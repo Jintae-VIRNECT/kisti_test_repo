@@ -3,7 +3,9 @@
 const { join, resolve, posix } = require('path')
 const webpack = require('webpack')
 const glob = require('glob')
-const MODE = process.env.NODE_ENV === 'develop' ? 'development' : 'production'
+const MODE = /local|develop|onpremise/.test(process.env.NODE_ENV)
+  ? 'development'
+  : 'production'
 const isProduction = MODE === 'production'
 
 const ExtractTextPlugin = require('extract-text-webpack-plugin')

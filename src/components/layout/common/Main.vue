@@ -21,9 +21,6 @@ export default {
     Vue.prototype.$urls = res
     Vue.prototype.$env = res.env
     await auth.init({ env: res.env, urls: res, timeout: res.timeout })
-    if (res.env === 'onpremise') {
-      store.dispatch('SET_CUSTOM')
-    }
     next()
   },
   data() {
@@ -43,6 +40,9 @@ export default {
       !!navigator.userAgent.match(/Trident.*rv:11\./)
     ) {
       this.$router.replace('/nobrowser')
+    }
+    if (this.$env === 'onpremise') {
+      this.$store.dispatch('SET_CUSTOM')
     }
   },
 }
