@@ -443,10 +443,7 @@ public class ContentService {
 		contentRepository.save(targetContent);
 		// 반환할 타겟정보
 		List<ContentTargetResponse> contentTargetResponseList = new ArrayList<>();
-		ContentTargetResponse contentTargetResponse = ContentTargetResponse.builder()
-			.type(updateRequest.getTargetType())
-			.data(targetData)
-			.build();
+		ContentTargetResponse contentTargetResponse = modelMapper.map(target, ContentTargetResponse.class);
 		contentTargetResponseList.add(contentTargetResponse);
 
 		ContentUploadResponse updateResult = this.modelMapper.map(targetContent, ContentUploadResponse.class);
