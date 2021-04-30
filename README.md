@@ -26,9 +26,9 @@ pf-login 프로젝트 필요. 로그인되어 있지 않으면 서버사이드�
 
 ## Architecture
 https://ko.nuxtjs.org/
-```
 Nuxt framework (Universal)
-
+### folder
+```
 cypress - e2e 테스트
 docker
 src
@@ -42,4 +42,8 @@ src
 /models - API 리스폰스 데이터 재정의
 /services - UI코드를 제외한 로직 분리
 ```
+### style
+scoped 사용하지 않는다. 컨포넌트 이름을 class명으로 정의하고, 페이지는 id로 정의한다.
+
+### logic
 워크스페이스 변경시 새로고침 되어야 하는 함수는 `workspaceSerivce.watchActiveWorkspace(fn)` 사용한다.

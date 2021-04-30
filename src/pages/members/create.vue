@@ -320,17 +320,13 @@ export default {
       margin-bottom: 0;
     }
     .el-col:first-child {
-      label {
-        width: 108px;
-      }
       .el-form-item {
         width: 420px;
       }
     }
-    .el-col:last-child {
-      label {
-        width: 150px;
-      }
+    .el-col label {
+      display: inline-block;
+      width: 108px;
     }
     .el-col:last-child .plans {
       display: inline-block;
