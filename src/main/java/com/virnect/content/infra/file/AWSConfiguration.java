@@ -1,4 +1,4 @@
-package com.virnect.content.global.config;
+package com.virnect.content.infra.file;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;

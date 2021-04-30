@@ -28,6 +28,8 @@ public class DownloadService {
     private final ContentRepository contentRepository;
     private final FileDownloadService fileDownloadService;
     private final ContentService contentService;
+    private final ApplicationEventPublisher eventPublisher;
+
     public ResponseEntity<byte[]> contentDownloadForUUIDHandler(final String contentUUID, final String memberUUID) {
         // 1. 컨텐츠 데이터 조회
         Content content = this.contentRepository.findByUuid(contentUUID)
@@ -40,8 +42,6 @@ public class DownloadService {
         eventPublisher.publishEvent(new ContentDownloadHitEvent(content, memberUUID));
         return responseEntity;
     }
-
-    private final ApplicationEventPublisher eventPublisher;
 
     public ResponseEntity<byte[]> contentDownloadForTargetHandler(final String targetData, final String memberUUID) {
         String checkedData = contentService.checkParameterEncoded(targetData);

@@ -41,16 +41,14 @@ public class ContentInfoResponse {
     private List<ContentTargetResponse> targets;
     @ApiModelProperty(value = "컨텐츠 생성 일자", notes = "컨텐츠 생성일자(신규 등록) 기간 정보입니다.", position = 12, example = "2020-02-15 16:32:13")
     private LocalDateTime createdDate;
-    @ApiModelProperty(value = "컨텐츠 생성 일자", notes = "컨텐츠 수정 일자 기간 정보입니다.", position = 13, example = "2020-02-15 16:32:13")
-    private LocalDateTime updatedDate;
-    @ApiModelProperty(value = "타겟", notes = "컨텐츠의 타겟 사이즈", position = 14, example = "10")
+    @ApiModelProperty(value = "타겟", notes = "컨텐츠의 타겟 사이즈", position = 13, example = "10")
     private Float targetSize;
 
     @Builder
     public ContentInfoResponse(
-            String workspaceUUID, String contentUUID, String contentName, YesOrNo shared, int sceneGroupTotal,
-            long contentSize, String uploaderUUID, String uploaderName, String uploaderProfile, String path,
-            YesOrNo converted, List<ContentTargetResponse> targets, LocalDateTime createdDate, LocalDateTime updatedDate, Float targetSize
+        String workspaceUUID, String contentUUID, String contentName, YesOrNo shared, int sceneGroupTotal,
+        long contentSize, String uploaderUUID, String uploaderName, String uploaderProfile, String path,
+        YesOrNo converted, List<ContentTargetResponse> targets, LocalDateTime createdDate, Float targetSize
     ) {
         this.workspaceUUID = workspaceUUID;
         this.contentUUID = contentUUID;
@@ -65,7 +63,6 @@ public class ContentInfoResponse {
         this.converted = converted;
         this.targets = targets;
         this.createdDate = createdDate;
-        this.updatedDate = updatedDate;
         this.targetSize = targetSize;
     }
 }
