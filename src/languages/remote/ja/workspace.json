@@ -48,6 +48,7 @@
     "remote_invite_impossible": "協業に参加できません。",
     "remote_already_invite": "同じアカウントで協業中です。協業に参加できません。",
     "remote_access_removed": "リーダーによって参加権限が削除されました。",
+    "remote_access_overflow": "最大参加人数{num}を超過しました。",
 
     "user_title": "協業可能メンバー",
     "user_description": "協業可能メンバーを選択し、メッセージを送ってみてください。",
