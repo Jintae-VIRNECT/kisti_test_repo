@@ -424,7 +424,7 @@ public class ContentService {
 			JsonParser jsonParse = new JsonParser();
 			JsonObject propertyObj = (JsonObject) jsonParse.parse(updateRequest.getMetadata());
 			JsonObject contents = propertyObj.getAsJsonObject("contents");
-			 targetSize= contents.get("targetSize").getAsFloat();
+			targetSize= contents.get("targetSize").getAsFloat();
 		}
 		target.setSize(targetSize);
 		// 8. 수정 반영

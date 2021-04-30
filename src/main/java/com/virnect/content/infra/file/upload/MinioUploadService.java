@@ -49,108 +49,108 @@ import com.virnect.content.global.error.ErrorCode;
 @Component
 @RequiredArgsConstructor
 public class MinioUploadService implements FileUploadService {
-	private final MinioClient minioClient;
+    private final MinioClient minioClient;
 
-	private static String CONTENT_DIRECTORY = "contents";
-	private static String REPORT_DIRECTORY = "report";
-	private static String REPORT_FILE_EXTENSION = ".png";
+    private static String CONTENT_DIRECTORY = "contents";
+    private static String REPORT_DIRECTORY = "report";
+    private static String REPORT_FILE_EXTENSION = ".png";
 
-	@Value("${minio.bucket}")
-	private String bucketName;
+    @Value("${minio.bucket}")
+    private String bucketName;
 
-	@Value("${minio.bucket-resource}")
-	private String bucketResource;
+    @Value("${minio.bucket-resource}")
+    private String bucketResource;
 
-	@Value("#{'${upload.allowed-extension}'.split(',')}")
-	private List<String> allowedExtension;
+    @Value("#{'${upload.allowed-extension}'.split(',')}")
+    private List<String> allowedExtension;
 
-	@Override
-	public boolean delete(String url) {
-		if (url.equals("default")) {
-			log.info("기본 이미지는 삭제하지 않습니다.");
-		} else {
-			String objectName = bucketResource + CONTENT_DIRECTORY + "/" + FilenameUtils.getName(url);
-			RemoveObjectArgs removeObjectArgs = RemoveObjectArgs.builder()
-				.bucket(bucketName)
-				.object(objectName)
-				.build();
-			try {
-				minioClient.removeObject(removeObjectArgs);
-				log.info(FilenameUtils.getName(url) + " 파일이 삭제되었습니다.");
-			} catch (ErrorResponseException | InsufficientDataException | InternalException | InvalidBucketNameException | InvalidKeyException | InvalidResponseException | IOException |
-				NoSuchAlgorithmException | ServerException | XmlParserException exception) {
-				log.error(exception.getMessage());
-				throw new ContentServiceException(ErrorCode.ERR_DELETE_CONTENT);
-			}
-		}
-		return true;
-	}
+    @Override
+    public boolean delete(String url) {
+        if (url.equals("default")) {
+            log.info("기본 이미지는 삭제하지 않습니다.");
+        } else {
+            String objectName = bucketResource + CONTENT_DIRECTORY + "/" + FilenameUtils.getName(url);
+            RemoveObjectArgs removeObjectArgs = RemoveObjectArgs.builder()
+                .bucket(bucketName)
+                .object(objectName)
+                .build();
+            try {
+                minioClient.removeObject(removeObjectArgs);
+                log.info(FilenameUtils.getName(url) + " 파일이 삭제되었습니다.");
+            } catch (ErrorResponseException | InsufficientDataException | InternalException | InvalidBucketNameException | InvalidKeyException | InvalidResponseException | IOException |
+                NoSuchAlgorithmException | ServerException | XmlParserException exception) {
+                log.error(exception.getMessage());
+                throw new ContentServiceException(ErrorCode.ERR_DELETE_CONTENT);
+            }
+        }
+        return true;
+    }
 
-	@Override
-	public File getFile(String url) {
-		return null;
-	}
+    @Override
+    public File getFile(String url) {
+        return null;
+    }
 
-	@Override
-	public String base64ImageUpload(String base64Image) {
-		try {
-			byte[] image = Base64.getDecoder().decode(base64Image);
-			String randomFileName = String.format(
-				"%s_%s%s", LocalDate.now().toString(), RandomStringUtils.randomAlphanumeric(10).toLowerCase(),
-				REPORT_FILE_EXTENSION
-			);
+    @Override
+    public String base64ImageUpload(String base64Image) {
+        try {
+            byte[] image = Base64.getDecoder().decode(base64Image);
+            String randomFileName = String.format(
+                "%s_%s%s", LocalDate.now().toString(), RandomStringUtils.randomAlphanumeric(10).toLowerCase(),
+                REPORT_FILE_EXTENSION
+            );
 
-			String objectName = String.format("%s%s/%s", bucketResource, REPORT_DIRECTORY, randomFileName);
+            String objectName = String.format("%s%s/%s", bucketResource, REPORT_DIRECTORY, randomFileName);
 
-			InputStream inputStream = new ByteArrayInputStream(image);
-			PutObjectArgs putObjectArgs = PutObjectArgs.builder()
-				.bucket(bucketName)
-				.object(objectName)
-				.contentType(MediaType.APPLICATION_OCTET_STREAM_VALUE)
-				.stream(inputStream, image.length, -1)
-				.build();
-			minioClient.putObject(putObjectArgs);
-			return minioClient.getObjectUrl(bucketName, objectName);
-		} catch (Exception e) {
-			log.error(e.getMessage());
-			throw new ContentServiceException(ErrorCode.ERR_CONTENT_UPLOAD);
-		}
+            InputStream inputStream = new ByteArrayInputStream(image);
+            PutObjectArgs putObjectArgs = PutObjectArgs.builder()
+                .bucket(bucketName)
+                .object(objectName)
+                .contentType(MediaType.APPLICATION_OCTET_STREAM_VALUE)
+                .stream(inputStream, image.length, -1)
+                .build();
+            minioClient.putObject(putObjectArgs);
+            return minioClient.getObjectUrl(bucketName, objectName);
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            throw new ContentServiceException(ErrorCode.ERR_CONTENT_UPLOAD);
+        }
 
-	}
+    }
 
-	@Override
-	public String uploadByFileInputStream(MultipartFile file, String fileName) throws IOException {
-		// 1. 파일 크기 확인
-		log.info("[FILE INPUT STREAM UPLOADER] - UPLOAD FILE SIZE >> " + file.getSize());
-		if (file.getSize() <= 0) {
-			throw new ContentServiceException(ErrorCode.ERR_CONTENT_UPLOAD);
-		}
+    @Override
+    public String uploadByFileInputStream(MultipartFile file, String fileName) throws IOException {
+        // 1. 파일 크기 확인
+        log.info("[FILE INPUT STREAM UPLOADER] - UPLOAD FILE SIZE >> " + file.getSize());
+        if (file.getSize() <= 0) {
+            throw new ContentServiceException(ErrorCode.ERR_CONTENT_UPLOAD);
+        }
 
-		// 2. 파일 확장자 확인
-		String fileExtension = String.format(
-			".%s", Files.getFileExtension(Objects.requireNonNull(file.getOriginalFilename())));
+        // 2. 파일 확장자 확인
+        String fileExtension = String.format(
+            ".%s", Files.getFileExtension(Objects.requireNonNull(file.getOriginalFilename())));
 
-		if (!allowedExtension.contains(fileExtension)) {
-			log.error("[AWS S3 FILE INPUT STREAM UPLOADER] [UNSUPPORTED_FILE] [{}]", file.getOriginalFilename());
-			throw new ContentServiceException(ErrorCode.ERR_UNSUPPORTED_FILE_EXTENSION);
-		}
+        if (!allowedExtension.contains(fileExtension)) {
+            log.error("[AWS S3 FILE INPUT STREAM UPLOADER] [UNSUPPORTED_FILE] [{}]", file.getOriginalFilename());
+            throw new ContentServiceException(ErrorCode.ERR_UNSUPPORTED_FILE_EXTENSION);
+        }
 
-		String objectName = String.format("%s%s/%s%s", bucketResource, CONTENT_DIRECTORY, fileName, fileExtension);
+        String objectName = String.format("%s%s/%s%s", bucketResource, CONTENT_DIRECTORY, fileName, fileExtension);
 
-		PutObjectArgs putObjectArgs = PutObjectArgs.builder()
-			.bucket(bucketName)
-			.object(objectName)
-			.contentType(file.getContentType())
-			.stream(file.getInputStream(), file.getSize(), -1)
-			.build();
-		try {
-			minioClient.putObject(putObjectArgs);
-			return minioClient.getObjectUrl(bucketName, objectName);
-		} catch (ErrorResponseException | InsufficientDataException | InternalException | InvalidBucketNameException | InvalidKeyException | InvalidResponseException | NoSuchAlgorithmException |
-			ServerException | XmlParserException exception) {
-			log.error(exception.getMessage());
-			throw new ContentServiceException(ErrorCode.ERR_CONTENT_UPLOAD);
-		}
-	}
+        PutObjectArgs putObjectArgs = PutObjectArgs.builder()
+            .bucket(bucketName)
+            .object(objectName)
+            .contentType(file.getContentType())
+            .stream(file.getInputStream(), file.getSize(), -1)
+            .build();
+        try {
+            minioClient.putObject(putObjectArgs);
+            return minioClient.getObjectUrl(bucketName, objectName);
+        } catch (ErrorResponseException | InsufficientDataException | InternalException | InvalidBucketNameException | InvalidKeyException | InvalidResponseException | NoSuchAlgorithmException |
+            ServerException | XmlParserException exception) {
+            log.error(exception.getMessage());
+            throw new ContentServiceException(ErrorCode.ERR_CONTENT_UPLOAD);
+        }
+    }
 
 }

@@ -139,11 +139,11 @@ public class S3FileDownloadService implements FileDownloadService {
             }
         };
         log.info(
-                "[CONVERT INPUTSTREAM TO MULTIPARTFILE] Convert success. uploaded url : [{}], contentType : [{}], file size : [{}], originalFileName : [{}],"
-                , amazonS3Client.getUrl(bucketName, key).toExternalForm()
-                , multipartFile.getContentType()
-                , multipartFile.getSize()
-                , multipartFile.getOriginalFilename()
+            "[CONVERT INPUTSTREAM TO MULTIPARTFILE] Convert success. uploaded url : [{}], contentType : [{}], file size : [{}], originalFileName : [{}],"
+            , amazonS3Client.getUrl(bucketName, key).toExternalForm()
+            , multipartFile.getContentType()
+            , multipartFile.getSize()
+            , multipartFile.getOriginalFilename()
         );
         return multipartFile;
     }

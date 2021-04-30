@@ -25,38 +25,38 @@ import com.virnect.content.infra.file.download.FileDownloadService;
 @Service
 @RequiredArgsConstructor
 public class DownloadService {
-	private final ContentRepository contentRepository;
-	private final FileDownloadService fileDownloadService;
-	private final ContentService contentService;
-	private final ApplicationEventPublisher eventPublisher;
+    private final ContentRepository contentRepository;
+    private final FileDownloadService fileDownloadService;
+    private final ContentService contentService;
+    private final ApplicationEventPublisher eventPublisher;
 
-	public ResponseEntity<byte[]> contentDownloadForUUIDHandler(final String contentUUID, final String memberUUID) {
-		// 1. 컨텐츠 데이터 조회
-		Content content = this.contentRepository.findByUuid(contentUUID)
-			.orElseThrow(() -> new ContentServiceException(ErrorCode.ERR_CONTENT_NOT_FOUND));
+    public ResponseEntity<byte[]> contentDownloadForUUIDHandler(final String contentUUID, final String memberUUID) {
+        // 1. 컨텐츠 데이터 조회
+        Content content = this.contentRepository.findByUuid(contentUUID)
+            .orElseThrow(() -> new ContentServiceException(ErrorCode.ERR_CONTENT_NOT_FOUND));
 
-		// 워크스페이스 총 다운로드 수와 라이선스의 다운로드 가능 수 체크
-		contentService.checkLicenseDownload(content.getWorkspaceUUID());
+        // 워크스페이스 총 다운로드 수와 라이선스의 다운로드 가능 수 체크
+        contentService.checkLicenseDownload(content.getWorkspaceUUID());
 
-		ResponseEntity<byte[]> responseEntity = this.fileDownloadService.fileDownload(content.getPath());
-		eventPublisher.publishEvent(new ContentDownloadHitEvent(content, memberUUID));
-		return responseEntity;
-	}
+        ResponseEntity<byte[]> responseEntity = this.fileDownloadService.fileDownload(content.getPath());
+        eventPublisher.publishEvent(new ContentDownloadHitEvent(content, memberUUID));
+        return responseEntity;
+    }
 
-	public ResponseEntity<byte[]> contentDownloadForTargetHandler(final String targetData, final String memberUUID) {
-		String checkedData = contentService.checkParameterEncoded(targetData);
+    public ResponseEntity<byte[]> contentDownloadForTargetHandler(final String targetData, final String memberUUID) {
+        String checkedData = contentService.checkParameterEncoded(targetData);
 
-		Content content = this.contentRepository.getContentOfTarget(checkedData);
-		// 컨텐츠 데이터 조회
+        Content content = this.contentRepository.getContentOfTarget(checkedData);
+        // 컨텐츠 데이터 조회
 
-		if (content == null)
-			throw new ContentServiceException(ErrorCode.ERR_MISMATCH_TARGET);
+        if (content == null)
+            throw new ContentServiceException(ErrorCode.ERR_MISMATCH_TARGET);
 
-		// 워크스페이스 총 다운로드 수와 라이선스의 다운로드 가능 수 체크
-		contentService.checkLicenseDownload(content.getWorkspaceUUID());
+        // 워크스페이스 총 다운로드 수와 라이선스의 다운로드 가능 수 체크
+        contentService.checkLicenseDownload(content.getWorkspaceUUID());
 
-		ResponseEntity<byte[]> responseEntity = this.fileDownloadService.fileDownload(content.getPath());
-		eventPublisher.publishEvent(new ContentDownloadHitEvent(content, memberUUID));
-		return responseEntity;
-	}
+        ResponseEntity<byte[]> responseEntity = this.fileDownloadService.fileDownload(content.getPath());
+        eventPublisher.publishEvent(new ContentDownloadHitEvent(content, memberUUID));
+        return responseEntity;
+    }
 }

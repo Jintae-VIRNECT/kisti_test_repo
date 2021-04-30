@@ -23,11 +23,11 @@ import io.minio.errors.XmlParserException;
  * @since 2020.05.10
  */
 public interface FileDownloadService {
-	ResponseEntity<byte[]> fileDownload(final String fileName);
+    ResponseEntity<byte[]> fileDownload(final String fileName);
 
-	void copyFileS3ToLocal(String fileName);
+    void copyFileS3ToLocal(String fileName);
 
-	String getFilePath(String bucketResource, String fileName);
+    String getFilePath(String bucketResource, String fileName);
 
-	MultipartFile getMultipartfile(String fileName);
+    MultipartFile getMultipartfile(String fileName);
 }

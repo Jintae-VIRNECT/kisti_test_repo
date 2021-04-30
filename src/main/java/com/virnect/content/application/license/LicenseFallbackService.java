@@ -17,9 +17,9 @@ import com.virnect.content.global.common.ResponseMessage;
 @Slf4j
 @Service
 public class LicenseFallbackService implements FallbackFactory<ResponseMessage> {
-	@Override
-	public ResponseMessage create(Throwable cause) {
-		log.error("USER SERVER FEIGN ERROR: {}", cause.getMessage());
-		return new ResponseMessage();
-	}
+    @Override
+    public ResponseMessage create(Throwable cause) {
+        log.error("USER SERVER FEIGN ERROR: {}", cause.getMessage());
+        return new ResponseMessage();
+    }
 }
