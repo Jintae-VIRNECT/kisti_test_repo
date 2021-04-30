@@ -286,7 +286,10 @@ public class ContentService {
 		JsonParser jsonParse = new JsonParser();
 		JsonObject propertyObj = (JsonObject)jsonParse.parse(content.getMetadata());
 		JsonObject contents = propertyObj.getAsJsonObject("contents");
-		float targetSize = contents.get("targetSize").getAsFloat();
+		float targetSize = 10f;
+		if(contents!=null && contents.get("targetSize")==null){
+			targetSize =contents.get("targetSize").getAsFloat();
+		}
 
 		Target target = Target.builder()
 			.type(targetType)
@@ -420,11 +423,14 @@ public class ContentService {
 		target.setData(updateRequest.getTargetData());
 		target.setType(updateRequest.getTargetType());
 		float targetSize = 10f;
+
 		if (!targetContent.getMetadata().equals(updateRequest.getMetadata())) {
 			JsonParser jsonParse = new JsonParser();
 			JsonObject propertyObj = (JsonObject) jsonParse.parse(updateRequest.getMetadata());
 			JsonObject contents = propertyObj.getAsJsonObject("contents");
-			targetSize= contents.get("targetSize").getAsFloat();
+			if(contents!=null && contents.get("targetSize")!=null){
+				targetSize =contents.get("targetSize").getAsFloat();
+			}
 		}
 		target.setSize(targetSize);
 		// 8. 수정 반영
@@ -737,7 +743,7 @@ public class ContentService {
 		JsonObject metaData = (JsonObject)jsonParse.parse(content.getMetadata());
 		JsonObject contents = metaData.getAsJsonObject("contents");
 		Float targetSize = 10f;
-		if (contents.get("targetSize") != null) {
+		if (contents!=null && contents.get("targetSize") != null) {
 			targetSize = contents.get("targetSize").getAsFloat();
 		}
 
