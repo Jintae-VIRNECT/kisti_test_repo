@@ -19,6 +19,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -41,6 +42,7 @@ import org.springframework.web.multipart.commons.CommonsMultipartFile;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.querydsl.core.Tuple;
@@ -286,7 +288,10 @@ public class ContentService {
 		JsonParser jsonParse = new JsonParser();
 		JsonObject propertyObj = (JsonObject)jsonParse.parse(content.getMetadata());
 		JsonObject contents = propertyObj.getAsJsonObject("contents");
-		float targetSize = contents.get("targetSize").getAsFloat();
+		float targetSize = 10f;
+		if (contents != null && contents.get("targetSize") == null) {
+			targetSize = contents.get("targetSize").getAsFloat();
+		}
 
 		Target target = Target.builder()
 			.type(targetType)
@@ -361,7 +366,7 @@ public class ContentService {
 		// 3. 수정 컨텐츠 저장
 		try {
 			String fileUploadPath = this.fileUploadService.uploadByFileInputStream(
-				updateRequest.getContent(), targetContent.getUuid() + "");
+				updateRequest.getContent(), targetContent.getUuid());
 
 			// 4 수정 컨텐츠 경로 반영
 			targetContent.setPath(fileUploadPath);
@@ -405,26 +410,32 @@ public class ContentService {
 			throw new ContentServiceException(ErrorCode.ERR_NOT_FOUND_TARGET);
 		}
 
-		if (!target.getData().equals(updateRequest.getTargetData()) || updateRequest.getTargetType() != target.getType()) {
+		//타겟 데이터가 달라지면 타겟타입이 QR타입인경우, QR이미지를 새로 생성해야 한다.
+		//1) 타겟 img path 변경
+		if (!target.getData().equals(updateRequest.getTargetData())
+			|| updateRequest.getTargetType() != target.getType()) {
 			if (updateRequest.getTargetType().equals(TargetType.QR)) {
 				String uploadImgPath = decodeData(updateRequest.getTargetData());
 				fileUploadService.delete(target.getImgPath());
 				target.setImgPath(uploadImgPath);
 			}
 			if (updateRequest.getTargetType().equals(TargetType.VTarget)) {
-				String uploadImgPath =fileDownloadService.getFilePath(fileUploadPath, defaultVTarget);
+				String uploadImgPath = fileDownloadService.getFilePath(fileUploadPath, defaultVTarget);
 				fileUploadService.delete(target.getImgPath());
 				target.setImgPath(uploadImgPath);
 			}
 		}
+		//2) 타겟 data 변경
 		target.setData(updateRequest.getTargetData());
+		//3) 타겟 type 변경
 		target.setType(updateRequest.getTargetType());
+		//4) 타겟 size 변경
+		JsonParser jsonParser = new JsonParser();
+		JsonObject propertyObj = (JsonObject)jsonParser.parse(updateRequest.getProperties());
+		Optional<JsonElement> jsonElement = Optional.ofNullable(propertyObj.get("TargetSize"));
 		float targetSize = 10f;
-		if (!targetContent.getMetadata().equals(updateRequest.getMetadata())) {
-			JsonParser jsonParse = new JsonParser();
-			JsonObject propertyObj = (JsonObject) jsonParse.parse(updateRequest.getMetadata());
-			JsonObject contents = propertyObj.getAsJsonObject("contents");
-			targetSize= contents.get("targetSize").getAsFloat();
+		if (jsonElement.isPresent()) {
+			targetSize = jsonElement.get().getAsFloat();
 		}
 		target.setSize(targetSize);
 		// 8. 수정 반영
@@ -432,10 +443,7 @@ public class ContentService {
 		contentRepository.save(targetContent);
 		// 반환할 타겟정보
 		List<ContentTargetResponse> contentTargetResponseList = new ArrayList<>();
-		ContentTargetResponse contentTargetResponse = ContentTargetResponse.builder()
-			.type(updateRequest.getTargetType())
-			.data(targetData)
-			.build();
+		ContentTargetResponse contentTargetResponse = modelMapper.map(target, ContentTargetResponse.class);
 		contentTargetResponseList.add(contentTargetResponse);
 
 		ContentUploadResponse updateResult = this.modelMapper.map(targetContent, ContentUploadResponse.class);
@@ -737,7 +745,7 @@ public class ContentService {
 		JsonObject metaData = (JsonObject)jsonParse.parse(content.getMetadata());
 		JsonObject contents = metaData.getAsJsonObject("contents");
 		Float targetSize = 10f;
-		if (contents.get("targetSize") != null) {
+		if (contents != null && contents.get("targetSize") != null) {
 			targetSize = contents.get("targetSize").getAsFloat();
 		}
 
