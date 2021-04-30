@@ -112,7 +112,7 @@ public class RoomService {
 		// 오픈방이 아닐 경우 인원수 체크
 		if (roomRequest.getSessionType() != SessionType.OPEN) {
 			if (roomRequest.getParticipantIds().size() + 1 > licenseItem.getUserCapacity()) {
-				return new ApiResponse<>(ErrorCode.ERR_ROOM_MEMBER_IS_OVER);
+				return new ApiResponse<>(ErrorCode.ERR_ROOM_MEMBER_MAX_COUNT);
 			}
 		}
 
@@ -147,7 +147,7 @@ public class RoomService {
 		// 오픈방이 아닐 경우 인원수 체크
 		if (roomRequest.getSessionType() != SessionType.OPEN) {
 			if (roomRequest.getParticipantIds().size() + 1 > licenseItem.getUserCapacity()) {
-				return new ApiResponse<>(ErrorCode.ERR_ROOM_MEMBER_IS_OVER);
+				return new ApiResponse<>(ErrorCode.ERR_ROOM_MEMBER_MAX_COUNT);
 			}
 		}
 
@@ -307,7 +307,7 @@ public class RoomService {
 		String userId
 	) {
 		Room room = roomRepository.findRoomByWorkspaceIdAndSessionIdForWrite(workspaceId, sessionId).orElse(null);
-		if (room == null) {
+		if (ObjectUtils.isEmpty(room)) {
 			return new ApiResponse<>(ErrorCode.ERR_ROOM_NOT_FOUND);
 		}
 
@@ -318,7 +318,7 @@ public class RoomService {
 			}
 		}
 
-		if (member == null) {
+		if (ObjectUtils.isEmpty(member)) {
 			return new ApiResponse<>(ErrorCode.ERR_ROOM_MEMBER_NOT_FOUND);
 		}
 
@@ -460,10 +460,9 @@ public class RoomService {
 			"room info retrieve by session id",
 			sessionId
 		);
-		// Get Room info from DB
+
 		Room room = roomRepository.findRoomByWorkspaceIdAndSessionIdNotInEvictedMember(workspaceId, sessionId).orElse(null);
-		//Room room = roomRepository.findRoomByWorkspaceIdAndSessionIdForWrite(workspaceId, sessionId).orElse(null);
-		if(room == null) {
+		if(ObjectUtils.isEmpty(room)) {
 			return new ApiResponse<>(ErrorCode.ERR_ROOM_NOT_FOUND);
 		}
 
@@ -514,13 +513,10 @@ public class RoomService {
 	) {
 
 		Page<Room> roomPage = roomRepository.findMyRoomSpecificUserId(workspaceId, userId, paging, pageable);
-		for (Room room : roomPage.getContent()) {
-			log.info("loadRoomPageList invokeDataProcess: {}", room.getSessionId());
-		}
 
 		List<RoomInfoResponse> roomInfoResponses = makeRoomInfoResponse(workspaceId, roomPage);
-		PageMetadataResponse pageMeta;
 
+		PageMetadataResponse pageMeta;
 		if (paging) {
 			pageMeta = PageMetadataResponse.builder()
 				.currentPage(pageable.getPageNumber())
@@ -558,16 +554,17 @@ public class RoomService {
 			Integer.MAX_VALUE
 		).getData().getMemberInfoList();
 		for (WorkspaceMemberInfoResponse memberInfo : members) {
-			if (memberInfo.getUuid() == null || memberInfo.getUuid().isEmpty()) {
+			if (StringUtils.isBlank(memberInfo.getUuid())) {
 				//if memberInfo is empty
 				log.info("loadFromDatabase::searchRoomHistoryPageList:: some member dose not have uuid");
 			} else {
 				userIds.add(memberInfo.getUuid());
 			}
 		}
+
 		Page<Room>  roomPage = roomRepository.findMyRoomSpecificUserIdBySearch(workspaceId, userId, userIds, search, pageable);
-		
 		List<RoomInfoResponse> roomInfoResponses = makeRoomInfoResponse(workspaceId, roomPage);
+
 		PageMetadataResponse pageMeta = PageMetadataResponse.builder()
 				.currentPage(pageable.getPageNumber())
 				.currentSize(pageable.getPageSize())
@@ -594,7 +591,7 @@ public class RoomService {
 		);
 
 		Room room = roomRepository.findRoomByWorkspaceIdAndSessionIdForWrite(workspaceId, sessionId).orElse(null);
-		if (room == null) {
+		if (ObjectUtils.isEmpty(room)) {
 			return new ApiResponse<>(ErrorCode.ERR_ROOM_NOT_FOUND);
 		}
 		if (!room.getLeaderId().equals(modifyRoomInfoRequest.getUuid())) {
@@ -640,7 +637,7 @@ public class RoomService {
 	public ApiResponse<RoomDeleteResponse> deleteRoomById(String workspaceId, String sessionId, String userId) {
 
 		Room room = roomRepository.findRoomByWorkspaceIdAndSessionIdForWrite(workspaceId, sessionId).orElse(null);
-		if (room == null) {
+		if (ObjectUtils.isEmpty(room)) {
 			return new ApiResponse<>(ErrorCode.ERR_ROOM_NOT_FOUND);
 		}
 		//check request user has valid permission

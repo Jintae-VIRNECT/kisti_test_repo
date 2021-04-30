@@ -65,8 +65,8 @@ public class HistoryService {
 		Page<RoomHistory> roomHistoryPage = roomHistoryRepository.findMyRoomHistorySpecificUserId(workspaceId, userId, paging, pageable);
 
 		List<RoomHistoryInfoResponse> roomHistoryInfoResponses = makeRoomHistoryInfoResponses(workspaceId, roomHistoryPage);
-		PageMetadataResponse pageMeta;
 
+		PageMetadataResponse pageMeta;
 		if (paging) {
 			pageMeta = PageMetadataResponse.builder()
 				.currentPage(pageable.getPageNumber())
@@ -114,6 +114,7 @@ public class HistoryService {
 		Page<RoomHistory> roomHistoryPage = roomHistoryRepository.findMyRoomHistorySpecificUserIdBySearch(workspaceId, userId, userIds, search, pageable);
 
 		List<RoomHistoryInfoResponse> roomHistoryInfoResponses = makeRoomHistoryInfoResponses(workspaceId, roomHistoryPage);
+
 		PageMetadataResponse pageMeta = PageMetadataResponse.builder()
 			.currentPage(pageable.getPageNumber())
 			.currentSize(pageable.getPageSize())
@@ -183,11 +184,6 @@ public class HistoryService {
 		String workspaceId,
 		String userId
 	) {
-
-		ApiResponse<ResultResponse> responseDate;
-
-		List<MemberHistory> memberHistories = memberHistoryRepository.findByWorkspaceIdAndUuid(workspaceId, userId);
-
 		LogMessage.formedInfo(
 			//TAG,
 			"invokeDataProcess",
@@ -196,6 +192,7 @@ public class HistoryService {
 			userId
 		);
 
+		List<MemberHistory> memberHistories = memberHistoryRepository.findByWorkspaceIdAndUuid(workspaceId, userId);
 		memberHistories.forEach(memberHistory -> {
 			if (memberHistory.getRoomHistory() != null) {
 				memberHistory.setHistoryDeleted(true);
@@ -207,9 +204,7 @@ public class HistoryService {
 		resultResponse.userId = userId;
 		resultResponse.setResult(true);
 
-		responseDate = new ApiResponse<>(resultResponse);
-
-		return responseDate;
+		return new ApiResponse<>(resultResponse);
 	}
 
 	public ApiResponse<ResultResponse> deleteHistoryById(

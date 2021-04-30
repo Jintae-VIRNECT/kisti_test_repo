@@ -238,7 +238,7 @@ public class HistoryRestController {
                 + "RoomHistoryDeleteRequest : " + roomHistoryDeleteRequest.toString(),
             "deleteHistoryByWorkspaceId"
         );
-        if (result.hasErrors()) {
+        if (result.hasErrors() || StringUtils.isBlank(workspaceId)) {
             throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
         ApiResponse<ResultResponse> responseData = historyService.deleteHistoryById(

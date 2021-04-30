@@ -825,19 +825,6 @@ public class SessionDataRepository {
             break;
             case OPEN: {
                 if (member != null) {
-                    /*MemberStatus memberStatus = member.getMemberStatus();
-                    if (memberStatus == MemberStatus.UNLOAD) {
-                        member.setMemberStatus(MemberStatus.LOADING);
-                        sessionService.setMember(member);
-                        result = true;
-                    }
-                    else if (memberStatus == MemberStatus.EVICTED) {
-                        errorCode = ErrorCode.ERR_ROOM_MEMBER_EVICTED_STATUS;
-                    } else if (memberStatus == MemberStatus.LOAD) {
-                        errorCode = ErrorCode.ERR_ROOM_MEMBER_ALREADY_JOINED;
-                    } else {
-                        errorCode = ErrorCode.ERR_ROOM_MEMBER_STATUS_INVALID;
-                    }*/
                     MemberStatus memberStatus = member.getMemberStatus();
                     if (memberStatus.equals(MemberStatus.UNLOAD) || memberStatus.equals(MemberStatus.EVICTED))
                     {
@@ -925,11 +912,13 @@ public class SessionDataRepository {
     }
 
     public ApiResponse<KickRoomResponse> kickFromRoom(
-        String workspaceId, String sessionId, KickRoomRequest kickRoomRequest
+        String workspaceId,
+        String sessionId,
+        KickRoomRequest kickRoomRequest
     ) {
 
         Room room = sessionService.getRoom(workspaceId, sessionId).orElse(null);
-        if (room == null) {
+        if (ObjectUtils.isEmpty(room)) {
             return new ApiResponse<>(new KickRoomResponse(), ErrorCode.ERR_ROOM_NOT_FOUND);
         }
 
@@ -939,8 +928,7 @@ public class SessionDataRepository {
                 member = participant;
             }
         }
-
-        if (member == null) {
+        if (ObjectUtils.isEmpty(member)) {
             return new ApiResponse<>(new KickRoomResponse(), ErrorCode.ERR_ROOM_MEMBER_NOT_FOUND);
         }
 
@@ -948,16 +936,15 @@ public class SessionDataRepository {
             return new ApiResponse<>(new KickRoomResponse(), ErrorCode.ERR_ROOM_INVALID_PERMISSION);
         }
 
-        String connectionId = member.getConnectionId();
         KickRoomResponse kickRoomResponse = new KickRoomResponse();
         kickRoomResponse.setWorkspaceId(room.getWorkspaceId());
         kickRoomResponse.setSessionId(room.getSessionId());
         kickRoomResponse.setLeaderId(room.getLeaderId());
         kickRoomResponse.setParticipantId(kickRoomRequest.getParticipantId());
-        kickRoomResponse.setConnectionId(connectionId);
+        kickRoomResponse.setConnectionId(member.getConnectionId());
 
         //if connection id cannot find, push message and just remove user
-        if (Strings.isBlank(connectionId)) {
+        if (Strings.isBlank(member.getConnectionId())) {
             sessionService.updateMember(member, MemberStatus.EVICTED);
         }
 
@@ -968,7 +955,7 @@ public class SessionDataRepository {
         String workspaceId, String sessionId, InviteRoomRequest inviteRoomRequest
     ) {
         Room room = sessionService.getRoom(workspaceId, sessionId).orElse(null);
-        if (room == null) {
+        if (ObjectUtils.isEmpty(room)) {
             return new ApiResponse<>(new InviteRoomResponse(), ErrorCode.ERR_ROOM_NOT_FOUND);
         }
 
