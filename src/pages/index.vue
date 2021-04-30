@@ -51,11 +51,7 @@
           <HomeUserProfileCard />
           <HomeDownloadCenter v-if="!$isOnpremise" />
           <HomeGuideList v-if="!$isOnpremise" />
-          <a
-            v-if="!$isOnpremise"
-            :href="`${$url.www}/support/faq`"
-            target="_blank"
-          >
+          <a v-if="!$isOnpremise" :href="`${$url.support}/faq`" target="_blank">
             <el-card class="faq-banner">
               <h6>
                 <span>{{ $t('home.faq.title') }}</span>

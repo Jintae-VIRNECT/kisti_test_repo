@@ -77,7 +77,7 @@
         <p>{{ $t('task.detail.empty') }}</p>
       </template>
     </el-table>
-    <SetSubTaskManage
+    <TaskSetSubTaskManage
       :taskInfo="taskInfo"
       :subTaskInfo="activeSubTask"
       :visible.sync="showSubTaskManageModal"
