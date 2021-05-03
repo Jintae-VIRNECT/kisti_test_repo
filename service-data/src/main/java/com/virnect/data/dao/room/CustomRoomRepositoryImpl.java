@@ -258,11 +258,12 @@ public class CustomRoomRepositoryImpl extends QuerydslRepositorySupport implemen
 			.leftJoin(room.members, member).fetchJoin()
 			.innerJoin(room.sessionProperty, sessionProperty).fetchJoin()
 			.where(
-				room.workspaceId.eq(room.workspaceId),
+				room.workspaceId.eq(workspaceId),
 				room.roomStatus.eq(RoomStatus.ACTIVE),
 				room.id.in(includeSearch(workspaceId, userId, userIds, search))
 				.or(
-				room.sessionProperty.sessionType.eq(SessionType.OPEN).and(room.title.contains(search))
+					room.sessionProperty.sessionType.eq(SessionType.OPEN)
+						.and(room.title.contains(search).and(room.workspaceId.eq(workspaceId)))
 				)
 			).distinct();
 		long totalCount = queryResult.fetchCount();
