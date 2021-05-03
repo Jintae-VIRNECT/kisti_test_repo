@@ -72,7 +72,7 @@ public class MinioUploadService implements FileUploadService {
     @Override
     public boolean delete(String url) {
         if (url.equals("default") || FilenameUtils.getName(url).equals(VTARGET_FILE_NAME)) {
-            log.info("기본 이미지는 삭제하지 않습니다.");
+            log.info("기본 이미지는 삭제하지 않습니다. FILE PATH >> [{}]", url);
         } else {
             String objectName = bucketResource + CONTENT_DIRECTORY + "/" + FilenameUtils.getName(url);
             RemoveObjectArgs removeObjectArgs = RemoveObjectArgs.builder()

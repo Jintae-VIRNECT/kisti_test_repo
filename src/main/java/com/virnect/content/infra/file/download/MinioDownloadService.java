@@ -159,7 +159,6 @@ public class MinioDownloadService implements FileDownloadService {
 
         String resourcePath = "contents/" + fileName;
         String objectName = bucketResource + resourcePath;
-
         GetObjectArgs getObjectArgs = GetObjectArgs.builder()
                 .bucket(bucketName)
                 .object(objectName)
@@ -167,7 +166,7 @@ public class MinioDownloadService implements FileDownloadService {
         InputStream inputStream;
 
         try {
-            inputStream = minioClient.getObject(getObjectArgs);
+            inputStream = (InputStream)minioClient.getObject(getObjectArgs);
         } catch (ErrorResponseException | InsufficientDataException | InternalException | InvalidKeyException | InvalidResponseException | NoSuchAlgorithmException |
                 ServerException | XmlParserException | IOException e) {
             throw new ContentServiceException(ErrorCode.ERR_CONTENT_DOWNLOAD);

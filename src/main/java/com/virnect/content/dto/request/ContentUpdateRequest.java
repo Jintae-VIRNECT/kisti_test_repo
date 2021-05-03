@@ -48,7 +48,7 @@ public class ContentUpdateRequest {
                 ", content=" + content +
                 ", name='" + name + '\'' +
       //          ", metadata='" + metadata + '\'' +
-                ", properties='" + properties + '\'' +
+                //", properties='" + properties + '\'' +
                 ", userUUID='" + userUUID + '\'' +
                 '}';
     }

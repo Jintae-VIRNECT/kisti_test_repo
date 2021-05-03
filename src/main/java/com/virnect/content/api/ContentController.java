@@ -159,6 +159,7 @@ public class ContentController {
     public ResponseEntity<ApiResponse<ContentUploadResponse>> contentFileUploadRequestHandler(
             @ModelAttribute @Valid ContentUploadRequest uploadRequest, BindingResult result
     ) {
+        log.info("[CONTENT UPLOAD REQUEST] {}",uploadRequest.toString());
         if (result.hasErrors()) {
             log.info("[ContentUploadRequest] => [{}]", uploadRequest);
             log.error(
@@ -207,6 +208,7 @@ public class ContentController {
             @ModelAttribute @Valid ContentUpdateRequest updateRequestDto,
             @PathVariable("contentUUID") String contentUUID, BindingResult result
     ) {
+        log.info("[CONTENT UPDATE REQUEST] {}",updateRequestDto.toString());
         if (result.hasErrors() || contentUUID.isEmpty()) {
             log.info("[ContentUpdateRequest] => [{}]", updateRequestDto.toString());
             log.error(

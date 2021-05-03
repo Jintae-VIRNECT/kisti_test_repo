@@ -407,9 +407,11 @@ public class ContentService {
         // 반환할 타겟정보
         List<ContentTargetResponse> contentTargetResponseList = new ArrayList<>();
         ContentTargetResponse contentTargetResponse = ContentTargetResponse.builder()
+                .id(target.getId())
                 .type(target.getType())
                 .data(target.getData())
                 .imgPath(target.getImgPath())
+                .size(target.getSize())
                 .build();
         contentTargetResponseList.add(contentTargetResponse);
         ContentUploadResponse updateResult = this.modelMapper.map(targetContent, ContentUploadResponse.class);
@@ -879,9 +881,7 @@ public class ContentService {
      */
     private ApiResponse<ContentUploadResponse> contentsDuplicateHandler(String contentUUID, String workspaceUUID, String userUUID, Content oldContents) throws IOException {
         //1. 라이선스 체크
-        MultipartFile originFile = fileDownloadService.getMultipartfile(contentUUID.concat(ARES_FILE_EXTENSION));
         //LicenseInfoResponse licenseInfoResponse = checkLicenseStorage(workspaceUUID, originFile.getSize(), userUUID);
-
         //2. 새로 생성하는 컨텐츠의 식별자
         String newContentUUID = UUID.randomUUID().toString();
         log.info("CONTENT UPLOAD - contentUUID : {}", newContentUUID);
@@ -901,7 +901,7 @@ public class ContentService {
                 .shared(INIT_IS_SHARED)
                 .converted(YesOrNo.YES)
                 .deleted(INIT_IS_DELETED)
-                .size(originFile.getSize())
+                .size(oldContents.getSize())
                 .path(fileUploadPath)
                 .build();
 
