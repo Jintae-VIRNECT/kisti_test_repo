@@ -159,9 +159,7 @@ export default {
 
           this.isInit = true
           this.$emit('loading')
-          this.$call.sendArDrawing(AR_DRAWING.START_DRAWING, {}, [
-            this.mainView.connectionId,
-          ])
+          this.$call.sendArDrawing(AR_DRAWING.START_DRAWING, {}, [])
         })
       }
       bgImage.onerror = error => {
