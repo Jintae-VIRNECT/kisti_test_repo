@@ -94,7 +94,7 @@ public class MemberRestController {
             userId,
             filter,
             search,
-            page + 1,
+            page,
             size
         );
 
