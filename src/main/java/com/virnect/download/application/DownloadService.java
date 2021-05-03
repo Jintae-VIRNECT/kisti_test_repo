@@ -9,6 +9,7 @@ import com.virnect.download.global.error.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
@@ -21,6 +22,7 @@ import java.util.stream.Collectors;
 public class DownloadService {
     private final AppRepository appRepository;
     private final ModelMapper modelMapper;
+    private final Environment environment;;
 
 
     //TODO: 응답 데이터 수정필요,,
@@ -49,6 +51,12 @@ public class DownloadService {
             Optional<App> optionalApp = appList.stream().findFirst();
             optionalApp.ifPresent(app -> {
                 AppInfoResponse appInfoResponse = modelMapper.map(app, AppInfoResponse.class);
+                if(environment.getActiveProfiles()[0].equals("production") && app.getDevice().getProduct().getName().equals("REMOTE") &&app.getDevice().getType().equals("MOBILE")){
+                    appInfoResponse.setAppUrl("https://play.google.com/store/apps/details?id=com.virnect.remote.mobile2");
+                }
+                if(environment.getActiveProfiles()[0].equals("production") && app.getDevice().getProduct().getName().equals("VIEW") &&app.getDevice().getType().equals("MOBILE")){
+                    appInfoResponse.setAppUrl("https://play.google.com/store/apps/details?id=com.VIRNECT.VIRNECTView");
+                }
                 appInfoResponse.setDeviceType(app.getDevice().getTypeDescription());
                 if (StringUtils.hasText(locale.getLanguage()) && locale.getLanguage().equalsIgnoreCase("en")) {
                     appInfoResponse.setDeviceName(app.getDevice().getModelDescriptionEng());
