@@ -1,6 +1,5 @@
 package com.virnect.content.infra.file.upload;
 
-import java.io.File;
 import java.io.IOException;
 
 import org.springframework.web.multipart.MultipartFile;
@@ -36,7 +35,7 @@ public interface FileUploadService {
 	 * @param url - 파일이 저장된 경로
 	 * @return - 파일 데이터
 	 */
-	File getFile(final String url);
+	//File getFile(final String url);
 
 	/**
 	 * base64로 인코딩된 이미지 파일 저장
@@ -54,4 +53,6 @@ public interface FileUploadService {
 	 * @throws IOException
 	 */
 	String uploadByFileInputStream(MultipartFile file, String fileName) throws IOException;
+
+	String copyByFileObject(String sourceFileName, String destinationFileName);
 }

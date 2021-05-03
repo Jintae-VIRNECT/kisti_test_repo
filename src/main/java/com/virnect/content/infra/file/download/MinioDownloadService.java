@@ -7,23 +7,27 @@ import java.io.InputStream;
 import java.nio.file.Path;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
+import org.springframework.http.ContentDisposition;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import io.minio.GetObjectArgs;
+import io.minio.GetObjectResponse;
 import io.minio.MinioClient;
 import io.minio.errors.ErrorResponseException;
 import io.minio.errors.InsufficientDataException;
 import io.minio.errors.InternalException;
-import io.minio.errors.InvalidBucketNameException;
 import io.minio.errors.InvalidResponseException;
 import io.minio.errors.ServerException;
 import io.minio.errors.XmlParserException;
@@ -42,7 +46,7 @@ import com.virnect.content.global.error.ErrorCode;
  * DESCRIPTION:
  */
 @Slf4j
-@Profile({"local","develop", "onpremise"})
+@Profile({"develop", "onpremise","test","local"})
 @Component
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public class MinioDownloadService implements FileDownloadService {
@@ -54,8 +58,12 @@ public class MinioDownloadService implements FileDownloadService {
     @Value("${minio.bucket-resource}")
     private String bucketResource;
 
+    @Value("${minio.server}")
+    private String minioServer;
+
+
     @Override
-    public ResponseEntity<byte[]> fileDownload(String fileName) {
+    public ResponseEntity<byte[]> fileDownload(String fileName, String range) {
         try {
             String resourcePath = fileName.split(bucketResource)[1];
             log.info("PARSER - RESOURCE PATH: [{}]", resourcePath);
@@ -65,22 +73,34 @@ public class MinioDownloadService implements FileDownloadService {
             }
             String objectName = bucketResource + resourcePath;
 
-            try {
-                minioClient.getObjectUrl(bucketName, objectName);
-                GetObjectArgs getObjectArgs = GetObjectArgs.builder()
+            Map<String, String> headers = new HashMap<>();
+            if (StringUtils.hasText(range)) {
+                range = range.trim();
+                if (!range.matches("^bytes=\\d*-\\d*$")) {
+                    log.error("Invalid Http Range : {}", range);
+                    throw new ContentServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
+                }
+                headers.put("Range", range);
+            }
+            GetObjectArgs getObjectArgs = GetObjectArgs.builder()
+                    .extraHeaders(headers)
                     .bucket(bucketName)
                     .object(objectName)
                     .build();
-                InputStream inputStream = minioClient.getObject(getObjectArgs);
-                byte[] bytes = IOUtils.toByteArray(inputStream);
+
+            try (GetObjectResponse objectResponse = minioClient.getObject(getObjectArgs)) {
+                byte[] bytes = IOUtils.toByteArray((InputStream) objectResponse);
                 HttpHeaders httpHeaders = new HttpHeaders();
+                String contentRange = objectResponse.headers().get("Content-Range");
+                if (StringUtils.hasText(contentRange)) {
+                    httpHeaders.set("Content-Range", contentRange);
+                }
                 httpHeaders.setContentType(MediaType.APPLICATION_OCTET_STREAM);
                 httpHeaders.setContentLength(bytes.length);
-                httpHeaders.setContentDispositionFormData("attachment", resources[1]);
-                inputStream.close();
+                httpHeaders.setContentDisposition(ContentDisposition.builder("attachment").filename(resources[1]).build());
                 return new ResponseEntity<>(bytes, httpHeaders, HttpStatus.OK);
-            } catch (ErrorResponseException | InsufficientDataException | InternalException | InvalidBucketNameException | InvalidKeyException | InvalidResponseException | NoSuchAlgorithmException |
-                ServerException | XmlParserException exception) {
+            } catch (ErrorResponseException | InsufficientDataException | InternalException | InvalidKeyException | InvalidResponseException | NoSuchAlgorithmException |
+                    ServerException | XmlParserException exception) {
                 log.error(exception.getMessage());
                 throw new ContentServiceException(ErrorCode.ERR_CONTENT_DOWNLOAD);
             }
@@ -97,9 +117,9 @@ public class MinioDownloadService implements FileDownloadService {
             String objectName = bucketResource + resourcePath;
 
             GetObjectArgs getObjectArgs = GetObjectArgs.builder()
-                .bucket(bucketName)
-                .object(objectName)
-                .build();
+                    .bucket(bucketName)
+                    .object(objectName)
+                    .build();
             InputStream inputStream = minioClient.getObject(getObjectArgs);
 
             File file = new File("upload/" + fileName);
@@ -121,9 +141,14 @@ public class MinioDownloadService implements FileDownloadService {
     public String getFilePath(String bucketResource, String fileName) {
         String objectName = bucketResource + fileName;
         try {
-            return minioClient.getObjectUrl(bucketName, objectName);
-        } catch (ErrorResponseException | InsufficientDataException | InternalException | InvalidBucketNameException | InvalidKeyException | InvalidResponseException | NoSuchAlgorithmException |
-            ServerException | XmlParserException | IOException exception) {
+            GetObjectArgs getObjectArgs = GetObjectArgs.builder()
+                    .bucket(bucketName)
+                    .object(objectName)
+                    .build();
+            minioClient.getObject(getObjectArgs);
+            return minioServer + "/" + bucketName + "/" + objectName;
+        } catch (ErrorResponseException | InsufficientDataException | InternalException | InvalidKeyException | InvalidResponseException | NoSuchAlgorithmException |
+                ServerException | XmlParserException | IOException exception) {
             log.error(exception.getMessage());
             throw new ContentServiceException(ErrorCode.ERR_CONTENT_DOWNLOAD);
         }
@@ -136,15 +161,15 @@ public class MinioDownloadService implements FileDownloadService {
         String objectName = bucketResource + resourcePath;
 
         GetObjectArgs getObjectArgs = GetObjectArgs.builder()
-            .bucket(bucketName)
-            .object(objectName)
-            .build();
+                .bucket(bucketName)
+                .object(objectName)
+                .build();
         InputStream inputStream;
 
         try {
             inputStream = minioClient.getObject(getObjectArgs);
-        } catch (ErrorResponseException | InsufficientDataException | InternalException | InvalidBucketNameException | InvalidKeyException | InvalidResponseException | NoSuchAlgorithmException |
-            ServerException | XmlParserException | IOException e) {
+        } catch (ErrorResponseException | InsufficientDataException | InternalException | InvalidKeyException | InvalidResponseException | NoSuchAlgorithmException |
+                ServerException | XmlParserException | IOException e) {
             throw new ContentServiceException(ErrorCode.ERR_CONTENT_DOWNLOAD);
         }
 
@@ -176,8 +201,8 @@ public class MinioDownloadService implements FileDownloadService {
                 try {
                     InputStream inputStream = minioClient.getObject(getObjectArgs);
                     return IOUtils.toByteArray(inputStream).length;
-                } catch (ErrorResponseException | InsufficientDataException | InternalException | InvalidBucketNameException | InvalidKeyException | InvalidResponseException | NoSuchAlgorithmException |
-                    ServerException | XmlParserException | IOException e) {
+                } catch (ErrorResponseException | InsufficientDataException | InternalException | InvalidKeyException | InvalidResponseException | NoSuchAlgorithmException |
+                        ServerException | XmlParserException | IOException e) {
                     throw new ContentServiceException(ErrorCode.ERR_CONTENT_DOWNLOAD);
                 }
             }
@@ -203,11 +228,11 @@ public class MinioDownloadService implements FileDownloadService {
             }
         };
         log.info(
-            "[CONVERT INPUTSTREAM TO MULTIPARTFILE] Convert success. uploaded url : [{}], contentType : [{}], file size : [{}], originalFileName : [{}],"
-            , getFilePath("contents", fileName)
-            , multipartFile.getContentType()
-            , multipartFile.getSize()
-            , multipartFile.getOriginalFilename()
+                "[CONVERT INPUTSTREAM TO MULTIPARTFILE] Convert success. uploaded url : [{}], contentType : [{}], file size : [{}], originalFileName : [{}],"
+                , getFilePath("contents", fileName)
+                , multipartFile.getContentType()
+                , multipartFile.getSize()
+                , multipartFile.getOriginalFilename()
         );
         return multipartFile;
     }

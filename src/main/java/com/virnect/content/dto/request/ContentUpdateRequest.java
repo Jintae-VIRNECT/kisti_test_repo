@@ -7,7 +7,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import lombok.Getter;
 import lombok.Setter;
-import lombok.ToString;
 
 import com.virnect.content.domain.TargetType;
 
@@ -33,7 +32,7 @@ public class ContentUpdateRequest {
 	@NotBlank
 	private String name;
 
-	private String metadata;
+	//private String metadata;
 
 	@NotBlank
 	private String properties;
@@ -41,14 +40,16 @@ public class ContentUpdateRequest {
 	@NotBlank
 	private String userUUID;
 
-	@Override
-	public String toString() {
-		return "ContentUpdateRequest{" +
-			"targetData='" + targetData + '\'' +
-			", targetType=" + targetType +
-			", content=" + content +
-			", name='" + name + '\'' +
-			", userUUID='" + userUUID + '\'' +
-			'}';
-	}
+    @Override
+    public String toString() {
+        return "ContentUpdateRequest{" +
+                "targetData='" + targetData + '\'' +
+                ", targetType=" + targetType +
+                ", content=" + content +
+                ", name='" + name + '\'' +
+      //          ", metadata='" + metadata + '\'' +
+                ", properties='" + properties + '\'' +
+                ", userUUID='" + userUUID + '\'' +
+                '}';
+    }
 }

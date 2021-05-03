@@ -23,6 +23,7 @@ import com.virnect.content.domain.Types;
 
 @Getter
 @Setter
+@ToString
 public class ContentUploadRequest {
 
 	private String targetData;
@@ -40,7 +41,7 @@ public class ContentUploadRequest {
 	@NotBlank
 	private String name;
 
-	private String metadata;
+	//private String metadata;
 
 	@NotBlank
 	private String properties;
@@ -51,7 +52,7 @@ public class ContentUploadRequest {
 	@Builder
 	public ContentUploadRequest(
 		String targetData, TargetType targetType, @NotBlank String workspaceUUID, @NotNull MultipartFile content,
-		Types contentType, @NotBlank String name, String metadata, @NotBlank String properties,
+		Types contentType, @NotBlank String name,@NotBlank String properties,
 		@NotBlank String userUUID
 	) {
 		this.targetData = targetData;
@@ -60,21 +61,8 @@ public class ContentUploadRequest {
 		this.content = content;
 		this.contentType = contentType;
 		this.name = name;
-		this.metadata = metadata;
+		//this.metadata = metadata;
 		this.properties = properties;
 		this.userUUID = userUUID;
-	}
-
-	@Override
-	public String toString() {
-		return "ContentUploadRequest{" +
-			"targetData='" + targetData + '\'' +
-			", targetType=" + targetType +
-			", workspaceUUID='" + workspaceUUID + '\'' +
-			", content=" + content +
-			", contentType=" + contentType +
-			", name='" + name + '\'' +
-			", userUUID='" + userUUID + '\'' +
-			'}';
 	}
 }
