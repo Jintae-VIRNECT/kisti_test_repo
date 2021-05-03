@@ -38,7 +38,6 @@ public class SessionConfiguration implements BeanClassLoaderAware {
 		SimpleModule simpleModule = new SimpleModule();
 		simpleModule.setMixInAnnotation(UserAuthenticationDetails.class, UserAuthenticationDetailsMixin.class);
 		objectMapper.registerModule(simpleModule);
-
 		return new GenericJackson2JsonRedisSerializer(objectMapper);
 	}
 
