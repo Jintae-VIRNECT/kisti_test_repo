@@ -8,6 +8,7 @@ import lombok.Setter;
 import lombok.ToString;
 
 import com.virnect.content.domain.ItemType;
+import com.virnect.content.dto.PropertiesInfo;
 
 /**
  * Project: PF-ContentManagement
@@ -18,6 +19,7 @@ import com.virnect.content.domain.ItemType;
  */
 @Getter
 @Setter
+@ToString
 public class MetadataInfoResponse {
 	@ApiModelProperty(value = "공정 메타데이터")
 	private Content contents;
@@ -37,7 +39,7 @@ public class MetadataInfoResponse {
 		@ApiModelProperty(value = "세부 공정 수(씬그룹 갯수)", position = 5, example = "5")
 		private int subProcessTotal;
 		@ApiModelProperty(value = "세부 공정 정보 리스트(씬그룹 정보 리스트)", position = 6)
-		private List<SceneGroup> sceneGroups;
+		private List<PropertiesInfo.SceneGroup> sceneGroups;
 	}
 
 	@Getter
