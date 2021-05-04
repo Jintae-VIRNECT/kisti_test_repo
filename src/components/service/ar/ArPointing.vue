@@ -31,9 +31,14 @@ export default {
   methods: {
     doPointing(event) {
       if (this.viewAction !== ACTION.AR_POINTING) return
-      //참가자이고, 참가자 포인팅 허용이 해제되있는 경우 포인팅 불가능하도록 한다.
-      if (this.account.roleType !== ROLE.LEADER && this.allowPointing !== true)
+      //참가자이고, 참가자 포인팅 허용 설정이 해제되있는 경우 포인팅 불가능하도록 한다.
+      if (
+        this.account.roleType !== ROLE.LEADER &&
+        this.allowPointing !== true
+      ) {
+        this.toastDefault(this.$t('service.tool_pointing_block'))
         return
+      }
       let posX = normalizedPosX(event.offsetX, this.videoSize.width)
       let posY = normalizedPosY(event.offsetY, this.videoSize.height)
       if (posX > 1) posX = 1
