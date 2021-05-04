@@ -232,6 +232,26 @@ public class Participant {
 		return builder.toString();
 	}
 
+	public String toStringAll() {
+		return "Participant{" +
+			"finalUserId='" + finalUserId + '\'' +
+			", participantPrivatetId='" + participantPrivatetId + '\'' +
+			", participantPublicId='" + participantPublicId + '\'' +
+			", sessionId='" + sessionId + '\'' +
+			", createdAt=" + createdAt +
+			", clientMetadata='" + clientMetadata + '\'' +
+			", serverMetadata='" + serverMetadata + '\'' +
+			", token=" + token +
+			", location=" + location +
+			", platform='" + platform + '\'' +
+			", endpointType=" + endpointType +
+			", streaming=" + streaming +
+			", closed=" + closed +
+			", METADATA_SEPARATOR='" + METADATA_SEPARATOR + '\'' +
+			", singleRecordingLock=" + singleRecordingLock +
+			'}';
+	}
+
 	public JsonObject toJson() {
 		JsonObject json = new JsonObject();
 		json.addProperty("connectionId", this.participantPublicId);
