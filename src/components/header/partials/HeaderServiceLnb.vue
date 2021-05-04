@@ -144,19 +144,21 @@ export default {
           // })
           return
         }
-        if (this.view === VIEW.DRAWING) {
-          if (this.shareFile && this.shareFile.id) {
-            // TODO: MESSAGE
-            this.confirmCancel(this.$t('service.toast_exit_drawing'), {
-              text: this.$t('button.exit'),
-              action: () => {
-                this.$call.sendDrawing(DRAWING.END_DRAWING)
-                this.goTabConfirm(type)
-              },
-            })
-            return
-          }
-        }
+        //현재 view가 협업보드인 경우 다른 view를 선택하면, 협업보드를 종료할 건지 확인 메시지
+        //=> 협업보드는 종료되지 않도록 수정됨 (210504)
+        // if (this.view === VIEW.DRAWING) {
+        //   if (this.shareFile && this.shareFile.id) {
+        //     // TODO: MESSAGE
+        //     this.confirmCancel(this.$t('service.toast_exit_drawing'), {
+        //       text: this.$t('button.exit'),
+        //       action: () => {
+        //         this.$call.sendDrawing(DRAWING.END_DRAWING)
+        //         this.goTabConfirm(type)
+        //       },
+        //     })
+        //     return
+        //   }
+        // }
 
         this.goTabConfirm(type)
       } // other user
@@ -215,6 +217,7 @@ export default {
       }
     },
     permissionSetting(permission) {
+      //AR 기능 요청 승낙 받은 경우 - AR 기능 시작 시그날 전송 & AR VIEW로 전환한다
       if (permission === true) {
         this.toastDefault(
           this.$t('service.toast_ar_start', { name: this.mainView.nickname }),
@@ -226,7 +229,9 @@ export default {
         })
         this.$call.sendArFeatureStart(this.mainView.id)
         this.setView(VIEW.AR)
-      } else if (permission === false) {
+      }
+      //AR 기능 요청 거부 당한 경우
+      else if (permission === false) {
         this.toastDefault(this.$t('service.toast_refused_ar'))
         this.addChat({
           status: 'ar-deny',

@@ -31,9 +31,10 @@ export default {
     },
   },
   watch: {
-    view() {
-      this.available = false
-    },
+    //협업보드에서 다른 탭 전환 되더라도 redo 버튼을 비활성화하지 않는다.
+    // view() {
+    //   this.available = false
+    // },
     viewAction(val) {
       if ([ACTION.AR_POINTING, ACTION.AR_DRAWING].includes(val)) {
         this.available = false
