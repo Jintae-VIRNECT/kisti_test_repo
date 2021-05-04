@@ -16,6 +16,8 @@ import lombok.RequiredArgsConstructor;
 
 import com.virnect.security.UserAuthenticationDetails;
 import com.virnect.security.UserAuthenticationDetailsMixin;
+import com.virnect.security.UsernameOtpCodeAuthenticationToken;
+import com.virnect.security.UsernameOtpCodeAuthenticationTokenMixin;
 
 @Configuration
 @EnableRedisWebSession
@@ -35,9 +37,21 @@ public class SessionConfiguration implements BeanClassLoaderAware {
 	public RedisSerializer<Object> springSessionDefaultRedisSerializer() {
 		ObjectMapper objectMapper = new ObjectMapper();
 		objectMapper.registerModules(SecurityJackson2Modules.getModules(this.classLoader));
-		SimpleModule simpleModule = new SimpleModule();
-		simpleModule.setMixInAnnotation(UserAuthenticationDetails.class, UserAuthenticationDetailsMixin.class);
-		objectMapper.registerModule(simpleModule);
+
+		SimpleModule userAuthenticationDetailsModule = new SimpleModule();
+		SimpleModule usernameOtpCodeAuthenticationTokenModule = new SimpleModule();
+
+		userAuthenticationDetailsModule.setMixInAnnotation(
+			UserAuthenticationDetails.class, UserAuthenticationDetailsMixin.class
+		);
+
+		usernameOtpCodeAuthenticationTokenModule.setMixInAnnotation(
+			UsernameOtpCodeAuthenticationToken.class, UsernameOtpCodeAuthenticationTokenMixin.class
+		);
+
+		objectMapper.registerModule(userAuthenticationDetailsModule);
+		objectMapper.registerModule(usernameOtpCodeAuthenticationTokenModule);
+
 		return new GenericJackson2JsonRedisSerializer(objectMapper);
 	}
 
