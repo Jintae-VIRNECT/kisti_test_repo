@@ -1,6 +1,6 @@
 {
   "name": "frontend",
-  "version": "1.3.3.0",
+  "version": "1.3.3.1",
   "description": "Virnect Platofrm Login FrontEnd",
   "author": "SungHyun Kang <k23sh138@gmail.com>",
   "private": true,
@@ -19,8 +19,8 @@
   "devDependencies": {
     "@babel/core": "^7.7.5",
     "@babel/preset-env": "^7.7.6",
-    "@virnect/components": "^1.1.3",
-    "@virnect/ui-assets": "^0.0.9",
+    "@virnect/components": "^1.1.4",
+    "@virnect/ui-assets": "^1.1.11",
     "@virnect/eslint-config": "^1.0.3",
     "@virnect/platform-auth": "^1.0.2",
     "@virnect/stylelint-config": "^1.0.2",

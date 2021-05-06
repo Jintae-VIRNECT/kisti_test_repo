@@ -8,5 +8,7 @@ Bug Fixes
 -
 v1.3.3.0
 - VIRNECT Components 다크테마 제거
+v1.3.3.1
+- VIRNECT Input reset 스타일 제거
 
 Copyright (C) 2020, VIRNECT CO., LTD. - All Rights Reserved
