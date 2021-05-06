@@ -135,11 +135,11 @@ public class MemberController {
     public ResponseEntity<ApiResponse<WorkspaceUserInfoListResponse>> getMemberInfoList(
             @PathVariable("workspaceId") String workspaceId, @RequestParam(value = "userIds") List<String> userIds, HttpServletRequest request
     ) {
+        String requestParam = request.getParameterMap().entrySet().stream()
+                .map(entry -> String.format("%s=%s", entry.getKey(), Joiner.on(",").join(entry.getValue())))
+                .collect(Collectors.joining(", "));
+        log.info("[REQUEST] workspaceId : [{}], userIds size : [{}], userIds : [{}]", workspaceId, userIds.size(), requestParam);
         if (!StringUtils.hasText(workspaceId) || userIds == null || userIds.isEmpty()) {
-            String requestParam = request.getParameterMap().entrySet().stream()
-                    .map(entry -> String.format("%s=%s", entry.getKey(), Joiner.on(",").join(entry.getValue())))
-                    .collect(Collectors.joining(", "));
-            log.error("[REQUEST] workspaceId : [{}], userIds size : [{}], userIds : [{}]", workspaceId, userIds.size(), requestParam);
             throw new WorkspaceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
         WorkspaceUserInfoListResponse response = memberService.getMemberInfoList(workspaceId, userIds);
