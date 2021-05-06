@@ -512,11 +512,24 @@ public class RoomService {
 		Pageable pageable
 	) {
 
+		PageMetadataResponse pageMeta;
 		Page<Room> roomPage = roomRepository.findMyRoomSpecificUserId(workspaceId, userId, paging, pageable);
+
+		if (roomPage.getContent().isEmpty()) {
+			List<RoomInfoResponse> emptyList = new ArrayList<>();
+			pageMeta = PageMetadataResponse.builder()
+				.currentPage(0)
+				.currentSize(0)
+				.numberOfElements(0)
+				.totalPage(0)
+				.totalElements(0)
+				.last(true)
+				.build();
+			return new RoomInfoListResponse(emptyList, pageMeta);
+		}
 
 		List<RoomInfoResponse> roomInfoResponses = makeRoomInfoResponse(workspaceId, roomPage);
 
-		PageMetadataResponse pageMeta;
 		if (paging) {
 			pageMeta = PageMetadataResponse.builder()
 				.currentPage(pageable.getPageNumber())
@@ -562,10 +575,25 @@ public class RoomService {
 			}
 		}
 
+		PageMetadataResponse pageMeta;
 		Page<Room>  roomPage = roomRepository.findMyRoomSpecificUserIdBySearch(workspaceId, userId, userIds, search, pageable);
+
+		if (roomPage.getContent().isEmpty()) {
+			List<RoomInfoResponse> emptyList = new ArrayList<>();
+			pageMeta = PageMetadataResponse.builder()
+				.currentPage(0)
+				.currentSize(0)
+				.numberOfElements(0)
+				.totalPage(0)
+				.totalElements(0)
+				.last(true)
+				.build();
+			return new RoomInfoListResponse(emptyList, pageMeta);
+		}
+
 		List<RoomInfoResponse> roomInfoResponses = makeRoomInfoResponse(workspaceId, roomPage);
 
-		PageMetadataResponse pageMeta = PageMetadataResponse.builder()
+		pageMeta = PageMetadataResponse.builder()
 				.currentPage(pageable.getPageNumber())
 				.currentSize(pageable.getPageSize())
 				.numberOfElements(roomPage.getNumberOfElements())
