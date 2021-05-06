@@ -1,0 +1,44 @@
+{
+  "profile_op": {
+    "desc": "Manage account information used by products and services.",
+    "info": {
+      "desc": "Manage account profile info.",
+      "imageDesc": "Manage account profile info.",
+      "nicknameDesc": "Your nickname is shared to other users using the products and services."
+    },
+    "account": {
+      "emailDesc": "Account ID cannot be changed",
+      "passwordQuestion": "Password reset question"
+    },
+    "imageChangeModal": {
+      "desc": "The profile image is shown to all the users."
+    },
+    "nicknameChangeModal": {
+      "desc": "The changed nickname is applied to the products and services."
+    },
+    "passwordQuestionModal": {
+      "title": "Change password reset question & answer",
+      "desc": "You can reset password using the account ID and password recovery question & answer.",
+      "question": "Password reset question & answer",
+      "questionPlaceholder": "Please select a question.",
+      "questionList": [
+        "What is the name of your first pet?",
+        "What is the name of your best friend when you were a teenager?",
+        "What was the first dis you learned?",
+        "What was the first movie you watched at the cinema?",
+        "Where was your first flight to visit?",
+        "What is the title of your favorite fairy tale book?",
+        "In which city did your parents first meet?",
+        "What is the name of the beach you've been to for the first time?",
+        "What was the name of the first mountain you visited?",
+        "Who was your favorite teacher?",
+        "What is your favorite car model?"
+      ],
+      "answerPlaceholder": "Please enter your answer",
+      "message": {
+        "success": "The change of password recovery question & answer is completed",
+        "successDesc": "The password recovery question & answer has changed."
+      }
+    }
+  }
+}
