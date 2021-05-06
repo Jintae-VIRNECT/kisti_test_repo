@@ -1,11 +1,10 @@
 package com.virnect.workspace.global.util;
 
-import java.util.Random;
-import java.util.UUID;
-
+import com.virnect.workspace.global.constant.UUIDType;
 import org.apache.commons.lang3.RandomStringUtils;
 
-import com.virnect.workspace.global.constant.UUIDType;
+import java.util.Random;
+import java.util.UUID;
 
 /**
  * Project: PF-Workspace
@@ -34,7 +33,7 @@ public class RandomStringTokenUtil {
 				return String.valueOf(result);
 			}
 			case INVITE_CODE: {
-				return RandomStringUtils.randomAlphanumeric(digit).toUpperCase();
+				return RandomStringUtils.randomAlphanumeric(20);
 			}
 		}
 		return UUID.randomUUID().toString();

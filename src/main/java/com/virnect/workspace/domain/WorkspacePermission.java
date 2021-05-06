@@ -30,9 +30,4 @@ public class WorkspacePermission extends TimeEntity {
     @Lob
     @Column(name = "description")
     private String description;
-
-    @Builder
-    public WorkspacePermission(Long id) {
-        this.id = id;
-    }
 }

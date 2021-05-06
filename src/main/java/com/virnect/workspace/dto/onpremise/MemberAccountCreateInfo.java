@@ -1,12 +1,12 @@
 package com.virnect.workspace.dto.onpremise;
 
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Pattern;
-
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
 import lombok.Setter;
+
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
 
 /**
  * Project: PF-Workspace
@@ -30,12 +30,12 @@ public class MemberAccountCreateInfo {
 	private String role;
 	@ApiModelProperty(value = "리모트 제품 플랜 사용 여부", required = true, example = "true", position = 3)
 	@NotNull
-	private Boolean planRemote;
+	private boolean planRemote;
 	@ApiModelProperty(value = "메이크 제품 플랜 사용 여부", required = true, example = "false", position = 4)
 	@NotNull
-	private Boolean planMake;
+	private boolean planMake;
 	@ApiModelProperty(value = "뷰 제품 플랜 사용 여부", required = true, example = "false", position = 5)
 	@NotNull
-	private Boolean planView;
+	private boolean planView;
 }
 

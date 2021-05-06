@@ -1,6 +1,5 @@
 package com.virnect.workspace.dto.response;
 
-import com.virnect.workspace.dto.UserInfoDTO;
 import com.virnect.workspace.dto.WorkspaceInfoDTO;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -18,7 +17,7 @@ import java.util.List;
 @Getter
 public class WorkspaceInfoResponse {
     private final WorkspaceInfoDTO workspaceInfo;
-    private final List<UserInfoDTO> workspaceUserInfo;
+    private final List<WorkspaceUserInfoResponse> workspaceUserInfo;
     private final long masterUserCount;
     private final long manageUserCount;
     private final long memberUserCount;

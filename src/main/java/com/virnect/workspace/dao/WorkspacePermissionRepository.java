@@ -11,4 +11,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
  * DESCRIPTION:
  */
 public interface WorkspacePermissionRepository extends JpaRepository<WorkspacePermission, Long> {
+    WorkspacePermission findByPermission(String permission);
 }

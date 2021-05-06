@@ -52,7 +52,7 @@ public class WorkspaceInfoListResponse {
         private String masterNickName;
         @ApiModelProperty(value = "해당 워크스페이스에서의 역할(MASTER,MANAGER,MEMBER) 번호", position = 12)
         private Long roleId;
-
+        private List<WorkspaceUserInfoResponse> memberList;//추가
         @Override
         public String toString() {
             return "UserWorkspaceInfo{" +

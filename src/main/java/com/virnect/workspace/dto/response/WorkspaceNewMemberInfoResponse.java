@@ -1,4 +1,4 @@
-package com.virnect.workspace.dto;
+package com.virnect.workspace.dto.response;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -14,7 +14,7 @@ import java.time.LocalDateTime;
  */
 @Getter
 @Setter
-public class WorkspaceNewMemberInfoDTO {
+public class WorkspaceNewMemberInfoResponse {
     private String uuid;
     private String nickName;
     private String name;

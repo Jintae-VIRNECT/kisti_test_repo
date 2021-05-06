@@ -1,11 +1,9 @@
 package com.virnect.workspace.dto.response;
 
-import java.util.List;
-
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
-import com.virnect.workspace.dto.MemberInfoDTO;
+import java.util.List;
 
 /**
  * Project: PF-Workspace
@@ -17,5 +15,5 @@ import com.virnect.workspace.dto.MemberInfoDTO;
 @Getter
 @RequiredArgsConstructor
 public class WorkspaceMemberInfoListResponse {
-	private final List<MemberInfoDTO> workspaceMemberInfoList;
+	private final List<WorkspaceUserInfoResponse> workspaceMemberInfoList;
 }

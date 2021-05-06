@@ -1,26 +1,13 @@
-package com.virnect.workspace.application;
+package com.virnect.workspace.application.user;
 
-import org.springframework.cloud.openfeign.FeignClient;
-import org.springframework.data.domain.Pageable;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RequestParam;
-
-import com.virnect.workspace.dto.rest.InviteUserInfoRestResponse;
-import com.virnect.workspace.dto.rest.MemberUserPasswordChangeRequest;
-import com.virnect.workspace.dto.rest.MemberUserPasswordChangeResponse;
-import com.virnect.workspace.dto.rest.RegisterMemberRequest;
-import com.virnect.workspace.dto.rest.UserDeleteRestResponse;
-import com.virnect.workspace.dto.rest.UserInfoAccessCheckRequest;
-import com.virnect.workspace.dto.rest.UserInfoAccessCheckResponse;
-import com.virnect.workspace.dto.rest.UserInfoListRestResponse;
-import com.virnect.workspace.dto.rest.UserInfoRestResponse;
+import com.virnect.workspace.dto.rest.*;
 import com.virnect.workspace.global.common.ApiResponse;
 import com.virnect.workspace.global.config.FeignConfiguration;
+import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.data.domain.Pageable;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 /**
  * Project: PF-Workspace
@@ -60,13 +47,12 @@ public interface UserRestService {
 	 * @return - 유저 정보
 	 */
 	@GetMapping("/users/invite")
-	ApiResponse<InviteUserInfoRestResponse> getUserInfoByEmailList(@RequestParam("email[]") String[] emailList);
+	ApiResponse<InviteUserInfoResponse> getUserInfoByEmail(@RequestParam("email") String email);
 
 	@PostMapping("/users/list")
 	ApiResponse<UserInfoListRestResponse> getUserInfoList(
-		@RequestParam("search") String search, @RequestBody String[] workspaceUserIdList
+		@RequestParam("search") String search, @RequestBody List<String> workspaceUserIdList
 	);
-
 	//멤버 등록
 	@PostMapping("/users/register/member")
 	ApiResponse<UserInfoRestResponse> registerMemberRequest(
