@@ -8,7 +8,7 @@ import VeeValidate from 'vee-validate'
 import App from '@/App.vue'
 import messages from 'languages'
 import { version } from 'root/package.json'
-import '@virnect/ui-assets/css/base.css'
+import '@virnect/ui-assets/css/base.old.css'
 import ElementUI from 'element-ui'
 
 import locale from 'element-ui/src/locale/lang/ko'
