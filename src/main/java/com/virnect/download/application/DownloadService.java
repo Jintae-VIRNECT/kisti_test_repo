@@ -1,19 +1,27 @@
 package com.virnect.download.application;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
+import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
+
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+
 import com.virnect.download.dao.AppRepository;
 import com.virnect.download.domain.App;
 import com.virnect.download.dto.response.AppInfoListResponse;
 import com.virnect.download.dto.response.AppInfoResponse;
 import com.virnect.download.exception.DownloadException;
 import com.virnect.download.global.error.ErrorCode;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.modelmapper.ModelMapper;
-import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
-
-import java.util.*;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -21,6 +29,13 @@ import java.util.stream.Collectors;
 public class DownloadService {
     private final AppRepository appRepository;
     private final ModelMapper modelMapper;
+
+    @Value("${app-store.view-mobile}")
+    private String appStoreViewMobile;
+    @Value("${app-store.remote-mobile}")
+    private String appStoreRemoteMobile;
+    @Value("${spring.profiles.active:develop}")
+    private String profiles;
 
 
     //TODO: 응답 데이터 수정필요,,
@@ -49,6 +64,12 @@ public class DownloadService {
             Optional<App> optionalApp = appList.stream().findFirst();
             optionalApp.ifPresent(app -> {
                 AppInfoResponse appInfoResponse = modelMapper.map(app, AppInfoResponse.class);
+                if(profiles.equals("production") && app.getDevice().getProduct().getName().equals("REMOTE") &&app.getDevice().getType().equals("MOBILE")){
+                    appInfoResponse.setAppUrl(appStoreRemoteMobile);
+                }
+                if(profiles.equals("production") && app.getDevice().getProduct().getName().equals("VIEW") &&app.getDevice().getType().equals("MOBILE")){
+                    appInfoResponse.setAppUrl(appStoreViewMobile);
+                }
                 appInfoResponse.setDeviceType(app.getDevice().getTypeDescription());
                 if (StringUtils.hasText(locale.getLanguage()) && locale.getLanguage().equalsIgnoreCase("en")) {
                     appInfoResponse.setDeviceName(app.getDevice().getModelDescriptionEng());
