@@ -12,7 +12,7 @@ const localIp = '192.168.13.72'
 
 const localUrls = {
   www: `https://${localIp}:9010`,
-  console: `https://${localIp}:8888`,
+  console: `https://${localIp}:8883`,
   api: 'https://192.168.6.3:8073',
   accout: 'https://localhost:8822',
   workstation: 'https://localhost:8878',

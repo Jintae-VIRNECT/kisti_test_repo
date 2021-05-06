@@ -1,6 +1,6 @@
 <template>
   <transition name="app-fade" mode="out-in">
-    <router-view :showSection="showSection" :auth="auth" />
+    <router-view :showStatus="showStatus" :auth="auth" />
   </transition>
 </template>
 
@@ -21,16 +21,14 @@ export default {
     Vue.prototype.$urls = res
     Vue.prototype.$env = res.env
     await auth.init({ env: res.env, urls: res, timeout: res.timeout })
-    if (res.env === 'onpremise') {
-      store.dispatch('SET_CUSTOM')
-    }
     next()
   },
   data() {
     return {
       auth,
-      showSection: {
-        login: false,
+      showStatus: {
+        login: true,
+        profile: false,
         language: true,
       },
     }
@@ -42,6 +40,9 @@ export default {
       !!navigator.userAgent.match(/Trident.*rv:11\./)
     ) {
       this.$router.replace('/nobrowser')
+    }
+    if (this.$env === 'onpremise') {
+      this.$store.dispatch('SET_CUSTOM')
     }
   },
 }

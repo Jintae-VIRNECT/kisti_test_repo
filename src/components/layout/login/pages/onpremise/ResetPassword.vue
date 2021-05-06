@@ -2,8 +2,8 @@
   <div class="container">
     <el-row type="flex" justify="center" align="middle" class="row-bg">
       <el-col>
-        <h2>{{ $t('onpremise.resetPass.title') }}</h2>
-        <p v-html="$t('onpremise.resetPass.disc')"></p>
+        <h2 class="title">{{ $t('onpremise.resetPass.title') }}</h2>
+        <p class="disc" v-html="$t('onpremise.resetPass.disc')"></p>
 
         <div class="find-body" v-if="!isQuestionAuth">
           <p class="input-title must-check">ID</p>

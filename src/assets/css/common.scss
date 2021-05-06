@@ -1,5 +1,4 @@
 @charset "utf-8";
-@import "~WC-Modules/assets/css/reset.scss";
 
 .resend-btn {
   width: 100%;
@@ -118,12 +117,12 @@
   }
 }
 
-h2 {
+h2.title {
   font-weight: 500;
   font-size: 28px;
   font-family: $noto;
 
-  + p {
+  + .disc {
     margin-top: 8px;
     font-weight: 500;
     font-size: 15px;

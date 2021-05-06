@@ -2,8 +2,8 @@
   <div class="container">
     <el-row type="flex" justify="center" align="middle" class="row-bg">
       <el-col>
-        <h2>{{ $t('find.title') }}</h2>
-        <p v-html="$t('find.pageInfo')"></p>
+        <h2 class="title">{{ $t('find.title') }}</h2>
+        <p class="disc" v-html="$t('find.pageInfo')"></p>
 
         <section class="find-wrap">
           <div class="find-head">
