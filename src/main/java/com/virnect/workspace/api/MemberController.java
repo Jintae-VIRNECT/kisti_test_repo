@@ -127,19 +127,20 @@ public class MemberController {
         WorkspaceUserInfoResponse response = memberService.getMemberInfo(workspaceId, userId);
         return ResponseEntity.ok(new ApiResponse<>(response));
     }
+
     @ApiOperation(
             value = "사용자 식별자 배열로 워크스페이스 멤버 정보 조회",
             notes = "워크스페이스 내에서 해당 멤버의 정보를 조회합니다."
     )
     @GetMapping("/{workspaceId}/members/infoList")
     public ResponseEntity<ApiResponse<WorkspaceUserInfoListResponse>> getMemberInfoList(
-            @PathVariable("workspaceId") String workspaceId, @RequestParam(value = "userIds") List<String> userIds, HttpServletRequest request
+            @PathVariable("workspaceId") String workspaceId, @RequestParam(value = "userIds") String[] userIds, HttpServletRequest request
     ) {
         String requestParam = request.getParameterMap().entrySet().stream()
                 .map(entry -> String.format("%s=%s", entry.getKey(), Joiner.on(",").join(entry.getValue())))
                 .collect(Collectors.joining(", "));
-        log.info("[REQUEST] workspaceId : [{}], userIds size : [{}], userIds : [{}]", workspaceId, userIds.size(), requestParam);
-        if (!StringUtils.hasText(workspaceId) || userIds == null || userIds.isEmpty()) {
+        log.info("[REQUEST] workspaceId : [{}], userIds size : [{}], userIds : [{}]", workspaceId, userIds.length, requestParam);
+        if (!StringUtils.hasText(workspaceId) || userIds.length == 0) {
             throw new WorkspaceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
         WorkspaceUserInfoListResponse response = memberService.getMemberInfoList(workspaceId, userIds);

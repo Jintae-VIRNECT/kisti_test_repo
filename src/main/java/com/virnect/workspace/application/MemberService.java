@@ -575,9 +575,9 @@ public class MemberService {
         }
     }
 
-    public WorkspaceUserInfoListResponse getMemberInfoList(String workspaceId, List<String> userIds) {
+    public WorkspaceUserInfoListResponse getMemberInfoList(String workspaceId, String[] userIds) {
         List<WorkspaceUserInfoResponse> workspaceUserInfoResponseList = new ArrayList<>();
-        userIds.forEach(userId -> {
+        for (String userId : userIds) {
             Optional<WorkspaceUserPermission> workspaceUserPermission = workspaceUserPermissionRepository.findWorkspaceUser(workspaceId, userId);
             if (workspaceUserPermission.isPresent()) {
                 WorkspaceUserInfoResponse workspaceUserInfoResponse = modelMapper.map(getUserInfo(userId), WorkspaceUserInfoResponse.class);
@@ -585,7 +585,7 @@ public class MemberService {
                 workspaceUserInfoResponse.setLicenseProducts(getUserLicenseProductList(workspaceId, userId));
                 workspaceUserInfoResponseList.add(workspaceUserInfoResponse);
             }
-        });
+        }
         return new WorkspaceUserInfoListResponse(workspaceUserInfoResponseList, null);
     }
 
