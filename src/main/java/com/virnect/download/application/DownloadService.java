@@ -34,6 +34,8 @@ public class DownloadService {
     private String appStoreViewMobile;
     @Value("${app-store.remote-mobile}")
     private String appStoreRemoteMobile;
+    @Value("${app-store.remote-linkflow}")
+    private String appStoreRemoteLinkflow;
     @Value("${spring.profiles.active:develop}")
     private String profiles;
 
@@ -70,6 +72,10 @@ public class DownloadService {
                 if(profiles.equals("production") && app.getDevice().getProduct().getName().equals("VIEW") &&app.getDevice().getType().equals("MOBILE")){
                     appInfoResponse.setAppUrl(appStoreViewMobile);
                 }
+                if(profiles.equals("production") && app.getDevice().getProduct().getName().equals("REMOTE") &&app.getDevice().getType().equals("LINKFLOW")){
+                    appInfoResponse.setAppUrl(appStoreRemoteLinkflow);
+                }
+
                 appInfoResponse.setDeviceType(app.getDevice().getTypeDescription());
                 if (StringUtils.hasText(locale.getLanguage()) && locale.getLanguage().equalsIgnoreCase("en")) {
                     appInfoResponse.setDeviceName(app.getDevice().getModelDescriptionEng());

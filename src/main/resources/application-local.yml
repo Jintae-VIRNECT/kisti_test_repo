@@ -78,3 +78,4 @@ minio:
 app-store:
   view-mobile: "https://play.google.com/store/apps/details?id=com.VIRNECT.VIRNECTView"
   remote-mobile: "https://play.google.com/store/apps/details?id=com.virnect.remote.mobile2"
+  remote-linkflow: "https://play.google.com/store/apps/details?id=com.virnect.remote.linkflow"
