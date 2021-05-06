@@ -22,6 +22,7 @@
         :imageUrl="userinfo.profile"
         :email="userinfo.email"
         :role="userinfo.role"
+        :status="['login', 'collabo', 'logout'][Math.floor(Math.random() * 3)]"
       >
       </member-card>
     </div>

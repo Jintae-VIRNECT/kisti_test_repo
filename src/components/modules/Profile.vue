@@ -162,14 +162,14 @@ export default {
   text-indent: -99px;
   border-radius: 50%;
 
-  &.busy {
-    background-color: $color_busy;
+  &.collabo {
+    background-color: $color_collabo;
   }
-  &.online {
-    background-color: $color_online;
+  &.login {
+    background-color: $color_login;
   }
-  &.offline {
-    background-color: $color_offline;
+  &.logout {
+    background-color: $color_logout;
   }
 }
 </style>

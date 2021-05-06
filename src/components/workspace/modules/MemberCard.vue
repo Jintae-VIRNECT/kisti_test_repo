@@ -6,12 +6,19 @@
           :image="imageUrl"
           :thumbStyle="{ width: '4.571rem', height: '4.571rem' }"
         ></profile>
-        <span
-          v-if="status && license"
-          class="card-profile--badge"
+        <tooltip
+          customClass="status-tooltip"
           :class="status"
-          >{{ status }}</span
+          :content="status"
+          placement="top"
         >
+          <span
+            v-if="status"
+            slot="body"
+            class="card-profile--badge"
+            :class="status"
+          ></span>
+        </tooltip>
       </div>
       <p class="card-profile--name">
         {{ name }}
@@ -29,18 +36,23 @@
 <script>
 import Profile from 'Profile'
 import Role from 'Role'
+import Tooltip from 'Tooltip'
+
 import { WORKSPACE_ROLE } from 'configs/status.config'
 export default {
   name: 'Card',
   components: {
     Profile,
     Role,
+    Tooltip,
   },
 
   props: {
+    //사용자의 현재 상태
     status: {
       type: String,
-      validator: value => ['', 'online', 'busy', 'offline'].indexOf(value) >= 0,
+      validator: value =>
+        ['', 'login', 'collabo', 'logout'].indexOf(value) >= 0,
     },
     imageUrl: String,
     name: {
@@ -157,24 +169,28 @@ export default {
 }
 
 .card-profile--badge {
-  position: absolute;
-  right: 0;
-  bottom: 0;
-  width: 26%;
-  height: 26%;
+  width: 24px;
+  height: 24px;
   overflow: hidden;
   text-indent: -99px;
   border-radius: 50%;
+  border: 4px solid #313135;
 
-  &.busy {
-    background-color: $color_busy;
+  &.collabo {
+    background-color: $color_collabo;
   }
-  &.online {
-    background-color: $color_online;
+  &.login {
+    background-color: $color_login;
   }
-  &.offline {
-    background-color: $color_offline;
+  &.logout {
+    background-color: $color_logout;
   }
+}
+
+.status-tooltip {
+  position: absolute;
+  right: 0;
+  bottom: 0;
 }
 
 .card-bottom {
@@ -186,5 +202,54 @@ export default {
 
   text-align: center;
   border-top: solid 1px rgba(#3e3e42, 0.92);
+}
+</style>
+<style lang="scss">
+@import '~assets/style/vars';
+
+.status-tooltip .top {
+  margin-bottom: 2px;
+}
+
+.status-tooltip.login .tooltiptext {
+  color: $color_text_login;
+}
+
+.status-tooltip.collabo .tooltiptext {
+  color: $color_text_collabo;
+}
+
+.status-tooltip.logout .tooltiptext {
+  color: $color_text_logout;
+}
+
+.status-tooltip .tooltiptext {
+  background-color: $color_bg;
+  border: 1px solid #3d3f40;
+  text-transform: capitalize;
+  font-weight: 500;
+  font-size: 0.857rem;
+  padding: 0.142rem 0.357rem;
+
+  &.top .arrow,
+  &.top-start .arrow,
+  &.top-end .arrow {
+    //꼬리 border 역할
+    &:before {
+      content: '';
+      position: absolute;
+      top: 1px;
+      left: 0;
+      width: 0;
+      height: 0;
+      margin-top: -7px;
+      margin-left: -7px;
+      border: solid 7px transparent;
+      border-top-color: #3d3f40;
+    }
+    &:after {
+      border-top-color: $color_bg;
+    }
+  }
 }
 </style>
