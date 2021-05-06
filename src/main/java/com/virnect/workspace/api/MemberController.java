@@ -1,5 +1,6 @@
 package com.virnect.workspace.api;
 
+import com.google.common.base.Joiner;
 import com.virnect.workspace.application.MemberService;
 import com.virnect.workspace.dto.request.MemberKickOutRequest;
 import com.virnect.workspace.dto.request.MemberUpdateRequest;
@@ -25,10 +26,12 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.view.RedirectView;
 import springfox.documentation.annotations.ApiIgnore;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.io.IOException;
 import java.util.List;
 import java.util.Locale;
+import java.util.stream.Collectors;
 
 /**
  * Project: PF-Workspace
@@ -130,9 +133,13 @@ public class MemberController {
     )
     @GetMapping("/{workspaceId}/members/infoList")
     public ResponseEntity<ApiResponse<WorkspaceUserInfoListResponse>> getMemberInfoList(
-            @PathVariable("workspaceId") String workspaceId, @RequestParam(value = "userIds") List<String> userIds
+            @PathVariable("workspaceId") String workspaceId, @RequestParam(value = "userIds") List<String> userIds, HttpServletRequest request
     ) {
-        if (!StringUtils.hasText(workspaceId) || userIds==null || userIds.isEmpty()) {
+        if (!StringUtils.hasText(workspaceId) || userIds == null || userIds.isEmpty()) {
+            String requestParam = request.getParameterMap().entrySet().stream()
+                    .map(entry -> String.format("%s=%s", entry.getKey(), Joiner.on(",").join(entry.getValue())))
+                    .collect(Collectors.joining(", "));
+            log.error("[REQUEST] workspaceId : [{}], userIds size : [{}], userIds : [{}]", workspaceId, userIds.size(), requestParam);
             throw new WorkspaceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
         WorkspaceUserInfoListResponse response = memberService.getMemberInfoList(workspaceId, userIds);
