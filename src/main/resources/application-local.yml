@@ -21,12 +21,23 @@ spring:
   cloud:
     loadbalancer:
       ribbon:
-        enabled: false
+        enabled: true
+  zipkin:
+    enabled: false
+content-server:
+  ribbon:
+    listOfServers: http://localhost:8078
+license-server:
+  ribbon:
+    listOfServers: http://192.168.6.3:8632
 
+workspace-server:
+  ribbon:
+    listOfServers: http://192.168.6.3:8082
 logging:
   level:
     com.virnect: DEBUG
-    org.hibernate.type.descriptor.sql: trace
+#    org.hibernate.type.descriptor.sql: trace
 
 eureka:
   instance:
@@ -34,6 +45,7 @@ eureka:
   client:
     service-url:
       defaultZone: http://localhost:8761/eureka
+    enabled: false
 
 ## Server Configuration
 server:
@@ -63,7 +75,7 @@ management:
 ## Minio
 minio:
   access-key: "virnect"
-  secret-key: "virnect0!"
-  server: "http://192.168.6.3:2838"
+  secret-key: "Qjsprxm13@$"
+  server: "https://192.168.6.3:2838"
   bucket: "virnect-platform"
   bucket-resource: "workspace/"

@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import com.virnect.process.dto.rest.response.workspace.MemberListResponse;
 import com.virnect.process.global.common.ApiResponse;
+import com.virnect.process.global.config.FeignConfiguration;
 
 /**
  * Project: PF-ProcessManagement
@@ -16,7 +17,7 @@ import com.virnect.process.global.common.ApiResponse;
  * DESCRIPTION: User Server Rest Client Service
  */
 
-@FeignClient(name = "workspace-server")
+@FeignClient(name = "workspace-server", configuration = FeignConfiguration.class)
 public interface WorkspaceRestService {
 
 	@GetMapping("/workspaces/{workspaceId}/members/simple")

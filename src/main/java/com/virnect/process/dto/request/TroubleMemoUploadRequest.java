@@ -1,11 +1,10 @@
 package com.virnect.process.dto.request;
 
+import javax.validation.constraints.NotNull;
+
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
 import lombok.Setter;
-import lombok.ToString;
-
-import javax.validation.constraints.NotNull;
 
 /**
  * @author jiyong.heo
@@ -16,15 +15,23 @@ import javax.validation.constraints.NotNull;
  */
 @Getter
 @Setter
-@ToString
 public class TroubleMemoUploadRequest {
-    @ApiModelProperty(value = "트러블 메모 사진")
-    private String photoFile;
+	@ApiModelProperty(value = "트러블 메모 사진")
+	private String photoFile;
 
-    @ApiModelProperty(value = "트러블 메모 사진 설명", position = 1)
-    private String caption;
+	@ApiModelProperty(value = "트러블 메모 사진 설명", position = 1)
+	private String caption;
 
-    @NotNull
-    @ApiModelProperty(value = "트러블 메모 작성자 식별자", position = 2)
-    private String workerUUID;
+	@NotNull
+	@ApiModelProperty(value = "트러블 메모 작성자 식별자", position = 2)
+	private String workerUUID;
+
+	@Override
+	public String toString() {
+		return "TroubleMemoUploadRequest{" +
+			"photoFile='" + photoFile + '\'' +
+			", caption='" + caption + '\'' +
+			", workerUUID='" + workerUUID + '\'' +
+			'}';
+	}
 }

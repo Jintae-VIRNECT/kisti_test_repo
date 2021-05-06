@@ -214,7 +214,8 @@ public class TaskService {
 				newProcess.setContentManagerUUID(registerNewProcess.getOwnerUUID());
 
 				// 3-1-3. 컨텐츠의 전환상태 변경
-				this.contentRestService.contentConvertHandler(contentDuplicate.getData().getContentUUID(), YesOrNo.YES);
+				//컨텐츠 전환 상태 변경을 컨텐츠 복제할 때 같이 한다.
+				//this.contentRestService.contentConvertHandler(contentDuplicate.getData().getContentUUID(), YesOrNo.YES);
 
 				// 3-1-4. 작업 저장
 				this.processRepository.save(newProcess);
@@ -229,13 +230,7 @@ public class TaskService {
 
 			// 3-1-5. 타겟 등록
 			addTargetToProcess(newProcess, registerNewProcess.getTargetSize(), registerNewProcess.getTargetType());
-			//컨텐츠:작업=1:1 이므로, 해당 에러코드를 추가함. (VECHOSYS-1282)
-			/*if (contentDuplicate.getData().getTargets().size() > 1) {
-				throw new ProcessServiceException(ErrorCode.ERR_OVER_MAX_TARGET);
-			}*/
-			//float targetSize = contentDuplicate.getData().getTargets().get(0).getSize();
-			//TargetType targetType = contentDuplicate.getData().getTargets().get(0).getType();
-			//addTargetToProcess(newProcess, targetSize, targetType);//타겟 타입을 클라에서 받지 않고 contents 서버로 부터 받는 것으로 수정 >> 다시 복구
+			//addTargetToProcess(newProcess, registerNewProcess.getTargetSize(), registerNewProcess.getTargetType());
 
 			ApiResponse<ContentRestDto> duplicatedContent = this.contentRestService.getContentMetadata(
 				contentDuplicate.getData().getContentUUID());
@@ -271,12 +266,12 @@ public class TaskService {
 			}
 
 			// 3-2-1-2. 컨텐츠의 타겟이 없을 경우
-			if (contentInfo.getTargets().isEmpty()) {
+			if (contentInfo.getTargets() == null || contentInfo.getTargets().isEmpty()) {
 				throw new ProcessServiceException(ErrorCode.ERR_NO_CONTENT_TARGET);
 			}
 
 			// 3-2-2. 컨텐츠의 타겟값을 가져옴
-			ContentTargetResponse contentTarget = contentTransform.getData().getTargets().get(0);
+			ContentTargetResponse contentTarget = contentInfo.getTargets().get(0);
 
 			// 3-2-3. 기존 컨텐츠 식별자 등록
 			newProcess.setContentUUID(registerNewProcess.getContentUUID());
@@ -356,10 +351,23 @@ public class TaskService {
 			String targetData = UUID.randomUUID().toString();
 			// cd07565a-dfe8-4441-8924-b047d525ea79
 
-			log.info(">>>>>>>>>>>>>>>>>>> targetData : {}", targetData);
+			log.info(
+				">>>>>>>>>>>>>>>>>>> targetData : {}, targetSize: {}, targetType: {}", targetData, targetSize,
+				targetType.toString()
+			);
 
-			// 컨텐츠 서버에 담겨진 QR코드 경로는 원본 값을 QR코드로 만든 것이다.
-			String imgPath = getImgPath(targetData); //= this.fileUploadService.base64ImageUpload(targetData);
+			/*
+			복제 시나리오 -> 작업서버에서 신규 타겟 발급 시에 타겟 구분 추가
+			 */
+			String imgPath = null;
+			if (targetType.equals(TargetType.QR)) {
+				// 컨텐츠 서버에 담겨진 QR코드 경로는 원본 값을 QR코드로 만든 것이다.
+				imgPath = getImgPath(targetData); //= this.fileUploadService.base64ImageUpload(targetData);
+			}
+			if (targetType.equals(TargetType.VTarget)) {
+				//imgPath = fileUploadUrl + fileUploadPath + defaultVTarget;defaultVTarget
+				imgPath = fileUploadService.getFilePath("virnect_target.png");
+			}
 
 			// 컨텐츠 서버에 담겨진 targetData (= Make에서 제공하는 targetData) 는 AES256인코딩 후 URL인코딩을 한 값이다.
 			// 컨텐츠 서버와 targetData 인코딩을 맞춰주기 위해서 해당 인코딩을 수행한다.
@@ -405,12 +413,18 @@ public class TaskService {
 			TargetType targetType = contentTargetResponse.getType();
 			String imgPath = contentTargetResponse.getImgPath(); //this.fileUploadService.base64ImageUpload(targetData);
 
+			//타겟 사이즈가 없는 컨텐츠들의 기본값은 10.
+			float targetSize = 10f;
+			if (contentTargetResponse.getSize() != null) {
+				targetSize = contentTargetResponse.getSize();
+			}
+
 			Target target = Target.builder()
 				.type(targetType)
 				.process(newProcess)
 				.data(targetData)
 				.imgPath(imgPath)
-				.size(contentTargetResponse.getSize())
+				.size(targetSize)
 				.build();
 
 			this.targetRepository.save(target);
@@ -638,7 +652,8 @@ public class TaskService {
 				newProcess.setContentManagerUUID(duplicateRequest.getOwnerUUID());
 
 				// 컨텐츠의 전환상태 변경
-				this.contentRestService.contentConvertHandler(contentDuplicate.getData().getContentUUID(), YesOrNo.YES);
+				//duplicate api에서 한꺼번에 하는 걸로 수정.
+				//this.contentRestService.contentConvertHandler(contentDuplicate.getData().getContentUUID(), YesOrNo.YES);
 
 				// 작업 저장
 				this.processRepository.save(newProcess);
@@ -651,15 +666,10 @@ public class TaskService {
 				throw new ProcessServiceException(ErrorCode.ERR_PROCESS_REGISTER);
 			}
 
-			// 타겟
+			/*
+			복제된 컨텐츠는 타겟정보가 없다. 따라서 클라이언트에서 받는다.
+			*/
 			addTargetToProcess(newProcess, duplicateRequest.getTargetSize(), duplicateRequest.getTargetType());
-			//컨텐츠:작업=1:1 이므로, 해당 에러코드를 추가함. (VECHOSYS-1282)
-			/*if (contentDuplicate.getData().getTargets().size() > 1) {
-				throw new ProcessServiceException(ErrorCode.ERR_OVER_MAX_TARGET);
-			}*/
-			//float targetSize = contentDuplicate.getData().getTargets().get(0).getSize();
-			//TargetType targetType = contentDuplicate.getData().getTargets().get(0).getType();
-			//addTargetToProcess(newProcess, targetSize, targetType);
 
 			// addSubProcessOnProcess에 들어갈 객체
 			ProcessRegisterRequest registerNewProcess = new ProcessRegisterRequest();
@@ -1075,7 +1085,8 @@ public class TaskService {
 	 * @return
 	 */
 	public ApiResponse<ProcessListResponse> getProcessList(
-		String myUUID, String workspaceUUID, String search, List<Conditions> filter, Pageable pageable
+		String myUUID, String workspaceUUID, String search, List<Conditions> filter, Pageable pageable,
+		String targetType
 	) {
 		List<String> userUUIDList = new ArrayList<>();
 
@@ -1091,7 +1102,9 @@ public class TaskService {
 
 		// 정렬에 Conditions가 들어왔을 경우 - Table의 Column이 아니기 때문에 List를 조작하여 처리.
 		if ("conditions".equals(pageable.getSort().toList().get(0).getProperty())) {
-			List<Process> processList = this.processRepository.findByWorkspaceUUID(workspaceUUID);
+			//List<Process> processList = this.processRepository.findByWorkspaceUUID(workspaceUUID);
+			List<Process> processList = this.processRepository.findByWorkspaceUUIDAndTargetType(
+				workspaceUUID, targetType);
 
 			List<Process> edit = new ArrayList<Process>(processList);
 
@@ -1111,15 +1124,18 @@ public class TaskService {
 		else {
 			if (Objects.nonNull(myUUID)) {
 				// 내 작업 목록
-				processPage = this.processRepository.getMyTask(myUUID, workspaceUUID, search, pageable);
+				processPage = this.processRepository.getMyTask(
+					filter, myUUID, workspaceUUID, search, pageable, targetType);
 			} else {
 				processPage = this.processRepository.getProcessPageSearchUser(
-					workspaceUUID, search, userUUIDList, pageable);
+					filter, workspaceUUID, search, userUUIDList, pageable, targetType
+				);
 			}
 
+			/* 페이징을 거치고 난 후의 값이 아닌 전체 process 데이터를 기준으로 필터링 하기 위해 아래 코드는 주석처리하고 위에서 처리함.
 			if (filter != null && filter.size() > 0 && !filter.contains(Conditions.ALL)) {
 				processPage = filterConditionsProcessPage(processPage, filter, pageable);
-			}
+			}*/
 		}
 		//
 		//        if (filter != null && filter.size() > 0 && !filter.contains(Conditions.ALL)) {
@@ -1224,9 +1240,11 @@ public class TaskService {
 
 		log.info("actorUUID : {}, contentManagerUUID : {}", request.getActorUUID(), process.getContentManagerUUID());
 
+		/* https://virtualconnection.atlassian.net/secure/RapidBoard.jspa?rapidView=223&projectKey=DPLA&modal=detail&selectedIssue=DPLA-1126&assignee=5dbfb7e2ffc8c10df0ed7a13
+		이슈로 작업 종료 권한 체크 주석처리.
 		if (!request.getActorUUID().equals(process.getContentManagerUUID())) {
 			throw new ProcessServiceException(ErrorCode.ERR_OWNERSHIP);
-		}
+		}*/
 
 		// 마감 상태로 변경
 		process.setState(State.CLOSED);
@@ -1535,8 +1553,16 @@ public class TaskService {
 				State state = process.getState();
 				String processWorkspaceUUID = process.getWorkspaceUUID();
 				// 공정상태가 종료 또는 삭제가 아니고 그리고 세부공정상태가 대기상태가 아닐 때, 마지막으로 워크스페이스가 동일한 프로세스에 대해 필터
+				/*
 				if ((state != State.CLOSED || state != State.DELETED) && subProcess.getConditions() != Conditions.WAIT
 					&& (workspaceUUID == null || processWorkspaceUUID.equals(workspaceUUID))) {
+					ing++;
+				}*/
+
+				// 세부공정 상태가 진행중일때 && 워크스페이스가 동일한 프로세스에 대해 필터링 함.
+				//https://virtualconnection.atlassian.net/browse/DPLA-535?atlOrigin=eyJpIjoiMmI1MGU1ZWUzNjdjNGUxZGIwZDA5YmU4Mzg1ODZkNzciLCJwIjoiaiJ9 으로 아래와 같이 수정함
+				if (subProcess.getConditions() == Conditions.PROGRESSING && (workspaceUUID == null
+					|| processWorkspaceUUID.equals(workspaceUUID))) {
 					ing++;
 				}
 			}
@@ -1551,7 +1577,7 @@ public class TaskService {
 
 			int percent = 0;
 
-			if (subProcessList.size() > 0) {
+			if (!subProcessList.isEmpty()) {
 				percent = (int)(((double)ing / (double)subProcessList.size()) * 100);
 			}
 

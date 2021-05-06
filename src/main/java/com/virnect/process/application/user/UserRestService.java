@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import com.virnect.process.dto.rest.response.user.UserInfoListResponse;
 import com.virnect.process.dto.rest.response.user.UserInfoResponse;
 import com.virnect.process.global.common.ApiResponse;
+import com.virnect.process.global.config.FeignConfiguration;
 
 /**
  * Project: PF-ProcessManagement
@@ -21,7 +22,7 @@ import com.virnect.process.global.common.ApiResponse;
  * DESCRIPTION: User Server Rest Client Service
  */
 
-@FeignClient(name = "user-server")
+@FeignClient(name = "user-server", configuration = FeignConfiguration.class)
 public interface UserRestService {
 
 	@GetMapping("/users/{userUUID}")
