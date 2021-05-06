@@ -10,7 +10,6 @@ import java.util.stream.Collectors;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
@@ -30,12 +29,13 @@ import com.virnect.download.global.error.ErrorCode;
 public class DownloadService {
     private final AppRepository appRepository;
     private final ModelMapper modelMapper;
-    private final Environment environment;
 
     @Value("${app-store.view-mobile}")
     private String appStoreViewMobile;
     @Value("${app-store.remote-mobile}")
     private String appStoreRemoteMobile;
+    @Value("${spring.profiles.active:develop}")
+    private String profiles;
 
 
     //TODO: 응답 데이터 수정필요,,
@@ -64,10 +64,10 @@ public class DownloadService {
             Optional<App> optionalApp = appList.stream().findFirst();
             optionalApp.ifPresent(app -> {
                 AppInfoResponse appInfoResponse = modelMapper.map(app, AppInfoResponse.class);
-                if(environment.getActiveProfiles()[0].equals("production") && app.getDevice().getProduct().getName().equals("REMOTE") &&app.getDevice().getType().equals("MOBILE")){
+                if(profiles.equals("production") && app.getDevice().getProduct().getName().equals("REMOTE") &&app.getDevice().getType().equals("MOBILE")){
                     appInfoResponse.setAppUrl(appStoreRemoteMobile);
                 }
-                if(environment.getActiveProfiles()[0].equals("production") && app.getDevice().getProduct().getName().equals("VIEW") &&app.getDevice().getType().equals("MOBILE")){
+                if(profiles.equals("production") && app.getDevice().getProduct().getName().equals("VIEW") &&app.getDevice().getType().equals("MOBILE")){
                     appInfoResponse.setAppUrl(appStoreViewMobile);
                 }
                 appInfoResponse.setDeviceType(app.getDevice().getTypeDescription());
