@@ -13,12 +13,6 @@
 import dayjs from '@/plugins/dayjs'
 import taskService from '@/services/task'
 
-// ssr error
-let bb = null
-if (process.client) {
-  bb = require('billboard.js').bb
-}
-
 export default {
   data() {
     return {
@@ -38,6 +32,9 @@ export default {
       this.date = dayjs(this.date).add(1, 'month')
     },
     async initProcessGraph(date) {
+      const billboard = await import('billboard.js')
+      const bb = billboard.bb
+
       const arrayData = await taskService.getTaskDailyRateAtMonth(
         date.format('YYYY-MM'),
       )
