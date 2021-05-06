@@ -8,11 +8,11 @@
           :disabled="!hasMainView"
         ></server-record>
       </template>
-      <template v-if="!isSafari">
+      <template v-if="!isSafari && useLocalRecording">
         <local-record :disabled="!hasMainView"></local-record>
         <local-record-list></local-record-list>
       </template>
-      <setting v-if="!isSafari || isLeader"></setting>
+      <setting v-if="isSettingVisible"></setting>
     </div>
   </div>
 </template>
@@ -27,6 +27,7 @@ import {
 } from './partials'
 import { mapGetters } from 'vuex'
 import { ROLE } from 'configs/remote.config'
+import { CAMERA as CAMERA_STATUS } from 'configs/device.config'
 
 export default {
   name: 'Menus',
@@ -43,7 +44,12 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['mainView', 'useRecording']),
+    ...mapGetters([
+      'mainView',
+      'useRecording',
+      'useLocalRecording',
+      'useTranslate',
+    ]),
     hasMainView() {
       return this.mainView && this.mainView.id
     },
@@ -52,6 +58,13 @@ export default {
     },
     isLeader() {
       return this.account.roleType === ROLE.LEADER
+    },
+    isSettingVisible() {
+      if (this.isSafari && !this.isLeader && !this.useTranslate) {
+        return false
+      } else {
+        return true
+      }
     },
   },
 

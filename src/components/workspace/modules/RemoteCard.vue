@@ -119,6 +119,13 @@ export default {
       },
     },
   },
+  watch: {
+    showRoomInfo(val) {
+      if (val === false) {
+        this.$emit('init')
+      }
+    },
+  },
   computed: {
     isOpenRoom() {
       return (

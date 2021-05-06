@@ -1,7 +1,6 @@
 <template>
   <tab-view
     :title="$t('workspace.history_title')"
-    :description="$t('workspace.history_description')"
     :placeholder="$t('workspace.search_room')"
     customClass="history"
     :emptyImage="require('assets/image/img_recent_empty.svg')"
@@ -105,6 +104,7 @@ export default {
         totalPage: 0,
         last: false,
       },
+      searchingText: '',
     }
   },
   computed: {
@@ -164,6 +164,12 @@ export default {
           return room.sessionId === sessionId
         })
         this.historyList.splice(pos, 1)
+        if (this.searchText.length > 0) {
+          const posSearch = this.searchHistoryList.findIndex(room => {
+            return room.sessionId === sessionId
+          })
+          this.searchHistoryList.splice(posSearch, 1)
+        }
       })
 
       const result = await deleteHistorySingleItem({
@@ -250,7 +256,9 @@ export default {
           }
           return
         }
-        this.searchHistoryList = await this.searchHistory(0, text)
+        const list = await this.searchHistory(0, text)
+        if (!list) return
+        this.searchHistoryList = list
         this.searchText = text
         if (!text || text.trim().length === 0) {
           this.searchText = ''
@@ -331,15 +339,17 @@ export default {
     },
     async searchHistory(page = 0, text) {
       try {
+        this.searchingText = text
         const datas = await searchHistoryList({
           paging: true,
           page,
           search: text,
-          size: 10,
+          size: 15,
           sort: 'createdDate,desc',
           userId: this.account.uuid,
           workspaceId: this.workspace.uuid,
         })
+        if (this.searchingText !== text) return false
         if ('pageMeta' in datas) {
           if (
             page === 0 &&

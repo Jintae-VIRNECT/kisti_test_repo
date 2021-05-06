@@ -1,4 +1,13 @@
+/**
+ * openvidu session signal에 사용되는 상수 값 및 행위 정의
+ * @see https://www.notion.so/virnect/Remote-2-0-Session-Signal-b2f5c765a16843f8b33bbb179e677def
+ */
+
+/**
+ * 시그널 유형 정의
+ */
 export const SIGNAL = {
+  SYSTEM: 'signal:system',
   VIDEO: 'signal:video',
   CHAT: 'signal:chat',
   RESOLUTION: 'signal:resolution',
@@ -15,33 +24,56 @@ export const SIGNAL = {
   AR_POINTING: 'signal:arPointing',
   CAPTURE_PERMISSION: 'signal:screenCapturePermission',
   FILE: 'signal:file',
-  SYSTEM: 'signal:system',
+  LINKFLOW: 'signal:linkflow',
 }
 
+/**
+ * 시그널 - 채팅파일 업로드
+ */
 export const FILE = {
   UPLOADED: 'fileUploaded',
 }
 
+/**
+ * 시그널 - 메인 영상 표출 상태
+ */
 export const VIDEO = {
-  NORMAL: 'normal',
-  SHARE: 'share',
+  NORMAL: 'normal', //일반
+  SHARE: 'share', //전체 공유
+  SCREEN_SHARE: 'screenShare', //PC 화면 공유
 }
 
+/**
+ * 시그널 - 카메라 제어
+ */
 export const CAMERA = {
   ZOOM: 'zoom',
   STATUS: 'status',
 }
 
+/**
+ * 시그널 - 플래시 제어
+ */
 export const FLASH = {
   FLASH: 'flash',
   STATUS: 'status',
 }
 
+/**
+ * 시그널 - 참가자의 기능 제어
+ */
 export const CONTROL = {
   POINTING: 'pointing',
   LOCAL_RECORD: 'localRecord',
+  VIDEO: 'video',
+  AUDIO: 'audio',
+  AUDIO_VIDEO: 'audioVideo',
+  RESTRICTED_MODE: 'restrictedMode',
 }
 
+/**
+ * 시그널 - 협업 보드 드로잉
+ */
 export const DRAWING = {
   LINE_DOWN: 'drawLineDown',
   LINE_MOVE: 'drawLineMove',
@@ -58,6 +90,9 @@ export const DRAWING = {
   END_DRAWING: 'endDrawing',
 }
 
+/**
+ * 시그널 - AR 포인팅
+ */
 export const AR_POINTING = {
   AR_POINTING: 'arPointing',
   UNDO: 'undo',
@@ -68,12 +103,18 @@ export const AR_POINTING = {
   CLEAR_ABLE: 'clearAble',
 }
 
+/**
+ * 시그널 - AR 기능 제어
+ */
 export const AR_FEATURE = {
   FEATURE: 'feature',
   START_AR_FEATURE: 'startArFeature',
   STOP_AR_FEATURE: 'stopArFeature',
 }
 
+/**
+ * AR 드로잉 정의 및 시그널
+ */
 export const AR_DRAWING = {
   FRAME_REQUEST: 'frameRequest',
   FRAME_RESPONSE: 'frameResponse',
@@ -95,25 +136,47 @@ export const AR_DRAWING = {
   CLEAR_ABLE: 'clearAble',
 }
 
+/**
+ * AR 드로잉 행위 정의
+ */
 export const AR_DRAWING_ACTION = {
   LINE_DOWN: 'arDrawLineDown',
   LINE_MOVE: 'arDrawLineMove',
   LINE_UP: 'arDrawLineUp',
 }
 
+/**
+ * 시그널 - 캡쳐 권한 제어
+ */
 export const CAPTURE_PERMISSION = {
   REQUEST: 'request',
   RESPONSE: 'response',
 }
 
+/**
+ * 시그널 - ??
+ */
 export const SYSTEM = {
   EVICT: 'evict',
 }
 
+/**
+ * 참가자 역할 정의
+ */
 export const ROLE = {
-  LEADER: 'LEADER',
-  EXPERT: 'EXPERT',
-  WORKER: 'WORKER',
-  UNKNOWN: 'UNKNOWN',
-  SECESSION: 'SECESSION',
+  LEADER: 'LEADER', //리더
+  EXPERT: 'EXPERT', //전문가
+  WORKER: 'WORKER', //작업자
+  UNKNOWN: 'UNKNOWN', //알수없음
+  SECESSION: 'SECESSION', //탈퇴
+}
+
+/**
+ * 시그널 - 링크플로우(fitt360) 제어
+ */
+export const LINKFLOW = {
+  STITCHING: 'stitching', //연결된 스트림(기본값)
+  SIDE_BY_SIDE: 'sidebyside', //분리된 스트림
+  SINGLE: 'single', //단일 스트림
+  ROTATION: 'rotation', //회전 정보
 }

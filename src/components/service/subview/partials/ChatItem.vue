@@ -203,7 +203,7 @@ export default {
       if (typeof chatText === 'object') {
         return ''
       }
-      chatText = linkifyHtml(chatText, {
+      chatText = linkifyHtml(chatText.replace(/\</g, '&lt;'), {
         defaultProtocol: 'https',
         className: 'chat-url',
       })
@@ -217,7 +217,7 @@ export default {
       if (typeof chatText === 'object') {
         return ''
       }
-      chatText = linkifyHtml(chatText, {
+      chatText = linkifyHtml(chatText.replace(/\</g, '&lt;'), {
         defaultProtocol: 'https',
         className: 'chat-url',
       })

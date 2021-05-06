@@ -47,6 +47,7 @@
         placement="bottom-start"
         popperClass="custom-popover"
         width="auto"
+        :scrollHide="true"
       >
         <button slot="reference" class="widecard-tools__menu-button"></button>
         <ul class="groupcard-popover">

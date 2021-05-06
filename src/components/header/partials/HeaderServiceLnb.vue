@@ -67,6 +67,8 @@ export default {
       'view',
       'shareFile',
       'viewForce',
+      'settingInfo',
+      'myInfo',
     ]),
     hasLeader() {
       const idx = this.participants.findIndex(
@@ -103,12 +105,10 @@ export default {
       deep: true,
       handler(val, oldVal) {
         // AR 기능 도중 메인뷰 참가자가 나갔을 경우
-        if (
-          this.view === VIEW.AR &&
-          val.id !== oldVal.id &&
-          this.account.roleType === ROLE.LEADER
-        ) {
-          this.$call.sendArFeatureStop()
+        if (this.view === VIEW.AR && val.id !== oldVal.id) {
+          if (this.account.roleType === ROLE.LEADER) {
+            this.$call.sendArFeatureStop()
+          }
           this.goTabConfirm(VIEW.STREAM)
         }
       },
@@ -122,6 +122,7 @@ export default {
 
       // leader
       if (this.account.roleType === ROLE.LEADER) {
+        //현재 view가 AR일때 다른 view를 선택하면 정말 이동할건지 확인 메시지
         if (this.view === VIEW.AR) {
           this.serviceConfirmTitle(
             this.$t('service.ar_exit'),
@@ -143,19 +144,22 @@ export default {
           // })
           return
         }
-        if (this.view === VIEW.DRAWING) {
-          if (this.shareFile && this.shareFile.id) {
-            // TODO: MESSAGE
-            this.confirmCancel(this.$t('service.toast_exit_drawing'), {
-              text: this.$t('button.exit'),
-              action: () => {
-                this.$call.sendDrawing(DRAWING.END_DRAWING)
-                this.goTabConfirm(type)
-              },
-            })
-            return
-          }
-        }
+        //현재 view가 협업보드인 경우 다른 view를 선택하면, 협업보드를 종료할 건지 확인 메시지
+        //=> 협업보드는 종료되지 않도록 수정됨 (210504)
+        // if (this.view === VIEW.DRAWING) {
+        //   if (this.shareFile && this.shareFile.id) {
+        //     // TODO: MESSAGE
+        //     this.confirmCancel(this.$t('service.toast_exit_drawing'), {
+        //       text: this.$t('button.exit'),
+        //       action: () => {
+        //         this.$call.sendDrawing(DRAWING.END_DRAWING)
+        //         this.goTabConfirm(type)
+        //       },
+        //     })
+        //     return
+        //   }
+        // }
+
         this.goTabConfirm(type)
       } // other user
       else {
@@ -163,9 +167,11 @@ export default {
           this.toastDefault(this.$t('service.toast_cannot_leave_ar'))
           return
         }
+
         if (type === VIEW.STREAM) {
           this.setView(VIEW.STREAM)
         }
+
         if (type === 'drawing') {
           if (this.shareFile && this.shareFile.id) {
             // this.drawingNotice = false
@@ -211,6 +217,7 @@ export default {
       }
     },
     permissionSetting(permission) {
+      //AR 기능 요청 승낙 받은 경우 - AR 기능 시작 시그날 전송 & AR VIEW로 전환한다
       if (permission === true) {
         this.toastDefault(
           this.$t('service.toast_ar_start', { name: this.mainView.nickname }),
@@ -222,7 +229,9 @@ export default {
         })
         this.$call.sendArFeatureStart(this.mainView.id)
         this.setView(VIEW.AR)
-      } else if (permission === false) {
+      }
+      //AR 기능 요청 거부 당한 경우
+      else if (permission === false) {
         this.toastDefault(this.$t('service.toast_refused_ar'))
         this.addChat({
           status: 'ar-deny',
@@ -321,8 +330,12 @@ export default {
 
   /* Lifecycles */
   created() {
-    this.$call.addListener(SIGNAL.CAPTURE_PERMISSION, this.getPermissionCheck)
-    this.$call.addListener(SIGNAL.AR_FEATURE, this.checkArFeature)
+    this.$eventBus.$on(SIGNAL.CAPTURE_PERMISSION, this.getPermissionCheck)
+    this.$eventBus.$on(SIGNAL.AR_FEATURE, this.checkArFeature)
+  },
+  beforeDestroy() {
+    this.$eventBus.$off(SIGNAL.CAPTURE_PERMISSION, this.getPermissionCheck)
+    this.$eventBus.$off(SIGNAL.AR_FEATURE, this.checkArFeature)
   },
 }
 </script>

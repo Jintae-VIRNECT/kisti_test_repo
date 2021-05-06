@@ -198,6 +198,8 @@ export default {
   scroll-behavior: smooth;
   -ms-overflow-style: none; /* IE and Edge */
   scrollbar-width: none; /* Firefox */
+  touch-action: pan-y;
+  overscroll-behavior-y: none;
   &::-webkit-scrollbar {
     display: none;
   }
@@ -208,6 +210,8 @@ export default {
     right: 0;
     bottom: 0;
     left: 0;
+    touch-action: pan-y;
+    overscroll-behavior-y: none;
   }
 
   .modal--inner {

@@ -132,13 +132,13 @@ export default {
         video: { deviceId: deviceId },
       })
       this.currentVideo = deviceId
-      this.$localStorage.setDevice('video', 'deviceId', deviceId)
+      window.myStorage.setDevice('video', 'deviceId', deviceId)
     },
     setQuality(quality) {
       this.setDevices({
         video: { quality: quality },
       })
-      this.$localStorage.setDevice('video', 'quality', quality)
+      window.myStorage.setDevice('video', 'quality', quality)
     },
     async initStream() {
       if (this.checking) return

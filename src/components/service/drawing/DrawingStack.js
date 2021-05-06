@@ -1,5 +1,6 @@
 /* eslint-disable no-undef */
 import { DRAWING } from 'configs/remote.config'
+import { VIEW } from 'configs/view.config'
 /**
  * undoList
  * {
@@ -9,6 +10,14 @@ import { DRAWING } from 'configs/remote.config'
  * }
  */
 export default {
+  data() {
+    return {
+      undoList: [],
+      receiveUndoList: {},
+      redoList: [],
+      receiveRedoList: {},
+    }
+  },
   methods: {
     stackAdd(type, id) {
       const stack = {
@@ -140,6 +149,39 @@ export default {
     },
 
     /**
+     * 드로잉 초기화 객체 메소드
+     */
+    drawingClear() {
+      const ids = this.canvas
+        .getObjects()
+        .filter(_ => _.opacity === 1)
+        .map(_ => _.id)
+
+      this.canvas.discardActiveObject()
+
+      if (ids.length > 0) {
+        this.canvas.getObjects().forEach(object => {
+          if (!('owner' in object)) {
+            this.canvas.remove(object)
+          }
+        })
+        this.backCanvas.getObjects().forEach(object => {
+          if (!('owner' in object)) {
+            this.backCanvas.remove(object)
+          }
+        })
+        this.canvas.renderAll()
+        this.backCanvas.renderAll()
+        // this.stackAdd('remove', [...ids]); //삭제 히스토리 쌓기
+        this.stackClear() // 전체 삭제
+
+        if (this.$call) {
+          this.$call.sendDrawing(DRAWING.CLEAR_ALL, { imgId: this.file.id })
+        }
+      }
+    },
+
+    /**
      * 드로잉 히스토리 초기화 메소드
      */
     stackClear() {
@@ -204,5 +246,17 @@ export default {
         }
       }
     },
+  },
+
+  /* Lifecycles */
+  created() {
+    this.$eventBus.$on(`control:${VIEW.DRAWING}:undo`, this.stackUndo)
+    this.$eventBus.$on(`control:${VIEW.DRAWING}:redo`, this.stackRedo)
+    this.$eventBus.$on(`control:${VIEW.DRAWING}:clear`, this.drawingClear)
+  },
+  beforeDestroy() {
+    this.$eventBus.$off(`control:${VIEW.DRAWING}:undo`, this.stackUndo)
+    this.$eventBus.$off(`control:${VIEW.DRAWING}:redo`, this.stackRedo)
+    this.$eventBus.$off(`control:${VIEW.DRAWING}:clear`, this.drawingClear)
   },
 }

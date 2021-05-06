@@ -27,6 +27,7 @@ export default {
   data() {
     return {
       show: false,
+      timeout: null,
     }
   },
   props: {
@@ -83,10 +84,17 @@ export default {
       if (this.isTablet) {
         if (e.type === 'mouseenter') return
         this.show = true
+        clearTimeout(this.timeout)
         if (!this.guide) {
-          setTimeout(() => {
+          this.timeout = setTimeout(() => {
+            clearTimeout(this.timeout)
             this.show = false
-          }, 1000)
+          }, 2000)
+        } else {
+          this.timeout = setTimeout(() => {
+            clearTimeout(this.timeout)
+            this.show = false
+          }, 5000)
         }
       } else {
         this.show = true
@@ -339,6 +347,7 @@ export default {
 .tooltip.tooltip-guide {
   > .tooltiptext.blue {
     padding: 1.143rem 1.714rem;
+    box-shadow: 0 0 3px #000;
     > .arrow {
       border-width: 0.714rem;
       &:after {

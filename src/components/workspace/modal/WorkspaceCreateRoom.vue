@@ -9,6 +9,7 @@
   >
     <div class="createroom">
       <create-room-info
+        :key="'roominfo_' + sessionId"
         :roomInfo="roomInfo"
         :selection="selection"
         :btnLoading="clicked"
@@ -57,6 +58,7 @@ export default {
   data() {
     return {
       selection: [],
+      selectHistory: [],
       visibleFlag: false,
       users: [],
       maxSelect: maxParticipants - 1,
@@ -66,7 +68,7 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['targetCompany']),
+    ...mapGetters(['targetCompany', 'restrictedMode', 'useScreenStrict']),
   },
   props: {
     visible: {
@@ -79,13 +81,14 @@ export default {
     },
   },
   watch: {
-    visible(flag) {
+    async visible(flag) {
       if (flag) {
         this.selection = []
-        this.inviteRefresh()
+        this.selectHistory = []
         if (this.sessionId && this.sessionId.length > 0) {
-          this.getInfo()
+          await this.getInfo()
         }
+        this.inviteRefresh()
       }
       this.visibleFlag = flag
     },
@@ -98,17 +101,16 @@ export default {
           workspaceId: this.workspace.uuid,
           sessionId: this.sessionId,
         })
-        for (let member of this.roomInfo.memberList) {
-          if (member.uuid !== this.account.uuid) {
-            this.selection.push(member)
-          }
-        }
+        this.selectHistory = this.roomInfo.memberList.filter(
+          member => member.uuid !== this.account.uuid,
+        )
       } catch (err) {
         console.error(err)
       }
     },
     reset() {
       this.selection = []
+      this.selectHistory = []
     },
     beforeClose() {
       this.$emit('update:visible', false)
@@ -144,6 +146,11 @@ export default {
           return 0
         }
       })
+      this.selection = this.users.filter(
+        user =>
+          this.selectHistory.findIndex(history => history.uuid === user.uuid) >
+          -1,
+      )
       this.loading = false
     },
     async startRemote(info) {
@@ -184,6 +191,10 @@ export default {
             sessionId: this.sessionId,
             sessionType: ROOM_STATUS.PRIVATE,
             companyCode: this.targetCompany,
+            videoRestrictedMode:
+              this.restrictedMode.video && this.useScreenStrict,
+            audioRestrictedMode:
+              this.restrictedMode.audio && this.useScreenStrict,
           })
         } else {
           createdRes = await createRoom({
@@ -196,6 +207,10 @@ export default {
             workspaceId: this.workspace.uuid,
             sessionType: ROOM_STATUS.PRIVATE,
             companyCode: this.targetCompany,
+            videoRestrictedMode:
+              this.restrictedMode.video && this.useScreenStrict,
+            audioRestrictedMode:
+              this.restrictedMode.audio && this.useScreenStrict,
           })
         }
         if (info.imageFile) {
@@ -222,6 +237,8 @@ export default {
           ...roomInfo,
           leaderId: this.account.uuid,
           open: false,
+          videoRestrictedMode: createdRes.videoRestrictedMode,
+          audioRestrictedMode: createdRes.audioRestrictedMode,
         })
         if (connRes) {
           this.$eventBus.$emit('popover:close')

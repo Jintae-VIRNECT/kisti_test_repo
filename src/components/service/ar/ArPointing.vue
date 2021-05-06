@@ -7,7 +7,7 @@ import { mapGetters } from 'vuex'
 import { reset } from 'utils/callOptions'
 import { hexToAHEX } from 'utils/color'
 import { ACTION } from 'configs/view.config'
-import { SIGNAL, AR_POINTING } from 'configs/remote.config'
+import { SIGNAL, AR_POINTING, ROLE } from 'configs/remote.config'
 import { normalizedPosX, normalizedPosY } from 'utils/normalize'
 import toastMixin from 'mixins/toast'
 
@@ -23,7 +23,7 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['tools', 'mainView', 'viewAction']),
+    ...mapGetters(['tools', 'mainView', 'viewAction', 'allowPointing']),
     pointingColor() {
       return this.tools ? this.tools.color : reset.color
     },
@@ -31,6 +31,14 @@ export default {
   methods: {
     doPointing(event) {
       if (this.viewAction !== ACTION.AR_POINTING) return
+      //참가자이고, 참가자 포인팅 허용 설정이 해제되있는 경우 포인팅 불가능하도록 한다.
+      if (
+        this.account.roleType !== ROLE.LEADER &&
+        this.allowPointing !== true
+      ) {
+        this.toastDefault(this.$t('service.tool_pointing_block'))
+        return
+      }
       let posX = normalizedPosX(event.offsetX, this.videoSize.width)
       let posY = normalizedPosY(event.offsetY, this.videoSize.height)
       if (posX > 1) posX = 1
@@ -79,12 +87,13 @@ export default {
 
   /* Lifecycling */
   created() {
-    this.$call.addListener(SIGNAL.AR_POINTING, this.receivePointing)
+    this.$eventBus.$on(SIGNAL.AR_POINTING, this.receivePointing)
     this.$eventBus.$on(`control:${ACTION.AR_POINTING}:undo`, this.stackUndo)
     this.$eventBus.$on(`control:${ACTION.AR_POINTING}:redo`, this.stackRedo)
     this.$eventBus.$on(`control:${ACTION.AR_POINTING}:clear`, this.drawingClear)
   },
   beforeDestroy() {
+    this.$eventBus.$off(SIGNAL.AR_POINTING, this.receivePointing)
     this.$eventBus.$off(`control:${ACTION.AR_POINTING}:undo`, this.stackUndo)
     this.$eventBus.$off(`control:${ACTION.AR_POINTING}:redo`, this.stackRedo)
     this.$eventBus.$off(

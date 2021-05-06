@@ -68,7 +68,7 @@ export default {
     },
   },
   computed: {
-    ...mapGetters(['targetCompany']),
+    ...mapGetters(['targetCompany', 'restrictedMode', 'useScreenStrict']),
   },
   methods: {
     ...mapActions(['setRoomInfo', 'roomClear', 'updateAccount']),
@@ -112,6 +112,10 @@ export default {
             sessionId: this.sessionId,
             sessionType: ROOM_STATUS.OPEN,
             companyCode: this.targetCompany,
+            videoRestrictedMode:
+              this.restrictedMode.video && this.useScreenStrict,
+            audioRestrictedMode:
+              this.restrictedMode.audio && this.useScreenStrict,
           })
         } else {
           createdRes = await createRoom({
@@ -124,6 +128,10 @@ export default {
             participantIds: [],
             workspaceId: this.workspace.uuid,
             companyCode: this.targetCompany,
+            videoRestrictedMode:
+              this.restrictedMode.video && this.useScreenStrict,
+            audioRestrictedMode:
+              this.restrictedMode.audio && this.useScreenStrict,
           })
         }
         if (info.imageFile) {
@@ -149,6 +157,8 @@ export default {
           ...roomInfo,
           leaderId: this.account.uuid,
           open: true,
+          videoRestrictedMode: createdRes.videoRestrictedMode,
+          audioRestrictedMode: createdRes.audioRestrictedMode,
         })
 
         if (connRes) {

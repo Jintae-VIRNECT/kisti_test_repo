@@ -10,24 +10,21 @@
   width: 100%;
   height: 100%;
 }
+
 .ar-video__box {
   position: relative;
-  top: 50%;
-  width: 100%;
+  width: fit-content;
   max-width: 100%;
-  height: 100%;
+  height: fit-content;
   max-height: 100%;
   margin: auto;
-  transform: translateY(-50%);
   // border: solid 1px #ddd;
-  > video {
-    width: 100%;
-    height: 100%;
-  }
 }
 
 .ar-video__stream {
+  width: 100%;
   max-width: 100%;
+  height: 100%;
   max-height: 100%;
 }
 

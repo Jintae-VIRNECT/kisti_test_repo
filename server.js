@@ -2,25 +2,19 @@ const express = require('express')
 const route = require('./route')
 const app = express()
 const server = require('./server/module')
+const { initHelmet } = require('./server/helmet')
 const path = require('path')
-
-var bodyParser = require('body-parser')
-app.use(bodyParser.json({ limit: '50mb' }))
-
-app.use((req, res, next) => {
-  res.header('X-Frame-Options', 'deny')
-  next()
-})
-
-app.use(express.static(path.join(__dirname, 'dist')))
-app.use(express.static(path.join(__dirname, 'record')))
+const compression = require('compression')
 
 const translate = require('./translate/translate')
 const stt = require('./translate/stt')
 const tts = require('./translate/tts')
 
+app.use(express.json({ limit: '50mb' }))
+app.use(compression())
+
 /* FEATURE: STT */
-app.post('/translate', bodyParser.json(), function(req, res) {
+app.post('/translate', express.json(), function(req, res) {
   const text = req.body.text
   const target = req.body.target
   translate.getTranslate(text, target).then(value => {
@@ -28,7 +22,7 @@ app.post('/translate', bodyParser.json(), function(req, res) {
   })
 })
 
-app.post('/stt', bodyParser.json(), function(req, res) {
+app.post('/stt', express.json(), function(req, res) {
   const file = req.body.file
   const lang = req.body.lang
   const rateHertz = req.body.rateHertz
@@ -38,7 +32,7 @@ app.post('/stt', bodyParser.json(), function(req, res) {
   })
 })
 
-app.post('/tts', bodyParser.json(), function(req, res) {
+app.post('/tts', express.json(), function(req, res) {
   // console.log(req.body.file)
   const text = req.body.text
   const lang = req.body.lang
@@ -49,11 +43,16 @@ app.post('/tts', bodyParser.json(), function(req, res) {
   })
 })
 
-app.use(route)
+initHelmet(app).then(() => {
+  app.use(express.static(path.join(__dirname, 'dist')))
+  app.use(express.static(path.join(__dirname, 'record')))
 
-server
-  .start(app)
-  .then(function() {})
-  .catch(function(e) {
-    console.log(e)
-  })
+  app.use(route)
+
+  server
+    .start(app)
+    .then(function() {})
+    .catch(function(e) {
+      console.log(e)
+    })
+})

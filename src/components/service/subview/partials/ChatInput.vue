@@ -26,11 +26,11 @@
     >
       <input
         type="file"
-        name="file"
+        name="chatfile"
         ref="inputFile"
         style="display: none"
         class="el-input__form-input"
-        accept="*/*"
+        accept=".*"
         @change="fileUpload($event)"
       />
       <template v-if="fileList.length === 0">
@@ -39,7 +39,7 @@
           class="chat-input__form-speech"
           @click="doStt"
         >
-          {{ $t('service.translate') }}
+          Speech To Text
         </button>
         <button
           v-if="useStorage"
@@ -83,7 +83,7 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
+import { mapGetters, mapActions } from 'vuex'
 import { uploadFile } from 'api/http/file'
 import toastMixin from 'mixins/toast'
 export default {
@@ -122,9 +122,10 @@ export default {
       },
       deep: true,
     },
-    'inputText.length': 'checkLength',
+    // 'inputText.length': 'checkLength', // safari issue
   },
   methods: {
+    ...mapActions(['useStt']),
     checkLength() {
       if (!this.useTranslate) return
       if (this.inputText.length > 200) {
@@ -139,7 +140,7 @@ export default {
         this.toastDefault(this.$t('service.stt_mic_off'))
         return
       }
-      this.$emit('update:speech', true)
+      this.useStt(true)
     },
     doTranslate() {
       // if (!this.mic.isOn) {
@@ -149,6 +150,7 @@ export default {
       this.viewTrans = !this.viewTrans
     },
     async doSend(e) {
+      if (e && e.keyCode === 229) return
       if (this.clicked) return
       this.clicked = true
       if (e) {
@@ -190,6 +192,7 @@ export default {
           }
         }
       } else if (this.inputText.length > 0) {
+        this.checkLength()
         this.$call.sendChat(this.inputText, this.translate.code)
       }
 

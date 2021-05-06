@@ -6,7 +6,6 @@ import { SIGNAL, DRAWING, ROLE } from 'configs/remote.config'
 export default {
   data() {
     return {
-      winResizeID: 0,
       receivePath: [],
     }
   },
@@ -29,9 +28,6 @@ export default {
           break
         case DRAWING.TEXT_ADD:
           this.drawingText(data)
-          break
-        case DRAWING.TEXT_UPDATE:
-          this.updateText(data)
           break
         case DRAWING.UNDO:
           this.receiveStackUndo(data)
@@ -116,14 +112,6 @@ export default {
       this.canvas.add(object)
       this.canvas.renderAll()
     },
-    updateText(data) {
-      const object = this.canvas.getObjects().find(_ => _.id === data.oId)
-      object.set({
-        text: data.text,
-      })
-      this.canvas.renderAll()
-      this.receiveStackAdd('text', object.id, object.owner)
-    },
     clearAll(data) {
       this.canvas.getObjects().forEach(object => {
         if (object.owner === 'export') {
@@ -139,7 +127,10 @@ export default {
   /* Lifecycles */
   created() {
     if (this.$call) {
-      this.$call.addListener(SIGNAL.DRAWING, this.drawingListener)
+      this.$eventBus.$on(SIGNAL.DRAWING, this.drawingListener)
     }
+  },
+  beforeDestroy() {
+    this.$eventBus.$off(SIGNAL.DRAWING, this.drawingListener)
   },
 }

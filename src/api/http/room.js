@@ -29,6 +29,8 @@ export const createRoom = async ({
   leaderId,
   participantIds = [],
   workspaceId,
+  videoRestrictedMode,
+  audioRestrictedMode,
 }) => {
   const returnVal = await http(
     'CREATE_ROOM',
@@ -44,6 +46,8 @@ export const createRoom = async ({
       leaderId,
       participantIds,
       workspaceId,
+      videoRestrictedMode,
+      audioRestrictedMode,
     },
     {
       client,
@@ -82,6 +86,8 @@ export const restartRoom = async ({
   leaderId,
   participantIds = [],
   workspaceId,
+  videoRestrictedMode,
+  audioRestrictedMode,
 }) => {
   const returnVal = await http(
     'RESTART_ROOM',
@@ -98,6 +104,8 @@ export const restartRoom = async ({
       leaderId,
       participantIds,
       workspaceId,
+      videoRestrictedMode,
+      audioRestrictedMode,
     },
     {
       client,

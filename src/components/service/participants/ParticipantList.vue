@@ -2,6 +2,10 @@
   <div class="participants" id="video-list">
     <vue2-scrollbar ref="sessionListScrollbar" :reverseAxios="true">
       <transition-group name="list" tag="div" class="participants__view">
+        <camera-control
+          v-if="restrictedRoom && isLeader"
+          key="controlBtn"
+        ></camera-control>
         <!-- <div class="participants__view"></div> -->
         <participant-video
           v-for="participant of participants"
@@ -28,24 +32,27 @@
 
 <script>
 import { mapGetters, mapActions } from 'vuex'
-import { ROLE } from 'configs/remote.config'
+import { SIGNAL, VIDEO, ROLE } from 'configs/remote.config'
 import { kickoutMember } from 'api/http/member'
 import { maxParticipants } from 'utils/callOptions'
 
 import ParticipantVideo from './ParticipantVideo'
 import InviteModal from '../modal/InviteModal'
 import SelectView from '../modal/SelectView'
+import CameraControl from './CameraControl'
 export default {
   name: 'ParticipantList',
   components: {
     ParticipantVideo,
     InviteModal,
     SelectView,
+    CameraControl,
   },
   data() {
     return {
       selectview: false,
       invite: false,
+      force: null,
     }
   },
   computed: {
@@ -55,6 +62,8 @@ export default {
       'viewForce',
       'roomInfo',
       'openRoom',
+      'allowCameraControl',
+      'restrictedRoom',
     ]),
     isLeader() {
       return this.account.roleType === ROLE.LEADER
@@ -96,6 +105,10 @@ export default {
   methods: {
     ...mapActions(['setMainView', 'addChat', 'removeMember']),
     selectMain(participant) {
+      if (this.restrictedRoom) {
+        this.$call.sendVideo(participant.id, true)
+        return
+      }
       this.selectview = {
         id: participant.id,
         nickname: participant.nickname,
@@ -109,24 +122,12 @@ export default {
     },
     changeMainView(select, force) {
       this.selectview = false
-      if (this.account.roleType === ROLE.LEADER) {
-        if (select.id === this.mainView.id && this.viewForce === force) return
-        if (force) {
-          this.addChat({
-            name: select.nickname,
-            status: this.isLeader ? 'sharing-start-leader' : 'sharing-start',
-            type: 'system',
-          })
-        } else {
-          if (this.viewForce === true) {
-            this.addChat({
-              name: this.mainView.nickname,
-              status: this.isLeader ? 'sharing-stop-leader' : 'sharing-stop',
-              type: 'system',
-            })
-          }
-        }
-      }
+      if (
+        this.account.roleType === ROLE.LEADER &&
+        select.id === this.mainView.id &&
+        this.viewForce === force
+      )
+        return
       this.$call.sendVideo(select.id, force)
       this.setMainView({ id: select.id, force })
     },
@@ -146,10 +147,39 @@ export default {
       }
       // this.$call.disconnect(this.participant.connectionId)
     },
+    signalVideo(event) {
+      const data = JSON.parse(event.data)
+      if (data.type === VIDEO.SHARE) {
+        const participant = this.participants.find(user => user.id === data.id)
+        this.addChat({
+          name: participant.nickname,
+          status: this.isLeader ? 'sharing-start-leader' : 'sharing-start',
+          type: 'system',
+        })
+        this.force = data.id
+      } else if (data.type === VIDEO.NORMAL) {
+        if (this.force) {
+          const participant = this.participants.find(
+            user => user.id === this.force,
+          )
+          if (participant) {
+            this.addChat({
+              name: participant.nickname,
+              status: this.isLeader ? 'sharing-stop-leader' : 'sharing-stop',
+              type: 'system',
+            })
+          }
+        }
+        this.force = null
+      }
+    },
   },
-
-  /* Lifecycles */
-  mounted() {},
+  beforeDestroy() {
+    this.$eventBus.$off(SIGNAL.VIDEO, this.signalVideo)
+  },
+  created() {
+    this.$eventBus.$on(SIGNAL.VIDEO, this.signalVideo)
+  },
 }
 </script>
 <style>

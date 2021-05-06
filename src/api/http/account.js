@@ -57,15 +57,10 @@ export const workspaceLicense = async function({ workspaceId, userId }) {
  * @param {String} userId
  * @param {String} workspaceId
  */
-export const getCompanyInfo = async function({
-  userId,
-  workspaceId,
-  companyCode = 0,
-}) {
+export const getCompanyInfo = async function({ userId, workspaceId }) {
   const returnVal = await http('COMPANY_INFO', {
     userId,
     workspaceId,
-    companyCode,
   })
   return returnVal
 }

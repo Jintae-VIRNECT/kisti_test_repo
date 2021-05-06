@@ -1,5 +1,10 @@
 //Definition of workspace store
-import { SETTINGS, TOGGLE_CHAT, ALLOW_RESET } from '../mutation-types'
+import {
+  SETTINGS,
+  TOGGLE_CHAT,
+  ALLOW_RESET,
+  MAIN_PANO_CANVAS,
+} from '../mutation-types'
 import { RECORD_TARGET } from 'utils/recordOptions'
 import { resolution } from 'utils/settingOptions'
 
@@ -30,9 +35,7 @@ const state = {
     pointing: true,
     localRecord: true,
   },
-
-  videoDevice: null,
-  language: null,
+  useScreenStrict: false,
 
   translate: {
     flag: false,
@@ -47,6 +50,8 @@ const state = {
   serverRecordStatus: 'STOP', // 'WAIT', 'START', 'STOP', 'PREPARE'
 
   chatBox: false,
+
+  mainPanoCanvas: null,
 }
 
 const mutations = {
@@ -91,12 +96,8 @@ const mutations = {
   [SETTINGS.SET_TTS_ALLOW](state, flag) {
     state.translate.ttsAllow = flag
   },
-
-  // [SETTINGS.SET_VIDEO_DEVICE](state, videoDevice) {
-  //   state.videoDevice = videoDevice
-  // },
-  [SETTINGS.SET_LANGUAGE](state, language) {
-    state.language = language
+  [SETTINGS.SET_SCREEN_STRICT](state, flag) {
+    state.useScreenStrict = flag
   },
 
   [SETTINGS.SET_LOCAL_RECORD_TARGET](state, localRecordTarget) {
@@ -114,6 +115,10 @@ const mutations = {
   [TOGGLE_CHAT](state, flag) {
     state.chatBox = flag
   },
+
+  [MAIN_PANO_CANVAS](state, canvas) {
+    state.mainPanoCanvas = canvas
+  },
 }
 const getters = {
   mic: state => state.mic,
@@ -123,9 +128,9 @@ const getters = {
   serverRecord: state => state.serverRecordInfo,
   allowLocalRecord: state => state.allow.localRecord,
   allowPointing: state => state.allow.pointing,
-  language: state => state.language,
 
   translate: state => state.translate,
+  useScreenStrict: state => state.useScreenStrict,
 
   // used Remote.js
   settingInfo: state => {
@@ -141,6 +146,8 @@ const getters = {
   },
 
   chatBox: state => state.chatBox,
+
+  mainPanoCanvas: state => state.mainPanoCanvas,
 }
 
 const actions = {

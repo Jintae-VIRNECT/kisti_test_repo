@@ -77,9 +77,10 @@ export default {
       if (val !== VIEW.DRAWING) {
         // clear image
         // TODO: 협업보드 나갈 때 클리어 할지 선택해야함
-        if (this.account.roleType === ROLE.LEADER) {
-          this.showImage({})
-        }
+        // => 협업보드에서 다른 탭으로 이동 시 협업보드는 종료되지 않으므로 데이터 초기화하지 않도록 함 (210504)
+        //if (this.account.roleType === ROLE.LEADER) {
+        //  this.showImage({})
+        //}
       }
     },
   },
@@ -185,11 +186,12 @@ export default {
   /* Lifecycles */
   created() {
     if (this.account.roleType !== ROLE.LEADER) {
-      this.$call.addListener(SIGNAL.DRAWING, this.getImage)
+      this.$eventBus.$on(SIGNAL.DRAWING, this.getImage)
     }
     this.$eventBus.$on('participantChange', this.participantChange)
   },
   beforeDestroy() {
+    this.$eventBus.$off(SIGNAL.DRAWING, this.getImage)
     this.$eventBus.$off('participantChange', this.participantChange)
   },
 }

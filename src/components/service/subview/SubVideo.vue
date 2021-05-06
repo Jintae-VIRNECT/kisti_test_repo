@@ -1,32 +1,51 @@
 <template>
   <div class="sub-video">
-    <transition name="opacity">
+    <transition-group
+      tag="div"
+      class="sub-video__wrapper"
+      :class="{ 'no-stream': stream === null }"
+      name="opacity"
+    >
       <video
-        class="sub-video--screen"
         v-if="stream !== null"
+        class="sub-video--screen"
         ref="subVideo"
         autoplay
         loop
         muted
         playsinline
+        @play="mediaPlay"
         :srcObject.prop="stream"
+        key="sub-video"
       ></video>
-      <div v-else class="sub-video--no-stream"></div>
-    </transition>
+      <div v-else class="sub-video--no-stream" key="sub-video-no-stream"></div>
+      <pano-video
+        v-if="activePanoVideo"
+        targetRef="subVideo"
+        :connectionId="mainView.connectionId"
+        key="sub-video-pano"
+        type="sub"
+      ></pano-video>
+    </transition-group>
   </div>
 </template>
 
 <script>
 import { mapGetters } from 'vuex'
-import { CAMERA } from 'configs/device.config'
+import { CAMERA, DEVICE } from 'configs/device.config'
 import { VIEW, ACTION } from 'configs/view.config'
+
 export default {
   name: 'SubVideo',
-  components: {},
-  data() {
-    return {}
+  components: {
+    PanoVideo: () => import('PanoVideo'),
   },
-  props: {},
+  data() {
+    return {
+      inited: false,
+      backInterval: null,
+    }
+  },
   computed: {
     ...mapGetters(['mainView', 'view', 'viewAction']),
     stream() {
@@ -47,6 +66,41 @@ export default {
         return null
       }
     },
+    activePanoVideo() {
+      return this.inited && this.stream !== null && this.isFITT360
+    },
+    isFITT360() {
+      return this.mainView.deviceType === DEVICE.FITT360
+    },
+  },
+  mounted() {
+    this.$nextTick(() => {
+      this.inited = true
+    })
+  },
+  methods: {
+    mediaPlay() {
+      this.$nextTick(() => {
+        if (this.isSafari && this.isTablet) {
+          this.checkBackgroundStream()
+        }
+      })
+    },
+    checkBackgroundStream() {
+      if (this.backInterval) clearInterval(this.backInterval)
+      let lastFired = new Date().getTime()
+      let now = 0
+      this.backInterval = setInterval(() => {
+        now = new Date().getTime()
+        if (now - lastFired > 1000) {
+          this.$refs['subVideo'].play()
+        }
+        lastFired = now
+      }, 500)
+    },
+  },
+  beforeDestroy() {
+    if (this.backInterval) clearInterval(this.backInterval)
   },
 }
 </script>

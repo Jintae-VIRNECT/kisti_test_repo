@@ -104,7 +104,7 @@
         <span>{{ $t('alarm.saved_duration') }}</span>
       </div> -->
     </div>
-    <audio preload="auto" ref="noticeAudio" playsinline>
+    <audio preload="auto" ref="noticeAudio" playsinline muted="muted">
       <source src="~assets/media/end.mp3" />
     </audio>
   </popover>
@@ -143,6 +143,7 @@ export default {
       key: '',
       active: false,
       visible: false,
+      muted: true,
       // alarmList: [],
     }
   },
@@ -152,9 +153,9 @@ export default {
   watch: {
     onPush(push) {
       if (push) {
-        this.$localStorage.setItem('push', 'true')
+        localStorage.setItem('push', 'true')
       } else {
-        this.$localStorage.setItem('push', 'false')
+        localStorage.setItem('push', 'false')
       }
     },
     workspace(val, oldVal) {
@@ -171,6 +172,20 @@ export default {
       'inviteResponseAlarm',
       'clearWorkspace',
     ]),
+    loadeddata() {
+      this.$refs['noticeAudio'].onloadeddata = () => {}
+      if (this.isSafari) {
+        window.addEventListener('touchstart', this.loadAudio)
+      }
+    },
+    loadAudio() {
+      this.$refs['noticeAudio'].muted = true
+      window.removeEventListener('touchstart', this.loadAudio)
+      this.$refs['noticeAudio'].play()
+      this.$refs['noticeAudio'].pause()
+
+      this.$refs['noticeAudio'].muted = false
+    },
     setVisible(value) {
       this.visible = value
     },
@@ -178,6 +193,7 @@ export default {
       this.active = false
     },
     playSound() {
+      this.$refs['noticeAudio'].muted = false
       this.$refs['noticeAudio'].play()
     },
     async alarmListener(listen) {
@@ -316,13 +332,14 @@ export default {
         if (err.code === 4002) {
           this.toastError(this.$t('workspace.remote_already_removed'))
           return
+        } else {
+          this.toastError(this.$t('workspace.remote_invite_impossible'))
         }
-        this.toastError(this.$t('workspace.remote_invite_impossible'))
       }
     },
     async pushInit() {
       if (!this.hasLicense) return
-      // const push = this.$localStorage.getItem('push')
+      // const push = localStorage.getItem('push')
       this.key = this.$route.name
       // if (push === 'true') {
       //   this.onPush = true
@@ -337,17 +354,24 @@ export default {
 
   /* Lifecycles */
   mounted() {
+    if (this.isSafari) {
+      this.$refs['noticeAudio'].onloadeddata = this.loadeddata
+      this.$refs['noticeAudio'].autoplay = true
+    }
     this.$nextTick(() => {
       this.pushInit()
       let push = true
-      if (this.$localStorage.getItem('push')) {
-        push = this.$localStorage.getItem('push') === 'true'
+      if (localStorage.getItem('push')) {
+        push = localStorage.getItem('push') === 'true'
       }
       this.onPush = push
     })
   },
   beforeDestroy() {
     this.$push.removeListener(this.key)
+    if (this.isSafari) {
+      window.removeEventListener('touchstart', this.loadAudio)
+    }
   },
 }
 </script>

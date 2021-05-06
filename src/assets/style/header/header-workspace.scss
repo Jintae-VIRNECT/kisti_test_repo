@@ -22,7 +22,9 @@
     color: #dcdcdc;
     font-weight: 500;
     font-size: 1.143rem;
+    white-space: nowrap;
     background: transparent;
+    white-space: nowrap;
     &::after {
       position: absolute;
       top: 50%;

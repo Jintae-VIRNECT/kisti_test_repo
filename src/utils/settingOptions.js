@@ -14,9 +14,9 @@ export const resolution = [
     text: '720p(HD)',
     resolution: '1280X720',
   },
-  {
-    value: '1080',
-    text: '1080p(FHD)',
-    resolution: '1920X1080',
-  },
+  // {
+  //   value: '1080',
+  //   text: '1080p(FHD)',
+  //   resolution: '1920X1080',
+  // },
 ]

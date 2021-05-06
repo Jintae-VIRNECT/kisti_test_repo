@@ -1,0 +1,242 @@
+/** custom modal */
+.modal.service-setting-modal .modal--inner {
+  min-width: 60rem;
+  background-color: $color_darkgray_500;
+  border: none;
+  border-radius: 0.4286em;
+  box-shadow: none;
+}
+.modal.service-setting-modal .modal--header {
+  height: auto;
+}
+
+.service-setting {
+  position: relative;
+  display: flex;
+  width: 100%;
+  height: 100%;
+  padding: 0;
+}
+
+.service-setting-nav {
+  position: relative;
+  display: flex;
+  flex: 0;
+  flex-direction: column;
+  width: 15.714em;
+  min-width: 15.714em;
+  // height: 100%;
+  padding: 3.2857rem 0 0 3.9286rem;
+  background-color: $color_darkgray_600;
+  border-right: solid 1px rgba(#7f7f7f, 0.2);
+  border-bottom-left-radius: 0.4286em;
+}
+
+.service-setting-nav__menu {
+  display: inline-flex;
+  flex-direction: column;
+  // align-items: center;
+  justify-content: space-between;
+  width: fit-content;
+  margin-bottom: 1.143em;
+  color: rgba($color_text_main, 0.5);
+  font-size: 1.143em;
+  text-align: left;
+  text-decoration: none;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+  -webkit-box-align: center;
+  -webkit-box-pack: justify;
+  &:focus {
+    color: rgba($color_text_main, 0.5);
+  }
+  &:hover {
+    color: rgba($color_text_main, 0.9);
+  }
+  &:active {
+    color: rgba($color_text_main, 0.7);
+  }
+  &.active {
+    color: $color_text;
+    font-weight: 500;
+  }
+  &:after {
+    height: 0;
+    overflow: hidden;
+    font-weight: 500;
+    visibility: hidden;
+    content: attr(data-text);
+    content: attr(data-text) / "";
+    user-select: none;
+    pointer-events: none;
+  }
+}
+
+.service-setting__view {
+  width: 44.2857rem;
+  padding: 3.8571rem 0px 0 2.7857rem;
+  border-bottom-right-radius: 0.4286em;
+}
+
+.service-setting--header {
+  position: relative;
+  margin-top: 2.143em;
+  margin-bottom: 1.2857rem;
+  padding-top: 2.571em;
+  color: $color_white;
+  font-size: 1.2857rem;
+  border-top: solid 1px #454548;
+  &:first-child {
+    margin-top: 0;
+    padding-top: 0;
+    border-top: none;
+  }
+
+  &.disable {
+    margin-bottom: 1rem;
+  }
+}
+
+.service-setting--warning {
+  position: absolute;
+  left: 14.857rem;
+  margin-bottom: 1rem;
+  color: #ff6363;
+  font-size: 1rem;
+}
+
+.service-setting__row {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  margin-bottom: 1rem;
+  &.disable {
+    opacity: 0.4;
+    pointer-events: none;
+  }
+  &.vertical {
+    flex-direction: column;
+    align-items: baseline;
+  }
+}
+
+.service-setting__description {
+  margin-bottom: 10px;
+  color: $color_text_main;
+  font-size: 0.929rem;
+}
+
+.service-setting__text {
+  width: 14.857rem;
+  color: $color_text_main;
+  opacity: 0.86;
+  transition: all 0.3s;
+  &.custom {
+    display: flex;
+    align-items: center;
+    opacity: 1;
+    > p {
+      margin-right: 0.286rem;
+      color: $color_text_main;
+      opacity: 0.86;
+    }
+  }
+
+  &.disable {
+    opacity: 0.4;
+    pointer-events: none;
+  }
+  > .popover--wrapper {
+    display: flex;
+  }
+}
+
+.service-setting__selector {
+  flex: 1;
+  align-items: flex-start;
+  > .radio-group {
+    height: 2.429rem;
+  }
+
+  .select-label {
+    width: 23.2857rem;
+    height: 2.5714rem;
+    min-height: unset;
+    padding: 0.4287rem 1.1433rem;
+
+    &::after {
+      right: 0.5714rem;
+    }
+  }
+}
+.setting--tooltip-icon {
+  width: 1.714em;
+  height: 1.714em;
+  opacity: 0.6;
+  transition: opacity 0.2;
+  &:hover {
+    opacity: 1;
+  }
+}
+
+/*custom remote radio */
+.service-setting {
+  .radio-group {
+    flex-direction: row;
+    padding: 0;
+
+    .radio-option:not(:first-of-type) {
+      padding-left: 1.8571rem;
+    }
+  }
+}
+
+/*custom slider*/
+.service-setting {
+  .service-setting__row {
+    .slider {
+      width: 23.2857rem;
+      background-color: $color_darkgray;
+    }
+  }
+}
+
+/*custom check*/
+.service-setting {
+  .service-setting__row {
+    .check {
+      width: 23.2857rem;
+      height: 2.5714rem;
+      padding-top: 0.5rem;
+      padding-bottom: 0.5rem;
+
+      &:not(.toggle) {
+        background-color: $color_darkgray;
+        border: solid 1px #363638;
+      }
+    }
+    .checkbox {
+      width: 23.2857rem;
+      height: 2.5714rem;
+      padding-top: 0.5rem;
+      padding-bottom: 0.5rem;
+
+      &:not(.toggle) {
+        background-color: $color_darkgray;
+        border: solid 1px #363638;
+      }
+
+      .checkbox-text {
+        color: rgba($color_white, 0.86);
+        font-weight: normal;
+        font-size: 1rem;
+      }
+    }
+  }
+}
+
+.modal.service-setting-modal .modal--inner .modal--body {
+  padding: 0;
+  background-color: #1e1e20;
+  border-radius: 0 0 0.4286em 0.4286em;
+}

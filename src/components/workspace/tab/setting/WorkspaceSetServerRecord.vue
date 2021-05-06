@@ -80,13 +80,17 @@ export default {
       this.setServerRecord({
         time: time,
       })
-      this.$localStorage.setServerRecord('time', time)
+      window.myStorage.setItemPiece('serverRecordInfo', 'time', time)
     },
     setRecResolution(resolution) {
       this.setServerRecord({
         resolution: resolution,
       })
-      this.$localStorage.setServerRecord('resolution', resolution)
+      window.myStorage.setItemPiece(
+        'serverRecordInfo',
+        'resolution',
+        resolution,
+      )
     },
   },
   created() {

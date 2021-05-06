@@ -4,7 +4,10 @@
       class="main-video__box"
       @mouseenter="hoverTools = true"
       @mouseleave="hoverTools = false"
-      :class="{ shutter: showShutter, hidden: !loaded || emptyStream }"
+      :class="{
+        shutter: showShutter,
+        hidden: !loaded || emptyStream,
+      }"
     >
       <!-- 메인 비디오 뷰 -->
       <video
@@ -53,6 +56,22 @@
           :videoSize="videoSize"
           class="main-video__pointing"
         ></pointing>
+
+        <!-- 360 화면 컨트롤 only -->
+        <moving
+          v-if="isLeader && isFITT360 && viewForce"
+          class="main-video__moving"
+          :class="{ upper: activeMovingControl }"
+          @panoctl="flag => (activeMovingControl = flag)"
+        ></moving>
+
+        <!-- 360 화면 뷰 only -->
+        <moving-viewer
+          ref="movingViewer"
+          v-if="isFITT360"
+          class="main-video__moving-viewer"
+        ></moving-viewer>
+
         <!-- 디바이스 컨트롤 뷰 -->
         <template v-if="allowTools">
           <transition name="opacity">
@@ -129,19 +148,22 @@
 <script>
 import { mapActions, mapGetters } from 'vuex'
 import { ROLE } from 'configs/remote.config'
-import { VIEW, ACTION } from 'configs/view.config'
-import { CAMERA, FLASH } from 'configs/device.config'
+import { ACTION } from 'configs/view.config'
+import { CAMERA, FLASH, DEVICE } from 'configs/device.config'
 
 import Pointing from './StreamPointing'
 import VideoTools from './MainVideoTools'
 import Fullscreen from './tools/Fullscreen'
 import shutterMixin from 'mixins/shutter'
 import toastMixin from 'mixins/toast'
+
 export default {
   name: 'MainVideo',
   mixins: [shutterMixin, toastMixin],
   components: {
     Pointing,
+    Moving: () => import('./StreamMoving'),
+    MovingViewer: () => import('./StreamMovingViewer'),
     VideoTools,
     Fullscreen,
   },
@@ -162,6 +184,9 @@ export default {
       serverTime: 0,
       serverStart: 0,
       hideFullBtn: false,
+
+      activeMovingControl: false,
+      backInterval: null,
     }
   },
   computed: {
@@ -173,9 +198,15 @@ export default {
       viewForce: 'viewForce',
       localRecordStatus: 'localRecordStatus',
       serverRecordStatus: 'serverRecordStatus',
+      view: 'view',
+      mainPanoCanvas: 'mainPanoCanvas',
+      screenSharing: 'screenSharing',
     }),
     isLeader() {
       return this.account.roleType === ROLE.LEADER
+    },
+    isFITT360() {
+      return this.mainView.deviceType === DEVICE.FITT360
     },
     resolution() {
       const idx = this.resolutions.findIndex(
@@ -214,13 +245,17 @@ export default {
       }
     },
     allowTools() {
+      if (this.mainView.screenShare) {
+        return false
+      }
       if (
         this.viewForce === true &&
         this.account.roleType === ROLE.LEADER &&
         this.viewAction !== ACTION.STREAM_POINTING
       ) {
         if (
-          this.mainView.flash === FLASH.FLASH_NONE &&
+          (this.mainView.flash === FLASH.FLASH_NONE ||
+            this.mainView.flash === 'default') &&
           this.mainView.zoomMax === 1
         ) {
           return false
@@ -231,10 +266,15 @@ export default {
       }
     },
     emptyStream() {
+      const validCameraStatus = this.cameraStatus !== -1
+      const cameraOff = this.cameraStatus.state === 'off'
+      const cameraBackground = this.cameraStatus.state === 'background'
+      const screenSharing = this.mainView.screenShare
+
       return (
-        this.cameraStatus !== -1 &&
-        ((this.loaded && this.cameraStatus.state === 'off') ||
-          this.cameraStatus.state === 'background')
+        validCameraStatus &&
+        ((this.loaded && cameraOff) || cameraBackground) &&
+        !screenSharing
       )
     },
   },
@@ -247,15 +287,49 @@ export default {
     },
     mainView: {
       deep: true,
-      handler(view) {
+      handler(view, oldView) {
         if (!view.id) {
           this.loaded = false
           this.$eventBus.$emit('video:loaded', false)
           const videoBox = this.$el.querySelector('.main-video__box')
           videoBox.style.height = '100%'
           videoBox.style.width = '100%'
+        } else {
+          // main view 변경
+          if (
+            view.id !== oldView.id &&
+            this.viewForce &&
+            view.flash === FLASH.FLASH_NONE
+          ) {
+            this.toastDefault(this.$t('service.flash_none'))
+          }
         }
       },
+    },
+    screenSharing(flag, oldFlag) {
+      if (!this.mainView.id) return
+      if (flag !== oldFlag) {
+        if (flag) {
+          this.$refs['mainVideo'].onresize = e => {
+            const track = this.mainView.stream.getVideoTracks()[0]
+            const settings = track.getSettings()
+            const capability = track.getCapabilities()
+            this.logger(
+              'call',
+              `resolution::${settings.width}X${settings.height}`,
+            )
+            this.debug('call::setting::', settings)
+            this.debug('call::capability::', capability)
+            this.$call.sendResolution({
+              width: settings.width,
+              height: settings.height,
+              orientation: '',
+            })
+          }
+        } else {
+          this.$refs['mainVideo'].onresize = () => {}
+        }
+      }
     },
     cameraStatus: {
       deep: true,
@@ -267,26 +341,6 @@ export default {
 
         this.$eventBus.$emit('video:loaded', status.state === 'on')
       },
-    },
-    viewForce(flag, oldFlag) {
-      if (!this.isLeader) {
-        if (flag === false && oldFlag === true) {
-          this.addChat({
-            name: this.mainView.nickname,
-            status: this.isLeader ? 'sharing-stop-leader' : 'sharing-stop',
-            type: 'system',
-          })
-        }
-        if (flag === true && oldFlag === false) {
-          this.$nextTick(() => {
-            this.addChat({
-              name: this.mainView.nickname,
-              status: this.isLeader ? 'sharing-start-leader' : 'sharing-start',
-              type: 'system',
-            })
-          })
-        }
-      }
     },
     localRecordStatus(status) {
       this.toggleLocalTimer(status)
@@ -300,11 +354,6 @@ export default {
   methods: {
     ...mapActions(['updateAccount', 'setCapture', 'addChat', 'setMainView']),
     cancelSharing() {
-      this.addChat({
-        name: this.mainView.nickname,
-        status: this.isLeader ? 'sharing-stop-leader' : 'sharing-stop',
-        type: 'system',
-      })
       this.setMainView({ force: false })
       this.$call.sendVideo(this.mainView.id, false)
     },
@@ -313,7 +362,22 @@ export default {
         this.optimizeVideoSize()
         this.loaded = true
         this.$eventBus.$emit('video:loaded', true)
+        if (this.isSafari && this.isTablet) {
+          this.checkBackgroundStream()
+        }
       })
+    },
+    checkBackgroundStream() {
+      if (this.backInterval) clearInterval(this.backInterval)
+      let lastFired = new Date().getTime()
+      let now = 0
+      this.backInterval = setInterval(() => {
+        now = new Date().getTime()
+        if (now - lastFired > 1000) {
+          this.$refs['mainVideo'].play()
+        }
+        lastFired = now
+      }, 500)
     },
     nextOptimize() {
       setTimeout(() => {
@@ -358,8 +422,16 @@ export default {
     doCapture() {
       const videoEl = this.$refs['mainVideo']
 
-      const width = videoEl.offsetWidth
-      const height = videoEl.offsetHeight
+      let width = videoEl.offsetWidth
+      let height = videoEl.offsetHeight
+
+      if (this.mainView.screenShare) {
+        const mainViewStream = this.mainView.stream
+        if (mainViewStream && mainViewStream.getVideoTracks().length > 0) {
+          width = mainViewStream.getVideoTracks()[0].getSettings().width
+          height = mainViewStream.getVideoTracks()[0].getSettings().height
+        }
+      }
 
       const tmpCanvas = document.createElement('canvas')
       tmpCanvas.width = width
@@ -367,9 +439,7 @@ export default {
 
       const tmpCtx = tmpCanvas.getContext('2d')
 
-      tmpCtx.drawImage(videoEl, 0, 0, width, height)
-
-      tmpCanvas.toBlob(blob => {
+      const canvasToBlob = blob => {
         const imgId = parseInt(
           Date.now()
             .toString()
@@ -384,7 +454,41 @@ export default {
           width,
           height,
         })
-      }, 'image/png')
+      }
+
+      if (this.isFITT360) {
+        //pano canvas -> dummy video element -> capture canvas
+        const panoCanvas = this.$refs['movingViewer'].$el.querySelector(
+          'canvas',
+        )
+
+        const videoElement = document.createElement('video')
+        const canvasStream = panoCanvas.captureStream(24)
+
+        videoElement.srcObject = canvasStream
+
+        videoElement.muted = true
+        videoElement.id = 'screen-capture-video'
+
+        videoElement.style.width = width
+        videoElement.style.height = height
+        videoElement.style.opacity = '0'
+        videoElement.style.position = 'absolute'
+        videoElement.style.zIndex = '-999999'
+
+        document.body.appendChild(videoElement)
+
+        videoElement.onloadeddata = event => {
+          tmpCtx.drawImage(videoElement, 0, 0, width, height)
+          tmpCanvas.toBlob(canvasToBlob, 'image/png')
+          videoElement.remove()
+        }
+
+        videoElement.play()
+      } else {
+        tmpCtx.drawImage(videoEl, 0, 0, width, height)
+        tmpCanvas.toBlob(canvasToBlob, 'image/png')
+      }
     },
     toggleLocalTimer(status) {
       if (status === 'START') {
@@ -430,6 +534,7 @@ export default {
     this.$eventBus.$off('showServerTimer', this.showServerTimer)
     this.$eventBus.$off('video:fullscreen', this.changeFullScreen)
     window.removeEventListener('resize', this.nextOptimize)
+    if (this.backInterval) clearInterval(this.backInterval)
   },
   created() {
     this.$eventBus.$on('capture', this.doCapture)

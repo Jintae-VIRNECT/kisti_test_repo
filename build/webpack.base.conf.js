@@ -17,6 +17,7 @@ const config = mode => {
       filename: 'assets/scripts/[name].js',
       path: resolve(__dirname, '../dist'),
       publicPath: '/',
+      chunkFilename: 'assets/scripts/chunks/[id].js',
     },
     resolve: {
       extensions: ['.js', '.vue', '.json'],
@@ -36,7 +37,9 @@ const config = mode => {
         api: join(__dirname, '../src/api'),
         utils: join(__dirname, '../src/utils'),
         static: join(__dirname, '../static'),
+        process: 'process/browser',
       },
+      fallback: { path: require.resolve('path-browserify') },
     },
     module: {
       rules: [
@@ -46,7 +49,12 @@ const config = mode => {
         },
         {
           test: /\.js$/,
-          use: 'babel-loader',
+          use: {
+            loader: 'babel-loader',
+            options: {
+              presets: [['@babel/preset-env', { targets: 'defaults' }]],
+            },
+          },
           exclude: /node_modules/,
         },
         {

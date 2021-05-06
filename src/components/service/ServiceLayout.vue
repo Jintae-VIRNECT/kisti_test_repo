@@ -16,7 +16,9 @@
       >
         <transition name="main">
           <stream-view
-            :class="{ hide: currentView !== 'stream' }"
+            :class="{
+              hide: currentView !== 'stream' && currentView !== 'screen',
+            }"
           ></stream-view>
         </transition>
         <transition name="main">
@@ -33,12 +35,7 @@
         </transition>
       </main>
 
-      <user-list
-        :class="{
-          shareview: isLeader && currentView === 'drawing',
-          fullscreen: isVideoLoaded && isFullScreen && currentView === 'stream',
-        }"
-      ></user-list>
+      <user-list :class="userListClass"></user-list>
       <!-- <div v-else>
         <figure
           v-for="participant of participants"
@@ -57,7 +54,7 @@
     </div>
     <reconnect-modal :visible.sync="connectVisible"></reconnect-modal>
     <setting-modal></setting-modal>
-    <record-list></record-list>
+    <record-list v-if="useLocalRecording"></record-list>
   </section>
 </template>
 
@@ -113,7 +110,15 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['view', 'captureFile', 'chatBox', 'myInfo', 'video']),
+    ...mapGetters([
+      'view',
+      'captureFile',
+      'chatBox',
+      'myInfo',
+      'video',
+      'restrictedRoom',
+      'useLocalRecording',
+    ]),
     isLeader() {
       return this.account.roleType === ROLE.LEADER
     },
@@ -126,6 +131,15 @@ export default {
         return 'ar'
       }
       return ''
+    },
+    userListClass() {
+      return {
+        shareview: this.isLeader && this.currentView === 'drawing',
+        fullscreen:
+          this.isVideoLoaded &&
+          this.isFullScreen &&
+          (this.currentView === 'stream' || this.currentView === 'screen'),
+      }
     },
   },
 
@@ -248,6 +262,12 @@ export default {
 
     this.$eventBus.$off('video:fullscreen', this.setFullScreen)
     this.$eventBus.$off('video:loaded', this.setVideoLoaded)
+  },
+
+  mounted() {
+    if (this.restrictedRoom) {
+      this.toastDefault(this.$t('service.toast_video_restrict_mode'))
+    }
   },
 }
 </script>

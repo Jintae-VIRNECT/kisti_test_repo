@@ -1,5 +1,19 @@
 @charset "utf-8";
 
+* {
+  -ms-touch-action: pinch-zoom;
+  touch-action: pinch-zoom;
+}
+
+html {
+  overscroll-behavior: none;
+  overflow: hidden;
+}
+body {
+  overscroll-behavior-y: contain;
+  height: 100%;
+}
+
 @import "common";
 @import "transition";
 @import "./plugin/material-icons";
@@ -16,5 +30,5 @@
 @import "./service/service-drawing";
 @import "./service/service-share";
 
-@import "./service/service-localRecordSetting";
+@import "./service/service-setting";
 @import "./service/service-selectview";

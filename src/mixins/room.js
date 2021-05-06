@@ -20,7 +20,6 @@ export default {
         if (this.clicked === true) return
         this.clicked = true
 
-        this.setRoomInfo(room)
         let role
         if (room.sessionType === ROOM_STATUS.PRIVATE) {
           let myInfo = room.memberList.find(
@@ -39,6 +38,11 @@ export default {
           deviceType: DEVICE.WEB,
           sessionId: room.sessionId,
           workspaceId: this.workspace.uuid,
+        })
+        this.setRoomInfo({
+          ...room,
+          audioRestrictedMode: res.audioRestrictedMode,
+          videoRestrictedMode: res.videoRestrictedMode,
         })
 
         const joinRtn = await this.$call.connect(res, role, options)
@@ -77,6 +81,13 @@ export default {
             return false
           } else if (err.code === 4016) {
             this.toastError(this.$t('workspace.remote_already_invite'))
+            return false
+          } else if (err.code === 4021) {
+            this.toastError(
+              this.$t('workspace.remote_access_overflow', {
+                num: room.maxUserCount,
+              }),
+            )
             return false
           }
         }

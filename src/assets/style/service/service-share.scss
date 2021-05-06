@@ -296,6 +296,11 @@ $share_savebtn_height: 2.929rem;
   width: calc(100% - 2.857rem);
   min-height: 2.143rem;
   margin: 1.429rem;
+  > .tooltip .tooltiptext p {
+    white-space: pre-wrap;
+    text-overflow: unset;
+    line-break: anywhere;
+  }
 }
 .share-body__backbutton-text {
   width: 100%;

@@ -11,13 +11,14 @@ const configService = require('../server/config')
 const translate = require('../translate/translate')
 const stt = require('../translate/stt')
 const tts = require('../translate/tts')
-// const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin
+// const BundleAnalyzerPlugin = require('webpack-bundle-analyzer')
+//   .BundleAnalyzerPlugin
 
 const mode = 'development'
 
 const localWebpackConfig = merge(baseWebpackConfig(mode), {
   mode,
-  devtool: 'cheap-module-eval-source-map',
+  devtool: 'eval-cheap-module-source-map',
   devServer: {
     https: {
       key: fs.readFileSync(path.join(__dirname, '../ssl/virnect.key')),
@@ -70,10 +71,10 @@ const localWebpackConfig = merge(baseWebpackConfig(mode), {
     noInfo: true,
     open: false,
     before: function(app) {
-      var bodyParser = require('body-parser')
+      var express = require('express')
       configService.init()
       app.use(
-        bodyParser.json({
+        express.json({
           limit: '50mb',
         }),
       )
@@ -81,12 +82,12 @@ const localWebpackConfig = merge(baseWebpackConfig(mode), {
         res.send(200)
       })
 
-      app.post('/logs', bodyParser.json(), function(req, res) {
+      app.post('/logs', express.json(), function(req, res) {
         logger.log(req.body.data, 'CONSOLE')
         res.send(true)
       })
 
-      app.get('/configs', bodyParser.json(), function(req, res) {
+      app.get('/configs', express.json(), function(req, res) {
         const a = configService.getConfigs()
         a.console = '/account'
         a.runtime = 'local'
@@ -97,7 +98,7 @@ const localWebpackConfig = merge(baseWebpackConfig(mode), {
         res.sendFile(path.join(__dirname, '../static/js/pdf.worker.js'))
       })
 
-      app.post('/translate', bodyParser.json(), function(req, res) {
+      app.post('/translate', express.json(), function(req, res) {
         const text = req.body.text
         const target = req.body.target
         translate.getTranslate(text, target).then(value => {
@@ -105,7 +106,7 @@ const localWebpackConfig = merge(baseWebpackConfig(mode), {
         })
       })
 
-      app.post('/stt', bodyParser.json(), function(req, res) {
+      app.post('/stt', express.json(), function(req, res) {
         const file = req.body.file
         const lang = req.body.lang
         const rateHertz = req.body.rateHertz
@@ -115,7 +116,7 @@ const localWebpackConfig = merge(baseWebpackConfig(mode), {
         })
       })
 
-      app.post('/tts', bodyParser.json(), function(req, res) {
+      app.post('/tts', express.json(), function(req, res) {
         const text = req.body.text
         const lang = req.body.lang
         const voice = req.body.voice
@@ -156,9 +157,9 @@ const localWebpackConfig = merge(baseWebpackConfig(mode), {
     }),
 
     // new BundleAnalyzerPlugin({
-    //     analyzerHost: '127.0.0.1',
-    //     analyzerPort: 8887
-    // })
+    //   analyzerHost: '127.0.0.1',
+    //   analyzerPort: 8887,
+    // }),
   ],
 })
 

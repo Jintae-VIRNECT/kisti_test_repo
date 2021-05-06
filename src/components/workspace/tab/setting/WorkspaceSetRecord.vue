@@ -123,6 +123,9 @@ export default {
     },
   },
   watch: {
+    recordResolution(time) {
+      this.setRecResolution(time)
+    },
     recordTime(time) {
       this.setRecLength(time)
     },
@@ -136,19 +139,19 @@ export default {
       this.setRecord({
         resolution: resolution,
       })
-      this.$localStorage.setRecord('resolution', resolution)
+      window.myStorage.setItemPiece('recordInfo', 'resolution', resolution)
     },
     setRecLength(time) {
       this.setRecord({
         time: time,
       })
-      this.$localStorage.setRecord('time', time)
+      window.myStorage.setItemPiece('recordInfo', 'time', time)
     },
     setRecInterval(newInterval) {
       this.setRecord({
         interval: newInterval,
       })
-      this.$localStorage.setRecord('interval', newInterval)
+      window.myStorage.setItemPiece('recordInfo', 'interval', newInterval)
     },
   },
   created() {

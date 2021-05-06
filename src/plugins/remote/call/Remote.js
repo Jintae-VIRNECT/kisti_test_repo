@@ -9,6 +9,8 @@ import {
   VIDEO,
   AR_FEATURE,
   FILE,
+  CONTROL,
+  LINKFLOW,
 } from 'configs/remote.config'
 import { URLS, setRecordInfo } from 'configs/env.config'
 import {
@@ -18,7 +20,6 @@ import {
 } from 'configs/device.config'
 import { logger, debug } from 'utils/logger'
 import { wsUri } from 'api/gateway/api'
-import { checkInput } from 'utils/deviceCheck'
 
 let OV
 
@@ -32,20 +33,25 @@ const _ = {
   resolution: null,
   currentZoomLevel: 1,
   maxZoomLevel: 1,
-  openRoom: false,
+
+  configs: null,
+  options: null,
+
   /**
    * join session
    * @param {Object} configs {coturn, wss, token}
    * @param {String} role remote.config.ROLE
    */
-  connect: async (configs, role, options, open = false) => {
+  connect: async (configs, role, options) => {
     try {
       _.account = Store.getters['account']
-      _.openRoom = open
 
       Store.commit('callClear')
       OV = new OpenVidu()
-      if (process.env.NODE_ENV === 'production') {
+      if (
+        process.env.NODE_ENV === 'production' &&
+        !(window.env && window.env === 'develop')
+      ) {
         OV.enableProdMode()
       }
       if (!_.session) {
@@ -59,13 +65,20 @@ const _ = {
         deviceType: DEVICE.WEB,
       }
 
-      const iceServers = configs.coturn || URLS['coturn']
+      // const iceServers = URLS.coturn
+      let ws = configs.wss || `${URLS['ws']}${wsUri['REMOTE']}`
+      // const ws = 'wss://192.168.6.3:8000/remote/websocket'
+      if (URLS['coturnUrl']) {
+        for (let config of configs.coturn) {
+          config.url = URLS['coturnUrl']
+        }
+        ws = `${URLS['ws']}${wsUri['REMOTE']}` || configs.wss
+      }
+
+      const iceServers = configs.coturn
       for (let ice of iceServers) {
         ice['urls'] = ice['url']
       }
-      // const iceServers = URLS.coturn
-      const ws = configs.wss || `${URLS['wsapi']}${wsUri['REMOTE']}`
-      // const ws = 'wss://192.168.6.3:8000/remote/websocket'
 
       setRecordInfo({
         token: configs['token'],
@@ -78,6 +91,18 @@ const _ = {
       }
       debug('coturn::', iceServers)
 
+      if (configs.audioRestrictedMode || configs.videoRestrictedMode) {
+        Store.commit('setRestrictedMode', true)
+        Store.dispatch('setDevices', {
+          video: {
+            isOn: false,
+          },
+          audio: {
+            isOn: false,
+          },
+        })
+      }
+
       const connectOption = {
         iceServers,
         wsUri: ws,
@@ -86,22 +111,30 @@ const _ = {
 
       await _.session.connect(
         configs.token,
-        JSON.stringify(metaData),
         connectOption,
+        JSON.stringify(metaData),
       )
 
       Store.dispatch('updateAccount', {
         roleType: role,
       })
+
       _.account.roleType = role
+      _.configs = configs
+      _.options = options
+
       if (options !== false) {
         const settingInfo = Store.getters['settingInfo']
 
         const publishOptions = {
-          audioSource: options.audioSource,
-          videoSource: options.videoSource,
-          publishAudio: settingInfo.micOn,
-          publishVideo: settingInfo.videoOn,
+          // audioSource: options.audioSource,
+          // videoSource: options.videoSource,
+          audioSource: options ? options.audioSource : false,
+          videoSource: options ? options.videoSource : false,
+          publishAudio: configs.audioRestrictedMode ? false : settingInfo.micOn,
+          publishVideo: configs.videoRestrictedMode
+            ? false
+            : settingInfo.videoOn,
           resolution: settingInfo.quality,
           // resolution: '1920x1080', // FHD
           // resolution: '3840x2160', // 4K
@@ -135,20 +168,25 @@ const _ = {
           logger('room', 'publish success')
           debug('publisher stream :: ', _.publisher.stream)
           const mediaStream = _.publisher.stream.mediaStream
-          Store.commit('updateParticipant', {
+
+          const participantInfo = {
             connectionId: _.publisher.stream.connection.connectionId,
             stream: mediaStream,
             hasVideo: _.publisher.stream.hasVideo,
             hasCamera: _.publisher.stream.hasVideo,
             hasAudio: _.publisher.stream.hasAudio,
-            video: settingInfo.videoOn,
+            video: _.publisher.stream.videoActive, // settingInfo.videoOn,
             audio: _.publisher.stream.audioActive,
             cameraStatus: _.publisher.stream.hasVideo
-              ? settingInfo.videoOn
+              ? configs.videoRestrictedMode
+                ? CAMERA_STATUS.CAMERA_OFF
+                : _.publisher.stream.videoActive
                 ? CAMERA_STATUS.CAMERA_ON
                 : CAMERA_STATUS.CAMERA_OFF
               : CAMERA_STATUS.CAMERA_NONE,
-          })
+          }
+
+          Store.commit('updateParticipant', participantInfo)
           if (_.publisher.stream.hasVideo) {
             const track = mediaStream.getVideoTracks()[0]
             const settings = track.getSettings()
@@ -177,42 +215,16 @@ const _ = {
               height: settings.height,
               orientation: '',
             })
-          } else if (_.openRoom) {
-            checkInput({ video: true, audio: false }).then(hasCamera => {
-              const params = {
-                connectionId: _.publisher.stream.connection.connectionId,
-                hasAudio: true,
-              }
-              if (!hasCamera) {
-                params.cameraStatus = CAMERA_STATUS.CAMERA_NONE
-                params.hasCamera = false
-                // _.changeProperty(true)
-              } else {
-                params.cameraStatus = CAMERA_STATUS.CAMERA_OFF
-                params.hasCamera = true
-              }
-              Store.commit('updateParticipant', params)
-              // _.sendCamera(
-              //   !hasCamera ? CAMERA_STATUS.CAMERA_NONE : CAMERA_STATUS.CAMERA_OFF,
-              // )
-            })
           }
         })
 
         _.session.publish(_.publisher)
       } else {
-        Store.commit('updateParticipant', {
-          connectionId: _.connectionId,
-          cameraStatus: CAMERA_STATUS.CAMERA_NONE,
-          hasVideo: false,
-          hasAudio: false,
-          video: false,
-          audio: false,
-        })
+        updateParticipantEmpty(_.connectionId)
       }
       return true
     } catch (err) {
-      console.err(err)
+      console.error(err)
       throw err
     }
   },
@@ -342,6 +354,24 @@ const _ = {
   },
   /**
    * @BROADCATE
+   * @TARGET
+   * other user's pointing, recording control
+   * @param {String} type = remote.config.CONTROL
+   */
+  sendControlRestrict: (device, enable, target = null) => {
+    const params = {
+      type: CONTROL.RESTRICTED_MODE,
+      target: device,
+      enable,
+    }
+    _.session.signal({
+      data: JSON.stringify(params),
+      to: target,
+      type: SIGNAL.CONTROL,
+    })
+  },
+  /**
+   * @BROADCATE
    * AR feature status
    * @param {String} type = remote.config.AR_FEATURE
    */
@@ -420,15 +450,22 @@ const _ = {
    * @TARGET
    * my video stream control
    * @param {Boolean, String} status CAMERA_STATUS
+   * @param {Boolean} publish video publish 여부. 기본값 true
    */
-  sendCamera: (status = CAMERA_STATUS.CAMERA_NONE, target = null) => {
+  sendCamera: (
+    status = CAMERA_STATUS.CAMERA_NONE,
+    target = null,
+    publish = true,
+  ) => {
     if (!_.publisher) return
     // if (!_.publisher.stream.hasVideo) return
     if (
       status === CAMERA_STATUS.CAMERA_ON ||
       status === CAMERA_STATUS.CAMERA_OFF
     ) {
-      _.publisher.publishVideo(status === CAMERA_STATUS.CAMERA_ON)
+      if (publish) {
+        _.publisher.publishVideo(status === CAMERA_STATUS.CAMERA_ON)
+      }
     }
 
     const params = {
@@ -454,7 +491,6 @@ const _ = {
    * @param {Boolean} active
    */
   sendMic: (active, target = null) => {
-    // if (_.openRoom) return
     if (_.publisher) {
       _.publisher.publishAudio(active)
     }
@@ -480,7 +516,9 @@ const _ = {
    */
   sendSpeaker: (active, target = null) => {
     for (let subscriber of _.subscribers) {
-      subscriber.subscribeToAudio(active)
+      if (subscriber.stream && subscriber.stream.mediaStream) {
+        subscriber.subscribeToAudio(active)
+      }
     }
     const params = {
       isOn: active,
@@ -548,6 +586,30 @@ const _ = {
     })
   },
   /**
+   * 현재 전체 공유중인 360 스트림의 제어 정보를 전송
+   * @BROADCATE
+   * @TARGET
+   * @param {Object} info 제어정보(yaw, pitch)
+   */
+  sendPanoRotation: info => {
+    const params = {
+      type: LINKFLOW.ROTATION,
+      yaw: info.yaw,
+      pitch: info.pitch,
+      //fov:fov.pitch - 차후 fov 필요하면 전달
+    }
+    if (info.origin) {
+      params.origin = info.origin
+    }
+
+    _.session.signal({
+      data: JSON.stringify(params),
+      to: null,
+      type: SIGNAL.LINKFLOW,
+    })
+  },
+
+  /**
    * @BROADCATE
    * @TARGET
    * user's speaker mute
@@ -581,6 +643,22 @@ const _ = {
       return
     }
     _.session.forceDisconnect(_.subscribers[idx].stream.connection)
+  },
+  /**
+   * 화면 공유 여부
+   * @param {Boolean} enable 화면 공유 기능 중단 여부 true, false
+   * @param {Array[String]} target 신호를 보낼 대상 커넥션 id String 배열
+   */
+  sendScreenSharing: (enable, target = null) => {
+    const params = {
+      type: VIDEO.SCREEN_SHARE,
+      enable: enable,
+    }
+    _.session.signal({
+      type: SIGNAL.VIDEO,
+      to: target,
+      data: JSON.stringify(params),
+    })
   },
   getState: () => {
     if (_.publisher) {
@@ -625,6 +703,188 @@ const _ = {
       _.session.off(type, func)
     }
   },
+  /**
+   * 현재 자신의 비디오 트랙을 교체할 비디오 트랙으로 변경
+   *
+   * @param {MediaStreamTrack} track 교체할 비디오 트랙
+   * @param {MediaStream} originStream 보존할 원래 스트림
+   */
+  async replaceTrack(track) {
+    // if (originStream) {
+    //   Store.commit('setMyTempStream', originStream.clone())
+    // }
+    await _.publisher.replaceTrack(track)
+    await new Promise(resolve => setTimeout(resolve, 200))
+    const settings = track.getSettings()
+    const capability = track.getCapabilities()
+    logger('call', `resolution::${settings.width}X${settings.height}`)
+    debug('call::setting::', settings)
+    debug('call::capability::', capability)
+    if ('zoom' in capability) {
+      track.applyConstraints({
+        advanced: [{ zoom: capability['zoom'].min }],
+      })
+      _.maxZoomLevel = parseInt(capability.zoom.max / capability.zoom.min)
+      _.minZoomLevel = parseInt(capability.zoom.min)
+    }
+    // _.sendCamera(
+    //   options.videoSource !== false
+    //     ? settingInfo.videoOn
+    //       ? CAMERA_STATUS.CAMERA_ON
+    //       : CAMERA_STATUS.CAMERA_OFF
+    //     : CAMERA_STATUS.CAMERA_NONE,
+    // )
+    _.sendResolution({
+      width: settings.width,
+      height: settings.height,
+      orientation: '',
+    })
+  },
+
+  /**
+   * 주어진 비디오 트랙으로 기존 publisher를 초기화하고 다시
+   * initPublisher를 실행.
+   *
+   * @param {MediaStreamTrack} videoTrack 교체할 비디오 트랙
+   */
+  async rePublish({ videoSource = false, audioSource }) {
+    try {
+      const settingInfo = Store.getters['settingInfo']
+
+      if (videoSource || audioSource) {
+        const publishOptions = {
+          audioSource: audioSource,
+          videoSource: videoSource,
+          publishAudio: _.configs.audioRestrictedMode
+            ? false
+            : settingInfo.micOn,
+          publishVideo: videoSource ? true : false,
+          resolution: settingInfo.quality,
+          // resolution: '1920x1080', // FHD
+          // resolution: '3840x2160', // 4K
+          frameRate: 30,
+          insertMode: 'PREPEND',
+          mirror: false,
+        }
+        debug('call::republish::', publishOptions)
+
+        const tempPublisher = OV.initPublisher('', publishOptions)
+        tempPublisher.onIceStateChanged(state => {
+          if (['failed', 'disconnected', 'closed'].includes(state)) {
+            Store.commit('updateParticipant', {
+              connectionId: tempPublisher.stream.connection.connectionId,
+              status: 'disconnected',
+            })
+          } else if (['connected', 'completed'].includes(state)) {
+            Store.commit('updateParticipant', {
+              connectionId: tempPublisher.stream.connection.connectionId,
+              status: 'good',
+            })
+          } else {
+            Store.commit('updateParticipant', {
+              connectionId: tempPublisher.stream.connection.connectionId,
+              status: 'normal',
+            })
+          }
+          logger('ice state change', state)
+        })
+        tempPublisher.on('streamCreated', () => {
+          logger('room', 'republish success')
+          debug('republisher stream :: ', tempPublisher.stream)
+          const mediaStream = tempPublisher.stream.mediaStream
+
+          const participantInfo = {
+            connectionId: tempPublisher.stream.connection.connectionId,
+            stream: mediaStream,
+            hasVideo: tempPublisher.stream.hasVideo,
+            // hasCamera: tempPublisher.stream.hasVideo,
+            hasAudio: tempPublisher.stream.hasAudio,
+            video: tempPublisher.stream.videoActive, // settingInfo.videoOn,
+            audio: tempPublisher.stream.audioActive,
+            cameraStatus: tempPublisher.stream.hasVideo
+              ? _.configs.videoRestrictedMode
+                ? CAMERA_STATUS.CAMERA_OFF
+                : tempPublisher.stream.videoActive
+                ? CAMERA_STATUS.CAMERA_ON
+                : CAMERA_STATUS.CAMERA_OFF
+              : CAMERA_STATUS.CAMERA_NONE,
+          }
+
+          Store.commit('updateParticipant', participantInfo)
+          _.sendCamera(
+            tempPublisher.stream.hasVideo
+              ? CAMERA_STATUS.CAMERA_ON
+              : CAMERA_STATUS.CAMERA_NONE,
+          )
+          if (tempPublisher.stream.hasVideo) {
+            const track = mediaStream.getVideoTracks()[0]
+            const settings = track.getSettings()
+            const capability = track.getCapabilities()
+            logger('call', `resolution::${settings.width}X${settings.height}`)
+            debug('call::setting::', settings)
+            debug('call::capability::', capability)
+            if ('zoom' in capability) {
+              track.applyConstraints({
+                advanced: [{ zoom: capability['zoom'].min }],
+              })
+              _.maxZoomLevel = parseInt(
+                capability.zoom.max / capability.zoom.min,
+              )
+              _.minZoomLevel = parseInt(capability.zoom.min)
+            }
+
+            _.sendResolution({
+              width: settings.width,
+              height: settings.height,
+              orientation: '',
+            })
+          }
+        })
+
+        if (_.publisher) {
+          await _.session.unpublish(_.publisher)
+          _.publisher = null
+        }
+
+        _.publisher = tempPublisher
+        _.session.publish(_.publisher)
+      } else {
+        //republish 과정에서 비디오, 마이크가 없는경우
+        if (_.publisher) {
+          await _.session.unpublish(_.publisher)
+          _.publisher = null
+        }
+
+        const mainView = Store.getters['mainView']
+
+        if (mainView.connectionId === _.connectionId) {
+          Store.commit('clearMainView', _.connectionId)
+        }
+
+        updateParticipantEmpty(_.connectionId)
+      }
+
+      return true
+    } catch (err) {
+      console.error(err)
+      throw err
+    }
+  },
+}
+
+/**
+ * 특정 participant정보를 false 및 CAMERA_STATUS.NONE 으로 업데이트
+ * @param {String} connectionId 커넥션 id
+ */
+const updateParticipantEmpty = connectionId => {
+  Store.commit('updateParticipant', {
+    connectionId: connectionId,
+    cameraStatus: CAMERA_STATUS.CAMERA_NONE,
+    hasVideo: false,
+    hasAudio: false,
+    video: false,
+    audio: false,
+  })
 }
 
 export const addSubscriber = subscriber => {

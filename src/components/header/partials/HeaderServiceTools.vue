@@ -39,15 +39,17 @@ export default {
     Chat,
   },
   data() {
-    return {}
+    return {
+      hideStream: false,
+    }
   },
   computed: {
-    ...mapGetters(['myInfo']),
+    ...mapGetters(['myInfo', 'screenSharing']),
     hasVideo() {
       if (this.$route.name === 'workspace') {
         return true
       }
-      return !!this.myInfo.hasVideo
+      return !!this.myInfo.hasCamera
     },
     hasAudio() {
       if (this.$route.name === 'workspace') {
@@ -64,6 +66,16 @@ export default {
       } catch (err) {
         this.$router.push({ name: 'workspace' })
       }
+    },
+    /**
+     * @TODO store 체크로 수정 예정
+     *
+     * 현재 내 카메라가 없으나 화면 공유를 위해
+     * 활성화 되는 카메라를 숨기기 위한 코드
+     * @param {Boolean} flag 플래그값
+     */
+    toggleStream(flag) {
+      this.hideStream = flag
     },
   },
 

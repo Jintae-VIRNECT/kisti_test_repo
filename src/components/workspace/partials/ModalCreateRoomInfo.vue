@@ -135,6 +135,11 @@ export default {
     reset() {
       this.title = `${this.shortName}'s Room`
       this.description = ''
+      if (this.roomInfo && this.roomInfo.title) {
+        this.title = this.roomInfo.title
+        this.description = this.roomInfo.description
+        this.imageURL = this.roomInfo.profile
+      }
     },
     async startRemote() {
       if (this.btnDisabled) {
