@@ -1,30 +1,19 @@
 package com.virnect.serviceserver.test.unit;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import com.virnect.data.dao.SessionType;
-import com.virnect.service.dto.LanguageCode;
-import com.virnect.service.dto.service.response.CompanyInfoResponse;
-import com.virnect.serviceserver.utils.JsonUtil;
+import com.virnect.data.domain.session.SessionType;
+import com.virnect.serviceserver.serviceremote.dto.response.company.CompanyInfoResponse;
+import com.virnect.serviceserver.serviceremote.dto.constraint.LanguageCode;
+import com.virnect.serviceserver.infra.utils.JsonUtil;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
-import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.io.Resource;
-import org.springframework.core.io.ResourceLoader;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.support.AnnotationConfigContextLoader;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.List;
 
 //@TestPropertySource(locations = "classpath:application.properties")
 @RunWith(SpringJUnit4ClassRunner.class)

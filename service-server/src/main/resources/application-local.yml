@@ -1,0 +1,125 @@
+spring:
+    application:
+        name: remote-service-server-local
+    profiles: local
+    main:
+        allow-bean-definition-overriding: true
+    datasource:
+        driver-class-name: com.mysql.cj.jdbc.Driver
+        url: jdbc:mysql://192.168.6.3:4336/remote?serverTimezone=UTC&characterEncoding=UTF-8
+        username: virnect-remote2
+        password: virnect1234
+
+    jpa:
+        database: mysql
+        database-platform: org.hibernate.dialect.MySQL5InnoDBDialect
+        generate-ddl: true
+        hibernate:
+            ddl-auto: validate
+        properties:
+            hibernate:
+                format_sql: true
+                use_sql_comments: false
+        show-sql: true
+
+eureka:
+    client:
+        enabled: false
+        registry-fetch-interval-seconds: 3
+        service-url:
+        defaultZone: http://localhost:8761/eureka
+    instance:
+        prefer-ip-address: true
+
+cloud:
+    loadbalancer:
+        ribbon:
+            enabled: true
+
+feign:
+    okhttp:
+        enabled: true
+    httpclient:
+        enabled: false
+        disable-ssl-validation: true
+    hystrix:
+        enabled: true
+    license-prefix: license-server
+    workspace-prefix: workspace-server
+    user-prefix: user-server
+    message-prefix: message-server
+    remote-prefix: remote-service-server
+    record-prefix: remote-record-server
+    license-url: http://192.168.6.3:8632
+    workspace-url: http://192.168.6.3:8082
+    user-url: http://192.168.6.3:8081
+    message-url: http://192.168.6.3:8084
+    remote-url: http://192.168.6.3:8000
+    record-url: https://192.168.6.3:8083
+
+workspace-server:
+    ribbon:
+        listOfServers: http://192.168.6.3:8082
+
+user-server:
+    ribbon:
+        listOfServers: http://192.168.6.3:8081
+
+remote-record-server:
+    ribbon:
+        listOfServers: https://192.168.6.3:8083
+
+license-server:
+    ribbon:
+        listOfServers: http://192.168.6.3:8632
+
+message-server:
+    ribbon:
+        listOfServers: http://192.168.6.3:8084
+
+logging:
+    level:
+        root: info
+        org.hibernate.type.descriptor.sql: off
+
+server:
+    address: 0.0.0.0
+    ssl:
+        enabled: true
+        key-store: virnect.pfx
+        key-store-password: 123456
+        key-store-type: PKCS12
+
+service:
+    certificate_type: selfsigned
+    coturn-credential: remote
+    coturn-mysql-connect-timeout: 100
+    coturn-mysql-dbname: coturn
+    coturn-mysql-ip: 192.168.6.3:4336
+    coturn-mysql-password: virnect1234
+    coturn-mysql-username: virnect-coturn
+    coturn-name: remot
+    coturn-uris-conference: '["turn:192.168.6.3:3478"]'
+    coturn-uris-streaming: '[]'
+    domain_or_public_ip: 192.168.13.36
+    https_port: 8000
+    kms-uris-conference: '["ws://192.168.6.3:8888/kurento"]'
+    kms-uris-streaming: '[]'
+    policy-location: '"policy/privateServicePolicy.json"'
+    wss: wss://192.168.13.36:8000
+
+storage:
+    enabled: true
+    serverUrl: https://192.168.6.3:2838
+    access-key: virnect
+    secret-key: Qjsprxm13@$
+    bucket-name: virnect-remote
+    bucket-file-name: file
+    bucket-profile-name: profile
+    bucket-record-name: record
+    policy-enabled: true
+    policy-lifecycle:
+    policy-location: ""
+
+hystrix:
+    command.default.execution.isolation.thread.timeoutInMilliseconds: 10000

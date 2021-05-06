@@ -1,0 +1,14 @@
+dependencies {
+    testImplementation 'junit:junit:4.12'
+    //============================ MEDIA SERVER DEPENDENCIES ===========================================//
+    api project(":service-client")
+    api project(":service-java-client")
+    api 'org.kurento:kurento-jsonrpc-server:6.14.0'
+    api 'org.kurento:kurento-client:6.14.0'
+    api 'com.google.code.gson:gson:2.8.6'
+
+
+    implementation("com.github.docker-java:docker-java:3.1.5")
+    implementation("org.codehaus.janino:janino:3.1.0")
+    implementation("org.apache.commons:commons-lang3:3.10")
+}
