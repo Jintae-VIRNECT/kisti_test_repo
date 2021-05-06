@@ -1,13 +1,13 @@
 RELEASE
 
 New Features
-다운로드 센터 디바이스 이름 영문 변환 적용
+- 없음
 
 Bug Fixes
-없음
+- production 다운로드센터에서 리모트 모바일, 뷰 모바일 구글 앱스토어 링크로 변환
 
 Limitation
-없음
+- 없음
 
 
 Copyright (C) 2020, VIRNECT CO., LTD. - All Rights Reserved

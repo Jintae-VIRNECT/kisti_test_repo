@@ -28,6 +28,8 @@ logging:
 ## Server Configuration
 server:
   port: 8086
+  tomcat:
+    redirect-context-root:
 
 ## Project Configuration
 file:
@@ -72,3 +74,7 @@ minio:
   server: "https://192.168.6.3:2838"
   bucket: "virnect-download"
   bucket-resource: "app"
+
+app-store:
+  view-mobile: "https://play.google.com/store/apps/details?id=com.VIRNECT.VIRNECTView"
+  remote-mobile: "https://play.google.com/store/apps/details?id=com.virnect.remote.mobile2"

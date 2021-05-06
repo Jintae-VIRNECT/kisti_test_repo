@@ -1,20 +1,28 @@
 package com.virnect.download.application;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
+import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.env.Environment;
+import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
+
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+
 import com.virnect.download.dao.AppRepository;
 import com.virnect.download.domain.App;
 import com.virnect.download.dto.response.AppInfoListResponse;
 import com.virnect.download.dto.response.AppInfoResponse;
 import com.virnect.download.exception.DownloadException;
 import com.virnect.download.global.error.ErrorCode;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.modelmapper.ModelMapper;
-import org.springframework.core.env.Environment;
-import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
-
-import java.util.*;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -22,7 +30,12 @@ import java.util.stream.Collectors;
 public class DownloadService {
     private final AppRepository appRepository;
     private final ModelMapper modelMapper;
-    private final Environment environment;;
+    private final Environment environment;
+
+    @Value("${app-store.view-mobile}")
+    private String appStoreViewMobile;
+    @Value("${app-store.remote-mobile}")
+    private String appStoreRemoteMobile;
 
 
     //TODO: 응답 데이터 수정필요,,
@@ -52,10 +65,10 @@ public class DownloadService {
             optionalApp.ifPresent(app -> {
                 AppInfoResponse appInfoResponse = modelMapper.map(app, AppInfoResponse.class);
                 if(environment.getActiveProfiles()[0].equals("production") && app.getDevice().getProduct().getName().equals("REMOTE") &&app.getDevice().getType().equals("MOBILE")){
-                    appInfoResponse.setAppUrl("https://play.google.com/store/apps/details?id=com.virnect.remote.mobile2");
+                    appInfoResponse.setAppUrl(appStoreRemoteMobile);
                 }
                 if(environment.getActiveProfiles()[0].equals("production") && app.getDevice().getProduct().getName().equals("VIEW") &&app.getDevice().getType().equals("MOBILE")){
-                    appInfoResponse.setAppUrl("https://play.google.com/store/apps/details?id=com.VIRNECT.VIRNECTView");
+                    appInfoResponse.setAppUrl(appStoreViewMobile);
                 }
                 appInfoResponse.setDeviceType(app.getDevice().getTypeDescription());
                 if (StringUtils.hasText(locale.getLanguage()) && locale.getLanguage().equalsIgnoreCase("en")) {
