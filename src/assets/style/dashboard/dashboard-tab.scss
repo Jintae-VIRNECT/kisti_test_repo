@@ -96,7 +96,8 @@
   top: 1.0714rem;
   right: 0rem;
   display: flex;
-  width: 7.7143rem;
+  // width: 7.7143rem;
+  max-width: 11rem;
   height: 3rem;
   padding: 0.5rem 0.7857rem 0.6429rem 0.7857rem;
   background: $color_white;

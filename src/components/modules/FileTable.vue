@@ -250,7 +250,10 @@ export default {
           }
         })
 
-        if (newData['expirationDate'] === this.$t('file.expired')) {
+        if (
+          newData['expirationDate'] !== undefined &&
+          newData['expirationDate'] === this.$t('file.expired')
+        ) {
           this.expiredArray.push(newData)
           return null
         } else {

@@ -59,6 +59,7 @@ module.exports = {
   getSettings() {
     // for test
     // settingConfig['ALLOW_FILE_INFO'] = false
+
     return settingConfig
   },
   getConfigs() {

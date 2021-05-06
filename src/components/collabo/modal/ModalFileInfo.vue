@@ -25,6 +25,9 @@
             <span class="table__count" v-if="fileList.length > 0">
               {{ fileList.length }}
             </span>
+            <!-- <span class="table__description" v-if="type === 'server'">{{
+              $t('file.server_record_description')
+            }}</span> -->
           </div>
 
           <div class="table__tools">

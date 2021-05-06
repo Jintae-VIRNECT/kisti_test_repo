@@ -3,7 +3,6 @@ const http = require('http')
 const path = require('path')
 const os = require('os')
 const fs = require('fs')
-// const logger = require('./logger')
 const logger = require('@virnect/logger')
 const config = require('./config')
 
@@ -97,13 +96,9 @@ var ServerModule = (function () {
     const ifaces = os.networkInterfaces()
     let result = ''
     for (const dev in ifaces) {
-      let alias = 0
-      // tslint:disable-next-line: ter-arrow-parens
       ifaces[dev].forEach(details => {
         if (details.family === 'IPv4' && !details.internal) {
           result = details.address
-          // tslint:disable-next-line: no-increment-decrement
-          ++alias
         }
       })
     }

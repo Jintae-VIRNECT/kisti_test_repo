@@ -54,7 +54,8 @@
     "expired": "Session expired",
     "download_period": "Download period",
     "upload_member": "Upload member",
-    "play":"Play"
+    "play":"Play",
+    "server_record_description" : "If the server specification is low, recording may not work properly."
   },
   "date": {
     "lastday": "[Yesterday] A",

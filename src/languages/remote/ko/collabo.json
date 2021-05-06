@@ -54,7 +54,8 @@
     "expired":"기간만료",
     "download_period":"다운로드 기간",
     "upload_member":"업로드 멤버",
-    "play":"녹화 재생"
+    "play":"녹화 재생",
+    "server_record_description" : "서버의 스펙이 낮을 경우, 녹화가 정상적으로 동작하지 않을 수 있습니다."
   },
   "date": {
     "lastday": "[어제] A",
