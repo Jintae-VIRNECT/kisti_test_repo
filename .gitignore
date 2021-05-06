@@ -3,6 +3,9 @@ node_modules
 .nuxt
 dist
 WC-Modules
+cypress/videos
+cypress/screenshots
+cypress/downloads
 
 # # local env files
 # .env.local
@@ -13,7 +16,6 @@ WC-Modules
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
-yarn.lock
 
 # Editor directories and files
 .idea

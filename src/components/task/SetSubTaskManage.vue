@@ -1,0 +1,205 @@
+<template>
+  <el-dialog
+    id="set-sub-task-manage-modal"
+    class="info-modal"
+    :visible.sync="showMe"
+    :title="$t('task.detail.dropdown.subTaskEdit')"
+    width="445px"
+    top="11vh"
+    :close-on-click-modal="false"
+  >
+    <el-row>
+      <!-- 작업 정보 -->
+      <el-col :span="24">
+        <h4>{{ $t('task.manage.taskInfo') }}</h4>
+        <el-divider />
+        <dl>
+          <dt>{{ $t('task.manage.taskName') }}</dt>
+          <dd>{{ taskName }}</dd>
+        </dl>
+        <el-form class="virnect-workstation-form">
+          <el-form-item class="horizon" :label="$t('task.manage.taskSchedule')">
+            <el-date-picker
+              v-model="taskSchedule"
+              type="datetimerange"
+              format="yyyy. MM. dd.  HH:mm"
+              disabled
+            />
+          </el-form-item>
+        </el-form>
+      </el-col>
+      <!-- 하위 작업 -->
+      <el-col :span="24">
+        <el-form
+          ref="form"
+          class="virnect-workstation-form"
+          :model="form"
+          :rules="rules"
+          :show-message="false"
+        >
+          <h4>{{ $t('task.detail.dropdown.subTaskEdit') }}</h4>
+          <el-divider />
+          <dl>
+            <dt>{{ $tc('task.manage.subTaskName', subTaskInfo.priority) }}</dt>
+            <dd>{{ subTaskInfo.subTaskName }}</dd>
+          </dl>
+          <el-form-item class="horizon" prop="schedule" required>
+            <template slot="label">
+              {{ $tc('task.manage.subTaskSchedule', subTaskInfo.priority) }}
+              <el-tooltip
+                :content="$t('task.manage.subTaskScheduleDesc')"
+                placement="right"
+              >
+                <img src="~assets/images/icon/ic-error.svg" />
+              </el-tooltip>
+            </template>
+            <el-date-picker
+              v-model="form.schedule"
+              type="datetimerange"
+              :start-placeholder="$t('task.manage.scheduleStart')"
+              :end-placeholder="$t('task.manage.scheduleEnd')"
+              format="yyyy. MM. dd.  HH:mm"
+              time-arrow-control
+              :picker-options="scheduleOption()"
+            />
+          </el-form-item>
+          <el-form-item
+            class="horizon"
+            :label="$tc('task.manage.subTaskWorker', subTaskInfo.priority)"
+            prop="worker"
+            required
+          >
+            <el-select
+              v-model="form.worker"
+              :placeholder="$t('task.manage.subTaskWorkerPlaceholder')"
+              filterable
+            >
+              <el-option
+                v-for="worker in workerList"
+                :key="worker.uuid"
+                :value="worker.uuid"
+                :label="worker.nickname"
+              />
+            </el-select>
+            <span>{{ $t('task.manage.subTaskWorkerChangeDesc') }}</span>
+          </el-form-item>
+        </el-form>
+      </el-col>
+    </el-row>
+
+    <template slot="footer">
+      <el-button @click="submit" type="primary">
+        {{ $t('common.update') }}
+      </el-button>
+    </template>
+  </el-dialog>
+</template>
+
+<script>
+import modalMixin from '@/mixins/modal'
+import workspaceService from '@/services/workspace'
+import taskService from '@/services/task'
+import dayjs from '@/plugins/dayjs'
+
+export default {
+  mixins: [modalMixin],
+  props: {
+    taskInfo: Object,
+    subTaskInfo: Object,
+  },
+  data() {
+    return {
+      taskName: '',
+      taskSchedule: [],
+      form: {
+        schedule: [],
+        worker: null,
+      },
+      rules: {
+        schedule: [{ required: true, trigger: 'change' }],
+        worker: [{ required: true, trigger: 'change' }],
+      },
+      workerList: [],
+      searchLoading: false,
+      scheduleOption() {
+        const schedule = this.taskSchedule
+        return {
+          disabledDate(time) {
+            if (!schedule.length) return false
+            const t = time.getTime()
+            const start = schedule[0].getTime()
+            const end = schedule[1].getTime()
+            return t < start || t > end
+          },
+        }
+      },
+    }
+  },
+  methods: {
+    async opened() {
+      if (!this.taskInfo) {
+        this.taskInfo = await taskService.getTaskDetail(this.subTaskInfo.taskId)
+      }
+      this.taskName = this.taskInfo.name
+      this.taskSchedule = [
+        dayjs.utc(this.taskInfo.startDate).local().toDate(),
+        dayjs.utc(this.taskInfo.endDate).local().toDate(),
+      ]
+      this.form.schedule = [
+        dayjs.utc(this.subTaskInfo.startDate).local().toDate(),
+        dayjs.utc(this.subTaskInfo.endDate).local().toDate(),
+      ]
+      this.form.worker = this.subTaskInfo.workerUUID
+      this.workerList = await workspaceService.allMembers()
+    },
+    async validate() {
+      try {
+        await this.$refs.form.validate()
+        return true
+      } catch (e) {
+        return false
+      }
+    },
+    async submit() {
+      if (!(await this.validate())) return false
+
+      const form = {
+        subTaskId: this.subTaskInfo.subTaskId,
+        startDate: dayjs.utc(this.form.schedule[0]),
+        endDate: dayjs.utc(this.form.schedule[1]),
+        workerUUID: this.form.worker,
+      }
+      try {
+        await taskService.updateSubTask(form.subTaskId, form)
+        this.$message.success({
+          message: this.$t('task.manage.message.subTaskUpdateSuccess'),
+          duration: 2000,
+          showClose: true,
+        })
+        this.$emit('updated')
+      } catch (e) {
+        this.$message.error({
+          message:
+            this.$t('task.manage.message.subTaskUpdateFail') + `\n(${e})`,
+          duration: 2000,
+          showClose: true,
+        })
+      }
+    },
+  },
+}
+</script>
+
+<style lang="scss">
+#__nuxt #set-sub-task-manage-modal {
+  .el-dialog__body {
+    .el-col:first-child,
+    .el-col:last-child {
+      padding: 0;
+    }
+  }
+  .el-dialog__footer {
+    border-top: solid 1px #edf0f7;
+  }
+}
+</style>

@@ -1,0 +1,258 @@
+<template>
+  <el-dialog
+    class="workspace-logo-modal onpremise-setting-modal"
+    :visible.sync="showMe"
+    :title="$t('workspace.onpremiseSetting.logo.title')"
+    width="440px"
+    top="11vh"
+  >
+    <div>
+      <p>{{ $t('workspace.onpremiseSetting.logo.desc') }}</p>
+
+      <div class="theme">
+        <h5>{{ $t('workspace.onpremiseSetting.logo.lightTheme') }}</h5>
+        <el-upload
+          ref="logoUpload"
+          action="#"
+          :auto-upload="false"
+          :on-change="logoImageSelected"
+          :show-file-list="false"
+        >
+          {{ $t('workspace.onpremiseSetting.favicon.upload') }}
+        </el-upload>
+      </div>
+      <div class="preview">
+        <div class="area">
+          <span class="editable">
+            <img :src="logoFile || defaultlogo" />
+          </span>
+          <span class="sub-title">
+            <el-divider direction="vertical" />
+            <VirnectThumbnail
+              :size="22"
+              :image="activeWorkspace.profile"
+              :defaultImage="$defaultWorkspaceProfile"
+            />
+            <span>{{ activeWorkspace.name }}</span>
+          </span>
+        </div>
+        <div class="tooltip">
+          {{ $t('workspace.onpremiseSetting.logo.tooltip') }}
+        </div>
+      </div>
+
+      <div class="theme">
+        <h5>{{ $t('workspace.onpremiseSetting.logo.darkTheme') }}</h5>
+        <el-upload
+          ref="whiteLogoUpload"
+          action="#"
+          :auto-upload="false"
+          :on-change="whiteLogoImageSelected"
+          :show-file-list="false"
+        >
+          {{ $t('workspace.onpremiseSetting.favicon.upload') }}
+        </el-upload>
+      </div>
+      <div class="preview dark">
+        <div class="area">
+          <span class="editable">
+            <img :src="whiteLogoFile || defaultWhiteLogo" />
+          </span>
+          <span class="sub-title">
+            <el-divider direction="vertical" />
+            <VirnectThumbnail
+              :size="22"
+              :image="activeWorkspace.profile"
+              :defaultImage="$defaultWorkspaceProfile"
+            />
+            <span>{{ activeWorkspace.name }}</span>
+          </span>
+        </div>
+        <div class="tooltip">
+          {{ $t('workspace.onpremiseSetting.logo.tooltip') }}
+        </div>
+      </div>
+
+      <p
+        class="caution"
+        v-html="$t('workspace.onpremiseSetting.logo.caution')"
+      />
+    </div>
+    <div slot="footer">
+      <el-button
+        type="text"
+        @click="deleteImage"
+        :disabled="!logoFile && !whiteLogoFile"
+      >
+        {{ $t('common.delete') }}
+      </el-button>
+      <el-button type="primary" @click="submit">
+        {{ $t('workspace.onpremiseSetting.logo.submit') }}
+      </el-button>
+    </div>
+  </el-dialog>
+</template>
+
+<script>
+import { mapGetters } from 'vuex'
+import modalMixin from '@/mixins/modal'
+import workspaceService from '@/services/workspace'
+import axios from 'axios'
+
+export default {
+  mixins: [modalMixin],
+  data() {
+    return {
+      defaultlogo: require('assets/images/logo/logo-gnb-ci.png'),
+      defaultWhiteLogo: require('assets/images/logo/logo-gnb-ci-white.png'),
+      logoFile: null,
+      whiteLogoFile: null,
+    }
+  },
+  computed: {
+    ...mapGetters({
+      activeWorkspace: 'auth/activeWorkspace',
+      logo: 'layout/logo',
+      whiteLogo: 'layout/whiteLogo',
+    }),
+  },
+  methods: {
+    opened() {
+      this.logoFile = this.logo
+      this.whiteLogoFile = this.whiteLogo
+    },
+    logoImageSelected(file) {
+      const reader = new FileReader()
+      reader.readAsDataURL(file.raw)
+      reader.onload = () => {
+        this.logoFile = reader.result
+      }
+    },
+    whiteLogoImageSelected(file) {
+      const reader = new FileReader()
+      reader.readAsDataURL(file.raw)
+      reader.onload = () => {
+        this.whiteLogoFile = reader.result
+      }
+    },
+    deleteImage() {
+      this.$refs.logoUpload.clearFiles()
+      this.$refs.whiteLogoUpload.clearFiles()
+      this.logoFile = null
+      this.whiteLogoFile = null
+    },
+    async urlToFile(url) {
+      const { data } = await axios({
+        url,
+        method: 'GET',
+        responseType: 'blob',
+      })
+      return new File([data], 'img.png', { type: data.type })
+    },
+    async submit() {
+      try {
+        const logoUploadFiles = this.$refs.logoUpload.uploadFiles
+        let logoRaw = logoUploadFiles.length
+          ? logoUploadFiles[logoUploadFiles.length - 1].raw
+          : null
+        const whiteLogoUploadFiles = this.$refs.whiteLogoUpload.uploadFiles
+        let whiteLogoRaw = whiteLogoUploadFiles.length
+          ? whiteLogoUploadFiles[whiteLogoUploadFiles.length - 1].raw
+          : null
+
+        if (!logoRaw && this.logoFile)
+          logoRaw = await this.urlToFile(this.logoFile)
+        if (!whiteLogoRaw && this.whiteLogoFile)
+          whiteLogoRaw = await this.urlToFile(this.whiteLogoFile)
+
+        await workspaceService.setWorkspaceLogo(logoRaw, whiteLogoRaw)
+        this.$store.commit('layout/SET_LOGO', {
+          logo: this.logoFile,
+          whiteLogo: this.whiteLogoFile,
+        })
+        this.showMe = false
+      } catch (e) {
+        const message =
+          {
+            3000: this.$t('common.message.notAllowFileExtension'),
+            3001: this.$t('common.message.notAllowFileSize'),
+          }[e.code] || e
+        this.$message.error({
+          message,
+          duration: 2000,
+          showClose: true,
+        })
+      }
+    },
+  },
+}
+</script>
+
+<style lang="scss">
+#__nuxt .workspace-logo-modal {
+  .theme {
+    margin-top: 28px;
+    text-align: right;
+    h5 {
+      float: left;
+      font-weight: 500;
+      font-size: 16px;
+    }
+    .el-upload {
+      color: #0052cc;
+      font-weight: 500;
+      font-size: 12px;
+    }
+  }
+  .preview {
+    height: 60px;
+
+    .area {
+      top: 6px;
+      left: 9px;
+      width: calc(100% - 20px);
+      height: 46px;
+    }
+    .tooltip {
+      top: -13px;
+      left: 9px;
+    }
+    .area > span {
+      top: 0;
+      vertical-align: middle;
+    }
+    .area > .editable {
+      display: inline-block;
+      height: 100%;
+      padding: 4px;
+      img {
+        height: 100%;
+      }
+    }
+    .sub-title .virnect-thumbnail {
+      display: inline-block;
+      margin-right: 4px;
+      vertical-align: middle;
+    }
+  }
+  .preview.dark {
+    background: #242427;
+    .area {
+      background: transparent;
+    }
+    .area:after {
+      background: linear-gradient(90deg, rgba(0, 0, 0, 0), #242427);
+    }
+    .el-divider {
+      opacity: 0.5;
+    }
+    .sub-title {
+      color: #f1f1f1;
+    }
+  }
+  .caution {
+    margin-top: 30px;
+    margin-bottom: 30px;
+  }
+}
+</style>

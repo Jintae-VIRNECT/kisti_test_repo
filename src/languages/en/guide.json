@@ -1,0 +1,46 @@
+{
+  "guide": {
+    "title": "User Guide",
+    "taskStatusGuide": {
+      "label": "User Guide for Task Status",
+      "url": "http://file.virnect.com/Guide/task_status_user_guide_EN.pdf"
+    },
+    "list": [
+      {
+        "label": "Make User Manual",
+        "url": "https://file.virnect.com/Guide/make_user_guide_EN.pdf"
+      },
+      {
+        "label": "AR Demo Content for Make",
+        "url": "https://file.virnect.com/Guide/make_demo_contents_EN.zip"
+      },
+      {
+        "label": "View User Manual (Mobile)",
+        "url": "https://file.virnect.com/Guide/view_mobile_user_guide_EN.pdf"
+      },
+      {
+        "label": "View User Manual (Realwear)",
+        "url": "https://file.virnect.com/Guide/view_realwear_user_guide_EN.pdf"
+      },
+      {
+        "label": "Remote User Manual",
+        "url": "https://file.virnect.com/Guide/remote_user_guide_EN.pdf"
+      },
+      {},
+      {},
+      {},
+      {
+        "label": "Workstation User Manual",
+        "url": "https://file.virnect.com/Guide/workstation_user_guide_EN.pdf"
+      },
+      {
+        "label": "User Guide for Payment",
+        "url": "https://file.virnect.com/Guide/purchase_user_guide_EN.pdf"
+      },
+      {
+        "label": "User Guide for Task Service",
+        "url": "http://file.virnect.com/Guide/task_management_user_guide_EN.pdf"
+      }
+    ]
+  }
+}

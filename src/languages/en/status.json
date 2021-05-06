@@ -1,0 +1,14 @@
+{
+  "status": {
+    "conditions": {
+      "wait": "Pending",
+      "unprogressing": "Not Started",
+      "progressing": "In Progress",
+      "incompleted": "Inadequate",
+      "completed": "Completed",
+      "failed": "Overdue",
+      "success": "Accomplished",
+      "fault": "Incompleted"
+    }
+  }
+}

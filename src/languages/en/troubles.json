@@ -1,0 +1,15 @@
+{
+  "troubles": {
+    "list": {
+      "title": "Trouble Memo(TM)",
+      "myTm": "My TM",
+      "tmList": "Trouble Memo list",
+      "column": {
+        "content": "Details",
+        "user": "Member",
+        "reportedDate": "Report Date"
+      }
+    },
+    "detail": "Selected TM Details"
+  }
+}

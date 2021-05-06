@@ -1,0 +1,27 @@
+{
+  "searchbar": {
+    "all": "All",
+    "delete": "Delete",
+    "filter": {
+      "title": "Filter",
+      "all": "All",
+      "processPublished": "Add Task",
+      "processUnpublished": "Remove Task",
+      "globalIssue": "Issues",
+      "workIssue": "Issues"
+    },
+    "sort": {
+      "title": "Sort",
+      "role": "Role",
+      "alphabetAsc": "A to Z",
+      "alphabetDesc": "Z to A",
+      "createdAsc": "Old to New Update",
+      "createdDesc": "New to Old Update",
+      "updatedAsc": "Old to New Report",
+      "updatedDesc": "New to Old Report"
+    },
+    "keyword": {
+      "title": "Search"
+    }
+  }
+}

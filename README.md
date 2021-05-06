@@ -1,44 +1,49 @@
-## Author
+# PF-WebWorkstation
 
+## Author
 ```
-lsb@virnect.com
+lsb@virnect.com / LeeSangBaek
 ```
 
 ## Description
+```
+버넥트 워크스테이션
+prod: workstation.virnect.com
+stg: stgworkstation.virnect.com
+dev: 192.168.6.3:8878
+```
 
-```
-Platform Worstation Web Service
-```
+## Config
+https://github.com/virnect-corp/PF-Configurations/blob/master/develop/workstation-web-develop.yml
 
 ## Environment
-
 ```
-node12 / Yarn workspace
-```
+node ^12.14.1
+yarn ^1.21.1
 
-## Develop
-
-```
-$ yarn
-$ yarn workspace workstation dev
+pf-login 프로젝트 필요. 로그인되어 있지 않으면 서버사이드에서 튕겨나감
 ```
 
-## Production
-
+## Architecture
+https://ko.nuxtjs.org/
+Nuxt framework (Universal)
+### folder
 ```
-# 환경설정 확인
-$ vim workstation/.env.production
-
-# 빌드 및 실행
-$ yarn workspace workstation build
-$ yarn workspace workstation deploy
+cypress - e2e 테스트
+docker
+src
+/api - 서버 요청 리스트
+/languages - 다국어
+/middleware - 클라이언트로 보내기 전 서버사이드 로직
+/components - 컴포넌트 .vue 파일
+/layouts - 페이지 레이아웃 .vue 파일
+/pages - 라우팅 되는 페이지 .vue 파일
+/plugins - vue root context (Vue.use())
+/models - API 리스폰스 데이터 재정의
+/services - UI코드를 제외한 로직 분리
 ```
+### style
+scoped 사용하지 않는다. 컨포넌트 이름을 class명으로 정의하고, 페이지는 id로 정의한다.
 
-## 추가 설명
-
-프로젝트 구조는 https://nuxtjs.org/guides/directory-structure/nuxt  
-\+ api, languages, mixins, services
-
-웹 앱 전반에 활성화된 워크스페이스에 따라 달라지는 내용들이 많음.  
-활성화 워크스페이스 변경은 필히 vuex의 `activeWorkspace`를 사용하고,  
-`services/workspace.watchActiveWorkspace()`를 사용하여 변경 이벤트를 트래킹할 것
+### logic
+워크스페이스 변경시 새로고침 되어야 하는 함수는 `workspaceSerivce.watchActiveWorkspace(fn)` 사용한다.

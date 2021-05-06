@@ -1,0 +1,80 @@
+{
+  "workspace": {
+    "welcome": "Hello {nickname} welcome to the Workspace",
+    "master": "Master",
+    "manager": "Manager",
+    "member": "Member",
+    "create": "Create Workspace",
+    "started": {
+      "title": "Finish setting up Workspace details",
+      "desc": "The Workspace information set up is completed. Invite members to start using VIRNECT products at Workspace."
+    },
+    "info": {
+      "title": "Workspace details",
+      "descriptionEmpty": "There is no Workspace description",
+      "planMemberCount": "Members per plans",
+      "planPurchase": "Purchase",
+      "addMember": "Add Member"
+    },
+    "setting": {
+      "title": "Profile Settings",
+      "createdDate": "Created",
+      "name": "Workspace Name",
+      "namePlaceholder": "{nickname}'s Workspace",
+      "nameComment": "Enter less than 30 characters for your Workspace name",
+      "desc": "Description",
+      "descPlaceholder": "Enter your Workspace description",
+      "descComment": "Enter less than 40 characters for the description.",
+      "image": "Profile Image",
+      "imageComment": "Update your Workspace profile image. This profile picture is displayed on the sidebar and notifications.",
+      "start": "Begin Workspace",
+      "leave": "Leave Workspace",
+      "leaveInfo": {
+        "title": "Notice on leaving the Workspace",
+        "list": [
+          "You are no longer participating in this Workspace including the plans and products related to it.",
+          "Data and records uploaded or shared by you will not be deleted. Leaving the Workspace is not canceled.",
+          "If you would like to rejoin the Workspace contact the Workspace master or manager again."
+        ],
+        "agree": "I agree to above guidelines before leaving the Workspace.",
+        "success": "You have left the Workspace.",
+        "fail": "Failed to leave the Workspace please try again later."
+      },
+      "message": {
+        "updateSuccess": "The Workspace details are updated.",
+        "updateFail": "Failed to setting up the Workspace details please try again later."
+      }
+    },
+    "invite": {
+      "invalid": "Failure to accept invitation"
+    },
+    "onpremiseSetting": {
+      "title": "Web service settings",
+      "desc": "Changing the favicon, logo and company name displayed on the web service. It does not apply to the installation programme (Application).",
+      "company": {
+        "title": "Change company name",
+        "desc": "If you change the customer name, you will be exposed to the customer name instead of 'VIRNECT' in the Web Services tab / Service Title / Notification phrase.",
+        "tooltip": "Company name area",
+        "companyName": "Company name",
+        "caution": "Company name can be changed to a combination of Korean, English, Number, Special character (.,!,@,#,$,%,-,_,&) up to 20 characters."
+      },
+      "logo": {
+        "title": "Change logo",
+        "desc": "If you wish to change a logo, please register a logo image. It will replace the VIRNECT logo from your web service.",
+        "lightTheme": "For bright interface",
+        "darkTheme": "For dark interface",
+        "tooltip": "Logo area",
+        "caution": "You can upload JPG and PNG files up to 3MB. <br>* Recommended size: 170(horizontal) * 32(vertical, fixed)px / 72 DPI",
+        "submit": "Register"
+      },
+      "favicon": {
+        "title": "Change favicon",
+        "desc": "If you wish to change a favicon, please register a favicon image.",
+        "tooltip": "Favicon area",
+        "caution": "You can upload JPG and PNG files up to 3MB. <br>* Recommended size: 170(horizontal) * 32(vertical, fixed)px / 72 DPI",
+        "upload": "Upload Image",
+        "submit": "Register"
+      }
+    }
+  }
+}

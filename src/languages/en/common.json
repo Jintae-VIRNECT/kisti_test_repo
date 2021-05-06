@@ -1,0 +1,24 @@
+{
+  "common": {
+    "workstation": "Workstation",
+    "all": "All",
+    "back": "Back",
+    "prev": "Previous",
+    "next": "Next",
+    "yes": "Yes",
+    "no": "No",
+    "confirm": "Confirm",
+    "update": "Update",
+    "download": "Download",
+    "delete": "Delete",
+    "graph": "Graph",
+    "list": "List",
+    "numbersUnit": "",
+    "paymentCenter": "Payment Center",
+    "plan": "Plan",
+    "message": {
+      "notAllowFileExtension": "Unsupported file type.",
+      "notAllowFileSize": "Unsupported file size."
+    }
+  }
+}

@@ -1,0 +1,53 @@
+{
+  "contents": {
+    "allContents": {
+      "title": "전체 콘텐츠 목록",
+      "myContents": "내 콘텐츠",
+      "delete": "삭제",
+      "workspaceContentsList": "워크스페이스 콘텐츠 목록",
+      "column": {
+        "id": "콘텐츠 ID",
+        "name": "콘텐츠 이름",
+        "targetType": "타겟 유형",
+        "uploader": "업로드 멤버",
+        "createdDate": "등록일",
+        "sharedStatus": "공유 상태"
+      },
+      "empty": "등록된 콘텐츠가 없습니다"
+    },
+    "sharedStatus": {
+      "shared": "활성화",
+      "noShared": "비활성화"
+    },
+    "targetTypes": {
+      "qr": "QR 타겟",
+      "vtarget": "V 타겟"
+    },
+    "info": {
+      "title": "콘텐츠 정보",
+      "id": "콘텐츠 ID",
+      "name": "콘텐츠 이름",
+      "uploader": "업로드 멤버",
+      "volume": "콘텐츠 용량",
+      "createdDate": "등록일",
+      "type": "콘텐츠 타입",
+      "device": "지원 디바이스",
+      "sharedStatus": "현재 공유 상태",
+      "target": "타겟 유형",
+      "properties": "콘텐츠 구성 정보",
+      "delete": "삭제하기",
+      "register": "작업 등록",
+      "message": {
+        "delete": "선택 콘텐츠 삭제",
+        "deleteSure": "선택하신 콘텐츠를 삭제 하시겠습니까?",
+        "deleteSuccess": "선택하신 콘텐츠를 삭제하였습니다.",
+        "deleteFail": "선택하신 콘텐츠 삭제에 실패했습니다. 잠시 후 다시 이용해 주세요.",
+        "deleteNotExist": "워크스페이스에 선택하신 콘텐츠가 존재하지 않습니다. 다시  확인해 주세요.",
+        "deleteShared": "콘텐츠 공유가 활성화 상태일때는 삭제가 불가합니다.",
+        "updateSuccess": "선택하신 콘텐츠 공유 설정을 변경하였습니다.",
+        "updateFail": "선택하신 콘텐츠 공유 설정 변경에 실패했습니다. 잠시 후 다시 이용해 주세요.",
+        "updateNotExist": "워크스페이스에 선택하신 콘텐츠가 존재하지 않습니다. 다시  확인해 주세요."
+      }
+    }
+  }
+}

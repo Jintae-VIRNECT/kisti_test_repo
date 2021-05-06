@@ -1,0 +1,24 @@
+{
+  "common": {
+    "workstation": "워크스테이션",
+    "all": "전체",
+    "back": "뒤로",
+    "prev": "이전",
+    "next": "다음",
+    "yes": "네",
+    "no": "아니요",
+    "confirm": "확인",
+    "update": "변경하기",
+    "download": "다운로드",
+    "delete": "삭제",
+    "graph": "그래프",
+    "list": "리스트",
+    "numbersUnit": "개",
+    "paymentCenter": "결제센터",
+    "plan": "플랜",
+    "message": {
+      "notAllowFileExtension": "지원하지 않는 파일 형식입니다.",
+      "notAllowFileSize": "지원하지 않는 파일 크기입니다."
+    }
+  }
+}

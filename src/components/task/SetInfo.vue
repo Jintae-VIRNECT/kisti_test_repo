@@ -1,0 +1,129 @@
+<template>
+  <el-dialog
+    id="set-task-info-modal"
+    class="info-modal"
+    :visible.sync="showMe"
+    :title="$t('task.new.contentsInfo')"
+    width="860px"
+    top="11vh"
+    :close-on-click-modal="false"
+  >
+    <el-row type="flex" v-if="content">
+      <el-col :span="9">
+        <h4>{{ $t('contents.info.title') }}</h4>
+        <el-divider />
+        <dl>
+          <dt>{{ $t('contents.info.id') }}</dt>
+          <dd class="content-uuid">{{ content.contentUUID }}</dd>
+          <dt>{{ $t('contents.info.name') }}</dt>
+          <dd>{{ content.contentName }}</dd>
+          <dt>{{ $t('contents.info.uploader') }}</dt>
+          <dd class="column-user">
+            <VirnectThumbnail :image="cdn(content.uploaderProfile)" />
+            <span>{{ content.uploaderName }}</span>
+          </dd>
+        </dl>
+        <el-divider />
+        <dl class="row">
+          <div>
+            <dt>{{ $t('contents.info.volume') }}</dt>
+            <dd>{{ content.contentSize | byte2mb }}</dd>
+            <dt>{{ $t('contents.info.type') }}</dt>
+            <dd></dd>
+          </div>
+          <div>
+            <dt>{{ $t('contents.info.createdDate') }}</dt>
+            <dd>{{ content.createdDate | localDateFormat }}</dd>
+            <dt>{{ $t('contents.info.device') }}</dt>
+            <dd></dd>
+          </div>
+        </dl>
+        <el-divider />
+        <dl>
+          <dt>{{ $t('contents.info.sharedStatus') }}</dt>
+          <dd class="virnect-workstation-form">
+            <el-input v-model="shared" disabled />
+          </dd>
+          <dt>{{ $t('contents.info.target') }}</dt>
+          <dd>
+            <span>{{ targetType2label(content.targetType) }}</span>
+          </dd>
+        </dl>
+      </el-col>
+      <!-- 작업 구성 정보 -->
+      <el-col :span="15">
+        <h4>
+          <span>{{ $t('task.new.sceneGroupInfo') }}</span>
+          <el-tooltip
+            :content="$t('task.new.sceneGroupInfoDesc')"
+            placement="right-start"
+          >
+            <img src="~assets/images/icon/ic-error.svg" />
+          </el-tooltip>
+        </h4>
+        <div class="properties">
+          <el-tree
+            :data="properties"
+            :props="propertiesProps"
+            node-key="id"
+            :default-expanded-keys="[content.contentUUID]"
+          />
+        </div>
+      </el-col>
+    </el-row>
+    <template slot="footer">
+      <el-button @click="$router.push(`/contents/${content.contentUUID}`)">
+        {{ $t('task.new.moveContentInfo') }}
+      </el-button>
+      <el-button @click="$emit('next', content)" type="primary">
+        {{ $t('common.next') }}
+      </el-button>
+    </template>
+  </el-dialog>
+</template>
+
+<script>
+import modalMixin from '@/mixins/modal'
+import contentService from '@/services/content'
+import { sharedStatus } from '@/models/content/Content'
+import filters from '@/mixins/filters'
+
+export default {
+  mixins: [modalMixin, filters],
+  props: {
+    visible: Boolean,
+    contentId: String,
+  },
+  data() {
+    return {
+      content: null,
+      properties: null,
+      sharedStatus,
+      propertiesProps: {
+        label: 'label',
+        childern: 'childern',
+      },
+    }
+  },
+  computed: {
+    shared() {
+      return this.$t(
+        sharedStatus.find(status => status.value === this.content.shared).label,
+      )
+    },
+  },
+  methods: {
+    async opened() {
+      const promise = {
+        content: contentService.getContentInfo(this.contentId),
+        properties: contentService.getContentProperties(
+          this.contentId,
+          this.$store.getters['auth/myProfile'].uuid,
+        ),
+      }
+      this.content = await promise.content
+      this.properties = await promise.properties
+    },
+  },
+}
+</script>

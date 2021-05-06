@@ -1,6 +1,7 @@
 node_modules
-yarn.lock
 Jenkinsfile
 releasenote.txt
 .git
 .gitignore
+cypress
+.husky
