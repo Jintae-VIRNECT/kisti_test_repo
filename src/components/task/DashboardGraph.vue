@@ -7,12 +7,6 @@ import { conditions } from '@/models/task/Task'
 import colorMap from '@/models/color'
 import utils from '@/mixins/utils'
 
-// ssr error
-let bb = null
-if (process.client) {
-  bb = require('billboard.js').bb
-}
-
 export default {
   mixins: [utils],
   props: {
@@ -33,7 +27,10 @@ export default {
     },
   },
   methods: {
-    initProcessGraph() {
+    async initProcessGraph() {
+      const billboard = await import('billboard.js')
+      const bb = billboard.bb
+
       const xAxisColors = conditions.map(condition => condition.color)
       const xAxisTicks = conditions.map(condition => condition.label)
       const xAxisValues = [
@@ -75,7 +72,7 @@ export default {
               text: {
                 show: true,
               },
-              format: function(index, val) {
+              format: function (index, val) {
                 return that.$t(val)
               },
             },

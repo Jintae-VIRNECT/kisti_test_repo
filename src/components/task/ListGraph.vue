@@ -10,12 +10,6 @@ import { conditions } from '@/models/task/Task'
 import color from '@/models/color'
 import utils from '@/mixins/utils'
 
-// ssr error
-let bb = null
-if (process.client) {
-  bb = require('billboard.js').bb
-}
-
 export default {
   mixins: [utils],
   props: {
@@ -31,7 +25,10 @@ export default {
     con2color(con) {
       return color[conditions.find(c => c.value === con).color]
     },
-    initProcessGraph() {
+    async initProcessGraph() {
+      const billboard = await import('billboard.js')
+      const bb = billboard.bb
+
       const json = this.data
       const heightSize = 200 + json.length * 60
       const self = this
