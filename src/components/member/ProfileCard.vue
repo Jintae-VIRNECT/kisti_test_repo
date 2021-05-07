@@ -57,12 +57,12 @@
       @back="back"
       @kicked="kicked"
     />
-    <MemberPasswordModal
+    <OnpremiseMemberPasswordModal
       v-if="$isOnpremise"
       :data="myInfo"
       :visible.sync="showMemberPasswordModal"
     />
-    <MemberDeleteModal
+    <OnpremiseMemberDeleteModal
       v-if="$isOnpremise"
       :data="myInfo"
       :visible.sync="showMemberDeleteModal"

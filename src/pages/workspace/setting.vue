@@ -125,7 +125,7 @@
             </div>
           </el-card>
         </el-col>
-        <WorkspaceOnpremiseSetting
+        <OnpremiseWorkspaceSetting
           v-if="$isOnpremise"
           class="container__right"
         />
