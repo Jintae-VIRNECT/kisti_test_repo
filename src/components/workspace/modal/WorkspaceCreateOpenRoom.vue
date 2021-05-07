@@ -99,6 +99,8 @@ export default {
         this.clicked = true
 
         const options = await this.getDeviceId()
+        const mediaStream = await this.$call.getStream({ options })
+
         let createdRes
         if (this.sessionId && this.sessionId.length > 0) {
           createdRes = await restartRoom({
@@ -138,6 +140,7 @@ export default {
           createdRes,
           ROLE.LEADER,
           options,
+          mediaStream,
         )
 
         const roomInfo = await getRoomInfo({

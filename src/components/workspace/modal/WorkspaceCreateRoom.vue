@@ -159,6 +159,7 @@ export default {
         this.clicked = true
 
         const options = await this.getDeviceId()
+        const mediaStream = await this.$call.getStream({ options })
 
         const selectedUser = []
         const selectedUserIds = []
@@ -226,6 +227,7 @@ export default {
           createdRes,
           ROLE.LEADER,
           options,
+          mediaStream,
         )
 
         const roomInfo = await getRoomInfo({
