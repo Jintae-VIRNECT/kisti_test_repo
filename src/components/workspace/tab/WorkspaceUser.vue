@@ -22,6 +22,8 @@
         :imageUrl="userinfo.profile"
         :email="userinfo.email"
         :role="userinfo.role"
+        :showMasterMenu="isMaster"
+        @forceLogout="forceLogout(userinfo)"
       >
       </member-card>
     </div>
@@ -32,6 +34,7 @@
 import TabView from '../partials/WorkspaceTabView'
 import MemberCard from 'MemberCard'
 import { getMemberList } from 'api/http/member'
+import { WORKSPACE_ROLE } from 'configs/status.config'
 
 export default {
   name: 'WorkspaceUser',
@@ -45,6 +48,9 @@ export default {
     }
   },
   computed: {
+    isMaster() {
+      return this.workspace.role === WORKSPACE_ROLE.MASTER
+    },
     list() {
       if (this.searchText.length > 0) {
         return this.searchMemberList
@@ -113,6 +119,11 @@ export default {
         this.loading = false
         console.error(err)
       }
+    },
+    forceLogout(targetUserinfo) {
+      this.debug('selected user', targetUserinfo)
+      //로그아웃 실행 후 멤버 목록 갱신
+      this.getList()
     },
   },
 

@@ -1,3 +1,32 @@
 .workspace-user {
   color: #fff;
 }
+
+.popover.card-menu__popover{
+  min-width: 4.286em;
+  max-width: 8.72em;
+  margin-top: 0.428em;
+  background-color: $color_bg_sub;
+  border: solid 1px #3a3a3d;
+  > .popover--body {
+    padding: 0px;
+  }
+
+  > .popover--body .card-menu__group-btn {
+    width: 100%;
+    height: 46px;
+    padding: 0.928em 1.428em;
+    line-height: 1em;
+    text-align: left;
+    &:hover {
+      background-color: rgba($color_bg_item, 0.3);
+    }
+  }
+  
+  > .popover--body .card-menu__group-btn:disabled{
+    opacity: 0.2;
+    &:hover {
+      background-color: initial;
+    }
+  }
+}
