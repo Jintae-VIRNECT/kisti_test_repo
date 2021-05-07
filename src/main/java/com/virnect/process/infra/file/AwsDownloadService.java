@@ -32,10 +32,10 @@ import com.virnect.process.global.error.ErrorCode;
 public class AwsDownloadService implements FileDownloadService {
 	private final AmazonS3 amazonS3Client;
 
-	@Value("${minio.bucket}")
+	@Value("${cloud.aws.s3.bucket.name}")
 	private String bucketName;
 
-	@Value("${minio.bucket-resource}")
+	@Value("${cloud.aws.s3.bucket.resource}")
 	private String bucketResource;
 
 	@Override
