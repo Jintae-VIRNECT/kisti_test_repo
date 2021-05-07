@@ -7,7 +7,7 @@ import { DEVICE, CAMERA as CAMERA_STATUS } from 'configs/device.config'
 import { logger, debug } from 'utils/logger'
 import { wsUri } from 'api/gateway/api'
 
-let OV
+let OV = null
 
 const _ = {
   account: null,
@@ -28,13 +28,14 @@ const _ = {
    * @param {Object} configs {coturn, wss, token}
    * @param {String} role remote.config.ROLE
    */
-  connect: async (configs, role, options) => {
+  connect: async (configs, role, options, mediaStream) => {
     try {
       _.account = Store.getters['account']
 
       Store.commit('callClear')
 
-      OV = new OpenVidu()
+      // OV = new OpenVidu()
+      initOpenVidu()
 
       const isProduction = process.env.NODE_ENV === 'production'
       const isNotDevelop = !(window.env && window.env === 'develop')
@@ -735,6 +736,12 @@ const getMediaStream = async options => {
   }
 
   return mediaStream
+}
+
+const initOpenVidu = () => {
+  if (OV === null) {
+    OV = new OpenVidu()
+  }
 }
 
 export const addSubscriber = subscriber => {
