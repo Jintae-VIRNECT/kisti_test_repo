@@ -19,7 +19,7 @@
       <img src="~assets/images/onpremise/posco.png" />
     </p>
     <h6>Connect Work, Space and People</h6>
-    <h5>Workstation for Posco - RIST Remote Collaboration Solution</h5>
+    <h5>Workstation for POSCO-RIST Remote Collaboration Solution</h5>
   </el-card>
 </template>
 
