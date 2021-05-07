@@ -8,11 +8,11 @@ spring:
   jpa:
     hibernate:
       ddl-auto: update
-    show-sql: true
+    show-sql: false
     database-platform: org.hibernate.dialect.MySQL5InnoDBDialect
     properties:
       hibnerate:
-        format_sql: true
+        format_sql: false
       org:
         hibernate:
           envers:
@@ -37,7 +37,7 @@ spring:
 
 logging:
   level:
-    org.hibernate.type.descriptor.sql: trace
+    org.hibernate.type.descriptor.sql: debug
     com.virnect.workspace.application.*: DEBUG
 ## Server Configuration
 server:
@@ -76,6 +76,8 @@ feign:
       default:
         connectTimeout: 1000
         readTimeout: 1000
+        loggerLevel: FULL
+
 hystrix:
   command:
     "LicenseRestService":
