@@ -26,7 +26,10 @@
     "confirm_already_invite_remove": "동일 계정으로 협업을 진행 중입니다. 협업을 삭제할 수 없습니다.",
     "confirm_already_invite_leave": "동일 계정으로 협업을 진행 중입니다. 협업을 나갈 수 없습니다.",
     "confirm_remote_leader_leave": "리더는 협업을 나갈 수 없습니다.",
-    
+    "confirm_force_logout_complete": "님이 로그아웃 되었습니다.",
+    "confirm_force_logout_received": "마스터에 의해 강제 로그아웃 되었습니다.",
+    "confirm_force_logout_unavailable": "님이 협업에 접속하여 로그아웃이 불가능합니다.",
+
     "history": "최근 기록",
     "remote": "원격 협업",
     "user": "멤버",
