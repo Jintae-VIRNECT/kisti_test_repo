@@ -60,7 +60,6 @@ module.exports = async () => {
     srcDir: resolve(__dirname, 'src'),
     components: [
       { path: '~/components' },
-      { prefix: 'onpremise', path: '~/components_onpremise' },
       { prefix: 'virnect', path: '@virnect/components' },
     ],
     alias: {
