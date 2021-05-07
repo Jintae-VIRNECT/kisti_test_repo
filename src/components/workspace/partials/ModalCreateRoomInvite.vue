@@ -22,6 +22,7 @@
               choice: true,
               selected:
                 selection.findIndex(select => select.uuid === user.uuid) > -1,
+              disabled: user.status === 'logout',
             }"
             height="6.143em"
             @click.native="selectUser(user)"
@@ -33,6 +34,7 @@
               :subText="user.email"
               :role="user.role"
               :thumbStyle="{ width: '3em', height: '3em' }"
+              :status="user.status"
             ></profile
           ></wide-card>
         </div>
@@ -107,11 +109,24 @@ export default {
       }
     },
   },
+  watch: {
+    //임시 멤버 상태
+    users(newVal) {
+      newVal.forEach(
+        user =>
+          (user.status = ['login', 'collabo', 'logout'][
+            Math.floor(Math.random() * 3)
+          ]),
+      )
+      console.log(newVal)
+    },
+  },
   methods: {
     refresh() {
       this.$emit('inviteRefresh')
     },
     selectUser(user) {
+      if (user.status === 'logout') return //logout 상태인 멤버는 선택할 수 없음
       this.$emit('userSelect', user)
     },
   },

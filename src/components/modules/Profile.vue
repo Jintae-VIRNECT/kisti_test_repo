@@ -9,9 +9,7 @@
           @error="onImageError"
         />
       </div>
-      <!-- <span v-if="status" class="profile--badge" :class="status">{{
-        status
-      }}</span> -->
+      <span v-if="status" class="profile--badge" :class="status"></span>
     </div>
     <figcaption class="profile--text" v-if="mainText && mainText.length > 0">
       <p class="profile--maintext">{{ mainText }}</p>
@@ -50,7 +48,8 @@ export default {
     subText: String,
     status: {
       type: String,
-      validator: value => ['', 'online', 'busy', 'offline'].indexOf(value) >= 0,
+      validator: value =>
+        ['', 'login', 'collabo', 'logout'].indexOf(value) >= 0,
     },
     role: {
       type: String,
@@ -154,13 +153,14 @@ export default {
 
 .profile--badge {
   position: absolute;
-  right: 0;
-  bottom: 0;
-  width: 26%;
-  height: 26%;
+  left: 66%;
+  top: 64%;
+  width: 1.26em;
+  height: 1.26em;
   overflow: hidden;
   text-indent: -99px;
   border-radius: 50%;
+  border: 0.215em solid $color_darkgray_600;
 
   &.collabo {
     background-color: $color_collabo;
