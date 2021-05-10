@@ -6,6 +6,7 @@
 <script>
 import confirmMixin from 'mixins/confirm'
 import auth from 'utils/auth'
+import { RUNTIME, RUNTIME_ENV } from 'configs/env.config'
 
 export default {
   name: 'RemoteLayout',
@@ -15,6 +16,11 @@ export default {
       key: 1,
       attr: '',
     }
+  },
+  computed: {
+    onpremise() {
+      return RUNTIME.ONPREMISE === RUNTIME_ENV
+    },
   },
   methods: {
     viewPointSetting(e) {
@@ -45,17 +51,26 @@ export default {
       // window.addEventListener('orientationchange', this.viewPointSetting)
       this.viewPointSetting()
     }
-    //마스터에 의해 강제 로그아웃 당할 시
-    this.$eventBus.$on('forceLogout', () => {
-      console.log('forceLogout')
 
-      //악의적으로 UI를 제거할 경우를 대비하여, 팝업의 action이 아닌 클릭 이벤트 발생 시 로그아웃 처리하도록 한다.
-      const eventHandler = () => auth.logout()
-      window.addEventListener('click', eventHandler, { once: true })
+    //구축형 - 강제 로그아웃 이벤트 핸들러 적용 여부
+    if (this.onpremise) {
+      //마스터에 의해 강제 로그아웃 당할 시
+      this.$eventBus.$on('forceLogout', () => {
+        //로그아웃 처리
+        const action = () => {
+          this.$eventBus.$emit('popover:close')
+          auth.logout()
+        }
 
-      //강제 로그아웃 알림 팝업
-      this.confirmDefault(this.$t('workspace.confirm_force_logout_received'))
-    })
+        //강제 로그아웃 알림 팝업
+        this.confirmDefault(
+          this.$t('workspace.confirm_force_logout_received'),
+          {
+            action,
+          },
+        )
+      })
+    }
   },
   beforeDestroy() {
     //이벤트 버스 리스너 청소

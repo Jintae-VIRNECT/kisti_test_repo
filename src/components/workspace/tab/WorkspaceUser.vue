@@ -22,7 +22,7 @@
         :imageUrl="userinfo.profile"
         :email="userinfo.email"
         :role="userinfo.role"
-        :showMasterMenu="isMaster"
+        :showMasterMenu="isMaster && onpremise"
         @forceLogout="forceLogout(userinfo)"
       >
       </member-card>
@@ -36,6 +36,7 @@ import MemberCard from 'MemberCard'
 import { getMemberList } from 'api/http/member'
 import { WORKSPACE_ROLE } from 'configs/status.config'
 import confirmMixin from 'mixins/confirm'
+import { RUNTIME, RUNTIME_ENV } from 'configs/env.config'
 
 export default {
   name: 'WorkspaceUser',
@@ -63,6 +64,9 @@ export default {
     }
   },
   computed: {
+    onpremise() {
+      return RUNTIME.ONPREMISE === RUNTIME_ENV
+    },
     isMaster() {
       return this.workspace.role === WORKSPACE_ROLE.MASTER
     },
@@ -173,9 +177,7 @@ export default {
         this.confirmDefault(text)
       }
       //갱신한 멤버 목록에 해당 유저가 없는 경우(예외상황)
-      else {
-        new Error('Target User Not Found!')
-      }
+      else return
 
       //to test
       //this.$eventBus.$emit('forceLogout')

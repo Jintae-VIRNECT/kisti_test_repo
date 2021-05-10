@@ -110,6 +110,7 @@ export default {
       }
     },
     isForceLogoutDisabled() {
+      //login 상태인 유저만 강제 로그아웃 가능
       if (this.status !== 'login') return true
       return false
     },
