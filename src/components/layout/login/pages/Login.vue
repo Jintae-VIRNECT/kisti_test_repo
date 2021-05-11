@@ -65,7 +65,7 @@
             v-if="$env !== 'onpremise'"
             >{{ $t('login.findAccount') }}</router-link
           >
-          <router-link :to="setPath">{{
+          <router-link :to="resetPasswordPath">{{
             $t('login.resetPassword')
           }}</router-link>
           <router-link to="/terms" v-if="$env !== 'onpremise'">{{
@@ -124,7 +124,7 @@ export default {
     }
   },
   computed: {
-    setPath() {
+    resetPasswordPath() {
       if (this.$env !== 'onpremise') {
         return {
           name: 'findTab',
@@ -219,7 +219,7 @@ export default {
               cancelButtonText: this.$t('login.accountError.btn'),
               dangerouslyUseHTMLString: true,
             },
-          ).then(() => this.$router.push({ name: 'reset_password' }))
+          ).then(() => this.$router.push(this.resetPasswordPath))
         }
         // 계졍 잠김
         else if (e.code === 2002 || failCount === 5) {
@@ -233,7 +233,7 @@ export default {
               cancelButtonText: this.$t('login.accountError.btn'),
               dangerouslyUseHTMLString: true,
             },
-          ).then(() => this.$router.push({ name: 'reset_password' }))
+          ).then(() => this.$router.push(this.resetPasswordPath))
         }
         // 기타
         else {
