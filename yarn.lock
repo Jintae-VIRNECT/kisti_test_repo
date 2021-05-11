@@ -1606,9 +1606,9 @@
     stylelint-scss "^3.18.0"
 
 "@virnect/ui-assets@^1.1.9":
-  version "1.1.9"
-  resolved "http://192.168.6.3:4873/@virnect%2fui-assets/-/ui-assets-1.1.9.tgz#8ca68f13a2d10807c1c849544f5c04c208d567b9"
-  integrity sha512-+eIfvFWVi+BikhkJt/rsEE1Ednmz/GTomtHAKBwOCo2mQ5XKjJm7yqZHatWlcQxELPXxySx1mGuFmX9JlIOl0g==
+  version "1.1.18"
+  resolved "http://192.168.6.3:4873/@virnect%2fui-assets/-/ui-assets-1.1.18.tgz#ee67e8b366e2368ced4581fcbc4226da085d7e2e"
+  integrity sha512-TL22kOWnCHi62rcdcGHOhuk59oh4jHPj6PNC+MXsotudY3SnDvaLiCBjJNCNvOTPVgWBcDrVtfW3QWUcS+xTzA==
 
 "@vue/babel-helper-vue-jsx-merge-props@^1.2.1":
   version "1.2.1"
