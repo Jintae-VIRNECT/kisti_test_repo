@@ -10,7 +10,8 @@
     "build:develop": "cross-env NODE_ENV=develop VIRNECT_ENV=local nuxt build --modern=server",
     "build:production": "cross-env NODE_ENV=production VIRNECT_ENV=local nuxt build --modern=server",
     "deploy": "cross-env NODE_ENV=$VIRNECT_ENV VIRNECT_ENV=$VIRNECT_ENV CONFIG_SERVER=$CONFIG_SERVER nuxt start --modern=server",
-    "generate": "nuxt generate"
+    "generate": "nuxt generate",
+    "i18n": "i18n --sheetId PF-WebAccount"
   },
   "dependencies": {
     "@nuxtjs/axios": "^5.11.0",
@@ -18,7 +19,7 @@
     "@virnect/components": "1.1.0",
     "@virnect/logger": "^1.0.2",
     "@virnect/platform-auth": "^1.0.2",
-    "@virnect/ui-assets": "^1.1.9",
+    "@virnect/ui-assets": "0.0.12",
     "axios": "^0.19.2",
     "cross-env": "^7.0.2",
     "dayjs": "^1.8.23",
@@ -34,6 +35,7 @@
   },
   "devDependencies": {
     "@virnect/eslint-config": "^1.0.0",
+    "@virnect/i18n": "^1.1.0",
     "@virnect/stylelint-config": "^1.0.1",
     "@vue/component-compiler-utils": "^3.1.0",
     "@vue/eslint-config-airbnb": "^4.0.0",
