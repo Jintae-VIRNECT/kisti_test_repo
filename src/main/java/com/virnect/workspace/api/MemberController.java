@@ -1,6 +1,6 @@
 package com.virnect.workspace.api;
 
-import com.virnect.workspace.application.MemberService;
+import com.virnect.workspace.application.MemberServiceImpl;
 import com.virnect.workspace.dto.request.MemberKickOutRequest;
 import com.virnect.workspace.dto.request.MemberUpdateRequest;
 import com.virnect.workspace.dto.request.WorkspaceInviteRequest;
@@ -42,7 +42,7 @@ import java.util.Locale;
 @RequestMapping("/workspaces")
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public class MemberController {
-    private final MemberService memberService;
+    private final MemberServiceImpl memberServiceImpl;
 
     @ApiOperation(
             value = "워크스페이스 멤버 검색(워크스페이스 멤버 목록 조회)",
@@ -65,7 +65,7 @@ public class MemberController {
         if (!StringUtils.hasText(workspaceId)) {
             throw new WorkspaceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
-        ApiResponse<WorkspaceUserInfoListResponse> apiResponse = memberService.getMembers(
+        ApiResponse<WorkspaceUserInfoListResponse> apiResponse = memberServiceImpl.getMembers(
                 workspaceId, search, filter, pageable);
         return ResponseEntity.ok(apiResponse);
     }
@@ -81,7 +81,7 @@ public class MemberController {
         if (!StringUtils.hasText(workspaceId)) {
             throw new WorkspaceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
-        List<WorkspaceNewMemberInfoResponse> response = memberService.getWorkspaceNewUserInfo(
+        List<WorkspaceNewMemberInfoResponse> response = memberServiceImpl.getWorkspaceNewUserInfo(
                 workspaceId);
         return ResponseEntity.ok(new ApiResponse<>(response));
     }
@@ -101,7 +101,7 @@ public class MemberController {
         if (!StringUtils.hasText(workspaceId) || bindingResult.hasErrors()) {
             throw new WorkspaceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
-        ApiResponse<Boolean> apiResponse = memberService.reviseMemberInfo(
+        ApiResponse<Boolean> apiResponse = memberServiceImpl.reviseMemberInfo(
                 workspaceId, memberUpdateRequest, locale);
         return ResponseEntity.ok(apiResponse);
     }
@@ -121,7 +121,7 @@ public class MemberController {
         if (!StringUtils.hasText(workspaceId) || !StringUtils.hasText(userId)) {
             throw new WorkspaceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
-        WorkspaceUserInfoResponse response = memberService.getMemberInfo(workspaceId, userId);
+        WorkspaceUserInfoResponse response = memberServiceImpl.getMemberInfo(workspaceId, userId);
         return ResponseEntity.ok(new ApiResponse<>(response));
     }
 
@@ -136,7 +136,7 @@ public class MemberController {
         if (!StringUtils.hasText(workspaceId) || userIds.length == 0) {
             throw new WorkspaceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
-        WorkspaceUserInfoListResponse response = memberService.getMemberInfoList(workspaceId, userIds);
+        WorkspaceUserInfoListResponse response = memberServiceImpl.getMemberInfoList(workspaceId, userIds);
         return ResponseEntity.ok(new ApiResponse<>(response));
     }
 
@@ -158,7 +158,7 @@ public class MemberController {
         if (!StringUtils.hasText(workspaceId) || bindingResult.hasErrors()) {
             throw new WorkspaceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
-        ApiResponse<Boolean> apiResponse = memberService.kickOutMember(
+        ApiResponse<Boolean> apiResponse = memberServiceImpl.kickOutMember(
                 workspaceId, memberKickOutRequest, locale);
         return ResponseEntity.ok(apiResponse);
     }
@@ -180,7 +180,7 @@ public class MemberController {
         if (!StringUtils.hasText(workspaceId) || bindingResult.hasErrors()) {
             throw new WorkspaceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
-        ApiResponse<Boolean> apiResponse = memberService.inviteWorkspace(
+        ApiResponse<Boolean> apiResponse = memberServiceImpl.inviteWorkspace(
                 workspaceId, workspaceInviteRequest, locale);
         return ResponseEntity.ok(apiResponse);
     }
@@ -201,7 +201,7 @@ public class MemberController {
         if (!StringUtils.hasText(sessionCode)) {
             throw new WorkspaceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
-        RedirectView redirectView = memberService.inviteWorkspaceAccept(sessionCode, lang);
+        RedirectView redirectView = memberServiceImpl.inviteWorkspaceAccept(sessionCode, lang);
         return redirectView;
     }
 
@@ -217,7 +217,7 @@ public class MemberController {
         if (!StringUtils.hasText(sessionCode)) {
             throw new WorkspaceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
-        RedirectView redirectView = memberService.inviteWorkspaceReject(sessionCode, lang);
+        RedirectView redirectView = memberServiceImpl.inviteWorkspaceReject(sessionCode, lang);
         return redirectView;
     }
 
@@ -236,7 +236,7 @@ public class MemberController {
         if (!StringUtils.hasText(workspaceId) || !StringUtils.hasText(userId)) {
             throw new WorkspaceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
-        ApiResponse<Boolean> apiResponse = memberService.exitWorkspace(workspaceId, userId, locale);
+        ApiResponse<Boolean> apiResponse = memberServiceImpl.exitWorkspace(workspaceId, userId, locale);
         return ResponseEntity.ok(apiResponse);
     }
 
@@ -254,7 +254,7 @@ public class MemberController {
         if (!StringUtils.hasText(workspaceId)) {
             throw new WorkspaceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
-        WorkspaceUserInfoListResponse response = memberService.getSimpleWorkspaceUserList(workspaceId);
+        WorkspaceUserInfoListResponse response = memberServiceImpl.getSimpleWorkspaceUserList(workspaceId);
         return ResponseEntity.ok(new ApiResponse<>(response));
     }
 
@@ -275,7 +275,7 @@ public class MemberController {
         if (!StringUtils.hasText(workspaceId)) {
             throw new WorkspaceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
-        WorkspaceUserLicenseListResponse response = memberService.getLicenseWorkspaceUserList(workspaceId, pageRequest);
+        WorkspaceUserLicenseListResponse response = memberServiceImpl.getLicenseWorkspaceUserList(workspaceId, pageRequest);
         return ResponseEntity.ok(new ApiResponse<>(response));
     }
 

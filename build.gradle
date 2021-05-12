@@ -7,7 +7,8 @@ plugins {
 }
 
 ext {
-    springCloudVersion = 'Hoxton.SR10'
+    set('springCloudVersion' , 'Hoxton.SR10')
+    set('mapstructVersion','1.4.2.Final')
 }
 
 group = 'com.virnect'
@@ -93,6 +94,11 @@ dependencies {
 
     // feign oktthp
     implementation 'io.github.openfeign:feign-okhttp'
+
+    // map struct
+    implementation "org.mapstruct:mapstruct:${mapstructVersion}"
+    annotationProcessor "org.mapstruct:mapstruct-processor:${mapstructVersion}"
+    testAnnotationProcessor "org.mapstruct:mapstruct-processor:${mapstructVersion}"
 }
 
 test {
