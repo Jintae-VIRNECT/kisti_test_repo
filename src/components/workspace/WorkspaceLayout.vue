@@ -271,7 +271,7 @@ export default {
         languageCodes,
         audioRestrictedMode: false, //res.audioRestrictedMode,
         videoRestrictedMode: res.videoRestrictedMode,
-        timeout: res.timeout, //협업 연장 질의 팝업 싸이클을 정하는 값. 분 단위
+        timeout: res.timeout !== undefined ? res.timeout : 60, //협업 연장 질의 팝업 싸이클을 정하는 값. 분 단위
       })
     },
   },

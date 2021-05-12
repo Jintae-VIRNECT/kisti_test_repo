@@ -172,8 +172,12 @@ export default {
       this.callTimeout = setTimeout(() => {
         this.logout()
       }, 30 * 1000)
+
+      const hr = this.coworkTimeout / 60
+      const time = this.coworkTimeout % 60 === 0 ? hr : hr.toFixed(1) //시간 단위로 딱 떨어지지 않는 케이스 대비
+
       this.confirmCancel(
-        this.$t('confirm.call_timeout'),
+        this.$t('confirm.call_timeout', { time }),
         {
           text: this.$t('button.progress'),
           action: this.initTimeout,
@@ -186,12 +190,14 @@ export default {
     },
     //협업 시간 카운트 & 협업 연장 질의 팝업 생성
     initTimeout() {
+      this.debug(`cowork timeout(min) : ${this.coworkTimeout}`)
+
+      if (this.coworkTimeout === 0) return
+
       if (this.callTimeout) {
         clearTimeout(this.callTimeout)
         this.callTimeout = null
       }
-
-      this.debug(`cowork timeout(min) : ${this.coworkTimeout}`)
 
       this.confirmClose()
       this.callTimeout = setTimeout(() => {

@@ -63,7 +63,7 @@
   },
   "confirm": {
     "network_error": "サーバーとの接続が不安定です。 後でもう一度やり直してください。",
-    "call_timeout": "協業に接続してから1時間になりました。<br>協業を継続しますか？",
+    "call_timeout": "協業に接続してから<em>[{time}]</em>時間になりました。<br>協業を継続しますか？",
     "unsupport_feature": "この機能は後日の予定です。",
     "access_remove": "選択したメンバーの参加権限を削除します。",
     "access_removed": "参加権限を削除します。"
