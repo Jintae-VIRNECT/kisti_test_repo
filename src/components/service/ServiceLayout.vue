@@ -118,6 +118,7 @@ export default {
       'video',
       'restrictedRoom',
       'useLocalRecording',
+      'coworkTimeout',
     ]),
     isLeader() {
       return this.account.roleType === ROLE.LEADER
@@ -167,6 +168,7 @@ export default {
         clearTimeout(this.callTimeout)
         this.callTimeout = null
       }
+      //30초후 자동 로그아웃
       this.callTimeout = setTimeout(() => {
         this.logout()
       }, 30 * 1000)
@@ -182,15 +184,20 @@ export default {
         },
       )
     },
+    //협업 시간 카운트 & 협업 연장 질의 팝업 생성
     initTimeout() {
       if (this.callTimeout) {
         clearTimeout(this.callTimeout)
         this.callTimeout = null
       }
+
+      this.debug(`cowork timeout(min) : ${this.coworkTimeout}`)
+
       this.confirmClose()
       this.callTimeout = setTimeout(() => {
         this.showTimeoutConfirm()
-      }, 60 * 60 * 1000)
+      }, this.coworkTimeout * 60 * 1000) //min * sec * ms
+      //companyInfo의 설정 값에 따라 협업 연장 팝업 생성 사이클이 정해진다.
     },
     logout() {
       if (this.callTimeout) {
