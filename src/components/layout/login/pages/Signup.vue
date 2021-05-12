@@ -222,7 +222,6 @@
 </template>
 
 <script>
-import Signup from 'model/signup'
 import AuthService from 'service/auth-service'
 import mixin from 'mixins/mixin'
 import dayjs from 'dayjs'
@@ -381,28 +380,25 @@ export default {
         )
       }
     },
-    async checkSignup() {
+    checkSignup() {
       // 폼내용전송
-      try {
-        const res = await this.passValidate(this.signup.password)
-        if (res) {
-          this.message = ''
-          this.submitted = true
-          // console.log(this.signup)
-          if (this.signup) {
-            setTimeout(() => {
-              window.scrollTo({
-                left: 0,
-                top: 0,
-              })
-            }, 400)
-            this.$router.push({
-              name: 'user',
-              params: { signup: this.signup },
+      if (this.passValidate(this.signup.password)) {
+        this.message = ''
+        this.submitted = true
+        // console.log(this.signup)
+        if (this.signup) {
+          setTimeout(() => {
+            window.scrollTo({
+              left: 0,
+              top: 0,
             })
-          }
-        } else throw res
-      } catch (e) {
+          }, 400)
+          this.$router.push({
+            name: 'user',
+            params: { signup: this.signup },
+          })
+        }
+      } else {
         this.alertMessage(
           this.$t('signup.errors.password.title'),
           this.$t('signup.errors.password.contents'),
@@ -495,21 +491,6 @@ export default {
         }
       }
       this.delayResend()
-    },
-    passValidate(password) {
-      let typeCount = 0
-      if (/[0-9]/.test(password)) typeCount++
-      if (/[a-z]/.test(password)) typeCount++
-      if (/[A-Z]/.test(password)) typeCount++
-      if (/[$.$,$!$@$#$$$%]/.test(password)) typeCount++
-      if (typeCount < 3) return false
-      if (!/^.{8,20}$/.test(password)) return false
-      if (/(.)\1\1\1/.test(password)) return false
-      if (/(0123|1234|2345|3456|4567|5678|6789|7890)/.test(password))
-        return false
-      if (/(0987|9876|8765|7654|6543|5432|4321|3210)/.test(password))
-        return false
-      return true
     },
     resetJoinInfo() {
       this.signup.joinInfo = ''

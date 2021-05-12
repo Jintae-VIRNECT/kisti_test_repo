@@ -183,7 +183,7 @@
                 show-password
                 v-model="resetPass.password"
                 v-if="isCodeAuth === true"
-                v-validate="'required|min:6|max:40'"
+                v-validate="'required|password'"
                 :class="{ 'input-danger': errors.has('password') }"
               ></el-input>
               <el-input
@@ -193,10 +193,11 @@
                 v-if="isCodeAuth === true"
                 show-password
                 name="passwordConfirm"
-                v-validate="'required|min:6|max:40'"
+                v-validate="'required|password'"
                 :class="{
                   'input-danger':
-                    resetPass.password !== resetPass.comfirmPassword,
+                    resetPass.password !== resetPass.comfirmPassword ||
+                    errors.has('password'),
                 }"
               ></el-input>
               <p
@@ -473,28 +474,10 @@ export default {
           )
       }
     },
-    passValidate(password) {
-      let typeCount = 0
-      if (/[0-9]/.test(password)) typeCount++
-      if (/[a-z]/.test(password)) typeCount++
-      if (/[A-Z]/.test(password)) typeCount++
-      if (/[$.$,$!$@$#$$$%]/.test(password)) typeCount++
-      if (typeCount < 3) return false
-      if (!/^.{8,20}$/.test(password)) return false
-      if (/(.)\1\1\1/.test(password)) return false
-      if (/(0123|1234|2345|3456|4567|5678|6789|7890)/.test(password))
-        return false
-      if (/(0987|9876|8765|7654|6543|5432|4321|3210)/.test(password))
-        return false
-      return true
-    },
-    async checkPass() {
-      try {
-        const res = await this.passValidate(this.resetPass.password)
-        if (res) {
-          this.changePass()
-        } else throw res
-      } catch (e) {
+    checkPass() {
+      if (this.passValidate(this.resetPass.password)) {
+        this.changePass()
+      } else {
         this.alertMessage(
           this.$t('find.authCode.error.rulePass'), // 비밀번호 입력 오류
           this.$t('find.authCode.error.rulePassMessage'),
@@ -503,6 +486,12 @@ export default {
         )
       }
     },
+  },
+  created() {
+    this.$validator.extend('password', {
+      getMessage: () => this.$t('signup.password.notice'),
+      validate: value => this.passValidate(value),
+    })
   },
 }
 </script>
