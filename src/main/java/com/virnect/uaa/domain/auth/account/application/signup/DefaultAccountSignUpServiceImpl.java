@@ -22,6 +22,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import com.virnect.uaa.domain.auth.account.application.UserAccessLogService;
+import com.virnect.uaa.domain.auth.account.application.signup.handler.SignUpSuccessHandler;
 import com.virnect.uaa.domain.auth.account.dao.EmailAuthorizationRepository;
 import com.virnect.uaa.domain.auth.account.domain.EmailAuth;
 import com.virnect.uaa.domain.auth.account.dto.ClientGeoIPInfo;

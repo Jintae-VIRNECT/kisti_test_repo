@@ -1,24 +1,90 @@
 package com.virnect.uaa.domain.auth.account.application.token;
 
+import java.util.Date;
+
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.stereotype.Service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.MalformedJwtException;
+import io.jsonwebtoken.SignatureException;
+import io.jsonwebtoken.UnsupportedJwtException;
+import io.jsonwebtoken.impl.TextCodec;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import com.virnect.uaa.domain.auth.account.dto.ClientGeoIPInfo;
 import com.virnect.uaa.domain.auth.account.dto.request.TokenRefreshRequest;
 import com.virnect.uaa.domain.auth.account.dto.response.RefreshTokenResponse;
+import com.virnect.uaa.domain.auth.account.error.AuthenticationErrorCode;
+import com.virnect.uaa.domain.auth.account.error.exception.UserAuthenticationServiceException;
+import com.virnect.uaa.domain.user.dao.user.UserRepository;
+import com.virnect.uaa.domain.user.domain.User;
+import com.virnect.uaa.global.common.ClientUserAgentInformationParser;
+import com.virnect.uaa.global.security.token.JwtPayload;
+import com.virnect.uaa.global.security.token.JwtTokenProvider;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class AccountTokenServiceImpl implements AccountTokenService {
+	private final ObjectMapper objectMapper;
+	private final JwtTokenProvider jwtTokenProvider;
+	private final UserRepository userRepository;
+	private final ClientUserAgentInformationParser clientUserAgentInformationParser;
+
 	@Override
 	public RefreshTokenResponse refreshAccessToken(
 		TokenRefreshRequest tokenRefreshRequest,
 		HttpServletRequest request
 	) {
-		return null;
+		try {
+			log.info("ACCESS TOKEN: {}", tokenRefreshRequest.getAccessToken());
+			log.info("REFRESH TOKEN: {}", tokenRefreshRequest.getRefreshToken());
+			String encodedPayload = tokenRefreshRequest.getAccessToken().split("\\.")[1];
+			log.info("ACCESS TOKEN PAYLOAD BASE64 DECODE: {}", TextCodec.BASE64URL.decodeToString(encodedPayload));
+			JwtPayload accessToken = objectMapper.readValue(
+				TextCodec.BASE64URL.decodeToString(encodedPayload), JwtPayload.class);
+			JwtPayload refreshToken = jwtTokenProvider.getJwtPayload(tokenRefreshRequest.getRefreshToken());
+
+			RefreshTokenResponse refreshTokenResponse = new RefreshTokenResponse();
+			long currentTimeMillis = new Date().getTime() / 1000;
+			if (accessToken.getExp() - currentTimeMillis >= 600) {
+				refreshTokenResponse.setAccessToken(tokenRefreshRequest.getAccessToken());
+				refreshTokenResponse.setRefreshToken(tokenRefreshRequest.getRefreshToken());
+				refreshTokenResponse.setExpireIn(accessToken.getExp() - currentTimeMillis);
+				refreshTokenResponse.setRefreshed(false);
+				return refreshTokenResponse;
+			}
+
+			if (!jwtTokenProvider.isValidToken(tokenRefreshRequest.getRefreshToken()) || !accessToken.getJwtId()
+				.equals(refreshToken.getAccessTokenJwtId())) {
+				throw new UserAuthenticationServiceException(AuthenticationErrorCode.ERR_API_AUTHENTICATION);
+			}
+
+			User user = userRepository.findByUuid(refreshToken.getUuid())
+				.orElseThrow(
+					() -> new UserAuthenticationServiceException(AuthenticationErrorCode.ERR_API_AUTHENTICATION));
+
+			ClientGeoIPInfo clientGeoIPInfo = clientUserAgentInformationParser.getClientGeoIPInformation(request);
+
+			refreshTokenResponse.setAccessToken(
+				jwtTokenProvider.createAccessToken(user, accessToken.getJwtId(), clientGeoIPInfo));
+			refreshTokenResponse.setRefreshToken(tokenRefreshRequest.getRefreshToken());
+			refreshTokenResponse.setExpireIn(jwtTokenProvider.getAccessTokenExpire());
+			refreshTokenResponse.setRefreshed(true);
+
+			return refreshTokenResponse;
+
+		} catch (UnsupportedJwtException | MalformedJwtException | SignatureException | ExpiredJwtException | IllegalArgumentException e) {
+			log.error(e.getMessage(), e);
+			throw new UserAuthenticationServiceException(AuthenticationErrorCode.ERR_API_AUTHENTICATION);
+		} catch (Exception e) {
+			log.error(e.getMessage(), e);
+			throw new UserAuthenticationServiceException(AuthenticationErrorCode.ERR_REFRESH_ACCESS_TOKEN);
+		}
 	}
 }

@@ -1,4 +1,4 @@
-package com.virnect.uaa.domain.auth.account.application.signup;
+package com.virnect.uaa.domain.auth.account.application.signup.handler;
 
 import java.util.Locale;
 

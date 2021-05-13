@@ -54,7 +54,7 @@ public class JwtTokenProvider {
 			authorities.add(permission.getPermission());
 		}
 
-		log.info("[CREATE_ACCESS_TOKEN][EXP] - IAT: {}, EXP: {}", now.toString(), expireDate.toString());
+		log.info("[CREATE_ACCESS_TOKEN][EXP] - IAT: {}, EXP: {}", now, expireDate);
 
 		return Jwts.builder()
 			.setSubject(user.getName())
@@ -82,7 +82,7 @@ public class JwtTokenProvider {
 		Date now = new Date();
 		Date expireDate;
 		expireDate = new Date((now.getTime() + tokenProperty.getJwtConfig().getRefreshTokenExpire()));
-		log.info("[CREATE_REFRESH_TOKEN][EXP] - IAT: {}, EXP: {}", now.toString(), expireDate.toString());
+		log.info("[CREATE_REFRESH_TOKEN][EXP] - IAT: {}, EXP: {}", now, expireDate);
 
 		List<String> authorities = new ArrayList<>();
 		for (UserPermission userPermission : user.getUserPermissionList()) {
