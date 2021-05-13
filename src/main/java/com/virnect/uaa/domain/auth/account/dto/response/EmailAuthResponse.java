@@ -15,7 +15,7 @@ import lombok.RequiredArgsConstructor;
 @Getter
 @RequiredArgsConstructor
 @ApiModel
-public class EmailAuthenticationResponse {
+public class EmailAuthResponse {
 	@ApiModelProperty(value = "이메일 인증 요청 처리 결과", example = "true")
 	private final boolean result;
 }

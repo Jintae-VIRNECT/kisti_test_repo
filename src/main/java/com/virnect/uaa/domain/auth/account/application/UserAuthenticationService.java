@@ -12,7 +12,7 @@ import com.virnect.uaa.domain.auth.account.dto.request.OTPLoginRequest;
 import com.virnect.uaa.domain.auth.account.dto.request.OTPQRGenerateRequest;
 import com.virnect.uaa.domain.auth.account.dto.request.RegisterRequest;
 import com.virnect.uaa.domain.auth.account.dto.request.TokenRefreshRequest;
-import com.virnect.uaa.domain.auth.account.dto.response.EmailAuthenticationResponse;
+import com.virnect.uaa.domain.auth.account.dto.response.EmailAuthResponse;
 import com.virnect.uaa.domain.auth.account.dto.response.EmailVerificationResponse;
 import com.virnect.uaa.domain.auth.account.dto.response.LogoutResponse;
 import com.virnect.uaa.domain.auth.account.dto.response.OAuthTokenResponse;
@@ -32,7 +32,7 @@ public interface UserAuthenticationService {
 	LogoutResponse logout(HttpServletRequest request, HttpServletResponse response, LogoutRequest logoutRequest);
 
 	// 이메일 인증
-	EmailAuthenticationResponse emailAuthorization(EmailAuthRequest emailAuthRequest, Locale locale);
+	EmailAuthResponse emailAuthorization(EmailAuthRequest emailAuthRequest, Locale locale);
 
 	// 이메일 인증 코드 확인
 	EmailVerificationResponse emailVerificationCodeCheck(String code, String email);

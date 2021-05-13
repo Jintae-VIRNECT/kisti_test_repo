@@ -94,7 +94,7 @@ import com.virnect.uaa.infra.email.EmailMessage;
 import com.virnect.uaa.infra.email.EmailService;
 import com.virnect.uaa.infra.file.Default;
 import com.virnect.uaa.infra.file.FileService;
-import com.virnect.uaa.infra.rest.billing.PayApiService;
+import com.virnect.uaa.infra.rest.billing.PayService;
 import com.virnect.uaa.infra.rest.content.ContentRestService;
 import com.virnect.uaa.infra.rest.content.dto.ContentSecessionResponse;
 import com.virnect.uaa.infra.rest.license.LicenseRestService;
@@ -137,7 +137,7 @@ public class UserServiceImpl implements UserService {
 	private final ContentRestService contentRestService;
 	private final ProcessRestService processRestService;
 	private final LicenseRestService licenseRestService;
-	private final PayApiService payApiService;
+	private final PayService payApiService;
 	private final RemoteRestService remoteRestService;
 	private final MessageSource messageSource;
 
@@ -1107,26 +1107,15 @@ public class UserServiceImpl implements UserService {
 	@Override
 	@Transactional
 	public UserInfoResponse registerNewMember(RegisterMemberRequest registerMemberRequest) {
-		User user = User.builder()
-			.uuid(RandomStringUtils.randomAlphanumeric(13))
-			.email(registerMemberRequest.getEmail())
-			.password(passwordEncoder.encode(registerMemberRequest.getPassword()))
-			.lastName(registerMemberRequest.getEmail())
-			.firstName("-Member")
-			.name(registerMemberRequest.getEmail() + "-Member")
-			.nickname(registerMemberRequest.getEmail() + "-Member")
-			.profile(Default.USER_PROFILE.getValue())
-			.userType(UserType.MEMBER_USER)
-			.birth(LocalDate.now())
-			.joinInfo("워크스페이스 멤버 등록")
-			.serviceInfo("워크스페이스 멤버 등록")
-			.language(Language.KO)
-			.marketInfoReceive(Status.REJECT)
+		String encodedPassword = passwordEncoder.encode(registerMemberRequest.getPassword());
+		User user = User.createMemberUser()
+			.registerMemberRequest(registerMemberRequest)
+			.encodedPassword(encodedPassword)
 			.build();
 
 		userRepository.save(user);
 
-		log.info("[REGISTER_NEW_MEMBER_USER] - {}", user.toString());
+		log.info("[REGISTER_NEW_MEMBER_USER] - {}", user);
 
 		return convertUserEntityToUserInfoDto(user);
 	}
@@ -1170,7 +1159,7 @@ public class UserServiceImpl implements UserService {
 		// 계정이 없는 경우
 		if (!user.isPresent()) {
 			return new UserEmailExistCheckResponse(email, false, LocalDateTime.now());
-		}
+		}	
 
 		//  비밀번호 찾기 질의 정보가 설정되어있지 않은 경우
 		if (StringUtils.isEmpty(user.get().getQuestion()) && StringUtils.isEmpty(user.get().getAnswer())) {

@@ -69,7 +69,7 @@ import com.virnect.uaa.domain.auth.account.dto.request.OTPLoginRequest;
 import com.virnect.uaa.domain.auth.account.dto.request.OTPQRGenerateRequest;
 import com.virnect.uaa.domain.auth.account.dto.request.RegisterRequest;
 import com.virnect.uaa.domain.auth.account.dto.request.TokenRefreshRequest;
-import com.virnect.uaa.domain.auth.account.dto.response.EmailAuthenticationResponse;
+import com.virnect.uaa.domain.auth.account.dto.response.EmailAuthResponse;
 import com.virnect.uaa.domain.auth.account.dto.response.EmailVerificationResponse;
 import com.virnect.uaa.domain.auth.account.dto.response.LogoutResponse;
 import com.virnect.uaa.domain.auth.account.dto.response.OAuthTokenResponse;
@@ -433,7 +433,7 @@ public class OnPremiseUserAuthenticationServiceImpl implements UserAuthenticatio
 	 * @param locale
 	 * @return
 	 */
-	public EmailAuthenticationResponse emailAuthorization(
+	public EmailAuthResponse emailAuthorization(
 		EmailAuthRequest emailAuthRequest, Locale locale
 	) {
 		// 탈퇴 회원의 이메일 정보인지 확인
@@ -448,7 +448,7 @@ public class OnPremiseUserAuthenticationServiceImpl implements UserAuthenticatio
 		// 인증 이메일 전송
 		sendAuthenticationEmail(emailAuthRequest, locale);
 
-		return new EmailAuthenticationResponse(true);
+		return new EmailAuthResponse(true);
 	}
 
 	private void checkSecessionUserEmail(String email) {

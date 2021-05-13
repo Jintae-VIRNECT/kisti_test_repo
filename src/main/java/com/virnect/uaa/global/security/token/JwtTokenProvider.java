@@ -14,9 +14,9 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
-import io.jsonwebtoken.SignatureException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -126,7 +126,7 @@ public class JwtTokenProvider {
 		try {
 			Jwts.parser().setSigningKey(getJwtSecret()).parseClaimsJws(authorizationToken);
 			return true;
-		} catch (SignatureException e) {
+		} catch (JwtException e) {
 			log.info("Invalid JWT Signature " + e);
 			log.debug("Exception " + e.getMessage());
 			return false;

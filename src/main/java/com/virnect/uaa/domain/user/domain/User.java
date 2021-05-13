@@ -16,15 +16,19 @@ import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
+import org.apache.commons.lang3.RandomStringUtils;
 import org.hibernate.envers.Audited;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
+import com.virnect.uaa.domain.auth.account.dto.request.RegisterRequest;
+import com.virnect.uaa.domain.user.dto.request.RegisterMemberRequest;
+import com.virnect.uaa.infra.file.Default;
 
 /**
  * Project: user
@@ -98,7 +102,6 @@ public class User extends BaseTimeEntity {
 	@Enumerated(EnumType.STRING)
 	private Language language;
 
-
 	@Column(name = "international_number")
 	private String internationalNumber;
 
@@ -135,32 +138,47 @@ public class User extends BaseTimeEntity {
 	@OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
 	private List<UserPermission> userPermissionList = new ArrayList<>();
 
-	@Builder
+	@Builder(builderMethodName = "createMemberUser")
 	public User(
-		String uuid, String name, String firstName, String lastName, String email, String password, LocalDate birth,
-		String description, String profile, String serviceInfo, String joinInfo, UserType userType, Language language,
-		Status marketInfoReceive, String mobile, String internationalNumber, String recoveryEmail, String nickname
+		RegisterMemberRequest registerMemberRequest,
+		String encodedPassword
 	) {
-		this.uuid = uuid;
-		this.name = name;
-		this.firstName = firstName;
-		this.lastName = lastName;
-		this.email = email;
-		this.password = password;
-		this.birth = birth;
-		this.description = description;
-		this.profile = profile;
-		this.serviceInfo = serviceInfo;
-		this.joinInfo = joinInfo;
-		this.userType = userType;
-		this.language = language;
-		this.marketInfoReceive = marketInfoReceive;
-		this.internationalNumber = internationalNumber;
-		this.mobile = mobile;
-		this.recoveryEmail = recoveryEmail;
-		this.nickname = nickname;
-		this.passwordUpdateDate = LocalDateTime.now();
+		this.uuid = RandomStringUtils.randomAlphanumeric(13);
+		this.email = registerMemberRequest.getEmail();
+		this.password = encodedPassword;
+		this.lastName = registerMemberRequest.getEmail();
+		this.firstName = "-Member";
+		this.name = registerMemberRequest.getEmail() + "-Member";
+		this.nickname = registerMemberRequest.getEmail() + "-Member";
+		this.profile = Default.USER_PROFILE.getValue();
+		this.userType = UserType.USER;
+		this.birth =LocalDate.now();
+		this.joinInfo = "워크스페이스 멤버 등록";
+		this.serviceInfo = "워크스페이스 멤버 등록";
+		this.language = Language.KO;
+		this.marketInfoReceive = Status.REJECT;
 		this.accountPasswordInitialized = false;
+	}
+
+	@Builder(builderMethodName = "createNewUser")
+	public User(RegisterRequest registerRequest, String encodedPassword, String profileUrl) {
+		this.uuid = RandomStringUtils.randomAlphanumeric(13);
+		this.email = registerRequest.getEmail();
+		this.password = encodedPassword;
+		this.name = registerRequest.getName();
+		this.profile = profileUrl;
+		this.firstName = registerRequest.getFirstName();
+		this.lastName = registerRequest.getLastName();
+		this.nickname = registerRequest.getNickname();
+		this.birth = registerRequest.getBirth();
+		this.internationalNumber = registerRequest.getInternationalNumberOfMobile();
+		this.mobile = registerRequest.getMobile();
+		this.recoveryEmail = registerRequest.getRecoveryEmail();
+		this.joinInfo = registerRequest.getJoinInfo();
+		this.serviceInfo = registerRequest.getServiceInfo();
+		this.marketInfoReceive = Status.valueOf(registerRequest.getMarketInfoReceive());
+		this.language = Language.KO;
+		this.userType = UserType.USER;
 	}
 
 	@Override

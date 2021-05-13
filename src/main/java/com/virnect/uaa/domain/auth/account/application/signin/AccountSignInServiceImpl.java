@@ -18,6 +18,7 @@ import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import com.virnect.uaa.domain.auth.account.application.UserAccessLogService;
 import com.virnect.uaa.domain.auth.account.dao.BlockTokenRepository;
 import com.virnect.uaa.domain.auth.account.dao.LoginAttemptRepository;
 import com.virnect.uaa.domain.auth.account.dao.UserOTPRepository;
@@ -37,10 +38,7 @@ import com.virnect.uaa.domain.auth.account.error.exception.LoginFailException;
 import com.virnect.uaa.domain.auth.account.error.exception.UserAuthenticationServiceException;
 import com.virnect.uaa.domain.auth.account.event.account.AccountLockEvent;
 import com.virnect.uaa.domain.user.dao.user.UserRepository;
-import com.virnect.uaa.domain.user.dao.useraccesslog.UserAccessLogRepository;
 import com.virnect.uaa.domain.user.domain.User;
-import com.virnect.uaa.domain.user.domain.UserAccessLog;
-import com.virnect.uaa.global.common.ClientUserAgentInformationParser;
 import com.virnect.uaa.global.common.TotpQRCodeGenerator;
 import com.virnect.uaa.global.security.token.JwtPayload;
 import com.virnect.uaa.global.security.token.JwtTokenProvider;
@@ -55,11 +53,10 @@ public class AccountSignInServiceImpl implements AccountSignInService {
 	private final JwtTokenProvider jwtTokenProvider;
 	private final PasswordEncoder passwordEncoder;
 	private final ApplicationEventPublisher applicationEventPublisher;
-	private final UserAccessLogRepository userAccessLogRepository;
 	private final BlockTokenRepository blockTokenRepository;
 	private final UserOTPRepository userOTPRepository;
 	private final TotpQRCodeGenerator totpQRCodeGenerator;
-	private final ClientUserAgentInformationParser clientUserAgentInformationParser;
+	private final UserAccessLogService userAccessLogService;
 
 	@Transactional
 	@Override
@@ -81,7 +78,7 @@ public class AccountSignInServiceImpl implements AccountSignInService {
 		removeLoginAttemptHistory(user.getEmail());
 
 		// save account access log
-		ClientGeoIPInfo clientGeoIPInfo = saveUserAccessLogInformation(user, request);
+		ClientGeoIPInfo clientGeoIPInfo = userAccessLogService.saveUserAccessLogInformation(user, request);
 
 		return getOauthLoginResponse(user, clientGeoIPInfo);
 	}
@@ -114,7 +111,7 @@ public class AccountSignInServiceImpl implements AccountSignInService {
 		removeLoginAttemptHistory(loginUser.getEmail());
 
 		// save account access log
-		ClientGeoIPInfo clientGeoIPInfo = saveUserAccessLogInformation(loginUser, request);
+		ClientGeoIPInfo clientGeoIPInfo = userAccessLogService.saveUserAccessLogInformation(loginUser, request);
 
 		return getOauthLoginResponse(loginUser, clientGeoIPInfo);
 	}
@@ -295,13 +292,6 @@ public class AccountSignInServiceImpl implements AccountSignInService {
 
 	public void removeLoginAttemptHistory(String userEmail) {
 		loginAttemptRepository.deleteById(userEmail);
-	}
-
-	public ClientGeoIPInfo saveUserAccessLogInformation(User user, HttpServletRequest request) {
-		ClientGeoIPInfo clientGeoIPInfo = clientUserAgentInformationParser.getClientGeoIPInformation(request);
-		UserAccessLog deviceMetadata = UserAccessLog.ofUserAndClientGeoIPInfo(user, clientGeoIPInfo);
-		userAccessLogRepository.save(deviceMetadata);
-		return clientGeoIPInfo;
 	}
 
 	public User findUserByUserUUID(String uuid, AuthenticationErrorCode errorCode) {

@@ -26,10 +26,10 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import springfox.documentation.annotations.ApiIgnore;
 
-import com.virnect.uaa.domain.auth.account.application.UserAuthenticationService;
+import com.virnect.uaa.domain.auth.account.application.signup.AccountSignUpService;
 import com.virnect.uaa.domain.auth.account.dto.request.EmailAuthRequest;
 import com.virnect.uaa.domain.auth.account.dto.request.RegisterRequest;
-import com.virnect.uaa.domain.auth.account.dto.response.EmailAuthenticationResponse;
+import com.virnect.uaa.domain.auth.account.dto.response.EmailAuthResponse;
 import com.virnect.uaa.domain.auth.account.dto.response.EmailVerificationResponse;
 import com.virnect.uaa.domain.auth.account.dto.response.OAuthTokenResponse;
 import com.virnect.uaa.domain.auth.account.error.AuthenticationErrorCode;
@@ -43,7 +43,7 @@ import com.virnect.uaa.global.common.ApiResponse;
 @RequiredArgsConstructor
 public class AccountSignUpController {
 	private static final String PARAMETER_LOG_MESSAGE = "[PARAMETER ERROR]:: {}";
-	private final UserAuthenticationService userAuthenticationService;
+	private final AccountSignUpService accountSignUpService;
 
 	@InitBinder("registerRequest")
 	public void initBinder(WebDataBinder binder) {
@@ -66,24 +66,21 @@ public class AccountSignUpController {
 			throw new UserAuthenticationServiceException(AuthenticationErrorCode.ERR_INVALID_REQUEST_PARAMETER);
 		}
 		log.info("SignUp Request: [{}]", registerRequest.toString());
-		OAuthTokenResponse registerResponse = userAuthenticationService.register(
-			registerRequest, request, locale
-		);
+		OAuthTokenResponse registerResponse = accountSignUpService.signUp(registerRequest, request, locale);
 		return ResponseEntity.ok(new ApiResponse<>(registerResponse));
 	}
 
 	@ApiOperation(value = "이메일 인증 API")
 	@PostMapping("/email")
-	public ResponseEntity<ApiResponse<EmailAuthenticationResponse>> emailAuthorizationRequestHandler(
+	public ResponseEntity<ApiResponse<EmailAuthResponse>> emailAuthorizationRequestHandler(
 		@RequestBody @Valid EmailAuthRequest emailAuthRequest, Locale locale, BindingResult result
 	) {
 		if (result.hasErrors()) {
 			result.getAllErrors().forEach(message -> log.error(PARAMETER_LOG_MESSAGE, message));
 			throw new UserAuthenticationServiceException(AuthenticationErrorCode.ERR_INVALID_REQUEST_PARAMETER);
 		}
-		EmailAuthenticationResponse emailAuthorizationResponse = userAuthenticationService.emailAuthorization(
-			emailAuthRequest, locale);
-		return ResponseEntity.ok(new ApiResponse<>(emailAuthorizationResponse));
+		EmailAuthResponse emailAuthResponse = accountSignUpService.emailAuthentication(emailAuthRequest, locale);
+		return ResponseEntity.ok(new ApiResponse<>(emailAuthResponse));
 	}
 
 	@ApiOperation(value = "이메일 인증 코드 확인 API")
@@ -94,9 +91,8 @@ public class AccountSignUpController {
 		if (StringUtils.isEmpty(code) || StringUtils.isEmpty(email)) {
 			throw new UserAuthenticationServiceException(AuthenticationErrorCode.ERR_INVALID_REQUEST_PARAMETER);
 		}
-		EmailVerificationResponse verificationCodeCheckResult = userAuthenticationService.emailVerificationCodeCheck(
-			code, email);
-		return ResponseEntity.ok(new ApiResponse<>(verificationCodeCheckResult));
+		EmailVerificationResponse authCodeVerification = accountSignUpService.emailAuthCodeVerification(code, email);
+		return ResponseEntity.ok(new ApiResponse<>(authCodeVerification));
 	}
 
 }
