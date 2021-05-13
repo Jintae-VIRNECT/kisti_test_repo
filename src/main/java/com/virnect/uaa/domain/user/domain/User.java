@@ -138,7 +138,7 @@ public class User extends BaseTimeEntity {
 	@OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
 	private List<UserPermission> userPermissionList = new ArrayList<>();
 
-	@Builder(builderMethodName = "createMemberUser")
+	@Builder(builderClassName = "ByRegisterMemberUserBuilder", builderMethodName = "ByRegisterMemberUserBuilder")
 	public User(
 		RegisterMemberRequest registerMemberRequest,
 		String encodedPassword
@@ -152,7 +152,7 @@ public class User extends BaseTimeEntity {
 		this.nickname = registerMemberRequest.getEmail() + "-Member";
 		this.profile = Default.USER_PROFILE.getValue();
 		this.userType = UserType.USER;
-		this.birth =LocalDate.now();
+		this.birth = LocalDate.now();
 		this.joinInfo = "워크스페이스 멤버 등록";
 		this.serviceInfo = "워크스페이스 멤버 등록";
 		this.language = Language.KO;
@@ -160,7 +160,7 @@ public class User extends BaseTimeEntity {
 		this.accountPasswordInitialized = false;
 	}
 
-	@Builder(builderMethodName = "createNewUser")
+	@Builder(builderClassName = "BySignUpUserBuilder", builderMethodName = "BySignUpUserBuilder")
 	public User(RegisterRequest registerRequest, String encodedPassword, String profileUrl) {
 		this.uuid = RandomStringUtils.randomAlphanumeric(13);
 		this.email = registerRequest.getEmail();

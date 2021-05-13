@@ -221,84 +221,85 @@ public class UserServiceImpl implements UserService {
 	@Override
 	@Transactional
 	public UserInfoResponse register(RegisterRequest registerRequest) {
-		// 1. 회원가입 세션 확인
-		EmailAuth emailAuth = emailAuthRepository.findById(registerRequest.getEmail())
-			.orElseThrow(() -> new UserServiceException(UserAccountErrorCode.ERR_REGISTER_SESSION_EXPIRE));
-
-		if (!emailAuth.getSessionCode().equals(registerRequest.getSessionCode())) {
-			throw new UserServiceException(UserAccountErrorCode.ERR_REGISTER_SESSION_EXPIRE);
-		}
-
-		// 2. 이메일 중복 확인
-		boolean hasDuplicateEmail = userRepository.existsByEmail(registerRequest.getEmail());
-
-		if (hasDuplicateEmail) {
-			throw new UserServiceException(UserAccountErrorCode.ERR_REGISTER_DUPLICATE_EMAIL);
-		}
-
-		// 3. 계정 식별자 생성
-		String uuid = RandomStringUtils.randomAlphanumeric(13);
-
-		// 4. 기본 계정 정보 생성
-		String name = registerRequest.getLastName() + registerRequest.getFirstName();
-		User user = User.builder()
-			.email(registerRequest.getEmail())
-			.password(passwordEncoder.encode(registerRequest.getPassword()))
-			.name(name)
-			.firstName(registerRequest.getFirstName())
-			.lastName(registerRequest.getLastName())
-			.birth(registerRequest.getBirth())
-			.joinInfo(registerRequest.getJoinInfo())
-			.serviceInfo(registerRequest.getServiceInfo())
-			.marketInfoReceive(registerRequest.getMarketInfoReceive())
-			.language(Language.KO)
-			.userType(UserType.USER)
-			.uuid(uuid)
-			.build();
-
-		// 5. 계정 추가정보 - 프로필 이미지 정보
-		if (registerRequest.getProfile() != null) {
-			try {
-				String profile = fileService.upload(registerRequest.getProfile());
-				user.setProfile(profile);
-			} catch (IOException e) {
-				log.error(e.getMessage());
-			}
-		} else {
-			user.setProfile(Default.USER_PROFILE.getValue());
-		}
-
-		// 6. 계정 추가정보 - 닉네임 정보
-		if (!StringUtils.hasText(registerRequest.getNickname())) {
-			user.setNickname(name);
-		} else {
-			user.setNickname(registerRequest.getNickname());
-		}
-
-		// 7.  계정 추가정보 - 연락처 정보
-		if (StringUtils.hasText(registerRequest.getMobile())) {
-			if (!registerRequest.getMobile().matches("^\\+\\d+-\\d{10,}$")) {
-				log.error("휴대전화번호 형식 불일치(^\\+\\d+-\\d{10,}$) : [{}]", registerRequest.getMobile());
-				throw new UserServiceException(UserAccountErrorCode.ERR_INVALID_REQUEST_PARAMETER);
-			}
-			String internationalNumber = registerRequest.getMobile().split("-")[0];
-			user.setInternationalNumber(internationalNumber);
-			//전화번호 추출(국제번호+ '-' 제외)
-			String mobileNumber = registerRequest.getMobile().substring(internationalNumber.length() + 1);
-			user.setMobile(mobileNumber);
-		}
-
-		// 8.  계정 추가정보 - 복구 이메일 정보
-		if (StringUtils.hasText(registerRequest.getRecoveryEmail())) {
-			user.setRecoveryEmail(registerRequest.getRecoveryEmail());
-		}
-
-		userRepository.save(user);
-
-		// 회원가입 시 한달 무료 이벤트 쿠폰 등록
-		payApiService.eventCouponRegisterToNewUser(user.getEmail(), user.getName(), user.getId());
-
-		return convertUserEntityToUserInfoDto(user);
+		// // 1. 회원가입 세션 확인
+		// EmailAuth emailAuth = emailAuthRepository.findById(registerRequest.getEmail())
+		// 	.orElseThrow(() -> new UserServiceException(UserAccountErrorCode.ERR_REGISTER_SESSION_EXPIRE));
+		//
+		// if (!emailAuth.getSessionCode().equals(registerRequest.getSessionCode())) {
+		// 	throw new UserServiceException(UserAccountErrorCode.ERR_REGISTER_SESSION_EXPIRE);
+		// }
+		//
+		// // 2. 이메일 중복 확인
+		// boolean hasDuplicateEmail = userRepository.existsByEmail(registerRequest.getEmail());
+		//
+		// if (hasDuplicateEmail) {
+		// 	throw new UserServiceException(UserAccountErrorCode.ERR_REGISTER_DUPLICATE_EMAIL);
+		// }
+		//
+		// // 3. 계정 식별자 생성
+		// String uuid = RandomStringUtils.randomAlphanumeric(13);
+		//
+		// // 4. 기본 계정 정보 생성
+		// String name = registerRequest.getLastName() + registerRequest.getFirstName();
+		// User user = User.builder()
+		// 	.email(registerRequest.getEmail())
+		// 	.password(passwordEncoder.encode(registerRequest.getPassword()))
+		// 	.name(name)
+		// 	.firstName(registerRequest.getFirstName())
+		// 	.lastName(registerRequest.getLastName())
+		// 	.birth(registerRequest.getBirth())
+		// 	.joinInfo(registerRequest.getJoinInfo())
+		// 	.serviceInfo(registerRequest.getServiceInfo())
+		// 	.marketInfoReceive(registerRequest.getMarketInfoReceive())
+		// 	.language(Language.KO)
+		// 	.userType(UserType.USER)
+		// 	.uuid(uuid)
+		// 	.build();
+		//
+		// // 5. 계정 추가정보 - 프로필 이미지 정보
+		// if (registerRequest.getProfile() != null) {
+		// 	try {
+		// 		String profile = fileService.upload(registerRequest.getProfile());
+		// 		user.setProfile(profile);
+		// 	} catch (IOException e) {
+		// 		log.error(e.getMessage());
+		// 	}
+		// } else {
+		// 	user.setProfile(Default.USER_PROFILE.getValue());
+		// }
+		//
+		// // 6. 계정 추가정보 - 닉네임 정보
+		// if (!StringUtils.hasText(registerRequest.getNickname())) {
+		// 	user.setNickname(name);
+		// } else {
+		// 	user.setNickname(registerRequest.getNickname());
+		// }
+		//
+		// // 7.  계정 추가정보 - 연락처 정보
+		// if (StringUtils.hasText(registerRequest.getMobile())) {
+		// 	if (!registerRequest.getMobile().matches("^\\+\\d+-\\d{10,}$")) {
+		// 		log.error("휴대전화번호 형식 불일치(^\\+\\d+-\\d{10,}$) : [{}]", registerRequest.getMobile());
+		// 		throw new UserServiceException(UserAccountErrorCode.ERR_INVALID_REQUEST_PARAMETER);
+		// 	}
+		// 	String internationalNumber = registerRequest.getMobile().split("-")[0];
+		// 	user.setInternationalNumber(internationalNumber);
+		// 	//전화번호 추출(국제번호+ '-' 제외)
+		// 	String mobileNumber = registerRequest.getMobile().substring(internationalNumber.length() + 1);
+		// 	user.setMobile(mobileNumber);
+		// }
+		//
+		// // 8.  계정 추가정보 - 복구 이메일 정보
+		// if (StringUtils.hasText(registerRequest.getRecoveryEmail())) {
+		// 	user.setRecoveryEmail(registerRequest.getRecoveryEmail());
+		// }
+		//
+		// userRepository.save(user);
+		//
+		// // 회원가입 시 한달 무료 이벤트 쿠폰 등록
+		// payApiService.eventCouponRegisterToNewUser(user.getEmail(), user.getName(), user.getId());
+		//
+		// return convertUserEntityToUserInfoDto(user);
+		return null;
 	}
 
 	/**
@@ -1108,7 +1109,7 @@ public class UserServiceImpl implements UserService {
 	@Transactional
 	public UserInfoResponse registerNewMember(RegisterMemberRequest registerMemberRequest) {
 		String encodedPassword = passwordEncoder.encode(registerMemberRequest.getPassword());
-		User user = User.createMemberUser()
+		User user = User.ByRegisterMemberUserBuilder()
 			.registerMemberRequest(registerMemberRequest)
 			.encodedPassword(encodedPassword)
 			.build();

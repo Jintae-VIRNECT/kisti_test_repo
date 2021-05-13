@@ -116,7 +116,7 @@ public class DefaultAccountSignUpServiceImpl implements AccountSignUpService {
 	public User createNewUser(RegisterRequest registerRequest) {
 		String profileUrl = getUserProfileUrlFromProfileImage(registerRequest.getProfile());
 		String encodedPassword = passwordEncoder.encode(registerRequest.getPassword());
-		return User.createNewUser()
+		return User.BySignUpUserBuilder()
 			.registerRequest(registerRequest)
 			.encodedPassword(encodedPassword)
 			.profileUrl(profileUrl)
