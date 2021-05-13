@@ -1,15 +1,22 @@
 package com.virnect.uaa.domain.auth.account.application.signup;
 
 import java.io.IOException;
+import java.time.Duration;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
 import java.util.Locale;
 import java.util.UUID;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.lang.RandomStringUtils;
+import org.springframework.context.MessageSource;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+import org.thymeleaf.context.Context;
+import org.thymeleaf.spring5.SpringTemplateEngine;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -25,9 +32,12 @@ import com.virnect.uaa.domain.auth.account.dto.response.EmailVerificationRespons
 import com.virnect.uaa.domain.auth.account.dto.response.OAuthTokenResponse;
 import com.virnect.uaa.domain.auth.account.error.AuthenticationErrorCode;
 import com.virnect.uaa.domain.auth.account.error.exception.UserAuthenticationServiceException;
+import com.virnect.uaa.domain.user.dao.SecessionUserRepository;
 import com.virnect.uaa.domain.user.dao.user.UserRepository;
 import com.virnect.uaa.domain.user.domain.User;
 import com.virnect.uaa.global.security.token.JwtTokenProvider;
+import com.virnect.uaa.infra.email.EmailMessage;
+import com.virnect.uaa.infra.email.EmailService;
 import com.virnect.uaa.infra.file.Default;
 import com.virnect.uaa.infra.file.FileService;
 
@@ -37,11 +47,15 @@ import com.virnect.uaa.infra.file.FileService;
 public class DefaultAccountSignUpServiceImpl implements AccountSignUpService {
 	private final FileService fileService;
 	private final PasswordEncoder passwordEncoder;
+	private final SecessionUserRepository secessionUserRepository;
 	private final UserRepository userRepository;
 	private final EmailAuthorizationRepository emailAuthorizationRepository;
 	private final SignUpSuccessHandler signUpSuccessHandler;
 	private final UserAccessLogService userAccessLogService;
 	private final JwtTokenProvider jwtTokenProvider;
+	private final MessageSource messageSource;
+	private final SpringTemplateEngine templateEngine;
+	private final EmailService emailService;
 
 	@Transactional
 	@Override
@@ -79,7 +93,19 @@ public class DefaultAccountSignUpServiceImpl implements AccountSignUpService {
 		EmailAuthRequest emailAuthRequest,
 		Locale locale
 	) {
-		return null;
+		// 탈퇴 회원의 이메일 정보인지 확인
+		checkSecessionUserEmail(emailAuthRequest.getEmail());
+
+		// 이미 가입된 사용자가 있는지 확인
+		emailDuplicateCheck(emailAuthRequest);
+
+		// 기존 인증 요청이 있는지 확인
+		authorizationRequestDuplicateCheck(emailAuthRequest);
+
+		// 인증 이메일 전송
+		sendAuthenticationEmail(emailAuthRequest, locale);
+
+		return new EmailAuthResponse(true);
 	}
 
 	@Override
@@ -88,6 +114,88 @@ public class DefaultAccountSignUpServiceImpl implements AccountSignUpService {
 		String code
 	) {
 		return null;
+	}
+
+	private void checkSecessionUserEmail(String email) {
+		boolean isSecessionUserEmail = secessionUserRepository.existsByEmail(email);
+		if (isSecessionUserEmail) {
+			log.info("[EMAIL_AUTHENTICATION] [SECESSION_USER] : [{}]", email);
+			throw new UserAuthenticationServiceException(AuthenticationErrorCode.ERR_REGISTER_SECESSION_USER_EMAIL);
+		}
+	}
+
+	private void emailDuplicateCheck(EmailAuthRequest emailAuthRequest) {
+		boolean hasDuplicatedEmail = userRepository.existsByEmail(emailAuthRequest.getEmail());
+
+		// Check email is Duplicate
+		if (hasDuplicatedEmail) {
+			throw new UserAuthenticationServiceException(AuthenticationErrorCode.ERR_REGISTER_DUPLICATED_EMAIL);
+		}
+	}
+
+	/**
+	 * 이메일 인증 요청 중복 여부 검사
+	 *
+	 * @param emailAuthRequest - 이메일 인증 요청 정보
+	 */
+	private void authorizationRequestDuplicateCheck(EmailAuthRequest emailAuthRequest) {
+		boolean hasPreviousRequest = emailAuthorizationRepository
+			.existsById(emailAuthRequest.getEmail());
+
+		// if have previous request
+		if (hasPreviousRequest) {
+			// delete previous request
+			emailAuthorizationRepository.deleteById(emailAuthRequest.getEmail());
+		}
+	}
+
+	/**
+	 * 이메일 인증 메일 전송 처리
+	 *
+	 * @param emailAuthRequest - 이메일 인증 요청 정보
+	 * @param locale
+	 */
+	private void sendAuthenticationEmail(EmailAuthRequest emailAuthRequest, Locale locale) {
+		String code = RandomStringUtils.randomNumeric(6);
+		String sessionCode = UUID.randomUUID().toString().replace("-", "");
+		long duration = Duration.ofMinutes(30).getSeconds();
+
+		ZoneOffset seoulZoneOffset = ZoneOffset.of("+09:00");
+		ZonedDateTime zonedDateTime = ZonedDateTime.now(seoulZoneOffset).plusSeconds(duration);
+
+		EmailAuth emailAuth = EmailAuth.builder()
+			.email(emailAuthRequest.getEmail())
+			.code(code)
+			.sessionCode(sessionCode)
+			.expireDate(duration)
+			.build();
+
+		// save new authentication request on redis
+		emailAuthorizationRepository.save(emailAuth);
+
+		// send email authentication email
+		Context context = new Context();
+		context.setVariable("email", emailAuthRequest.getEmail());
+		context.setVariable("code", code);
+		context.setVariable("expiredDate", zonedDateTime);
+
+		String mailTitle = messageSource.getMessage("MAIL_TITLE_OF_REGISTER_EMAIL_CHECK", null, locale);
+		String mailTemplatePath = String.format("%s/register/email_check", locale.getLanguage());
+		log.info("mailTemplatePath: {}", mailTemplatePath);
+		String message = templateEngine.process(mailTemplatePath, context);
+
+		EmailMessage registerEmailAuthenticationMail = new EmailMessage();
+		registerEmailAuthenticationMail.setSubject(mailTitle);
+		registerEmailAuthenticationMail.setTo(emailAuthRequest.getEmail());
+		registerEmailAuthenticationMail.setMessage(message);
+
+		log.info(
+			"[SEND_EMAIL_CHECK_EMAIL] - title: {} , to: {}",
+			registerEmailAuthenticationMail.getSubject(),
+			registerEmailAuthenticationMail.getTo()
+		);
+
+		emailService.sendEmail(registerEmailAuthenticationMail);
 	}
 
 	public void signupSessionCodeValidate(String email, String sessionCode) {
