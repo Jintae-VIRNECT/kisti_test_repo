@@ -1,5 +1,6 @@
 package com.virnect.workspace.global.common;
 
+import com.virnect.workspace.dto.response.WorkspaceNewMemberInfoResponse;
 import com.virnect.workspace.dto.response.WorkspaceUserInfoResponse;
 import com.virnect.workspace.dto.rest.UserInfoRestResponse;
 import org.mapstruct.Mapper;
@@ -16,4 +17,7 @@ import org.mapstruct.Mapping;
 public interface MapStructMapper {
     @Mapping(target = "nickName", source = "nickname")
     WorkspaceUserInfoResponse userInfoRestResponseToWorkspaceUserInfoResponse(UserInfoRestResponse userInfoRestResponse);
+
+    @Mapping(target = "nickName", source = "nickname")
+    WorkspaceNewMemberInfoResponse userInfoRestResponseToWorkspaceNewMemberInfoResponse(UserInfoRestResponse userInfoRestResponse);
 }

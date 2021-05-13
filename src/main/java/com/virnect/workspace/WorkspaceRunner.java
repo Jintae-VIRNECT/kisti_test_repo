@@ -1,7 +1,7 @@
 package com.virnect.workspace;
 
-import com.virnect.workspace.dao.WorkspaceSettingRepository;
-import com.virnect.workspace.domain.WorkspaceSetting;
+import com.virnect.workspace.dao.workspace.WorkspaceSettingRepository;
+import com.virnect.workspace.domain.workspace.WorkspaceSetting;
 import com.virnect.workspace.infra.file.FileService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
