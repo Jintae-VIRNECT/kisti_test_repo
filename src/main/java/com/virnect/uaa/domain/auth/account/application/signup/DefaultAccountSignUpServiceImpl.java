@@ -113,7 +113,13 @@ public class DefaultAccountSignUpServiceImpl implements AccountSignUpService {
 		String email,
 		String code
 	) {
-		return null;
+		EmailAuth emailAuth = emailAuthorizationRepository.findById(email)
+			.orElseThrow(
+				() -> new UserAuthenticationServiceException(AuthenticationErrorCode.ERR_REGISTER_AUTHENTICATION));
+		if (!emailAuth.getCode().equals(code)) {
+			throw new UserAuthenticationServiceException(AuthenticationErrorCode.ERR_REGISTER_AUTHENTICATION);
+		}
+		return new EmailVerificationResponse(true, emailAuth.getSessionCode());
 	}
 
 	private void checkSecessionUserEmail(String email) {
