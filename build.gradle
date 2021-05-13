@@ -111,7 +111,7 @@ sourceSets {
 }
 
 ext {
-    springCloudVersion = 'Greenwich.SR10'
+    springCloudVersion = 'Hoxton.SR10'
 }
 
 dependencyManagement {
