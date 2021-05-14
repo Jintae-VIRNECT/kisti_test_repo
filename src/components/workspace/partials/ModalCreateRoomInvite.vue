@@ -22,7 +22,6 @@
               choice: true,
               selected:
                 selection.findIndex(select => select.uuid === user.uuid) > -1,
-              disabled: user.status === 'logout',
             }"
             height="6.143em"
             @click.native="selectUser(user)"
@@ -114,7 +113,6 @@ export default {
       this.$emit('inviteRefresh')
     },
     selectUser(user) {
-      if (user.status === 'logout') return //logout 상태인 멤버는 선택할 수 없음
       this.$emit('userSelect', user)
     },
   },
