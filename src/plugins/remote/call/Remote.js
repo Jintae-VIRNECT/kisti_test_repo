@@ -101,7 +101,7 @@ const _ = {
       const connectOption = {
         iceServers,
         wsUri: ws,
-        role: options === false ? 'SUBSCRIBER' : 'PUBLISHER',
+        role: mediaStream ? 'PUBLISHER' : 'SUBSCRIBER',
       }
 
       await _.session.connect(
@@ -118,7 +118,7 @@ const _ = {
       _.configs = configs
       _.options = options
 
-      if (options !== false) {
+      if (mediaStream) {
         await doPublish({ mediaStream, options, configs })
       } else {
         updateParticipantEmpty(_.connectionId)
@@ -471,15 +471,23 @@ const _ = {
    *
    * @param {Object} options 옵션 객체
    * @returns {MediaStream} 미디어 스트림 반환
+   * @public
    * @throws nodevice
    */
-  getStream: async ({ options }) => {
+  getStream: async options => {
     let mediaStream = null
     const settingInfo = Store.getters['settingInfo']
 
+    const { audioSource, videoSource } = options
+
+    //오디오, 비디오 둘다 사용하지 않을때,
+    if (audioSource === false && videoSource === false) {
+      return null
+    }
+
     //get audio stream
     const audioStream = await getMediaStream({
-      audioSource: options ? options.audioSource : false,
+      audioSource: audioSource,
       videoSource: false,
     })
 
@@ -490,7 +498,7 @@ const _ = {
     //get video stream
     const videoStream = await getMediaStream({
       audioSource: false,
-      videoSource: options ? options.videoSource : false,
+      videoSource: videoSource,
       resolution: settingInfo.quality,
       frameRate: 30,
     })

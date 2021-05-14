@@ -159,7 +159,7 @@ export default {
         this.clicked = true
 
         const options = await this.getDeviceId()
-        const mediaStream = await this.$call.getStream({ options })
+        const mediaStream = await this.$call.getStream(options)
 
         const selectedUser = []
         const selectedUserIds = []

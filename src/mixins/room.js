@@ -31,7 +31,7 @@ export default {
           role = room.leaderId === this.account.uuid ? ROLE.LEADER : ROLE.EXPERT
         }
         const options = await this.getDeviceId()
-        const mediaStream = await this.$call.getStream({ options })
+        const mediaStream = await this.$call.getStream(options)
 
         const res = await joinRoom({
           uuid: this.account.uuid,

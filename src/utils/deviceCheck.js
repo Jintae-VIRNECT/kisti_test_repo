@@ -1,5 +1,3 @@
-import Store from 'stores/remote/store'
-
 /**
  * 권한 허용 체크 로직
  * @param {Object} { video: Boolean, audio: Boolean }
