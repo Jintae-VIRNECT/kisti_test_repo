@@ -181,6 +181,7 @@
 .roominfo-userinfo {
   display: flex;
   width: 100%;
+  background-color: inherit;
   > .profile {
     flex: 1;
     > .profile--text {

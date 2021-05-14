@@ -9,7 +9,9 @@
           @error="onImageError"
         />
       </div>
-      <span v-if="status" class="profile--badge" :class="status"></span>
+      <div v-if="status" class="profile--badge">
+        <div class="profile--badge__core" :class="[status, { me: isMe }]"></div>
+      </div>
     </div>
     <figcaption class="profile--text" v-if="mainText && mainText.length > 0">
       <p class="profile--maintext">{{ mainText }}</p>
@@ -59,6 +61,10 @@ export default {
       type: Boolean,
       default: false,
     },
+    isMe: {
+      type: Boolean,
+      default: false,
+    },
   },
   computed: {
     showRole() {
@@ -101,12 +107,14 @@ export default {
   // width: fit-content;
   width: 100%;
   height: 100%;
+  background-color: inherit;
 }
 .profile--thumb {
   position: relative;
   flex: 0 0 auto;
   width: 100%;
   height: 100%;
+  background-color: inherit;
 }
 
 .profile--image {
@@ -155,13 +163,21 @@ export default {
   position: absolute;
   left: 66%;
   top: 64%;
-  width: 1.26em;
-  height: 1.26em;
-  overflow: hidden;
-  text-indent: -99px;
+  width: 1.333em;
+  height: 1.333em;
   border-radius: 50%;
-  border: 0.215em solid $color_darkgray_600;
+  background-color: inherit;
+}
 
+.profile--badge__core {
+  width: 0.833em;
+  height: 0.833em;
+  border-radius: 50%;
+  margin: 0.25em;
+
+  &.me {
+    background: url('~assets/image/mdpi_icon_me.svg') center;
+  }
   &.collabo {
     background-color: $color_collabo;
   }

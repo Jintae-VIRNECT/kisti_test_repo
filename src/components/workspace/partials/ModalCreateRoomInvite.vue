@@ -34,7 +34,7 @@
               :subText="user.email"
               :role="user.role"
               :thumbStyle="{ width: '3em', height: '3em' }"
-              :status="user.status"
+              :status="user.accessType"
             ></profile
           ></wide-card>
         </div>
@@ -107,18 +107,6 @@ export default {
       } else {
         return this.total
       }
-    },
-  },
-  watch: {
-    //임시 멤버 상태
-    users(newVal) {
-      newVal.forEach(
-        user =>
-          (user.status = ['login', 'collabo', 'logout'][
-            Math.floor(Math.random() * 3)
-          ]),
-      )
-      console.log(newVal)
     },
   },
   methods: {

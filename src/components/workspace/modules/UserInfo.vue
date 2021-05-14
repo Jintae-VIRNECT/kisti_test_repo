@@ -11,7 +11,9 @@
         :mainText="user.nickName"
         :subText="user.email"
         :role="user.memberType"
+        :status="user.accessType"
         :thumbStyle="{ width: '3em', height: '3em' }"
+        :isMe="isMe"
       ></profile>
 
       <img
@@ -76,6 +78,10 @@ export default {
     },
     canKick() {
       return this.isLeader && this.account.uuid === this.user.uuid
+    },
+    //본인인지 여부
+    isMe() {
+      return this.account.uuid === this.user.uuid
     },
   },
   methods: {},
