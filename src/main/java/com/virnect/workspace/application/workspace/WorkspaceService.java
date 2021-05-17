@@ -15,6 +15,7 @@ import com.virnect.workspace.dto.rest.MailRequest;
 import com.virnect.workspace.dto.rest.PageMetadataRestResponse;
 import com.virnect.workspace.dto.rest.UserInfoRestResponse;
 import com.virnect.workspace.dto.rest.WorkspaceLicensePlanInfoResponse;
+import com.virnect.workspace.event.cache.UserWorkspacesDeleteEvent;
 import com.virnect.workspace.exception.WorkspaceException;
 import com.virnect.workspace.global.common.ApiResponse;
 import com.virnect.workspace.global.common.RedirectProperty;
@@ -27,10 +28,10 @@ import com.virnect.workspace.infra.file.FileService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Profile;
 import org.springframework.data.domain.Page;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
@@ -71,9 +72,9 @@ public abstract class WorkspaceService {
     private final MessageSource messageSource;
     private final LicenseRestService licenseRestService;
     private final RedirectProperty redirectProperty;
-    private final RedisTemplate redisTemplate;
     private final WorkspaceMapStruct workspaceMapStruct;
     private final RestMapStruct restMapStruct;
+    private final ApplicationEventPublisher applicationEventPublisher;
 
     /**
      * 워크스페이스 생성
@@ -150,12 +151,7 @@ public abstract class WorkspaceService {
         WorkspaceInfoDTO workspaceInfoDTO = workspaceMapStruct.workspaceToWorkspaceInfoDTO(newWorkspace);
         workspaceInfoDTO.setMasterUserId(newWorkspace.getUserId());
 
-        redisTemplate.keys("userWorkspaces::*").stream().forEach(object -> {
-            String key = (String) object;
-            if (key.startsWith("userWorkspaces::".concat(workspaceCreateRequest.getUserId()))) {
-                redisTemplate.delete(key);
-            }
-        });
+        applicationEventPublisher.publishEvent(new UserWorkspacesDeleteEvent(workspaceCreateRequest.getUserId()));// 캐싱 삭제
         return workspaceInfoDTO;
     }
 
@@ -318,12 +314,7 @@ public abstract class WorkspaceService {
             List<WorkspaceUser> workspaceUserList = workspaceUserRepository.findByWorkspace_Uuid(
                     workspace.getUuid());
             workspaceUserList.forEach(workspaceUser -> {
-                redisTemplate.keys("userWorkspaces::*").forEach(object -> {
-                    String key = (String) object;
-                    if (key.startsWith("userWorkspaces::".concat(workspaceUser.getUserId()))) {
-                        redisTemplate.delete(key);
-                    }
-                });
+                applicationEventPublisher.publishEvent(new UserWorkspacesDeleteEvent(workspaceUser.getUserId()));//캐싱 삭제
                 UserInfoRestResponse userInfoRestResponse = getUserInfo(workspaceUser.getUserId());
                 receiverEmailList.add(userInfoRestResponse.getEmail());
                 if (userInfoRestResponse.getUuid().equals(workspace.getUserId())) {

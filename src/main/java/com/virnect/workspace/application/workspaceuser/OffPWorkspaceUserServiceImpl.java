@@ -14,6 +14,7 @@ import com.virnect.workspace.dto.request.WorkspaceMemberPasswordChangeRequest;
 import com.virnect.workspace.dto.response.WorkspaceMemberInfoListResponse;
 import com.virnect.workspace.dto.response.WorkspaceMemberPasswordChangeResponse;
 import com.virnect.workspace.dto.rest.*;
+import com.virnect.workspace.event.cache.UserWorkspacesDeleteEvent;
 import com.virnect.workspace.event.history.HistoryAddEvent;
 import com.virnect.workspace.exception.WorkspaceException;
 import com.virnect.workspace.global.common.ApiResponse;
@@ -23,11 +24,9 @@ import com.virnect.workspace.global.constant.*;
 import com.virnect.workspace.global.error.ErrorCode;
 import com.virnect.workspace.global.util.RandomStringTokenUtil;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.cache.CacheManager;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Profile;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.servlet.view.RedirectView;
@@ -66,25 +65,22 @@ public class OffPWorkspaceUserServiceImpl extends WorkspaceUserService {
     private final MessageSource messageSource;
     private final LicenseRestService licenseRestService;
     private final RedirectProperty redirectProperty;
-    private final RedisTemplate redisTemplate;
     private final ApplicationEventPublisher applicationEventPublisher;
 
-
-    public OffPWorkspaceUserServiceImpl(WorkspaceRepository workspaceRepository, WorkspaceUserRepository workspaceUserRepository, WorkspaceRoleRepository workspaceRoleRepository, WorkspacePermissionRepository workspacePermissionRepository, WorkspaceUserPermissionRepository workspaceUserPermissionRepository, UserRestService userRestService, MessageRestService messageRestService, UserInviteRepository userInviteRepository, SpringTemplateEngine springTemplateEngine, MessageSource messageSource, LicenseRestService licenseRestService, RedirectProperty redirectProperty, CacheManager cacheManager, RedisTemplate redisTemplate, RestMapStruct restMapStruct, ApplicationEventPublisher applicationEventPublisher) {
-        super(workspaceRepository, workspaceUserRepository, workspaceRoleRepository, workspacePermissionRepository, workspaceUserPermissionRepository, userRestService, messageRestService, userInviteRepository, springTemplateEngine, messageSource, licenseRestService, redirectProperty, cacheManager, redisTemplate, restMapStruct, applicationEventPublisher);
+    public OffPWorkspaceUserServiceImpl(WorkspaceRepository workspaceRepository, WorkspaceUserRepository workspaceUserRepository, WorkspaceRoleRepository workspaceRoleRepository, WorkspaceUserPermissionRepository workspaceUserPermissionRepository, UserRestService userRestService, MessageRestService messageRestService, SpringTemplateEngine springTemplateEngine, MessageSource messageSource, LicenseRestService licenseRestService, RedirectProperty redirectProperty, RestMapStruct restMapStruct, ApplicationEventPublisher applicationEventPublisher, WorkspacePermissionRepository workspacePermissionRepository, UserInviteRepository userInviteRepository) {
+        super(workspaceRepository, workspaceUserRepository, workspaceRoleRepository, workspaceUserPermissionRepository, userRestService, messageRestService, springTemplateEngine, messageSource, licenseRestService, redirectProperty, restMapStruct, applicationEventPublisher);
         this.workspaceRepository = workspaceRepository;
         this.workspaceUserRepository = workspaceUserRepository;
         this.workspaceRoleRepository = workspaceRoleRepository;
         this.workspacePermissionRepository = workspacePermissionRepository;
         this.workspaceUserPermissionRepository = workspaceUserPermissionRepository;
-        this.messageRestService = messageRestService;
         this.userRestService = userRestService;
+        this.messageRestService = messageRestService;
         this.userInviteRepository = userInviteRepository;
         this.springTemplateEngine = springTemplateEngine;
         this.messageSource = messageSource;
         this.licenseRestService = licenseRestService;
         this.redirectProperty = redirectProperty;
-        this.redisTemplate = redisTemplate;
         this.applicationEventPublisher = applicationEventPublisher;
     }
 
@@ -255,7 +251,7 @@ public class OffPWorkspaceUserServiceImpl extends WorkspaceUserService {
         userInvite.setInvitedUserId(inviteUserDetailInfoResponse.getUserUUID());
         userInviteRepository.save(userInvite);
 
-        removeUserWorkspacesCache(inviteUserDetailInfoResponse.getUserUUID());
+        applicationEventPublisher.publishEvent(new UserWorkspacesDeleteEvent(inviteUserDetailInfoResponse.getUserUUID()));
 
         Workspace workspace = workspaceRepository.findByUuid(userInvite.getWorkspaceId()).orElseThrow(() -> new WorkspaceException(ErrorCode.ERR_WORKSPACE_NOT_FOUND));
 
@@ -378,15 +374,6 @@ public class OffPWorkspaceUserServiceImpl extends WorkspaceUserService {
 
     private String generatePlanString(boolean remote, boolean make, boolean view) {
         return generatePlanList(remote, make, view).stream().map(Enum::toString).collect(Collectors.joining(","));
-    }
-
-    private void removeUserWorkspacesCache(String userId) {
-        redisTemplate.keys("userWorkspaces::*").stream().forEach(object -> {
-            String key = (String) object;
-            if (key.startsWith("userWorkspaces::".concat(userId))) {
-                redisTemplate.delete(key);
-            }
-        });
     }
 
     @Override

@@ -3,8 +3,10 @@ package com.virnect.workspace.application.workspaceuser;
 import com.virnect.workspace.application.license.LicenseRestService;
 import com.virnect.workspace.application.message.MessageRestService;
 import com.virnect.workspace.application.user.UserRestService;
-import com.virnect.workspace.dao.cache.UserInviteRepository;
-import com.virnect.workspace.dao.workspace.*;
+import com.virnect.workspace.dao.workspace.WorkspaceRepository;
+import com.virnect.workspace.dao.workspace.WorkspaceRoleRepository;
+import com.virnect.workspace.dao.workspace.WorkspaceUserPermissionRepository;
+import com.virnect.workspace.dao.workspace.WorkspaceUserRepository;
 import com.virnect.workspace.domain.rest.LicenseStatus;
 import com.virnect.workspace.domain.workspace.Workspace;
 import com.virnect.workspace.domain.workspace.WorkspaceRole;
@@ -13,6 +15,7 @@ import com.virnect.workspace.dto.onpremise.MemberAccountCreateRequest;
 import com.virnect.workspace.dto.request.*;
 import com.virnect.workspace.dto.response.*;
 import com.virnect.workspace.dto.rest.*;
+import com.virnect.workspace.event.cache.UserWorkspacesDeleteEvent;
 import com.virnect.workspace.event.history.HistoryAddEvent;
 import com.virnect.workspace.exception.WorkspaceException;
 import com.virnect.workspace.global.common.ApiResponse;
@@ -26,14 +29,12 @@ import com.virnect.workspace.global.constant.MailSender;
 import com.virnect.workspace.global.error.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.cache.CacheManager;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Profile;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
@@ -61,19 +62,15 @@ public abstract class WorkspaceUserService {
     private final WorkspaceRepository workspaceRepository;
     private final WorkspaceUserRepository workspaceUserRepository;
     private final WorkspaceRoleRepository workspaceRoleRepository;
-    private final WorkspacePermissionRepository workspacePermissionRepository;
     private final WorkspaceUserPermissionRepository workspaceUserPermissionRepository;
     private final UserRestService userRestService;
     private final MessageRestService messageRestService;
-    private final UserInviteRepository userInviteRepository;
     private final SpringTemplateEngine springTemplateEngine;
     private final MessageSource messageSource;
     private final LicenseRestService licenseRestService;
     private final RedirectProperty redirectProperty;
-    private final CacheManager cacheManager;
     private static final String ALL_WORKSAPCE_ROLE = "MASTER|MANAGER|MEMBER";
     private static final String ALL_LICENSE_PRODUCT = "REMOTE|MAKE|VIEW";
-    private final RedisTemplate redisTemplate;
     private final RestMapStruct restMapStruct;
     private final ApplicationEventPublisher applicationEventPublisher;
 
@@ -371,7 +368,7 @@ public abstract class WorkspaceUserService {
                     "WORKSPACE_SET_MEMBER", new String[]{masterUser.getNickname(), user.getNickname()}, locale);
         }
         applicationEventPublisher.publishEvent(new HistoryAddEvent(message, requestUserId, workspace));
-        removeUserWorkspacesCache(responseUserId);
+        applicationEventPublisher.publishEvent(new UserWorkspacesDeleteEvent(responseUserId));
     }
 
     @Transactional
@@ -625,7 +622,7 @@ public abstract class WorkspaceUserService {
                 "WORKSPACE_EXPELED", new String[]{masterUser.getNickname(), kickedUser.getNickname()}, locale);
         applicationEventPublisher.publishEvent(new HistoryAddEvent(message, kickedUser.getUuid(), workspace));
 
-        removeUserWorkspacesCache(memberKickOutRequest.getKickedUserId());
+        applicationEventPublisher.publishEvent(new UserWorkspacesDeleteEvent(memberKickOutRequest.getKickedUserId()));
         return new ApiResponse<>(true);
     }
 
@@ -637,15 +634,6 @@ public abstract class WorkspaceUserService {
 
     @Profile("!onpremise")
     public abstract RedirectView inviteWorkspaceReject(String sessionCode, String lang);
-
-    private void removeUserWorkspacesCache(String userId) {
-        redisTemplate.keys("userWorkspaces::*").stream().forEach(object -> {
-            String key = (String) object;
-            if (key.startsWith("userWorkspaces::".concat(userId))) {
-                redisTemplate.delete(key);
-            }
-        });
-    }
 
 
     public ApiResponse<Boolean> exitWorkspace(String workspaceId, String userId, Locale locale) {
@@ -680,8 +668,7 @@ public abstract class WorkspaceUserService {
         String message = messageSource.getMessage(
                 "WORKSPACE_LEAVE", new String[]{userInfoRestResponse.getNickname()}, locale);
         applicationEventPublisher.publishEvent(new HistoryAddEvent(message, userId, workspace));
-
-        removeUserWorkspacesCache(userId);
+        applicationEventPublisher.publishEvent(new UserWorkspacesDeleteEvent(userId));//캐싱 삭제
         return new ApiResponse<>(true);
     }
 
