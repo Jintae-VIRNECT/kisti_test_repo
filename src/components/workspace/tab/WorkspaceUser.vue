@@ -22,6 +22,7 @@
         :imageUrl="userinfo.profile"
         :email="userinfo.email"
         :role="userinfo.role"
+        :status="accessType(userinfo.accessType)"
       >
       </member-card>
     </div>
@@ -113,6 +114,10 @@ export default {
         this.loading = false
         console.error(err)
       }
+    },
+    accessType(accessType) {
+      if (accessType) return accessType.toLowerCase()
+      return ''
     },
   },
 

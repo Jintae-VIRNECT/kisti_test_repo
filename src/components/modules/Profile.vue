@@ -9,9 +9,9 @@
           @error="onImageError"
         />
       </div>
-      <!-- <span v-if="status" class="profile--badge" :class="status">{{
-        status
-      }}</span> -->
+      <div v-if="status" class="profile--badge">
+        <div class="profile--badge__core" :class="[status, { me: isMe }]"></div>
+      </div>
     </div>
     <figcaption class="profile--text" v-if="mainText && mainText.length > 0">
       <p class="profile--maintext">{{ mainText }}</p>
@@ -23,7 +23,7 @@
 
 <script>
 import Role from 'Role'
-import { WORKSPACE_ROLE } from 'configs/status.config'
+import { WORKSPACE_ROLE, MEMBER_STATUS } from 'configs/status.config'
 import { ROLE } from 'configs/remote.config'
 import { proxyUrl } from 'utils/file'
 export default {
@@ -50,13 +50,17 @@ export default {
     subText: String,
     status: {
       type: String,
-      validator: value => ['', 'online', 'busy', 'offline'].indexOf(value) >= 0,
+      validator: value => ['', ...MEMBER_STATUS].indexOf(value) >= 0,
     },
     role: {
       type: String,
       default: null,
     },
     group: {
+      type: Boolean,
+      default: false,
+    },
+    isMe: {
       type: Boolean,
       default: false,
     },
@@ -102,12 +106,14 @@ export default {
   // width: fit-content;
   width: 100%;
   height: 100%;
+  background-color: inherit;
 }
 .profile--thumb {
   position: relative;
   flex: 0 0 auto;
   width: 100%;
   height: 100%;
+  background-color: inherit;
 }
 
 .profile--image {
@@ -154,22 +160,31 @@ export default {
 
 .profile--badge {
   position: absolute;
-  right: 0;
-  bottom: 0;
-  width: 26%;
-  height: 26%;
-  overflow: hidden;
-  text-indent: -99px;
+  left: 66%;
+  top: 64%;
+  width: 1.333em;
+  height: 1.333em;
   border-radius: 50%;
+  background-color: inherit;
+}
 
-  &.busy {
-    background-color: $color_busy;
+.profile--badge__core {
+  width: 0.833em;
+  height: 0.833em;
+  border-radius: 50%;
+  margin: 0.25em;
+
+  &.me {
+    background: url('~assets/image/mdpi_icon_me.svg') center;
   }
-  &.online {
-    background-color: $color_online;
+  &.join {
+    background-color: $color_collabo;
   }
-  &.offline {
-    background-color: $color_offline;
+  &.login {
+    background-color: $color_login;
+  }
+  &.logout {
+    background-color: $color_logout;
   }
 }
 </style>

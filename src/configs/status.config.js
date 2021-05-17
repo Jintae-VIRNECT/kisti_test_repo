@@ -36,3 +36,17 @@ export const ROOM_STATUS = {
   PRIVATE: 'PRIVATE', //원격 협업
   OPEN: 'OPEN', //오픈방
 }
+
+/**
+ * 인증 서버 연결 메시지
+ */
+export const AUTH_STATUS = {
+  CONNECTION_ESTABLISHED: 'Connection Establish.',
+  REGISTER_SUCCESS: 'Register Success',
+  REGISTER_FAIL: 'Register Fail.',
+}
+
+/**
+ * 멤버 상태
+ */
+export const MEMBER_STATUS = ['login', 'join', 'logout']
