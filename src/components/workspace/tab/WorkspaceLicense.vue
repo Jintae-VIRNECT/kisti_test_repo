@@ -5,7 +5,7 @@
       <p
         class="workspace-license__description--title"
         v-html="
-          onpremise
+          isOnpremise
             ? $t('workspace.license_no_title_onpremise')
             : $t('workspace.license_no_title')
         "
@@ -13,7 +13,7 @@
       <p
         class="workspace-license__description--sub-title"
         v-html="
-          onpremise
+          isOnpremise
             ? $t('workspace.license_no_description_onpremise')
             : $t('workspace.license_no_description')
         "
@@ -24,13 +24,7 @@
 
 <script>
 import { URLS } from 'configs/env.config'
-import { RUNTIME, RUNTIME_ENV } from 'configs/env.config'
 export default {
-  computed: {
-    onpremise() {
-      return RUNTIME.ONPREMISE === RUNTIME_ENV
-    },
-  },
   methods: {
     purchase() {
       location.href = URLS['pay']

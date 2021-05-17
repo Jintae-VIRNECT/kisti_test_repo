@@ -6,7 +6,6 @@
 <script>
 import confirmMixin from 'mixins/confirm'
 import auth from 'utils/auth'
-import { RUNTIME, RUNTIME_ENV } from 'configs/env.config'
 
 export default {
   name: 'RemoteLayout',
@@ -16,11 +15,6 @@ export default {
       key: 1,
       attr: '',
     }
-  },
-  computed: {
-    onpremise() {
-      return RUNTIME.ONPREMISE === RUNTIME_ENV
-    },
   },
   methods: {
     viewPointSetting(e) {
@@ -53,7 +47,7 @@ export default {
     }
 
     //구축형 - 강제 로그아웃 이벤트 핸들러 적용 여부
-    if (this.onpremise) {
+    if (this.isOnpremise) {
       //마스터에 의해 강제 로그아웃 당할 시
       this.$eventBus.$on('forceLogout', () => {
         //로그아웃 처리

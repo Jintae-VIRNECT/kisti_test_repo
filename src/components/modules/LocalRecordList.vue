@@ -40,7 +40,7 @@
             </div>
             <div class="table__tools">
               <icon-button
-                v-if="isHome && onpremise"
+                v-if="isHome && isOnpremise"
                 :text="$t('workspace.record_upload')"
                 :imgSrc="require('assets/image/ic_upload.svg')"
                 :customClass="{
@@ -85,7 +85,6 @@ import IconButton from 'IconButton'
 import IDBHelper from 'utils/idbHelper'
 import JSZip from 'jszip'
 import FileSaver from 'file-saver'
-import { RUNTIME, RUNTIME_ENV } from 'configs/env.config'
 import { mapGetters, mapActions } from 'vuex'
 
 export default {
@@ -129,9 +128,6 @@ export default {
     },
     isHome() {
       return this.$route.path === '/home'
-    },
-    onpremise() {
-      return RUNTIME.ONPREMISE === RUNTIME_ENV
     },
   },
   watch: {

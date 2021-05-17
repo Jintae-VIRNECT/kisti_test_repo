@@ -22,7 +22,7 @@
         :imageUrl="userinfo.profile"
         :email="userinfo.email"
         :role="userinfo.role"
-        :showMasterMenu="isMaster && onpremise"
+        :showMasterMenu="isMaster && isOnpremise"
         @forceLogout="forceLogout(userinfo)"
       >
       </member-card>
@@ -36,7 +36,6 @@ import MemberCard from 'MemberCard'
 import { getMemberList } from 'api/http/member'
 import { WORKSPACE_ROLE } from 'configs/status.config'
 import confirmMixin from 'mixins/confirm'
-import { RUNTIME, RUNTIME_ENV } from 'configs/env.config'
 
 export default {
   name: 'WorkspaceUser',
@@ -64,9 +63,6 @@ export default {
     }
   },
   computed: {
-    onpremise() {
-      return RUNTIME.ONPREMISE === RUNTIME_ENV
-    },
     isMaster() {
       return this.workspace.role === WORKSPACE_ROLE.MASTER
     },

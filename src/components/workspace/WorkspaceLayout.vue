@@ -21,7 +21,7 @@
         ></workspace-tab>
       </div>
       <cookie-policy
-        v-if="!onpremise && showCookie"
+        v-if="!isOnpremise && showCookie"
         :visible.sync="showCookie"
       ></cookie-policy>
       <record-list
@@ -48,7 +48,6 @@ import DeviceDenied from './modal/WorkspaceDeviceDenied'
 import PlanOverflow from './modal/WorkspacePlanOverflow'
 import { mapActions, mapGetters } from 'vuex'
 import { PLAN_STATUS } from 'configs/status.config'
-import { RUNTIME, RUNTIME_ENV } from 'configs/env.config'
 import { MyStorage } from 'utils/storage'
 
 export default {
@@ -111,9 +110,6 @@ export default {
   },
   computed: {
     ...mapGetters(['useLocalRecording']),
-    onpremise() {
-      return RUNTIME.ONPREMISE === RUNTIME_ENV
-    },
   },
   methods: {
     ...mapActions([
