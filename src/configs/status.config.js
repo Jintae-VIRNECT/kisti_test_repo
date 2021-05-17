@@ -45,3 +45,8 @@ export const AUTH_STATUS = {
   REGISTER_SUCCESS: 'Register Success',
   REGISTER_FAIL: 'Register Fail.',
 }
+
+/**
+ * 멤버 상태
+ */
+export const MEMBER_STATUS = ['login', 'join', 'logout']

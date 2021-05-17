@@ -38,7 +38,7 @@ import Profile from 'Profile'
 import Role from 'Role'
 import Tooltip from 'Tooltip'
 
-import { WORKSPACE_ROLE } from 'configs/status.config'
+import { WORKSPACE_ROLE, MEMBER_STATUS } from 'configs/status.config'
 export default {
   name: 'Card',
   components: {
@@ -51,8 +51,7 @@ export default {
     //사용자의 현재 상태
     status: {
       type: String,
-      validator: value =>
-        ['', 'login', 'collabo', 'logout'].indexOf(value) >= 0,
+      validator: value => [...MEMBER_STATUS].indexOf(value) >= 0,
     },
     imageUrl: String,
     name: {
@@ -176,7 +175,7 @@ export default {
   border-radius: 50%;
   border: 4px solid #313135;
 
-  &.collabo {
+  &.join {
     background-color: $color_collabo;
   }
   &.login {
@@ -215,7 +214,7 @@ export default {
   color: $color_text_login;
 }
 
-.status-tooltip.collabo .tooltiptext {
+.status-tooltip.join .tooltiptext {
   color: $color_text_collabo;
 }
 

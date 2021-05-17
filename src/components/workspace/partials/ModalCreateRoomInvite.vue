@@ -33,7 +33,7 @@
               :subText="user.email"
               :role="user.role"
               :thumbStyle="{ width: '3em', height: '3em' }"
-              :status="user.accessType"
+              :status="accessType(user.accessType)"
             ></profile
           ></wide-card>
         </div>
@@ -114,6 +114,10 @@ export default {
     },
     selectUser(user) {
       this.$emit('userSelect', user)
+    },
+    accessType(accessType) {
+      if (accessType) return accessType.toLowerCase()
+      return ''
     },
   },
 

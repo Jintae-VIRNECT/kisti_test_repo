@@ -23,7 +23,7 @@
 
 <script>
 import Role from 'Role'
-import { WORKSPACE_ROLE } from 'configs/status.config'
+import { WORKSPACE_ROLE, MEMBER_STATUS } from 'configs/status.config'
 import { ROLE } from 'configs/remote.config'
 import { proxyUrl } from 'utils/file'
 export default {
@@ -50,8 +50,7 @@ export default {
     subText: String,
     status: {
       type: String,
-      validator: value =>
-        ['', 'login', 'collabo', 'logout'].indexOf(value) >= 0,
+      validator: value => ['', ...MEMBER_STATUS].indexOf(value) >= 0,
     },
     role: {
       type: String,
@@ -178,7 +177,7 @@ export default {
   &.me {
     background: url('~assets/image/mdpi_icon_me.svg') center;
   }
-  &.collabo {
+  &.join {
     background-color: $color_collabo;
   }
   &.login {

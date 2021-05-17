@@ -11,7 +11,7 @@
         :mainText="user.nickName"
         :subText="user.email"
         :role="user.memberType"
-        :status="user.accessType"
+        :status="accessType(user.accessType)"
         :thumbStyle="{ width: '3em', height: '3em' }"
         :isMe="isMe"
       ></profile>
@@ -84,7 +84,12 @@ export default {
       return this.account.uuid === this.user.uuid
     },
   },
-  methods: {},
+  methods: {
+    accessType(accessType) {
+      if (accessType) return accessType.toLowerCase()
+      return ''
+    },
+  },
 
   /* Lifecycles */
   mounted() {},
