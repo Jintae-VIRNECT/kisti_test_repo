@@ -12,6 +12,7 @@ import {
   RUNTIME,
   URLS,
 } from 'configs/env.config'
+import { AUTH_STATUS } from 'configs/status.config'
 
 /**
  * 상태
@@ -22,6 +23,7 @@ let myWorkspaces = []
 const intervalTime = 5 * 60 * 1000 // 5 minutes
 const renewvalTime = 10 * 60 // 5 minutes
 let interval
+let socket
 
 /**
  * 메소드
@@ -80,6 +82,70 @@ const getMyInfo = async () => {
       // return
     }
     throw err
+  }
+}
+
+//사용자 상태 소켓 연결/등록
+const initLoginStatus = () => {
+  if (window.urls && window.urls['ws']) {
+    const wssUrl = window.urls['ws']
+
+    try {
+      socket = new WebSocket(`${wssUrl}/auth/status`)
+      socket.onerror = e => logger(e)
+    } catch (e) {
+      console.error('Websocket connection error')
+      return
+    }
+
+    //소켓 연결
+    socket.onopen = e => {
+      logger('auth status opened', e)
+
+      //메시지 수신
+      socket.onmessage = e => {
+        //debug('message received', e.data)
+
+        //메시지, 데이터 존재 여부 판단
+        if (e && e.data) {
+          const { message } = JSON.parse(e.data)
+
+          switch (message) {
+            //연결 수립 완료 메시지 수신 시 유저 정보 전송하여 등록절차를 밟는다.
+            case AUTH_STATUS.CONNECTION_ESTABLISHED:
+              logger(
+                'connection established, regist',
+                myInfo.uuid,
+                myInfo.name,
+                myInfo.email,
+              )
+              socket.send(
+                JSON.stringify({
+                  uuid: myInfo.uuid,
+                  name: myInfo.name,
+                  email: myInfo.email,
+                }),
+              )
+              break
+            //등록완료
+            case AUTH_STATUS.REGISTER_SUCCESS:
+              logger('register success', e.data)
+              break
+            //등록 실패 및 예외 케이스
+            default:
+              new Error(e.data)
+          }
+        }
+      }
+    }
+  }
+}
+
+//사용자 상태 소켓 연결 해제
+const endLoginStatus = () => {
+  if (socket) {
+    debug('auth status socket close')
+    socket.close()
   }
 }
 
@@ -179,6 +245,8 @@ class Auth {
         console.error('Token is expired')
         isLogin = false
       }
+
+      initLoginStatus() //로그인 상태 업데이트
     }
     return {
       account: this.myInfo,
@@ -191,6 +259,7 @@ class Auth {
     return this
   }
   logout() {
+    endLoginStatus() //로그아웃 상태 업데이트
     cookieClear()
     isLogin = false
     myInfo = {}
