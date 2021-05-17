@@ -7,7 +7,6 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
-import java.util.HashMap;
 import java.util.Set;
 
 /**
@@ -26,7 +25,6 @@ public class CacheDeleteEventHandler {
     @EventListener(UserWorkspacesDeleteEvent.class)
     public void userWorkspacesDeleteEventListener(UserWorkspacesDeleteEvent userWorkspacesDeleteEvent) {
         Set<String> keys = redisTemplate.keys("userWorkspaces::*");
-        new HashMap<.>()
         if (!CollectionUtils.isEmpty(keys)) {
             keys.forEach(key -> {
                 if (key.startsWith("userWorkspaces::".concat(userWorkspacesDeleteEvent.getUserId()))) {
