@@ -1,4 +1,4 @@
-package com.virnect.workspace.dao.redis;
+package com.virnect.workspace.dao.cache;
 
 import com.virnect.workspace.domain.redis.UserInvite;
 import org.springframework.data.repository.CrudRepository;

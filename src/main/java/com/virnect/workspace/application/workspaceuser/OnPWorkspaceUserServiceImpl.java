@@ -3,8 +3,7 @@ package com.virnect.workspace.application.workspaceuser;
 import com.virnect.workspace.application.license.LicenseRestService;
 import com.virnect.workspace.application.message.MessageRestService;
 import com.virnect.workspace.application.user.UserRestService;
-import com.virnect.workspace.dao.history.HistoryRepository;
-import com.virnect.workspace.dao.redis.UserInviteRepository;
+import com.virnect.workspace.dao.cache.UserInviteRepository;
 import com.virnect.workspace.dao.workspace.*;
 import com.virnect.workspace.domain.workspace.*;
 import com.virnect.workspace.dto.onpremise.MemberAccountCreateInfo;
@@ -18,14 +17,14 @@ import com.virnect.workspace.dto.response.WorkspaceUserInfoResponse;
 import com.virnect.workspace.dto.rest.*;
 import com.virnect.workspace.exception.WorkspaceException;
 import com.virnect.workspace.global.common.ApiResponse;
-import com.virnect.workspace.global.common.MapStructMapper;
 import com.virnect.workspace.global.common.RedirectProperty;
+import com.virnect.workspace.global.common.mapper.rest.RestMapStruct;
 import com.virnect.workspace.global.constant.LicenseProduct;
 import com.virnect.workspace.global.constant.Permission;
 import com.virnect.workspace.global.error.ErrorCode;
 import lombok.extern.slf4j.Slf4j;
-import org.modelmapper.ModelMapper;
 import org.springframework.cache.CacheManager;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Profile;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -57,19 +56,19 @@ public class OnPWorkspaceUserServiceImpl extends WorkspaceUserService {
     private final WorkspacePermissionRepository workspacePermissionRepository;
     private final WorkspaceUserPermissionRepository workspaceUserPermissionRepository;
     private final UserRestService userRestService;
-    private final ModelMapper modelMapper;
     private final LicenseRestService licenseRestService;
+    private final RestMapStruct restMapStruct;
 
-    public OnPWorkspaceUserServiceImpl(WorkspaceRepository workspaceRepository, WorkspaceUserRepository workspaceUserRepository, WorkspaceRoleRepository workspaceRoleRepository, WorkspacePermissionRepository workspacePermissionRepository, WorkspaceUserPermissionRepository workspaceUserPermissionRepository, UserRestService userRestService, ModelMapper modelMapper, MessageRestService messageRestService, UserInviteRepository userInviteRepository, SpringTemplateEngine springTemplateEngine, HistoryRepository historyRepository, MessageSource messageSource, LicenseRestService licenseRestService, RedirectProperty redirectProperty, CacheManager cacheManager, RedisTemplate redisTemplate, MapStructMapper mapStructMapper) {
-        super(workspaceRepository, workspaceUserRepository, workspaceRoleRepository, workspacePermissionRepository, workspaceUserPermissionRepository, userRestService, modelMapper, messageRestService, userInviteRepository, springTemplateEngine, historyRepository, messageSource, licenseRestService, redirectProperty, cacheManager, redisTemplate, mapStructMapper);
+    public OnPWorkspaceUserServiceImpl(WorkspaceRepository workspaceRepository, WorkspaceUserRepository workspaceUserRepository, WorkspaceRoleRepository workspaceRoleRepository, WorkspacePermissionRepository workspacePermissionRepository, WorkspaceUserPermissionRepository workspaceUserPermissionRepository, UserRestService userRestService, MessageRestService messageRestService, UserInviteRepository userInviteRepository, SpringTemplateEngine springTemplateEngine, MessageSource messageSource, LicenseRestService licenseRestService, RedirectProperty redirectProperty, CacheManager cacheManager, RedisTemplate redisTemplate, RestMapStruct restMapStruct, ApplicationEventPublisher applicationEventPublisher) {
+        super(workspaceRepository, workspaceUserRepository, workspaceRoleRepository, workspacePermissionRepository, workspaceUserPermissionRepository, userRestService, messageRestService, userInviteRepository, springTemplateEngine, messageSource, licenseRestService, redirectProperty, cacheManager, redisTemplate, restMapStruct, applicationEventPublisher);
         this.workspaceRepository = workspaceRepository;
         this.workspaceUserRepository = workspaceUserRepository;
         this.workspaceRoleRepository = workspaceRoleRepository;
         this.workspacePermissionRepository = workspacePermissionRepository;
         this.workspaceUserPermissionRepository = workspaceUserPermissionRepository;
         this.userRestService = userRestService;
-        this.modelMapper = modelMapper;
         this.licenseRestService = licenseRestService;
+        this.restMapStruct = restMapStruct;
     }
 
     @Override
@@ -198,7 +197,7 @@ public class OnPWorkspaceUserServiceImpl extends WorkspaceUserService {
             );
 
             //5. response
-            WorkspaceUserInfoResponse memberInfoResponse = modelMapper.map(userInfoRestResponse, WorkspaceUserInfoResponse.class);
+            WorkspaceUserInfoResponse memberInfoResponse = restMapStruct.userInfoRestResponseToWorkspaceUserInfoResponse(userInfoRestResponse);
             memberInfoResponse.setRole(newWorkspaceUserPermission.getWorkspaceRole().getRole());
             memberInfoResponse.setRoleId(newWorkspaceUserPermission.getWorkspaceRole().getId());
             memberInfoResponse.setJoinDate(newWorkspaceUser.getCreatedDate());

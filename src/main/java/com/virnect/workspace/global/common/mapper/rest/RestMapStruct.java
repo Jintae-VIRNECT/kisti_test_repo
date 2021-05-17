@@ -1,7 +1,8 @@
-package com.virnect.workspace.global.common;
+package com.virnect.workspace.global.common.mapper.rest;
 
 import com.virnect.workspace.dto.response.WorkspaceNewMemberInfoResponse;
 import com.virnect.workspace.dto.response.WorkspaceUserInfoResponse;
+import com.virnect.workspace.dto.response.WorkspaceUserLicenseInfoResponse;
 import com.virnect.workspace.dto.rest.UserInfoRestResponse;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -14,10 +15,13 @@ import org.mapstruct.Mapping;
  * DESCRIPTION:
  */
 @Mapper(componentModel = "spring")
-public interface MapStructMapper {
+public interface RestMapStruct {
     @Mapping(target = "nickName", source = "nickname")
     WorkspaceUserInfoResponse userInfoRestResponseToWorkspaceUserInfoResponse(UserInfoRestResponse userInfoRestResponse);
 
     @Mapping(target = "nickName", source = "nickname")
     WorkspaceNewMemberInfoResponse userInfoRestResponseToWorkspaceNewMemberInfoResponse(UserInfoRestResponse userInfoRestResponse);
+
+    @Mapping(target = "nickName", source = "nickname")
+    WorkspaceUserLicenseInfoResponse userInfoRestResponseToWorkspaceUserLicenseInfoResponse (UserInfoRestResponse userInfoRestResponse);
 }

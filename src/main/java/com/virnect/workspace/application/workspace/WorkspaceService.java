@@ -5,7 +5,6 @@ import com.virnect.workspace.application.message.MessageRestService;
 import com.virnect.workspace.application.user.UserRestService;
 import com.virnect.workspace.dao.history.HistoryRepository;
 import com.virnect.workspace.dao.workspace.*;
-import com.virnect.workspace.domain.histroy.History;
 import com.virnect.workspace.domain.workspace.*;
 import com.virnect.workspace.dto.WorkspaceInfoDTO;
 import com.virnect.workspace.dto.onpremise.*;
@@ -19,18 +18,18 @@ import com.virnect.workspace.dto.rest.WorkspaceLicensePlanInfoResponse;
 import com.virnect.workspace.exception.WorkspaceException;
 import com.virnect.workspace.global.common.ApiResponse;
 import com.virnect.workspace.global.common.RedirectProperty;
+import com.virnect.workspace.global.common.mapper.rest.RestMapStruct;
+import com.virnect.workspace.global.common.mapper.workspace.WorkspaceMapStruct;
 import com.virnect.workspace.global.constant.*;
 import com.virnect.workspace.global.error.ErrorCode;
 import com.virnect.workspace.global.util.RandomStringTokenUtil;
 import com.virnect.workspace.infra.file.FileService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.modelmapper.ModelMapper;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Profile;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -65,7 +64,6 @@ public abstract class WorkspaceService {
     private final WorkspacePermissionRepository workspacePermissionRepository;
     private final WorkspaceUserPermissionRepository workspaceUserPermissionRepository;
     private final UserRestService userRestService;
-    private final ModelMapper modelMapper;
     private final MessageRestService messageRestService;
     private final FileService fileUploadService;
     private final SpringTemplateEngine springTemplateEngine;
@@ -74,6 +72,8 @@ public abstract class WorkspaceService {
     private final LicenseRestService licenseRestService;
     private final RedirectProperty redirectProperty;
     private final RedisTemplate redisTemplate;
+    private final WorkspaceMapStruct workspaceMapStruct;
+    private final RestMapStruct restMapStruct;
 
     /**
      * 워크스페이스 생성
@@ -147,7 +147,7 @@ public abstract class WorkspaceService {
                 .build();
         workspaceUserPermissionRepository.save(newWorkspaceUserPermission);
 
-        WorkspaceInfoDTO workspaceInfoDTO = modelMapper.map(newWorkspace, WorkspaceInfoDTO.class);
+        WorkspaceInfoDTO workspaceInfoDTO = workspaceMapStruct.workspaceToWorkspaceInfoDTO(newWorkspace);
         workspaceInfoDTO.setMasterUserId(newWorkspace.getUserId());
 
         redisTemplate.keys("userWorkspaces::*").stream().forEach(object -> {
@@ -179,7 +179,7 @@ public abstract class WorkspaceService {
             WorkspaceUser workspaceUser = workspaceUserPermission.getWorkspaceUser();
             Workspace workspace = workspaceUser.getWorkspace();
 
-            WorkspaceInfoListResponse.WorkspaceInfo workspaceInfo = modelMapper.map(workspace, WorkspaceInfoListResponse.WorkspaceInfo.class);
+            WorkspaceInfoListResponse.WorkspaceInfo workspaceInfo = workspaceMapStruct.workspaceToWorkspaceInfo(workspace);
             workspaceInfo.setJoinDate(workspaceUser.getCreatedDate());
 
             UserInfoRestResponse userInfoRestResponse = userRestService.getUserInfoByUserId(workspace.getUserId()).getData();
@@ -210,14 +210,14 @@ public abstract class WorkspaceService {
         //workspace 정보 set
         Workspace workspace = workspaceRepository.findByUuid(workspaceId)
                 .orElseThrow(() -> new WorkspaceException(ErrorCode.ERR_WORKSPACE_NOT_FOUND));
-        WorkspaceInfoDTO workspaceInfo = modelMapper.map(workspace, WorkspaceInfoDTO.class);
+        WorkspaceInfoDTO workspaceInfo = workspaceMapStruct.workspaceToWorkspaceInfoDTO(workspace);
         workspaceInfo.setMasterUserId(workspace.getUserId());
 
         //user 정보 set
         List<WorkspaceUserPermission> workspaceUserPermissionList = workspaceUserPermissionRepository.findByWorkspaceUser_Workspace(workspace);
         List<WorkspaceUserInfoResponse> userInfoList = workspaceUserPermissionList.stream().map(workspaceUserPermission -> {
             UserInfoRestResponse userInfoRestResponse = userRestService.getUserInfoByUserId(workspaceUserPermission.getWorkspaceUser().getUserId()).getData();
-            WorkspaceUserInfoResponse workspaceUserInfoResponse = modelMapper.map(userInfoRestResponse, WorkspaceUserInfoResponse.class);
+            WorkspaceUserInfoResponse workspaceUserInfoResponse = restMapStruct.userInfoRestResponseToWorkspaceUserInfoResponse(userInfoRestResponse);
             workspaceUserInfoResponse.setRole(workspaceUserPermission.getWorkspaceRole().getRole());
             return workspaceUserInfoResponse;
         }).collect(Collectors.toList());
@@ -255,9 +255,7 @@ public abstract class WorkspaceService {
      */
     public WorkspaceInfoDTO getWorkspaceInfo(String workspaceId) {
         Workspace workspace = workspaceRepository.findByUuid(workspaceId).orElseThrow(() -> new WorkspaceException(ErrorCode.ERR_WORKSPACE_NOT_FOUND));
-        WorkspaceInfoDTO workspaceInfoDTO = modelMapper.map(workspace, WorkspaceInfoDTO.class);
-        workspaceInfoDTO.setMasterUserId(workspace.getUserId());
-        return workspaceInfoDTO;
+        return workspaceMapStruct.workspaceToWorkspaceInfoDTO(workspace);
     }
 
     /**
@@ -358,27 +356,7 @@ public abstract class WorkspaceService {
 
         workspaceRepository.save(workspace);
 
-        WorkspaceInfoDTO workspaceInfoDTO = modelMapper.map(workspace, WorkspaceInfoDTO.class);
-        workspaceInfoDTO.setMasterUserId(workspace.getUserId());
-
-        return workspaceInfoDTO;
-    }
-
-    public ApiResponse<WorkspaceHistoryListResponse> getWorkspaceHistory(
-            String workspaceId, String userId, Pageable pageable
-    ) {
-
-        Page<History> historyPage = historyRepository.findAllByUserIdAndWorkspace_Uuid(
-                userId, workspaceId, pageable);
-        List<WorkspaceHistoryListResponse.WorkspaceHistory> workspaceHistoryList = historyPage.stream().map(history -> modelMapper.map(history, WorkspaceHistoryListResponse.WorkspaceHistory.class)).collect(Collectors.toList());
-
-        PageMetadataRestResponse pageMetadataResponse = new PageMetadataRestResponse();
-        pageMetadataResponse.setTotalElements(historyPage.getTotalElements());
-        pageMetadataResponse.setTotalPage(historyPage.getTotalPages());
-        pageMetadataResponse.setCurrentPage(pageable.getPageNumber());
-        pageMetadataResponse.setCurrentSize(pageable.getPageSize());
-
-        return new ApiResponse<>(new WorkspaceHistoryListResponse(workspaceHistoryList, pageMetadataResponse));
+        return workspaceMapStruct.workspaceToWorkspaceInfoDTO(workspace);
     }
 
     public WorkspaceLicenseInfoResponse getWorkspaceLicenseInfo(String workspaceId) {

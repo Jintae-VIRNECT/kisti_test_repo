@@ -3,10 +3,8 @@ package com.virnect.workspace.application.workspaceuser;
 import com.virnect.workspace.application.license.LicenseRestService;
 import com.virnect.workspace.application.message.MessageRestService;
 import com.virnect.workspace.application.user.UserRestService;
-import com.virnect.workspace.dao.history.HistoryRepository;
-import com.virnect.workspace.dao.redis.UserInviteRepository;
+import com.virnect.workspace.dao.cache.UserInviteRepository;
 import com.virnect.workspace.dao.workspace.*;
-import com.virnect.workspace.domain.histroy.History;
 import com.virnect.workspace.domain.redis.UserInvite;
 import com.virnect.workspace.domain.workspace.*;
 import com.virnect.workspace.dto.onpremise.MemberAccountCreateRequest;
@@ -16,16 +14,17 @@ import com.virnect.workspace.dto.request.WorkspaceMemberPasswordChangeRequest;
 import com.virnect.workspace.dto.response.WorkspaceMemberInfoListResponse;
 import com.virnect.workspace.dto.response.WorkspaceMemberPasswordChangeResponse;
 import com.virnect.workspace.dto.rest.*;
+import com.virnect.workspace.event.history.HistoryAddEvent;
 import com.virnect.workspace.exception.WorkspaceException;
 import com.virnect.workspace.global.common.ApiResponse;
-import com.virnect.workspace.global.common.MapStructMapper;
 import com.virnect.workspace.global.common.RedirectProperty;
+import com.virnect.workspace.global.common.mapper.rest.RestMapStruct;
 import com.virnect.workspace.global.constant.*;
 import com.virnect.workspace.global.error.ErrorCode;
 import com.virnect.workspace.global.util.RandomStringTokenUtil;
 import lombok.extern.slf4j.Slf4j;
-import org.modelmapper.ModelMapper;
 import org.springframework.cache.CacheManager;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Profile;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -64,15 +63,15 @@ public class OffPWorkspaceUserServiceImpl extends WorkspaceUserService {
     private final MessageRestService messageRestService;
     private final UserInviteRepository userInviteRepository;
     private final SpringTemplateEngine springTemplateEngine;
-    private final HistoryRepository historyRepository;
     private final MessageSource messageSource;
     private final LicenseRestService licenseRestService;
     private final RedirectProperty redirectProperty;
     private final RedisTemplate redisTemplate;
+    private final ApplicationEventPublisher applicationEventPublisher;
 
 
-    public OffPWorkspaceUserServiceImpl(WorkspaceRepository workspaceRepository, WorkspaceUserRepository workspaceUserRepository, WorkspaceRoleRepository workspaceRoleRepository, WorkspacePermissionRepository workspacePermissionRepository, WorkspaceUserPermissionRepository workspaceUserPermissionRepository, UserRestService userRestService, ModelMapper modelMapper, MessageRestService messageRestService, UserInviteRepository userInviteRepository, SpringTemplateEngine springTemplateEngine, HistoryRepository historyRepository, MessageSource messageSource, LicenseRestService licenseRestService, RedirectProperty redirectProperty, CacheManager cacheManager, RedisTemplate redisTemplate, MapStructMapper mapStructMapper) {
-        super(workspaceRepository, workspaceUserRepository, workspaceRoleRepository, workspacePermissionRepository, workspaceUserPermissionRepository, userRestService, modelMapper, messageRestService, userInviteRepository, springTemplateEngine, historyRepository, messageSource, licenseRestService, redirectProperty, cacheManager, redisTemplate, mapStructMapper);
+    public OffPWorkspaceUserServiceImpl(WorkspaceRepository workspaceRepository, WorkspaceUserRepository workspaceUserRepository, WorkspaceRoleRepository workspaceRoleRepository, WorkspacePermissionRepository workspacePermissionRepository, WorkspaceUserPermissionRepository workspaceUserPermissionRepository, UserRestService userRestService, MessageRestService messageRestService, UserInviteRepository userInviteRepository, SpringTemplateEngine springTemplateEngine, MessageSource messageSource, LicenseRestService licenseRestService, RedirectProperty redirectProperty, CacheManager cacheManager, RedisTemplate redisTemplate, RestMapStruct restMapStruct, ApplicationEventPublisher applicationEventPublisher) {
+        super(workspaceRepository, workspaceUserRepository, workspaceRoleRepository, workspacePermissionRepository, workspaceUserPermissionRepository, userRestService, messageRestService, userInviteRepository, springTemplateEngine, messageSource, licenseRestService, redirectProperty, cacheManager, redisTemplate, restMapStruct, applicationEventPublisher);
         this.workspaceRepository = workspaceRepository;
         this.workspaceUserRepository = workspaceUserRepository;
         this.workspaceRoleRepository = workspaceRoleRepository;
@@ -82,11 +81,11 @@ public class OffPWorkspaceUserServiceImpl extends WorkspaceUserService {
         this.userRestService = userRestService;
         this.userInviteRepository = userInviteRepository;
         this.springTemplateEngine = springTemplateEngine;
-        this.historyRepository = historyRepository;
         this.messageSource = messageSource;
         this.licenseRestService = licenseRestService;
         this.redirectProperty = redirectProperty;
         this.redisTemplate = redisTemplate;
+        this.applicationEventPublisher = applicationEventPublisher;
     }
 
 
@@ -351,10 +350,10 @@ public class OffPWorkspaceUserServiceImpl extends WorkspaceUserService {
         //history 저장
         if (workspaceRole.getRole().equalsIgnoreCase("MANAGER")) {
             String message = messageSource.getMessage("WORKSPACE_INVITE_MANAGER", new String[]{inviteUserInfo.getNickname(), generatePlanString(userInvite.isPlanRemote(), userInvite.isPlanMake(), userInvite.isPlanView())}, locale);
-            historySaveHandler(message, userInvite.getInvitedUserId(), workspace);
+            applicationEventPublisher.publishEvent(new HistoryAddEvent(message, userInvite.getInvitedUserId(), workspace));
         } else {
             String message = messageSource.getMessage("WORKSPACE_INVITE_MEMBER", new String[]{inviteUserInfo.getNickname(), generatePlanString(userInvite.isPlanRemote(), userInvite.isPlanMake(), userInvite.isPlanView())}, locale);
-            historySaveHandler(message, userInvite.getInvitedUserId(), workspace);
+            applicationEventPublisher.publishEvent(new HistoryAddEvent(message, userInvite.getInvitedUserId(), workspace));
         }
 
         RedirectView redirectView = new RedirectView();
@@ -484,14 +483,6 @@ public class OffPWorkspaceUserServiceImpl extends WorkspaceUserService {
         return redirectView;
     }
 
-    private void historySaveHandler(String message, String userId, Workspace workspace) {
-        History history = History.builder()
-                .message(message)
-                .userId(userId)
-                .workspace(workspace)
-                .build();
-        historyRepository.save(history);
-    }
 
     public RedirectView workspaceOverPlanFailHandler(Workspace workspace, UserInvite
             userInvite, List<String> successPlan, List<String> failPlan, Locale locale) {

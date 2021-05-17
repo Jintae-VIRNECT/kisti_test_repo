@@ -11,11 +11,12 @@ import com.virnect.workspace.domain.workspace.WorkspaceUserPermission;
 import com.virnect.workspace.dto.onpremise.*;
 import com.virnect.workspace.exception.WorkspaceException;
 import com.virnect.workspace.global.common.RedirectProperty;
+import com.virnect.workspace.global.common.mapper.rest.RestMapStruct;
+import com.virnect.workspace.global.common.mapper.workspace.WorkspaceMapStruct;
 import com.virnect.workspace.global.error.ErrorCode;
 import com.virnect.workspace.infra.file.FileService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FilenameUtils;
-import org.modelmapper.ModelMapper;
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Profile;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -44,8 +45,8 @@ public class OnPWorkspaceServiceImpl extends WorkspaceService {
     private final FileService fileUploadService;
     private final WorkspaceSettingRepository workspaceSettingRepository;
 
-    public OnPWorkspaceServiceImpl(WorkspaceRepository workspaceRepository, WorkspaceUserRepository workspaceUserRepository, WorkspaceRoleRepository workspaceRoleRepository, WorkspacePermissionRepository workspacePermissionRepository, WorkspaceUserPermissionRepository workspaceUserPermissionRepository, UserRestService userRestService, ModelMapper modelMapper, MessageRestService messageRestService, FileService fileUploadService, SpringTemplateEngine springTemplateEngine, HistoryRepository historyRepository, MessageSource messageSource, LicenseRestService licenseRestService, RedirectProperty redirectProperty, RedisTemplate redisTemplate, WorkspaceSettingRepository workspaceSettingRepository) {
-        super(workspaceRepository, workspaceUserRepository, workspaceRoleRepository, workspacePermissionRepository, workspaceUserPermissionRepository, userRestService, modelMapper, messageRestService, fileUploadService, springTemplateEngine, historyRepository, messageSource, licenseRestService, redirectProperty, redisTemplate);
+    public OnPWorkspaceServiceImpl(WorkspaceRepository workspaceRepository, WorkspaceUserRepository workspaceUserRepository, WorkspaceRoleRepository workspaceRoleRepository, WorkspacePermissionRepository workspacePermissionRepository, WorkspaceUserPermissionRepository workspaceUserPermissionRepository, UserRestService userRestService, MessageRestService messageRestService, FileService fileUploadService, SpringTemplateEngine springTemplateEngine, HistoryRepository historyRepository, MessageSource messageSource, LicenseRestService licenseRestService, RedirectProperty redirectProperty, RedisTemplate redisTemplate, WorkspaceMapStruct workspaceMapStruct, RestMapStruct restMapStruct, WorkspaceSettingRepository workspaceSettingRepository) {
+        super(workspaceRepository, workspaceUserRepository, workspaceRoleRepository, workspacePermissionRepository, workspaceUserPermissionRepository, userRestService, messageRestService, fileUploadService, springTemplateEngine, historyRepository, messageSource, licenseRestService, redirectProperty, redisTemplate, workspaceMapStruct, restMapStruct);
         this.workspaceRepository = workspaceRepository;
         this.workspaceUserPermissionRepository = workspaceUserPermissionRepository;
         this.fileUploadService = fileUploadService;

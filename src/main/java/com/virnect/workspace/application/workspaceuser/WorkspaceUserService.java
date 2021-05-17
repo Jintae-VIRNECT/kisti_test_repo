@@ -3,10 +3,8 @@ package com.virnect.workspace.application.workspaceuser;
 import com.virnect.workspace.application.license.LicenseRestService;
 import com.virnect.workspace.application.message.MessageRestService;
 import com.virnect.workspace.application.user.UserRestService;
-import com.virnect.workspace.dao.history.HistoryRepository;
-import com.virnect.workspace.dao.redis.UserInviteRepository;
+import com.virnect.workspace.dao.cache.UserInviteRepository;
 import com.virnect.workspace.dao.workspace.*;
-import com.virnect.workspace.domain.histroy.History;
 import com.virnect.workspace.domain.rest.LicenseStatus;
 import com.virnect.workspace.domain.workspace.Workspace;
 import com.virnect.workspace.domain.workspace.WorkspaceRole;
@@ -15,16 +13,21 @@ import com.virnect.workspace.dto.onpremise.MemberAccountCreateRequest;
 import com.virnect.workspace.dto.request.*;
 import com.virnect.workspace.dto.response.*;
 import com.virnect.workspace.dto.rest.*;
+import com.virnect.workspace.event.history.HistoryAddEvent;
 import com.virnect.workspace.exception.WorkspaceException;
-import com.virnect.workspace.global.common.*;
+import com.virnect.workspace.global.common.ApiResponse;
+import com.virnect.workspace.global.common.CustomPageHandler;
+import com.virnect.workspace.global.common.CustomPageResponse;
+import com.virnect.workspace.global.common.RedirectProperty;
+import com.virnect.workspace.global.common.mapper.rest.RestMapStruct;
 import com.virnect.workspace.global.constant.LicenseProduct;
 import com.virnect.workspace.global.constant.Mail;
 import com.virnect.workspace.global.constant.MailSender;
 import com.virnect.workspace.global.error.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.modelmapper.ModelMapper;
 import org.springframework.cache.CacheManager;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Profile;
 import org.springframework.data.domain.Page;
@@ -61,11 +64,9 @@ public abstract class WorkspaceUserService {
     private final WorkspacePermissionRepository workspacePermissionRepository;
     private final WorkspaceUserPermissionRepository workspaceUserPermissionRepository;
     private final UserRestService userRestService;
-    private final ModelMapper modelMapper;
     private final MessageRestService messageRestService;
     private final UserInviteRepository userInviteRepository;
     private final SpringTemplateEngine springTemplateEngine;
-    private final HistoryRepository historyRepository;
     private final MessageSource messageSource;
     private final LicenseRestService licenseRestService;
     private final RedirectProperty redirectProperty;
@@ -73,7 +74,8 @@ public abstract class WorkspaceUserService {
     private static final String ALL_WORKSAPCE_ROLE = "MASTER|MANAGER|MEMBER";
     private static final String ALL_LICENSE_PRODUCT = "REMOTE|MAKE|VIEW";
     private final RedisTemplate redisTemplate;
-    private final MapStructMapper mapStructMapper;
+    private final RestMapStruct restMapStruct;
+    private final ApplicationEventPublisher applicationEventPublisher;
 
     /**
      * 멤버 조회
@@ -137,7 +139,7 @@ public abstract class WorkspaceUserService {
                 WorkspaceUserPermission workspaceUserPermission : workspaceUserPermissionPage) {
             UserInfoRestResponse userInfoResponse = userInfoListRestResponse.getUserInfoList().stream()
                     .filter(userInfoRestResponse -> userInfoRestResponse.getUuid().equals(workspaceUserPermission.getWorkspaceUser().getUserId())).findFirst().orElse(new UserInfoRestResponse());
-            WorkspaceUserInfoResponse workspaceUserInfoResponse = mapStructMapper.userInfoRestResponseToWorkspaceUserInfoResponse(userInfoResponse);
+            WorkspaceUserInfoResponse workspaceUserInfoResponse = restMapStruct.userInfoRestResponseToWorkspaceUserInfoResponse(userInfoResponse);
             workspaceUserInfoResponse.setRole(workspaceUserPermission.getWorkspaceRole().getRole());
             workspaceUserInfoResponse.setJoinDate(workspaceUserPermission.getWorkspaceUser().getCreatedDate());
             workspaceUserInfoResponse.setRoleId(workspaceUserPermission.getWorkspaceRole().getId());
@@ -248,7 +250,7 @@ public abstract class WorkspaceUserService {
         List<WorkspaceUserPermission> workspaceUserPermissionList = workspaceUserPermissionRepository.findRecentWorkspaceUserList(4, workspaceId);
 
         return workspaceUserPermissionList.stream().map(workspaceUserPermission -> {
-            WorkspaceNewMemberInfoResponse newMemberInfo = mapStructMapper.userInfoRestResponseToWorkspaceNewMemberInfoResponse(getUserInfoByUserId(workspaceUserPermission.getWorkspaceUser().getUserId()));
+            WorkspaceNewMemberInfoResponse newMemberInfo = restMapStruct.userInfoRestResponseToWorkspaceNewMemberInfoResponse(getUserInfoByUserId(workspaceUserPermission.getWorkspaceUser().getUserId()));
             newMemberInfo.setJoinDate(workspaceUserPermission.getWorkspaceUser().getCreatedDate());
             newMemberInfo.setRole(workspaceUserPermission.getWorkspaceRole().getRole());
             return newMemberInfo;
@@ -368,17 +370,8 @@ public abstract class WorkspaceUserService {
             message = messageSource.getMessage(
                     "WORKSPACE_SET_MEMBER", new String[]{masterUser.getNickname(), user.getNickname()}, locale);
         }
-        saveHistotry(workspace, responseUserId, message);
+        applicationEventPublisher.publishEvent(new HistoryAddEvent(message, requestUserId, workspace));
         removeUserWorkspacesCache(responseUserId);
-    }
-
-    private void saveHistotry(Workspace workspace, String userId, String message) {
-        History history = History.builder()
-                .workspace(workspace)
-                .userId(userId)
-                .message(message)
-                .build();
-        historyRepository.save(history);
     }
 
     @Transactional
@@ -425,7 +418,7 @@ public abstract class WorkspaceUserService {
                     new String[]{requestUser.getNickname(), user.getNickname(), org.apache.commons.lang.StringUtils.join(removedProductList, ",")},
                     locale
             );
-            saveHistotry(workspace, userId, message);
+            applicationEventPublisher.publishEvent(new HistoryAddEvent(message, userId, workspace));
         }
 
         if (!addedProductList.isEmpty()) {
@@ -440,7 +433,7 @@ public abstract class WorkspaceUserService {
                     "WORKSPACE_GRANT_LICENSE",
                     new String[]{requestUser.getNickname(), user.getNickname(), org.apache.commons.lang.StringUtils.join(addedProductList, ",")}, locale
             );
-            saveHistotry(workspace, userId, message);
+            applicationEventPublisher.publishEvent(new HistoryAddEvent(message, userId, workspace));
         }
 
         if (!addedProductList.isEmpty() || !removedProductList.isEmpty()) {
@@ -517,7 +510,7 @@ public abstract class WorkspaceUserService {
     public WorkspaceUserInfoResponse getMemberInfo(String workspaceId, String userId) {
         Optional<WorkspaceUserPermission> workspaceUserPermission = workspaceUserPermissionRepository.findWorkspaceUser(workspaceId, userId);
         if (workspaceUserPermission.isPresent()) {
-            WorkspaceUserInfoResponse workspaceUserInfoResponse = mapStructMapper.userInfoRestResponseToWorkspaceUserInfoResponse(getUserInfoByUserId(userId));
+            WorkspaceUserInfoResponse workspaceUserInfoResponse = restMapStruct.userInfoRestResponseToWorkspaceUserInfoResponse(getUserInfoByUserId(userId));
             workspaceUserInfoResponse.setRole(workspaceUserPermission.get().getWorkspaceRole().getRole());
             workspaceUserInfoResponse.setLicenseProducts(getUserLicenseProductList(workspaceId, userId));
             return workspaceUserInfoResponse;
@@ -531,7 +524,7 @@ public abstract class WorkspaceUserService {
         for (String userId : userIds) {
             Optional<WorkspaceUserPermission> workspaceUserPermission = workspaceUserPermissionRepository.findWorkspaceUser(workspaceId, userId);
             if (workspaceUserPermission.isPresent()) {
-                WorkspaceUserInfoResponse workspaceUserInfoResponse = modelMapper.map(getUserInfoByUserId(userId), WorkspaceUserInfoResponse.class);
+                WorkspaceUserInfoResponse workspaceUserInfoResponse = restMapStruct.userInfoRestResponseToWorkspaceUserInfoResponse(getUserInfoByUserId(userId));
                 workspaceUserInfoResponse.setRole(workspaceUserPermission.get().getWorkspaceRole().getRole());
                 workspaceUserInfoResponse.setLicenseProducts(getUserLicenseProductList(workspaceId, userId));
                 workspaceUserInfoResponseList.add(workspaceUserInfoResponse);
@@ -630,12 +623,7 @@ public abstract class WorkspaceUserService {
         //history 저장
         String message = messageSource.getMessage(
                 "WORKSPACE_EXPELED", new String[]{masterUser.getNickname(), kickedUser.getNickname()}, locale);
-        History history = History.builder()
-                .message(message)
-                .userId(kickedUser.getUuid())
-                .workspace(workspace)
-                .build();
-        historyRepository.save(history);
+        applicationEventPublisher.publishEvent(new HistoryAddEvent(message, kickedUser.getUuid(), workspace));
 
         removeUserWorkspacesCache(memberKickOutRequest.getKickedUserId());
         return new ApiResponse<>(true);
@@ -658,7 +646,6 @@ public abstract class WorkspaceUserService {
             }
         });
     }
-
 
 
     public ApiResponse<Boolean> exitWorkspace(String workspaceId, String userId, Locale locale) {
@@ -692,12 +679,7 @@ public abstract class WorkspaceUserService {
         UserInfoRestResponse userInfoRestResponse = userRestService.getUserInfoByUserId(userId).getData();
         String message = messageSource.getMessage(
                 "WORKSPACE_LEAVE", new String[]{userInfoRestResponse.getNickname()}, locale);
-        History history = History.builder()
-                .message(message)
-                .userId(userId)
-                .workspace(workspace)
-                .build();
-        historyRepository.save(history);
+        applicationEventPublisher.publishEvent(new HistoryAddEvent(message, userId, workspace));
 
         removeUserWorkspacesCache(userId);
         return new ApiResponse<>(true);
@@ -707,7 +689,7 @@ public abstract class WorkspaceUserService {
         List<String> workspaceUserIdList = workspaceUserRepository.getWorkspaceUserIdList(workspaceId);
         UserInfoListRestResponse userInfoListRestResponse = getUserInfoList("", workspaceUserIdList);
         List<WorkspaceUserInfoResponse> workspaceUserInfoResponseList = userInfoListRestResponse.getUserInfoList().stream().map(userInfoRestResponse -> {
-            WorkspaceUserInfoResponse workspaceUserInfoResponse = modelMapper.map(userInfoRestResponse, WorkspaceUserInfoResponse.class);
+            WorkspaceUserInfoResponse workspaceUserInfoResponse = restMapStruct.userInfoRestResponseToWorkspaceUserInfoResponse(userInfoRestResponse);
             WorkspaceRole role = workspaceUserPermissionRepository.findWorkspaceUser(workspaceId, userInfoRestResponse.getUuid()).get().getWorkspaceRole();
             workspaceUserInfoResponse.setRole(role.getRole());
             workspaceUserInfoResponse.setRoleId(role.getId());
@@ -741,7 +723,7 @@ public abstract class WorkspaceUserService {
                             .filter(licenseInfoResponse -> licenseInfoResponse.getStatus().equals(LicenseStatus.USE))
                             .forEach(licenseInfoResponse -> {
                                 UserInfoRestResponse userInfoRestResponse = userRestService.getUserInfoByUserId(licenseInfoResponse.getUserId()).getData();
-                                WorkspaceUserLicenseInfoResponse workspaceUserLicenseInfo = modelMapper.map(userInfoRestResponse, WorkspaceUserLicenseInfoResponse.class);
+                                WorkspaceUserLicenseInfoResponse workspaceUserLicenseInfo = restMapStruct.userInfoRestResponseToWorkspaceUserLicenseInfoResponse(userInfoRestResponse);
                                 workspaceUserLicenseInfo.setLicenseType(licenseProductInfoResponse.getLicenseType());
                                 workspaceUserLicenseInfo.setProductName(licenseProductInfoResponse.getProductName());
                                 workspaceUserLicenseInfoList.add(workspaceUserLicenseInfo);
@@ -792,7 +774,7 @@ public abstract class WorkspaceUserService {
 
     @Profile("onpremise")
     @Transactional
-    public abstract  boolean deleteWorkspaceMemberAccount(String workspaceId, MemberAccountDeleteRequest memberAccountDeleteRequest);
+    public abstract boolean deleteWorkspaceMemberAccount(String workspaceId, MemberAccountDeleteRequest memberAccountDeleteRequest);
 
     @Profile("onpremise")
     @Transactional

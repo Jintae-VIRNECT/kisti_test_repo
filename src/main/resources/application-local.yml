@@ -3,7 +3,7 @@ spring:
     name: workspace-server
   datasource:
     url: jdbc:mysql://192.168.6.3:4336/workspace?serverTimezone=UTC
-    username: virnect-read
+    username: virnect-workspace
     password: virnect1234
   jpa:
     hibernate:
@@ -121,3 +121,6 @@ user-server:
 license-server:
   ribbon:
     listOfServers: http://192.168.6.3:8632
+message-server:
+  ribbon:
+    listOfServers: http://192.168.6.3:8084
