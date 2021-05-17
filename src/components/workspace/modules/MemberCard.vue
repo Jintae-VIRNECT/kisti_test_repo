@@ -51,7 +51,7 @@ export default {
     //사용자의 현재 상태
     status: {
       type: String,
-      validator: value => [...MEMBER_STATUS].indexOf(value) >= 0,
+      validator: value => ['', ...MEMBER_STATUS].indexOf(value) >= 0,
     },
     imageUrl: String,
     name: {
