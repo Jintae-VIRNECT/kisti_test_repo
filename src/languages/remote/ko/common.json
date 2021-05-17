@@ -63,7 +63,7 @@
   },
   "confirm": {
     "network_error": "서버와 통신이 원활하지 않습니다. 잠시 후 다시 시도해 주세요.",
-    "call_timeout": "협업을 접속한 지 1시간이 되었습니다.​ <br>협업을 계속 진행하시겠습니까?",
+    "call_timeout": "협업을 접속한 지 {time}분이 되었습니다.​ <br>협업을 계속 진행하시겠습니까?",
     "unsupport_feature": "해당 기능은 추후 오픈 예정입니다.",
     "access_remove": "선택한 멤버의 참가 권한을 삭제합니다.",
     "access_removed": "참가 권한을 삭제하였습니다."

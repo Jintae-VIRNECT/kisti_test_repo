@@ -63,7 +63,7 @@
   },
   "confirm": {
     "network_error": "Unstable connection with the server. Please try again later.",
-    "call_timeout": "Your Collabo has been lasted for 1hr, <br>would you like to continue?",
+    "call_timeout": "Your Collabo has been lasted for {time}min, <br>would you like to continue?",
     "unsupport_feature": "This feature is scheduled to be functional later.",
     "access_remove": "Allow access disabled for the selected member.",
     "access_removed": "Allow access disabled."
