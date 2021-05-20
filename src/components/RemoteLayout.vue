@@ -4,12 +4,8 @@
 </template>
 
 <script>
-import confirmMixin from 'mixins/confirm'
-import auth from 'utils/auth'
-
 export default {
   name: 'RemoteLayout',
-  mixins: [confirmMixin],
   data() {
     return {
       key: 1,
@@ -45,33 +41,12 @@ export default {
       // window.addEventListener('orientationchange', this.viewPointSetting)
       this.viewPointSetting()
     }
-
-    //구축형 - 강제 로그아웃 이벤트 핸들러 적용 여부
-    if (this.isOnpremise) {
-      //마스터에 의해 강제 로그아웃 당할 시
-      this.$eventBus.$on('forceLogout', () => {
-        //로그아웃 처리
-        const action = () => {
-          this.$eventBus.$emit('popover:close')
-          auth.logout()
-        }
-
-        //강제 로그아웃 알림 팝업
-        this.confirmDefault(
-          this.$t('workspace.confirm_force_logout_received'),
-          {
-            action,
-          },
-        )
-      })
-    }
   },
   beforeDestroy() {
     //이벤트 버스 리스너 청소
     this.$eventBus.$off('reJoin', () => {
       this.key++
     })
-    this.$eventBus.$off('forceLogout')
     document.body.onorientationchange = () => {}
   },
 }

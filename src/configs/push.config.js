@@ -8,6 +8,7 @@
  */
 export const DESTINATION = {
   PUSH: '/topic/push',
+  FORCELOGOUT: '/topic/event.force_logout',
 }
 
 /**

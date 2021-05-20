@@ -36,6 +36,7 @@ import MemberCard from 'MemberCard'
 import { getMemberList } from 'api/http/member'
 import { WORKSPACE_ROLE } from 'configs/status.config'
 import confirmMixin from 'mixins/confirm'
+import { forceLogout } from 'api/http/message'
 
 export default {
   name: 'WorkspaceUser',
@@ -155,13 +156,19 @@ export default {
         let text = ''
 
         //멤버 상태가 '협업 중'인 경우
-        if (latestTargetUserInfo.status === 'collabo') {
+        if (latestTargetUserInfo.status === 'join') {
           //강제 로그아웃 불가 메시지
           text = `${nickNameTag} ${this.$t(
             'workspace.confirm_force_logout_unavailable',
           )}`
         } else {
-          //@TODO : 강제 로그인 실행
+          //강제 로그인 메시지 API 호출
+          const params = {
+            workspaceId: this.workspace.uuid,
+            userId: this.account.uuid,
+            targetUserIds: new Array(latestTargetUserInfo.uuid),
+          }
+          await forceLogout(params)
 
           //강제 로그아웃 실행 확인 메시지
           text = `${nickNameTag} ${this.$t(

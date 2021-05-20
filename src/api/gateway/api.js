@@ -88,6 +88,9 @@ export default {
     'GET',
     '/remote/recorder/workspaces/{workspaceId}/users/{userId}/recordings',
   ],
+
+  /* MESSAGE FORCE LOGOUT */
+  FORCE_LOGOUT: ['POST', '/remote/message/push/forced-logout'],
 }
 
 export const wsUri = {
