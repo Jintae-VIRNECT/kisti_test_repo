@@ -1459,12 +1459,12 @@
     "@types/webpack-sources" "*"
     source-map "^0.6.0"
 
-"@virnect/components@1.1.0":
-  version "1.1.0"
-  resolved "http://192.168.6.3:4873/@virnect%2fcomponents/-/components-1.1.0.tgz#5b9a5c0af5e1795f4627094e3e44f665600a3e48"
-  integrity sha512-D9Jsdq6dpinBVtek1MomIARAVZ4he5eA9UdgLtdWLlogymbLivH0v/+BBghjwyS8IxJaQXcI8lnWL2Ocal8xjw==
+"@virnect/components@^1.1.8":
+  version "1.1.8"
+  resolved "http://192.168.6.3:4873/@virnect%2fcomponents/-/components-1.1.8.tgz#3600b3576573f623ca918f641c703e3b5719c3a9"
+  integrity sha512-CleMDC/eB/0bSG4/wmRMHnpJDVU2T/Av7pWSugnnEPaSyncnuqYI17D3H7t5Q42VCRpnK+UTlqEsRBmpVtNsqg==
   dependencies:
-    "@virnect/ui-assets" "^1.1.9"
+    "@virnect/ui-assets" "^1.1.17"
     "@vue/composition-api" "^1.0.0-rc.2"
     js-cookie "^2.2.1"
     vue-demi "^0.7.1"
@@ -1522,15 +1522,10 @@
     stylelint-prettier "^1.1.2"
     stylelint-scss "^3.18.0"
 
-"@virnect/ui-assets@0.0.12":
-  version "0.0.12"
-  resolved "http://192.168.6.3:4873/@virnect%2fui-assets/-/ui-assets-0.0.12.tgz#111bb134f8912ea18d674d6c97bd719be4761ab8"
-  integrity sha512-bV2K/7wm3DDjiEKgv9hQm0qXTAPiL7Dz9X/w3gnXzNlx5LtX0UVRqYH+npZ5uYVvYi7Ej33VcUzqiPqJhxJUAQ==
-
-"@virnect/ui-assets@^1.1.9":
-  version "1.1.9"
-  resolved "http://192.168.6.3:4873/@virnect%2fui-assets/-/ui-assets-1.1.9.tgz#8ca68f13a2d10807c1c849544f5c04c208d567b9"
-  integrity sha512-+eIfvFWVi+BikhkJt/rsEE1Ednmz/GTomtHAKBwOCo2mQ5XKjJm7yqZHatWlcQxELPXxySx1mGuFmX9JlIOl0g==
+"@virnect/ui-assets@^1.1.17", "@virnect/ui-assets@^1.1.18":
+  version "1.1.18"
+  resolved "http://192.168.6.3:4873/@virnect%2fui-assets/-/ui-assets-1.1.18.tgz#ee67e8b366e2368ced4581fcbc4226da085d7e2e"
+  integrity sha512-TL22kOWnCHi62rcdcGHOhuk59oh4jHPj6PNC+MXsotudY3SnDvaLiCBjJNCNvOTPVgWBcDrVtfW3QWUcS+xTzA==
 
 "@vue/babel-helper-vue-jsx-merge-props@^1.2.1":
   version "1.2.1"

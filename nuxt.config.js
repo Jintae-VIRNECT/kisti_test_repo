@@ -52,7 +52,7 @@ module.exports = async () => {
         '@/assets/css/_vars.scss',
       ],
     },
-    css: ['@virnect/ui-assets/css/base.css', '@/assets/css/global.scss'],
+    css: ['@virnect/ui-assets/css/base.old.css', '@/assets/css/global.scss'],
     loading: { color: '#1468e2' },
     /**
      * dir
