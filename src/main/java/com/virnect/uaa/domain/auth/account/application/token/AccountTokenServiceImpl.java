@@ -1,5 +1,7 @@
 package com.virnect.uaa.domain.auth.account.application.token;
 
+import static io.jsonwebtoken.impl.TextCodec.*;
+
 import java.util.Date;
 
 import javax.servlet.http.HttpServletRequest;
@@ -12,7 +14,6 @@ import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.SignatureException;
 import io.jsonwebtoken.UnsupportedJwtException;
-import io.jsonwebtoken.impl.TextCodec;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -45,9 +46,8 @@ public class AccountTokenServiceImpl implements AccountTokenService {
 			log.info("ACCESS TOKEN: {}", tokenRefreshRequest.getAccessToken());
 			log.info("REFRESH TOKEN: {}", tokenRefreshRequest.getRefreshToken());
 			String encodedPayload = tokenRefreshRequest.getAccessToken().split("\\.")[1];
-			log.info("ACCESS TOKEN PAYLOAD BASE64 DECODE: {}", TextCodec.BASE64URL.decodeToString(encodedPayload));
-			JwtPayload accessToken = objectMapper.readValue(
-				TextCodec.BASE64URL.decodeToString(encodedPayload), JwtPayload.class);
+			log.info("ACCESS TOKEN PAYLOAD BASE64 DECODE: {}", BASE64URL.decodeToString(encodedPayload));
+			JwtPayload accessToken = objectMapper.readValue(BASE64URL.decodeToString(encodedPayload), JwtPayload.class);
 			JwtPayload refreshToken = jwtTokenProvider.getJwtPayload(tokenRefreshRequest.getRefreshToken());
 
 			RefreshTokenResponse refreshTokenResponse = new RefreshTokenResponse();
@@ -66,13 +66,11 @@ public class AccountTokenServiceImpl implements AccountTokenService {
 			}
 
 			User user = userRepository.findByUuid(refreshToken.getUuid())
-				.orElseThrow(
-					() -> new UserAuthenticationServiceException(AuthenticationErrorCode.ERR_API_AUTHENTICATION));
+				.orElseThrow(() -> new UserAuthenticationServiceException(AuthenticationErrorCode.ERR_API_AUTHENTICATION));
 
 			ClientGeoIPInfo clientGeoIPInfo = clientUserAgentInformationParser.getClientGeoIPInformation(request);
 
-			refreshTokenResponse.setAccessToken(
-				jwtTokenProvider.createAccessToken(user, accessToken.getJwtId(), clientGeoIPInfo));
+			refreshTokenResponse.setAccessToken(jwtTokenProvider.createAccessToken(user, accessToken.getJwtId(), clientGeoIPInfo));
 			refreshTokenResponse.setRefreshToken(tokenRefreshRequest.getRefreshToken());
 			refreshTokenResponse.setExpireIn(jwtTokenProvider.getAccessTokenExpire());
 			refreshTokenResponse.setRefreshed(true);
