@@ -263,13 +263,14 @@ class Auth {
     location.href = `${URLS['console']}/?continue=${location.href}`
     return this
   }
-  logout() {
+  logout(redirect = true) {
     endLoginStatus() //로그아웃 상태 업데이트
     cookieClear()
     isLogin = false
     myInfo = {}
     myWorkspaces = []
-    location.href = `${URLS['console']}/?continue=${location.href}`
+    if (redirect)
+      location.href = `${URLS['console']}/?continue=${location.href}`
     return this
   }
 }

@@ -117,6 +117,7 @@ import { ROLE } from 'configs/remote.config'
 import { sendPush } from 'api/http/message'
 import { getRoomInfo } from 'api/http/room'
 import auth from 'utils/auth'
+import { URLS } from 'configs/env.config'
 
 import Switcher from 'Switcher'
 import Popover from 'Popover'
@@ -364,11 +365,13 @@ export default {
     //구축형 강제 로그아웃 이벤트 수신 함수
     forcedLogout() {
       this.debug('force logout received')
+      const redirect = false
+      auth.logout(redirect)
 
       //로그아웃 처리
       const action = () => {
         this.$eventBus.$emit('popover:close')
-        auth.logout()
+        location.href = `${URLS['console']}/?continue=${location.href}`
       }
 
       //강제 로그아웃 알림 팝업
