@@ -108,13 +108,18 @@ const initLoginStatus = () => {
 
         //메시지, 데이터 존재 여부 판단
         if (e && e.data) {
-          const { message } = JSON.parse(e.data)
+          if (e.data === 'PING') {
+            socket.send('PONG')
+            return
+          }
 
-          switch (message) {
+          const { code } = JSON.parse(e.data)
+
+          switch (code) {
             //연결 수립 완료 메시지 수신 시 유저 정보 전송하여 등록절차를 밟는다.
-            case AUTH_STATUS.CONNECTION_ESTABLISHED:
+            case AUTH_STATUS.CONNECT_SUCCESS:
               logger(
-                'connection established, regist',
+                'connect success, regist',
                 myInfo.uuid,
                 myInfo.name,
                 myInfo.email,
@@ -128,8 +133,8 @@ const initLoginStatus = () => {
               )
               break
             //등록완료
-            case AUTH_STATUS.REGISTER_SUCCESS:
-              logger('register success', e.data)
+            case AUTH_STATUS.REGISTRATION_SUCCESS:
+              logger('Registration Success', e.data)
               break
             //등록 실패 및 예외 케이스
             default:

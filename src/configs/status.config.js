@@ -41,9 +41,9 @@ export const ROOM_STATUS = {
  * 인증 서버 연결 메시지
  */
 export const AUTH_STATUS = {
-  CONNECTION_ESTABLISHED: 'Connection Establish.',
-  REGISTER_SUCCESS: 'Register Success',
-  REGISTER_FAIL: 'Register Fail.',
+  CONNECT_SUCCESS: 200,
+  REGISTRATION_SUCCESS: 300,
+  REGISTRATION_FAIL: 400,
 }
 
 /**
