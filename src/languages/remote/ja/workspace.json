@@ -26,6 +26,9 @@
     "confirm_already_invite_remove": "同じアカウントで協業中です。 協業を削除することはできません。",
     "confirm_already_invite_leave": "同じアカウントで協業中です。協業を退場できません。",
     "confirm_remote_leader_leave": "リーダーは協業から退場できません。",
+    "confirm_force_logout_complete": "がログアウトしました。",
+    "confirm_force_logout_received": "マスターによって強制的にログアウトされます。",
+    "confirm_force_logout_unavailable": "はコラボレーションにアクセスしたため、ログアウトできません。",
 
     "history": "最近履歴",
     "remote": "リモート協業",

@@ -1,5 +1,24 @@
 <template>
   <div class="card">
+    <popover
+      v-if="showMasterMenu"
+      class="card-menu"
+      popperClass="card-menu__popover"
+      placement="bottom-start"
+    >
+      <button slot="reference" class="card-menu__btn"></button>
+      <ul>
+        <li>
+          <button
+            class="card-menu__group-btn"
+            :disabled="isForceLogoutDisabled"
+            @click="forceLogout"
+          >
+            {{ $t('button.logout') }}
+          </button>
+        </li>
+      </ul>
+    </popover>
     <div class="card-center">
       <div class="card-profile--thumb">
         <profile
@@ -37,14 +56,17 @@
 import Profile from 'Profile'
 import Role from 'Role'
 import Tooltip from 'Tooltip'
+import Popover from 'Popover'
 
 import { WORKSPACE_ROLE, MEMBER_STATUS } from 'configs/status.config'
+
 export default {
   name: 'Card',
   components: {
     Profile,
     Role,
     Tooltip,
+    Popover,
   },
 
   props: {
@@ -67,6 +89,10 @@ export default {
       default: '',
     },
     showSignal: {
+      type: Boolean,
+      default: false,
+    },
+    showMasterMenu: {
       type: Boolean,
       default: false,
     },
@@ -95,8 +121,17 @@ export default {
         return 'expired'
       }
     },
+    isForceLogoutDisabled() {
+      //login 상태인 유저만 강제 로그아웃 가능
+      if (this.status !== 'login') return true
+      return false
+    },
   },
-  methods: {},
+  methods: {
+    forceLogout() {
+      this.$emit('forceLogout')
+    },
+  },
 
   /* Lifecycles */
   mounted() {},
@@ -107,6 +142,7 @@ export default {
 @import '~assets/style/vars';
 @import '~assets/style/mixin';
 .card {
+  position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -120,6 +156,24 @@ export default {
     background-color: $color_darkgray_500;
   }
 }
+
+.card-menu {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  .card-menu__btn {
+    width: 2em;
+    height: 2em;
+    background: url(~assets/image/ic_more.svg) 50% no-repeat;
+    border-radius: 50%;
+    &:active,
+    &:focus,
+    &:hover {
+      background-color: rgba(white, 0.2);
+    }
+  }
+}
+
 .card-center {
   position: relative;
   display: flex;

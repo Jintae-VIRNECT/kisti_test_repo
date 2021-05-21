@@ -26,6 +26,9 @@
     "confirm_already_invite_remove": "The same account is being used for Collabo. Cannot remove this Collabo.",
     "confirm_already_invite_leave": "The same account is being used for Collabo. Cannot leave this Collabo.",
     "confirm_remote_leader_leave": "Leader cannot leave the Collabo.",
+    "confirm_force_logout_complete": "is logged out.",
+    "confirm_force_logout_received": "You have been forced to log out by the master.",
+    "confirm_force_logout_unavailable": "has accessed the collaboration and cannot log out.",
 
     "history": "Recent history",
     "remote": "Remote Collabo",

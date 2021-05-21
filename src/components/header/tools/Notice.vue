@@ -116,6 +116,7 @@ import { EVENT } from 'configs/push.config'
 import { ROLE } from 'configs/remote.config'
 import { sendPush } from 'api/http/message'
 import { getRoomInfo } from 'api/http/room'
+import auth from 'utils/auth'
 
 import Switcher from 'Switcher'
 import Popover from 'Popover'
@@ -126,10 +127,11 @@ import NoticeItem from './NoticeItem'
 import alarmMixin from 'mixins/alarm'
 import roomMixin from 'mixins/room'
 import toastMixin from 'mixins/toast'
+import confirmMixin from 'mixins/confirm'
 
 export default {
   name: 'Notice',
-  mixins: [roomMixin, alarmMixin, toastMixin],
+  mixins: [roomMixin, alarmMixin, toastMixin, confirmMixin],
   components: {
     Switcher,
     Popover,
@@ -349,6 +351,30 @@ export default {
       if (!this.workspace.uuid) return
       await this.$push.init(this.workspace)
       this.$push.addListener(this.key, this.alarmListener)
+
+      //구축형인 경우 강제 로그아웃 이벤트 리스너 활성화
+      if (this.isOnpremise) {
+        this.$push.addForceLogoutSubscriber(
+          this.account.uuid,
+          this.forcedLogout,
+        )
+      }
+    },
+
+    //구축형 강제 로그아웃 이벤트 수신 함수
+    forcedLogout() {
+      this.debug('force logout received')
+
+      //로그아웃 처리
+      const action = () => {
+        this.$eventBus.$emit('popover:close')
+        auth.logout()
+      }
+
+      //강제 로그아웃 알림 팝업
+      this.confirmDefault(this.$t('workspace.confirm_force_logout_received'), {
+        action,
+      })
     },
   },
 
@@ -369,6 +395,8 @@ export default {
   },
   beforeDestroy() {
     this.$push.removeListener(this.key)
+    if (this.isOnpremise) this.$push.removeForceLogoutSubscriber()
+
     if (this.isSafari) {
       window.removeEventListener('touchstart', this.loadAudio)
     }
