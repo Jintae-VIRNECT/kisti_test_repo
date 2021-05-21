@@ -190,12 +190,13 @@ class Auth {
     location.href = `${URLS['console']}/?continue=${location.href}`
     return this
   }
-  logout() {
+  logout(redirect = true) {
     cookieClear()
     isLogin = false
     myInfo = {}
     myWorkspaces = []
-    location.href = `${URLS['console']}/?continue=${location.href}`
+    if (redirect)
+      location.href = `${URLS['console']}/?continue=${location.href}`
     return this
   }
 }

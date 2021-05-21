@@ -153,37 +153,42 @@ export default {
 
       //갱신한 목록에서 검색한 해당 멤버의 현재 접속 상태를 확인
       if (latestTargetUserInfo) {
-        let text = ''
+        //강제 로그아웃 불가 메시지
+        let text = `${nickNameTag} ${this.$t(
+          'workspace.confirm_force_logout_unavailable',
+        )}`
 
-        //멤버 상태가 '협업 중'인 경우
-        if (latestTargetUserInfo.status === 'join') {
-          //강제 로그아웃 불가 메시지
-          text = `${nickNameTag} ${this.$t(
-            'workspace.confirm_force_logout_unavailable',
-          )}`
-        } else {
+        let action = () => {}
+
+        //멤버 상태가 '로그인'인 경우
+        if (latestTargetUserInfo.accessType === 'LOGIN') {
           //강제 로그인 메시지 API 호출
           const params = {
             workspaceId: this.workspace.uuid,
             userId: this.account.uuid,
             targetUserIds: new Array(latestTargetUserInfo.uuid),
           }
-          await forceLogout(params)
 
-          //강제 로그아웃 실행 확인 메시지
-          text = `${nickNameTag} ${this.$t(
-            'workspace.confirm_force_logout_complete',
-          )}`
+          try {
+            await forceLogout(params) //강제 로그아웃 실행
+
+            //강제 로그아웃 실행 확인 메시지
+            text = `${nickNameTag} ${this.$t(
+              'workspace.confirm_force_logout_complete',
+            )}`
+          } catch (e) {
+            console.error(e)
+          }
+
+          //강제 로그아웃 처리 후 멤버 목록 갱신
+          action = async () => await this.getList()
         }
 
         //확인 팝업
-        this.confirmDefault(text)
+        this.confirmDefault(text, { action })
       }
       //갱신한 멤버 목록에 해당 유저가 없는 경우(예외상황)
       else return
-
-      //to test
-      //this.$eventBus.$emit('forceLogout')
     },
   },
 
