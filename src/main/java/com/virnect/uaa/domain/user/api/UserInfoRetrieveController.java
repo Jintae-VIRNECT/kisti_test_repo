@@ -4,6 +4,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -18,7 +19,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import springfox.documentation.annotations.ApiIgnore;
 
-import com.virnect.uaa.domain.user.application.UserInformationRetreiveService;
+import com.virnect.uaa.domain.user.application.UserInformationRetrieveService;
 import com.virnect.uaa.domain.user.dto.response.InviteUserInfoResponse;
 import com.virnect.uaa.domain.user.dto.response.UserAccessHistoryResponse;
 import com.virnect.uaa.domain.user.dto.response.UserDetailsInfoResponse;
@@ -36,7 +37,7 @@ import com.virnect.uaa.global.common.PageRequest;
 @RequiredArgsConstructor
 @RequestMapping("/users")
 public class UserInfoRetrieveController {
-	private final UserInformationRetreiveService userInformationRetreiveService;
+	private final UserInformationRetrieveService userInformationRetrieveService;
 
 	/**
 	 * 사용자 정보 리스트 조회 처리
@@ -57,7 +58,9 @@ public class UserInfoRetrieveController {
 		@RequestParam(name = "search", required = false) String search, @RequestParam("paging") boolean paging,
 		@ApiIgnore PageRequest pageable
 	) {
-		UserInfoListResponse responseMessage = userServiceImpl.getUserInfoList(search, paging, pageable.of());
+		UserInfoListResponse responseMessage = userInformationRetrieveService.searchUserInformation(
+			search, pageable.of(), paging
+		);
 		return ResponseEntity.ok(new ApiResponse<>(responseMessage));
 	}
 
@@ -70,9 +73,10 @@ public class UserInfoRetrieveController {
 	@ApiOperation(value = "내 정보 조회(authorization 토큰을 전달할 시 사용)")
 	@GetMapping("/info")
 	public ResponseEntity<ApiResponse<UserDetailsInfoResponse>> getUserDetailsInfoRequestHandler(
-		HttpServletRequest request
+		HttpServletRequest request, Authentication authentication
 	) {
-		UserDetailsInfoResponse responseMessage = userServiceImpl.getUserDetailsInfo(request);
+		UserDetailsInfoResponse responseMessage = userInformationRetrieveService.getUserDetailsInformationByAuthentication(
+			request, authentication);
 		return ResponseEntity.ok(new ApiResponse<>(responseMessage));
 	}
 
@@ -89,7 +93,7 @@ public class UserInfoRetrieveController {
 		if (userId.isEmpty()) {
 			throw new UserServiceException(UserAccountErrorCode.ERR_INVALID_REQUEST_PARAMETER);
 		}
-		UserInfoResponse responseMessage = userServiceImpl.getUserInfoByUserId(userId);
+		UserInfoResponse responseMessage = userInformationRetrieveService.getUserInformationByUserUUID(userId);
 		return ResponseEntity.ok(new ApiResponse<>(responseMessage));
 	}
 
@@ -107,11 +111,12 @@ public class UserInfoRetrieveController {
 		if (StringUtils.isEmpty(userId)) {
 			throw new UserServiceException(UserAccountErrorCode.ERR_INVALID_REQUEST_PARAMETER);
 		}
-		UserAccessHistoryResponse responseMessage = userServiceImpl.getUserAccessDeviceHistory(userId, pageable.of());
+		UserAccessHistoryResponse responseMessage = userInformationRetrieveService.getUserAccessHistoryByUserUUID(
+			userId, pageable.of());
 		return ResponseEntity.ok(new ApiResponse<>(responseMessage));
 	}
 
-	@ApiOperation(value = "사용자 식별자 배열로 사용자 정보 조회", noteas = "사용자 식별자 배열을 통해 사용자 정보를 조회할 수 있는 api 입니다.")
+	@ApiOperation(value = "사용자 식별자 배열로 사용자 정보 조회", notes = "사용자 식별자 배열을 통해 사용자 정보를 조회할 수 있는 api 입니다.")
 	@GetMapping("/infoList")
 	public ResponseEntity<ApiResponse<UserInfoListOnlyResponse>> getUserInfoByUUIDListRequest(
 		@RequestParam(value = "uuid", required = false) String[] uuid
@@ -119,7 +124,8 @@ public class UserInfoRetrieveController {
 		if (uuid == null || uuid.length <= 0) {
 			throw new UserServiceException(UserAccountErrorCode.ERR_USER_INFO);
 		}
-		UserInfoListOnlyResponse userInfoListOnlyResponse = userServiceImpl.getUserInfoListByUUIDList(uuid);
+		UserInfoListOnlyResponse userInfoListOnlyResponse = userInformationRetrieveService.getUserInformationListByUserUUIDArray(
+			uuid);
 		return ResponseEntity.ok(new ApiResponse<>(userInfoListOnlyResponse));
 	}
 
@@ -131,7 +137,7 @@ public class UserInfoRetrieveController {
 		if (StringUtils.isEmpty(email)) {
 			throw new UserServiceException(UserAccountErrorCode.ERR_USER_INFO);
 		}
-		InviteUserInfoResponse responseMessage = userServiceImpl.getInviteUserInfoList(email);
+		InviteUserInfoResponse responseMessage = userInformationRetrieveService.getUserInformationByUserEmail(email);
 		return ResponseEntity.ok(new ApiResponse<>(responseMessage));
 	}
 
