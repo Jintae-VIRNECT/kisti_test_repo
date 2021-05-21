@@ -5,12 +5,10 @@ import { hexToRGBA } from 'utils/color'
 export default {
   data() {
     return {
-      lineWidth: 4,
       fontFamily: 'Sans-Serif',
       fontStyle: 'normal',
       fontWeight: 'normal',
       lineHeight: 1,
-      fontSize: 16,
       textObj: null,
     }
   },
@@ -28,7 +26,7 @@ export default {
         fontFamily: this.fontFamily,
         fontStyle: this.fontStyle,
         fontWeight: this.fontWeight,
-        fontSize: this.scaleFont * 0.9,
+        fontSize: this.tools.fontSize / this.origin.scale,
         lineHeight: this.lineHeight,
         hasControls: false,
       })
@@ -41,7 +39,7 @@ export default {
 
       this.textObj.on('editing:exited', () => {
         if (this.textObj.text.trim() === '') {
-          this.textObj.canvas.remove(this.textObj)
+          this.canvas.remove(this.textObj)
         } else {
           if (this.textObj.initialized) {
             this._sendAction(DRAWING.TEXT_UPDATE, this.textObj)
@@ -51,21 +49,7 @@ export default {
             this.stackAdd('add', this.textObj.id)
           }
           this.textObj.initialized = true
-          const cloneObj = new fabric.IText('', {
-            left: left,
-            top: top,
-            fill: hexToRGBA(this.tools.color, this.tools.opacity),
-            fontFamily: this.fontFamily,
-            fontStyle: this.fontStyle,
-            fontWeight: this.fontWeight,
-            fontSize: this.scaleFont * 0.9,
-            lineHeight: this.lineHeight,
-            hasControls: false,
-            text: this.textObj.text,
-            id: this.textObj.id,
-            tId: this.textObj.tId,
-          })
-          this.backCanvas.add(cloneObj)
+          this.backCanvas.add(fabric.util.object.clone(this.textObj))
         }
 
         setTimeout(() => {
@@ -73,39 +57,6 @@ export default {
           this.textObj = null
         }, 100)
       })
-    },
-
-    /**
-     * 드로잉 초기화 객체 메소드
-     */
-    drawingClear() {
-      const ids = this.canvas
-        .getObjects()
-        .filter(_ => _.opacity === 1)
-        .map(_ => _.id)
-
-      this.canvas.discardActiveObject()
-
-      if (ids.length > 0) {
-        this.canvas.getObjects().forEach(object => {
-          if (!('owner' in object)) {
-            this.canvas.remove(object)
-          }
-        })
-        this.backCanvas.getObjects().forEach(object => {
-          if (!('owner' in object)) {
-            this.backCanvas.remove(object)
-          }
-        })
-        this.canvas.renderAll()
-        this.backCanvas.renderAll()
-        // this.stackAdd('remove', [...ids]); //삭제 히스토리 쌓기
-        this.stackClear() // 전체 삭제
-
-        if (this.$call) {
-          this.$call.sendDrawing(DRAWING.CLEAR_ALL, { imgId: this.file.id })
-        }
-      }
     },
   },
 }

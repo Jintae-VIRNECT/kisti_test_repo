@@ -35,12 +35,10 @@ import { mapGetters } from 'vuex'
 import { CAMERA, DEVICE } from 'configs/device.config'
 import { VIEW, ACTION } from 'configs/view.config'
 
-import PanoVideo from 'PanoVideo'
-
 export default {
   name: 'SubVideo',
   components: {
-    PanoVideo,
+    PanoVideo: () => import('PanoVideo'),
   },
   data() {
     return {

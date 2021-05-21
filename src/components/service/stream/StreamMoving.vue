@@ -19,8 +19,6 @@
 </template>
 
 <script>
-import PanoVideo from 'PanoVideo'
-
 import { mapGetters, mapActions } from 'vuex'
 import { ACTION } from 'configs/view.config'
 
@@ -30,7 +28,7 @@ import { DEVICE } from 'configs/device.config'
 export default {
   name: 'Moving',
   components: {
-    PanoVideo,
+    PanoVideo: () => import('PanoVideo'),
   },
 
   data() {

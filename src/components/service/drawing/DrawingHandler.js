@@ -1,14 +1,8 @@
 import { fabric } from 'plugins/remote/fabric.custom'
 import { DRAWING, ROLE } from 'configs/remote.config'
-import { VIEW, ACTION } from 'configs/view.config'
+import { ACTION } from 'configs/view.config'
 
 export default {
-  data() {
-    return {
-      winResizeID: 0,
-      receivePath: [],
-    }
-  },
   methods: {
     appendListener() {
       const canvas = this.canvas
@@ -184,7 +178,10 @@ export default {
         ) {
           event.e.preventDefault()
           // this.addTextObject(mouse.x, mouse.y)
-          this.addTextObject(mouse.x, mouse.y - this.scaleFont / 2 - 1)
+          this.addTextObject(
+            mouse.x,
+            mouse.y - this.tools.fontSize / this.origin.scale / 2 - 1,
+          )
         }
       })
 
@@ -324,24 +321,12 @@ export default {
   },
 
   /* Lifecycles */
-  created() {
-    this.$eventBus.$on(`control:${VIEW.DRAWING}:undo`, this.stackUndo)
-    this.$eventBus.$on(`control:${VIEW.DRAWING}:redo`, this.stackRedo)
-    this.$eventBus.$on(`control:${VIEW.DRAWING}:clear`, this.drawingClear)
-    // this.$eventBus.$on(`control:${this.mode}:focus`, this.focusCanvas)
-  },
   mounted() {
     window.addEventListener('keydown', this.keyEventHandler)
     window.addEventListener('keyup', this.keyUpEventHandler)
-    // window.addEventListener('resize', this.resizeEventHandler)
   },
   beforeDestroy() {
-    this.$eventBus.$off(`control:${VIEW.DRAWING}:undo`, this.stackUndo)
-    this.$eventBus.$off(`control:${VIEW.DRAWING}:redo`, this.stackRedo)
-    this.$eventBus.$off(`control:${VIEW.DRAWING}:clear`, this.drawingClear)
-    // this.$eventBus.$off(`control:${this.mode}:focus`, this.focusCanvas)
     window.removeEventListener('keydown', this.keyEventHandler)
     window.removeEventListener('keyup', this.keyUpEventHandler)
-    // window.removeEventListener('resize', this.resizeEventHandler)
   },
 }

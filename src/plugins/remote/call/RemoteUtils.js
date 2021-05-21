@@ -171,12 +171,19 @@ export const addSessionEventListener = session => {
     }
   })
   // user leave
-  // session.on('streamDestroyed', event => {
+  session.on('streamDestroyed', event => {
+    logger('room', 'stream destroy', event.reason)
+    if (event.reason === 'streamNotExist') {
+      const connectionId = event.stream.connection.connectionId
+      Store.commit('removeStream', connectionId)
+      removeSubscriber(connectionId)
+    }
+  })
   session.on('connectionDestroyed', event => {
     logger('room', 'participant destroy')
     const connectionId = event.connection.connectionId
     Store.commit('removeStream', connectionId)
-    removeSubscriber(event.connection.connectionId)
+    removeSubscriber(connectionId)
   })
   // user leave
   session.on(SIGNAL.SYSTEM, () => {
