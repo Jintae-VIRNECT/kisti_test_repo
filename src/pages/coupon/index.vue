@@ -11,18 +11,12 @@
       </div>
       <el-row>
         <el-col class="container__left">
-          <!-- 배너 -->
-          <el-card class="banner" @click.native="goGetCouponPage">
-            <span>{{ $t('coupon.banner.subTitle') }}</span>
-            <h4>{{ $t('coupon.banner.mainTitle') }}</h4>
-            <a>
-              <span>{{ $t('coupon.banner.link') }}</span>
-              <img
-                class="icon"
-                src="~assets/images/icon/ic-arrow-forward.svg"
-              />
-            </a>
-          </el-card>
+          <Banner
+            :headerTxt="$t('coupon.banner.mainTitle')"
+            :subTxt="$t('coupon.banner.subTitle')"
+            :linkTxt="$t('coupon.banner.link')"
+            :to="`${this.$url.www}/contact/inquiry`"
+          />
           <!-- 쿠폰 입력 -->
           <el-card class="add-coupon">
             <div slot="header">
@@ -120,9 +114,6 @@ export default {
     changedSearchParams(searchParams) {
       this.searchCoupons(searchParams)
     },
-    goGetCouponPage() {
-      window.open(`${this.$url.www}/contact/inquiry`)
-    },
     /**
      * 상품 리스트
      */
@@ -196,57 +187,6 @@ export default {
 #coupon {
   .container .title {
     margin-bottom: 44px;
-  }
-  .banner .el-card__body {
-    position: relative;
-    color: #fff;
-    background: url('~assets/images/bg_banner.jpg');
-    background-size: cover;
-    cursor: pointer;
-
-    & > span {
-      font-weight: normal;
-      font-size: 14px;
-    }
-    & > h4 {
-      font-weight: bold;
-      font-size: 20px;
-    }
-    & > a {
-      display: inline-block;
-      margin-top: 12px;
-      color: #fff;
-      font-weight: normal;
-      font-size: 12px;
-      & > * {
-        display: inline-block;
-        vertical-align: middle;
-      }
-    }
-
-    // effect
-    &:after {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background-image: linear-gradient(140deg, #fff, transparent);
-      opacity: 0;
-      content: '';
-    }
-    &:after,
-    img {
-      transition: 0.3s;
-    }
-    &:hover {
-      &:after {
-        opacity: 0.3;
-      }
-      img {
-        margin-left: 4px;
-      }
-    }
   }
 
   .add-coupon {
