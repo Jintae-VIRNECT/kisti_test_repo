@@ -470,7 +470,7 @@ const _ = {
    * 협업시 오디오 디바이스는 필수임으로 오디오 디바이스가 없으면 에러 반환
    *
    * @param {Object} options 옵션 객체
-   * @returns {MediaStream} 미디어 스트림 반환
+   * @returns {MediaStream | null} 미디어 스트림 반환
    * @public
    * @throws nodevice
    */
