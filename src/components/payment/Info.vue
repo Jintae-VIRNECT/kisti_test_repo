@@ -89,7 +89,7 @@
     </div>
 
     <!-- 모달 -->
-    <AutoPaymentCancelModal
+    <PaymentCancelModal
       :autoPaymentId="autoPayments.id"
       :autoPaymentItems="autoPayments.items"
       :visible.sync="showAutoPaymentCancelModal"
