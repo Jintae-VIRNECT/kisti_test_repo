@@ -246,12 +246,11 @@ class Auth {
         await getMyInfo()
         isLogin = true
         tokenRenewal()
+        initLoginStatus() //로그인 상태 업데이트
       } catch (e) {
         console.error('Token is expired')
         isLogin = false
       }
-
-      initLoginStatus() //로그인 상태 업데이트
     }
     return {
       account: this.myInfo,
