@@ -92,11 +92,12 @@ const initLoginStatus = () => {
 
     try {
       socket = new WebSocket(`${wssUrl}/auth/status`)
-      socket.onerror = e => logger(e)
     } catch (e) {
-      console.error('Websocket connection error')
+      console.error('auth status websocket connection error')
       return
     }
+
+    socket.onerror = e => console.error('auth status websocket error', e)
 
     //소켓 연결
     socket.onopen = e => {
