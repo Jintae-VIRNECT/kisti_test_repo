@@ -30,6 +30,9 @@ export default {
         } else {
           role = room.leaderId === this.account.uuid ? ROLE.LEADER : ROLE.EXPERT
         }
+
+        this.$eventBus.$emit('roomloading:show', true)
+
         const options = await this.getDeviceId()
         const mediaStream = await this.$call.getStream(options)
 
@@ -65,6 +68,7 @@ export default {
         }
       } catch (err) {
         this.clicked = false
+        this.$eventBus.$emit('roomloading:show', false)
         this.roomClear()
         if (this['init'] && typeof this['init'] === 'function') {
           this.init()

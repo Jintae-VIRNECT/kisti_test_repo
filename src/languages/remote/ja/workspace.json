@@ -164,6 +164,9 @@
     "plan_exceeded_desctiption": "保有するプラン数よりユーザが多い、利用が制限されました。マスターにプラン管理を要請してください。",
     "go_workspace_member": "ワークスペースメンバーリスト移動",
 
+    "loading_prepare_remote":"협업 룸 생성 준비",
+    "loading_checking_device":"장치 연결 상태 확인 중...",
+
     "cookie": "VIRNECT はVIRNECT のサービスを運営し、改善のためクッキーおよび利用統計を使用しています。 詳細を調べるには、<br> 当社の <a href='https://virnect.com/policy#10' target='_blank'>取扱方針</a>をご確認ください。 「確認」をクリック、サイトの使用を継続することはクッキーおよび利用統計収集に同意することになります。"    
   }
 }

@@ -164,6 +164,9 @@
     "plan_exceeded_desctiption": "The service is restricted because there were more users assigned to the plans than the number of plans you possess. Please request for plan management to the Master user.",
     "go_workspace_member": "Move to Workspace member list",
 
+    "loading_prepare_remote":"협업 룸 생성 준비",
+    "loading_checking_device":"장치 연결 상태 확인 중...",
+
     "cookie": "We use cookies and usage statistics to improve our service and customer experience. To learn more, <br>please check out our <a href='https://virnect.com/policy#10' target='_blank'>policy</a>. By clicking \"OK\" or continuing the use of site, you consent to the collection of cookies and usage statistics."
   }
 }

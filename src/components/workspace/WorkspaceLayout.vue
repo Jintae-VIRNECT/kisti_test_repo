@@ -31,6 +31,7 @@
       <device-denied :visible.sync="showDenied"></device-denied>
     </vue2-scrollbar>
     <plan-overflow :visible.sync="showPlanOverflow"></plan-overflow>
+    <room-loading :visible.sync="showLoading"></room-loading>
   </section>
 </template>
 
@@ -46,6 +47,7 @@ import langMixin from 'mixins/language'
 import toastMixin from 'mixins/toast'
 import DeviceDenied from './modal/WorkspaceDeviceDenied'
 import PlanOverflow from './modal/WorkspacePlanOverflow'
+import RoomLoading from './modal/WorkspaceRoomLoading'
 import { mapActions, mapGetters } from 'vuex'
 import { PLAN_STATUS } from 'configs/status.config'
 import { RUNTIME, RUNTIME_ENV } from 'configs/env.config'
@@ -72,6 +74,7 @@ export default {
     RecordList,
     DeviceDenied,
     PlanOverflow,
+    RoomLoading,
     CookiePolicy: () => import('CookiePolicy'),
   },
   data() {
@@ -84,6 +87,7 @@ export default {
       license: true,
       showDenied: false,
       showPlanOverflow: false,
+      showLoading: false,
       inited: false,
     }
   },
@@ -260,6 +264,9 @@ export default {
         videoRestrictedMode: res.videoRestrictedMode,
       })
     },
+    showRoomLoading(toggle) {
+      this.showLoading = toggle
+    },
   },
 
   /* Lifecycles */
@@ -275,11 +282,13 @@ export default {
     this.$eventBus.$on('scroll:reset:workspace', this.scrollTop)
     this.$eventBus.$on('filelist:open', this.toggleList)
     this.$eventBus.$on('devicedenied:show', this.showDeviceDenied)
+    this.$eventBus.$on('roomloading:show', this.showRoomLoading)
   },
   beforeDestroy() {
     this.$eventBus.$off('scroll:reset:workspace', this.scrollTop)
     this.$eventBus.$off('filelist:open')
     this.$eventBus.$off('devicedenied:show')
+    this.$eventBus.$off('roomloading:show', this.showRoomLoading)
   },
 }
 </script>

@@ -98,6 +98,8 @@ export default {
         if (this.clicked === true) return
         this.clicked = true
 
+        this.$eventBus.$emit('roomloading:show', true)
+
         const options = await this.getDeviceId()
         const mediaStream = await this.$call.getStream(options)
 
@@ -168,6 +170,7 @@ export default {
         }
       } catch (err) {
         this.clicked = false
+        this.$eventBus.$emit('roomloading:show', false)
         this.roomClear()
         if (typeof err === 'string') {
           console.error(err)
