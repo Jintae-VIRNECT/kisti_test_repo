@@ -184,8 +184,9 @@ export default {
           action = async () => await this.getList()
         }
 
-        //확인 팝업
-        this.confirmDefault(text, { action })
+        //로그인, 협업중인 상태의 멤버에게만 팝업 알림이 뜨도록 한다.
+        if (latestTargetUserInfo.accessType !== 'LOGOUT')
+          this.confirmDefault(text, { action })
       }
       //갱신한 멤버 목록에 해당 유저가 없는 경우(예외상황)
       else return
