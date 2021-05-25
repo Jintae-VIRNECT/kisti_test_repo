@@ -52,7 +52,7 @@ import java.util.stream.Collectors;
 @Slf4j
 @Service
 @Profile("!onpremise")
-public class OffPWorkspaceUserServiceImpl extends WorkspaceUserService {
+public class OnWorkspaceUserServiceImpl extends WorkspaceUserService {
     private final WorkspaceRepository workspaceRepository;
     private final WorkspaceUserRepository workspaceUserRepository;
     private final WorkspaceRoleRepository workspaceRoleRepository;
@@ -67,7 +67,7 @@ public class OffPWorkspaceUserServiceImpl extends WorkspaceUserService {
     private final RedirectProperty redirectProperty;
     private final ApplicationEventPublisher applicationEventPublisher;
 
-    public OffPWorkspaceUserServiceImpl(WorkspaceRepository workspaceRepository, WorkspaceUserRepository workspaceUserRepository, WorkspaceRoleRepository workspaceRoleRepository, WorkspaceUserPermissionRepository workspaceUserPermissionRepository, UserRestService userRestService, MessageRestService messageRestService, SpringTemplateEngine springTemplateEngine, MessageSource messageSource, LicenseRestService licenseRestService, RedirectProperty redirectProperty, RestMapStruct restMapStruct, ApplicationEventPublisher applicationEventPublisher, WorkspacePermissionRepository workspacePermissionRepository, UserInviteRepository userInviteRepository) {
+    public OnWorkspaceUserServiceImpl(WorkspaceRepository workspaceRepository, WorkspaceUserRepository workspaceUserRepository, WorkspaceRoleRepository workspaceRoleRepository, WorkspaceUserPermissionRepository workspaceUserPermissionRepository, UserRestService userRestService, MessageRestService messageRestService, SpringTemplateEngine springTemplateEngine, MessageSource messageSource, LicenseRestService licenseRestService, RedirectProperty redirectProperty, RestMapStruct restMapStruct, ApplicationEventPublisher applicationEventPublisher, WorkspacePermissionRepository workspacePermissionRepository, UserInviteRepository userInviteRepository) {
         super(workspaceRepository, workspaceUserRepository, workspaceRoleRepository, workspaceUserPermissionRepository, userRestService, messageRestService, springTemplateEngine, messageSource, licenseRestService, redirectProperty, restMapStruct, applicationEventPublisher);
         this.workspaceRepository = workspaceRepository;
         this.workspaceUserRepository = workspaceUserRepository;
@@ -89,12 +89,13 @@ public class OffPWorkspaceUserServiceImpl extends WorkspaceUserService {
     public ApiResponse<Boolean> inviteWorkspace(
             String workspaceId, WorkspaceInviteRequest workspaceInviteRequest, Locale locale
     ) {
-        /**
+        /*
          * 권한체크
          * 초대하는 사람 권한 - 마스터, 매니저만 가능
          * 초대받는 사람 권한 - 매니저, 멤버만 가능
          * 초대하는 사람이 매니저일때 - 멤버만 초대할 수 있음.
          */
+
 
         //1. 초대하는 유저 권한 체크
         Optional<WorkspaceUserPermission> requestUserPermission = workspaceUserPermissionRepository.findWorkspaceUser(workspaceId, workspaceInviteRequest.getUserId());
@@ -102,7 +103,7 @@ public class OffPWorkspaceUserServiceImpl extends WorkspaceUserService {
             throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_INVALID_PERMISSION);
         }
         workspaceInviteRequest.getUserInfoList().forEach(userInfo -> {
-            OffPWorkspaceUserServiceImpl.log.debug("[WORKSPACE INVITE USER] Invite request user role >> [{}], response user role >> [{}]", requestUserPermission.get().getWorkspaceRole().getRole(), userInfo.getRole());
+            log.debug("[WORKSPACE INVITE USER] Invite request user role >> [{}], response user role >> [{}]", requestUserPermission.get().getWorkspaceRole().getRole(), userInfo.getRole());
             if (userInfo.getRole().equalsIgnoreCase("MASTER")) {
                 throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_INVALID_PERMISSION);
             }
@@ -113,10 +114,16 @@ public class OffPWorkspaceUserServiceImpl extends WorkspaceUserService {
 
         //2. 초대 정보 저장
         workspaceInviteRequest.getUserInfoList().forEach(userInfo -> {
-            InviteUserInfoResponse inviteUserResponse = getInviteUserInfoResponse(userInfo.getEmail());
+            InviteUserInfoResponse inviteUserResponse = getInviteUserInfoByEmail(userInfo.getEmail());
+            if (inviteUserResponse == null) {
+                log.error("[WORKSPACE INVITE USER] Invalid Invited User Info.");
+                throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_INVITE);
+            }
             //2-1. 이미 워크스페이스에 소속된 유저인지 체크
-            if (inviteUserResponse.isMemberUser() &&
-                    workspaceUserRepository.findByUserIdAndWorkspace_Uuid(inviteUserResponse.getInviteUserDetailInfo().getUserUUID(), workspaceId).isPresent()) {
+            Optional<WorkspaceUser> optionalWorkspaceUser = workspaceUserRepository.findByUserIdAndWorkspace_Uuid(inviteUserResponse.getInviteUserDetailInfo().getUserUUID(), workspaceId);
+            if (inviteUserResponse.isMemberUser() && optionalWorkspaceUser.isPresent()) {
+                //비회원이 아니면서 이미 워크스페이스에 소속되어 있을 때
+                log.error("[WORKSPACE INVITE USER] Invite User is already Workspace user. Invite user is Member >>> [{}], Invite user is Workspace User >>> [{}]", inviteUserResponse.isMemberUser(), true);
                 throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_USER_ALREADY_EXIST);
             }
 
@@ -133,7 +140,7 @@ public class OffPWorkspaceUserServiceImpl extends WorkspaceUserService {
                     userInvite.setExpireTime(Duration.ofDays(7).getSeconds());
                     userInviteRepository.save(userInvite);
                     sessionCode = userInvite.getSessionCode();
-                    OffPWorkspaceUserServiceImpl.log.info("[WORKSPACE INVITE USER] Workspace Invite Info Redis Update >> {}", userInvite.toString());
+                    log.info("[WORKSPACE INVITE USER] Workspace Invite Info Redis Update >> {}", userInvite.toString());
                 }
             }
             if (!inviteSessionExist) {
@@ -155,7 +162,7 @@ public class OffPWorkspaceUserServiceImpl extends WorkspaceUserService {
                         .expireTime(Duration.ofDays(7).getSeconds())
                         .build();
                 userInviteRepository.save(newUserInvite);
-                OffPWorkspaceUserServiceImpl.log.info("[WORKSPACE INVITE USER] Workspace Invite Info Redis Set >> {}", newUserInvite.toString());
+                log.info("[WORKSPACE INVITE USER] Workspace Invite Info Redis Set >> {}", newUserInvite.toString());
             }
 
             //메일 전송
@@ -218,32 +225,48 @@ public class OffPWorkspaceUserServiceImpl extends WorkspaceUserService {
         return userRestService.getUserInfoByUserId(userId).getData();
     }
 
-    private InviteUserInfoResponse getInviteUserInfoResponse(String email) {
-        //todo: logging
-        return userRestService.getUserInfoByEmail(email).getData();
+    private InviteUserInfoResponse getInviteUserInfoByEmail(String email) {
+        //todo : logging
+        ApiResponse<InviteUserInfoResponse> apiResponse = userRestService.getInviteUserInfoByEmail(email);
+        if (apiResponse.getCode() != 200) {
+            log.error("[GET INVITE USER INFO BY EMAIL] response message : {}", apiResponse.getMessage());
+            return null;
+            //throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_INVITE);
+        }
+        return apiResponse.getData();
     }
 
     public RedirectView inviteWorkspaceAccept(String sessionCode, String lang) throws IOException {
         Locale locale = new Locale(lang, "");
         UserInvite userInvite = userInviteRepository.findById(sessionCode).orElse(null);
         if (userInvite == null) {
-            OffPWorkspaceUserServiceImpl.log.info("[WORKSPACE INVITE ACCEPT] Workspace invite session Info Not found. session code >> [{}]", sessionCode);
+            log.info("[WORKSPACE INVITE ACCEPT] Workspace invite session Info Not found. session code >> [{}]", sessionCode);
             RedirectView redirectView = new RedirectView();
             redirectView.setUrl(redirectProperty.getWorkstationWeb() + "/?message=workspace.invite.invalid");
             redirectView.setContentType("application/json");
             return redirectView;
         }
+        log.info("[WORKSPACE INVITE ACCEPT] Workspace invite session Info >> [{}]", userInvite.toString());
 
+        //초대받은 유저가 비회원인지 체크
+        InviteUserInfoResponse inviteUserResponse = getInviteUserInfoByEmail(userInvite.getInvitedUserEmail());
 
-        OffPWorkspaceUserServiceImpl.log.info("[WORKSPACE INVITE ACCEPT] Workspace invite session Info >> [{}]", userInvite.toString());
-        InviteUserInfoResponse inviteUserResponse = userRestService.getUserInfoByEmail(userInvite.getInvitedUserEmail()).getData();
-        if (inviteUserResponse != null && !inviteUserResponse.isMemberUser()) {
-            OffPWorkspaceUserServiceImpl.log.info("[WORKSPACE INVITE ACCEPT] Invited User isMemberUser Info >> [{}]", inviteUserResponse.isMemberUser());
+        //탈퇴한 유저인 경우나 기타 등등
+        if (inviteUserResponse == null) {
+            //캐싱은 시간이 지나면 만료되니 일단 삭제 보류. 탈퇴한 유저가 아닐 가능성도 있음.
+            log.info("[WORKSPACE INVITE ACCEPT] Invalid Invited User Info.");
+            RedirectView redirectView = new RedirectView();
+            redirectView.setUrl(redirectProperty.getWorkstationWeb() + "/?message=workspace.invite.invalid");
+            redirectView.setContentType("application/json");
+            return redirectView;
+        }
+        //비회원인 경우
+        if (!inviteUserResponse.isMemberUser()) {
+            log.info("[WORKSPACE INVITE ACCEPT] Invited User is Member >> [{}]", inviteUserResponse.isMemberUser());
             RedirectView redirectView = new RedirectView();
             redirectView.setUrl(redirectProperty.getTermsWeb() + "?inviteSession=" + sessionCode + "&lang=" + lang + "&email=" + userInvite.getInvitedUserEmail());
             redirectView.setContentType("application/json");
             return redirectView;
-
         }
         //비회원일경우 초대 session정보에 uuid가 안들어가므로 user서버에서 조회해서 가져온다.
         InviteUserDetailInfoResponse inviteUserDetailInfoResponse = inviteUserResponse.getInviteUserDetailInfo();
@@ -269,7 +292,7 @@ public class OffPWorkspaceUserServiceImpl extends WorkspaceUserService {
         //라이선스 최대 멤버 수 초과 메일전송
         int workspaceUserAmount = workspaceUserRepository.findByWorkspace_Uuid(workspace.getUuid()).size();
         if (workspaceLicensePlanInfoResponse.getMaxUserAmount() < workspaceUserAmount + 1) {
-            OffPWorkspaceUserServiceImpl.log.error("[WORKSPACE INVITE ACCEPT] Over Max Workspace Member amount. max user Amount >> [{}], exist user amount >> [{}]",
+            log.error("[WORKSPACE INVITE ACCEPT] Over Max Workspace Member amount. max user Amount >> [{}], exist user amount >> [{}]",
                     workspaceLicensePlanInfoResponse.getMaxUserAmount(),
                     workspaceUserAmount + 1);
             worksapceOverMaxUserFailHandler(workspace, userInvite, locale);
@@ -294,7 +317,7 @@ public class OffPWorkspaceUserServiceImpl extends WorkspaceUserService {
             workspaceOverPlanFailHandler(workspace, userInvite, successPlan, failPlan, locale);
             successPlan.forEach(s -> {
                 Boolean revokeResult = licenseRestService.revokeWorkspaceLicenseToUser(workspace.getUuid(), userInvite.getInvitedUserId(), s).getData();
-                OffPWorkspaceUserServiceImpl.log.info("[WORKSPACE INVITE ACCEPT] [{}] License Grant Fail. Revoke user License Result >> [{}]", s, revokeResult);
+                log.info("[WORKSPACE INVITE ACCEPT] [{}] License Grant Fail. Revoke user License Result >> [{}]", s, revokeResult);
             });
         }
         //워크스페이스 소속 넣기 (workspace_user)
@@ -517,18 +540,30 @@ public class OffPWorkspaceUserServiceImpl extends WorkspaceUserService {
         Locale locale = new Locale(lang, "");
         UserInvite userInvite = userInviteRepository.findById(sessionCode).orElse(null);
         if (userInvite == null) {
-            OffPWorkspaceUserServiceImpl.log.info("[WORKSPACE INVITE REJECT] Workspace invite session Info Not found. session code >> [{}]", sessionCode);
+            log.info("[WORKSPACE INVITE REJECT] Workspace invite session Info Not found. session code >> [{}]", sessionCode);
             RedirectView redirectView = new RedirectView();
             redirectView.setUrl(redirectProperty.getWorkstationWeb());
             redirectView.setContentType("application/json");
             return redirectView;
         }
-        OffPWorkspaceUserServiceImpl.log.info("[WORKSPACE INVITE REJECT] Workspace Invite Session Info >> [{}] ", userInvite);
+        log.info("[WORKSPACE INVITE REJECT] Workspace Invite Session Info >> [{}] ", userInvite);
 
         //비회원 거절은 메일 전송 안함.
-        InviteUserInfoResponse inviteUserResponse = userRestService.getUserInfoByEmail(userInvite.getInvitedUserEmail()).getData();
-        if (inviteUserResponse != null && !inviteUserResponse.isMemberUser()) {
-            OffPWorkspaceUserServiceImpl.log.info("[WORKSPACE INVITE REJECT] Invited User isMemberUser Info >> [{}]", inviteUserResponse.isMemberUser());
+        InviteUserInfoResponse inviteUserResponse = getInviteUserInfoByEmail(userInvite.getInvitedUserEmail());
+
+        //탈퇴한 유저인 경우나 기타 등등
+        if (inviteUserResponse == null) {
+            //캐싱은 시간이 지나면 만료되니 일단 삭제 보류. 탈퇴한 유저가 아닐 가능성도 있음.
+            log.info("[WORKSPACE INVITE REJECT] Invalid Invited User Info.");
+            RedirectView redirectView = new RedirectView();
+            redirectView.setUrl(redirectProperty.getWorkstationWeb());
+            redirectView.setContentType("application/json");
+            return redirectView;
+        }
+
+        //비회원
+        if (!inviteUserResponse.isMemberUser()) {
+            log.info("[WORKSPACE INVITE REJECT] Invited User is Member >> [{}]", inviteUserResponse.isMemberUser());
             userInviteRepository.delete(userInvite);
             RedirectView redirectView = new RedirectView();
             redirectView.setUrl(redirectProperty.getWorkstationWeb());
