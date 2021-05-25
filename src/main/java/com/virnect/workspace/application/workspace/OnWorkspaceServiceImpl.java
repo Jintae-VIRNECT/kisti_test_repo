@@ -20,10 +20,10 @@ import org.thymeleaf.spring5.SpringTemplateEngine;
 @Slf4j
 @Service
 @Profile("!onpremise")
-public class OffPWorkspaceServiceImpl extends WorkspaceService {
+public class OnWorkspaceServiceImpl extends WorkspaceService {
 
 
-    public OffPWorkspaceServiceImpl(WorkspaceRepository workspaceRepository, WorkspaceUserRepository workspaceUserRepository, WorkspaceRoleRepository workspaceRoleRepository, WorkspacePermissionRepository workspacePermissionRepository, WorkspaceUserPermissionRepository workspaceUserPermissionRepository, UserRestService userRestService, MessageRestService messageRestService, FileService fileUploadService, SpringTemplateEngine springTemplateEngine, HistoryRepository historyRepository, MessageSource messageSource, LicenseRestService licenseRestService, RedirectProperty redirectProperty, WorkspaceMapStruct workspaceMapStruct, RestMapStruct restMapStruct, ApplicationEventPublisher applicationEventPublisher) {
+    public OnWorkspaceServiceImpl(WorkspaceRepository workspaceRepository, WorkspaceUserRepository workspaceUserRepository, WorkspaceRoleRepository workspaceRoleRepository, WorkspacePermissionRepository workspacePermissionRepository, WorkspaceUserPermissionRepository workspaceUserPermissionRepository, UserRestService userRestService, MessageRestService messageRestService, FileService fileUploadService, SpringTemplateEngine springTemplateEngine, HistoryRepository historyRepository, MessageSource messageSource, LicenseRestService licenseRestService, RedirectProperty redirectProperty, WorkspaceMapStruct workspaceMapStruct, RestMapStruct restMapStruct, ApplicationEventPublisher applicationEventPublisher) {
         super(workspaceRepository, workspaceUserRepository, workspaceRoleRepository, workspacePermissionRepository, workspaceUserPermissionRepository, userRestService, messageRestService, fileUploadService, springTemplateEngine, historyRepository, messageSource, licenseRestService, redirectProperty, workspaceMapStruct, restMapStruct, applicationEventPublisher);
     }
 

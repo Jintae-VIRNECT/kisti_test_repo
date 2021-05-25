@@ -12,9 +12,13 @@ public enum ErrorCode {
     ERR_MASTER_WORKSPACE_ALREADY_EXIST(1001, "User already have master workspace."),
     ERR_WORKSPACE_USER_ALREADY_EXIST(1002, "Workspace User already exist."),
     ERR_WORKSPACE_INVALID_PERMISSION(1003, "Invalid permission to the Workspace."),
-    ERR_NOT_FOUND_INVITE_WORKSPACE_INFO(1004, "Not found Wokrspace Invite Code."),
+
+    //워크스페이스 초대 관련 에러
+    ERR_NOT_FOUND_INVITE_WORKSPACE_INFO(1004, "Not found Workspace Invite Code."),
     ERR_INCORRECT_INVITE_WORKSPACE_CODE(1005,"Incorrect Workspace Invite Code."),
-    ERR_INVALID_USER_EXIST(1006,"Invalid User Exist."),
+    ERR_WORKSPACE_INVITE(1006,"Workspace Invite Fail."),
+    //ERR_INVALID_USER_EXIST(1006,"Invalid User Exist."),
+
     ERR_INCORRECT_USER_LICENSE_INFO(1007,"Users must have at least 1 plan."),
     ERR_NOMORE_JOIN_WORKSPACE(1008,"No more join the workspace"),
     ERR_WORKSPACE_NOT_FOUND(1009, "Workspace not found"),
@@ -24,6 +28,7 @@ public enum ErrorCode {
 	ERR_WORKSPACE_USER_PASSWORD_CHANGE(1013,"Workspace user password change fail. Workspace Member Type User Not found"),
     ERR_WORKSPACE_ROLE_NOT_FOUND(1014,"Workspace Role not found"),
     ERR_WORKSPACE_PERMISSION_NOT_FOUND(1015,"Workspace Permission not found"),
+
 
     //라이선스 관련 에러
     ERR_WORKSPACE_USER_LICENSE_GRANT_FAIL(2000,"Workspace user license grant fail"),

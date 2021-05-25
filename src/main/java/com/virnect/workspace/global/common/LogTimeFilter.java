@@ -23,8 +23,10 @@ public class LogTimeFilter implements Filter {
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
         String requestUrl = null;
+        String method = null;
         if (request instanceof HttpServletRequest) {
             requestUrl = ((HttpServletRequest) request).getRequestURL().toString();
+            method = ((HttpServletRequest) request).getMethod();
         }
         String requestParam = request.getParameterMap().entrySet().stream()
                 .map(entry -> String.format("%s=%s", entry.getKey(), Joiner.on(",").join(entry.getValue())))
@@ -32,7 +34,7 @@ public class LogTimeFilter implements Filter {
         long startTime = System.currentTimeMillis();
         chain.doFilter(request, response);
         long duration = System.currentTimeMillis() - startTime;
-        log.info("Request Url : {}, take Time : {}(ms)", requestUrl + "?" + requestParam, duration);
+        log.info("Request Url : {}, take Time : {}(ms)", method + " " + requestUrl + "?" + requestParam, duration);
 
     }
 
