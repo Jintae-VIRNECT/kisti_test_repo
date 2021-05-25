@@ -17,4 +17,3 @@ logs
 *.ntvs*
 *.njsproj
 *.sln
-yarn.lock
