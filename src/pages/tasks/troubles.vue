@@ -90,13 +90,15 @@ export default {
     rowClick(row) {
       this.$router.push(`/tasks/troubles/${row.issueId}`)
     },
-    async searchTroubles(searchParams) {
-      const { list, total } = await resultService.searchTroubles(searchParams)
+    async searchTroubles() {
+      const { list, total } = await resultService.searchTroubles(
+        this.searchParams,
+      )
       this.troublesList = list
       this.troublesTotal = total
     },
-    changedSearchParams(searchParams) {
-      this.searchTroubles(searchParams)
+    changedSearchParams() {
+      this.searchTroubles()
     },
     showAll() {},
     showMine() {},
