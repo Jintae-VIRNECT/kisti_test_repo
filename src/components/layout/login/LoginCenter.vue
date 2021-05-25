@@ -9,9 +9,9 @@
     >
       <img src="~assets/images/common/img-moveto-login@2x.png" />
       <p class="popup-title">
-        <strong>{{ $t('login.needTo.title') }}</strong>
+        <strong>{{ message.title }}</strong>
       </p>
-      <p>{{ $t('login.needTo.contents') }}</p>
+      <p>{{ message.contents }}</p>
     </el-dialog>
     <template v-else>
       <Header
@@ -52,6 +52,7 @@ export default {
     return {
       show: false,
       logo: {},
+      message: {},
     }
   },
   watch: {
@@ -78,12 +79,22 @@ export default {
     },
   },
   mounted() {
+    // 서버 푸시 메세지
+    const messageKey = this.$route.query.message
+    if (messageKey) {
+      this.message.title = this.$t(`messages.${messageKey}.title`)
+      this.message.contents = this.$t(`messages.${messageKey}.contents`)
+      this.show = true
+    }
+
     const redirectTarget = this.$route.query.continue
     // 자신으로 리다이렉트 제외
     if (redirectTarget === undefined) return
 
     // 로그인 필요 다이얼로그
     if (redirectTarget.split(this.$urls.www).length == 1) {
+      this.message.title = this.$t('login.needTo.title')
+      this.message.contents = this.$t('login.needTo.contents')
       this.show = true
       this.loginService()
     }
