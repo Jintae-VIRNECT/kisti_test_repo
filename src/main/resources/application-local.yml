@@ -59,13 +59,14 @@ eureka:
 
 ## Mail send redirect Url
 redirect:
-  workspace-server: "https://localhost:8082"
+  workspace-server: "http://192.168.6.3:8082"
   workstation-web: "https://192.168.6.3:8878"
   contact-web: "https://192.168.6.3:3000/contact/inquiry"
   account-web: "https://192.168.6.3:8822"
   support-web: "https://192.168.6.3:3000/support"
-  signup-web: "https://192.168.6.3:8878/signup"
+  terms-web: "https://192.168.6.3:8883/terms"
   members-web: "https://192.168.6.3:8878/members"
+  console-web: "https://192.168.6.3:8883"
 
 ## Feign
 feign:

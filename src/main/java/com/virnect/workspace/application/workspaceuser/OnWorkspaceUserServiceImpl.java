@@ -242,7 +242,7 @@ public class OnWorkspaceUserServiceImpl extends WorkspaceUserService {
         if (userInvite == null) {
             log.info("[WORKSPACE INVITE ACCEPT] Workspace invite session Info Not found. session code >> [{}]", sessionCode);
             RedirectView redirectView = new RedirectView();
-            redirectView.setUrl(redirectProperty.getWorkstationWeb() + "/?message=workspace.invite.invalid");
+            redirectView.setUrl(redirectProperty.getConsoleWeb() + "/?message=workspace.invite.invalid");
             redirectView.setContentType("application/json");
             return redirectView;
         }
