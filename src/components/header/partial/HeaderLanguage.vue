@@ -67,6 +67,9 @@ export default {
         { text: 'KOR', key: 'ko' },
         { text: 'ENG', key: 'en' },
         { text: 'JPN', key: 'ja' },
+        //@TODO : 중국어 추가시 주석해제 및 언어 표기 확인
+        // { text: 'ZH-CH', key: 'zh-CN' },
+        // { text: 'ZH-TW', key: 'zh-TW' },
       ],
     }
   },
@@ -108,9 +111,11 @@ export default {
   }
 }
 
+//@TODO : 중국어 추가시 크기조절
 .popover-language {
   min-width: 5.1429rem;
   height: 9.2857rem;
+  // height: 14.6429rem;
   background: $color_bg_sub;
   border: 1px solid $color_bg_sub_border;
   box-shadow: 0px 4px 12px 0px rgba(0, 0, 0, 0.2);
