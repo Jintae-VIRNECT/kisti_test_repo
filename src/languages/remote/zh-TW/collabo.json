@@ -1,0 +1,65 @@
+{
+  "room": {
+    "room_info": "合作詳情",
+    "title": "合作名稱",
+    "leader": "領導",
+    "description": "合作說明",
+    "member_list": "參加成員",
+    "active_date": "開始時間",
+    "unactive_date": "結束時間",
+    "duration_sec": "進行時間"
+  },
+  "status": {
+    "all": "全部",
+    "progress": "正在進行",
+    "finished": "結束",
+    "unknown": "無法得知"
+  },
+  "search": {
+    "collabo_status": "合作狀態",
+    "text": "搜索詞",
+    "placeholder": "請輸入合作名稱/成員",
+    "use_date_search": "使用期間搜索",
+    "execute": "搜索",
+    "over_period": "無法查閱3個月以上內容。",
+    "invalid_period": "這不是有效期間。",
+    "invalid_date": "請指定正確的日期。",
+    "select_period": "選擇期間",
+    "enable_search": "使用搜索"
+  },
+  "list": {
+    "title": "合作明細目錄",
+    "title_description": "顯示最近合作記錄。",
+    "no_data": "沒有搜索結果。",
+    "room_title": "合作名稱",
+    "room_leader": "領導",
+    "room_active_date": "合作開始日期",
+    "room_status": "狀態",
+    "room_server_record": "服務器拍攝",
+    "room_local_record": "本地拍攝",
+    "room_attach_file": "附加文件",
+    "count": "{count}件"
+  },
+  "file": {
+    "name": "文件名稱",
+    "record_time": "拍攝時間",
+    "size": "文件容量",
+    "server_record": "服務器拍攝文件",
+    "local_record": "本地拍攝文件",
+    "record_member": "拍攝成員",
+    "attach_file": "附加文件",
+    "expired": "期滿",
+    "download_period": "下載期間",
+    "upload_member": "上傳成員",
+    "play": "拍攝播放"
+  },
+  "date": {
+    "lastday": "[昨天] A",
+    "nextday": "[明天] A",
+    "timeHour": "h小時 m分鐘",
+    "time": "m分鐘 s秒",
+    "hour": "小時",
+    "minute": "分鐘",
+    "second": "秒"
+  }
+}
