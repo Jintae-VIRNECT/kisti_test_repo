@@ -1565,10 +1565,10 @@
     eslint-plugin-vue "^6.0.1"
     prettier "^2.2.1"
 
-"@virnect/i18n@^1.0.1":
-  version "1.0.1"
-  resolved "http://192.168.6.3:4873/@virnect%2fi18n/-/i18n-1.0.1.tgz#f16072f9eba7a98dec5edf3af2f9e6abccf84dd1"
-  integrity sha512-qqXtKDS4yRrtBTweSzbOrOhVIr5VCCltyNkLk/d5ZlhDuprRb2pfkRQCyuMIhUpxdfi71ZMXxMDBi6gk9kHmEQ==
+"@virnect/i18n@^1.1.1":
+  version "1.1.1"
+  resolved "http://192.168.6.3:4873/@virnect%2fi18n/-/i18n-1.1.1.tgz#00c285f1d89edb4e78ca0d76e82673293c786cef"
+  integrity sha512-3GsHkYAk3JAMqTd0eRoyoUYUEm8C+Ysv1quTwNDsqjlzOYXmha6+RWKQTwm+hVD7Lun6jicyKxgwnFF4q07JIg==
   dependencies:
     commander "^7.2.0"
     google-spreadsheet "^3.1.15"
@@ -4948,9 +4948,9 @@ functional-red-black-tree@^1.0.1:
   integrity sha1-GwqzvVU7Kg1jmdKcDj6gslIHgyc=
 
 gaxios@^4.0.0:
-  version "4.2.0"
-  resolved "https://registry.npmjs.org/gaxios/-/gaxios-4.2.0.tgz#33bdc4fc241fc33b8915a4b8c07cfb368b932e46"
-  integrity sha512-Ms7fNifGv0XVU+6eIyL9LB7RVESeML9+cMvkwGS70xyD6w2Z80wl6RiqiJ9k1KFlJCUTQqFFc8tXmPQfSKUe8g==
+  version "4.2.1"
+  resolved "https://registry.npmjs.org/gaxios/-/gaxios-4.2.1.tgz#7463d3a06f56ddbffa745a242d2b4933b88b2ada"
+  integrity sha512-s+rTywpw6CmfB8r9TXYkpix7YFeuRjnR/AqhaJrQqsNhsAqej+IAiCc3hadzQH3gHyWth30tvYjxH8EVjQt/8Q==
   dependencies:
     abort-controller "^3.0.0"
     extend "^3.0.2"

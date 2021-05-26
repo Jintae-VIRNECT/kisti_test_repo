@@ -19,7 +19,10 @@
           </span>
         </el-button>
       </h3>
-      <div class="right">
+      <div
+        class="right"
+        v-if="$t('guide.taskStatusGuide.url') !== 'guide.taskStatusGuide.url'"
+      >
         <a :href="$t('guide.taskStatusGuide.url')" target="_blank">
           {{ $t('guide.taskStatusGuide.label') }}
         </a>
