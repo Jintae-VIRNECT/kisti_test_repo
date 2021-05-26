@@ -27,7 +27,6 @@ import com.virnect.workspace.global.util.RandomStringTokenUtil;
 import com.virnect.workspace.infra.file.FileService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Profile;
@@ -161,10 +160,10 @@ public abstract class WorkspaceService {
      * @param userId - 사용자 uuid
      * @return - 소속된 워크스페이스 정보
      */
-    @Cacheable(value = "userWorkspaces", key = "{#userId" +
+    /*@Cacheable(value = "userWorkspaces", key = "{#userId" +
             ".concat(',pageSize=').concat(#pageRequest.of().pageSize)" +
             ".concat(',pageNumber=').concat(#pageRequest.of().pageNumber)" +
-            ".concat(',pageSort=').concat(#pageRequest.of().sort.toString()).replace(':',',')}", unless = "#result.workspaceList.size()==0")
+            ".concat(',pageSort=').concat(#pageRequest.of().sort.toString()).replace(':',',')}", unless = "#result.workspaceList.size()==0")*/
     public WorkspaceInfoListResponse getUserWorkspaces(
             String userId, com.virnect.workspace.global.common.PageRequest pageRequest
     ) {

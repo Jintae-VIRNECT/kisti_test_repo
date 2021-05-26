@@ -46,7 +46,7 @@ public class S3FileService implements FileService {
 
     @Override
     public String upload(MultipartFile file) throws IOException {
-        String extension = FilenameUtils.getExtension(file.getOriginalFilename()).toLowerCase();
+        String extension = FilenameUtils.getExtension(file.getOriginalFilename());
 
         if (!allowExtension.contains(extension)) {
             //log.error("Not Allow File Extension. Request File Extension >> {}", extension);
@@ -55,6 +55,9 @@ public class S3FileService implements FileService {
 
         String uniqueFileName = UUID.randomUUID().toString().replace("-", "") + "." + extension;
         String objectName = resource + "/" + uniqueFileName;
+        log.info("[FILE UPLOAD] Upload File Info >> bucket : {}, resource : {}, filename : {}, fileSize : {}", bucket, resource,
+                uniqueFileName, file.getSize()
+        );
 
         ObjectMetadata objectMetadata = new ObjectMetadata();
         objectMetadata.setContentType(MediaType.APPLICATION_OCTET_STREAM_VALUE);
@@ -68,11 +71,9 @@ public class S3FileService implements FileService {
             putObjectRequest.withCannedAcl(CannedAccessControlList.PublicRead);
 
             amazonS3Client.putObject(putObjectRequest);
-            log.info("Upload File Info >> bucket : {}, resource : {}, filename : {}, fileSize : {}", bucket, resource,
-                    uniqueFileName, file.getSize()
-            );
-
-            return amazonS3Client.getUrl(bucket, objectName).toExternalForm();
+            String uploadPath = amazonS3Client.getUrl(bucket, objectName).toExternalForm();
+            log.info("[FILE UPLOAD] Upload Result path : [{}],", uploadPath);
+            return uploadPath;
 
         } catch (Exception e) {
             log.error(e.getMessage());
