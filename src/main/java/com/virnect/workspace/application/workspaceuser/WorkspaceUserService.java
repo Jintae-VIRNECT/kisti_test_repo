@@ -69,8 +69,7 @@ public abstract class WorkspaceUserService {
     private final MessageSource messageSource;
     private final LicenseRestService licenseRestService;
     private final RedirectProperty redirectProperty;
-    private static final String ALL_WORKSAPCE_ROLE = "MASTER|MANAGER|MEMBER";
-    private static final String ALL_LICENSE_PRODUCT = "REMOTE|MAKE|VIEW";
+    private static final String ALL_LICENSE_PRODUCT = ".*(?i)REMOTE.*|.*(?i)MAKE.*|.*(?i)VIEW.*";
     private final RestMapStruct restMapStruct;
     private final ApplicationEventPublisher applicationEventPublisher;
 
@@ -104,7 +103,7 @@ public abstract class WorkspaceUserService {
 
         //3. 라이선스 필터링 : filter값이 라이선스값인 경우, search된 유저 목록중에서 filter 라이선스 정보만 가지고 오고, filter값이 라이선스가 아니라면 search된 유저 목록의 모든 라이선스 정보를 가지고 온다.
         Map<String, List<MyLicenseInfoResponse>> licenseProducts = new HashMap<>();
-        if (StringUtils.hasText(filter) && filter.matches("(?i)" + ALL_LICENSE_PRODUCT)) {
+        if (StringUtils.hasText(filter) && filter.matches(ALL_LICENSE_PRODUCT)) {
             searchedUserIds.forEach(userId -> {
                 MyLicenseInfoListResponse myLicenseInfoListResponse = getMyLicenseInfoRequestHandler(workspaceId, userId);
                 if (myLicenseInfoListResponse != null && myLicenseInfoListResponse.getLicenseInfoList() != null && !myLicenseInfoListResponse.getLicenseInfoList().isEmpty() &&
@@ -645,7 +644,6 @@ public abstract class WorkspaceUserService {
         }
 
         WorkspaceUserPermission workspaceUserPermission = workspaceUserPermissionRepository.findByWorkspaceUser_WorkspaceAndWorkspaceUser_UserId(workspace, userId).orElseThrow(() -> new WorkspaceException(ErrorCode.ERR_WORKSPACE_USER_NOT_FOUND));
-
         //라이선스 해제
         MyLicenseInfoListResponse myLicenseInfoListResponse = licenseRestService.getMyLicenseInfoRequestHandler(
                 workspaceId, userId).getData();

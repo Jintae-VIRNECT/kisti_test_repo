@@ -24,7 +24,7 @@ import java.util.Optional;
  */
 public class WorkspaceUserPermissionRepositoryImpl extends QuerydslRepositorySupport implements WorkspaceUserPermissionRepositoryCustom {
     private final JPAQueryFactory jpaQueryFactory;
-
+    private static final String ALL_WORKSAPCE_ROLE = ".*(?i)MASTER.*|.*(?i)MANAGER.*|.*(?i)MEMBER.*";
     public WorkspaceUserPermissionRepositoryImpl(JPAQueryFactory jpaQueryFactory) {
         super(WorkspaceUserPermission.class);
         this.jpaQueryFactory = jpaQueryFactory;
@@ -121,8 +121,8 @@ public class WorkspaceUserPermissionRepositoryImpl extends QuerydslRepositorySup
         if (!StringUtils.hasText(filter)) {
             return null;
         }
-        if (filter.matches("(?i)MASTER|MANAGER|MEMBER")) {
-            String[] roleList = StringUtils.split(filter.toUpperCase(), ",") == null ? new String[]{filter.toUpperCase()} : StringUtils.split(filter.toUpperCase(), ",");
+        if (filter.matches(ALL_WORKSAPCE_ROLE)) {
+            String[] roleList = filter.toUpperCase().split(",").length == 0 ? new String[]{filter.toUpperCase()} : filter.toUpperCase().split(",");
             return QWorkspaceUserPermission.workspaceUserPermission.workspaceRole.role.in(roleList);
         }
         return null;
