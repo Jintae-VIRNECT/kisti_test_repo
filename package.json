@@ -18,8 +18,8 @@
     "start:staging": "set CONFIG_SERVER=https://stgconfig.virnect.com && set VIRNECT_ENV=staging && set NODE_ENV=production && node server.js",
     "test:cover": "vue-cli-service test:unit --coverage",
     "i18n:diff": "i18n diff --sheetId RM-DashBoard --src src/languages/remote",
-    "i18n:upload": "i18n diff --sheetId RM-DashBoard --src src/languages/remote --force",
-    "i18n:download": "i18n download --sheetId RM-DashBoard --src src/languages/remote",
+    "i18n:upload": "i18n upload --sheetId RM-DashBoard --src src/languages/remote",
+    "i18n:download": "i18n download --sheetId RM-DashBoard --src src/languages/remote --force",
     "i18n": "i18n --sheetId RM-DashBoard --src src/languages/remote",
     "prepare": "husky install"
   },
@@ -37,7 +37,7 @@
   "devDependencies": {
     "@popperjs/core": "^2.5.4",
     "@virnect/eslint-config": "^1.0.3",
-    "@virnect/i18n": "^1.0.0",
+    "@virnect/i18n": "^1.1.1",
     "@virnect/stylelint-config": "^1.0.2",
     "@vue/cli-plugin-babel": "^4.5.12",
     "@vue/cli-plugin-eslint": "^4.5.12",
