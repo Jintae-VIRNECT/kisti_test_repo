@@ -4,7 +4,7 @@
       :env="$env"
       :subTitle="$t('menu.account')"
       :showStatus="showSection"
-      :userInfo="auth.myInfo"
+      :userInfo="myProfile"
       :urls="$url"
       :logo="{ default: logo }"
       @logout="$store.commit('auth/LOGOUT')"
@@ -47,7 +47,7 @@ export default {
   },
   computed: {
     ...mapGetters({
-      auth: 'auth/auth',
+      myProfile: 'auth/myProfile',
       title: 'layout/title',
       logo: 'layout/logo',
       favicon: 'layout/favicon',

@@ -9,7 +9,7 @@
               : $t('certification.desc')
           "
         />
-        <VirnectThumbnail :size="100" :image="cdn(me.image)" />
+        <VirnectThumbnail :size="100" :image="cdn(me.profile)" />
         <span class="name">{{ me.nickname }}</span>
         <span class="email">{{ me.email }}</span>
         <el-form ref="form" :model="form" @submit.native.prevent="submit">
