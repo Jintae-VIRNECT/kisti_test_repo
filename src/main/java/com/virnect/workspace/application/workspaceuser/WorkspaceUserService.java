@@ -88,11 +88,13 @@ public abstract class WorkspaceUserService {
     ) {
         //1. 정렬 체크 : workspace 서버에서 정렬처리를 할 수 있는 항목인지 체크한다.
         Pageable newPageable = PageRequest.of(pageRequest.of().getPageNumber(), pageRequest.of().getPageSize());
-        if (!pageRequest.of().getSort().get().findFirst().isPresent()) {
+        //정렬요청이 없는 경우에는 worksapceUser.updateDate,desc을 기본값으로 정렬한다.
+        if (pageRequest.getSortName().equals("updatedDate")) {
             pageRequest.setSort("workspaceUser.updatedDate,desc");
             newPageable = pageRequest.of();
         }
-        if (pageRequest.getSortName().equals("workspaceRole") || pageRequest.getSortName().equals(("workspaceUser.createdDate"))) {
+        //워크스페이스에서 정렬이 가능한 경우 -> 권한 정렬, 참여 일자 정렬
+        if (pageRequest.getSortName().equalsIgnoreCase("role") || pageRequest.getSortName().equalsIgnoreCase(("joinDate"))) {
             newPageable = pageRequest.of();
         }
 
@@ -118,7 +120,7 @@ public abstract class WorkspaceUserService {
             });
         }
 
-        //4. 권한 필터링 : filter값이 권한값인 경우, search된 유저 목록 중에서 권한에 일치한 유저만 검색한다.
+        //4. 권한 필터링, 정렬 : filter값이 권한값인 경우, search된 유저 목록 중에서 권한에 일치한 유저만 검색한다.
         Page<WorkspaceUserPermission> workspaceUserPermissionPage = workspaceUserPermissionRepository.getWorkspaceUserPermissionByInUserListAndEqRole(searchedUserIds, filter, newPageable, workspaceId);
 
         //5. 결과가 없는 경우에는 빠른 리턴
