@@ -295,7 +295,8 @@ public class OnWorkspaceUserServiceImpl extends WorkspaceUserService {
             log.error("[WORKSPACE INVITE ACCEPT] Over Max Workspace Member amount. max user Amount >> [{}], exist user amount >> [{}]",
                     workspaceLicensePlanInfoResponse.getMaxUserAmount(),
                     workspaceUserAmount + 1);
-            worksapceOverMaxUserFailHandler(workspace, userInvite, locale);
+            RedirectView redirectView = worksapceOverMaxUserFailHandler(workspace, userInvite, locale);
+            return redirectView;
         }
 
         //플랜 할당.
@@ -314,11 +315,12 @@ public class OnWorkspaceUserServiceImpl extends WorkspaceUserService {
             }
         }
         if (!licenseGrantResult) {
-            workspaceOverPlanFailHandler(workspace, userInvite, successPlan, failPlan, locale);
+            RedirectView redirectView = workspaceOverPlanFailHandler(workspace, userInvite, successPlan, failPlan, locale);
             successPlan.forEach(s -> {
                 Boolean revokeResult = licenseRestService.revokeWorkspaceLicenseToUser(workspace.getUuid(), userInvite.getInvitedUserId(), s).getData();
                 log.info("[WORKSPACE INVITE ACCEPT] [{}] License Grant Fail. Revoke user License Result >> [{}]", s, revokeResult);
             });
+            return redirectView;
         }
         //워크스페이스 소속 넣기 (workspace_user)
         WorkspaceUser workspaceUser = WorkspaceUser.builder().workspace(workspace).userId(userInvite.getInvitedUserId()).build();
