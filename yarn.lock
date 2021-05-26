@@ -924,11 +924,6 @@
     "@nodelib/fs.scandir" "2.1.4"
     fastq "^1.6.0"
 
-"@popperjs/core@^2.6.0":
-  version "2.9.2"
-  resolved "https://registry.npmjs.org/@popperjs/core/-/core-2.9.2.tgz#adea7b6953cbb34651766b0548468e743c6a2353"
-  integrity sha512-VZMYa7+fXHdwIq1TDhSXoVmSPEGM/aa+6Aiq3nVVJ9bXr24zScr+NlKFKC3iPljA7ho/GAZr+d2jOf5GIRC30Q==
-
 "@stylelint/postcss-css-in-js@^0.37.2":
   version "0.37.2"
   resolved "https://registry.npmjs.org/@stylelint/postcss-css-in-js/-/postcss-css-in-js-0.37.2.tgz#7e5a84ad181f4234a2480803422a47b8749af3d2"
@@ -1027,15 +1022,15 @@
   dependencies:
     "@types/node" "*"
 
-"@virnect/components@^1.1.4":
-  version "1.1.9"
-  resolved "http://192.168.6.3:4873/@virnect%2fcomponents/-/components-1.1.9.tgz#4e4b72a409752b84ba4a0a7cf148af72d05b4bb2"
-  integrity sha512-OSDV0g3Au8JdQFs/bTRiDrInjvt87JzAO5npJ/wTza7XA+93GwWMsiok2UCtKJ4hBYI84Feora035gvz29+0Xg==
+"@virnect/components@^1.1.10":
+  version "1.1.10"
+  resolved "http://192.168.6.3:4873/@virnect%2fcomponents/-/components-1.1.10.tgz#89b9911511e27a80007dfce16cff34ef59f71a61"
+  integrity sha512-cqGx85zFAX0B/b7/3HSsd30g0vpHjQGOTUQAjvmPUgbEmapUfXLgbIu2vJzrkKoM0hXzyYuGvAAC6OMoudFynQ==
   dependencies:
     "@virnect/ui-assets" "^1.1.20"
     "@vue/composition-api" "^1.0.0-rc.2"
     js-cookie "^2.2.1"
-    v-tooltip "^3.0.0-alpha.21"
+    v-tooltip "^2.1.3"
     vue-demi "^0.7.1"
 
 "@virnect/eslint-config@^1.0.3":
@@ -7829,6 +7824,11 @@ pkg-dir@^4.1.0:
   dependencies:
     find-up "^4.0.0"
 
+popper.js@^1.16.1:
+  version "1.16.1"
+  resolved "https://registry.npmjs.org/popper.js/-/popper.js-1.16.1.tgz#2a223cb3dc7b6213d740e40372be40de43e65b1b"
+  integrity sha512-Wb4p1J4zyFTbM+u6WuO4XstYx4Ky9Cewe4DWrel7B0w6VVICvPwdOpotjzcf6eD8TsckVnIMNONQyPIUFOUbCQ==
+
 portfinder@^1.0.26:
   version "1.0.28"
   resolved "https://registry.npmjs.org/portfinder/-/portfinder-1.0.28.tgz#67c4622852bd5374dd1dd900f779f53462fac778"
@@ -10663,13 +10663,15 @@ uuid@^3.3.2, uuid@^3.4.0:
   resolved "https://registry.npmjs.org/uuid/-/uuid-3.4.0.tgz#b23e4358afa8a202fe7a100af1f5f883f02007ee"
   integrity sha512-HjSDRw6gZE5JMggctHBcjVak08+KEVhSIiDzFnT9S9aegmp85S/bReBVTb4QTFaRNptJ9kuYaNhnbNEOkbKb/A==
 
-v-tooltip@^3.0.0-alpha.21:
-  version "3.0.0-alpha.21"
-  resolved "https://registry.npmjs.org/v-tooltip/-/v-tooltip-3.0.0-alpha.21.tgz#249f5c57f2efef971497775c3e7d77e9e607593a"
-  integrity sha512-k+4oj+UBKnhONFoenbRLIzCQj500R2MDUm953kgRrZAKQRGXU9kVI7bJirvJLZG73b7LE7vx/dUDirHc+wIovg==
+v-tooltip@^2.1.3:
+  version "2.1.3"
+  resolved "https://registry.npmjs.org/v-tooltip/-/v-tooltip-2.1.3.tgz#281c2015d1e73787f13c8956aa295b8c3a73f261"
+  integrity sha512-xXngyxLQTOx/yUEy50thb8te7Qo4XU6h4LZB6cvEfVd9mnysUxLEoYwGWDdqR+l69liKsy3IPkdYff3J1gAJ5w==
   dependencies:
-    "@popperjs/core" "^2.6.0"
-    vue-resize "^1.0.0"
+    "@babel/runtime" "^7.13.10"
+    lodash "^4.17.21"
+    popper.js "^1.16.1"
+    vue-resize "^1.0.1"
 
 v8-compile-cache@^2.0.3, v8-compile-cache@^2.1.1, v8-compile-cache@^2.3.0:
   version "2.3.0"
@@ -10841,7 +10843,7 @@ vue-qrcode-reader@^2.1.1:
     vue "^2.6.11"
     webrtc-adapter "7.7.0"
 
-vue-resize@^1.0.0:
+vue-resize@^1.0.1:
   version "1.0.1"
   resolved "https://registry.npmjs.org/vue-resize/-/vue-resize-1.0.1.tgz#c120bed4e09938771d622614f57dbcf58a5147ee"
   integrity sha512-z5M7lJs0QluJnaoMFTIeGx6dIkYxOwHThlZDeQnWZBizKblb99GSejPnK37ZbNE/rVwDcYcHY+Io+AxdpY952w==
