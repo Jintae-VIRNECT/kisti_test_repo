@@ -11,9 +11,9 @@ import {
   RUNTIME_ENV,
   RUNTIME,
   URLS,
-  TIMEOUT,
 } from 'configs/env.config'
 import { AUTH_STATUS } from 'configs/status.config'
+import { STATUS_SESSION_ID_SET } from '../stores/remote/mutation-types'
 
 /**
  * 상태
@@ -25,12 +25,14 @@ const intervalTime = 5 * 60 * 1000 // 5 minutes
 const renewvalTime = 10 * 60 // 5 minutes
 const statusReconnectIntervalTime = 4 * 1000 // 4sec
 const reRegistIntervalTime = 4 * 1000 // 4sec
+const pingCheckIntervalTime = 12 * 1000 //12sec
 let interval
-let socket
+let socket //멤버 상태 소켓
 let reConnectIntervalId
 let pingIntervalId
 let reRegistIntervalId
-let reRegistCount = 0
+let reRegistCount = 0 //재등록 실패시 실행하는 재등록 시도 횟수 (3회 까지시도하고 중지하기 위함)
+let isRegisted = false //이미 등록완료된 상태에서 멤버 상태 소켓에 재연결 방지하기 위한 플래그
 
 /**
  * 메소드
@@ -92,18 +94,37 @@ const getMyInfo = async () => {
   }
 }
 
+//초기 소켓 연결 실패로 인한 재접속 시도 인터벌 초기화
+const resetReConnectInterval = () => {
+  if (reConnectIntervalId) clearInterval(reConnectIntervalId)
+  reConnectIntervalId = null
+}
+
+//멤버 재등록 실패 후 재등록 시도 인터벌 초기화
+const resetReRegistInterval = () => {
+  if (reRegistIntervalId) clearInterval(reRegistIntervalId)
+  reRegistIntervalId = null
+}
+
+//기존 PING Timeout으로 인한 재접속 시도 인터벌 초기화
+const resetPingCheckInterval = () => {
+  if (pingIntervalId) clearInterval(pingIntervalId)
+  pingIntervalId = null
+}
+
 //사용자 상태 소켓 연결/등록
 const initLoginStatus = onDuplicatedRegistrationCallback => {
   if (window.urls && window.urls['ws']) {
-    const wssUrl = window.urls['ws'] //'wss://15.165.37.208:8073'
+    const wssUrl = window.urls['ws']
 
     try {
-      if (reConnectIntervalId) clearInterval(reConnectIntervalId) //기존 재접속 인터벌 초기화
+      resetReConnectInterval() //기존 재접속 인터벌 초기화
       socket = new WebSocket(`${wssUrl}/auth/status`)
     } catch (e) {
       //초기 연결 실패시 재접속 인터벌 실행
       console.error('auth status websocket connection error', e)
       reConnectIntervalId = setInterval(() => {
+        isRegisted = false
         logger('connect retry')
         initLoginStatus(onDuplicatedRegistrationCallback)
       }, statusReconnectIntervalTime)
@@ -113,29 +134,30 @@ const initLoginStatus = onDuplicatedRegistrationCallback => {
     //소켓 연결
     socket.onopen = e => {
       logger('auth status opened', e)
-      if (pingIntervalId) clearInterval(pingIntervalId) //기존 재접속 시도 인터벌 취소
 
       //메시지 수신
       socket.onmessage = e => {
-        //debug('message received', e.data)
         //메시지, 데이터 존재 여부 판단
         if (e && e.data) {
           if (e.data === 'PING') {
             socket.send('PONG')
 
+            resetPingCheckInterval() //기존 재접속 시도 인터벌 취소
+
             //ping 메시지 기다리고, 메시지 오지 않올시 재접속 시도
             pingIntervalId = setInterval(() => {
+              isRegisted = false
               console.error(
                 'auth status websocket ping not received, reconnect',
               )
               socket.close()
-              if (reRegistIntervalId) clearInterval(reRegistIntervalId) //재등록 실패 후 소켓연결이 끊긴 경우라면 재등록 시도를 초기화하기 위함
+              resetReRegistInterval() //재등록 실패 후 소켓연결이 끊긴 경우라면 재등록 시도를 초기화하기 위함
               initLoginStatus(onDuplicatedRegistrationCallback) //재접속 시도
-            }, TIMEOUT)
+            }, pingCheckIntervalTime)
             return
           }
 
-          if (reRegistIntervalId) clearInterval(reRegistIntervalId) //재등록 실패 후 재등록 시도를 초기화
+          resetReRegistInterval() //재등록 실패 후 재등록 시도를 초기화
 
           const { code, data } = JSON.parse(e.data)
           switch (code) {
@@ -155,13 +177,23 @@ const initLoginStatus = onDuplicatedRegistrationCallback => {
                 }),
               )
               break
+
             //등록완료
             case AUTH_STATUS.REGISTRATION_SUCCESS:
+              isRegisted = true
               logger('Registration Success : ', e.data)
+              //session id 저장 : 중복 로그인으로 인한 로그아웃 요청 수신 시 로그아웃 시킬 기기 구분하기 위해 사용
+              window.vue.$store.commit(STATUS_SESSION_ID_SET, data.sessionId)
               break
+
             //중복 로그인 등록 or 해당 유저 협업 중
             case AUTH_STATUS.DUPLICATED_REGISTRATION:
+              isRegisted = false
               logger('Registration Fail(duplcated session exist) : ', e.data)
+
+              //session id 저장 : 기접속자 로그아웃 요청 시 로그아웃 시킬 기기 구분하기 위해 저장
+              window.vue.$store.commit(STATUS_SESSION_ID_SET, data.sessionId)
+
               //중복된 기 접속자가 있는 경우 처리 콜백
               onDuplicatedRegistrationCallback(
                 {
@@ -173,13 +205,16 @@ const initLoginStatus = onDuplicatedRegistrationCallback => {
                 socket,
               )
               break
+
             //등록 실패 시 재등록 시도
             case AUTH_STATUS.REGISTRATION_FAIL:
+              isRegisted = false
               console.error('Registration Fail : ', e.data)
 
               //3번까지 재등록 시도
               if (reRegistCount < 3) {
                 reRegistIntervalId = setInterval(() => {
+                  isRegisted = false
                   reRegistCount++
                   socket.send(
                     JSON.stringify({
@@ -190,10 +225,11 @@ const initLoginStatus = onDuplicatedRegistrationCallback => {
                   )
                 }, reRegistIntervalTime)
               } else reRegistCount = 0 //3번 재등록 시도 실패시 재등록 시도 종료 : 재등록 안된 상태로 머뭄
-
               break
+
             //예외 케이스
             default:
+              isRegisted = false
               console.error('auth status exception : ', e.data)
           }
         }
@@ -206,6 +242,12 @@ const initLoginStatus = onDuplicatedRegistrationCallback => {
 const endLoginStatus = () => {
   if (socket) {
     debug('auth status socket close')
+    isRegisted = false
+    resetPingCheckInterval()
+    resetReConnectInterval()
+    resetReRegistInterval()
+
+    window.vue.$store.commit(STATUS_SESSION_ID_SET, '')
     socket.close()
   }
 }
@@ -306,7 +348,7 @@ class Auth {
         await getMyInfo()
         isLogin = true
         tokenRenewal()
-        initLoginStatus(onDuplicatedRegistrationCallback) //로그인 상태 업데이트
+        if (!isRegisted) initLoginStatus(onDuplicatedRegistrationCallback) //로그인 상태 업데이트를 위한 소켓 접속 (workspace 진행 시마다 init이 호출되나, 이미 등록완료한 경우 실행하지 않는다)
       } catch (e) {
         console.error('Token is expired')
         isLogin = false
@@ -322,13 +364,14 @@ class Auth {
     location.href = `${URLS['console']}/?continue=${location.href}`
     return this
   }
-  logout() {
+  logout(redirect = true) {
     endLoginStatus() //로그아웃 상태 업데이트
     cookieClear()
     isLogin = false
     myInfo = {}
     myWorkspaces = []
-    location.href = `${URLS['console']}/?continue=${location.href}`
+    if (redirect)
+      location.href = `${URLS['console']}/?continue=${location.href}`
     return this
   }
 }
