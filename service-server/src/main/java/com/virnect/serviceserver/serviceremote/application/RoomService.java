@@ -851,4 +851,22 @@ public class RoomService {
 		}
 		return roomInfoResponses;
 	}
+
+	public ApiResponse<RoomResponse> joinOpenRoomOnlyNonmember(String workspaceId, String sessionId, String authCode) {
+
+		// 세션 및 토큰 생성
+		JsonObject sessionJson = serviceSessionManager.generateSession(sessionId);
+		JsonObject tokenResult = serviceSessionManager.generateSessionToken(sessionJson);
+
+		// 협업방 참여
+		ApiResponse<RoomResponse> responseData = this.sessionDataRepository.joinOpenRoomOnlyNonmember(
+			workspaceId,
+			sessionId,
+			tokenResult.toString()
+		);
+
+		responseData.getData().getCoturn().add(setCoturnResponse(responseData.getData().getSessionType()));
+
+		return responseData;
+	}
 }

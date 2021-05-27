@@ -17,6 +17,7 @@ import com.virnect.data.domain.room.Room;
 import com.virnect.data.domain.roomhistory.RoomHistory;
 import com.virnect.data.domain.session.SessionProperty;
 import com.virnect.data.domain.session.SessionPropertyHistory;
+import com.virnect.data.domain.session.SessionType;
 import com.virnect.data.dto.rest.PushResponse;
 import com.virnect.data.dto.rest.StopRecordingResponse;
 import com.virnect.data.dto.rest.UserInfoResponse;
@@ -1076,5 +1077,46 @@ public class SessionDataRepository {
 
             sessionService.deleteRoom(room);
         }
+    }
+
+    public ApiResponse<RoomResponse> joinOpenRoomOnlyNonmember(String workspaceId, String sessionId, String sessionToken) {
+
+        Room room = sessionService.getRoomForWrite(workspaceId, sessionId);
+        if (room == null) {
+            throw new RestServiceException(ErrorCode.ERR_ROOM_NOT_FOUND);
+        }
+
+        if (room.getSessionProperty().getSessionType() != SessionType.OPEN) {
+            throw new RestServiceException(ErrorCode.ERR_ROOM_INFO_ACCESS);
+        }
+
+        // Pre data process
+        SessionTokenResponse sessionTokenResponse = null;
+        try {
+            sessionTokenResponse = objectMapper.readValue(sessionToken, SessionTokenResponse.class);
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        }
+
+        Member member = Member.builder()
+            .workspaceId(workspaceId)
+            .sessionId(sessionId)
+            .uuid("NONMEMBER")
+            .memberType(MemberType.NONMEMBER)
+            .room(room)
+            .build();
+
+        sessionService.setMember(member);
+
+        RoomResponse roomResponse = new RoomResponse();
+        //not set session create at property
+        roomResponse.setSessionId(sessionId);
+        roomResponse.setToken(sessionTokenResponse.getToken());
+        roomResponse.setWss(UrlConstants.wssUrl);
+        roomResponse.setVideoRestrictedMode(room.isVideoRestrictedMode());
+        roomResponse.setAudioRestrictedMode(room.isAudioRestrictedMode());
+        roomResponse.setSessionType(room.getSessionProperty().getSessionType());
+
+        return new ApiResponse<>(roomResponse);
     }
 }
