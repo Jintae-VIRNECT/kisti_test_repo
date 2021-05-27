@@ -26,4 +26,5 @@ export const EVENT = {
   INVITE: 'invite', //협업 초대
   INVITE_DENIED: 'invitationDenied', //협업 초대 거부
   INVITE_ACCEPTED: 'invitationAccepted', //협업 초대 승인
+  FORCE_LOGOUT: 'forceLogout', //중복 세션인 기 접속자를 강제 로그아웃 시키는 이벤트 (마스터가 하는 강제 로그아웃과 다른 이벤트임)
 }

@@ -116,6 +116,8 @@ import { EVENT } from 'configs/push.config'
 import { ROLE } from 'configs/remote.config'
 import { sendPush } from 'api/http/message'
 import { getRoomInfo } from 'api/http/room'
+import auth from 'utils/auth'
+import { URLS } from 'configs/env.config'
 
 import Switcher from 'Switcher'
 import Popover from 'Popover'
@@ -126,10 +128,11 @@ import NoticeItem from './NoticeItem'
 import alarmMixin from 'mixins/alarm'
 import roomMixin from 'mixins/room'
 import toastMixin from 'mixins/toast'
+import confirmMixin from 'mixins/confirm'
 
 export default {
   name: 'Notice',
-  mixins: [roomMixin, alarmMixin, toastMixin],
+  mixins: [roomMixin, alarmMixin, toastMixin, confirmMixin],
   components: {
     Switcher,
     Popover,
@@ -273,6 +276,18 @@ export default {
               }
             }, 60000)
           }
+          break
+        case EVENT.FORCE_LOGOUT:
+          console.log('중복 로그인 유저 로그아웃 이벤트 수신')
+          auth.logout(false) //바로 로그아웃 처리
+          //팝업 표시 후 리디렉트 실행
+          this.confirmDefault(
+            this.$t('confirm_duplicated_session_logout_received'),
+            {
+              action: () =>
+                (location.href = `${URLS['console']}/?continue=${location.href}`),
+            },
+          )
           break
         default:
           return
