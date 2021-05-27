@@ -859,7 +859,7 @@ public class RoomService {
 	public ApiResponse<RoomResponse> joinOpenRoomOnlyNonmember(String workspaceId, String sessionId, String authCode) {
 
 		NonmemberAuth nonmemberAuth = nonmemberService.getNonmemberAuth(sessionId);
-		if (!authCode.equals(nonmemberAuth.getAuthCode())) {
+		if (ObjectUtils.isEmpty(nonmemberAuth) || !authCode.equals(nonmemberAuth.getAuthCode())) {
 			return new ApiResponse<>(ErrorCode.ERR_ROOM_NOT_FOUND);
 		}
 
