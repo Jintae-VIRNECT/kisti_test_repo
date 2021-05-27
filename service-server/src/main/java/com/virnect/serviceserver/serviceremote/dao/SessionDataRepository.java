@@ -61,7 +61,7 @@ import java.util.stream.Collectors;
 public class SessionDataRepository {
 
     private static final String TAG = SessionDataRepository.class.getSimpleName();
-    private final int ROOM_MEMBER_LIMIT = 6;
+    private final int ROOM_MEMBER_LIMIT = 30;
 
     private final ObjectMapper objectMapper;
 
@@ -1088,6 +1088,13 @@ public class SessionDataRepository {
 
         if (room.getSessionProperty().getSessionType() != SessionType.OPEN) {
             throw new RestServiceException(ErrorCode.ERR_ROOM_INFO_ACCESS);
+        }
+
+        if (!room.getMembers().isEmpty()) {
+            long memberCount = room.getMembers().stream().filter(member -> !(member.getMemberStatus() == MemberStatus.UNLOAD)).count();
+            if (memberCount >= ROOM_MEMBER_LIMIT) {
+                throw new RestServiceException(ErrorCode.ERR_ROOM_MEMBER_MAX_COUNT);
+            }
         }
 
         // Pre data process
