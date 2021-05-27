@@ -75,7 +75,6 @@ public class ServiceServerApplication extends SpringBootServletInitializer imple
     private static final Logger log = LoggerFactory.getLogger(ServiceServerApplication.class);
 
     public final static String WS_PATH = "/remote/websocket";
-
     @Bean
     @ConditionalOnMissingBean
     @DependsOn("remoteServiceConfig")
@@ -222,5 +221,57 @@ public class ServiceServerApplication extends SpringBootServletInitializer imple
         log.info("Using /dev/urandom for secure random generation");
         System.setProperty("java.security.egd", "file:/dev/./urandom");
         SpringApplication.run(ServiceServerApplication.class, Arrays.append(args, "--spring.main.banner-mode=off"));
+    }
+
+    public static <T> Map<String, String> checkConfigProperties(Class<T> configClass) throws InterruptedException {
+        ConfigurableApplicationContext app = SpringApplication.run(configClass,
+            "--spring.main.web-application-type=none"
+        );
+        RemoteServiceConfig config = app.getBean(RemoteServiceConfig.class);
+        List<com.virnect.serviceserver.global.config.RemoteServiceConfig.Error> errors = config.getConfigErrors();
+
+        if (!errors.isEmpty()) {
+            // @formatter:off
+            StringBuilder msg = new StringBuilder("\n\n\n" + "   Configuration errors\n" + "   --------------------\n" + "\n");
+            for (com.virnect.serviceserver.global.config.RemoteServiceConfig.Error error : config.getConfigErrors()) {
+                msg.append("   * ");
+                if (error.getProperty() != null) {
+                    msg.append("Property ").append(config.getPropertyName(error.getProperty()));
+                    if (error.getValue() == null || error.getValue().equals("")) {
+                        msg.append(" is not set. ");
+                    } else {
+                        msg.append("=").append(error.getValue()).append(". ");
+                    }
+                }
+                msg.append(error.getMessage()).append("\n");
+            }
+            msg.append("\n"+"\n"+"   Fix config errors\n"+"   ---------------\n"+"\n"+"   1) Return to shell pressing Ctrl+C\n"+"   2) Set correct values in '.env' configuration file\n"+"   3) Restart RemoteService with:\n"+"\n"+"      $ ./remoteservice restart\n"+"\n");
+            // @formatter:on
+            log.info(msg.toString());
+            // Wait forever
+            new Semaphore(0).acquire();
+        } else {
+            StringBuilder msg = new StringBuilder(
+                "\n\n\n" + "   Configuration properties\n" + "   ------------------------\n" + "\n");
+
+            final Map<String, String> configProps = config.getConfigProps();
+            List<String> configPropNames = new ArrayList<>(config.getUserProperties());
+            Collections.sort(configPropNames);
+
+            for (String property : configPropNames) {
+                String value = configProps.get(property);
+                msg.append("   * ")
+                    .append(config.getPropertyName(property))
+                    .append("=")
+                    .append(value == null ? "" : value)
+                    .append("\n");
+            }
+            msg.append("\n\n");
+            log.info(msg.toString());
+            // Close the auxiliary ApplicationContext
+            app.close();
+            return configProps;
+        }
+        return null;
     }
 }

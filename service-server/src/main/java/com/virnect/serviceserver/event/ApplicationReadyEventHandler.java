@@ -4,11 +4,17 @@ import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+
+import com.virnect.serviceserver.serviceremote.dao.SessionDataRepository;
 
 @Slf4j
 @Service
+@RequiredArgsConstructor
 public class ApplicationReadyEventHandler {
+
+	private final SessionDataRepository sessionDataRepository;
 
 	@EventListener(ApplicationReadyEvent.class)
 	public void applicationReady() {
@@ -19,8 +25,8 @@ public class ApplicationReadyEventHandler {
 			+ "   * VIRNECT_ENV: [" + System.getenv("VIRNECT_ENV") + "]\n" + " \n"
 			+ "   * Config Server Url: [" + System.getenv("CONFIG_SERVER") + "]\n" + "\n"
 			+ "----------------------------------------------------\n";
-
 		log.info(msg);
+		sessionDataRepository.removeAllRoom();
 	}
 
 }

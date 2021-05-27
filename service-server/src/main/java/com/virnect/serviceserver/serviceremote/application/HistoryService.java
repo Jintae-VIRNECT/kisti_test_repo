@@ -26,6 +26,7 @@ import com.virnect.data.dto.rest.WorkspaceMemberInfoListResponse;
 import com.virnect.data.dto.rest.WorkspaceMemberInfoResponse;
 import com.virnect.data.error.ErrorCode;
 import com.virnect.data.global.common.ApiResponse;
+import com.virnect.data.global.util.ListUtils;
 import com.virnect.data.infra.utils.LogMessage;
 import com.virnect.serviceserver.serviceremote.dto.request.room.RoomHistoryDeleteRequest;
 import com.virnect.serviceserver.serviceremote.dto.response.ResultResponse;
@@ -60,54 +61,12 @@ public class HistoryService {
 		boolean paging,
 		Pageable pageable
 	) {
-		// Response data
-		List<RoomHistoryInfoResponse> roomHistoryInfoResponses = new ArrayList<>();
-		PageMetadataResponse pageMeta;
 
-		// Receive RoomHistory list page from DB
 		Page<RoomHistory> roomHistoryPage = roomHistoryRepository.findMyRoomHistorySpecificUserId(workspaceId, userId, paging, pageable);
 
-		// Make uuid array
-		List<String> userList = new ArrayList<>();
-		for (RoomHistory roomHistory : roomHistoryPage) {
-			for (MemberHistory memberHistory : roomHistory.getMemberHistories()) {
-				if (memberHistory.getMemberType() == MemberType.LEADER && !(memberHistory.getUuid() == null || memberHistory.getUuid().isEmpty())) {
-					userList.add(memberHistory.getUuid());
-				}
-			}
-		}
-		String[] userIds = userList.stream().distinct().toArray(String[]::new);
+		List<RoomHistoryInfoResponse> roomHistoryInfoResponses = makeRoomHistoryInfoResponses(workspaceId, roomHistoryPage);
 
-		// Receive User list from Workspace
-		ApiResponse<WorkspaceMemberInfoListResponse> memberInfo = workspaceRestService.getWorkspaceMemberInfoList(workspaceId, userIds);
-
-		// Make Response data
-		for (RoomHistory roomHistory : roomHistoryPage.getContent()) {
-			RoomHistoryInfoResponse roomHistoryInfoResponse = modelMapper.map(roomHistory, RoomHistoryInfoResponse.class);
-			roomHistoryInfoResponse.setSessionType(roomHistory.getSessionPropertyHistory().getSessionType());
-
-			List<MemberInfoResponse> memberInfoList = roomHistory.getMemberHistories().stream()
-				.map(member -> modelMapper.map(member, MemberInfoResponse.class))
-				.collect(Collectors.toList());
-
-			// find and get extra information from use-server using uuid
-			for (MemberInfoResponse memberInfoResponse : memberInfoList) {
-				for (WorkspaceMemberInfoResponse workspaceMemberInfo : memberInfo.getData().getMemberInfoList()) {
-					if (memberInfoResponse.getUuid().equals(workspaceMemberInfo.getUuid())) {
-						memberInfoResponse.setRole(workspaceMemberInfo.getRole());
-						memberInfoResponse.setEmail(workspaceMemberInfo.getEmail());
-						memberInfoResponse.setName(workspaceMemberInfo.getName());
-						memberInfoResponse.setNickName(workspaceMemberInfo.getNickName());
-						memberInfoResponse.setProfile(workspaceMemberInfo.getProfile());
-					}
-				}
-			}
-
-			// Set Member List to Room Information Response
-			roomHistoryInfoResponse.setMemberList(setLeader(memberInfoList));
-			roomHistoryInfoResponses.add(roomHistoryInfoResponse);
-		}
-
+		PageMetadataResponse pageMeta;
 		if (paging) {
 			pageMeta = PageMetadataResponse.builder()
 				.currentPage(pageable.getPageNumber())
@@ -136,75 +95,27 @@ public class HistoryService {
 		String search,
 		Pageable pageable
 	) {
-		// Response data
-		List<RoomHistoryInfoResponse> roomHistoryInfoResponses = new ArrayList<>();
-		PageMetadataResponse pageMeta;
 
-		Page<RoomHistory> roomHistoryPage;
-		if (!(StringUtils.isBlank(search))) {
-			List<String> userIds = new ArrayList<>();
-			List<WorkspaceMemberInfoResponse> members = workspaceRestService.getWorkspaceMemberInfoList(
-				workspaceId,
-				"remote",
-				search,
-				99
-			).getData().getMemberInfoList();
-
+		List<WorkspaceMemberInfoResponse> members = workspaceRestService.getWorkspaceMemberInfoList(
+			workspaceId,
+			"remote",
+			search,
+			99
+		).getData().getMemberInfoList();
+		List<String> userIds = new ArrayList<>();
+		if (!userIds.isEmpty()) {
 			for (WorkspaceMemberInfoResponse memberInfo : members) {
-				if (memberInfo.getUuid() == null || memberInfo.getUuid().isEmpty()) {
-					//if memberInfo is empty
-					log.info("loadFromDatabase::searchRoomHistoryPageList:: some member dose not have uuid");
-				} else {
+				if (!StringUtils.isBlank(memberInfo.getUuid())){
 					userIds.add(memberInfo.getUuid());
 				}
 			}
-			roomHistoryPage = roomHistoryRepository.findMyRoomHistorySpecificUserIdBySearch(workspaceId, userId, userIds, search, pageable);
-		} else {
-			roomHistoryPage = roomHistoryRepository.findMyRoomHistorySpecificUserId(workspaceId, userId, true, pageable);
 		}
 
-		// Make uuid array
-		List<String> userList = new ArrayList<>();
-		for (RoomHistory roomHistory : roomHistoryPage) {
-			for (MemberHistory memberHistory : roomHistory.getMemberHistories()) {
-				if (memberHistory.getMemberType() == MemberType.LEADER && !(memberHistory.getUuid() == null || memberHistory.getUuid().isEmpty())) {
-					userList.add(memberHistory.getUuid());
-				}
-			}
-		}
+		Page<RoomHistory> roomHistoryPage = roomHistoryRepository.findMyRoomHistorySpecificUserIdBySearch(workspaceId, userId, userIds, search, pageable);
 
-		// Receive User list from Workspace
-		String[] userIds = userList.stream().distinct().toArray(String[]::new);
-		ApiResponse<WorkspaceMemberInfoListResponse> memberInfo = workspaceRestService.getWorkspaceMemberInfoList(workspaceId, userIds);
+		List<RoomHistoryInfoResponse> roomHistoryInfoResponses = makeRoomHistoryInfoResponses(workspaceId, roomHistoryPage);
 
-		// Make Response data
-		for (RoomHistory roomHistory : roomHistoryPage.getContent()) {
-			RoomHistoryInfoResponse roomHistoryInfoResponse = modelMapper.map(roomHistory, RoomHistoryInfoResponse.class);
-			roomHistoryInfoResponse.setSessionType(roomHistory.getSessionPropertyHistory().getSessionType());
-
-			List<MemberInfoResponse> memberInfoList = roomHistory.getMemberHistories().stream()
-				.map(member -> modelMapper.map(member, MemberInfoResponse.class))
-				.collect(Collectors.toList());
-
-			// find and get extra information from use-server using uuid
-			for (MemberInfoResponse memberInfoResponse : memberInfoList) {
-				for (WorkspaceMemberInfoResponse workspaceMemberInfo : memberInfo.getData().getMemberInfoList()) {
-					if (memberInfoResponse.getUuid().equals(workspaceMemberInfo.getUuid())) {
-						memberInfoResponse.setRole(workspaceMemberInfo.getRole());
-						memberInfoResponse.setEmail(workspaceMemberInfo.getEmail());
-						memberInfoResponse.setName(workspaceMemberInfo.getName());
-						memberInfoResponse.setNickName(workspaceMemberInfo.getNickName());
-						memberInfoResponse.setProfile(workspaceMemberInfo.getProfile());
-					}
-				}
-			}
-
-			// Set Member List to Room Information Response
-			roomHistoryInfoResponse.setMemberList(setLeader(memberInfoList));
-			roomHistoryInfoResponses.add(roomHistoryInfoResponse);
-		}
-
-		pageMeta = PageMetadataResponse.builder()
+		PageMetadataResponse pageMeta = PageMetadataResponse.builder()
 			.currentPage(pageable.getPageNumber())
 			.currentSize(pageable.getPageSize())
 			.numberOfElements(roomHistoryPage.getNumberOfElements())
@@ -228,63 +139,51 @@ public class HistoryService {
 			sessionId
 		);
 
-		// Response data
-		ApiResponse<RoomHistoryDetailInfoResponse> responseData;
-
 		RoomHistory roomHistory = roomHistoryRepository.findRoomHistoryByWorkspaceIdAndSessionId(workspaceId, sessionId).orElse(null);
-
 		if (roomHistory == null) {
-			RoomHistoryDetailInfoResponse empty = new RoomHistoryDetailInfoResponse();
-			responseData = new ApiResponse<>(empty, ErrorCode.ERR_ROOM_NOT_FOUND);
-		} else {
-
-			// Make uuid array
-			List<String> userList = new ArrayList<>();
-			for (MemberHistory member : roomHistory.getMemberHistories()) {
-				if (!(member.getUuid() == null || member.getUuid().isEmpty())) {
-					userList.add(member.getUuid());
-				}
-			}
-			String[] userIds = userList.stream().distinct().toArray(String[]::new);
-
-			// Receive User list from Workspace
-			ApiResponse<WorkspaceMemberInfoListResponse> memberInfo = workspaceRestService.getWorkspaceMemberInfoList(workspaceId, userIds);
-
-			// mapping data
-			RoomHistoryDetailInfoResponse resultResponse = modelMapper.map(roomHistory, RoomHistoryDetailInfoResponse.class);
-			resultResponse.setSessionType(roomHistory.getSessionPropertyHistory().getSessionType());
-
-			List<MemberInfoResponse> memberInfoList = roomHistory.getMemberHistories().stream()
-				.map(member -> modelMapper.map(member, MemberInfoResponse.class))
-				.collect(Collectors.toList());
-
-			for (MemberInfoResponse memberInfoResponse : memberInfoList) {
-				for (WorkspaceMemberInfoResponse workspaceMemberInfo : memberInfo.getData().getMemberInfoList()) {
-					if (memberInfoResponse.getUuid().equals(workspaceMemberInfo.getUuid())) {
-						memberInfoResponse.setRole(workspaceMemberInfo.getRole());
-						memberInfoResponse.setEmail(workspaceMemberInfo.getEmail());
-						memberInfoResponse.setName(workspaceMemberInfo.getName());
-						memberInfoResponse.setNickName(workspaceMemberInfo.getNickName());
-						memberInfoResponse.setProfile(workspaceMemberInfo.getProfile());
-					}
-				}
-			}
-
-			resultResponse.setMemberList(setLeader(memberInfoList));
-			responseData = new ApiResponse<>(resultResponse);
+			return new ApiResponse<>(ErrorCode.ERR_ROOM_NOT_FOUND);
 		}
-		return responseData;
+
+		// Make uuid array
+		List<String> userList = new ArrayList<>();
+		for (MemberHistory member : roomHistory.getMemberHistories()) {
+			if (!(member.getUuid() == null || member.getUuid().isEmpty())) {
+				userList.add(member.getUuid());
+			}
+		}
+		String[] userIds = userList.stream().distinct().toArray(String[]::new);
+
+		// Receive User list from Workspace
+		ApiResponse<WorkspaceMemberInfoListResponse> memberInfo = workspaceRestService.getWorkspaceMemberInfoList(workspaceId, userIds);
+
+		// mapping data
+		RoomHistoryDetailInfoResponse resultResponse = modelMapper.map(roomHistory, RoomHistoryDetailInfoResponse.class);
+		resultResponse.setSessionType(roomHistory.getSessionPropertyHistory().getSessionType());
+
+		List<MemberInfoResponse> memberInfoList = roomHistory.getMemberHistories().stream()
+			.map(member -> modelMapper.map(member, MemberInfoResponse.class))
+			.collect(Collectors.toList());
+
+		for (MemberInfoResponse memberInfoResponse : memberInfoList) {
+			for (WorkspaceMemberInfoResponse workspaceMemberInfo : memberInfo.getData().getMemberInfoList()) {
+				if (memberInfoResponse.getUuid().equals(workspaceMemberInfo.getUuid())) {
+					memberInfoResponse.setRole(workspaceMemberInfo.getRole());
+					memberInfoResponse.setEmail(workspaceMemberInfo.getEmail());
+					memberInfoResponse.setName(workspaceMemberInfo.getName());
+					memberInfoResponse.setNickName(workspaceMemberInfo.getNickName());
+					memberInfoResponse.setProfile(workspaceMemberInfo.getProfile());
+				}
+			}
+		}
+		resultResponse.setMemberList(setLeader(memberInfoList));
+
+		return new ApiResponse<>(resultResponse);
 	}
 
 	public ApiResponse<ResultResponse> deleteHistory(
 		String workspaceId,
 		String userId
 	) {
-
-		ApiResponse<ResultResponse> responseDate;
-
-		List<MemberHistory> memberHistories = memberHistoryRepository.findByWorkspaceIdAndUuid(workspaceId, userId);
-
 		LogMessage.formedInfo(
 			//TAG,
 			"invokeDataProcess",
@@ -293,9 +192,9 @@ public class HistoryService {
 			userId
 		);
 
+		List<MemberHistory> memberHistories = memberHistoryRepository.findByWorkspaceIdAndUuid(workspaceId, userId);
 		memberHistories.forEach(memberHistory -> {
 			if (memberHistory.getRoomHistory() != null) {
-				//memberHistory.setRoomHistory(null);
 				memberHistory.setHistoryDeleted(true);
 				this.memberHistoryRepository.save(memberHistory);
 			}
@@ -305,18 +204,13 @@ public class HistoryService {
 		resultResponse.userId = userId;
 		resultResponse.setResult(true);
 
-		responseDate = new ApiResponse<>(resultResponse);
-
-		return responseDate;
+		return new ApiResponse<>(resultResponse);
 	}
 
 	public ApiResponse<ResultResponse> deleteHistoryById(
-		String workspaceId
-		, RoomHistoryDeleteRequest roomHistoryDeleteRequest
+		String workspaceId,
+		RoomHistoryDeleteRequest roomHistoryDeleteRequest
 	) {
-
-		ApiResponse<ResultResponse> responseDate;
-
 		LogMessage.formedInfo(
 			//TAG,
 			"invokeDataProcess",
@@ -332,8 +226,6 @@ public class HistoryService {
 			).orElse(null);
 			if (memberHistory != null) {
 				if (memberHistory.getRoomHistory() != null) {
-					//memberHistory.setRoomHistory(null);
-
 					memberHistory.setHistoryDeleted(true);
 					this.memberHistoryRepository.save(memberHistory);
 				}
@@ -352,13 +244,59 @@ public class HistoryService {
 		ResultResponse resultResponse = new ResultResponse();
 		resultResponse.userId = roomHistoryDeleteRequest.getUuid();
 		resultResponse.setResult(true);
-		responseDate = new ApiResponse<>(resultResponse);
 
-		return responseDate;
+		return new ApiResponse<>(resultResponse);
 	}
 
 	public RoomHistory getRoomHistory(String workspaceId, String sessionId) {
 		return this.roomHistoryRepository.findRoomHistoryByWorkspaceIdAndSessionId(workspaceId, sessionId).orElse(null);
+	}
+
+	private List<RoomHistoryInfoResponse> makeRoomHistoryInfoResponses(
+			String workspaceId,
+			Page<RoomHistory> roomHistoryPage
+	) {
+		List<RoomHistoryInfoResponse> roomHistoryInfoResponses = new ArrayList<>();
+		// Make uuid array
+		List<String> userList = new ArrayList<>();
+		for (RoomHistory roomHistory : roomHistoryPage) {
+			for (MemberHistory memberHistory : roomHistory.getMemberHistories()) {
+				if (memberHistory.getMemberType() == MemberType.LEADER && !(memberHistory.getUuid() == null || memberHistory.getUuid().isEmpty())) {
+					userList.add(memberHistory.getUuid());
+				}
+			}
+		}
+
+		// Receive User list from Workspace
+		String[] userIds = userList.stream().distinct().toArray(String[]::new);
+		ApiResponse<WorkspaceMemberInfoListResponse> memberInfo = workspaceRestService.getWorkspaceMemberInfoList(workspaceId, userIds);
+
+		// Make Response data
+		for (RoomHistory roomHistory : roomHistoryPage.getContent()) {
+			RoomHistoryInfoResponse roomHistoryInfoResponse = modelMapper.map(roomHistory, RoomHistoryInfoResponse.class);
+			roomHistoryInfoResponse.setSessionType(roomHistory.getSessionPropertyHistory().getSessionType());
+
+			List<MemberInfoResponse> memberInfoList = roomHistory.getMemberHistories().stream()
+					.map(member -> modelMapper.map(member, MemberInfoResponse.class))
+					.collect(Collectors.toList());
+
+			// find and get extra information from use-server using uuid
+			for (MemberInfoResponse memberInfoResponse : memberInfoList) {
+				for (WorkspaceMemberInfoResponse workspaceMemberInfo : memberInfo.getData().getMemberInfoList()) {
+					if (memberInfoResponse.getUuid().equals(workspaceMemberInfo.getUuid())) {
+						memberInfoResponse.setRole(workspaceMemberInfo.getRole());
+						memberInfoResponse.setEmail(workspaceMemberInfo.getEmail());
+						memberInfoResponse.setName(workspaceMemberInfo.getName());
+						memberInfoResponse.setNickName(workspaceMemberInfo.getNickName());
+						memberInfoResponse.setProfile(workspaceMemberInfo.getProfile());
+					}
+				}
+			}
+			// Set Member List to Room Information Response
+			roomHistoryInfoResponse.setMemberList(setLeader(memberInfoList));
+			roomHistoryInfoResponses.add(roomHistoryInfoResponse);
+		}
+		return roomHistoryInfoResponses;
 	}
 
 }

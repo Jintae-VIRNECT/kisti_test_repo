@@ -8,6 +8,7 @@ import javax.persistence.Enumerated;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -42,4 +43,21 @@ public class RoomResponse {
     @Enumerated(EnumType.STRING)
     private SessionType sessionType;
 
+    @Builder
+    public RoomResponse(
+        String token, String sessionId,
+        List<CoturnResponse> coturn,
+        String wss,
+        boolean videoRestrictedMode,
+        boolean audioRestrictedMode,
+        SessionType sessionType
+    ) {
+        this.token = token;
+        this.sessionId = sessionId;
+        this.coturn = coturn;
+        this.wss = wss;
+        this.videoRestrictedMode = videoRestrictedMode;
+        this.audioRestrictedMode = audioRestrictedMode;
+        this.sessionType = sessionType;
+    }
 }

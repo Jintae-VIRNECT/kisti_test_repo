@@ -14,5 +14,5 @@ public class FileDeleteResponse {
     @ApiModelProperty(value = "Remote Session Identifier", position = 1)
     private String sessionId;
     @ApiModelProperty(value = "File name", position = 2, example = "example file name")
-    private String fileName;
+    private String objectName;
 }

@@ -24,18 +24,9 @@ import com.virnect.data.application.message.MessageRestService;
 @RequiredArgsConstructor
 public class PushMessageClient {
 
-    //private final ObjectMapper mapper = new ObjectMapper();\
     private final ObjectMapper mapper;
-
     private PushSendRequest pushSendRequest;
-
     private final MessageRestService messageRestService;
-
-    /*@Qualifier(value = "messageRestService")
-    @Autowired
-    public void setMessageRestService(MessageRestService messageRestService) {
-        this.messageRestService = messageRestService;
-    }*/
 
     public void setPush(
         String pushService,
@@ -86,24 +77,4 @@ public class PushMessageClient {
         return this.messageRestService.sendPush(pushSendRequest);
     }
 
-    /*public PushSendRequest sendInviteContents(String sessionId,
-                                             String title,
-                                             String sender,
-                                             String profile) {
-        //set push message invite room contents
-        InviteRoomContents inviteRoomContents = new InviteRoomContents();
-        inviteRoomContents.setSessionId(sessionId);
-        inviteRoomContents.setTitle(title);
-        inviteRoomContents.setNickName(sender);
-        inviteRoomContents.setProfile(profile);
-
-        try {
-            String jsonString = mapper.writeValueAsString(inviteRoomContents);
-            pushSendRequest.setContents(mapper.readValue(jsonString, new TypeReference<Map<Object, Object>>() {}));
-        } catch (JsonProcessingException e) {
-            e.printStackTrace();
-        }
-
-        return pushSendRequest;
-    }*/
 }
