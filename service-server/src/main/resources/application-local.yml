@@ -96,22 +96,21 @@ server:
         key-store-type: PKCS12
 
 service:
-    certificate_type: selfsigned
     coturn-credential: remote
     coturn-mysql-connect-timeout: 100
     coturn-mysql-dbname: coturn
     coturn-mysql-ip: 192.168.6.3:4336
     coturn-mysql-password: virnect1234
     coturn-mysql-username: virnect-coturn
-    coturn-name: remot
-    coturn-uris-conference: '["turn:192.168.6.3:3478"]'
-    coturn-uris-streaming: '[]'
+    coturn-name: remote
+    coturn-uris-conference: ["turn:192.168.6.3:3478"]
+    coturn-uris-streaming: []
     domain_or_public_ip: 192.168.13.36
     https_port: 8000
-    kms-uris-conference: '["ws://192.168.6.3:8888/kurento"]'
-    kms-uris-streaming: '[]'
-    policy-location: '"policy/privateServicePolicy.json"'
-    wss: wss://192.168.13.36:8000
+    kms-uris-conference: ["ws://192.168.6.3:8888/kurento"]
+    kms-uris-streaming: []
+    policy-location: policy/privateServicePolicy.json
+    wss: wss://192.168.13.36:8000/remote/websocket
 
 storage:
     enabled: true
@@ -123,8 +122,8 @@ storage:
     bucket-profile-name: profile
     bucket-record-name: record
     policy-enabled: true
-    policy-lifecycle:
-    policy-location: ""
+    policy-lifecycle: 
+    policy-location:
 
 hystrix:
     command.default.execution.isolation.thread.timeoutInMilliseconds: 10000

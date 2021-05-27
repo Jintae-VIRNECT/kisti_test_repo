@@ -43,7 +43,7 @@ public class ConfigService {
 		json.addProperty("https_port", remoteServiceConfig.remoteServiceProperties.getHttpsPort());
 		json.addProperty(
 			"remote_service_publicurl", remoteServiceConfig.remoteServiceProperties.getRemoteServicePublicUrl());
-		json.addProperty("remote_service_cdr", remoteServiceConfig.isCdrEnabled());
+		json.addProperty("remote_service_cdr", remoteServiceConfig.remoteServiceProperties.isRemoteCdr());
 
 		//BandwidthProperty
 		MediaServerProperties mediaServerProperties = remoteServiceConfig.remoteServiceProperties.mediaServerProperties;
@@ -73,24 +73,6 @@ public class ConfigService {
 			mediaServerProperties.serverProperty.getSessionsGarbageThreshold()
 		);
 
-		json.addProperty("remote_service_webhook", remoteServiceConfig.isWebhookEnabled());
-		if (remoteServiceConfig.isWebhookEnabled()) {
-			json.addProperty(
-				"remote_service_webhook_endpoint",
-				remoteServiceConfig.remoteServiceProperties.getRemoteServiceWebhookEndpoint()
-			);
-			JsonArray webhookHeaders = new JsonArray();
-			for (Header header : remoteServiceConfig.remoteServiceProperties.getRemoteServiceWebhookHeaders()) {
-				webhookHeaders.add(header.getName() + ": " + header.getValue());
-			}
-			json.add("remote_service_webhook_headers", webhookHeaders);
-			JsonArray webhookEvents = new JsonArray();
-			for (CDREventName eventName : remoteServiceConfig.remoteServiceProperties.getRemoteServiceWebhookEvents()) {
-				webhookEvents.add(eventName.name());
-			}
-			json.add("remote_service_webhook_events", webhookEvents);
-		}
-
 		return new ResponseEntity<>(json.toString(), getResponseHeaders(), HttpStatus.OK);
 	}
 
@@ -99,7 +81,7 @@ public class ConfigService {
 	}
 
 	public String getRemoteServicePublicUrl() {
-		return remoteServiceConfig.getFinalUrl();
+		return remoteServiceConfig.remoteServiceProperties.mediaServerProperties.getFinalUrl();
 	}
 
 	public Boolean getRemoteServiceRecordingEnabled() {
@@ -113,6 +95,6 @@ public class ConfigService {
 	}
 
 	public Boolean getRemoteServiceCdrEnabled() {
-		return remoteServiceConfig.isCdrEnabled();
+		return remoteServiceConfig.remoteServiceProperties.isRemoteCdr();
 	}
 }

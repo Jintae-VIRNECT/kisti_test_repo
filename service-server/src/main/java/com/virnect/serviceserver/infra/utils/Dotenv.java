@@ -1,5 +1,6 @@
 package com.virnect.serviceserver.infra.utils;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
@@ -11,6 +12,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
@@ -150,6 +152,36 @@ public class Dotenv {
 		}
 
 		this.properties.put(property, value);
+	}
+
+	public Path getDotenvFilePathFromDotenvPath(String dotenvPathProperty) {
+		if (dotenvPathProperty.endsWith(".env")) {
+			// Is file
+			return Paths.get(dotenvPathProperty);
+		} else if (dotenvPathProperty.endsWith("/")) {
+			// Is folder
+			return Paths.get(dotenvPathProperty + ".env");
+		} else {
+			// Is a folder not ending in "/"
+			return Paths.get(dotenvPathProperty + "/.env");
+		}
+	}
+
+	public File getDotenvFile(String dotenvPath) {
+		if (dotenvPath != null && !dotenvPath.isEmpty()) {
+			Path path = getDotenvFilePathFromDotenvPath(dotenvPath);
+			String normalizePath = FilenameUtils.normalize(path.toAbsolutePath().toString());
+			File file = new File(normalizePath);
+
+			if (file.exists()) {
+				return file;
+			} else {
+				log.error(".env file not found at {}", file.getAbsolutePath());
+			}
+		} else {
+			log.warn("DOTENV_PATH configuration property is not defined");
+		}
+		return null;
 	}
 
 }

@@ -455,6 +455,122 @@ public class RoomService {
 		return apiResponse;
 	}
 
+	private CoturnResponse setCoturnResponse(SessionType sessionType) {
+		CoturnResponse coturnResponse = new CoturnResponse();
+		switch (sessionType) {
+			case OPEN: {
+				List<String> urlList = config.remoteServiceProperties.getCoturnUrisStreaming();
+				if (urlList.isEmpty()) {
+					for (String coturnUrl : config.remoteServiceProperties.getCoturnUrisConference()) {
+						coturnResponse.setUsername(config.remoteServiceProperties.getCoturnName());
+						coturnResponse.setCredential(config.remoteServiceProperties.getCoturnCredential());
+						coturnResponse.setUrl(coturnUrl);
+					}
+				} else {
+					for (String coturnUrl : urlList) {
+						coturnResponse.setUsername(config.remoteServiceProperties.getCoturnName());
+						coturnResponse.setCredential(config.remoteServiceProperties.getCoturnCredential());
+						coturnResponse.setUrl(coturnUrl);
+					}
+				}
+			}
+			break;
+			case PUBLIC:
+			case PRIVATE: {
+				for (String coturnUrl : config.remoteServiceProperties.getCoturnUrisConference()) {
+					coturnResponse.setUsername(config.remoteServiceProperties.getCoturnName());
+					coturnResponse.setCredential(config.remoteServiceProperties.getCoturnCredential());
+					//coturnResponse.setUrl(coturnUrl.replaceAll("\"", ""));
+					coturnResponse.setUrl(coturnUrl);
+				}
+			}
+			break;
+		}
+		return coturnResponse;
+	}
+
+	/**
+	 * todo: need to change this process to batch process
+	 */
+	//public DataProcess<Void> removeAllRoom() {
+	//return new RepoDecoder<List<Room>, Void>(RepoDecoderType.DELETE) {
+	public void removeAllRoom() {
+		LogMessage.formedInfo(
+			TAG,
+			"invokeDataProcess",
+			"removeAllRoom",
+			"the server restarts and deletes the room list information"
+		);
+		List<Room> roomList = sessionService.getRoomList();
+		for (Room room : roomList) {
+
+			// Remote Room History Entity Create
+			RoomHistory roomHistory = RoomHistory.builder()
+				.sessionId(room.getSessionId())
+				.title(room.getTitle())
+				.description(room.getDescription())
+				.profile(room.getProfile())
+				.leaderId(room.getLeaderId())
+				.workspaceId(room.getWorkspaceId())
+				.maxUserCount(room.getMaxUserCount())
+				.licenseName(room.getLicenseName())
+				.build();
+
+			// Remote Session Property Entity Create
+			SessionProperty sessionProperty = room.getSessionProperty();
+			SessionPropertyHistory sessionPropertyHistory = SessionPropertyHistory.builder()
+				.mediaMode(sessionProperty.getMediaMode())
+				.recordingMode(sessionProperty.getRecordingMode())
+				.defaultOutputMode(sessionProperty.getDefaultOutputMode())
+				.defaultRecordingLayout(sessionProperty.getDefaultRecordingLayout())
+				.recording(sessionProperty.isRecording())
+				.keepalive(sessionProperty.isKeepalive())
+				.sessionType(sessionProperty.getSessionType())
+				.roomHistory(roomHistory)
+				.build();
+
+			roomHistory.setSessionPropertyHistory(sessionPropertyHistory);
+
+			// Set room member history
+			// Mapping Member List Data to Member History List
+			for (Member roomMember : room.getMembers()) {
+				MemberHistory memberHistory = MemberHistory.builder()
+					.roomHistory(roomHistory)
+					.workspaceId(roomMember.getWorkspaceId())
+					.uuid(roomMember.getUuid())
+					.memberType(roomMember.getMemberType())
+					.deviceType(roomMember.getDeviceType())
+					.sessionId(roomMember.getSessionId())
+					.startDate(roomMember.getStartDate())
+					.endDate(roomMember.getEndDate())
+					.durationSec(roomMember.getDurationSec())
+					.build();
+
+				//sessionService.setMemberHistory(memberHistory);
+				roomHistory.getMemberHistories().add(memberHistory);
+
+				//delete member
+				sessionService.deleteMember(roomMember);
+			}
+
+			//set active time
+			roomHistory.setActiveDate(room.getActiveDate());
+
+			//set un active  time
+			LocalDateTime endTime = LocalDateTime.now();
+			roomHistory.setUnactiveDate(endTime);
+
+			//time diff seconds
+			Duration duration = Duration.between(room.getActiveDate(), endTime);
+			roomHistory.setDurationSec(duration.getSeconds());
+
+			//save room history
+			sessionService.setRoomHistory(roomHistory);
+
+			sessionService.deleteRoom(room);
+		}
+	}
+
 	public ApiResponse<RoomDetailInfoResponse> getRoomDetailBySessionId(String workspaceId, String sessionId) {
 
 		LogMessage.formedInfo(
