@@ -58,7 +58,11 @@
     </div>
 
     <div slot="footer" class="dialog-footer">
-      <el-button type="primary" :disabled="!agree" @click="submit">
+      <el-button
+        type="primary"
+        :disabled="!agree || form.secessionReason === ''"
+        @click="submit"
+      >
         {{ $t('profile.secession.title') }}
       </el-button>
     </div>

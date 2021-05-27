@@ -1,0 +1,7 @@
+{
+  "invalid": {
+    "char": {
+      "between": "{0} must be between {1} and {2} characters"
+    }
+  }
+}
