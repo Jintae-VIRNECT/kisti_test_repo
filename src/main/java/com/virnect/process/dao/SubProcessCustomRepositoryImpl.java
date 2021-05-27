@@ -10,6 +10,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.support.QuerydslRepositorySupport;
+import org.springframework.util.StringUtils;
 
 import com.querydsl.jpa.JPQLQuery;
 
@@ -112,12 +113,12 @@ public class SubProcessCustomRepositoryImpl extends QuerydslRepositorySupport im
 			query = query.where(qSubProcess.in(subProcessList));
 		}
 
-		if (userUUIDList != null && userUUIDList.size() > 0) {
+		if (!userUUIDList.isEmpty()) {
 			query = query.where(qSubProcess.workerUUID.in(userUUIDList));
 		}
 
-		if (search != null) {
-			query = query.where(qSubProcess.name.contains(search));
+		if (StringUtils.hasText(search) && userUUIDList.isEmpty()) {
+			query = query.where(qSubProcess.name.contains(search).or(qSubProcess.process.name.contains(search)));
 		}
 
 		if (processId != null) {
