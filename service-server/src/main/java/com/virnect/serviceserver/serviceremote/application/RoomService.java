@@ -41,6 +41,8 @@ import com.virnect.data.dto.rest.WorkspaceMemberInfoResponse;
 import com.virnect.data.error.ErrorCode;
 import com.virnect.data.global.common.ApiResponse;
 import com.virnect.data.infra.utils.LogMessage;
+import com.virnect.data.redis.application.NonmemberService;
+import com.virnect.data.redis.domain.NonmemberAuth;
 import com.virnect.serviceserver.global.config.RemoteServiceConfig;
 import com.virnect.serviceserver.serviceremote.api.SessionRestController;
 import com.virnect.serviceserver.serviceremote.dao.SessionDataRepository;
@@ -80,6 +82,8 @@ public class RoomService {
 	private final MemberRepository memberRepository;
 	private final ServiceSessionManager serviceSessionManager;
 	private final FileService fileService;
+
+	private final NonmemberService nonmemberService;
 
 	private final RemoteServiceConfig config;
 
@@ -853,6 +857,11 @@ public class RoomService {
 	}
 
 	public ApiResponse<RoomResponse> joinOpenRoomOnlyNonmember(String workspaceId, String sessionId, String authCode) {
+
+		NonmemberAuth nonmemberAuth = nonmemberService.getNonmemberAuth(sessionId);
+		if (!authCode.equals(nonmemberAuth.getAuthCode())) {
+			return new ApiResponse<>(ErrorCode.ERR_ROOM_NOT_FOUND);
+		}
 
 		// 세션 및 토큰 생성
 		JsonObject sessionJson = serviceSessionManager.generateSession(sessionId);
