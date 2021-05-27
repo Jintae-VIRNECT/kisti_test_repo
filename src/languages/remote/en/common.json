@@ -34,7 +34,8 @@
     "exit_room": "End Collabo",
     "progress": "Progress",
     "reconnect": "Reconnect",
-    "manual": "Manual Download"
+    "manual": "Manual Download",
+    "force_logout": "Log out"
   },
   "date": {
     "lastday": "[Yesterday]",

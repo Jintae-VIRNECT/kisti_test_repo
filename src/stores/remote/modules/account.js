@@ -1,4 +1,8 @@
-import { ACCOUNT_SET, ACCOUNT_CLEAR } from '../mutation-types'
+import {
+  ACCOUNT_SET,
+  ACCOUNT_CLEAR,
+  STATUS_SESSION_ID_SET,
+} from '../mutation-types'
 
 function getDefaultState() {
   return {
@@ -11,6 +15,7 @@ function getDefaultState() {
     userType: null,
     roleType: '', // 'LEADER' / 'EXPERT' / 'WORKER'
     licenseEmpty: true,
+    statusSessionId: '',
   }
 }
 const state = getDefaultState()
@@ -35,10 +40,14 @@ const mutations = {
 
     return true
   },
+  [STATUS_SESSION_ID_SET](state, statusSessionId) {
+    state.statusSessionId = statusSessionId
+  },
 }
 
 const getters = {
   hasLicense: state => state.licenseEmpty,
+  statusSessionId: state => state.statusSessionId,
 }
 
 export default {

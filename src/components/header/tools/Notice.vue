@@ -151,7 +151,10 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['alarmList']),
+    ...mapGetters([
+      'alarmList',
+      'statusSessionId', //멤버 상태 소켓에서 발급받은 session id
+    ]),
   },
   watch: {
     onPush(push) {
@@ -203,7 +206,11 @@ export default {
       const body = JSON.parse(listen.body)
 
       if (body.targetUserIds.indexOf(this.account.uuid) < 0) return
-      if (body.userId === this.account.uuid) return
+      if (
+        body.event !== EVENT.FORCE_LOGOUT &&
+        body.userId === this.account.uuid
+      )
+        return
 
       this.logger('received message::', body)
 
@@ -276,6 +283,21 @@ export default {
               }
             }, 60000)
           }
+          break
+        case EVENT.FORCE_LOGOUT:
+          //contents에 담긴 sessionId와 같지 않은 경우 로그아웃 대상이다
+          if (body.contents.sessionId !== this.statusSessionId) {
+            auth.logout(false) //바로 로그아웃 처리
+            //팝업 표시 후 리디렉트 실행
+            this.confirmDefault(
+              this.$t('workspace.confirm_duplicated_session_logout_received'),
+              {
+                action: () =>
+                  (location.href = `${URLS['console']}/?continue=${location.href}`),
+              },
+            )
+          }
+
           break
         default:
           return

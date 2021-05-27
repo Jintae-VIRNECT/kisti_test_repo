@@ -48,7 +48,10 @@ import DeviceDenied from './modal/WorkspaceDeviceDenied'
 import PlanOverflow from './modal/WorkspacePlanOverflow'
 import { mapActions, mapGetters } from 'vuex'
 import { PLAN_STATUS } from 'configs/status.config'
+import { URLS } from 'configs/env.config'
 import { MyStorage } from 'utils/storage'
+import { sendPush } from 'api/http/message'
+import { EVENT } from 'configs/push.config'
 
 export default {
   name: 'WorkspaceLayout',
@@ -125,9 +128,63 @@ export default {
       'setScreenStrict',
       'clearWorkspace',
     ]),
+
+    //중복된 기 접속자가 있는 경우 처리 콜백
+    onDuplicatedRegistration(
+      { currentStatus, sessionId, userId, myInfo },
+      socket,
+    ) {
+      //로그인 된 기 접속자가 있는 경우 : 팝업으로 강제 로그아웃 실행 여부 확인
+      if (currentStatus === 'LOGIN') {
+        const text = this.$t('workspace.confirm_duplicated_session_logout')
+        const contents = { sessionId }
+        const { uuid, name, email } = myInfo
+
+        //원격종료
+        const confirmAction = () => {
+          sendPush(EVENT.FORCE_LOGOUT, [userId], contents) //기 접속자 로그아웃 처리 메시지 전송
+          setTimeout(
+            () =>
+              //재등록 요청
+              socket.send(
+                JSON.stringify({
+                  uuid,
+                  name,
+                  email,
+                }),
+              ),
+            2000,
+          ) //상대방 로그아웃 처리 소요 시간 고려하여 재등록 요청
+        }
+        //취소 : 로그인 시도했던 사용자 로그아웃 처리 및 로그인 페이지로 리디렉트
+        const cancelAction = () => auth.logout()
+
+        const confirm = {
+          text: this.$t('button.force_logout'),
+          action: confirmAction,
+        }
+
+        const cancel = {
+          text: this.$t('button.cancel'),
+          action: cancelAction,
+        }
+
+        this.confirmCancel(text, confirm, cancel)
+      }
+      //협업 중인 경우 : 팝업 띄운 후 로그인 페이지로 리디렉트
+      else {
+        const redirect = false
+        auth.logout(redirect) //바로 로그아웃 처리하고, 리디렉트는 팝업 엑션에서 실행한다
+
+        const text = this.$t('workspace.confirm_duplicated_session_joined')
+        const action = () =>
+          (location.href = `${URLS['console']}/?continue=${location.href}`) //리디렉트
+        this.confirmDefault(text, { action })
+      }
+    },
     async init() {
       this.inited = false
-      const authInfo = await auth.init()
+      const authInfo = await auth.init(this.onDuplicatedRegistration)
       if (!auth.isLogin) {
         auth.login()
         return

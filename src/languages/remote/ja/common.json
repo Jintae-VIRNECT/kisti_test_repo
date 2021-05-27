@@ -34,7 +34,8 @@
     "exit_room": "協業終了",
     "progress": "スタート",
     "reconnect": "再接続",
-    "manual": "マニュアルダウンロード"
+    "manual": "マニュアルダウンロード",
+    "force_logout": "遠隔終了"
   },
   "date": {
     "lastday": "[昨日] A",
