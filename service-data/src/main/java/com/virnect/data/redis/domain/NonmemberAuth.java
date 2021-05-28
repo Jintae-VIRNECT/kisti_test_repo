@@ -11,6 +11,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
+@Builder
 @RedisHash("nonmemberAuth")
 public class NonmemberAuth {
 
@@ -20,12 +21,6 @@ public class NonmemberAuth {
 
 	@Column(name = "auth_code")
 	private String authCode;
-
-	@Builder
-	public NonmemberAuth(String id, String authCode) {
-		this.id = id;
-		this.authCode = authCode;
-	}
 
 	@Override
 	public String toString() {
