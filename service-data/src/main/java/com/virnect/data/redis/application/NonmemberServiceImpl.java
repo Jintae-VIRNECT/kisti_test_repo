@@ -35,7 +35,7 @@ public class NonmemberServiceImpl implements NonmemberService {
 				log.info("This auth code data is already saved : " + findData.toString());
 			} else {
 				savedData = NonmemberAuth.builder()
-					.sessionId(sessionId)
+					.id(sessionId)
 					.authCode(AUTH_CODE + RandomStringUtils.randomAlphabetic(1).toUpperCase())
 					.build();
 				nonmemberRepository.save(savedData);
