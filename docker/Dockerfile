@@ -1,7 +1,17 @@
-# Build Stage
-FROM gradle:6.8-jdk8 AS builder
+# Build Stage #1 build depency
+FROM gradle:6.8-jdk11 AS build_dependency
 ENV APP_HOME=/usr/app/
 WORKDIR $APP_HOME
+
+# Only copy dependency-related files
+COPY build.gradle settings.gradle ./
+
+RUN gradle clean build --no-daemon > /dev/null 2>&1 || true
+
+FROM gradle:6.8-jdk11 AS builder
+ENV APP_HOME=/usr/app/
+WORKDIR $APP_HOME
+ COPY --from=build_dependency /root/.gradle /root/.gradle
 
 # Only copy dependency-related files
 COPY build.gradle settings.gradle ./
@@ -12,10 +22,13 @@ COPY src src
 
 # build soruce file with dependnecies
 RUN gradle cleanQuerydslSourcesDir
-RUN gradle build -x test --stacktrace
+RUN gradle build -x test --no-daemon
 
 # Runtime Stage
-FROM openjdk:8-jre-alpine
+FROM openjdk:11-jdk-slim
+
+# Label
+LABEL APPLICATION="PF-License"
 
 ENV APP_HOME=/usr/app/
 WORKDIR $APP_HOME
