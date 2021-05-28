@@ -83,6 +83,9 @@ body .el-popper {
       &.red {
         color: #dd1717;
       }
+      &.is-disabled {
+        opacity: 0.3;
+      }
     }
   }
 }

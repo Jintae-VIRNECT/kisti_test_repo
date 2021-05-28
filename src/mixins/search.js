@@ -52,7 +52,8 @@ export default {
         } else if (last !== 'ALL' && filter.myValue[0] === 'ALL') {
           filter.myValue.shift()
         }
-        this.emitChangedSearchParams({ page: 1 })
+        page.myPage = 1
+        this.emitChangedSearchParams()
       })
     }
     if (table) {
