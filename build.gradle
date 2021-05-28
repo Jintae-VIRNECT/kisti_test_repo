@@ -6,7 +6,7 @@ buildscript {
         mavenCentral()
     }
 
-    ext { set('springCloudVersion', "Hoxton.SR9") }
+    ext { set('springCloudVersion', "Hoxton.SR10") }
 }
 
 

@@ -1,21 +1,23 @@
 package com.virnect.data.redis;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.repository.configuration.EnableRedisRepositories;
+import org.springframework.validation.annotation.Validated;
 
 @Configuration
 @EnableRedisRepositories
 public class RedisConfig {
 
-	@Value("${spring.redis.host}")
+	@Value("${redis.host}")
 	private String redisHost;
 
-	@Value("${spring.redis.port}")
+	@Value("${redis.port}")
 	private int redisPort;
 
 	@Bean

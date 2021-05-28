@@ -1,3 +1,7 @@
+redis:
+    host: 127.0.0.1
+    post: 6379
+
 spring:
     application:
         name: remote-service-server-local
@@ -23,9 +27,6 @@ spring:
     mvc:
         async:
             request-timeout: 10000
-    redis:
-        host: 127.0.0.1
-        post: 6379
 
 eureka:
     client:
