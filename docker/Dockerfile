@@ -21,8 +21,7 @@ COPY virnect.pfx .
 COPY src src
 
 # build soruce file with dependnecies
-RUN gradle cleanQuerydslSourcesDir
-RUN gradle build -x test --no-daemon
+RUN gradle clean build -x test
 
 # Runtime Stage
 FROM openjdk:11-jdk-slim
