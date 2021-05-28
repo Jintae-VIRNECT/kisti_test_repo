@@ -1,4 +1,4 @@
-RELEASE v2.3.3.2
+RELEASE v2.3.5.0
 
 ### New Features
 ### Bug Fixes
@@ -7,14 +7,11 @@ RELEASE v2.3.3.2
 ### Limitation
 ### Chore
 
-Bug Fixes
-* [DPLA-2535] STT 여부와 상관 없이 무조건 TTS 진행
-* [DPLA-2537] 협업 도중 AR 공유 사용자가 강제종료 했을 경우 처리 추가
-* [DPLA-2530] PDF 파일명 text-overflow 이슈 해결
-* [DPLA-2594] 오픈룸으로 협업 생성 시 제한모드 설정이 안되는 이슈
-* [DPLA-2606] 협업보드 사이즈 조정 후 텍스트 추가 시 이미지 사이즈 변경되는 이슈 해결
-* [DPLA-2595] 오픈룸 최대인원 이상 입장 시 참여 불가 에러문구 추가
-* [DPLA-2603] 참가자 포인팅 허용 해제 시 AR 포인팅 가능한 이슈
-* [DPLA-2625] 협업 방 생성 전/후 최근 기록 목록이 상이하게 출력
+New Features
+
+- 멤버 상태 표시 기능 추가
+- 중복 로그인 알림 & 원격 종료 기능 추가
+- 마스터의 멤버 강제 로그아웃 기능 추가
+- 협업 1시간 초과시 연장 여부 팝업 제거
 
 Copyright (C) 2021, VIRNECT CO., LTD. - All Rights Reserved
