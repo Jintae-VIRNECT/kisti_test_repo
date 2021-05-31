@@ -84,7 +84,6 @@ public class RoomService {
 	private final FileService fileService;
 	private final NonmemberService nonmemberService;
 
-
 	@Override
 	protected Object clone() throws CloneNotSupportedException {
 		return super.clone();

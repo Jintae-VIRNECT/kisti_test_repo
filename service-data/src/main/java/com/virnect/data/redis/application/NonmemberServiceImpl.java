@@ -18,6 +18,7 @@ public class NonmemberServiceImpl implements NonmemberService {
 
 	private static final String TAG = NonmemberServiceImpl.class.getSimpleName();
 	private static final String AUTH_CODE = "non_";
+
 	private final NonmemberRepository nonmemberRepository;
 
 	@Override
