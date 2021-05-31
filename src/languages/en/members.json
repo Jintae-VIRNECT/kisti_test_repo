@@ -72,23 +72,21 @@
       }
     },
     "add": {
-      "title": "Add Member",
-      "desc": "Would you like other users to use VIRNECT products and services together?",
-      "desc2": "Invite VIRNECT users to your Workspace",
-      "desc3": "You can Invite VIRNECT users as Workspace members. Purchase plans in advance from \"Payment Center\" and allocate them to your new members.",
+      "title": "Add Workspace Members",
+      "desc": "Sending a Workspace member invitation email to the email address you entered. A member is added if this member accepts the invitation. You can allocate plans whenever you prefer from the [member settings].",
       "addUser": "Add Workspace Members",
-      "email": "VIRNECT User Email",
+      "email": "Email",
       "emailDesc": "Please enter the VIRNECT member's email address of the person you want to invite and send an invitation. By accepting your invitation the member can become one of your Workspace member and use products together.",
       "emailPlaceholder": "Enter email address of invitee",
       "available": "You can add <i>{n}</i> more members.",
-      "addMember": "Add Member",
+      "addMember": "Add Workspace Members",
       "submit": "Send Invitation",
       "message": {
         "inviteFail": "Failed to invite a member to Workspace please try again later",
         "inviteSuccess": "The invitation email has been sent. The member is added when this member accepts your invitation.",
         "notHaveAnyPlan": "At least one plan must be allocated when inviting new Workspace members.",
         "enoughPlan": "No plans available to assign to Workspace members please purchase plans and invite them again.",
-        "memberOverflow": "Please contact us if you would like add more members to the Workspace.",
+        "memberOverflow": "Please contact us if you would like add more members to the Workspace. <a href='https://virnect.com/contact/inquiry' target='_blank'>Contact</a>",
         "workspaceOverflow": "In Public Service one user can participate in up to 9 Workspaces. To join the selected Workspace please make yourself available first by leaving one of the Workspace you are in and request an invitation email to the Workspace master member.",
         "memberAlready": "Cannot invite a member who has already participated in the Workspace.",
         "noHavePlans": "There are no remaining plans available. Please go to the payment center and purchase the plans."
