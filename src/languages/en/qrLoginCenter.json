@@ -8,7 +8,7 @@
     "effectiveTime": "Time remaining",
     "resendCode": "Refresh QR code",
     "howToLogin": "How to use?",
-    "LoginInfo": "You can only use QR Login with the competible devices.",
+    "LoginInfo": "You can only use QR Login with the compatible devices.",
     "centerHowTo": [
       "Please launch the VIRNECT app on your mobile device or smart glass.",
       "Select [QR Login] on the login screen to run it.",

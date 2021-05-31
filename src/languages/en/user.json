@@ -1,6 +1,6 @@
 {
   "user": {
-    "title": "Enter Addtional Information",
+    "title": "Enter Additional Information",
     "pageInfo": "Entering additional information allows you to use VIRNECT products to be more utilizable",
     "profileImage": {
       "title": "Profile Image",
@@ -27,7 +27,7 @@
     },
     "recoveryEmail": {
       "title": "Verification Email Address",
-      "placeHolder": "Enter your verification eamil address"
+      "placeHolder": "Enter your verification email address"
     },
     "confirm": "Confirm",
     "later": "Next Time",
@@ -37,7 +37,7 @@
         "message": "Failed to proceed with account registration please try again later"
       },
       "nickName": {
-        "title": "Nickname settup error",
+        "title": "Nickname setup error",
         "message": "Please enter a nickname of 20 characters or less. You can use Korean English special characters and spaces."
       }
     }

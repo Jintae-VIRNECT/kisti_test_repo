@@ -128,7 +128,7 @@ export default {
       this.runnerID = setInterval(() => {
         const diff = this.deadline - dayjs().unix()
         this.remainTime = parseInt(dayjs.duration({ second: diff }).$ms / 1000)
-        if (this.remainTime <= 0) {
+        if (this.remainTime < 1) {
           this.isExpire = true
           clearInterval(this.runnerID)
         }
