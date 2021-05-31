@@ -1,4 +1,5 @@
 'use strict'
+const webpack = require('webpack')
 const merge = require('webpack-merge')
 const CleanWebpackPlugin = require('clean-webpack-plugin')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
@@ -41,6 +42,9 @@ const productionWebpackConfig = merge(baseWebpackConfig(mode), {
     }),
     new MiniCssExtractPlugin({
       filename: './assets/style/[name].[hash:5].css',
+    }),
+    new webpack.DefinePlugin({
+      GOOGLE_MAP_API: '"AIzaSyD0JClrnwr2SpYViHpY69M6_euI7GyUpu8"',
     }),
   ],
   optimization: {},
