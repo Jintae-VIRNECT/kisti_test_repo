@@ -68,6 +68,7 @@ public class OnWorkspaceUserServiceImpl extends WorkspaceUserService {
     private final ApplicationEventPublisher applicationEventPublisher;
     private static final int MAX_JOIN_WORKSPACE_AMOUNT = 49;//최대 참여 가능한 워크스페이스 수
     private static final int MAX_INVITE_USER_AMOUNT = 49;//최대 초대 가능한 워크스페이스 멤버 수
+    private static final int MAX_WORKSPACE_USER_AMOUNT = 50;//워크스페이스 최대 멤버 수(마스터 본인 포함)
 
     public OnWorkspaceUserServiceImpl(WorkspaceRepository workspaceRepository, WorkspaceUserRepository workspaceUserRepository, WorkspaceRoleRepository workspaceRoleRepository, WorkspaceUserPermissionRepository workspaceUserPermissionRepository, UserRestService userRestService, MessageRestService messageRestService, SpringTemplateEngine springTemplateEngine, MessageSource messageSource, LicenseRestService licenseRestService, RedirectProperty redirectProperty, RestMapStruct restMapStruct, ApplicationEventPublisher applicationEventPublisher, WorkspacePermissionRepository workspacePermissionRepository, UserInviteRepository userInviteRepository) {
         super(workspaceRepository, workspaceUserRepository, workspaceRoleRepository, workspaceUserPermissionRepository, userRestService, messageRestService, springTemplateEngine, messageSource, licenseRestService, redirectProperty, restMapStruct, applicationEventPublisher);
@@ -113,19 +114,29 @@ public class OnWorkspaceUserServiceImpl extends WorkspaceUserService {
             }
         });
 
-        //1-2. 워크스페이스 최대 초대가능 멤버 수, 최대 참여 가능 멤버 수(마스터 유저 + 이미 소속된 유저 + 요청들어온 유저) 체크
-        WorkspaceLicensePlanInfoResponse workspaceLicensePlanInfoResponse = getWorkspaceLicenses(workspaceId);
-        if (workspaceLicensePlanInfoResponse == null || workspaceLicensePlanInfoResponse.getLicenseProductInfoList() == null || workspaceLicensePlanInfoResponse.getLicenseProductInfoList().isEmpty()) {
-            throw new WorkspaceException(ErrorCode.ERR_NOT_FOUND_WORKSPACE_LICENSE_PLAN);
-        }
-        long workspaceUserAmount = workspaceUserRepository.countByWorkspace_Uuid(workspaceId);
-        if (workspaceInviteRequest.getUserInfoList().size() > MAX_INVITE_USER_AMOUNT ||
-                workspaceInviteRequest.getUserInfoList().size() + workspaceUserAmount > workspaceLicensePlanInfoResponse.getMaxUserAmount()) {
-            log.error("[WORKSPACE INVITE USER] maximum workspace user amount : [{}], request user amount [{}], current workspace user amount : [{}]", workspaceLicensePlanInfoResponse.getMaxUserAmount(),
-                    workspaceInviteRequest.getUserInfoList().size(), workspaceUserAmount);
+        //1-2. 워크스페이스 최대 초대가능 멤버 수 체크
+        if (workspaceInviteRequest.getUserInfoList().size() > MAX_INVITE_USER_AMOUNT) {
+            log.error("[WORKSPACE INVITE USER] maximum workspace user amount : [{}], request user amount [{}]", MAX_INVITE_USER_AMOUNT,
+                    workspaceInviteRequest.getUserInfoList().size());
             throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_INVITE);
         }
-
+        //1-3. 워크스페이스에 최대 참여 가능한 멤버 수 체크
+        long workspaceUserAmount = workspaceUserRepository.countByWorkspace_Uuid(workspaceId);
+        WorkspaceLicensePlanInfoResponse workspaceLicensePlanInfoResponse = getWorkspaceLicenses(workspaceId);
+        if (workspaceLicensePlanInfoResponse != null && workspaceLicensePlanInfoResponse.getLicenseProductInfoList() != null && !workspaceLicensePlanInfoResponse.getLicenseProductInfoList().isEmpty()) {
+            //1-3-1. 라이선스를 구매한 워크스페이스는 라이선스에 종속된 값으로 체크
+            if (workspaceInviteRequest.getUserInfoList().size() + workspaceUserAmount > workspaceLicensePlanInfoResponse.getMaxUserAmount()) {
+                log.error("[WORKSPACE INVITE USER] maximum workspace user amount(by license) : [{}], request user amount [{}], current workspace user amount : [{}]", workspaceLicensePlanInfoResponse.getMaxUserAmount(),
+                        workspaceInviteRequest.getUserInfoList().size(), workspaceUserAmount);
+                throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_INVITE);
+            }
+        }else{
+            //1-3-2. 라이선스를 구매하지 않은 워크스페이스는 기본값으로 체크
+            if (workspaceInviteRequest.getUserInfoList().size() + workspaceUserAmount > MAX_WORKSPACE_USER_AMOUNT) {
+                log.error("[WORKSPACE INVITE USER] maximum workspace user amount : [{}], request user amount [{}], current workspace user amount : [{}]", MAX_WORKSPACE_USER_AMOUNT,
+                        workspaceInviteRequest.getUserInfoList().size(), workspaceUserAmount);
+            }
+        }
 
         //2. 초대 정보 저장
         workspaceInviteRequest.getUserInfoList().forEach(userInfo -> {
@@ -272,6 +283,7 @@ public class OnWorkspaceUserServiceImpl extends WorkspaceUserService {
 
     public RedirectView inviteWorkspaceAccept(String sessionCode, String lang) throws IOException {
         Locale locale = new Locale(lang, "");
+        //1-1. 초대 세션 유효성 체크
         UserInvite userInvite = userInviteRepository.findById(sessionCode).orElse(null);
         if (userInvite == null) {
             log.info("[WORKSPACE INVITE ACCEPT] Workspace invite session Info Not found. session code >> [{}]", sessionCode);
@@ -282,10 +294,8 @@ public class OnWorkspaceUserServiceImpl extends WorkspaceUserService {
         }
         log.info("[WORKSPACE INVITE ACCEPT] Workspace invite session Info >> [{}]", userInvite.toString());
 
-        //초대받은 유저가 비회원인지 체크
         InviteUserInfoResponse inviteUserResponse = getInviteUserInfoByEmail(userInvite.getInvitedUserEmail());
-
-        //탈퇴한 유저인 경우나 기타 등등
+        //1-2. 초대받은 유저가 유효한지 체크
         if (inviteUserResponse == null) {
             //캐싱은 시간이 지나면 만료되니 일단 삭제 보류. 탈퇴한 유저가 아닐 가능성도 있음.
             log.info("[WORKSPACE INVITE ACCEPT] Invalid Invited User Info.");
@@ -294,7 +304,7 @@ public class OnWorkspaceUserServiceImpl extends WorkspaceUserService {
             redirectView.setContentType("application/json");
             return redirectView;
         }
-        //비회원인 경우
+        //1-3. 초대받은 유저가 비회원인지 체크
         if (!inviteUserResponse.isMemberUser()) {
             log.info("[WORKSPACE INVITE ACCEPT] Invited User is Member >> [{}]", inviteUserResponse.isMemberUser());
             RedirectView redirectView = new RedirectView();
@@ -302,7 +312,7 @@ public class OnWorkspaceUserServiceImpl extends WorkspaceUserService {
             redirectView.setContentType("application/json");
             return redirectView;
         }
-        //비회원일경우 초대 session정보에 uuid가 안들어가므로 user서버에서 조회해서 가져온다.
+        //1-4. 비회원인경우 초대 session정보에 uuid가 null값이므로 회원가입 후에 수락하게 하고 user서버에서 회원정보를 가져온다.
         InviteUserDetailInfoResponse inviteUserDetailInfoResponse = inviteUserResponse.getInviteUserDetailInfo();
         userInvite.setInvitedUserEmail(inviteUserDetailInfoResponse.getEmail());
         userInvite.setInvitedUserId(inviteUserDetailInfoResponse.getUserUUID());
@@ -312,27 +322,37 @@ public class OnWorkspaceUserServiceImpl extends WorkspaceUserService {
 
         Workspace workspace = workspaceRepository.findByUuid(userInvite.getWorkspaceId()).orElseThrow(() -> new WorkspaceException(ErrorCode.ERR_WORKSPACE_NOT_FOUND));
 
-        //유저가 최대 참여 가능한 워크스페이스 수 체크
-        if (workspaceUserRepository.countByWorkspace_Uuid(workspace.getUuid()) > MAX_JOIN_WORKSPACE_AMOUNT) {
+        //1-5. 유저가 최대 참여 가능한 워크스페이스 수 체크
+        long maxJoinWorkspaceAmount = workspaceUserRepository.countByWorkspace_Uuid(workspace.getUuid());
+        if (maxJoinWorkspaceAmount + 1 > MAX_JOIN_WORKSPACE_AMOUNT) {
+            log.error("[WORKSPACE INVITE ACCEPT] Over Max Workspace join amount. max join workspace Amount >> [{}], current workspace joined amount(include master user) >> [{}]"
+                    , MAX_JOIN_WORKSPACE_AMOUNT, maxJoinWorkspaceAmount);
             return workspaceOverJoinFailHandler(workspace, userInvite, locale);
         }
-        //라이선스 체크 - 라이선스 플랜 보유 체크, 멤버 제한 수 체크
-        WorkspaceLicensePlanInfoResponse workspaceLicensePlanInfoResponse = licenseRestService.getWorkspaceLicenses(workspace.getUuid()).getData();
-        if (workspaceLicensePlanInfoResponse.getLicenseProductInfoList() == null || workspaceLicensePlanInfoResponse.getLicenseProductInfoList().isEmpty()) {
-            throw new WorkspaceException(ErrorCode.ERR_NOT_FOUND_WORKSPACE_LICENSE_PLAN);
+
+        //1-6. 워크스페이스에서 최대 참여 가능한 멤버 수 체크
+        long workspaceUserAmount = workspaceUserRepository.countByWorkspace_Uuid(workspace.getUuid());
+        WorkspaceLicensePlanInfoResponse workspaceLicensePlanInfoResponse = getWorkspaceLicenses(workspace.getUuid());
+        if (workspaceLicensePlanInfoResponse != null && workspaceLicensePlanInfoResponse.getLicenseProductInfoList() != null && !workspaceLicensePlanInfoResponse.getLicenseProductInfoList().isEmpty()) {
+            //1-6-1. 라이선스를 구매한 워크스페이스는 라이선스에 종속된 값으로 체크
+            if (workspaceUserAmount + 1 > workspaceLicensePlanInfoResponse.getMaxUserAmount()) {
+                log.error("[WORKSPACE INVITE ACCEPT] Over Max Workspace Member amount. max user Amount(by license) >> [{}], current user amount >> [{}]",
+                        workspaceLicensePlanInfoResponse.getMaxUserAmount(),
+                        workspaceUserAmount);
+                return workspaceOverMaxUserFailHandler(workspace, userInvite, locale);
+
+            }
+        } else {
+            //1-6-2. 라이선스를 구매하지 않은 워크스페이스는 기본값으로 체크
+            if (workspaceUserAmount + 1 > MAX_WORKSPACE_USER_AMOUNT) {
+                log.error("[WORKSPACE INVITE ACCEPT] Over Max Workspace Member amount. max user Amount(by workspace) >> [{}], current user amount >> [{}]",
+                        MAX_WORKSPACE_USER_AMOUNT,
+                        workspaceUserAmount);
+                return workspaceOverMaxUserFailHandler(workspace, userInvite, locale);
+            }
         }
 
-        //라이선스 최대 멤버 수 초과 메일전송
-        int workspaceUserAmount = workspaceUserRepository.findByWorkspace_Uuid(workspace.getUuid()).size();
-        if (workspaceLicensePlanInfoResponse.getMaxUserAmount() < workspaceUserAmount + 1) {
-            log.error("[WORKSPACE INVITE ACCEPT] Over Max Workspace Member amount. max user Amount >> [{}], exist user amount >> [{}]",
-                    workspaceLicensePlanInfoResponse.getMaxUserAmount(),
-                    workspaceUserAmount + 1);
-            RedirectView redirectView = worksapceOverMaxUserFailHandler(workspace, userInvite, locale);
-            return redirectView;
-        }
-
-        //플랜 할당.
+        //2. 초대 수락 수행 - 플랜 할당
         boolean licenseGrantResult = true;
         List<String> successPlan = new ArrayList<>();
         List<String> failPlan = new ArrayList<>();
@@ -490,7 +510,7 @@ public class OnWorkspaceUserServiceImpl extends WorkspaceUserService {
         return redirectView;
     }
 
-    public RedirectView worksapceOverMaxUserFailHandler(Workspace workspace, UserInvite userInvite, Locale locale) {
+    public RedirectView workspaceOverMaxUserFailHandler(Workspace workspace, UserInvite userInvite, Locale locale) {
         UserInfoRestResponse inviteUserInfo = getUserInfoByUserId(userInvite.getInvitedUserId());
         UserInfoRestResponse masterUserInfo = getUserInfoByUserId(workspace.getUserId());
 
