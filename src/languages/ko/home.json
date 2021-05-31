@@ -1,10 +1,10 @@
 {
   "home": {
     "title": "다운로드 센터",
-    "needPlan": "제품 이용을 위해서는 제품 사용 플랜이 필요합니다.",
+    "notice": "최신 <a href='https://support.virnect.com/notice/new' target='_blank'>업데이트 소식</a>을 확인하세요.",
     "visual": {
-      "title": "산업 현장을 위해 최적화된 <br>VIRNECT 제품을 만나보세요",
-      "desc": "VIRNECT의 제품을 다운로드해 설치 방법을 <br>참고하여 디바이스에 설치해 주세요."
+      "title": "Connect the Future",
+      "desc": "XR 혁신을 이끌 새로운 어플리케이션을 다운로드하세요."
     },
     "make": "VIRNECT Make",
     "view": "VIRNECT View",

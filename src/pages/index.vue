@@ -1,12 +1,10 @@
 <template>
   <div id="home">
-    <div class="ribbon">
-      {{ $t('home.needPlan') }}
-    </div>
     <div class="visual">
       <h3 v-html="$t('home.visual.title')" />
       <p v-html="$t('home.visual.desc')" />
     </div>
+    <div class="ribbon" v-html="$t('home.notice')" />
     <el-tabs v-model="activeTab" @tab-click="tabClick">
       <el-tab-pane
         v-for="(product, name) in products"
@@ -14,25 +12,14 @@
         :name="name"
         :key="name"
       >
-        <el-card v-for="app in product" :key="app.id">
-          <h6 v-html="app.deviceType" />
-          <h5 v-html="app.deviceName" />
-          <img :src="app.imageUrl" />
-          <span class="release">
-            Release: {{ app.releaseTime | dateFormat }}
-          </span>
-          <span class="version">{{ app.version }}</span>
-          <el-button type="primary" @click="link('app', app)">
-            {{ downloadText(app) }}
-          </el-button>
-          <el-button
-            type="text"
-            @click="link('guide', app)"
-            :disabled="!app.guideUrl"
-          >
-            {{ $t('home.guide') }}
-          </el-button>
-        </el-card>
+        <el-row>
+          <el-col :md="5" :span="24">
+            <h4>{{ name }}</h4>
+          </el-col>
+          <el-col :md="19" :span="24">
+            <Item v-for="app in product" :key="app.id" :app="app" />
+          </el-col>
+        </el-row>
       </el-tab-pane>
     </el-tabs>
   </div>
@@ -73,41 +60,6 @@ export default {
   },
   filters,
   methods: {
-    downloadText(app) {
-      let str = this.$t('home.download')
-      if (/play\.google\.com/.test(app.appUrl)) str = 'Google Play'
-      if (/apps\.apple\.com/.test(app.appUrl)) str = 'App Store'
-      return str
-    },
-    async download(type, app) {
-      let uri, downloadUrl
-      if (type === 'app') {
-        uri = 'DOWNLOAD_APP'
-        downloadUrl = app.appUrl
-      }
-      if (type === 'guide') {
-        uri = 'DOWNLOAD_GUIDE'
-        downloadUrl = app.guideUrl
-      }
-      try {
-        await this.$api(uri, {
-          route: { uuid: app.uuid },
-        })
-        return downloadUrl
-      } catch (e) {
-        this.$message.error({
-          message: e,
-          duration: 2000,
-          showClose: true,
-        })
-      }
-    },
-    link(type, app) {
-      const popup = window.open()
-      this.download(type, app).then(url => {
-        popup.location = url
-      })
-    },
     snbNav() {
       const scrollY = window.pageYOffset
       const tab = document.querySelector('.el-tabs')

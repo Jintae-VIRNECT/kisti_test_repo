@@ -1,0 +1,131 @@
+<template>
+  <el-card class="item">
+    <el-row>
+      <el-col :span="13">
+        <h6 v-html="app.deviceType" />
+        <h5 v-html="app.deviceName" />
+        <p class="version">{{ app.version }}</p>
+        <p class="release">Release: {{ app.releaseTime | dateFormat }}</p>
+      </el-col>
+      <el-col :span="11">
+        <el-button type="primary" @click="link('app', app)">
+          {{ downloadText(app) }}
+        </el-button>
+        <!-- <el-button type="simple" @click="link('app', app)">
+          {{ downloadText(app) }}
+        </el-button> -->
+        <el-button
+          type="text"
+          @click="link('guide', app)"
+          :disabled="!app.guideUrl"
+        >
+          {{ $t('home.guide') }}
+        </el-button>
+      </el-col>
+    </el-row>
+  </el-card>
+</template>
+
+<script>
+import { filters } from '@/plugins/dayjs'
+
+export default {
+  props: {
+    app: Object,
+  },
+  filters: {
+    ...filters,
+  },
+  methods: {
+    downloadText(app) {
+      let str = this.$t('home.download')
+      if (/play\.google\.com/.test(app.appUrl)) str = 'Google Play'
+      if (/apps\.apple\.com/.test(app.appUrl)) str = 'App Store'
+      return str
+    },
+    async download(type, app) {
+      let uri, downloadUrl
+      if (type === 'app') {
+        uri = 'DOWNLOAD_APP'
+        downloadUrl = app.appUrl
+      }
+      if (type === 'guide') {
+        uri = 'DOWNLOAD_GUIDE'
+        downloadUrl = app.guideUrl
+      }
+      try {
+        await this.$api(uri, {
+          route: { uuid: app.uuid },
+        })
+        return downloadUrl
+      } catch (e) {
+        this.$message.error({
+          message: e,
+          duration: 2000,
+          showClose: true,
+        })
+      }
+    },
+    link(type, app) {
+      const popup = window.open()
+      this.download(type, app).then(url => {
+        popup.location = url
+      })
+    },
+  },
+}
+</script>
+
+<style lang="scss">
+.el-tabs__content .item.el-card {
+  margin-bottom: 24px;
+  box-shadow: none;
+  &:last-child {
+    margin-bottom: 0;
+  }
+
+  .el-card__body {
+    padding: 32px 32px 32px 40px;
+  }
+
+  .el-col:first-child {
+    line-height: normal;
+    text-align: left;
+
+    h6 {
+      font-size: 18px;
+    }
+    h5 {
+      color: $color-primary;
+      font-size: 26px;
+    }
+    .version {
+      margin: 20px 0 8px;
+      font-size: 20px;
+    }
+    .release {
+      color: #8e95a1;
+    }
+  }
+  .el-col:last-child {
+    padding-left: 15px;
+    text-align: right;
+
+    button {
+      display: block;
+      width: 100%;
+    }
+    button + button {
+      margin: 8px 0 0 0;
+    }
+    button.el-button--text {
+      position: absolute;
+      right: 0;
+      bottom: 0;
+      width: auto;
+      height: 34px;
+      padding: 7px 20px;
+    }
+  }
+}
+</style>
