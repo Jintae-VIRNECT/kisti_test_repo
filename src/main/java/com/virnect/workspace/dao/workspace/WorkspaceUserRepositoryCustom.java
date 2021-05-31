@@ -12,7 +12,6 @@ import java.util.List;
  * DESCRIPTION:
  */
 public interface WorkspaceUserRepositoryCustom {
-    long countWorkspaceUser(String workspaceId);
     long deleteAllWorkspaceUserByWorkspace(Workspace workspace);
     List<String> getWorkspaceUserIdList(String workspaceId);
 }

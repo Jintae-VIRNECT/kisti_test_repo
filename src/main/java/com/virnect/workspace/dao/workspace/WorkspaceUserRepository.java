@@ -29,7 +29,10 @@ public interface WorkspaceUserRepository extends JpaRepository<WorkspaceUser, Lo
 
     Page<WorkspaceUser> findByWorkspace_UuidAndUserIdIn(String workspaceId, List<String> userIdList, Pageable pageable);
 
-    long countWorkspaceUsersByUserId(String userId);
+    long countByUserId(String userId);
+
+    long countByWorkspace_Uuid(String workspaceId);
 
     long deleteByWorkspace(Workspace workspace);
+
 }

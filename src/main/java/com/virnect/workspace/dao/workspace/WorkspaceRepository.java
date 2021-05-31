@@ -19,4 +19,6 @@ public interface WorkspaceRepository extends JpaRepository<Workspace, Long>, Wor
 	Optional<Workspace> findByUserId(String userUUID);
     boolean existsByUserId(String userId);
     Page<Workspace> findAll(Pageable pageable);
+
+    long countByUserId(String userId);
 }

@@ -74,6 +74,7 @@ public abstract class WorkspaceService {
     private final WorkspaceMapStruct workspaceMapStruct;
     private final RestMapStruct restMapStruct;
     private final ApplicationEventPublisher applicationEventPublisher;
+    private static final int MAX_HAVE_WORKSPACE_AMOUNT = 49; //최대 생성 가능한 워크스페이스 수
 
     /**
      * 워크스페이스 생성
@@ -98,10 +99,10 @@ public abstract class WorkspaceService {
             throw new WorkspaceException(ErrorCode.ERR_UNEXPECTED_SERVER_ERROR);
         }
 
-        //이미 생성한 워크스페이스가 있는지 확인(사용자가 마스터로 소속되는 워크스페이스는 단 1개다.)
-        boolean userHasWorkspace = workspaceRepository.existsByUserId(workspaceCreateRequest.getUserId());
-
-        if (userHasWorkspace) {
+        //사용자가 최대로 생성 가능한 워크스페이스 수를 넘겼는지 체크
+        long userHasWorkspaceAmount = workspaceRepository.countByUserId(workspaceCreateRequest.getUserId());
+        if (userHasWorkspaceAmount + 1 > MAX_HAVE_WORKSPACE_AMOUNT) {
+            log.error("[WORKSPACE CREATE] creatable maximum Workspace amount : [{}], current amount of workspace that user has : [{}].", MAX_HAVE_WORKSPACE_AMOUNT, userHasWorkspaceAmount);
             throw new WorkspaceException(ErrorCode.ERR_MASTER_WORKSPACE_ALREADY_EXIST);
         }
         //워크스페이스 생성

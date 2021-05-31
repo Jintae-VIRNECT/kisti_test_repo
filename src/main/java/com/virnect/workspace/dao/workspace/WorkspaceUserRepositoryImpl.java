@@ -21,11 +21,6 @@ public class WorkspaceUserRepositoryImpl implements WorkspaceUserRepositoryCusto
     QWorkspaceUser qWorkspaceUser = QWorkspaceUser.workspaceUser;
 
     @Override
-    public long countWorkspaceUser(String workspaceId) {
-        return jpaQueryFactory.select(qWorkspaceUser).from(qWorkspaceUser).where(qWorkspaceUser.workspace.uuid.eq(workspaceId)).fetchCount();
-    }
-
-    @Override
     public long deleteAllWorkspaceUserByWorkspace(Workspace workspace) {
         return jpaQueryFactory.delete(qWorkspaceUser).where(qWorkspaceUser.workspace.eq(workspace)).execute();
     }
