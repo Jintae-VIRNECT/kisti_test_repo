@@ -879,7 +879,23 @@ public class RoomService {
 			tokenResult.toString()
 		);
 
-		responseData.getData().getCoturn().add(setCoturnResponse(responseData.getData().getSessionType()));
+		CoturnResponse coturnResponse = new CoturnResponse();
+		List<String> urlList = config.remoteServiceProperties.getCoturnUrisStreaming();
+		if (urlList.isEmpty()) {
+			for (String coturnUrl : config.remoteServiceProperties.getCoturnUrisConference()) {
+				coturnResponse.setUsername("nonmember");
+				coturnResponse.setCredential("nonmember");
+				coturnResponse.setUrl(coturnUrl);
+			}
+		} else {
+			for (String coturnUrl : urlList) {
+				coturnResponse.setUsername("nonmember");
+				coturnResponse.setCredential("nonmember");
+				coturnResponse.setUrl(coturnUrl);
+			}
+		}
+
+		responseData.getData().getCoturn().add(coturnResponse);
 
 		return responseData;
 	}
