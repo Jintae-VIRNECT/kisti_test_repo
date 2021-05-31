@@ -151,10 +151,7 @@ export default {
     }
   },
   computed: {
-    ...mapGetters([
-      'alarmList',
-      'statusSessionId', //멤버 상태 소켓에서 발급받은 session id
-    ]),
+    ...mapGetters(['alarmList']),
   },
   watch: {
     onPush(push) {
@@ -206,11 +203,7 @@ export default {
       const body = JSON.parse(listen.body)
 
       if (body.targetUserIds.indexOf(this.account.uuid) < 0) return
-      if (
-        body.event !== EVENT.FORCE_LOGOUT &&
-        body.userId === this.account.uuid
-      )
-        return
+      if (body.userId === this.account.uuid) return
 
       this.logger('received message::', body)
 
@@ -283,21 +276,6 @@ export default {
               }
             }, 60000)
           }
-          break
-        case EVENT.FORCE_LOGOUT:
-          //contents에 담긴 sessionId와 같지 않은 경우 로그아웃 대상이다
-          if (body.contents.sessionId !== this.statusSessionId) {
-            auth.logout(false) //바로 로그아웃 처리
-            //팝업 표시 후 리디렉트 실행
-            this.confirmDefault(
-              this.$t('workspace.confirm_duplicated_session_logout_received'),
-              {
-                action: () =>
-                  (location.href = `${URLS['console']}/?continue=${location.href}`),
-              },
-            )
-          }
-
           break
         default:
           return
@@ -374,32 +352,6 @@ export default {
       if (!this.workspace.uuid) return
       await this.$push.init(this.workspace)
       this.$push.addListener(this.key, this.alarmListener)
-
-      //구축형인 경우 강제 로그아웃 이벤트 리스너 활성화
-      if (this.isOnpremise) {
-        this.$push.addForceLogoutSubscriber(
-          this.account.uuid,
-          this.forcedLogout,
-        )
-      }
-    },
-
-    //구축형 강제 로그아웃 이벤트 수신 함수
-    forcedLogout() {
-      this.debug('force logout received')
-      const redirect = false
-      auth.logout(redirect)
-
-      //로그아웃 처리
-      const action = () => {
-        this.$eventBus.$emit('popover:close')
-        location.href = `${URLS['console']}/?continue=${location.href}`
-      }
-
-      //강제 로그아웃 알림 팝업
-      this.confirmDefault(this.$t('workspace.confirm_force_logout_received'), {
-        action,
-      })
     },
   },
 
@@ -420,7 +372,6 @@ export default {
   },
   beforeDestroy() {
     this.$push.removeListener(this.key)
-    if (this.isOnpremise) this.$push.removeForceLogoutSubscriber()
 
     if (this.isSafari) {
       window.removeEventListener('touchstart', this.loadAudio)

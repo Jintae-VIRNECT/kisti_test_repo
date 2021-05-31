@@ -10,7 +10,6 @@ const push = {
   _inited: false,
   _listeners: [],
   _subscription: null,
-  _forceLogoutSubscription: null,
   subscriber: event => {
     for (let listener of push._listeners) {
       listener['cb'](event)
@@ -111,21 +110,6 @@ const push = {
     if (idx < 0) return
 
     push._listeners.splice(idx, 1)
-  },
-
-  addForceLogoutSubscriber: (userId, cb) => {
-    debug('message::subscribe::', `${DESTINATION.FORCELOGOUT}.${userId}`)
-    push._forceLogoutSubscription = client.subscribe(
-      `${DESTINATION.FORCELOGOUT}.${userId}`,
-      cb,
-    )
-  },
-  removeForceLogoutSubscriber: () => {
-    if (push._forceLogoutSubscription) {
-      debug('message::unsubscribe::', push._forceLogoutSubscription)
-      push._forceLogoutSubscription.unsubscribe()
-      push._forceLogoutSubscription = null
-    }
   },
 }
 

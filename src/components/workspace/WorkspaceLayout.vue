@@ -50,8 +50,7 @@ import { mapActions, mapGetters } from 'vuex'
 import { PLAN_STATUS } from 'configs/status.config'
 import { URLS } from 'configs/env.config'
 import { MyStorage } from 'utils/storage'
-import { sendPush } from 'api/http/message'
-import { EVENT } from 'configs/push.config'
+import { COMMAND } from 'configs/push.config'
 
 export default {
   name: 'WorkspaceLayout',
@@ -112,7 +111,10 @@ export default {
     },
   },
   computed: {
-    ...mapGetters(['useLocalRecording']),
+    ...mapGetters([
+      'useLocalRecording',
+      'statusSessionId', //멤버 상태 소켓에서 발급받은 session id
+    ]),
   },
   methods: {
     ...mapActions([
@@ -132,7 +134,7 @@ export default {
     //중복된 기 접속자가 있는 경우 처리 콜백
     onDuplicatedRegistration(
       { currentStatus, sessionId, userId, myInfo },
-      socket,
+      sendCommand,
     ) {
       //로그인 된 기 접속자가 있는 경우 : 팝업으로 강제 로그아웃 실행 여부 확인
       if (currentStatus === 'LOGIN') {
@@ -142,17 +144,23 @@ export default {
 
         //원격종료
         const confirmAction = () => {
-          sendPush(EVENT.FORCE_LOGOUT, [userId], contents) //기 접속자 로그아웃 처리 메시지 전송
+          //기 접속자 원격 종료 요청
+          sendCommand(COMMAND.REMOTE_EXIT, {
+            service: 'remote',
+            workspaceId: this.workspace.uuid,
+            userId,
+            targetUserId: userId,
+            event: 'remoteExit',
+            contents,
+          })
           setTimeout(
             () =>
               //재등록 요청
-              socket.send(
-                JSON.stringify({
-                  uuid,
-                  name,
-                  email,
-                }),
-              ),
+              sendCommand(COMMAND.REGISTER, {
+                uuid,
+                name,
+                email,
+              }),
             2000,
           ) //상대방 로그아웃 처리 소요 시간 고려하여 재등록 요청
         }
@@ -182,9 +190,41 @@ export default {
         this.confirmDefault(text, { action })
       }
     },
+
+    onRemoteExitReceived() {
+      auth.logout(false) //바로 로그아웃 처리
+      //팝업 표시 후 리디렉트 실행
+      this.confirmDefault(
+        this.$t('workspace.confirm_duplicated_session_logout_received'),
+        {
+          action: () =>
+            (location.href = `${URLS['console']}/?continue=${location.href}`),
+        },
+      )
+    },
+
+    onForceLogoutReceived() {
+      if (!this.isOnpremise) return
+      this.debug('force logout received')
+      const redirect = false
+      auth.logout(redirect)
+
+      //로그아웃 처리
+      const action = () =>
+        (location.href = `${URLS['console']}/?continue=${location.href}`)
+
+      //강제 로그아웃 알림 팝업
+      this.confirmDefault(this.$t('workspace.confirm_force_logout_received'), {
+        action,
+      })
+    },
+
     async init() {
       this.inited = false
-      const authInfo = await auth.init(this.onDuplicatedRegistration)
+      const authInfo = await auth.init(
+        this.onDuplicatedRegistration,
+        this.onRemoteExitReceived,
+      )
       if (!auth.isLogin) {
         auth.login()
         return

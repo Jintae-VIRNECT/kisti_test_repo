@@ -13,6 +13,7 @@ import {
   URLS,
 } from 'configs/env.config'
 import { AUTH_STATUS } from 'configs/status.config'
+import { COMMAND } from 'configs/push.config'
 import { STATUS_SESSION_ID_SET } from '../stores/remote/mutation-types'
 
 /**
@@ -113,7 +114,11 @@ const resetPingCheckInterval = () => {
 }
 
 //사용자 상태 소켓 연결/등록
-const initLoginStatus = onDuplicatedRegistrationCallback => {
+const initLoginStatus = (
+  onDuplicatedRegistrationCallback,
+  onRemoteExitReceivedCallback,
+  onForceLogoutReceivedCallback,
+) => {
   if (window.urls && window.urls['ws']) {
     const wssUrl = window.urls['ws']
 
@@ -169,13 +174,13 @@ const initLoginStatus = onDuplicatedRegistrationCallback => {
                 myInfo.name,
                 myInfo.email,
               )
-              socket.send(
-                JSON.stringify({
-                  uuid: myInfo.uuid,
-                  name: myInfo.name,
-                  email: myInfo.email,
-                }),
-              )
+
+              //유저 정보 등록
+              sendCommand(COMMAND.REGISTER, {
+                uuid: myInfo.uuid,
+                name: myInfo.name,
+                email: myInfo.email,
+              })
               break
 
             //등록완료
@@ -202,7 +207,7 @@ const initLoginStatus = onDuplicatedRegistrationCallback => {
                   userId: data.userUUID,
                   myInfo,
                 },
-                socket,
+                sendCommand,
               )
               break
 
@@ -227,6 +232,35 @@ const initLoginStatus = onDuplicatedRegistrationCallback => {
               } else reRegistCount = 0 //3번 재등록 시도 실패시 재등록 시도 종료 : 재등록 안된 상태로 머뭄
               break
 
+            //원격 종료 요청 성공 시 재등록 요청 전송
+            case AUTH_STATUS.REMOTE_EXIT_REQ_SUCCESS:
+              logger(window.vue.$store.state.statusSessionId, data.sessionId)
+              //자신이 보낸 요청에 대한 응답인지를 체크한 후 재등록 실행한다
+              if (window.vue.$store.state.statusSessionId === data.sessionId) {
+                //유저 정보 재등록 요청
+                sendCommand(COMMAND.REGISTER, {
+                  uuid: myInfo.uuid,
+                  name: myInfo.name,
+                  email: myInfo.email,
+                })
+              }
+              break
+
+            //원격 종료 요청 실패
+            case AUTH_STATUS.REMOTE_EXIT_REQ_FAIL_NOT_FOUND:
+              console.error('Remote exit request not found')
+              break
+
+            //원격 종료
+            case AUTH_STATUS.REMOTE_EXIT_RECEIVED:
+              onRemoteExitReceivedCallback()
+              break
+
+            //마스터 강제 로그아웃 수신
+            case AUTH_STATUS.FORCE_LOGOUT_RECEIVED:
+              onForceLogoutReceivedCallback()
+              break
+
             //예외 케이스
             default:
               isRegisted = false
@@ -236,6 +270,15 @@ const initLoginStatus = onDuplicatedRegistrationCallback => {
       }
     }
   }
+}
+
+const sendCommand = (command, data) => {
+  const message = {
+    command,
+    data,
+  }
+
+  socket.send(JSON.stringify(message))
 }
 
 //사용자 상태 소켓 연결 해제
@@ -340,15 +383,26 @@ class Auth {
 
   /**
    * @param {Function} onDuplicatedRegistrationCallback - auth/status에 접속 시 중복 세션이 있는 경우 콜백함수
+   * @param {Function} onRemoteExitReceivedCallback - 중복 세션 원격종료 수신시 콜백함수
+   * @param {Function} onForceLogoutReceivedCallback - 마스터에 의한 강제로그아웃 수신시 콜백함수
    * @returns { account, workspace }
    */
-  async init(onDuplicatedRegistrationCallback) {
+  async init(
+    onDuplicatedRegistrationCallback,
+    onRemoteExitReceivedCallback,
+    onForceLogoutReceivedCallback,
+  ) {
     if (Cookies.get('accessToken')) {
       try {
         await getMyInfo()
         isLogin = true
         tokenRenewal()
-        if (!isRegisted) initLoginStatus(onDuplicatedRegistrationCallback) //로그인 상태 업데이트를 위한 소켓 접속 (workspace 진행 시마다 init이 호출되나, 이미 등록완료한 경우 실행하지 않는다)
+        if (!isRegisted)
+          initLoginStatus(
+            onDuplicatedRegistrationCallback,
+            onRemoteExitReceivedCallback,
+            onForceLogoutReceivedCallback,
+          ) //로그인 상태 업데이트를 위한 소켓 접속 (workspace 진행 시마다 init이 호출되나, 이미 등록완료한 경우 실행하지 않는다)
       } catch (e) {
         console.error('Token is expired')
         isLogin = false
