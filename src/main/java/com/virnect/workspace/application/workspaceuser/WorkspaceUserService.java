@@ -105,6 +105,18 @@ public abstract class WorkspaceUserService {
 
         //3. 라이선스 필터링 : filter값이 라이선스값인 경우, search된 유저 목록중에서 filter 라이선스 정보만 가지고 오고, filter값이 라이선스가 아니라면 search된 유저 목록의 모든 라이선스 정보를 가지고 온다.
         Map<String, List<MyLicenseInfoResponse>> licenseProducts = new HashMap<>();
+        searchedUserIds.forEach(userId -> {
+            MyLicenseInfoListResponse myLicenseInfoListResponse = getMyLicenseInfoRequestHandler(workspaceId, userId);
+            if (myLicenseInfoListResponse != null && myLicenseInfoListResponse.getLicenseInfoList() != null && !myLicenseInfoListResponse.getLicenseInfoList().isEmpty()) {
+                if (StringUtils.hasText(filter) && filter.matches(ALL_LICENSE_PRODUCT)) {
+                    if (myLicenseInfoListResponse.getLicenseInfoList().stream().anyMatch(myLicenseInfoResponse -> filter.toUpperCase().contains(myLicenseInfoResponse.getProductName().toUpperCase()))) {
+                        licenseProducts.put(userId, myLicenseInfoListResponse.getLicenseInfoList());
+                    }
+                } else {
+                    licenseProducts.put(userId, myLicenseInfoListResponse.getLicenseInfoList());
+                }
+            }
+        });
         if (StringUtils.hasText(filter) && filter.matches(ALL_LICENSE_PRODUCT)) {
             searchedUserIds.forEach(userId -> {
                 MyLicenseInfoListResponse myLicenseInfoListResponse = getMyLicenseInfoRequestHandler(workspaceId, userId);
@@ -116,7 +128,8 @@ public abstract class WorkspaceUserService {
             searchedUserIds = new ArrayList<>(licenseProducts.keySet());
         } else {
             searchedUserIds.forEach(userId -> {
-                licenseProducts.put(userId, getMyLicenseInfoRequestHandler(workspaceId, userId).getLicenseInfoList());
+                if (getMyLicenseInfoRequestHandler(workspaceId, userId) != null)
+                    licenseProducts.put(userId, getMyLicenseInfoRequestHandler(workspaceId, userId).getLicenseInfoList());
             });
         }
 
@@ -141,7 +154,7 @@ public abstract class WorkspaceUserService {
             workspaceUserInfoResponse.setRole(workspaceUserPermission.getWorkspaceRole().getRole());
             workspaceUserInfoResponse.setJoinDate(workspaceUserPermission.getWorkspaceUser().getCreatedDate());
             workspaceUserInfoResponse.setRoleId(workspaceUserPermission.getWorkspaceRole().getId());
-            String[] userLicenseProducts = licenseProducts.get(workspaceUserPermission.getWorkspaceUser().getUserId()).stream().map(MyLicenseInfoResponse::getProductName).toArray(String[]::new);
+            String[] userLicenseProducts = licenseProducts.isEmpty() ? new String[0] : licenseProducts.get(workspaceUserPermission.getWorkspaceUser().getUserId()).stream().map(MyLicenseInfoResponse::getProductName).toArray(String[]::new);
             workspaceUserInfoResponse.setLicenseProducts(userLicenseProducts);
             workspaceUserInfoResponseList.add(workspaceUserInfoResponse);
         }
@@ -171,7 +184,12 @@ public abstract class WorkspaceUserService {
     }
 
     private MyLicenseInfoListResponse getMyLicenseInfoRequestHandler(String workspaceId, String userId) {
-        return licenseRestService.getMyLicenseInfoRequestHandler(workspaceId, userId).getData();
+        ApiResponse<MyLicenseInfoListResponse> apiResponse = licenseRestService.getMyLicenseInfoRequestHandler(workspaceId, userId);
+        if (apiResponse.getCode() != 200) {
+            log.error("[GET MY LICENSE INFO BY WORKSPACE UUID & USER UUID] response message : {}", apiResponse.getMessage());
+            return null;
+        }
+        return apiResponse.getData();
     }
 
     public List<WorkspaceUserInfoResponse> getSortedMemberList(
