@@ -117,21 +117,6 @@ public abstract class WorkspaceUserService {
                 }
             }
         });
-        if (StringUtils.hasText(filter) && filter.matches(ALL_LICENSE_PRODUCT)) {
-            searchedUserIds.forEach(userId -> {
-                MyLicenseInfoListResponse myLicenseInfoListResponse = getMyLicenseInfoRequestHandler(workspaceId, userId);
-                if (myLicenseInfoListResponse != null && myLicenseInfoListResponse.getLicenseInfoList() != null && !myLicenseInfoListResponse.getLicenseInfoList().isEmpty() &&
-                        myLicenseInfoListResponse.getLicenseInfoList().stream().anyMatch(myLicenseInfoResponse -> filter.toUpperCase().contains(myLicenseInfoResponse.getProductName().toUpperCase()))) {
-                    licenseProducts.put(userId, myLicenseInfoListResponse.getLicenseInfoList());
-                }
-            });
-            searchedUserIds = new ArrayList<>(licenseProducts.keySet());
-        } else {
-            searchedUserIds.forEach(userId -> {
-                if (getMyLicenseInfoRequestHandler(workspaceId, userId) != null)
-                    licenseProducts.put(userId, getMyLicenseInfoRequestHandler(workspaceId, userId).getLicenseInfoList());
-            });
-        }
 
         //4. 권한 필터링, 정렬 : filter값이 권한값인 경우, search된 유저 목록 중에서 권한에 일치한 유저만 검색한다.
         Page<WorkspaceUserPermission> workspaceUserPermissionPage = workspaceUserPermissionRepository.getWorkspaceUserPermissionByInUserListAndEqRole(searchedUserIds, filter, newPageable, workspaceId);
@@ -253,7 +238,7 @@ public abstract class WorkspaceUserService {
     public String[] getUserLicenseProductList(String workspaceId, String userId) {
         MyLicenseInfoListResponse myLicenseInfoListResponse = getMyLicenseInfoRequestHandler(workspaceId, userId);
 
-        if (myLicenseInfoListResponse.getLicenseInfoList() != null && !myLicenseInfoListResponse.getLicenseInfoList().isEmpty()) {
+        if (myLicenseInfoListResponse != null && myLicenseInfoListResponse.getLicenseInfoList() != null && !myLicenseInfoListResponse.getLicenseInfoList().isEmpty()) {
             return myLicenseInfoListResponse.getLicenseInfoList()
                     .stream()
                     .map(MyLicenseInfoResponse::getProductName)
@@ -403,10 +388,9 @@ public abstract class WorkspaceUserService {
         checkWorkspaceAndUserRole(workspace.getUuid(), requestUser.getUuid(), new String[]{"MASTER", "MANAGER"});
 
         //사용자의 예전 라이선스정보 가져오기
-        MyLicenseInfoListResponse myLicenseInfoListResponse = licenseRestService.getMyLicenseInfoRequestHandler(workspace.getUuid(), userId).getData();
+        MyLicenseInfoListResponse myLicenseInfoListResponse = getMyLicenseInfoRequestHandler(workspace.getUuid(), userId);
         List<String> oldProductList = new ArrayList<>();
-        if (myLicenseInfoListResponse.getLicenseInfoList() != null && !myLicenseInfoListResponse.getLicenseInfoList()
-                .isEmpty()) {
+        if (myLicenseInfoListResponse != null && myLicenseInfoListResponse.getLicenseInfoList() != null && !myLicenseInfoListResponse.getLicenseInfoList().isEmpty()) {
             for (MyLicenseInfoResponse myLicenseInfoResponse : myLicenseInfoListResponse.getLicenseInfoList()) {
                 oldProductList.add(myLicenseInfoResponse.getProductName());
             }
@@ -588,12 +572,9 @@ public abstract class WorkspaceUserService {
         }
 
         //라이선스 해제
-        MyLicenseInfoListResponse myLicenseInfoListResponse = licenseRestService.getMyLicenseInfoRequestHandler(
-                workspaceId, memberKickOutRequest.getKickedUserId()).getData();
-        if (myLicenseInfoListResponse.getLicenseInfoList() != null && !myLicenseInfoListResponse.getLicenseInfoList()
-                .
-
-                        isEmpty()) {
+        MyLicenseInfoListResponse myLicenseInfoListResponse = getMyLicenseInfoRequestHandler(
+                workspaceId, memberKickOutRequest.getKickedUserId());
+        if (myLicenseInfoListResponse != null && myLicenseInfoListResponse.getLicenseInfoList() != null && !myLicenseInfoListResponse.getLicenseInfoList().isEmpty()) {
             myLicenseInfoListResponse.getLicenseInfoList().forEach(myLicenseInfoResponse -> {
                 log.debug(
                         "[WORKSPACE KICK OUT USER] Workspace User License Revoke. License Product Name >> {}",
@@ -665,10 +646,8 @@ public abstract class WorkspaceUserService {
 
         WorkspaceUserPermission workspaceUserPermission = workspaceUserPermissionRepository.findByWorkspaceUser_WorkspaceAndWorkspaceUser_UserId(workspace, userId).orElseThrow(() -> new WorkspaceException(ErrorCode.ERR_WORKSPACE_USER_NOT_FOUND));
         //라이선스 해제
-        MyLicenseInfoListResponse myLicenseInfoListResponse = licenseRestService.getMyLicenseInfoRequestHandler(
-                workspaceId, userId).getData();
-        if (myLicenseInfoListResponse.getLicenseInfoList() != null && !myLicenseInfoListResponse.getLicenseInfoList()
-                .isEmpty()) {
+        MyLicenseInfoListResponse myLicenseInfoListResponse = getMyLicenseInfoRequestHandler(workspaceId, userId);
+        if (myLicenseInfoListResponse != null && myLicenseInfoListResponse.getLicenseInfoList() != null && !myLicenseInfoListResponse.getLicenseInfoList().isEmpty()) {
             myLicenseInfoListResponse.getLicenseInfoList().forEach(myLicenseInfoResponse -> {
                 boolean revokeResult = licenseRestService.revokeWorkspaceLicenseToUser(
                         workspaceId, userId, myLicenseInfoResponse.getProductName()).getData();
