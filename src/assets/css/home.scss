@@ -110,7 +110,7 @@
   /**
    * 모바일
    */
-  @media screen and (max-width: $tablet) {
+  @include responsive-to(max, "huge") {
     .el-tabs.sticky .el-tabs__header,
     .el-tabs__header .el-tabs__nav-wrap {
       z-index: 1;
@@ -122,9 +122,26 @@
     .el-tabs__content {
       min-height: 0;
       padding: 60px 0 100px;
+
+      h4 {
+        margin-bottom: 12px;
+        font-weight: bold;
+        font-size: 20px;
+      }
+
+      .el-tab-pane > .el-row {
+        margin-top: 40px;
+        padding: 0 24px;
+
+        &:not(:first-child) {
+          margin-top: 60px;
+          padding-top: 0;
+          border-top: none;
+        }
+      }
     }
   }
-  @media screen and (max-width: $short) {
+  @include responsive-to(max, "small") {
     .visual {
       height: auto;
       padding: 90px 20px;

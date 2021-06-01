@@ -4,11 +4,6 @@
     .hover-box {
       z-index: 1;
     }
-    @media screen and (max-width: $tiny) {
-      .sub-title {
-        display: none;
-      }
-    }
   }
 
   .el-button {

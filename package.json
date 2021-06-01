@@ -12,12 +12,13 @@
     "generate": "nuxt generate",
     "i18n": "i18n --sheetId PF-WebDownload",
     "e2e": "cypress run",
-    "e2e:open": "cypress open"
+    "e2e:open": "cypress open",
+    "prepare": "husky install"
   },
   "dependencies": {
     "@nuxtjs/axios": "^5.10.3",
     "@nuxtjs/style-resources": "^1.0.0",
-    "@virnect/components": "1.1.0",
+    "@virnect/components": "^1.1.11",
     "@virnect/logger": "^1.0.2",
     "@virnect/platform-auth": "^1.0.2",
     "@virnect/ui-assets": "^1.1.9",
@@ -32,10 +33,11 @@
   },
   "devDependencies": {
     "@virnect/eslint-config": "^1.0.3",
-    "@virnect/i18n": "^1.0.0",
+    "@virnect/i18n": "^1.1.1",
     "@virnect/stylelint-config": "^1.0.2",
     "@vue/component-compiler-utils": "^3.1.0",
     "cypress": "^7.0.0",
+    "husky": "^6.0.0",
     "node-sass": "^4.5.3",
     "sass": "^1.23.7",
     "sass-loader": "^10.1.1",

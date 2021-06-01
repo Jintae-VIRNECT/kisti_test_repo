@@ -77,11 +77,11 @@ export default {
   vertical-align: top;
   box-shadow: none;
 
-  @media screen and (max-width: $tablet) {
+  @include responsive-to(max, 'large') {
     max-width: 372px;
     margin: 18px 18px 0 18px;
   }
-  @media screen and (max-width: $short) {
+  @include responsive-to(max, 'small') {
     width: calc(100% - 36px);
     max-width: none;
   }

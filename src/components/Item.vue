@@ -1,13 +1,13 @@
 <template>
   <el-card class="item">
     <el-row>
-      <el-col :span="13">
+      <el-col :xs="24" :sm="13">
         <h6 v-html="app.deviceType" />
         <h5 v-html="app.deviceName" />
         <p class="version">{{ app.version }}</p>
         <p class="release">Release: {{ app.releaseTime | dateFormat }}</p>
       </el-col>
-      <el-col :span="11">
+      <el-col :xs="24" :sm="11">
         <el-button type="primary" @click="link('app', app)">
           {{ downloadText(app) }}
         </el-button>
@@ -125,6 +125,24 @@ export default {
       width: auto;
       height: 34px;
       padding: 7px 20px;
+    }
+  }
+
+  @include responsive-to(max, 'medium') {
+    .el-card__body {
+      padding: 28px 12px 24px;
+    }
+    .el-col:first-child {
+      margin-bottom: 29px;
+      text-align: center;
+    }
+    .el-col:last-child {
+      padding: 0 24px;
+      button.el-button--text {
+        position: inherit;
+        width: 100%;
+        margin-top: 16px;
+      }
     }
   }
 }
