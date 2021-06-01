@@ -7,6 +7,8 @@ import lombok.Setter;
 import javax.validation.constraints.NotBlank;
 import java.util.Map;
 
+import com.virnect.message.domain.MessageType;
+
 /**
  * Project: PF-Message
  * DATE: 2021-03-08
@@ -34,13 +36,17 @@ public class EventSendRequest {
             "}", required = true, position = 5)
     private Map<Object, Object> contents;
 
+    @ApiModelProperty(value = "메세지 타입", example = "EMAIL", required = true, position = 1)
+    private MessageType messageType;
+
     @Override
     public String toString() {
         return "EventSendRequest{" +
-                "eventName='" + eventName + '\'' +
-                ", eventUUID='" + eventUUID + '\'' +
-                ", service='" + service + '\'' +
-                ", contents=" + contents +
-                '}';
+            "eventName='" + eventName + '\'' +
+            ", eventUUID='" + eventUUID + '\'' +
+            ", service='" + service + '\'' +
+            ", contents=" + contents +
+            ", messageType=" + messageType +
+            '}';
     }
 }

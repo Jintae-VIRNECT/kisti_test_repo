@@ -1,15 +1,24 @@
 package com.virnect.message.application.message;
 
 import com.amazonaws.services.s3.AmazonS3;
+import com.amazonaws.services.simpleemail.model.Body;
+import com.amazonaws.services.simpleemail.model.Destination;
+import com.amazonaws.services.simpleemail.model.SendEmailRequest;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import com.virnect.message.application.mail.MailService;
 import com.virnect.message.dao.MailHistoryRepository;
+import com.virnect.message.domain.MailHistory;
+import com.virnect.message.domain.MailSender;
 import com.virnect.message.domain.MessageType;
 import com.virnect.message.dto.request.EventSendRequest;
+import com.virnect.message.dto.request.MailSendRequest;
 import com.virnect.message.dto.request.PushSendRequest;
 import com.virnect.message.dto.response.EventSendResponse;
 import com.virnect.message.dto.response.PushResponse;
+import com.virnect.message.exception.MessageException;
+import com.virnect.message.global.error.ErrorCode;
 
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -20,6 +29,7 @@ import org.springframework.amqp.core.Message;
 import org.springframework.amqp.rabbit.annotation.*;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.context.annotation.Profile;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -37,6 +47,9 @@ import java.time.LocalDateTime;
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public class RabbitMQMessageServiceImpl implements MessageService {
 	private final RabbitTemplate rabbitTemplate;
+	private final ObjectMapper objectMapper;
+	private final MailService mailService;
+
 	public static final String TOPIC_EXCHANGE_NAME = "amq.topic";
 	public static final String HEADER_X_RETRIES_COUNT = "x-retries-count";
 	public static final int MAX_RETRY_COUNT = 2;
@@ -52,18 +65,31 @@ public class RabbitMQMessageServiceImpl implements MessageService {
 			"[PUSH MESSAGE PUBLISH] exchange : [{}], routingKey : [{}], message : [{}]", TOPIC_EXCHANGE_NAME,
 			routingKey, pushSendRequest.toString()
 		);
-		PushResponse pushResponse = new PushResponse(
+		return new PushResponse(
 			pushSendRequest.getService(), pushSendRequest.getEvent(), pushSendRequest.getWorkspaceId(), true,
 			LocalDateTime
 				.now()
 		);
-		return pushResponse;
 	}
 
 	@Override
 	public EventSendResponse eventMessageHandler(
 		EventSendRequest eventSendRequest
 	) {
+		if (eventSendRequest.getMessageType() != null && eventSendRequest.getMessageType() == MessageType.EMAIL) {
+			try {
+				MailSendRequest mailSendRequest = objectMapper.readValue(
+					eventSendRequest.getContents().get("mailSendRequest").toString(), MailSendRequest.class);
+				mailService.sendMail(mailSendRequest);
+			} catch (JsonProcessingException e) {
+				throw new MessageException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
+			}
+
+			return new EventSendResponse(
+				eventSendRequest.getService(), eventSendRequest.getEventName(), eventSendRequest.getEventUUID(), true,
+				LocalDateTime.now()
+			);
+		}
 		String routingKey = String.format(
 			"%s.%s.%s", MessageType.EVENT.getValue(), eventSendRequest.getEventName(), eventSendRequest.getEventUUID());
 		rabbitTemplate.convertAndSend(TOPIC_EXCHANGE_NAME, routingKey, eventSendRequest);
@@ -71,11 +97,10 @@ public class RabbitMQMessageServiceImpl implements MessageService {
 			"[EVENT MESSAGE PUBLISH] exchange : [{}], routingKey : [{}], message : [{}]", TOPIC_EXCHANGE_NAME,
 			routingKey, eventSendRequest.toString()
 		);
-		EventSendResponse eventSendResponse = new EventSendResponse(
+		return new EventSendResponse(
 			eventSendRequest.getService(), eventSendRequest.getEventName(), eventSendRequest.getEventUUID(), true,
 			LocalDateTime.now()
 		);
-		return eventSendResponse;
 	}
 
 	@Override
@@ -86,8 +111,18 @@ public class RabbitMQMessageServiceImpl implements MessageService {
 		key = "push.#"
 	), containerFactory = "rabbitListenerContainerFactory")
 	public void getAllPushMessage(PushSendRequest pushSendRequest) {
-		log.info(pushSendRequest.toString());
+		log.info("[PUSH MESSAGE RECEIVED] MESSAGE >> [{}]", pushSendRequest.toString());
 	}
+
+	//이벤트 메세지는 라우팅할 큐가 있는지 체크하기 위해서 로깅하지 않음.
+	/*@RabbitListener(bindings = @QueueBinding(
+		value = @Queue,
+		exchange = @Exchange(value = "amq.topic", type = ExchangeTypes.TOPIC),
+		key = "event.#"
+	), containerFactory = "rabbitListenerContainerFactory")
+	public void getAllEventMessage(EventSendRequest eventSendRequest) {
+		log.info("[EVENT MESSAGE RECEIVED] MESSAGE >> [{}]", eventSendRequest.toString());
+	}*/
 
 	@RabbitListener(bindings = @QueueBinding(
 		value = @Queue,

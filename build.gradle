@@ -79,6 +79,11 @@ dependencies {
     // Redis
     implementation 'org.springframework.boot:spring-boot-starter-data-redis'
 
+    implementation 'io.jsonwebtoken:jjwt-api:0.11.2'
+
+    // Minio
+    implementation 'io.minio:minio:7.1.4'
+
 }
 
 test {

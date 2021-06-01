@@ -27,7 +27,7 @@ import com.virnect.message.dto.request.MailSendRequest;
 @Service
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 @Profile("onpremise")
-public class OnpremiseMailServiceImpl implements MailService {
+public class OffMailServiceImpl implements MailService {
 	@Override
 	public void sendTemplateMail(
 		String sender, List<String> receivers, String subject, String mailTemplate, Context context

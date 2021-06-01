@@ -20,16 +20,12 @@ import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
 
 import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.io.IOUtils;
 import org.springframework.context.annotation.Profile;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.thymeleaf.context.Context;
 import org.thymeleaf.spring5.SpringTemplateEngine;
 
-import com.amazonaws.services.s3.AmazonS3;
-import com.amazonaws.services.s3.model.S3Object;
-import com.amazonaws.services.s3.model.S3ObjectInputStream;
 import com.amazonaws.services.simpleemail.AmazonSimpleEmailServiceAsyncClient;
 import com.amazonaws.services.simpleemail.model.Body;
 import com.amazonaws.services.simpleemail.model.Content;
@@ -49,6 +45,7 @@ import com.virnect.message.domain.MailSender;
 import com.virnect.message.dto.request.AttachmentMailRequest;
 import com.virnect.message.dto.request.MailSendRequest;
 import com.virnect.message.global.common.ByteArrayDataSource;
+import com.virnect.message.infra.file.FileService;
 
 /**
  * Project: PF-Message
@@ -61,12 +58,11 @@ import com.virnect.message.global.common.ByteArrayDataSource;
 @Service
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 @Profile("!onpremise")
-public class AWSMailServiceImpl implements MailService {
+public class OnMailServiceImpl implements MailService {
 	private final AmazonSimpleEmailServiceAsyncClient amazonSimpleEmailServiceAsyncClient;
 	private final SpringTemplateEngine springTemplateEngine;
 	private final MailHistoryRepository mailHistoryRepository;
-	private final AmazonS3 amazonS3Client;
-	public static final String S3_BUCKET_NAME = "virnect-homepagestorage";
+	private final FileService fileService;
 
 	@Override
 	public Boolean sendMail(MailSendRequest mailSendRequest) {
@@ -92,10 +88,7 @@ public class AWSMailServiceImpl implements MailService {
 	public Boolean sendAttachmentMail(AttachmentMailRequest mailSendRequest) throws
 		MessagingException,
 		IOException {
-		S3Object object = amazonS3Client.getObject(
-			S3_BUCKET_NAME, "roi/" + FilenameUtils.getName(mailSendRequest.getMultipartFile()));
-		S3ObjectInputStream inputStream = object.getObjectContent();
-		byte[] bytes = IOUtils.toByteArray(inputStream, object.getObjectMetadata().getContentLength());
+		byte[] bytes = fileService.getObjectBytes("roi/" + FilenameUtils.getName(mailSendRequest.getMultipartFile()));
 
 		for (String receiver : mailSendRequest.getReceivers()) {
 			MailHistory mailHistory = MailHistory.builder()
