@@ -74,7 +74,6 @@ public abstract class WorkspaceService {
     private final WorkspaceMapStruct workspaceMapStruct;
     private final RestMapStruct restMapStruct;
     private final ApplicationEventPublisher applicationEventPublisher;
-    private static final int MAX_HAVE_WORKSPACE_AMOUNT = 49; //최대 생성 가능한 워크스페이스 수
 
     /**
      * 워크스페이스 생성
@@ -90,25 +89,22 @@ public abstract class WorkspaceService {
                 workspaceCreateRequest.getName()) || !StringUtils.hasText(workspaceCreateRequest.getDescription())) {
             throw new WorkspaceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
-
         //User Service 에서 유저 조회
         UserInfoRestResponse userInfoRestResponse = getUserInfo(workspaceCreateRequest.getUserId());
-
         //서브유저(유저가 만들어낸 유저)는 워크스페이스를 가질 수 없다.
         if (userInfoRestResponse.getUserType().equals("SUB_USER")) {
             throw new WorkspaceException(ErrorCode.ERR_UNEXPECTED_SERVER_ERROR);
         }
 
-        //사용자가 최대로 생성 가능한 워크스페이스 수를 넘겼는지 체크
-        long userHasWorkspaceAmount = workspaceRepository.countByUserId(workspaceCreateRequest.getUserId());
-        if (userHasWorkspaceAmount + 1 > MAX_HAVE_WORKSPACE_AMOUNT) {
-            log.error("[WORKSPACE CREATE] creatable maximum Workspace amount : [{}], current amount of workspace that user has : [{}].", MAX_HAVE_WORKSPACE_AMOUNT, userHasWorkspaceAmount);
+        //이미 생성한 워크스페이스가 있는지 확인(사용자가 마스터로 소속되는 워크스페이스는 단 1개다.)
+        boolean userHasWorkspace = workspaceRepository.existsByUserId(workspaceCreateRequest.getUserId());
+
+        if (userHasWorkspace) {
             throw new WorkspaceException(ErrorCode.ERR_MASTER_WORKSPACE_ALREADY_EXIST);
         }
         //워크스페이스 생성
         String uuid = RandomStringTokenUtil.generate(UUIDType.UUID_WITH_SEQUENCE, 0);
         String pinNumber = RandomStringTokenUtil.generate(UUIDType.PIN_NUMBER, 0);
-
         String profile;
         if (workspaceCreateRequest.getProfile() != null) {
             try {
@@ -119,7 +115,6 @@ public abstract class WorkspaceService {
         } else {
             profile = fileUploadService.getFileUrl("workspace-profile.png");
         }
-
         Workspace newWorkspace = Workspace.builder()
                 .uuid(uuid)
                 .userId(workspaceCreateRequest.getUserId())
@@ -128,16 +123,13 @@ public abstract class WorkspaceService {
                 .profile(profile)
                 .pinNumber(pinNumber)
                 .build();
-
         workspaceRepository.save(newWorkspace);
-
         // 워크스페이스 소속 할당
         WorkspaceUser newWorkspaceUser = WorkspaceUser.builder()
                 .userId(workspaceCreateRequest.getUserId())
                 .workspace(newWorkspace)
                 .build();
         workspaceUserRepository.save(newWorkspaceUser);
-
         // 워크스페이스 권한 할당
         WorkspaceRole workspaceRole = workspaceRoleRepository.findById(Role.MASTER.getValue()).orElseThrow(() -> new WorkspaceException(ErrorCode.ERR_WORKSPACE_ROLE_NOT_FOUND));
         WorkspacePermission workspacePermission = workspacePermissionRepository.findById(Permission.ALL.getValue()).orElseThrow(() -> new WorkspaceException(ErrorCode.ERR_WORKSPACE_PERMISSION_NOT_FOUND));
@@ -147,10 +139,8 @@ public abstract class WorkspaceService {
                 .workspaceUser(newWorkspaceUser)
                 .build();
         workspaceUserPermissionRepository.save(newWorkspaceUserPermission);
-
         WorkspaceInfoDTO workspaceInfoDTO = workspaceMapStruct.workspaceToWorkspaceInfoDTO(newWorkspace);
         workspaceInfoDTO.setMasterUserId(newWorkspace.getUserId());
-
         applicationEventPublisher.publishEvent(new UserWorkspacesDeleteEvent(workspaceCreateRequest.getUserId()));// 캐싱 삭제
         return workspaceInfoDTO;
     }
@@ -260,7 +250,7 @@ public abstract class WorkspaceService {
      * @param userId - 유저 uuid
      * @return - 유저 정보
      */
-    private UserInfoRestResponse getUserInfo(String userId) {
+    UserInfoRestResponse getUserInfo(String userId) {
         ApiResponse<UserInfoRestResponse> userInfoResponse = userRestService.getUserInfoByUserId(userId);
         return userInfoResponse.getData();
     }
