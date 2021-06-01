@@ -116,8 +116,6 @@ import { EVENT } from 'configs/push.config'
 import { ROLE } from 'configs/remote.config'
 import { sendPush } from 'api/http/message'
 import { getRoomInfo } from 'api/http/room'
-import auth from 'utils/auth'
-import { URLS } from 'configs/env.config'
 
 import Switcher from 'Switcher'
 import Popover from 'Popover'

@@ -139,6 +139,7 @@ const initLoginStatus = (
     //소켓 연결
     socket.onopen = e => {
       logger('auth status opened', e)
+      reRegistCount = 0 //재등록 실패시 재등록 시도 수 초기화
 
       //메시지 수신
       socket.onmessage = e => {
@@ -207,7 +208,7 @@ const initLoginStatus = (
                   userId: data.userUUID,
                   myInfo,
                 },
-                sendCommand,
+                socket,
               )
               break
 
@@ -221,22 +222,21 @@ const initLoginStatus = (
                 reRegistIntervalId = setInterval(() => {
                   isRegisted = false
                   reRegistCount++
-                  socket.send(
-                    JSON.stringify({
-                      uuid: myInfo.uuid,
-                      name: myInfo.name,
-                      email: myInfo.email,
-                    }),
-                  )
+                  sendCommand(COMMAND.REGISTER, {
+                    uuid: myInfo.uuid,
+                    name: myInfo.name,
+                    email: myInfo.email,
+                  })
                 }, reRegistIntervalTime)
-              } else reRegistCount = 0 //3번 재등록 시도 실패시 재등록 시도 종료 : 재등록 안된 상태로 머뭄
+              }
               break
 
-            //원격 종료 요청 성공 시 재등록 요청 전송
+            //원격 종료 요청 성공 시 (서버에서 당사자 상태 값이 변경되므로, 이 응답이 해당 유저 로그아웃 완료를 보장함)
             case AUTH_STATUS.REMOTE_EXIT_REQ_SUCCESS:
-              logger(window.vue.$store.state.statusSessionId, data.sessionId)
               //자신이 보낸 요청에 대한 응답인지를 체크한 후 재등록 실행한다
-              if (window.vue.$store.state.statusSessionId === data.sessionId) {
+              if (
+                window.vue.$store.getters.statusSessionId === data.sessionId
+              ) {
                 //유저 정보 재등록 요청
                 sendCommand(COMMAND.REGISTER, {
                   uuid: myInfo.uuid,

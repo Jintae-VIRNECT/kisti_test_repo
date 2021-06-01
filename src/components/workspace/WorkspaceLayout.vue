@@ -132,37 +132,28 @@ export default {
     ]),
 
     //중복된 기 접속자가 있는 경우 처리 콜백
-    onDuplicatedRegistration(
-      { currentStatus, sessionId, userId, myInfo },
-      sendCommand,
-    ) {
+    onDuplicatedRegistration({ currentStatus, sessionId, userId }, socket) {
       //로그인 된 기 접속자가 있는 경우 : 팝업으로 강제 로그아웃 실행 여부 확인
       if (currentStatus === 'LOGIN') {
         const text = this.$t('workspace.confirm_duplicated_session_logout')
         const contents = { sessionId }
-        const { uuid, name, email } = myInfo
 
         //원격종료
         const confirmAction = () => {
           //기 접속자 원격 종료 요청
-          sendCommand(COMMAND.REMOTE_EXIT, {
-            service: 'remote',
-            workspaceId: this.workspace.uuid,
-            userId,
-            targetUserId: userId,
-            event: 'remoteExit',
-            contents,
-          })
-          setTimeout(
-            () =>
-              //재등록 요청
-              sendCommand(COMMAND.REGISTER, {
-                uuid,
-                name,
-                email,
-              }),
-            2000,
-          ) //상대방 로그아웃 처리 소요 시간 고려하여 재등록 요청
+          socket.send(
+            JSON.stringify({
+              command: COMMAND.REMOTE_EXIT,
+              data: {
+                service: 'remote',
+                workspaceId: this.workspace.uuid,
+                userId,
+                targetUserId: userId,
+                event: 'remoteExit',
+                contents,
+              },
+            }),
+          )
         }
         //취소 : 로그인 시도했던 사용자 로그아웃 처리 및 로그인 페이지로 리디렉트
         const cancelAction = () => auth.logout()

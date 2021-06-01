@@ -183,6 +183,7 @@ export default {
             )}`
           } catch (e) {
             console.error(e)
+            return
           }
 
           //강제 로그아웃 처리 후 멤버 목록 갱신
