@@ -215,6 +215,7 @@ export default {
       const authInfo = await auth.init(
         this.onDuplicatedRegistration,
         this.onRemoteExitReceived,
+        this.onForceLogoutReceived,
       )
       if (!auth.isLogin) {
         auth.login()
