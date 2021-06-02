@@ -54,7 +54,7 @@ module.exports = async () => {
       ],
     },
     css: [
-      '@virnect/ui-assets/css/base.css',
+      '@virnect/ui-assets/css/base.old.css',
       resolve(__dirname, 'src/assets/css/common.scss'),
     ],
     loading: { color: '#1468e2' },

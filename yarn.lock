@@ -1624,7 +1624,7 @@
     stylelint-prettier "^1.1.2"
     stylelint-scss "^3.18.0"
 
-"@virnect/ui-assets@^1.1.21", "@virnect/ui-assets@^1.1.9":
+"@virnect/ui-assets@^1.1.21":
   version "1.1.21"
   resolved "http://192.168.6.3:4873/@virnect%2fui-assets/-/ui-assets-1.1.21.tgz#d09895ff3f36d5193914e8f2b985e1d58d44cf29"
   integrity sha512-xy/jbhE6q41TKsf3pXblu81a65mY/EIHf19ckbhY6cs18rHo/fbJXLNqefmyvbaiNHrrLVQ9MOV5qS688LROjQ==

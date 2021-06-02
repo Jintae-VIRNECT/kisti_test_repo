@@ -5,7 +5,7 @@
         <h6 v-html="app.deviceType" />
         <h5 v-html="app.deviceName" />
         <p class="version">{{ app.version }}</p>
-        <p class="release">Release: {{ app.releaseTime | dateFormat }}</p>
+        <p class="release">Released: {{ app.releaseTime | dateFormat }}</p>
       </el-col>
       <el-col :xs="24" :sm="11">
         <el-button type="primary" @click="link('app', app)">
@@ -97,6 +97,7 @@ export default {
     }
     h5 {
       color: $color-primary;
+      font-weight: bold;
       font-size: 26px;
     }
     .version {
@@ -135,6 +136,12 @@ export default {
     .el-col:first-child {
       margin-bottom: 29px;
       text-align: center;
+      h6 {
+        font-size: 16px;
+      }
+      h5 {
+        font-size: 24px;
+      }
     }
     .el-col:last-child {
       padding: 0 24px;
