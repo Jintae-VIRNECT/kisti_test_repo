@@ -132,6 +132,11 @@ public class MemberService {
 			.map(memberInfo -> modelMapper.map(memberInfo, MemberInfoResponse.class))
 			.collect(Collectors.toList());
 
+		// Redis 내 멤버 접속상태 확인
+		for (MemberInfoResponse memberInfoResponse : memberInfoList) {
+			memberInfoResponse.setAccessType(loadAccessType(memberInfoResponse.getUuid()));
+		}
+
 		return new ApiResponse<>(new MemberInfoListResponse(memberInfoList,pageMeta));
 	}
 
@@ -237,6 +242,20 @@ public class MemberService {
 		}
 
 		return new MemberSecessionResponse(userId, true, LocalDateTime.now());
+	}
+
+	public AccessType loadAccessType(String uuid) {
+		AccessType result = AccessType.LOGOUT;
+		try {
+			AccessStatus accessStatus = accessStatusService.getAccessStatus(uuid);
+			if (ObjectUtils.isEmpty(accessStatus) || accessStatus.getAccessType() == AccessType.LOGOUT) {
+				return AccessType.LOGOUT;
+			}
+			return accessStatus.getAccessType();
+		} catch (Exception e) {
+			log.info("SET MEMBER STATUS EXCEPTION => [{}]", uuid);
+		}
+		return result;
 	}
 
 }
