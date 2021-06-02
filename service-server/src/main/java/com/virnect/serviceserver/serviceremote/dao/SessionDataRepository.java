@@ -25,6 +25,8 @@ import com.virnect.data.error.ErrorCode;
 import com.virnect.data.error.exception.RestServiceException;
 import com.virnect.data.global.common.ApiResponse;
 import com.virnect.data.infra.utils.LogMessage;
+import com.virnect.data.redis.application.AccessStatusService;
+import com.virnect.data.redis.domain.AccessType;
 import com.virnect.mediaserver.core.EndReason;
 import com.virnect.mediaserver.core.Participant;
 import com.virnect.serviceserver.global.config.UrlConstants;
@@ -70,6 +72,21 @@ public class SessionDataRepository {
     private final PushMessageClient pushMessageClient;
     private final UserRestService userRestService;
     private final RecordRestService recordRestService;
+
+    private final AccessStatusService accessStatusService;
+
+    public void setAccessStatus(Participant participant, AccessType accessType) {
+        JsonObject jsonObject = JsonParser.parseString(participant.getClientMetadata()).getAsJsonObject();
+        ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+        ClientMetaData clientMetaData = null;
+        try {
+            clientMetaData = objectMapper.readValue(jsonObject.toString(), ClientMetaData.class);
+            accessStatusService.saveAccessStatus(clientMetaData.getClientData(), accessType);
+        } catch (JsonProcessingException e) {
+            log.info("setAccessStatus error :: userId : {}", clientMetaData.getClientData());
+        }
+    }
 
     public Boolean destroySession(String sessionId, EndReason reason) {
 
@@ -812,6 +829,10 @@ public class SessionDataRepository {
                         member.setMemberStatus(MemberStatus.LOADING);
                         sessionService.setMember(member);
                         result = true;
+
+                        // LOADING일때 ACCESS STATUS JOIN
+                        accessStatusService.saveAccessStatus(member.getUuid(), AccessType.JOIN);
+
                     } else if (memberStatus == MemberStatus.EVICTED) {
                         errorCode = ErrorCode.ERR_ROOM_MEMBER_EVICTED_STATUS;
                     } else if (memberStatus == MemberStatus.LOAD) {

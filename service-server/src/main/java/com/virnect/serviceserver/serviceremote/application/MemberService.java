@@ -2,11 +2,11 @@ package com.virnect.serviceserver.serviceremote.application;
 
 import java.time.LocalDateTime;
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import org.apache.commons.compress.utils.Lists;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
@@ -15,24 +15,26 @@ import org.springframework.util.ObjectUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import com.virnect.data.application.workspace.WorkspaceRestService;
 import com.virnect.data.dao.memberhistory.MemberHistoryRepository;
 import com.virnect.data.dao.room.RoomRepository;
-import com.virnect.data.domain.member.Member;
 import com.virnect.data.domain.member.MemberHistory;
 import com.virnect.data.domain.member.MemberStatus;
 import com.virnect.data.domain.member.MemberType;
 import com.virnect.data.domain.room.Room;
+import com.virnect.data.dto.PageMetadataResponse;
+import com.virnect.data.dto.rest.WorkspaceMemberInfoListResponse;
+import com.virnect.data.dto.rest.WorkspaceMemberInfoResponse;
 import com.virnect.data.error.ErrorCode;
 import com.virnect.data.error.exception.RestServiceException;
 import com.virnect.data.global.common.ApiResponse;
+import com.virnect.data.redis.application.AccessStatusService;
+import com.virnect.data.redis.domain.AccessStatus;
+import com.virnect.data.redis.domain.AccessType;
 import com.virnect.serviceserver.serviceremote.dto.constraint.LicenseConstants;
-import com.virnect.data.dto.PageMetadataResponse;
 import com.virnect.serviceserver.serviceremote.dto.response.member.MemberInfoListResponse;
 import com.virnect.serviceserver.serviceremote.dto.response.member.MemberInfoResponse;
 import com.virnect.serviceserver.serviceremote.dto.response.member.MemberSecessionResponse;
-import com.virnect.data.dto.rest.WorkspaceMemberInfoListResponse;
-import com.virnect.data.dto.rest.WorkspaceMemberInfoResponse;
-import com.virnect.data.application.workspace.WorkspaceRestService;
 
 @Slf4j
 @Service
@@ -43,6 +45,8 @@ public class MemberService {
 	private final WorkspaceRestService workspaceRestService;
 	private final RoomRepository roomRepository;
 	private final MemberHistoryRepository memberHistoryRepository;
+
+	private final AccessStatusService accessStatusService;
 
 	public WorkspaceMemberInfoListResponse getMembers(
 		String workspaceId,
@@ -162,17 +166,40 @@ public class MemberService {
 		});
 		workspaceMemberInfoList = finalWorkspaceMemberInfoList;
 
+		List<MemberInfoResponse> memberInfoList = workspaceMemberInfoList.stream()
+			.map(memberInfo -> modelMapper.map(memberInfo, MemberInfoResponse.class))
+			.collect(Collectors.toList());
+
+
+		for(Iterator<MemberInfoResponse> memberInfoResponseIterator = memberInfoList.iterator(); memberInfoResponseIterator.hasNext();){
+			AccessStatus targetUser = accessStatusService.getAccessStatus(memberInfoResponseIterator.next().getUuid());
+			if (ObjectUtils.isEmpty(targetUser)) {
+				memberInfoResponseIterator.remove();
+			} else {
+				if (targetUser.getAccessType() == AccessType.LOGIN) {
+					System.out.println("login user : " + targetUser.getId());
+				} else {
+					System.out.println("not login user : " + targetUser.getId() + ", status : " + targetUser.getAccessType());
+					memberInfoResponseIterator.remove();
+				}
+			}
+		}
+
+		for (MemberInfoResponse memberInfoResponse : memberInfoList) {
+			AccessStatus targetUser = accessStatusService.getAccessStatus(memberInfoResponse.getUuid());
+			memberInfoResponse.setAccessType(targetUser.getAccessType());
+		}
 
 		int currentPage = page + 1; // current page number (start : 0)
 		int pagingSize = size; // page data count
-		long totalElements = workspaceMemberInfoList.size();
+		long totalElements = memberInfoList.size();
 		int totalPage = totalElements % size == 0 ? (int)(totalElements / (size)) : (int)(totalElements / (size)) + 1;
 		boolean last = (currentPage) == totalPage;
 
 		int startIndex = 0;
 		int endIndex = 0;
 
-		if (!workspaceMemberInfoList.isEmpty()) {
+		if (!memberInfoList.isEmpty()) {
 			if (pagingSize > totalElements) {
 				startIndex = 0;
 				endIndex = (int)totalElements;
@@ -183,24 +210,20 @@ public class MemberService {
 		}
 
 		// 데이터 range
-		workspaceMemberInfoList = IntStream
+		memberInfoList = IntStream
 			.range(startIndex, endIndex)
-			.mapToObj(workspaceMemberInfoList::get)
+			.mapToObj(memberInfoList::get)
 			.collect(Collectors.toList());
 
 		// 페이징 데이터 설정
 		PageMetadataResponse pageMeta = PageMetadataResponse.builder()
 			.currentPage(currentPage)
 			.currentSize(pagingSize)
-			.numberOfElements(workspaceMemberInfoList.size())
+			.numberOfElements(memberInfoList.size())
 			.totalPage(totalPage)
 			.totalElements(totalElements)
 			.last(last)
 			.build();
-
-		List<MemberInfoResponse> memberInfoList = workspaceMemberInfoList.stream()
-			.map(memberInfo -> modelMapper.map(memberInfo, MemberInfoResponse.class))
-			.collect(Collectors.toList());
 
 		return new MemberInfoListResponse(memberInfoList, pageMeta);
 	}
