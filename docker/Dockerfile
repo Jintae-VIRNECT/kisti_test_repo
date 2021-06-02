@@ -6,12 +6,16 @@ WORKDIR $APP_HOME
 # Only copy dependency-related files
 COPY build.gradle settings.gradle ./
 
-RUN gradle clean build --no-daemon > /dev/null 2>&1 || true
+RUN gradle build --info --no-daemon  > /dev/null 2>&1 || true
+
 
 FROM gradle:6.8-jdk11 AS builder
 ENV APP_HOME=/usr/app/
 WORKDIR $APP_HOME
- COPY --from=build_dependency /root/.gradle /root/.gradle
+
+# Copy gradle cache 
+COPY --from=build_dependency /home/gradle/.gradle /home/gradle
+COPY --from=build_dependency ${APP_HOME}/.gradle ${APP_HOME}
 
 # Only copy dependency-related files
 COPY build.gradle settings.gradle ./
@@ -21,7 +25,7 @@ COPY virnect.pfx .
 COPY src src
 
 # build soruce file with dependnecies
-RUN gradle clean build -x test
+RUN gradle clean build -x test --info  --no-daemon
 
 # Runtime Stage
 FROM openjdk:11-jdk-slim
