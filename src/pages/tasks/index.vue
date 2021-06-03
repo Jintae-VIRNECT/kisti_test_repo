@@ -55,7 +55,7 @@
             </el-button>
             <div class="right">
               <span>{{ $t('task.list.taskCount') }}</span>
-              <span class="num">{{ taskStatistics.totalTasks }}</span>
+              <span class="num">{{ taskTotal }}</span>
             </div>
           </div>
           <!-- 차트 -->
@@ -81,8 +81,8 @@
             ref="table"
             :data="taskList"
             :clickable="true"
-            @updated="searchTasks"
-            @deleted="searchTasks"
+            @updated="refresh"
+            @deleted="refresh"
           />
           <!-- 차트 -->
           <TaskDailyGraph v-else />
@@ -159,12 +159,13 @@ export default {
     filterChanged(filter) {
       if (!filter.length) this.activeTab = 'allTasks'
     },
-  },
-  beforeMount() {
-    workspaceService.watchActiveWorkspace(this, async () => {
+    async refresh() {
       this.searchTasks()
       this.taskStatistics = await taskService.getTaskStatistics()
-    })
+    },
+  },
+  beforeMount() {
+    workspaceService.watchActiveWorkspace(this, this.refresh)
   },
 }
 </script>

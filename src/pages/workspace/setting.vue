@@ -49,6 +49,7 @@
                   >
                     <el-form-item
                       class="horizon"
+                      :class="{ disabled: activeWorkspace.role !== 'MASTER' }"
                       :label="$t('workspace.setting.image')"
                     >
                       <el-upload

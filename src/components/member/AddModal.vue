@@ -136,7 +136,23 @@ export default {
       availablePlans: { remote: 0, make: 0, view: 0 },
       userInfoList: [new InviteMember()],
       rules: {
-        email: [{ required: true, trigger: 'blur', type: 'email' }],
+        email: [
+          {
+            required: true,
+            trigger: 'blur',
+            message: this.$t('invalid.required', [
+              this.$t('members.add.email'),
+            ]),
+          },
+          {
+            trigger: 'blur',
+            type: 'email',
+            message: this.$t('invalid.format', [
+              this.$t('members.add.email'),
+              this.$t('members.add.email'),
+            ]),
+          },
+        ],
       },
     }
   },

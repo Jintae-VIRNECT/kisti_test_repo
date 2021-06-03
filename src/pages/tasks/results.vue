@@ -97,6 +97,12 @@ export default {
       }
       this.$router.replace(pathTo).catch(() => {})
     },
+    $route() {
+      const { path } = this.$route
+      if (path === '/tasks/results') this.activeTab = 'task'
+      else if (path === '/tasks/results/issues') this.activeTab = 'issue'
+      else if (path === '/tasks/results/papers') this.activeTab = 'paper'
+    },
   },
   methods: {
     changedSearchParams() {
