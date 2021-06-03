@@ -242,7 +242,7 @@ const _ = {
 
   setScaleResolution: async scaleResolution => {
     if (_.stream) {
-      return await _.stream.setScaleResolution(scaleResolution)
+      return await _.stream.webRtcPeer.setScaleResolution(scaleResolution)
     }
   },
   /**
