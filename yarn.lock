@@ -1022,10 +1022,10 @@
   dependencies:
     "@types/node" "*"
 
-"@virnect/components@^1.1.10":
-  version "1.1.10"
-  resolved "http://192.168.6.3:4873/@virnect%2fcomponents/-/components-1.1.10.tgz#89b9911511e27a80007dfce16cff34ef59f71a61"
-  integrity sha512-cqGx85zFAX0B/b7/3HSsd30g0vpHjQGOTUQAjvmPUgbEmapUfXLgbIu2vJzrkKoM0hXzyYuGvAAC6OMoudFynQ==
+"@virnect/components@^1.5.0":
+  version "1.5.0"
+  resolved "http://192.168.6.3:4873/@virnect%2fcomponents/-/components-1.5.0.tgz#0163f56207443652e46d74d6223363edbfecd6fa"
+  integrity sha512-v54v67CE2KKwX5LuXfHVdkloi71/DoUhgpXOho5qmMNwZtuv55UdN8peABTuFcjHBtaTKiAPwqSCtZIozg7drA==
   dependencies:
     "@virnect/ui-assets" "^1.1.20"
     "@vue/composition-api" "^1.0.0-rc.2"
@@ -1086,10 +1086,15 @@
     stylelint-prettier "^1.1.2"
     stylelint-scss "^3.18.0"
 
-"@virnect/ui-assets@^1.1.12", "@virnect/ui-assets@^1.1.20":
+"@virnect/ui-assets@^1.1.20":
   version "1.1.20"
   resolved "http://192.168.6.3:4873/@virnect%2fui-assets/-/ui-assets-1.1.20.tgz#d536a732e7413c36d8341462271c65b649ac22ef"
   integrity sha512-6GhXYFmHNGXqgAcO+WSfNn/pSpxmqN1VR8ltYKtIBI1HRVdBN+k/1PnDt2y9dFDn9EjkJy8uqgUVFSB79BErfQ==
+
+"@virnect/ui-assets@^1.5.0":
+  version "1.5.0"
+  resolved "http://192.168.6.3:4873/@virnect%2fui-assets/-/ui-assets-1.5.0.tgz#412550ca21cd60dcc2e8b2b5e13c1e5a0c34de05"
+  integrity sha512-kVxKcXy23KUsW9VyHIj+grkINsK+12bHFT9Vesx5NI/cbAWQeUw0BZmIkL+wH7KDUWDVZYcMV4UPDuWt98CcoA==
 
 "@vue/composition-api@^1.0.0-rc.2":
   version "1.0.0-rc.9"
