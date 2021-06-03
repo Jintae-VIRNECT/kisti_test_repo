@@ -115,6 +115,8 @@ public abstract class WorkspaceUserService {
                 } else {
                     licenseProducts.put(userId, myLicenseInfoListResponse.getLicenseInfoList());
                 }
+            } else {
+                licenseProducts.put(userId, null);
             }
         });
 
@@ -139,7 +141,8 @@ public abstract class WorkspaceUserService {
             workspaceUserInfoResponse.setRole(workspaceUserPermission.getWorkspaceRole().getRole());
             workspaceUserInfoResponse.setJoinDate(workspaceUserPermission.getWorkspaceUser().getCreatedDate());
             workspaceUserInfoResponse.setRoleId(workspaceUserPermission.getWorkspaceRole().getId());
-            String[] userLicenseProducts = licenseProducts.isEmpty() ? new String[0] : licenseProducts.get(workspaceUserPermission.getWorkspaceUser().getUserId()).stream().map(MyLicenseInfoResponse::getProductName).toArray(String[]::new);
+            String[] userLicenseProducts = licenseProducts.get(workspaceUserPermission.getWorkspaceUser().getUserId()) == null ? new String[0] :
+                    licenseProducts.get(workspaceUserPermission.getWorkspaceUser().getUserId()).stream().map(MyLicenseInfoResponse::getProductName).toArray(String[]::new);
             workspaceUserInfoResponse.setLicenseProducts(userLicenseProducts);
             workspaceUserInfoResponseList.add(workspaceUserInfoResponse);
         }
