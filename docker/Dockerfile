@@ -1,5 +1,5 @@
 # Build Stage
-FROM gradle:6.0.1-jdk8 AS builder
+FROM gradle:6.3.0-jdk8 AS builder
 ENV APP_HOME=/usr/app/
 WORKDIR $APP_HOME
 
