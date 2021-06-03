@@ -1,4 +1,5 @@
 import { OpenVidu } from '@virnect/remote-webrtc'
+// import { OpenVidu } from './openvidu'
 import { addSessionEventListener } from './RemoteUtils'
 import Store from 'stores/remote/store'
 import {
@@ -19,6 +20,7 @@ import {
   CAMERA as CAMERA_STATUS,
 } from 'configs/device.config'
 import { logger, debug } from 'utils/logger'
+import { getResolutionScale } from 'utils/settingOptions'
 import { wsUri } from 'api/gateway/api'
 
 let OV
@@ -36,6 +38,8 @@ const _ = {
 
   configs: null,
   options: null,
+
+  stream: null,
 
   /**
    * join session
@@ -164,10 +168,17 @@ const _ = {
           }
           logger('ice state change', state)
         })
+
         _.publisher.on('streamCreated', () => {
           logger('room', 'publish success')
           debug('publisher stream :: ', _.publisher.stream)
           const mediaStream = _.publisher.stream.mediaStream
+          _.stream = _.publisher.stream
+
+          const video = Store.getters['video']
+          const quality = Number.parseInt(video.quality, 10)
+          const scale = getResolutionScale(quality)
+          _.setScaleResolution(scale)
 
           const participantInfo = {
             connectionId: _.publisher.stream.connection.connectionId,
@@ -226,6 +237,12 @@ const _ = {
     } catch (err) {
       console.error(err)
       throw err
+    }
+  },
+
+  setScaleResolution: async scaleResolution => {
+    if (_.stream) {
+      return await _.stream.setScaleResolution(scaleResolution)
     }
   },
   /**
@@ -295,7 +312,7 @@ const _ = {
    * @param {Boolean} force true / false
    */
   sendVideo: (uuid, force = false, target = null) => {
-    if (_.account.roleType !== ROLE.LEADER) return
+    // if (_.account.roleType !== ROLE.LEADER) return
     if (!uuid) uuid = _.account.uuid
     const params = {
       id: uuid,
@@ -792,6 +809,12 @@ const _ = {
           logger('room', 'republish success')
           debug('republisher stream :: ', tempPublisher.stream)
           const mediaStream = tempPublisher.stream.mediaStream
+          _.stream = tempPublisher.stream
+
+          const video = Store.getters['video']
+          const quality = Number.parseInt(video.quality, 10)
+          const scale = getResolutionScale(quality)
+          _.setScaleResolution(scale)
 
           const participantInfo = {
             connectionId: tempPublisher.stream.connection.connectionId,

@@ -26,6 +26,8 @@ import { VIEW } from 'configs/view.config'
 import LnbButton from '../tools/LnbButton'
 import toastMixin from 'mixins/toast'
 import configmMixin from 'mixins/confirm'
+import { getResolutionScale } from 'utils/settingOptions'
+
 // import web_test from 'utils/testing'
 export default {
   name: 'HeaderServiceLnb',
@@ -68,6 +70,7 @@ export default {
       'viewForce',
       'settingInfo',
       'myInfo',
+      'video',
     ]),
     hasLeader() {
       const idx = this.participants.findIndex(
@@ -100,6 +103,16 @@ export default {
         // this.setView(VIEW.STREAM)
       }
     },
+    viewForce() {
+      this.controlScale()
+    },
+    participants: {
+      handler() {
+        this.controlScale()
+      },
+      deep: true,
+    },
+
     mainView: {
       deep: true,
       handler(val, oldVal) {
@@ -325,6 +338,33 @@ export default {
         }
       }
     },
+
+    /**
+     * 자신의 영상 스트림 스케일 제어
+     */
+    controlScale() {
+      if (this.participants.length === 1) return
+
+      const ptIndex = this.participants.findIndex(pt => {
+        const isWatchingMe = pt.currentWatching === this.account.uuid
+
+        //다른사람이 날 보고 있음.
+        const watchingMeByElse = isWatchingMe && !pt.me
+
+        //전체 공유로 인해 내가 내화면을 보고 있음.
+        const watchingMeByForce =
+          isWatchingMe && pt.me && this.viewForce === true
+        return watchingMeByElse || watchingMeByForce
+      })
+
+      if (ptIndex > -1) {
+        this.$call.setScaleResolution(1)
+      } else {
+        const quality = Number.parseInt(this.video.quality, 10)
+        const scale = getResolutionScale(quality)
+        this.$call.setScaleResolution(scale)
+      }
+    },
   },
 
   /* Lifecycles */
@@ -332,6 +372,7 @@ export default {
     this.$eventBus.$on(SIGNAL.CAPTURE_PERMISSION, this.getPermissionCheck)
     this.$eventBus.$on(SIGNAL.AR_FEATURE, this.checkArFeature)
   },
+
   beforeDestroy() {
     this.$eventBus.$off(SIGNAL.CAPTURE_PERMISSION, this.getPermissionCheck)
     this.$eventBus.$off(SIGNAL.AR_FEATURE, this.checkArFeature)
