@@ -79,7 +79,7 @@
       </el-button>
       <!-- 자동 결제 해지 -->
       <el-button
-        v-else
+        v-else-if="autoPayments.payFlag === 'Y'"
         type="simple"
         class="wide"
         @click="showAutoPaymentCancelModal = true"
@@ -89,7 +89,7 @@
     </div>
 
     <!-- 모달 -->
-    <AutoPaymentCancelModal
+    <PaymentCancelModal
       :autoPaymentId="autoPayments.id"
       :autoPaymentItems="autoPayments.items"
       :visible.sync="showAutoPaymentCancelModal"

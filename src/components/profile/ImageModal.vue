@@ -60,12 +60,12 @@ export default {
   },
   computed: {
     disabled() {
-      return this.file === this.cdn(this.$props.me.image)
+      return this.file === this.cdn(this.$props.me.profile)
     },
   },
   watch: {
     visible() {
-      this.file = this.cdn(this.$props.me.image)
+      this.file = this.cdn(this.$props.me.profile)
     },
   },
   methods: {

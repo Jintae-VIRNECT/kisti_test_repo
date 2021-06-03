@@ -4,7 +4,7 @@
     <div class="container">
       <el-row>
         <section class="page-description">
-          <VirnectThumbnail :size="100" :image="me.image" />
+          <VirnectThumbnail :size="100" :image="me.profile" />
           <h2>{{ $t('home.title.welcome', { username: me.nickname }) }}</h2>
           <p v-html="$t('home.title.description')"></p>
         </section>

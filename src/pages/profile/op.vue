@@ -134,7 +134,7 @@ export default {
   },
   computed: {
     profileImg() {
-      if (this.me.image) return this.me.image
+      if (this.me.profile) return this.me.profile
       else return require('assets/images/icon/ic-user-profile.png')
     },
     myBirth() {
@@ -144,7 +144,7 @@ export default {
   },
   methods: {
     changedImage(image) {
-      this.me.image = image
+      this.me.profile = image
       this.visible.imageChangeModal = false
       this.$store.dispatch('auth/getAuth', this.$config.VIRNECT_ENV)
     },
