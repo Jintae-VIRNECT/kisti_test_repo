@@ -29,6 +29,7 @@ import com.virnect.data.redis.application.AccessStatusService;
 import com.virnect.data.redis.domain.AccessType;
 import com.virnect.mediaserver.core.EndReason;
 import com.virnect.mediaserver.core.Participant;
+import com.virnect.serviceserver.global.config.RemoteServiceConfig;
 import com.virnect.serviceserver.global.config.UrlConstants;
 import com.virnect.serviceserver.serviceremote.application.HistoryService;
 import com.virnect.serviceserver.serviceremote.application.PushMessageClient;
@@ -62,6 +63,8 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class SessionDataRepository {
 
+    public static final String WS_PATH = "/remote/websocket";
+
     private static final String TAG = SessionDataRepository.class.getSimpleName();
     private final int ROOM_MEMBER_LIMIT = 30;
 
@@ -74,6 +77,8 @@ public class SessionDataRepository {
     private final RecordRestService recordRestService;
 
     private final AccessStatusService accessStatusService;
+
+    private final RemoteServiceConfig config;
 
     public void setAccessStatus(Participant participant, AccessType accessType) {
         JsonObject jsonObject = JsonParser.parseString(participant.getClientMetadata()).getAsJsonObject();
@@ -679,7 +684,7 @@ public class SessionDataRepository {
         //not set session create at property
         roomResponse.setSessionId(sessionResponse.getId());
         roomResponse.setToken(sessionTokenResponse.getToken());
-        roomResponse.setWss(UrlConstants.wssUrl);
+        roomResponse.setWss(config.remoteServiceProperties.getWss() + WS_PATH);
         roomResponse.setVideoRestrictedMode(room.isVideoRestrictedMode());
         roomResponse.setAudioRestrictedMode(room.isAudioRestrictedMode());
         roomResponse.setSessionType(room.getSessionProperty().getSessionType());
@@ -785,7 +790,7 @@ public class SessionDataRepository {
         //not set session create at property
         roomResponse.setSessionId(sessionResponse.getId());
         roomResponse.setToken(sessionTokenResponse.getToken());
-        roomResponse.setWss(UrlConstants.wssUrl);
+        roomResponse.setWss(config.remoteServiceProperties.getWss() + WS_PATH);
         roomResponse.setVideoRestrictedMode(room.isVideoRestrictedMode());
         roomResponse.setAudioRestrictedMode(room.isAudioRestrictedMode());
         roomResponse.setSessionType(room.getSessionProperty().getSessionType());
@@ -925,7 +930,7 @@ public class SessionDataRepository {
         //not set session create at property
         roomResponse.setSessionId(sessionId);
         roomResponse.setToken(sessionTokenResponse.getToken());
-        roomResponse.setWss(UrlConstants.wssUrl);
+        roomResponse.setWss(config.remoteServiceProperties.getWss() + WS_PATH);
         roomResponse.setVideoRestrictedMode(room.isVideoRestrictedMode());
         roomResponse.setAudioRestrictedMode(room.isAudioRestrictedMode());
         roomResponse.setSessionType(room.getSessionProperty().getSessionType());
@@ -1140,7 +1145,7 @@ public class SessionDataRepository {
         //not set session create at property
         roomResponse.setSessionId(sessionId);
         roomResponse.setToken(sessionTokenResponse.getToken());
-        roomResponse.setWss(UrlConstants.wssUrl);
+        roomResponse.setWss(config.remoteServiceProperties.getWss() + WS_PATH);
         roomResponse.setVideoRestrictedMode(room.isVideoRestrictedMode());
         roomResponse.setAudioRestrictedMode(room.isAudioRestrictedMode());
         roomResponse.setSessionType(room.getSessionProperty().getSessionType());

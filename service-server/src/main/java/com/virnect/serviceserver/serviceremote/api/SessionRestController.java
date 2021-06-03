@@ -31,14 +31,17 @@ import com.virnect.data.global.common.ApiResponse;
 import com.virnect.data.infra.utils.LogMessage;
 import com.virnect.serviceserver.serviceremote.application.PushMessageClient;
 import com.virnect.serviceserver.serviceremote.application.RoomService;
+import com.virnect.serviceserver.serviceremote.application.ServiceSessionManager;
 import com.virnect.serviceserver.serviceremote.dto.push.SendSignalRequest;
 import com.virnect.serviceserver.serviceremote.dto.request.room.InviteRoomRequest;
 import com.virnect.serviceserver.serviceremote.dto.request.room.JoinRoomRequest;
 import com.virnect.serviceserver.serviceremote.dto.request.room.KickRoomRequest;
 import com.virnect.serviceserver.serviceremote.dto.request.room.ModifyRoomInfoRequest;
 import com.virnect.serviceserver.serviceremote.dto.request.room.RoomRequest;
+import com.virnect.serviceserver.serviceremote.dto.request.session.ForceLogoutRequest;
 import com.virnect.serviceserver.serviceremote.dto.response.PageRequest;
 import com.virnect.serviceserver.serviceremote.dto.response.ResultResponse;
+import com.virnect.serviceserver.serviceremote.dto.response.member.MemberInfoListResponse;
 import com.virnect.serviceserver.serviceremote.dto.response.room.RoomDeleteResponse;
 import com.virnect.serviceserver.serviceremote.dto.response.room.RoomDetailInfoResponse;
 import com.virnect.serviceserver.serviceremote.dto.response.room.RoomInfoListResponse;
@@ -53,6 +56,7 @@ public class SessionRestController {
     private static final String TAG = SessionRestController.class.getSimpleName();
     private static final String REST_PATH = "/remote/room";
 
+    private final ServiceSessionManager serviceSessionManager;
     private final PushMessageClient pushMessageClient;
     private final RoomService roomService;
 
@@ -431,31 +435,36 @@ public class SessionRestController {
         return ResponseEntity.ok(responseData);
     }
 
-    /*@ApiOperation(value = "Join a Open Room (Nonmember)", notes = "비회원이 오픈방에 url로 참여하는 API 입니다.")
-    @PostMapping(value = "room/join/nonmember")
-    public ResponseEntity<ApiResponse<RoomResponse>> joinOpenRoomOnlyNonmember(
-        @RequestParam("workspaceId") String workspaceId,
-        @RequestParam("sessionId") String sessionId,
-        @RequestParam("authCode") String authCode
-    ) {
+    @ApiOperation(value = "Forced Logout", notes = "강제 로그아웃 API 입니다")
+    @PostMapping(value = "message/push/forced-logout")
+    ResponseEntity<ApiResponse<MemberInfoListResponse>> forcedLogout(
+        @RequestBody @Valid ForceLogoutRequest forceLogoutRequest,
+        BindingResult result)
+    {
         LogMessage.formedInfo(
             TAG,
             "REST API: POST "
-                + REST_PATH + "::"
-                + "workspaceId:" + workspaceId + ","
-                + "sessionId:" + sessionId + ","
-                + "authCode:" + authCode,
-            "joinOpenRoomOnlyNonmember"
+                + REST_PATH
+                + forceLogoutRequest.toString()
+                + "/message/push/forced-logout",
+            "forcedLogout"
         );
-        if (Strings.isBlank(workspaceId) || Strings.isBlank(sessionId) || Strings.isBlank(authCode)) {
+        if(result.hasErrors()) {
+            result.getAllErrors().forEach(message ->
+                LogMessage.formedError(
+                    TAG,
+                    "REST API: POST " + REST_PATH + "/message/push/forced-logout",
+                    "forcedLogout",
+                    LogMessage.PARAMETER_ERROR,
+                    message.toString()
+                )
+            );
             throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
-        ApiResponse<RoomResponse> responseData = roomService.joinOpenRoomOnlyNonmember(
-            workspaceId,
-            sessionId,
-            authCode
-        );
+
+        ApiResponse<MemberInfoListResponse> responseData = serviceSessionManager.forceLogout(forceLogoutRequest);
         return ResponseEntity.ok(responseData);
-    }*/
+    }
+
 
 }
