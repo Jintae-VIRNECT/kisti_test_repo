@@ -18,7 +18,6 @@
 import { mapGetters, mapActions, mapMutations } from 'vuex'
 import {
   SIGNAL,
-  DRAWING,
   AR_FEATURE,
   CAPTURE_PERMISSION,
   ROLE,
@@ -98,7 +97,7 @@ export default {
       if (!val && val !== bVal && this.participants.length > 0) {
         this.toastDefault(this.$t('service.toast_leave_leader'))
         this.showImage({})
-        this.setView(VIEW.STREAM)
+        // this.setView(VIEW.STREAM)
       }
     },
     mainView: {
@@ -173,13 +172,13 @@ export default {
         }
 
         if (type === 'drawing') {
-          if (this.shareFile && this.shareFile.id) {
-            // this.drawingNotice = false
-            this.menus[this.drawingNotice].notice = false
-            this.setView(VIEW.DRAWING)
-          } else {
-            this.toastDefault(this.$t('service.toast_cannot_invite_drawing'))
-          }
+          // if (this.shareFile && this.shareFile.id) {
+          // this.drawingNotice = false
+          // this.menus[this.drawingNotice].notice = false
+          // this.setView(VIEW.DRAWING)
+          // } else {
+          //   this.toastDefault(this.$t('service.toast_cannot_invite_drawing'))
+          // }
           this.goDrawing()
         }
         if (type === VIEW.AR) {
@@ -210,11 +209,11 @@ export default {
         this.setView(VIEW.DRAWING)
         return
       }
-      if (this.shareFile && this.shareFile.id) {
-        this.setView(VIEW.DRAWING)
-      } else {
-        this.toastDefault(this.$t('service.toast_cannot_invite_drawing'))
-      }
+      // if (this.shareFile && this.shareFile.id) {
+      this.setView(VIEW.DRAWING)
+      // } else {
+      //   this.toastDefault(this.$t('service.toast_cannot_invite_drawing'))
+      // }
     },
     permissionSetting(permission) {
       //AR 기능 요청 승낙 받은 경우 - AR 기능 시작 시그날 전송 & AR VIEW로 전환한다

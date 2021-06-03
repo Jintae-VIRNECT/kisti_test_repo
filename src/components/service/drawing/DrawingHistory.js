@@ -1,19 +1,8 @@
 /* eslint-disable camelcase */
 export default {
-  data() {
-    return {
-      receivedList: [
-        // {
-        //   id: 0,
-        //   data: {},
-        //   path: [] / {},
-        // }
-      ],
-    }
-  },
   methods: {
     /**
-     * 이미지 목록 수정 메소드
+     * 이미지 히스토리 업데이트 메소드
      */
     updateHistory() {
       const json = this.canvas.toJSON().objects

@@ -82,12 +82,17 @@ export const DRAWING = {
   TEXT_UPDATE: 'updateText',
   UNDO: 'drawUndo',
   REDO: 'drawRedo',
-  CLEAR_ALL: 'drawClearAll',
+  CLEAR: 'clear',
+  CLEAR_ALL: 'clearAll',
 
-  FIRST_FRAME: 'firstFrame',
-  FRAME: 'frame',
-  LAST_FRAME: 'lastFrame',
+  // FIRST_FRAME: 'firstFrame',
+  // FRAME: 'frame',
+  // LAST_FRAME: 'lastFrame',
   END_DRAWING: 'endDrawing',
+
+  FILE_SHARE: 'fileShare',
+  ADDED: 'added',
+  DELETED: 'deleted',
 }
 
 /**
