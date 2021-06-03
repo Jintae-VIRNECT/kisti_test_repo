@@ -48,7 +48,7 @@ module.exports = async () => {
      */
     styleResources: {
       scss: [
-        '@virnect/ui-assets/stylesheets/abstracts/_vars.scss',
+        '@virnect/ui-assets/stylesheets/abstracts/_mixins.scss',
         '@/assets/css/_vars.scss',
       ],
     },
