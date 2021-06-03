@@ -59,7 +59,7 @@ export default {
       if (/[0-9]/.test(password)) typeCount++
       if (/[a-z]/.test(password)) typeCount++
       if (/[A-Z]/.test(password)) typeCount++
-      if (/[$.$,$!$@$#$$$%]/.test(password)) typeCount++
+      if (/[$.$!$@$#$$$%]/.test(password)) typeCount++
       if (typeCount < 3) return false
       if (!/^.{8,20}$/.test(password)) return false
       if (/(.)\1\1\1/.test(password)) return false
@@ -67,7 +67,7 @@ export default {
         return false
       if (/(0987|9876|8765|7654|6543|5432|4321|3210)/.test(password))
         return false
-      if (!/^[0-9a-zA-Z$.$,$!$@$#$$$%]+$/.test(password)) return false
+      if (!/^[0-9a-zA-Z$.$!$@$#$$$%]+$/.test(password)) return false
       return true
     },
   },
