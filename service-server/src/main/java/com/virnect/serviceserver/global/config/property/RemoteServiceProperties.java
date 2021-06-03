@@ -87,7 +87,7 @@ public class RemoteServiceProperties extends PropertyService {
 	@NotNull
 	private boolean remoteRecordingPublicAccess;
 
-	@NotEmpty
+	//@NotEmpty
 	private String remoteRecordingVersion;
 
 	private String remoteSecret;
@@ -134,12 +134,13 @@ public class RemoteServiceProperties extends PropertyService {
 			(List<String>)getValue("service.coturn-uris-conference", coturnUrisConference));
 		mediaServerProperties.coturnProperty.setCoturnUrisSteaming(
 			(List<String>)getValue("service.coturn-uris-streaming", coturnUrisStreaming));
-		mediaServerProperties.coturnProperty.setCoturnRedisDbname(
+
+		/*mediaServerProperties.coturnProperty.setCoturnRedisDbname(
 			getValue("service.coturn-redis-dbname",coturnRedisDbname).toString());
 		mediaServerProperties.coturnProperty.setCoturnRedisPassword(
 			getValue("service.coturn-redis-password",coturnRedisPassword).toString());
 		mediaServerProperties.coturnProperty.setCoturnRedisConnectTimeout(
-			getValue("service.coturn-redis-connect-timeout",coturnRedisConnectTimeout).toString());
+			getValue("service.coturn-redis-connect-timeout",coturnRedisConnectTimeout).toString());*/
 
 		// set Media server property
 		mediaServerProperties.serverProperty.setSessionsGarbageInterval(
