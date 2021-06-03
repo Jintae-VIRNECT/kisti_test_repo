@@ -27,7 +27,7 @@ WORKDIR $APP_HOME
 
 
 COPY --from=builder ${APP_HOME}/virnect.pfx .
-COPY --from=builder ${APP_HOME}/service-server/build/libs/RM-Service-2.0.jar ./RM-Service-2.0.jar
+COPY --from=builder ${APP_HOME}/service-server/build/libs/RM-Service-2.3.jar ./RM-Service-2.3.jar
 
 EXPOSE 8000
-CMD ["java", "-XX:+UseG1GC", "-Xmx400M", "-jar", "RM-Service-2.0.jar"]
+CMD ["java", "-XX:+UseG1GC", "-Xmx400M", "-jar", "RM-Service-2.3.jar"]
