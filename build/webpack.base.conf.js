@@ -8,15 +8,12 @@ const MODE = /local|develop|onpremise/.test(process.env.NODE_ENV)
   : 'production'
 const isProduction = MODE === 'production'
 
-const ExtractTextPlugin = require('extract-text-webpack-plugin')
+const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 const CopyWebpackPlugin = require('copy-webpack-plugin')
 
-const extractCSS = new ExtractTextPlugin({
-  filename: getPath => {
-    return getPath('[name].css').replace('css/js', 'css')
-  },
-  allChunks: true,
+const extractCSS = new MiniCssExtractPlugin({
+  filename: '[name].css',
 })
 
 const entries = {}
@@ -39,12 +36,6 @@ glob.sync('./src/apps/**/app.js').forEach(path => {
   htmlWebpackPluginArray.push(new HtmlWebpackPlugin(htmlConf))
 })
 
-const styleLoaderOptions = {
-  loader: 'style-loader',
-  options: {
-    sourceMap: !isProduction,
-  },
-}
 const cssOptions = [
   { loader: 'css-loader', options: { sourceMap: true } },
   {
@@ -110,18 +101,12 @@ const config = {
         loader: 'vue-loader',
         options: {
           loaders: {
-            css: ['css-hot-loader'].concat(
-              ExtractTextPlugin.extract({
-                use: cssOptions,
-                fallback: styleLoaderOptions,
-              }),
-            ),
-            scss: ['css-hot-loader'].concat(
-              ExtractTextPlugin.extract({
-                use: sassOptions,
-                fallback: styleLoaderOptions,
-              }),
-            ),
+            css: ['css-hot-loader', MiniCssExtractPlugin.loader, ...cssOptions],
+            scss: [
+              'css-hot-loader',
+              MiniCssExtractPlugin.loader,
+              ...sassOptions,
+            ],
           },
         },
       },
@@ -132,21 +117,11 @@ const config = {
       },
       {
         test: /\.css$/,
-        use: ['css-hot-loader'].concat(
-          ExtractTextPlugin.extract({
-            use: cssOptions,
-            fallback: styleLoaderOptions,
-          }),
-        ),
+        use: ['css-hot-loader', MiniCssExtractPlugin.loader, ...cssOptions],
       },
       {
         test: /\.scss$/,
-        use: ['css-hot-loader'].concat(
-          ExtractTextPlugin.extract({
-            use: sassOptions,
-            fallback: styleLoaderOptions,
-          }),
-        ),
+        use: ['css-hot-loader', MiniCssExtractPlugin.loader, ...sassOptions],
       },
       {
         test: /\.html$/,
