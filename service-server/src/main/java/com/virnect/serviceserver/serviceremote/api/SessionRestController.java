@@ -431,7 +431,7 @@ public class SessionRestController {
         return ResponseEntity.ok(responseData);
     }
 
-    @ApiOperation(value = "Join a Open Room (Nonmember)", notes = "비회원이 오픈방에 url로 참여하는 API 입니다.")
+    /*@ApiOperation(value = "Join a Open Room (Nonmember)", notes = "비회원이 오픈방에 url로 참여하는 API 입니다.")
     @PostMapping(value = "room/join/nonmember")
     public ResponseEntity<ApiResponse<RoomResponse>> joinOpenRoomOnlyNonmember(
         @RequestParam("workspaceId") String workspaceId,
@@ -456,6 +456,6 @@ public class SessionRestController {
             authCode
         );
         return ResponseEntity.ok(responseData);
-    }
+    }*/
 
 }
