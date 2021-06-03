@@ -12,7 +12,7 @@
 // This block encapsulates custom properties and makes them available to
 // all modules in the project.
 ext {
-    set("springCloudVersion", "Hoxton.SR1")
+    set("springCloudVersion", "Hoxton.SR10")
 }
 
 configurations {
