@@ -14,8 +14,8 @@
       </dd>
       <dt>{{ $t('home.workspace.master') }}</dt>
       <dd class="column-user">
-        <VirnectThumbnail :image="workspace.masterProfile" />
-        <span>{{ workspace.masterNickName }}</span>
+        <VirnectThumbnail :image="myProfile.profile" />
+        <span>{{ myProfile.nickname }}</span>
       </dd>
       <a :href="`${$url.workstation}/workspace/${workspace.uuid}`">
         <el-button type="simple">
@@ -27,6 +27,7 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
 import workspaceService from '@/services/workspace'
 
 export default {
@@ -34,6 +35,11 @@ export default {
     return {
       workspace: {},
     }
+  },
+  computed: {
+    ...mapGetters({
+      myProfile: 'auth/myProfile',
+    }),
   },
   mounted() {
     this.workspace = workspaceService.getMasterWorkspaceInfo()
