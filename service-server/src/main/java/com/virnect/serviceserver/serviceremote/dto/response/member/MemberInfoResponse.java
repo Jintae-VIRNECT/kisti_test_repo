@@ -8,6 +8,7 @@ import lombok.Setter;
 import com.virnect.data.domain.DeviceType;
 import com.virnect.data.domain.member.MemberStatus;
 import com.virnect.data.domain.member.MemberType;
+import com.virnect.data.redis.domain.AccessType;
 
 @Getter
 @Setter
@@ -53,6 +54,12 @@ public class MemberInfoResponse {
             value = "Member Status ( LOAD(참여 중), UNLOAD(미 참여 중), EVICTED(퇴출 됨) )",
             position = 10)
     private MemberStatus memberStatus = MemberStatus.UNLOAD;
+
+    @ApiModelProperty(
+        value = "Access type (LOGIN : 접속 중, LOGOUT : 로그아웃(웹소켓 끊김), JOIN(협업 진행 중)",
+        position = 11)
+    private AccessType accessType = AccessType.LOGOUT;
+
 
     @Override
     public String toString() {

@@ -140,7 +140,7 @@ public class CustomRoomRepositoryImpl extends QuerydslRepositorySupport implemen
 	public Optional<Room> findRoomByWorkspaceIdAndSessionIdForWrite(
 		String workspaceId, String sessionId
 	) {
-		return Optional.ofNullable(
+      return Optional.ofNullable(
 			query.selectFrom(room)
 			.leftJoin(room.members, member).fetchJoin()
 			.innerJoin(room.sessionProperty, sessionProperty).fetchJoin()

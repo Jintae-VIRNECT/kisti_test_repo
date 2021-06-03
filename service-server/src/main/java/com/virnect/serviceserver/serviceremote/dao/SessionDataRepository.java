@@ -17,6 +17,7 @@ import com.virnect.data.domain.room.Room;
 import com.virnect.data.domain.roomhistory.RoomHistory;
 import com.virnect.data.domain.session.SessionProperty;
 import com.virnect.data.domain.session.SessionPropertyHistory;
+import com.virnect.data.domain.session.SessionType;
 import com.virnect.data.dto.rest.PushResponse;
 import com.virnect.data.dto.rest.StopRecordingResponse;
 import com.virnect.data.dto.rest.UserInfoResponse;
@@ -24,6 +25,8 @@ import com.virnect.data.error.ErrorCode;
 import com.virnect.data.error.exception.RestServiceException;
 import com.virnect.data.global.common.ApiResponse;
 import com.virnect.data.infra.utils.LogMessage;
+import com.virnect.data.redis.application.AccessStatusService;
+import com.virnect.data.redis.domain.AccessType;
 import com.virnect.mediaserver.core.EndReason;
 import com.virnect.mediaserver.core.Participant;
 import com.virnect.serviceserver.global.config.UrlConstants;
@@ -60,7 +63,7 @@ import java.util.stream.Collectors;
 public class SessionDataRepository {
 
     private static final String TAG = SessionDataRepository.class.getSimpleName();
-    private final int ROOM_MEMBER_LIMIT = 6;
+    private final int ROOM_MEMBER_LIMIT = 30;
 
     private final ObjectMapper objectMapper;
 
@@ -69,6 +72,21 @@ public class SessionDataRepository {
     private final PushMessageClient pushMessageClient;
     private final UserRestService userRestService;
     private final RecordRestService recordRestService;
+
+    private final AccessStatusService accessStatusService;
+
+    public void setAccessStatus(Participant participant, AccessType accessType) {
+        JsonObject jsonObject = JsonParser.parseString(participant.getClientMetadata()).getAsJsonObject();
+        ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+        ClientMetaData clientMetaData = null;
+        try {
+            clientMetaData = objectMapper.readValue(jsonObject.toString(), ClientMetaData.class);
+            accessStatusService.saveAccessStatus(clientMetaData.getClientData(), accessType);
+        } catch (JsonProcessingException e) {
+            log.info("setAccessStatus error :: userId : {}", clientMetaData.getClientData());
+        }
+    }
 
     public Boolean destroySession(String sessionId, EndReason reason) {
 
@@ -811,6 +829,10 @@ public class SessionDataRepository {
                         member.setMemberStatus(MemberStatus.LOADING);
                         sessionService.setMember(member);
                         result = true;
+
+                        // LOADING일때 ACCESS STATUS JOIN
+                        accessStatusService.saveAccessStatus(member.getUuid(), AccessType.JOIN);
+
                     } else if (memberStatus == MemberStatus.EVICTED) {
                         errorCode = ErrorCode.ERR_ROOM_MEMBER_EVICTED_STATUS;
                     } else if (memberStatus == MemberStatus.LOAD) {
@@ -1076,5 +1098,53 @@ public class SessionDataRepository {
 
             sessionService.deleteRoom(room);
         }
+    }
+
+    public ApiResponse<RoomResponse> joinOpenRoomOnlyNonmember(String workspaceId, String sessionId, String sessionToken) {
+
+        Room room = sessionService.getRoomForWrite(workspaceId, sessionId);
+        if (room == null) {
+            throw new RestServiceException(ErrorCode.ERR_ROOM_NOT_FOUND);
+        }
+
+        if (room.getSessionProperty().getSessionType() != SessionType.OPEN) {
+            throw new RestServiceException(ErrorCode.ERR_ROOM_INFO_ACCESS);
+        }
+
+        if (!room.getMembers().isEmpty()) {
+            long memberCount = room.getMembers().stream().filter(member -> !(member.getMemberStatus() == MemberStatus.UNLOAD)).count();
+            if (memberCount >= ROOM_MEMBER_LIMIT) {
+                throw new RestServiceException(ErrorCode.ERR_ROOM_MEMBER_MAX_COUNT);
+            }
+        }
+
+        // Pre data process
+        SessionTokenResponse sessionTokenResponse = null;
+        try {
+            sessionTokenResponse = objectMapper.readValue(sessionToken, SessionTokenResponse.class);
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        }
+
+        Member member = Member.builder()
+            .workspaceId(workspaceId)
+            .sessionId(sessionId)
+            .uuid("NONMEMBER")
+            .memberType(MemberType.NONMEMBER)
+            .room(room)
+            .build();
+
+        sessionService.setMember(member);
+
+        RoomResponse roomResponse = new RoomResponse();
+        //not set session create at property
+        roomResponse.setSessionId(sessionId);
+        roomResponse.setToken(sessionTokenResponse.getToken());
+        roomResponse.setWss(UrlConstants.wssUrl);
+        roomResponse.setVideoRestrictedMode(room.isVideoRestrictedMode());
+        roomResponse.setAudioRestrictedMode(room.isAudioRestrictedMode());
+        roomResponse.setSessionType(room.getSessionProperty().getSessionType());
+
+        return new ApiResponse<>(roomResponse);
     }
 }

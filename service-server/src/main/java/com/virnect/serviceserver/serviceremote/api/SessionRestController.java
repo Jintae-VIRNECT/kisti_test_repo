@@ -1,5 +1,28 @@
 package com.virnect.serviceserver.serviceremote.api;
 
+import javax.validation.Valid;
+
+import org.apache.commons.lang.StringUtils;
+import org.apache.logging.log4j.util.Strings;
+import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
+import io.swagger.annotations.ApiOperation;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import springfox.documentation.annotations.ApiIgnore;
+
 import com.virnect.data.dto.PushSendRequest;
 import com.virnect.data.dto.rest.PushResponse;
 import com.virnect.data.error.ErrorCode;
@@ -8,32 +31,18 @@ import com.virnect.data.global.common.ApiResponse;
 import com.virnect.data.infra.utils.LogMessage;
 import com.virnect.serviceserver.serviceremote.application.PushMessageClient;
 import com.virnect.serviceserver.serviceremote.application.RoomService;
-import com.virnect.serviceserver.serviceremote.dto.constraint.LicenseItem;
 import com.virnect.serviceserver.serviceremote.dto.push.SendSignalRequest;
-import com.virnect.serviceserver.serviceremote.dto.request.room.*;
+import com.virnect.serviceserver.serviceremote.dto.request.room.InviteRoomRequest;
+import com.virnect.serviceserver.serviceremote.dto.request.room.JoinRoomRequest;
+import com.virnect.serviceserver.serviceremote.dto.request.room.KickRoomRequest;
+import com.virnect.serviceserver.serviceremote.dto.request.room.ModifyRoomInfoRequest;
+import com.virnect.serviceserver.serviceremote.dto.request.room.RoomRequest;
 import com.virnect.serviceserver.serviceremote.dto.response.PageRequest;
 import com.virnect.serviceserver.serviceremote.dto.response.ResultResponse;
 import com.virnect.serviceserver.serviceremote.dto.response.room.RoomDeleteResponse;
 import com.virnect.serviceserver.serviceremote.dto.response.room.RoomDetailInfoResponse;
 import com.virnect.serviceserver.serviceremote.dto.response.room.RoomInfoListResponse;
 import com.virnect.serviceserver.serviceremote.dto.response.room.RoomResponse;
-import io.swagger.annotations.ApiImplicitParam;
-import io.swagger.annotations.ApiImplicitParams;
-import io.swagger.annotations.ApiOperation;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang.StringUtils;
-import org.apache.logging.log4j.util.Strings;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
-import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.web.client.RestTemplate;
-import springfox.documentation.annotations.ApiIgnore;
-
-import javax.validation.Valid;
 
 @Slf4j
 @RestController
@@ -418,6 +427,33 @@ public class SessionRestController {
         ApiResponse<ResultResponse> responseData = roomService.sendSignal(
             workspaceId,
             sendSignalRequest
+        );
+        return ResponseEntity.ok(responseData);
+    }
+
+    @ApiOperation(value = "Join a Open Room (Nonmember)", notes = "비회원이 오픈방에 url로 참여하는 API 입니다.")
+    @PostMapping(value = "room/join/nonmember")
+    public ResponseEntity<ApiResponse<RoomResponse>> joinOpenRoomOnlyNonmember(
+        @RequestParam("workspaceId") String workspaceId,
+        @RequestParam("sessionId") String sessionId,
+        @RequestParam("authCode") String authCode
+    ) {
+        LogMessage.formedInfo(
+            TAG,
+            "REST API: POST "
+                + REST_PATH + "::"
+                + "workspaceId:" + workspaceId + ","
+                + "sessionId:" + sessionId + ","
+                + "authCode:" + authCode,
+            "joinOpenRoomOnlyNonmember"
+        );
+        if (Strings.isBlank(workspaceId) || Strings.isBlank(sessionId) || Strings.isBlank(authCode)) {
+            throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
+        }
+        ApiResponse<RoomResponse> responseData = roomService.joinOpenRoomOnlyNonmember(
+            workspaceId,
+            sessionId,
+            authCode
         );
         return ResponseEntity.ok(responseData);
     }

@@ -26,6 +26,7 @@ import lombok.extern.slf4j.Slf4j;
 import com.virnect.client.RemoteServiceException;
 import com.virnect.data.error.ErrorCode;
 import com.virnect.data.infra.utils.LogMessage;
+import com.virnect.data.redis.domain.AccessType;
 import com.virnect.java.client.MediaMode;
 import com.virnect.java.client.Recording;
 import com.virnect.java.client.RecordingLayout;
@@ -130,6 +131,7 @@ public class ServiceSessionManager {
                         Participant evict = session.getParticipantByPublicId(participant.getParticipantPublicId());
                         sessionManager.evictParticipant(evict, null, null, EndReason.forceDisconnectByServer);*/
 					} else {
+						sessionDataRepository.setAccessStatus(participant, AccessType.JOIN);
 						//todo: after log here
 						return true;
 					}
@@ -161,6 +163,7 @@ public class ServiceSessionManager {
 				} else {
 					sessionDataRepository.leaveSession(participant, sessionId, reason);
 				}
+				sessionDataRepository.setAccessStatus(participant, AccessType.LEAVE);
 			}
 
 			@Override

@@ -97,7 +97,7 @@ public class CompanyRestController {
         if (StringUtils.isBlank(workspaceId) || StringUtils.isBlank(userId)) {
             throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
-        String policyLocation = config.remoteServiceProperties.getServicePolicyLocation();
+        String policyLocation = config.remoteServiceProperties.getPolicyLocation();
         ApiResponse<CompanyInfoResponse> responseData = companyService.getCompanyInfo(
             workspaceId,
             userId,
@@ -122,7 +122,7 @@ public class CompanyRestController {
                 + "companyCode:" + companyCode,
             "getCompanyInfoRequestHandler"
         );
-        String policyLocation = config.remoteServiceProperties.getServicePolicyLocation();
+        String policyLocation = config.remoteServiceProperties.getPolicyLocation();
         ApiResponse<CompanyInfoResponse> responseData = companyService.getCompanyInfoByCompanyCode(
                 workspaceId,
                 userId,

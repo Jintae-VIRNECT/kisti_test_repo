@@ -41,68 +41,79 @@ springBoot {
 // DEPENDENCIES.
 //—————————————————————————————————————————————————————————————————————————————————————————————————
 dependencies {
-    //implementation("org.springframework.boot:spring-boot-starter-data-redis")
-    implementation("org.springframework.boot:spring-boot-starter-data-jpa")
-    implementation("org.springframework.boot:spring-boot-starter-security")
-    implementation("org.springframework.boot:spring-boot-starter-thymeleaf")
-    implementation("org.springframework.boot:spring-boot-starter-web")
-    implementation("org.springframework.boot:spring-boot-starter-websocket")
+    implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    implementation 'org.springframework.boot:spring-boot-starter-security'
+    implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-websocket'
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
 
-    implementation("org.springframework.data:spring-data-envers")
-    implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
-    implementation("org.jetbrains.kotlin:kotlin-reflect")
-    //implementation("org.jetbrains:annotations:20.1.0")
+    implementation 'org.springframework.data:spring-data-envers'
 
-    //developmentOnly("org.springframework.boot:spring-boot-devtools") //Unresolved reference: developmentOnly under boot version 2.3.1
-    runtimeOnly("mysql:mysql-connector-java")
-    runtimeOnly("org.hsqldb:hsqldb")
+    // jackson
+    implementation group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.10.2'
+    implementation group: 'com.fasterxml.jackson.core', name: 'jackson-core', version: '2.10.2'
+    implementation group: 'com.fasterxml.jackson.core', name: 'jackson-annotations', version: '2.10.2'
 
-    testImplementation("org.springframework.security:spring-security-test")
+    runtimeOnly 'mysql:mysql-connector-java'
+    runtimeOnly 'org.hsqldb:hsqldb'
+
+    testImplementation 'org.springframework.security:spring-security-test'
     //============================ SERVICE DEPENDENCIES ===========================================//
-    implementation("org.springframework.cloud:spring-cloud-config-client")
-    // Eureka
-    implementation("org.springframework.cloud:spring-cloud-starter-netflix-eureka-client")
-    // Netflex Feign Client
-    implementation("org.springframework.cloud:spring-cloud-starter-openfeign")
+
+    // Netflix Feign Client
+    implementation 'org.springframework.cloud:spring-cloud-starter-openfeign'
+    implementation 'org.springframework.cloud:spring-cloud-config-client'
+
+    implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-server'
+
+    implementation group: 'io.github.openfeign.form', name: 'feign-form', version: '3.8.0'
+
     // ModelMapper
-    implementation("org.modelmapper:modelmapper:2.3.0")
-    // Query DSL
-    implementation("com.querydsl:querydsl-jpa")
-    implementation("com.querydsl:querydsl-apt")
+    implementation group: 'org.modelmapper', name: 'modelmapper', version: '2.3.0'
+
+// Query DSL
+    implementation("com.querydsl:querydsl-jpa") // querydsl
+    implementation("com.querydsl:querydsl-apt") // querydsl
+
     // Common
-    implementation("commons-io:commons-io:2.4")
-    //implementation("com.google.code.gson:gson:2.8.5")
+    implementation group: 'commons-io', name: 'commons-io', version: '2.4'
+
     // Apache Common Lang and Http Component
-    implementation("org.apache.commons:commons-lang3:3.10")
-    implementation("org.apache.httpcomponents:httpclient:4.5.9")
+    implementation group: 'org.apache.commons', name: 'commons-lang3', version: '3.9'
+    implementation group: 'org.apache.httpcomponents', name: 'httpclient', version: '4.5.9'
+
     // aws s3
     //implementation("com.amazonaws:aws-java-sdk-s3:1.11.415") // AWS Storage Service
-    implementation("com.amazonaws:aws-java-sdk-s3") // AWS Storage Service
+    implementation 'com.amazonaws:aws-java-sdk-s3' // AWS Storage Service
     // minio
     //implementation("io.minio:minio:7.1.0") // minio Storage Service
-    implementation("io.minio:minio:7.1.0")
+    implementation 'io.minio:minio:7.1.0'
     // feign oktthp
-    implementation("io.github.openfeign:feign-okhttp")
+    implementation 'io.github.openfeign:feign-okhttp'
 
     //============================ MEDIA SERVER DEPENDENCIES ===========================================//
-    implementation("org.kurento:kurento-jsonrpc-server:6.14.0")
-    implementation("org.kurento:kurento-client:6.14.0")
-    implementation("com.github.docker-java:docker-java:3.1.5")
-    implementation("org.codehaus.janino:janino:3.1.0")
-    implementation("com.google.code.gson:gson:2.8.6")
+    implementation 'org.kurento:kurento-jsonrpc-server:6.14.0'
+    implementation 'org.kurento:kurento-client:6.14.0'
+    implementation 'com.github.docker-java:docker-java:3.1.5'
+    implementation 'org.codehaus.janino:janino:3.1.0'
+    implementation 'com.google.code.gson:gson:2.8.6'
 
-    testImplementation("org.powermock:powermock-module-junit4:2.0.7")
-    testImplementation("org.hamcrest:hamcrest-core:2.2")
-    testImplementation("org.hamcrest:hamcrest-library:2.2")
+    testImplementation 'org.powermock:powermock-module-junit4:2.0.7'
+    testImplementation 'org.hamcrest:hamcrest-core:2.2'
+    testImplementation 'org.hamcrest:hamcrest-library:2.2'
 
-    // Swagger
-    implementation("io.springfox:springfox-swagger2:2.9.2")
-    implementation("io.springfox:springfox-swagger-ui:2.9.2")
+    //Swagger Libraries
+    implementation 'io.springfox:springfox-swagger2:2.9.2'
+    implementation 'io.springfox:springfox-swagger-ui:2.9.2'
 
     implementation group: 'org.imgscalr', name: 'imgscalr-lib', version: '4.2'
     implementation group: 'org.apache.pdfbox', name: 'pdfbox', version: '2.0.19'
     implementation group: 'org.apache.pdfbox', name: 'pdfbox-tools', version: '2.0.19'
     testImplementation group: 'org.springframework', name: 'spring-mock', version: '2.0.8'
+
+    annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
 }
 
 //—————————————————————————————————————————————————————————————————————————————————————————————————

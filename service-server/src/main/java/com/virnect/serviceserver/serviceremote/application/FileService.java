@@ -24,7 +24,6 @@ import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.rendering.ImageType;
 import org.apache.pdfbox.rendering.PDFRenderer;
 import org.imgscalr.Scalr;
-import org.jetbrains.annotations.NotNull;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -847,7 +846,7 @@ public class FileService {
 		return pdfThumbnail;
 	}
 
-	private BufferedImage makeThumbnail(@NotNull MultipartFile targetFile) {
+	private BufferedImage makeThumbnail(MultipartFile targetFile) {
 		BufferedImage responseImg;
 		try {
 			if (targetFile.getContentType().equals("application/pdf")) {
@@ -864,7 +863,7 @@ public class FileService {
 		return responseImg;
 	}
 
-	private java.io.File convertFile(@NotNull MultipartFile multipartFile) throws IOException {
+	private java.io.File convertFile(MultipartFile multipartFile) throws IOException {
 		java.io.File file = new java.io.File(multipartFile.getOriginalFilename());
 		file.createNewFile();
 		FileOutputStream fos = new FileOutputStream(file);
