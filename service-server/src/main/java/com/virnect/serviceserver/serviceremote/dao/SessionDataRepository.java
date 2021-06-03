@@ -30,7 +30,6 @@ import com.virnect.data.redis.domain.AccessType;
 import com.virnect.mediaserver.core.EndReason;
 import com.virnect.mediaserver.core.Participant;
 import com.virnect.serviceserver.global.config.RemoteServiceConfig;
-import com.virnect.serviceserver.global.config.UrlConstants;
 import com.virnect.serviceserver.serviceremote.application.HistoryService;
 import com.virnect.serviceserver.serviceremote.application.PushMessageClient;
 import com.virnect.serviceserver.serviceremote.application.SessionTransactionalService;
