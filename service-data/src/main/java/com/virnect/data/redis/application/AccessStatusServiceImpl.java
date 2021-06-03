@@ -24,7 +24,10 @@ public class AccessStatusServiceImpl implements AccessStatusService {
 
 	private final AccessStatusRepository accessStatusRepository;
 
-	public AccessStatus saveAccessStatus(String id, AccessType accessType) {
+	public AccessStatus saveAccessStatus(
+		String id,
+		AccessType accessType
+	) {
 		LogMessage.formedInfo(
 			TAG,
 			"[REDIS:POST] "
