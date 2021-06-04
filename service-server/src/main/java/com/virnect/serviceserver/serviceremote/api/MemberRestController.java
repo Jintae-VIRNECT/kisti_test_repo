@@ -20,6 +20,7 @@ import com.virnect.data.error.ErrorCode;
 import com.virnect.data.error.exception.RestServiceException;
 import com.virnect.data.global.common.ApiResponse;
 import com.virnect.data.infra.utils.LogMessage;
+import com.virnect.data.redis.domain.AccessType;
 import com.virnect.serviceserver.serviceremote.application.MemberService;
 import com.virnect.serviceserver.serviceremote.dto.response.member.MemberInfoListResponse;
 import com.virnect.serviceserver.serviceremote.dto.response.member.MemberSecessionResponse;
@@ -77,6 +78,7 @@ public class MemberRestController {
         @ApiImplicitParam(name = "page", value = "size 대로 나눠진 페이지를 조회할 번호(Index 0 부터 시작)", dataType = "Integer", paramType = "query", defaultValue = "0"),
         @ApiImplicitParam(name = "size", value = "Paging Data Size", dataType = "number", paramType = "query", defaultValue = "20"),
         @ApiImplicitParam(name = "sort", value = "Sort Option", paramType = "query", defaultValue = "role, desc"),
+        @ApiImplicitParam(name = "accessTypeFilter", value = "로그인상태 필터 여부", dataType = "boolean", allowEmptyValue = true, defaultValue = "false"),
     })
     @GetMapping(value = "members/{workspaceId}/{userId}")
     public ResponseEntity<ApiResponse<MemberInfoListResponse>> getMembersByWorkspaceIdAndUserId(
@@ -85,7 +87,8 @@ public class MemberRestController {
         @RequestParam(value = "filter", required = false) String filter,
         @RequestParam(value = "search", required = false) String search,
         @RequestParam(value = "page") int page,
-        @RequestParam(value = "size") int size
+        @RequestParam(value = "size") int size,
+        @RequestParam(value = "accessTypeFilter", required = false) boolean accessTypeFilter
     ) {
         LogMessage.formedInfo(
             TAG,
@@ -106,7 +109,8 @@ public class MemberRestController {
             filter,
             search,
             page,
-            size
+            size,
+            accessTypeFilter
         );
         return ResponseEntity.ok(responseData);
     }

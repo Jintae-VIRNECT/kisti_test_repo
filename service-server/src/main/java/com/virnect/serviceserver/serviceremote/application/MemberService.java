@@ -76,10 +76,14 @@ public class MemberService {
 		String filter,
 		String search,
 		int page,
-		int size
+		int size,
+		boolean accessTypeFilter
 	) {
 
-		WorkspaceMemberInfoListResponse responseData = workspaceRestService.getWorkspaceMembers(workspaceId).getData();
+		//WorkspaceMemberInfoListResponse responseData = workspaceRestService.getWorkspaceMembers(workspaceId).getData();
+
+		WorkspaceMemberInfoListResponse responseData = workspaceRestService.getWorkspaceMemberInfoList(workspaceId, filter, search, 0, Integer.MAX_VALUE).getData();
+
 		List<WorkspaceMemberInfoResponse> workspaceMemberInfoList = responseData.getMemberInfoList();
 
 		if (CollectionUtils.isEmpty(workspaceMemberInfoList)) {
@@ -93,12 +97,20 @@ public class MemberService {
 
 		workspaceMemberInfoList.removeIf(memberInfoResponses -> memberInfoResponses.getUuid().equals(userId));
 
+		if (accessTypeFilter) {
+			for(Iterator<WorkspaceMemberInfoResponse> memberInfoIterator = workspaceMemberInfoList.iterator(); memberInfoIterator.hasNext();){
+				AccessStatus targetUser = accessStatusService.getAccessStatus(memberInfoIterator.next().getUuid());
+				if (ObjectUtils.isEmpty(targetUser) || targetUser.getAccessType() != AccessType.LOGIN) {
+					memberInfoIterator.remove();
+				}
+			}
+		}
+
 		int currentPage = page + 1; // current page number (start : 0)
 		int pagingSize = size; // page data count
 		long totalElements = workspaceMemberInfoList.size();
 		int totalPage = totalElements % size == 0 ? (int)(totalElements / (size)) : (int)(totalElements / (size)) + 1;
 		boolean last = (currentPage) == totalPage;
-
 
 		int startIndex = 0;
 		int endIndex = 0;

@@ -54,7 +54,7 @@ public class AccessStatusServiceImpl implements AccessStatusService {
 					"updated status : " + savedTarget.getId()
 						+ "(" + findDataAccessType.toString() + "->" + savedTarget.getAccessType().toString() + ")");
 			} else {
-				log.info("findData is null");
+				/*log.info("findData is null");
 				AccessStatus target = AccessStatus.builder()
 					.id(id)
 					.accessType(accessType)
@@ -66,7 +66,7 @@ public class AccessStatusServiceImpl implements AccessStatusService {
 					findData.setAccessType(accessType);
 				}
 				savedTarget = accessStatusRepository.save(target);
-				log.info("saved data : " + savedTarget.toString());
+				log.info("saved data : " + savedTarget.toString());*/
 			}
 			/*if (ObjectUtils.isEmpty(savedTarget)) {
 				LogMessage.formedInfo("[REDIS:POST] saved data is null");

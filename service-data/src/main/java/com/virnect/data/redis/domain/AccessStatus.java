@@ -1,11 +1,10 @@
 package com.virnect.data.redis.domain;
 
-import javax.persistence.Column;
 import javax.persistence.Id;
 
 import org.springframework.data.redis.core.RedisHash;
+import org.springframework.data.redis.core.TimeToLive;
 
-import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -15,23 +14,19 @@ import lombok.Setter;
 public class AccessStatus {
 
 	@Id
-	@Column(name = "id")
-	private String id;
-
-	@Column(name = "access_type")
+	private String id; 		// workspaceId_userUUID
+	private String email;
 	private AccessType accessType;
-
-	@Builder
-	public AccessStatus(String id, AccessType accessType) {
-		this.id = id;
-		this.accessType = accessType;
-	}
+	@TimeToLive
+	private Long expiresIn;	// default 23 hour
 
 	@Override
 	public String toString() {
 		return "AccessStatus{" +
 			"id='" + id + '\'' +
+			", email='" + email + '\'' +
 			", accessType=" + accessType +
+			", expiresIn=" + expiresIn +
 			'}';
 	}
 }
