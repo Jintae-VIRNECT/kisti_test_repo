@@ -77,7 +77,7 @@
 
           <!-- 테이블 -->
           <TaskList
-            v-if="!isGraph"
+            v-show="!isGraph"
             ref="table"
             :data="taskList"
             :clickable="true"
@@ -85,11 +85,11 @@
             @deleted="refresh"
           />
           <!-- 차트 -->
-          <TaskDailyGraph v-else />
+          <TaskDailyGraph v-show="isGraph" />
         </el-card>
       </el-row>
       <SearchbarPage
-        v-if="!isGraph"
+        v-show="!isGraph"
         ref="page"
         :value.sync="taskPage"
         :total="taskTotal"

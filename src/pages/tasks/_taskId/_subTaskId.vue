@@ -31,7 +31,11 @@
               <span>{{ $t('task.subTaskDetail.title') }}</span>
             </h3>
           </div>
-          <TaskSubTasksList :data="[subTaskInfo]" @updated="subTaskUpdated" />
+          <TaskSubTasksList
+            :taskInfo="taskInfo"
+            :data="[subTaskInfo]"
+            @updated="subTaskUpdated"
+          />
         </el-card>
       </el-row>
 
@@ -199,10 +203,12 @@ export default {
   mixins: [searchMixin, columnMixin],
   async asyncData({ params }) {
     const promise = {
+      taskDetail: taskService.getTaskDetail(params.taskId),
       subTaskDetail: taskService.getSubTaskDetail(params.subTaskId),
       steps: taskService.searchSteps(params.subTaskId),
     }
     return {
+      taskInfo: await promise.taskDetail,
       subTaskInfo: await promise.subTaskDetail,
       stepsList: (await promise.steps).list,
       stepsTotal: (await promise.steps).total,
