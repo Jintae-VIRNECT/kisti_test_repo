@@ -102,7 +102,7 @@ public class OnWorkspaceServiceImpl extends WorkspaceService {
             try {
                 profile = fileUploadService.upload(workspaceCreateRequest.getProfile());
             } catch (IOException e) {
-                throw new WorkspaceException(ErrorCode.ERR_UNEXPECTED_SERVER_ERROR);
+                throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_CREATE_INVALID_PROFILE);
             }
         } else {
             profile = fileUploadService.getFileUrl("workspace-profile.png");
