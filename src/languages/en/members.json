@@ -74,12 +74,12 @@
     "add": {
       "title": "Add Workspace Members",
       "desc": "Sending a Workspace member invitation email to the email address you entered. A member is added if this member accepts the invitation. You can allocate plans whenever you prefer from the [member settings].",
-      "addUser": "Add Workspace Members",
+      "addUser": "Add Members",
       "email": "Email",
       "emailDesc": "Please enter the VIRNECT member's email address of the person you want to invite and send an invitation. By accepting your invitation the member can become one of your Workspace member and use products together.",
       "emailPlaceholder": "Enter email address of invitee",
       "available": "You can add <i>{n}</i> more members.",
-      "addMember": "Add Workspace Members",
+      "addMember": "Add Members",
       "submit": "Send Invitation",
       "message": {
         "inviteFail": "Failed to invite a member to Workspace please try again later",
