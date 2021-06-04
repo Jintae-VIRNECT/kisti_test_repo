@@ -17,8 +17,8 @@ public enum ErrorCode {
     ERR_NOT_FOUND_INVITE_WORKSPACE_INFO(1004, "Not found Workspace Invite Code."),
     ERR_INCORRECT_INVITE_WORKSPACE_CODE(1005, "Incorrect Workspace Invite Code."),
     ERR_WORKSPACE_INVITE(1006, "Workspace Invite Fail."),
-    ERR_WORKSPACE_INVITE_MAX_USER(1016, "Workspace invite fail. Because over workspace max user amount."),
-    ERR_WORKSPACE_INVITE_MAX_JOIN_USER(1017, "Workspace invite fail. Because over count user join workspace."),
+    ERR_WORKSPACE_INVITE_MAX_USER(1016, "Workspace invite fail. Because over maximum number of user participation."),
+    ERR_WORKSPACE_INVITE_MAX_JOIN_USER(1017, "Workspace invite fail. Because over maximum number of workspace join."),
 
     //
     ERR_INCORRECT_USER_LICENSE_INFO(1007, "Users must have at least 1 plan."),
@@ -33,7 +33,8 @@ public enum ErrorCode {
 
     //워크스페이스 생성 에러
     ERR_WORKSPACE_CREATE(1100, "Workspace Create fail."),
-    ERR_WORKSPACE_CREATE_INVALID_PROFILE(1101, "Workspace create fail. Because invalid workspace profile image"),
+    ERR_WORKSPACE_CREATE_INVALID_PROFILE(1101, "Workspace create fail. Because invalid workspace profile image."),
+    ERR_WORKSPACE_CREATE_MAX_CREATE(1102, "Workspace create fail. Because over maximum number of workspace creation."),
 
     //라이선스 관련 에러
     ERR_WORKSPACE_USER_LICENSE_GRANT_FAIL(2000, "Workspace user license grant fail"),

@@ -90,7 +90,7 @@ public class OnWorkspaceServiceImpl extends WorkspaceService {
         long userHasWorkspaceAmount = workspaceRepository.countByUserId(workspaceCreateRequest.getUserId());
         if (userHasWorkspaceAmount + 1 > MAX_HAVE_WORKSPACE_AMOUNT) {
             log.error("[WORKSPACE CREATE] creatable maximum Workspace amount : [{}], current amount of workspace that user has : [{}].", MAX_HAVE_WORKSPACE_AMOUNT, userHasWorkspaceAmount);
-            throw new WorkspaceException(ErrorCode.ERR_MASTER_WORKSPACE_ALREADY_EXIST);
+            throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_CREATE_MAX_CREATE);
         }
 
         //워크스페이스 생성

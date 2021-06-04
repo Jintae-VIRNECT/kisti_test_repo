@@ -93,7 +93,7 @@ public class OffWorkspaceServiceImpl extends WorkspaceService {
         long userHasWorkspaceAmount = workspaceRepository.countByUserId(workspaceCreateRequest.getUserId());
         if (userHasWorkspaceAmount + 1 > maxHaveWorkspaceAmount) {
             log.error("[WORKSPACE CREATE] creatable maximum Workspace amount : [{}], current amount of workspace that user has : [{}].", maxHaveWorkspaceAmount, userHasWorkspaceAmount);
-            throw new WorkspaceException(ErrorCode.ERR_MASTER_WORKSPACE_ALREADY_EXIST);
+            throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_CREATE_MAX_CREATE);
         }
         //워크스페이스 생성
         String uuid = RandomStringTokenUtil.generate(UUIDType.UUID_WITH_SEQUENCE, 0);
@@ -103,7 +103,7 @@ public class OffWorkspaceServiceImpl extends WorkspaceService {
             try {
                 profile = fileUploadService.upload(workspaceCreateRequest.getProfile());
             } catch (IOException e) {
-                throw new WorkspaceException(ErrorCode.ERR_UNEXPECTED_SERVER_ERROR);
+                throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_CREATE_INVALID_PROFILE);
             }
         } else {
             profile = fileUploadService.getFileUrl("workspace-profile.png");
