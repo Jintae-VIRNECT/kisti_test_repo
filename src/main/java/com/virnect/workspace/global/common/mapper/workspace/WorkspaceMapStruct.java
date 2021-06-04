@@ -1,8 +1,12 @@
 package com.virnect.workspace.global.common.mapper.workspace;
 
+import com.virnect.workspace.domain.setting.Setting;
+import com.virnect.workspace.domain.setting.WorkspaceCustomSetting;
 import com.virnect.workspace.domain.workspace.Workspace;
 import com.virnect.workspace.dto.WorkspaceInfoDTO;
+import com.virnect.workspace.dto.response.SettingInfoResponse;
 import com.virnect.workspace.dto.response.WorkspaceInfoListResponse;
+import com.virnect.workspace.dto.response.WorkspaceSettingInfoResponse;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
@@ -20,4 +24,12 @@ public interface WorkspaceMapStruct {
     WorkspaceInfoDTO workspaceToWorkspaceInfoDTO(Workspace workspace);
 
     WorkspaceInfoListResponse.WorkspaceInfo workspaceToWorkspaceInfo(Workspace workspace);
+
+    @Mapping(target = "settingValue", source = "value")
+    @Mapping(target = "settingName", expression = "java(workspaceCustomSetting.getSetting().getName())")
+    @Mapping(target = "paymentType", expression = "java(workspaceCustomSetting.getSetting().getPaymentType())")
+    WorkspaceSettingInfoResponse workspaceCustomSettingToWorkspaceSettingInfoResponse(WorkspaceCustomSetting workspaceCustomSetting);
+
+    @Mapping(target = "settingName", source = "name")
+    SettingInfoResponse settingToSettingInfoResponse(Setting setting);
 }

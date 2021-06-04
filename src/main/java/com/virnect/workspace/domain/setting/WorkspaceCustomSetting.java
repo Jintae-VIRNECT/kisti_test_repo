@@ -4,7 +4,10 @@ import com.virnect.workspace.domain.TimeEntity;
 import com.virnect.workspace.domain.workspace.Workspace;
 import lombok.AccessLevel;
 import lombok.Builder;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.envers.Audited;
+import org.hibernate.envers.NotAudited;
 
 import javax.persistence.*;
 
@@ -18,6 +21,8 @@ import javax.persistence.*;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(name = "workspace_custom_setting")
 @Entity
+@Getter
+@Audited
 public class WorkspaceCustomSetting extends TimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -34,16 +39,28 @@ public class WorkspaceCustomSetting extends TimeEntity {
 
     @ManyToOne(targetEntity = Setting.class, fetch = FetchType.LAZY)
     @JoinColumn(name = "setting_id")
+    @NotAudited
     private Setting setting;
 
     @ManyToOne(targetEntity = Workspace.class, fetch = FetchType.LAZY)
     @JoinColumn(name = "workspace_id")
+    @NotAudited
     private Workspace workspace;
 
     @Builder
-    public WorkspaceCustomSetting(SettingValue settingValue, Setting setting, Workspace workspace) {
+    public WorkspaceCustomSetting(SettingValue settingValue, Status status, Setting setting, Workspace workspace) {
         this.value = settingValue;
+        this.status=status;
         this.setting = setting;
         this.workspace = workspace;
     }
+
+    public void setValue(SettingValue value) {
+        this.value = value;
+    }
+
+    public void setStatus(Status status) {
+        this.status = status;
+    }
+
 }

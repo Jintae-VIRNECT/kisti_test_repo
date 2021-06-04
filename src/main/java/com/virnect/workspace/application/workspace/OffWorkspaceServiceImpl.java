@@ -4,6 +4,8 @@ import com.virnect.workspace.application.license.LicenseRestService;
 import com.virnect.workspace.application.message.MessageRestService;
 import com.virnect.workspace.application.user.UserRestService;
 import com.virnect.workspace.dao.history.HistoryRepository;
+import com.virnect.workspace.dao.setting.SettingRepository;
+import com.virnect.workspace.dao.setting.WorkspaceCustomSettingRepository;
 import com.virnect.workspace.dao.workspace.*;
 import com.virnect.workspace.domain.workspace.Workspace;
 import com.virnect.workspace.domain.workspace.WorkspaceSetting;
@@ -44,9 +46,8 @@ public class OffWorkspaceServiceImpl extends WorkspaceService {
     private final WorkspaceUserPermissionRepository workspaceUserPermissionRepository;
     private final FileService fileUploadService;
     private final WorkspaceSettingRepository workspaceSettingRepository;
-
-    public OffWorkspaceServiceImpl(WorkspaceRepository workspaceRepository, WorkspaceUserRepository workspaceUserRepository, WorkspaceRoleRepository workspaceRoleRepository, WorkspacePermissionRepository workspacePermissionRepository, WorkspaceUserPermissionRepository workspaceUserPermissionRepository, UserRestService userRestService, MessageRestService messageRestService, FileService fileUploadService, SpringTemplateEngine springTemplateEngine, HistoryRepository historyRepository, MessageSource messageSource, LicenseRestService licenseRestService, RedirectProperty redirectProperty, WorkspaceMapStruct workspaceMapStruct, RestMapStruct restMapStruct, ApplicationEventPublisher applicationEventPublisher, WorkspaceSettingRepository workspaceSettingRepository) {
-        super(workspaceRepository, workspaceUserRepository, workspaceRoleRepository, workspacePermissionRepository, workspaceUserPermissionRepository, userRestService, messageRestService, fileUploadService, springTemplateEngine, historyRepository, messageSource, licenseRestService, redirectProperty, workspaceMapStruct, restMapStruct, applicationEventPublisher);
+    public OffWorkspaceServiceImpl(WorkspaceRepository workspaceRepository, WorkspaceUserRepository workspaceUserRepository, WorkspaceRoleRepository workspaceRoleRepository, WorkspacePermissionRepository workspacePermissionRepository, WorkspaceUserPermissionRepository workspaceUserPermissionRepository, UserRestService userRestService, MessageRestService messageRestService, FileService fileUploadService, SpringTemplateEngine springTemplateEngine, HistoryRepository historyRepository, MessageSource messageSource, LicenseRestService licenseRestService, RedirectProperty redirectProperty, WorkspaceMapStruct workspaceMapStruct, RestMapStruct restMapStruct, ApplicationEventPublisher applicationEventPublisher, WorkspaceSettingRepository workspaceSettingRepository, WorkspaceCustomSettingRepository workspaceCustomSettingRepository, SettingRepository settingRepository) {
+        super(workspaceRepository, workspaceUserRepository, workspaceRoleRepository, workspacePermissionRepository, workspaceUserPermissionRepository, userRestService, messageRestService, fileUploadService, springTemplateEngine, historyRepository, messageSource, licenseRestService, redirectProperty, workspaceMapStruct, restMapStruct, applicationEventPublisher, settingRepository, workspaceCustomSettingRepository);
         this.workspaceRepository = workspaceRepository;
         this.workspaceUserPermissionRepository = workspaceUserPermissionRepository;
         this.fileUploadService = fileUploadService;

@@ -1,10 +1,10 @@
 package com.virnect.workspace.api;
 
 import com.virnect.workspace.application.workspace.WorkspaceService;
+import com.virnect.workspace.domain.setting.Product;
 import com.virnect.workspace.dto.WorkspaceInfoDTO;
 import com.virnect.workspace.dto.onpremise.*;
-import com.virnect.workspace.dto.request.WorkspaceCreateRequest;
-import com.virnect.workspace.dto.request.WorkspaceUpdateRequest;
+import com.virnect.workspace.dto.request.*;
 import com.virnect.workspace.dto.response.*;
 import com.virnect.workspace.exception.WorkspaceException;
 import com.virnect.workspace.global.common.ApiResponse;
@@ -246,5 +246,57 @@ public class WorkspaceController {
     ) {
         WorkspaceCustomSettingResponse workspaceCustomSettingResponse = workspaceService.getWorkspaceCustomSetting();
         return ResponseEntity.ok(new ApiResponse<>(workspaceCustomSettingResponse));
+    }
+
+    @ApiOperation(value = "워크스페이스 설정 추가")
+    @PostMapping("/{workspaceId}/settings")
+    public ResponseEntity<ApiResponse<WorkspaceSettingAddResponse>> addWorkspaceSetting(@PathVariable("workspaceId") String workspaceId,
+                                                                                        @RequestBody @Valid WorkspaceSettingAddRequest workspaceSettingAddRequest, BindingResult bindingResult) {
+        if (bindingResult.hasErrors() || !StringUtils.hasText(workspaceId)) {
+
+        }
+        WorkspaceSettingAddResponse responseMessage = workspaceService.addWorkspaceSetting(workspaceId, workspaceSettingAddRequest);
+        return ResponseEntity.ok(new ApiResponse<>(responseMessage));
+    }
+
+    @ApiOperation(value = "워크스페이스 설정 목록 조회")
+    @GetMapping("/{workspaceId}/settings")
+    public ResponseEntity<ApiResponse<WorkspaceSettingInfoListResponse>> findWorkspaceSettingList(@PathVariable("workspaceId") String workspaceId, @RequestParam("product") Product product) {
+        if (!StringUtils.hasText(workspaceId)) {
+
+        }
+        WorkspaceSettingInfoListResponse responseMessage = workspaceService.getWorkspaceSettingList(workspaceId, product);
+        return ResponseEntity.ok(new ApiResponse<>(responseMessage));
+    }
+
+    @ApiOperation(value = "워크스페이스 설정 정보 수정")
+    @PutMapping("/{workspaceId}/{userId}/settings")
+    public ResponseEntity<ApiResponse<WorkspaceSettingUpdateResponse>> updateWorkspaceSetting(@PathVariable("workspaceId") String workspaceId,
+                                                                                              @RequestParam("userId") String userId,
+                                                                                              @RequestBody WorkspaceSettingUpdateRequest workspaceSettingUpdateRequest
+            , BindingResult bindingResult
+    ) {
+        if (bindingResult.hasErrors() || !StringUtils.hasText(workspaceId) || !StringUtils.hasText(userId)) {
+
+        }
+        WorkspaceSettingUpdateResponse responseMessage = workspaceService.updateWorkspaceSetting(workspaceId, userId, workspaceSettingUpdateRequest);
+        return ResponseEntity.ok(new ApiResponse<>(responseMessage));
+    }
+
+    @ApiOperation(value = "설정 정보 목록 조회")
+    @GetMapping("/settings")
+    public ResponseEntity<ApiResponse<SettingInfoListResponse>> findSettingList() {
+        SettingInfoListResponse responseMessage = workspaceService.getSettingList();
+        return ResponseEntity.ok(new ApiResponse<>(responseMessage));
+    }
+
+    @ApiOperation(value = "설정 정보 수정")
+    @PutMapping("/settings")
+    public ResponseEntity<ApiResponse<SettingUpdateResponse>> updateSetting(@RequestBody SettingUpdateRequest settingUpdateRequest, BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
+
+        }
+        SettingUpdateResponse responseMessage = workspaceService.updateSetting(settingUpdateRequest);
+        return ResponseEntity.ok(new ApiResponse<>(responseMessage));
     }
 }

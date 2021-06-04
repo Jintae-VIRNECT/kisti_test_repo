@@ -4,12 +4,14 @@ import com.virnect.workspace.application.license.LicenseRestService;
 import com.virnect.workspace.application.message.MessageRestService;
 import com.virnect.workspace.application.user.UserRestService;
 import com.virnect.workspace.dao.history.HistoryRepository;
+import com.virnect.workspace.dao.setting.SettingRepository;
+import com.virnect.workspace.dao.setting.WorkspaceCustomSettingRepository;
 import com.virnect.workspace.dao.workspace.*;
+import com.virnect.workspace.domain.setting.*;
 import com.virnect.workspace.domain.workspace.*;
 import com.virnect.workspace.dto.WorkspaceInfoDTO;
 import com.virnect.workspace.dto.onpremise.*;
-import com.virnect.workspace.dto.request.WorkspaceCreateRequest;
-import com.virnect.workspace.dto.request.WorkspaceUpdateRequest;
+import com.virnect.workspace.dto.request.*;
 import com.virnect.workspace.dto.response.*;
 import com.virnect.workspace.dto.rest.MailRequest;
 import com.virnect.workspace.dto.rest.PageMetadataRestResponse;
@@ -40,10 +42,7 @@ import org.thymeleaf.spring5.SpringTemplateEngine;
 import java.io.IOException;
 import java.text.DecimalFormat;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -74,6 +73,8 @@ public abstract class WorkspaceService {
     private final WorkspaceMapStruct workspaceMapStruct;
     private final RestMapStruct restMapStruct;
     private final ApplicationEventPublisher applicationEventPublisher;
+    private final SettingRepository settingRepository;
+    private final WorkspaceCustomSettingRepository workspaceCustomSettingRepository;
 
     /**
      * 워크스페이스 생성
@@ -428,4 +429,67 @@ public abstract class WorkspaceService {
     @Profile("onpremise")
     public abstract WorkspaceCustomSettingResponse getWorkspaceCustomSetting();
 
+    public WorkspaceSettingAddResponse addWorkspaceSetting(String workspaceId, WorkspaceSettingAddRequest workspaceSettingAddRequest) {
+        Workspace workspace = workspaceRepository.findByUuid(workspaceId).orElseThrow(() -> new WorkspaceException(ErrorCode.ERR_UNEXPECTED_SERVER_ERROR));
+        Setting setting = settingRepository.findByName(workspaceSettingAddRequest.getSettingName()).orElseThrow(() -> new WorkspaceException(ErrorCode.ERR_UNEXPECTED_SERVER_ERROR));
+        SettingValue defaultValue = SettingName.valueOf(workspaceSettingAddRequest.getSettingName().toString()).getDefaultSettingValue();//todo null 체크
+        WorkspaceCustomSetting workspaceCustomSetting = WorkspaceCustomSetting.builder()
+                .setting(setting)
+                .settingValue(defaultValue)
+                .workspace(workspace)
+                .build();
+        workspaceCustomSettingRepository.save(workspaceCustomSetting);
+        return new WorkspaceSettingAddResponse(setting.getName(), workspaceCustomSetting.getCreatedDate());
+    }
+
+    public WorkspaceSettingInfoListResponse getWorkspaceSettingList(String workspaceId, Product product) {
+        Workspace workspace = workspaceRepository.findByUuid(workspaceId).orElseThrow(() -> new WorkspaceException(ErrorCode.ERR_UNEXPECTED_SERVER_ERROR));
+        List<WorkspaceCustomSetting> workspaceCustomSettingList = workspaceCustomSettingRepository.findByWorkspace_UuidAndStatus(workspaceId, Status.ACTIVE);
+        //데이터 마이그레이션
+        if (workspaceCustomSettingList.isEmpty()) {
+            settingRepository.findByStatusAndPaymentType(Status.ACTIVE, PaymentType.FREE).forEach(setting -> {
+                WorkspaceCustomSetting workspaceCustomSetting = WorkspaceCustomSetting.builder()
+                        .setting(setting)
+                        .settingValue(SettingName.valueOf(setting.getName().toString()).getDefaultSettingValue())
+                        .status(Status.ACTIVE)
+                        .workspace(workspace)
+                        .build();
+                workspaceCustomSettingRepository.save(workspaceCustomSetting);
+            });
+        }
+        List<WorkspaceSettingInfoResponse> workspaceSettingInfoResponseList =
+                workspaceCustomSettingList.stream()
+                        .filter(workspaceCustomSetting -> SettingName.valueOf(workspaceCustomSetting.getSetting().getName().toString()).getProduct() == product)
+                        .map(workspaceMapStruct::workspaceCustomSettingToWorkspaceSettingInfoResponse).collect(Collectors.toList());
+        return new WorkspaceSettingInfoListResponse(workspaceSettingInfoResponseList);
+    }
+
+    public WorkspaceSettingUpdateResponse updateWorkspaceSetting(String id, String workspaceId, WorkspaceSettingUpdateRequest workspaceSettingUpdateRequest) {
+        /*WorkspaceCustomSetting workspaceCustomSetting = workspaceCustomSettingRepository.findByWorkspace_UuidAndSetting_Name(workspaceId, workspaceSettingUpdateRequest.getSettingName()).orElseThrow(() -> new WorkspaceException(ErrorCode.ERR_UNEXPECTED_SERVER_ERROR));
+        workspaceCustomSetting.setValue(workspaceSettingUpdateRequest.getSettingValue());
+        workspaceCustomSetting.setStatus(workspaceSettingUpdateRequest.getStatus());
+        workspaceCustomSettingRepository.save(workspaceCustomSetting);
+        return new WorkspaceSettingUpdateResponse(workspaceSettingUpdateRequest.getSettingName(), workspaceCustomSetting.getUpdatedDate());*/
+        return null;
+    }
+
+    public SettingUpdateResponse updateSetting(SettingUpdateRequest settingUpdateRequest) {
+        Setting setting = settingRepository.findByName(settingUpdateRequest.getSettingName()).orElseThrow(() -> new WorkspaceException(ErrorCode.ERR_UNEXPECTED_SERVER_ERROR));
+        setting.setStatus(settingUpdateRequest.getStatus());
+        setting.setPaymentType(settingUpdateRequest.getPaymentType());
+        settingRepository.save(setting);
+        return new SettingUpdateResponse(setting.getName(), setting.getUpdatedDate());
+    }
+
+    public SettingInfoListResponse getSettingList() {
+        List<SettingInfoResponse> settingInfoResponseList =
+                settingRepository.findAll().stream().map(setting -> {
+                    SettingInfoResponse settingInfoResponse = workspaceMapStruct.settingToSettingInfoResponse(setting);
+                    settingInfoResponse.setSettingDefaultValue(SettingName.valueOf(setting.getName().toString()).getDefaultSettingValue());
+                    settingInfoResponse.setSettingValueList(Arrays.asList(SettingName.valueOf(setting.getName().toString()).getSettingValues()));
+                    settingInfoResponse.setProduct(SettingName.valueOf(setting.getName().toString()).getProduct());
+                    return settingInfoResponse;
+                }).collect(Collectors.toList());
+        return new SettingInfoListResponse(settingInfoResponseList);
+    }
 }
