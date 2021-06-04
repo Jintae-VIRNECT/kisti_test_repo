@@ -128,13 +128,14 @@ public class OnWorkspaceUserServiceImpl extends WorkspaceUserService {
             if (workspaceInviteRequest.getUserInfoList().size() + workspaceUserAmount > workspaceLicensePlanInfoResponse.getMaxUserAmount()) {
                 log.error("[WORKSPACE INVITE USER] maximum workspace user amount(by license) : [{}], request user amount [{}], current workspace user amount : [{}]", workspaceLicensePlanInfoResponse.getMaxUserAmount(),
                         workspaceInviteRequest.getUserInfoList().size(), workspaceUserAmount);
-                throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_INVITE);
+                throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_INVITE_MAX_USER);
             }
-        }else{
+        } else {
             //1-3-2. 라이선스를 구매하지 않은 워크스페이스는 기본값으로 체크
             if (workspaceInviteRequest.getUserInfoList().size() + workspaceUserAmount > MAX_WORKSPACE_USER_AMOUNT) {
                 log.error("[WORKSPACE INVITE USER] maximum workspace user amount : [{}], request user amount [{}], current workspace user amount : [{}]", MAX_WORKSPACE_USER_AMOUNT,
                         workspaceInviteRequest.getUserInfoList().size(), workspaceUserAmount);
+                throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_INVITE_MAX_USER);
             }
         }
 
@@ -158,7 +159,7 @@ public class OnWorkspaceUserServiceImpl extends WorkspaceUserService {
             long userIncludedWorkspaceAmount = workspaceUserRepository.countByUserId(inviteUserResponse.getInviteUserDetailInfo().getUserUUID());
             if (inviteUserResponse.isMemberUser() && userIncludedWorkspaceAmount + 1 > MAX_JOIN_WORKSPACE_AMOUNT) {
                 log.error("[WORKSPACE INVITE USER] maximum join workspace amount : [{}], current user join workspace amount(include request) : [{}]", MAX_JOIN_WORKSPACE_AMOUNT, userIncludedWorkspaceAmount + 1);
-                throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_INVITE);
+                throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_INVITE_MAX_JOIN_USER);
             }
 
             boolean inviteSessionExist = false;
