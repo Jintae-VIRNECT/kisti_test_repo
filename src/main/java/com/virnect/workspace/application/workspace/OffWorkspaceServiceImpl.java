@@ -7,18 +7,25 @@ import com.virnect.workspace.dao.history.HistoryRepository;
 import com.virnect.workspace.dao.setting.SettingRepository;
 import com.virnect.workspace.dao.setting.WorkspaceCustomSettingRepository;
 import com.virnect.workspace.dao.workspace.*;
-import com.virnect.workspace.domain.workspace.Workspace;
-import com.virnect.workspace.domain.workspace.WorkspaceSetting;
-import com.virnect.workspace.domain.workspace.WorkspaceUserPermission;
+import com.virnect.workspace.domain.workspace.*;
+import com.virnect.workspace.dto.WorkspaceInfoDTO;
 import com.virnect.workspace.dto.onpremise.*;
+import com.virnect.workspace.dto.request.WorkspaceCreateRequest;
+import com.virnect.workspace.dto.rest.UserInfoRestResponse;
+import com.virnect.workspace.event.cache.UserWorkspacesDeleteEvent;
 import com.virnect.workspace.exception.WorkspaceException;
 import com.virnect.workspace.global.common.RedirectProperty;
 import com.virnect.workspace.global.common.mapper.rest.RestMapStruct;
 import com.virnect.workspace.global.common.mapper.workspace.WorkspaceMapStruct;
+import com.virnect.workspace.global.constant.Permission;
+import com.virnect.workspace.global.constant.Role;
+import com.virnect.workspace.global.constant.UUIDType;
 import com.virnect.workspace.global.error.ErrorCode;
+import com.virnect.workspace.global.util.RandomStringTokenUtil;
 import com.virnect.workspace.infra.file.FileService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FilenameUtils;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Profile;
@@ -45,15 +52,91 @@ public class OffWorkspaceServiceImpl extends WorkspaceService {
     private final WorkspaceRepository workspaceRepository;
     private final WorkspaceUserPermissionRepository workspaceUserPermissionRepository;
     private final FileService fileUploadService;
+    private final WorkspaceUserRepository workspaceUserRepository;
     private final WorkspaceSettingRepository workspaceSettingRepository;
+    private final WorkspaceRoleRepository workspaceRoleRepository;
+    private final WorkspaceMapStruct workspaceMapStruct;
+    private final ApplicationEventPublisher applicationEventPublisher;
+    private final WorkspacePermissionRepository workspacePermissionRepository;
+
+    @Value("${workspace.on-premise.max-have-workspace-amount}")
+    private int maxHaveWorkspaceAmount;//최대 생성 가능한 워크스페이스 수
+
     public OffWorkspaceServiceImpl(WorkspaceRepository workspaceRepository, WorkspaceUserRepository workspaceUserRepository, WorkspaceRoleRepository workspaceRoleRepository, WorkspacePermissionRepository workspacePermissionRepository, WorkspaceUserPermissionRepository workspaceUserPermissionRepository, UserRestService userRestService, MessageRestService messageRestService, FileService fileUploadService, SpringTemplateEngine springTemplateEngine, HistoryRepository historyRepository, MessageSource messageSource, LicenseRestService licenseRestService, RedirectProperty redirectProperty, WorkspaceMapStruct workspaceMapStruct, RestMapStruct restMapStruct, ApplicationEventPublisher applicationEventPublisher, WorkspaceSettingRepository workspaceSettingRepository, WorkspaceCustomSettingRepository workspaceCustomSettingRepository, SettingRepository settingRepository) {
-        super(workspaceRepository, workspaceUserRepository, workspaceRoleRepository, workspacePermissionRepository, workspaceUserPermissionRepository, userRestService, messageRestService, fileUploadService, springTemplateEngine, historyRepository, messageSource, licenseRestService, redirectProperty, workspaceMapStruct, restMapStruct, applicationEventPublisher, settingRepository, workspaceCustomSettingRepository);
+        super(workspaceRepository, workspaceUserRepository, workspaceUserPermissionRepository, userRestService, messageRestService, fileUploadService, springTemplateEngine, historyRepository, messageSource, licenseRestService, redirectProperty, workspaceMapStruct, restMapStruct, applicationEventPublisher, settingRepository, workspaceCustomSettingRepository);
         this.workspaceRepository = workspaceRepository;
         this.workspaceUserPermissionRepository = workspaceUserPermissionRepository;
         this.fileUploadService = fileUploadService;
         this.workspaceSettingRepository = workspaceSettingRepository;
+        this.workspaceUserRepository = workspaceUserRepository;
+        this.workspaceRoleRepository = workspaceRoleRepository;
+        this.workspaceMapStruct = workspaceMapStruct;
+        this.applicationEventPublisher = applicationEventPublisher;
+        this.workspacePermissionRepository = workspacePermissionRepository;
     }
 
+    @Override
+    public WorkspaceInfoDTO createWorkspace(WorkspaceCreateRequest workspaceCreateRequest) {
+        //필수 값 체크
+        if (!StringUtils.hasText(workspaceCreateRequest.getUserId()) || !StringUtils.hasText(
+                workspaceCreateRequest.getName()) || !StringUtils.hasText(workspaceCreateRequest.getDescription())) {
+            throw new WorkspaceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
+        }
+        //User Service 에서 유저 조회
+        UserInfoRestResponse userInfoRestResponse = getUserInfo(workspaceCreateRequest.getUserId());
+        //서브유저(유저가 만들어낸 유저)는 워크스페이스를 가질 수 없다.
+        if (userInfoRestResponse.getUserType().equals("SUB_USER")) {
+            throw new WorkspaceException(ErrorCode.ERR_UNEXPECTED_SERVER_ERROR);
+        }
+
+        //사용자가 최대로 생성 가능한 워크스페이스 수를 넘겼는지 체크
+        long userHasWorkspaceAmount = workspaceRepository.countByUserId(workspaceCreateRequest.getUserId());
+        if (userHasWorkspaceAmount + 1 > maxHaveWorkspaceAmount) {
+            log.error("[WORKSPACE CREATE] creatable maximum Workspace amount : [{}], current amount of workspace that user has : [{}].", maxHaveWorkspaceAmount, userHasWorkspaceAmount);
+            throw new WorkspaceException(ErrorCode.ERR_MASTER_WORKSPACE_ALREADY_EXIST);
+        }
+        //워크스페이스 생성
+        String uuid = RandomStringTokenUtil.generate(UUIDType.UUID_WITH_SEQUENCE, 0);
+        String pinNumber = RandomStringTokenUtil.generate(UUIDType.PIN_NUMBER, 0);
+        String profile;
+        if (workspaceCreateRequest.getProfile() != null) {
+            try {
+                profile = fileUploadService.upload(workspaceCreateRequest.getProfile());
+            } catch (IOException e) {
+                throw new WorkspaceException(ErrorCode.ERR_UNEXPECTED_SERVER_ERROR);
+            }
+        } else {
+            profile = fileUploadService.getFileUrl("workspace-profile.png");
+        }
+        Workspace newWorkspace = Workspace.builder()
+                .uuid(uuid)
+                .userId(workspaceCreateRequest.getUserId())
+                .name(workspaceCreateRequest.getName())
+                .description(workspaceCreateRequest.getDescription())
+                .profile(profile)
+                .pinNumber(pinNumber)
+                .build();
+        workspaceRepository.save(newWorkspace);
+        // 워크스페이스 소속 할당
+        WorkspaceUser newWorkspaceUser = WorkspaceUser.builder()
+                .userId(workspaceCreateRequest.getUserId())
+                .workspace(newWorkspace)
+                .build();
+        workspaceUserRepository.save(newWorkspaceUser);
+        // 워크스페이스 권한 할당
+        WorkspaceRole workspaceRole = workspaceRoleRepository.findById(Role.MASTER.getValue()).orElseThrow(() -> new WorkspaceException(ErrorCode.ERR_WORKSPACE_ROLE_NOT_FOUND));
+        WorkspacePermission workspacePermission = workspacePermissionRepository.findById(Permission.ALL.getValue()).orElseThrow(() -> new WorkspaceException(ErrorCode.ERR_WORKSPACE_PERMISSION_NOT_FOUND));
+        WorkspaceUserPermission newWorkspaceUserPermission = WorkspaceUserPermission.builder()
+                .workspaceRole(workspaceRole)
+                .workspacePermission(workspacePermission)
+                .workspaceUser(newWorkspaceUser)
+                .build();
+        workspaceUserPermissionRepository.save(newWorkspaceUserPermission);
+        WorkspaceInfoDTO workspaceInfoDTO = workspaceMapStruct.workspaceToWorkspaceInfoDTO(newWorkspace);
+        workspaceInfoDTO.setMasterUserId(newWorkspace.getUserId());
+        applicationEventPublisher.publishEvent(new UserWorkspacesDeleteEvent(workspaceCreateRequest.getUserId()));// 캐싱 삭제
+        return workspaceInfoDTO;
+    }
 
     public WorkspaceFaviconUpdateResponse updateWorkspaceFavicon(
             String workspaceId, WorkspaceFaviconUpdateRequest workspaceFaviconUpdateRequest
