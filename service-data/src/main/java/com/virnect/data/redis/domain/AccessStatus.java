@@ -5,11 +5,13 @@ import javax.persistence.Id;
 import org.springframework.data.redis.core.RedisHash;
 import org.springframework.data.redis.core.TimeToLive;
 
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
+@Builder
 @RedisHash("accessStatus")
 public class AccessStatus {
 

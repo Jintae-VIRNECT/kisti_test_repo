@@ -14,6 +14,7 @@ public class StatusMessage implements Serializable {
 	private String name;
 	private String email;
 	private String status;
+	private String workspaceId;
 
 	@Override
 	public String toString() {

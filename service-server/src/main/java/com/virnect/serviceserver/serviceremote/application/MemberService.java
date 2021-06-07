@@ -99,7 +99,8 @@ public class MemberService {
 
 		if (accessTypeFilter) {
 			for(Iterator<WorkspaceMemberInfoResponse> memberInfoIterator = workspaceMemberInfoList.iterator(); memberInfoIterator.hasNext();){
-				AccessStatus targetUser = accessStatusService.getAccessStatus(memberInfoIterator.next().getUuid());
+				AccessStatus targetUser = accessStatusService.getAccessStatus(
+					workspaceId + "_" + memberInfoIterator.next().getUuid());
 				if (ObjectUtils.isEmpty(targetUser) || targetUser.getAccessType() != AccessType.LOGIN) {
 					memberInfoIterator.remove();
 				}
@@ -146,7 +147,7 @@ public class MemberService {
 
 		// Redis 내 멤버 접속상태 확인
 		for (MemberInfoResponse memberInfoResponse : memberInfoList) {
-			memberInfoResponse.setAccessType(loadAccessType(memberInfoResponse.getUuid()));
+			memberInfoResponse.setAccessType(loadAccessType(workspaceId, memberInfoResponse.getUuid()));
 		}
 
 		return new ApiResponse<>(new MemberInfoListResponse(memberInfoList,pageMeta));
@@ -189,7 +190,8 @@ public class MemberService {
 
 
 		for(Iterator<MemberInfoResponse> memberInfoResponseIterator = memberInfoList.iterator(); memberInfoResponseIterator.hasNext();){
-			AccessStatus targetUser = accessStatusService.getAccessStatus(memberInfoResponseIterator.next().getUuid());
+			AccessStatus targetUser = accessStatusService.getAccessStatus(
+				workspaceId + "_" + memberInfoResponseIterator.next().getUuid());
 			if (ObjectUtils.isEmpty(targetUser)) {
 				memberInfoResponseIterator.remove();
 			} else {
@@ -203,7 +205,7 @@ public class MemberService {
 		}
 
 		for (MemberInfoResponse memberInfoResponse : memberInfoList) {
-			AccessStatus targetUser = accessStatusService.getAccessStatus(memberInfoResponse.getUuid());
+			AccessStatus targetUser = accessStatusService.getAccessStatus(workspaceId + "_" + memberInfoResponse.getUuid());
 			memberInfoResponse.setAccessType(targetUser.getAccessType());
 		}
 
@@ -256,10 +258,10 @@ public class MemberService {
 		return new MemberSecessionResponse(userId, true, LocalDateTime.now());
 	}
 
-	public AccessType loadAccessType(String uuid) {
+	public AccessType loadAccessType(String workspaceId, String uuid) {
 		AccessType result = AccessType.LOGOUT;
 		try {
-			AccessStatus accessStatus = accessStatusService.getAccessStatus(uuid);
+			AccessStatus accessStatus = accessStatusService.getAccessStatus(workspaceId + "_" + uuid);
 			if (ObjectUtils.isEmpty(accessStatus) || accessStatus.getAccessType() == AccessType.LOGOUT) {
 				return AccessType.LOGOUT;
 			}

@@ -1,13 +1,28 @@
 package com.virnect.serviceserver.serviceremote.dao;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import org.apache.logging.log4j.util.Strings;
+import org.springframework.stereotype.Service;
+import org.springframework.util.ObjectUtils;
+
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+
 import com.virnect.client.RemoteServiceException;
 import com.virnect.data.application.record.RecordRestService;
 import com.virnect.data.application.user.UserRestService;
+import com.virnect.data.dao.member.MemberRepository;
 import com.virnect.data.domain.DeviceType;
 import com.virnect.data.domain.member.Member;
 import com.virnect.data.domain.member.MemberHistory;
@@ -45,17 +60,6 @@ import com.virnect.serviceserver.serviceremote.dto.response.room.RoomResponse;
 import com.virnect.serviceserver.serviceremote.dto.response.rpc.ClientMetaData;
 import com.virnect.serviceserver.serviceremote.dto.response.session.SessionResponse;
 import com.virnect.serviceserver.serviceremote.dto.response.session.SessionTokenResponse;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.apache.logging.log4j.util.Strings;
-import org.springframework.stereotype.Service;
-import org.springframework.util.ObjectUtils;
-
-import java.time.Duration;
-import java.time.LocalDateTime;
-import java.util.Arrays;
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -79,14 +83,25 @@ public class SessionDataRepository {
 
     private final RemoteServiceConfig config;
 
+    private final MemberRepository memberRepository;
+
     public void setAccessStatus(Participant participant, AccessType accessType) {
         JsonObject jsonObject = JsonParser.parseString(participant.getClientMetadata()).getAsJsonObject();
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         ClientMetaData clientMetaData = null;
         try {
+            String workspaceId;
+            String userId;
             clientMetaData = objectMapper.readValue(jsonObject.toString(), ClientMetaData.class);
-            accessStatusService.saveAccessStatus(clientMetaData.getClientData(), accessType);
+            userId = clientMetaData.getClientData();
+            Member member = memberRepository.findByUuid(userId).orElse(null);
+            if (member != null) {
+                workspaceId = member.getWorkspaceId();
+                accessStatusService.saveAccessStatus(workspaceId + "_" + userId, accessType);
+            } else {
+                log.info("member is null in setAccessStatus :: userId : {}", clientMetaData.getClientData());
+            }
         } catch (JsonProcessingException e) {
             log.info("setAccessStatus error :: userId : {}", clientMetaData.getClientData());
         }
@@ -835,7 +850,7 @@ public class SessionDataRepository {
                         result = true;
 
                         // LOADING일때 ACCESS STATUS JOIN
-                        accessStatusService.saveAccessStatus(member.getUuid(), AccessType.JOIN);
+                        accessStatusService.saveAccessStatus(member.getWorkspaceId() + "_" + member.getUuid(), AccessType.JOIN);
 
                     } else if (memberStatus == MemberStatus.EVICTED) {
                         errorCode = ErrorCode.ERR_ROOM_MEMBER_EVICTED_STATUS;

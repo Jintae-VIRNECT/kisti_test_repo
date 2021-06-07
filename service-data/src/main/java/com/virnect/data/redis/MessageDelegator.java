@@ -34,14 +34,15 @@ public class MessageDelegator implements MessageListener {
 		try {
 			String body = (String) redisTemplate.getStringSerializer().deserialize(message.getBody());
 			StatusMessage statusMessage = objectMapper.readValue(body, StatusMessage.class);
+			String accessStatusId = statusMessage.getWorkspaceId() + "_" + statusMessage.getUuid();
 			switch (statusMessage.getStatus()) {
 				case LOGIN_STATUS :
 					log.info("[REDIS:POST] login uuid : " + statusMessage.getUuid());
-					accessStatusService.saveAccessStatus(statusMessage.getUuid(), AccessType.LOGIN);
+					accessStatusService.saveAccessStatus(accessStatusId, AccessType.LOGIN);
 					break;
 				case LOGOUT_STATUS :
 					log.info("[REDIS:POST] logout uuid : " + statusMessage.getUuid());
-					accessStatusService.saveAccessStatus(statusMessage.getUuid(), AccessType.LOGOUT);
+					accessStatusService.saveAccessStatus(accessStatusId, AccessType.LOGOUT);
 					break;
 			}
 		} catch (Exception e) {
