@@ -85,7 +85,7 @@ public class SessionDataRepository {
 
     private final MemberRepository memberRepository;
 
-    public void setAccessStatus(Participant participant, AccessType accessType) {
+    public void setAccessStatus(Participant participant, String sessionId, AccessType accessType) {
         JsonObject jsonObject = JsonParser.parseString(participant.getClientMetadata()).getAsJsonObject();
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
@@ -95,7 +95,7 @@ public class SessionDataRepository {
             String userId;
             clientMetaData = objectMapper.readValue(jsonObject.toString(), ClientMetaData.class);
             userId = clientMetaData.getClientData();
-            Member member = memberRepository.findByUuid(userId).orElse(null);
+            Member member = memberRepository.findBySessionIdAndUuid(sessionId, userId);
             if (member != null) {
                 workspaceId = member.getWorkspaceId();
                 accessStatusService.saveAccessStatus(workspaceId + "_" + userId, accessType);

@@ -161,7 +161,7 @@ public class ServiceSessionManager {
                         Participant evict = session.getParticipantByPublicId(participant.getParticipantPublicId());
                         sessionManager.evictParticipant(evict, null, null, EndReason.forceDisconnectByServer);*/
 					} else {
-						sessionDataRepository.setAccessStatus(participant, AccessType.JOIN);
+						sessionDataRepository.setAccessStatus(participant, sessionId, AccessType.JOIN);
 						//todo: after log here
 						return true;
 					}
@@ -193,7 +193,7 @@ public class ServiceSessionManager {
 				} else {
 					sessionDataRepository.leaveSession(participant, sessionId, reason);
 				}
-				sessionDataRepository.setAccessStatus(participant, AccessType.LEAVE);
+				sessionDataRepository.setAccessStatus(participant, sessionId, AccessType.LEAVE);
 			}
 
 			@Override
