@@ -7,7 +7,7 @@ import com.virnect.data.redis.domain.AccessType;
 
 public interface AccessStatusService {
 
-	AccessStatus saveAccessStatus(String uuid, AccessType accessType);
+	AccessStatus saveAccessStatus(String id, AccessType accessType, String uuid);
 
 	boolean deleteAccessStatus(String uuid);
 

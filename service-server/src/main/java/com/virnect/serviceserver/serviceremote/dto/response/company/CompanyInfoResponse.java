@@ -49,6 +49,9 @@ public class CompanyInfoResponse {
 	@ApiModelProperty(value = "Enable Text to speech", position = 9, example = "false")
 	private boolean tts = false;
 
+	@ApiModelProperty(value = "Timeout", position = 10)
+	private int timeout = 60;
+
 	@ApiModelProperty(
 		value = "Translation Language codes",
 		position = 10,

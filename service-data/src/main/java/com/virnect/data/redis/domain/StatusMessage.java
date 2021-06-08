@@ -11,7 +11,7 @@ public class StatusMessage implements Serializable {
 
 	private static final long serialVersionUID = 2082503192322391880L;
 	private String uuid;
-	private String name;
+	private String nickname;
 	private String email;
 	private String status;
 	private String workspaceId;
@@ -20,9 +20,10 @@ public class StatusMessage implements Serializable {
 	public String toString() {
 		return "StatusMessage{" +
 			"uuid='" + uuid + '\'' +
-			", name='" + name + '\'' +
+			", nickname='" + nickname + '\'' +
 			", email='" + email + '\'' +
 			", status='" + status + '\'' +
+			", workspaceId='" + workspaceId + '\'' +
 			'}';
 	}
 }

@@ -92,13 +92,13 @@ public class SessionDataRepository {
         ClientMetaData clientMetaData = null;
         try {
             String workspaceId;
-            String userId;
+            String uuid;
             clientMetaData = objectMapper.readValue(jsonObject.toString(), ClientMetaData.class);
-            userId = clientMetaData.getClientData();
-            Member member = memberRepository.findBySessionIdAndUuid(sessionId, userId);
+            uuid = clientMetaData.getClientData();
+            Member member = memberRepository.findBySessionIdAndUuid(sessionId, uuid);
             if (member != null) {
                 workspaceId = member.getWorkspaceId();
-                accessStatusService.saveAccessStatus(workspaceId + "_" + userId, accessType);
+                accessStatusService.saveAccessStatus(workspaceId + "_" + uuid, accessType, uuid);
             } else {
                 log.info("member is null in setAccessStatus :: userId : {}", clientMetaData.getClientData());
             }
@@ -850,7 +850,11 @@ public class SessionDataRepository {
                         result = true;
 
                         // LOADING일때 ACCESS STATUS JOIN
-                        accessStatusService.saveAccessStatus(member.getWorkspaceId() + "_" + member.getUuid(), AccessType.JOIN);
+                        accessStatusService.saveAccessStatus(
+                            member.getWorkspaceId() + "_" + member.getUuid(),
+                            AccessType.JOIN,
+                            member.getUuid()
+                        );
 
                     } else if (memberStatus == MemberStatus.EVICTED) {
                         errorCode = ErrorCode.ERR_ROOM_MEMBER_EVICTED_STATUS;

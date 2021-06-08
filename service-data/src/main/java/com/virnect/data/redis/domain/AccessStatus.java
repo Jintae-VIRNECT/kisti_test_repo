@@ -1,5 +1,7 @@
 package com.virnect.data.redis.domain;
 
+import java.time.Duration;
+
 import javax.persistence.Id;
 
 import org.springframework.data.redis.core.RedisHash;
@@ -11,7 +13,6 @@ import lombok.Setter;
 
 @Getter
 @Setter
-@Builder
 @RedisHash("accessStatus")
 public class AccessStatus {
 
@@ -21,6 +22,13 @@ public class AccessStatus {
 	private AccessType accessType;
 	@TimeToLive
 	private Long expiresIn;	// default 23 hour
+
+	public AccessStatus(String id, String email, AccessType accessType) {
+		this.id = id;
+		this.email = email;
+		this.accessType = accessType;
+		this.expiresIn = Duration.ofHours(23).getSeconds();
+	}
 
 	@Override
 	public String toString() {
