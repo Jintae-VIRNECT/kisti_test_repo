@@ -98,13 +98,17 @@ public class SubProcessCustomRepositoryImpl extends QuerydslRepositorySupport im
 	@Override
 	public Page<SubProcess> getFilteredSubProcessPage(
 		String workspaceUUID, Long processId, String search, List<String> userUUIDList, Pageable pageable,
-		List<Conditions> filter
+		List<Conditions> filter,
+		String myUUID
 	) {
 		QSubProcess qSubProcess = QSubProcess.subProcess;
 		QProcess qProcess = QProcess.process;
 		JPQLQuery<SubProcess> query = from(qSubProcess).join(qSubProcess.process, qProcess);
 		List<SubProcess> subProcessList = query.fetch();
 
+		if (StringUtils.hasText(myUUID)) {
+			query = query.where(qSubProcess.workerUUID.eq(myUUID));
+		}
 		if (filter != null && !filter.isEmpty() && !filter.contains(Conditions.ALL)) {
 			List<SubProcess> filterdSubProcessList = new ArrayList<>();
 			subProcessList.forEach(subProcess -> {

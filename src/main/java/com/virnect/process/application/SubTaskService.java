@@ -185,7 +185,7 @@ public class SubTaskService {
 	 * @return
 	 */
 	public ApiResponse<SubProcessesResponse> getSubProcesses(
-		String workspaceUUID, Long processId, String search, Pageable pageable, List<Conditions> filter
+		String workspaceUUID, Long processId, String search, Pageable pageable, List<Conditions> filter, String myUUID
 	) {
 		// 워크스페이스 전체의 세부공정목록조회
 		// 검색어로 사용자 목록 조회
@@ -198,7 +198,7 @@ public class SubTaskService {
 		}
 
 		Page<SubProcess> subProcessPage = this.subProcessRepository.getFilteredSubProcessPage(
-			workspaceUUID, processId, search, userUUIDList, pageable, filter);
+			workspaceUUID, processId, search, userUUIDList, pageable, filter, myUUID);
 /*
 		if (filter != null && !filter.isEmpty() && !filter.contains(Conditions.ALL)) {
 			List<SubProcessReportedResponse> editSubProcessResponseList = subProcessPage.stream()

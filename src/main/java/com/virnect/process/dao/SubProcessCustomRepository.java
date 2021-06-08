@@ -22,7 +22,8 @@ public interface SubProcessCustomRepository {
 
 	Page<SubProcess> getFilteredSubProcessPage(
 		String workspaceUUID, Long processId, String search, List<String> userUUIDList, Pageable pageable,
-		List<Conditions> filter
+		List<Conditions> filter,
+		String myUUID
 	);
 
 	LocalDateTime getLastestReportedTime(String workspaceUUID, String userUUID);
