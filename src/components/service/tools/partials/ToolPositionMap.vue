@@ -2,19 +2,18 @@
   <tool-button
     :text="'지도'"
     :active="status"
-    :isActive="status"
-    :disabled="false"
-    :src="require('assets/image/ic_notice.svg')"
-    :activeSrc="require('assets/image/ic_notice_off.svg')"
-    @click="toggleMap"
+    :disabled="!isAvailable"
+    :src="require('assets/image/call/ic_location.svg')"
+    @click="requestLocation"
   ></tool-button>
 </template>
 
 <script>
 import toolMixin from './toolMixin'
 import toastMixin from 'mixins/toast'
+import { DEVICE } from 'configs/device.config'
 // import { CAMERA as CAMERA_STATUS } from 'configs/device.config'
-// import { mapActions, mapGetters } from 'vuex'
+import { mapGetters } from 'vuex'
 export default {
   name: 'ToolPositionMap',
   mixins: [toolMixin, toastMixin],
@@ -22,22 +21,52 @@ export default {
   data() {
     return {
       status: false,
+      isAvailable: true,
     }
   },
   computed: {
     // ...mapGetters(['myInfo', 'myTempStream', 'settingInfo', 'video']),
+    ...mapGetters(['mainView']),
+  },
+  watch: {
+    mainView: {
+      handler() {
+        this.isAvailable = this.mainView.deviceType === DEVICE.MOBILE
+        // this.isAvailable = true
+      },
+      deep: true,
+      immediate: true,
+    },
   },
 
   methods: {
-    toggleMap() {
-      this.status = !this.status
-      this.$eventBus.$emit('show:positionmap', this.status)
+    requestLocation() {
+      if (!this.isAvailable) return
+
+      this.$call.sendRequestLocation([this.mainView.connectionId])
+    },
+    toggleMap(enable) {
+      if (enable) {
+        this.showMap()
+      } else {
+        this.toastDefault('위치정보 요청이 거절되었습니다.​')
+      }
+    },
+    showMap() {
+      this.status = true
+      this.$eventBus.$emit('map:show', this.status)
+    },
+    closeMap() {
+      this.status = false
     },
   },
   mounted() {
-    this.$eventBus.$on('close:positionmap', () => {
-      this.status = false
-    })
+    this.$eventBus.$on('map:closed', this.closeMap)
+    this.$eventBus.$on('map:enable', this.toggleMap)
+  },
+  beforeDestroy() {
+    this.$eventBus.$off('map:closed', this.closeMap)
+    this.$eventBus.$off('map:enable', this.toggleMap)
   },
 }
 </script>

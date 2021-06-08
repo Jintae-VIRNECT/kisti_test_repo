@@ -248,7 +248,7 @@ export default {
     this.$call.addListener('sessionDisconnected', this.reconnect)
     this.$eventBus.$on('video:fullscreen', this.setFullScreen)
     this.$eventBus.$on('video:loaded', this.setVideoLoaded)
-    this.$eventBus.$on('show:positionmap', this.togglePositionMap)
+    this.$eventBus.$on('map:show', this.togglePositionMap)
   },
   beforeDestroy() {
     if (this.callTimeout) {
@@ -269,7 +269,7 @@ export default {
 
     this.$eventBus.$off('video:fullscreen', this.setFullScreen)
     this.$eventBus.$off('video:loaded', this.setVideoLoaded)
-    this.$eventBus.$off('show:positionmap', this.togglePositionMap)
+    this.$eventBus.$off('map:show', this.togglePositionMap)
   },
 
   mounted() {
