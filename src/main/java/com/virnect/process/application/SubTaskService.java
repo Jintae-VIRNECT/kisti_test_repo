@@ -103,7 +103,7 @@ public class SubTaskService {
 
 		// 하위 작업 조회
 		subProcessPage = this.subProcessRepository.getSubProcessPage(
-			workspaceUUID, processId, search, userUUIDList, pageable);
+			workspaceUUID, processId, search, userUUIDList, userUUID, pageable);
 
 		if (filter != null && filter.size() > 0 && !filter.contains(Conditions.ALL)) {
 			subProcessPage = filterConditionsSubProcessPage(subProcessPage, filter, pageable);
@@ -394,7 +394,7 @@ public class SubTaskService {
 			.orElseThrow(() -> new ProcessServiceException(ErrorCode.ERR_NOT_FOUND_PROCESS_OF_TARGET));
 		//        Page<SubProcess> subProcessPage = this.subProcessRepository.selectSubProcesses(null, process.getId(), null, null, pageable);
 		Page<SubProcess> subProcessPage = this.subProcessRepository.getSubProcessPage(
-			null, process.getId(), null, null, pageable);
+			null, process.getId(), null, null, null, pageable);
 		SubProcessesOfTargetResponse subProcessesOfTargetResponse = SubProcessesOfTargetResponse.builder()
 			.taskId(process.getId())
 			.taskName(process.getName())

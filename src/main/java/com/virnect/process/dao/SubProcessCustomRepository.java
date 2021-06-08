@@ -16,7 +16,8 @@ public interface SubProcessCustomRepository {
 	boolean existsByIsRecentAndWorkerUUIDAndWorkspaceUUID(YesOrNo newWork, String workspaceUUID, String workerUUID);
 
 	Page<SubProcess> getSubProcessPage(
-		String workspaceUUID, Long processId, String search, List<String> userUUIDList, Pageable pageable
+		String workspaceUUID, Long processId, String search, List<String> userUUIDList, String userUUID,
+		Pageable pageable
 	);
 
 	Page<SubProcess> getFilteredSubProcessPage(
