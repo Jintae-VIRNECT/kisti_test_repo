@@ -20,10 +20,9 @@ import com.virnect.data.error.ErrorCode;
 import com.virnect.data.error.exception.RestServiceException;
 import com.virnect.data.global.common.ApiResponse;
 import com.virnect.data.infra.utils.LogMessage;
-import com.virnect.data.redis.domain.AccessType;
 import com.virnect.serviceserver.serviceremote.application.MemberService;
-import com.virnect.serviceserver.serviceremote.dto.response.member.MemberInfoListResponse;
-import com.virnect.serviceserver.serviceremote.dto.response.member.MemberSecessionResponse;
+import com.virnect.data.dto.response.member.MemberInfoListResponse;
+import com.virnect.data.dto.response.member.MemberSecessionResponse;
 
 @Slf4j
 @RestController

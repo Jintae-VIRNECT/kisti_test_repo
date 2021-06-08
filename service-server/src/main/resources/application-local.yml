@@ -10,9 +10,9 @@ spring:
         allow-bean-definition-overriding: true
     datasource:
         driver-class-name: com.mysql.cj.jdbc.Driver
-        url: jdbc:mysql://localhost:3306/woong?serverTimezone=UTC&characterEncoding=UTF-8
-        username: root
-        password: dndqmffldb
+        url: jdbc:mysql://192.168.6.3:4336/remote?serverTimezone=UTC&characterEncoding=UTF-8
+        username: virnect-remote2
+        password: virnect1234
     jpa:
         database: mysql
         database-platform: org.hibernate.dialect.MySQL5InnoDBDialect
@@ -105,11 +105,11 @@ service:
     https_port: 8000
     kms-uris-conference: ["ws://192.168.6.3:8888/kurento"]
     kms-uris-streaming: []
-    policy-location: policy/privateServicePolicy.json
+
+
+    policy-location: policy/publicServicePolicy.json
     wss: wss://192.168.13.36:8000/remote/websocket
     certificate_type: owncert
-    policy:
-        location: '"policy/privateServicePolicy.json"'
     remote_cdr: true
     remote_cdr_path: /var/log/remote/cdr
     remote_log_path: /var/log/remote/service

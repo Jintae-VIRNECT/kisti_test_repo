@@ -114,6 +114,10 @@ dependencies {
     testImplementation group: 'org.springframework', name: 'spring-mock', version: '2.0.8'
 
     annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
+
+    // MapStruct
+    implementation 'org.mapstruct:mapstruct:1.4.2.Final'
+    annotationProcessor 'org.mapstruct:mapstruct-processor:1.4.2.Final'
 }
 
 //—————————————————————————————————————————————————————————————————————————————————————————————————

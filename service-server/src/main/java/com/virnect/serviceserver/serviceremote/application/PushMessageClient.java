@@ -13,11 +13,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import com.virnect.serviceserver.serviceremote.dto.push.InviteRoomContents;
 import com.virnect.data.dto.PushSendRequest;
 import com.virnect.data.dto.rest.PushResponse;
 import com.virnect.data.global.common.ApiResponse;
 import com.virnect.data.application.message.MessageRestService;
+import com.virnect.serviceserver.serviceremote.dto.constraint.InviteRoomContents;
 
 @Slf4j
 @Service

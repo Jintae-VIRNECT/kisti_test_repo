@@ -20,13 +20,13 @@ import lombok.extern.slf4j.Slf4j;
 
 import com.virnect.serviceserver.global.config.RemoteServiceConfig;
 import com.virnect.serviceserver.serviceremote.application.CompanyService;
-import com.virnect.serviceserver.serviceremote.dto.request.company.CompanyRequest;
-import com.virnect.serviceserver.serviceremote.dto.request.company.CompanyResponse;
+import com.virnect.data.dto.request.company.CompanyRequest;
+import com.virnect.data.dto.request.company.CompanyResponse;
 import com.virnect.data.error.ErrorCode;
 import com.virnect.data.error.exception.RestServiceException;
 import com.virnect.data.global.common.ApiResponse;
 import com.virnect.data.infra.utils.LogMessage;
-import com.virnect.serviceserver.serviceremote.dto.response.company.CompanyInfoResponse;
+import com.virnect.data.dto.response.company.CompanyInfoResponse;
 
 @Slf4j
 @RestController

@@ -23,6 +23,9 @@ import com.virnect.data.domain.member.MemberStatus;
 import com.virnect.data.domain.member.MemberType;
 import com.virnect.data.domain.room.Room;
 import com.virnect.data.dto.PageMetadataResponse;
+import com.virnect.data.dto.constraint.LicenseConstants;
+import com.virnect.data.dto.mapper.MemberMapper;
+import com.virnect.data.dto.mapper.MemberWorkspaceMapper;
 import com.virnect.data.dto.rest.WorkspaceMemberInfoListResponse;
 import com.virnect.data.dto.rest.WorkspaceMemberInfoResponse;
 import com.virnect.data.error.ErrorCode;
@@ -31,22 +34,23 @@ import com.virnect.data.global.common.ApiResponse;
 import com.virnect.data.redis.application.AccessStatusService;
 import com.virnect.data.redis.domain.AccessStatus;
 import com.virnect.data.redis.domain.AccessType;
-import com.virnect.serviceserver.serviceremote.dto.constraint.LicenseConstants;
-import com.virnect.serviceserver.serviceremote.dto.response.member.MemberInfoListResponse;
-import com.virnect.serviceserver.serviceremote.dto.response.member.MemberInfoResponse;
-import com.virnect.serviceserver.serviceremote.dto.response.member.MemberSecessionResponse;
+import com.virnect.data.dto.response.member.MemberInfoListResponse;
+import com.virnect.data.dto.response.member.MemberInfoResponse;
+import com.virnect.data.dto.response.member.MemberSecessionResponse;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class MemberService {
 
-	private final ModelMapper modelMapper;
+	//private final ModelMapper modelMapper;
 	private final WorkspaceRestService workspaceRestService;
 	private final RoomRepository roomRepository;
 	private final MemberHistoryRepository memberHistoryRepository;
 
 	private final AccessStatusService accessStatusService;
+
+	private final MemberWorkspaceMapper memberWorkspaceMapper;
 
 	public WorkspaceMemberInfoListResponse getMembers(
 		String workspaceId,
@@ -141,7 +145,8 @@ public class MemberService {
 			.build();
 
 		List<MemberInfoResponse> memberInfoList = workspaceMemberInfoList.stream()
-			.map(memberInfo -> modelMapper.map(memberInfo, MemberInfoResponse.class))
+			//.map(memberInfo -> modelMapper.map(memberInfo, MemberInfoResponse.class))
+			.map(workspaceMemberInfoResponse -> memberWorkspaceMapper.toDto(workspaceMemberInfoResponse))
 			.collect(Collectors.toList());
 
 		// Redis 내 멤버 접속상태 확인
@@ -184,7 +189,8 @@ public class MemberService {
 		workspaceMemberInfoList = finalWorkspaceMemberInfoList;
 
 		List<MemberInfoResponse> memberInfoList = workspaceMemberInfoList.stream()
-			.map(memberInfo -> modelMapper.map(memberInfo, MemberInfoResponse.class))
+			//.map(memberInfo -> modelMapper.map(memberInfo, MemberInfoResponse.class))
+			.map(workspaceMemberInfoResponse -> memberWorkspaceMapper.toDto(workspaceMemberInfoResponse))
 			.collect(Collectors.toList());
 
 

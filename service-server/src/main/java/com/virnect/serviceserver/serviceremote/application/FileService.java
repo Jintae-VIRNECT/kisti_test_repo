@@ -51,26 +51,33 @@ import com.virnect.data.domain.room.Room;
 import com.virnect.data.dto.FileUploadResult;
 import com.virnect.data.dto.PageMetadataResponse;
 import com.virnect.data.dto.UploadResult;
+import com.virnect.data.dto.mapper.FileInfoMapper;
+import com.virnect.data.dto.mapper.FileUploadMapper;
+import com.virnect.data.dto.mapper.FileUserInfoMapper;
+import com.virnect.data.dto.mapper.RecordFileDetailMapper;
+import com.virnect.data.dto.mapper.RecordFileMapper;
+import com.virnect.data.dto.mapper.ShareFileInfoMapper;
+import com.virnect.data.dto.mapper.ShareUploadFileMapper;
 import com.virnect.data.dto.rest.UserInfoResponse;
 import com.virnect.data.error.ErrorCode;
 import com.virnect.data.global.common.ApiResponse;
 import com.virnect.data.infra.file.IFileManagementService;
-import com.virnect.serviceserver.serviceremote.dto.request.file.FileUploadRequest;
-import com.virnect.serviceserver.serviceremote.dto.request.file.RecordFileUploadRequest;
-import com.virnect.serviceserver.serviceremote.dto.request.file.RoomProfileUpdateRequest;
-import com.virnect.serviceserver.serviceremote.dto.response.ResultResponse;
-import com.virnect.serviceserver.serviceremote.dto.response.file.FileDeleteResponse;
-import com.virnect.serviceserver.serviceremote.dto.response.file.FileDetailInfoListResponse;
-import com.virnect.serviceserver.serviceremote.dto.response.file.FileDetailInfoResponse;
-import com.virnect.serviceserver.serviceremote.dto.response.file.FileInfoListResponse;
-import com.virnect.serviceserver.serviceremote.dto.response.file.FileInfoResponse;
-import com.virnect.serviceserver.serviceremote.dto.response.file.FilePreSignedResponse;
-import com.virnect.serviceserver.serviceremote.dto.response.file.FileUploadResponse;
-import com.virnect.serviceserver.serviceremote.dto.response.file.FileUserInfoResponse;
-import com.virnect.serviceserver.serviceremote.dto.response.file.RoomProfileUpdateResponse;
-import com.virnect.serviceserver.serviceremote.dto.response.file.ShareFileInfoListResponse;
-import com.virnect.serviceserver.serviceremote.dto.response.file.ShareFileInfoResponse;
-import com.virnect.serviceserver.serviceremote.dto.response.file.ShareFileUploadResponse;
+import com.virnect.data.dto.request.file.FileUploadRequest;
+import com.virnect.data.dto.request.file.RecordFileUploadRequest;
+import com.virnect.data.dto.request.file.RoomProfileUpdateRequest;
+import com.virnect.data.dto.response.ResultResponse;
+import com.virnect.data.dto.response.file.FileDeleteResponse;
+import com.virnect.data.dto.response.file.FileDetailInfoListResponse;
+import com.virnect.data.dto.response.file.FileDetailInfoResponse;
+import com.virnect.data.dto.response.file.FileInfoListResponse;
+import com.virnect.data.dto.response.file.FileInfoResponse;
+import com.virnect.data.dto.response.file.FilePreSignedResponse;
+import com.virnect.data.dto.response.file.FileUploadResponse;
+import com.virnect.data.dto.response.file.FileUserInfoResponse;
+import com.virnect.data.dto.response.file.RoomProfileUpdateResponse;
+import com.virnect.data.dto.response.file.ShareFileInfoListResponse;
+import com.virnect.data.dto.response.file.ShareFileInfoResponse;
+import com.virnect.data.dto.response.file.ShareFileUploadResponse;
 
 @Slf4j
 @Service
@@ -82,7 +89,14 @@ public class FileService {
 
 	private final IFileManagementService fileManagementService;
 	private final UserRestService userRestService;
-	private final ModelMapper modelMapper;
+	//private final ModelMapper modelMapper;
+	private final FileUploadMapper fileUploadMapper;
+	private final RecordFileMapper recordFileMapper;
+	private final FileInfoMapper fileInfoMapper;
+	private final FileUserInfoMapper fileUserInfoMapper;
+	private final RecordFileDetailMapper recordFileDetailMapper;
+	private final ShareUploadFileMapper shareUploadFileMapper;
+	private final ShareFileInfoMapper shareFileInfoMapper;
 
 	private final FileRepository fileRepository;
 	private final RoomRepository roomRepository;
@@ -143,7 +157,9 @@ public class FileService {
 			return new ApiResponse<>(ErrorCode.ERR_FILE_UPLOAD_FAILED);
 		}
 
-		FileUploadResponse fileUploadResponse = modelMapper.map(file, FileUploadResponse.class);
+		//FileUploadResponse fileUploadResponse = modelMapper.map(file, FileUploadResponse.class);
+		FileUploadResponse fileUploadResponse = fileUploadMapper.toDto(file);
+
 		return new ApiResponse<>(fileUploadResponse);
 	}
 
@@ -190,7 +206,7 @@ public class FileService {
 			return new ApiResponse<>(ErrorCode.ERR_FILE_UPLOAD_FAILED);
 		}
 
-		FileUploadResponse fileUploadResponse = modelMapper.map(recordFile, FileUploadResponse.class);
+		FileUploadResponse fileUploadResponse = recordFileMapper.toDto(recordFile);
 
 		return new ApiResponse<>(fileUploadResponse);
 	}
@@ -433,7 +449,8 @@ public class FileService {
 
 		List<FileInfoResponse> fileInfoList = filePage.toList()
 			.stream()
-			.map(file -> modelMapper.map(file, FileInfoResponse.class))
+			//.map(file -> modelMapper.map(file, FileInfoResponse.class))
+			.map(file -> fileInfoMapper.toDto(file))
 			.collect(Collectors.toList());
 
 		return new ApiResponse<>(new FileInfoListResponse(fileInfoList, pageMeta));
@@ -460,8 +477,11 @@ public class FileService {
 			log.info("getRecordFileInfoList : {}", recordFile.getObjectName());
 			ApiResponse<UserInfoResponse> feignResponse = userRestService.getUserInfoByUserId(recordFile.getUuid());
 
-			FileUserInfoResponse fileUserInfoResponse = modelMapper.map(feignResponse.getData(), FileUserInfoResponse.class);
-			FileDetailInfoResponse fileDetailInfoResponse = modelMapper.map(recordFile, FileDetailInfoResponse.class);
+			/*FileUserInfoResponse fileUserInfoResponse = modelMapper.map(feignResponse.getData(), FileUserInfoResponse.class);
+			FileDetailInfoResponse fileDetailInfoResponse = modelMapper.map(recordFile, FileDetailInfoResponse.class);*/
+
+			FileUserInfoResponse fileUserInfoResponse = fileUserInfoMapper.toDto(feignResponse.getData());
+			FileDetailInfoResponse fileDetailInfoResponse = recordFileDetailMapper.toDto(recordFile);
 
 			log.info("getRecordFileInfoList : {}", fileUserInfoResponse.toString());
 			fileDetailInfoResponse.setFileUserInfo(fileUserInfoResponse);
@@ -679,7 +699,8 @@ public class FileService {
 			return new ApiResponse<>(fileUploadResult.getErrorCode());
 		}
 
-		ShareFileUploadResponse fileUploadResponse = modelMapper.map(fileUploadResult.getFile(), ShareFileUploadResponse.class);
+		//ShareFileUploadResponse fileUploadResponse = modelMapper.map(fileUploadResult.getFile(), ShareFileUploadResponse.class);
+		ShareFileUploadResponse fileUploadResponse = shareUploadFileMapper.toDto(fileUploadResult.getFile());
 
 		// Get File thumbnail download url
 		ApiResponse<String> downloadUrl = downloadFileUrl(thumbnailUploadResult.getFile());
@@ -795,7 +816,8 @@ public class FileService {
 		if (!shareFilePage.isEmpty()) {
 			shareFileInfoResponses = shareFilePage
 				.stream()
-				.map(file -> modelMapper.map(file, ShareFileInfoResponse.class))
+				//.map(file -> modelMapper.map(file, ShareFileInfoResponse.class))
+				.map(file -> shareFileInfoMapper.toDto(file))
 				.collect(Collectors.toList());
 		}
 

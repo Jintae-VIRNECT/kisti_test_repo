@@ -30,19 +30,19 @@ import com.virnect.data.global.common.ApiResponse;
 import com.virnect.data.infra.utils.LogMessage;
 import com.virnect.serviceserver.global.config.property.RemoteStorageProperties;
 import com.virnect.serviceserver.serviceremote.application.FileService;
-import com.virnect.serviceserver.serviceremote.dto.request.file.FileUploadRequest;
-import com.virnect.serviceserver.serviceremote.dto.request.file.RecordFileUploadRequest;
-import com.virnect.serviceserver.serviceremote.dto.request.file.RoomProfileUpdateRequest;
-import com.virnect.serviceserver.serviceremote.dto.response.PageRequest;
-import com.virnect.serviceserver.serviceremote.dto.response.ResultResponse;
-import com.virnect.serviceserver.serviceremote.dto.response.file.FileDeleteResponse;
-import com.virnect.serviceserver.serviceremote.dto.response.file.FileDetailInfoListResponse;
-import com.virnect.serviceserver.serviceremote.dto.response.file.FileInfoListResponse;
-import com.virnect.serviceserver.serviceremote.dto.response.file.FilePreSignedResponse;
-import com.virnect.serviceserver.serviceremote.dto.response.file.FileUploadResponse;
-import com.virnect.serviceserver.serviceremote.dto.response.file.RoomProfileUpdateResponse;
-import com.virnect.serviceserver.serviceremote.dto.response.file.ShareFileInfoListResponse;
-import com.virnect.serviceserver.serviceremote.dto.response.file.ShareFileUploadResponse;
+import com.virnect.data.dto.request.file.FileUploadRequest;
+import com.virnect.data.dto.request.file.RecordFileUploadRequest;
+import com.virnect.data.dto.request.file.RoomProfileUpdateRequest;
+import com.virnect.data.dto.request.PageRequest;
+import com.virnect.data.dto.response.ResultResponse;
+import com.virnect.data.dto.response.file.FileDeleteResponse;
+import com.virnect.data.dto.response.file.FileDetailInfoListResponse;
+import com.virnect.data.dto.response.file.FileInfoListResponse;
+import com.virnect.data.dto.response.file.FilePreSignedResponse;
+import com.virnect.data.dto.response.file.FileUploadResponse;
+import com.virnect.data.dto.response.file.RoomProfileUpdateResponse;
+import com.virnect.data.dto.response.file.ShareFileInfoListResponse;
+import com.virnect.data.dto.response.file.ShareFileUploadResponse;
 
 @Slf4j
 @RestController

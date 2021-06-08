@@ -9,7 +9,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang.StringUtils;
-import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -36,6 +35,26 @@ import com.virnect.data.domain.session.SessionProperty;
 import com.virnect.data.domain.session.SessionPropertyHistory;
 import com.virnect.data.domain.session.SessionType;
 import com.virnect.data.dto.PageMetadataResponse;
+import com.virnect.data.dto.constraint.LicenseItem;
+import com.virnect.data.dto.mapper.MemberMapper;
+import com.virnect.data.dto.mapper.RoomDetailMapper;
+import com.virnect.data.dto.mapper.RoomMapper;
+import com.virnect.data.dto.push.SendSignalRequest;
+import com.virnect.data.dto.request.room.InviteRoomRequest;
+import com.virnect.data.dto.request.room.JoinRoomRequest;
+import com.virnect.data.dto.request.room.KickRoomRequest;
+import com.virnect.data.dto.request.room.ModifyRoomInfoRequest;
+import com.virnect.data.dto.request.room.RoomRequest;
+import com.virnect.data.dto.response.ResultResponse;
+import com.virnect.data.dto.response.member.MemberInfoResponse;
+import com.virnect.data.dto.response.room.CoturnResponse;
+import com.virnect.data.dto.response.room.InviteRoomResponse;
+import com.virnect.data.dto.response.room.KickRoomResponse;
+import com.virnect.data.dto.response.room.RoomDeleteResponse;
+import com.virnect.data.dto.response.room.RoomDetailInfoResponse;
+import com.virnect.data.dto.response.room.RoomInfoListResponse;
+import com.virnect.data.dto.response.room.RoomInfoResponse;
+import com.virnect.data.dto.response.room.RoomResponse;
 import com.virnect.data.dto.rest.WorkspaceMemberInfoListResponse;
 import com.virnect.data.dto.rest.WorkspaceMemberInfoResponse;
 import com.virnect.data.error.ErrorCode;
@@ -44,24 +63,7 @@ import com.virnect.data.infra.utils.LogMessage;
 import com.virnect.serviceserver.global.config.RemoteServiceConfig;
 import com.virnect.serviceserver.serviceremote.api.SessionRestController;
 import com.virnect.serviceserver.serviceremote.dao.SessionDataRepository;
-import com.virnect.serviceserver.serviceremote.dto.constraint.LicenseItem;
 import com.virnect.serviceserver.serviceremote.dto.constraint.PushConstants;
-import com.virnect.serviceserver.serviceremote.dto.push.SendSignalRequest;
-import com.virnect.serviceserver.serviceremote.dto.request.room.InviteRoomRequest;
-import com.virnect.serviceserver.serviceremote.dto.request.room.JoinRoomRequest;
-import com.virnect.serviceserver.serviceremote.dto.request.room.KickRoomRequest;
-import com.virnect.serviceserver.serviceremote.dto.request.room.ModifyRoomInfoRequest;
-import com.virnect.serviceserver.serviceremote.dto.request.room.RoomRequest;
-import com.virnect.serviceserver.serviceremote.dto.response.CoturnResponse;
-import com.virnect.serviceserver.serviceremote.dto.response.ResultResponse;
-import com.virnect.serviceserver.serviceremote.dto.response.member.MemberInfoResponse;
-import com.virnect.serviceserver.serviceremote.dto.response.room.InviteRoomResponse;
-import com.virnect.serviceserver.serviceremote.dto.response.room.KickRoomResponse;
-import com.virnect.serviceserver.serviceremote.dto.response.room.RoomDeleteResponse;
-import com.virnect.serviceserver.serviceremote.dto.response.room.RoomDetailInfoResponse;
-import com.virnect.serviceserver.serviceremote.dto.response.room.RoomInfoListResponse;
-import com.virnect.serviceserver.serviceremote.dto.response.room.RoomInfoResponse;
-import com.virnect.serviceserver.serviceremote.dto.response.room.RoomResponse;
 
 @Slf4j
 @Service
@@ -71,7 +73,7 @@ public class RoomService {
 	private static final String TAG = SessionRestController.class.getSimpleName();
 	private static final String REST_PATH = "/remote/room";
 
-	private final ModelMapper modelMapper;
+	//private final ModelMapper modelMapper;
 
 	private final RoomRepository roomRepository;
 	private final SessionDataRepository sessionDataRepository;
@@ -80,6 +82,10 @@ public class RoomService {
 	private final MemberRepository memberRepository;
 	private final ServiceSessionManager serviceSessionManager;
 	private final FileService fileService;
+
+	private final RoomMapper roomMapper;
+	private final RoomDetailMapper roomDetailMapper;
+	private final MemberMapper memberMapper;
 
 	@Override
 	protected Object clone() throws CloneNotSupportedException {
@@ -522,11 +528,13 @@ public class RoomService {
 		ApiResponse<WorkspaceMemberInfoListResponse> memberInfo = workspaceRestService.getWorkspaceMemberInfoList(workspaceId, userIds);
 
 		// mapping data
-		RoomDetailInfoResponse roomDetailInfoResponse = modelMapper.map(room, RoomDetailInfoResponse.class);
+		RoomDetailInfoResponse roomDetailInfoResponse = roomDetailMapper.toDto(room);
+		//RoomDetailInfoResponse roomDetailInfoResponse = modelMapper.map(room, RoomDetailInfoResponse.class);
 		roomDetailInfoResponse.setSessionType(room.getSessionProperty().getSessionType());
 
 		List<MemberInfoResponse> memberInfoList = room.getMembers().stream()
-			.map(member -> modelMapper.map(member, MemberInfoResponse.class))
+			//.map(member -> modelMapper.map(member, MemberInfoResponse.class))
+			.map(member -> memberMapper.toDto(member))
 			.collect(Collectors.toList());
 
 		for (MemberInfoResponse memberInfoResponse : memberInfoList) {
@@ -671,14 +679,16 @@ public class RoomService {
 		Room updatedRoom = roomRepository.save(room);
 
 		// mapping data
-		RoomDetailInfoResponse roomDetailInfoResponse = modelMapper.map(updatedRoom, RoomDetailInfoResponse.class);
+		RoomDetailInfoResponse roomDetailInfoResponse = roomDetailMapper.toDto(room);
+		//RoomDetailInfoResponse roomDetailInfoResponse = modelMapper.map(updatedRoom, RoomDetailInfoResponse.class);
 		roomDetailInfoResponse.setSessionType(updatedRoom.getSessionProperty().getSessionType());
 		// Get Member List by Room Session ID
 		// Mapping Member List Data to Member Information List
 		List<MemberInfoResponse> memberInfoList = memberRepository.findAllBySessionId(sessionId)
 			.stream()
 			.filter(member -> !(member.getMemberStatus() == MemberStatus.EVICTED))
-			.map(member -> modelMapper.map(member, MemberInfoResponse.class))
+			//.map(member -> modelMapper.map(member, MemberInfoResponse.class))
+			.map(member -> memberMapper.toDto(member))
 			.collect(Collectors.toList());
 
 		// find and get extra information from use-server using uuid
@@ -833,12 +843,15 @@ public class RoomService {
 
 		// Make Response data
 		for (Room room : roomPage.getContent()) {
-			RoomInfoResponse roomInfoResponse = modelMapper.map(room, RoomInfoResponse.class);
+
+			RoomInfoResponse roomInfoResponse = roomMapper.toDto(room);
+			//RoomInfoResponse roomInfoResponse = modelMapper.map(room, RoomInfoResponse.class);
 			roomInfoResponse.setSessionType(room.getSessionProperty().getSessionType());
 
 			// Mapping Member List Data to Member Information List
 			List<MemberInfoResponse> memberInfoList = room.getMembers().stream()
-				.map(member -> modelMapper.map(member, MemberInfoResponse.class))
+				//.map(member -> modelMapper.map(member, MemberInfoResponse.class))
+				.map(member -> memberMapper.toDto(member))
 				.collect(Collectors.toList());
 
 			for (MemberInfoResponse memberInfoResponse : memberInfoList) {

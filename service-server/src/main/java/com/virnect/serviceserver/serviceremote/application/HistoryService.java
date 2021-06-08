@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang.StringUtils;
-import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -16,25 +15,24 @@ import lombok.extern.slf4j.Slf4j;
 import com.virnect.data.application.workspace.WorkspaceRestService;
 import com.virnect.data.dao.memberhistory.MemberHistoryRepository;
 import com.virnect.data.dao.roomhistory.RoomHistoryRepository;
-import com.virnect.data.domain.member.Member;
 import com.virnect.data.domain.member.MemberHistory;
-import com.virnect.data.domain.member.MemberStatus;
 import com.virnect.data.domain.member.MemberType;
 import com.virnect.data.domain.roomhistory.RoomHistory;
 import com.virnect.data.dto.PageMetadataResponse;
+import com.virnect.data.dto.mapper.MemberHistoryMapper;
+import com.virnect.data.dto.mapper.RoomHistoryDetailInfoMapper;
+import com.virnect.data.dto.mapper.RoomHistoryInfoMapper;
+import com.virnect.data.dto.request.room.RoomHistoryDeleteRequest;
+import com.virnect.data.dto.response.ResultResponse;
+import com.virnect.data.dto.response.member.MemberInfoResponse;
+import com.virnect.data.dto.response.room.RoomHistoryDetailInfoResponse;
+import com.virnect.data.dto.response.room.RoomHistoryInfoListResponse;
+import com.virnect.data.dto.response.room.RoomHistoryInfoResponse;
 import com.virnect.data.dto.rest.WorkspaceMemberInfoListResponse;
 import com.virnect.data.dto.rest.WorkspaceMemberInfoResponse;
 import com.virnect.data.error.ErrorCode;
 import com.virnect.data.global.common.ApiResponse;
-import com.virnect.data.global.util.ListUtils;
 import com.virnect.data.infra.utils.LogMessage;
-import com.virnect.serviceserver.serviceremote.dto.request.room.RoomHistoryDeleteRequest;
-import com.virnect.serviceserver.serviceremote.dto.response.ResultResponse;
-import com.virnect.serviceserver.serviceremote.dto.response.member.MemberInfoResponse;
-import com.virnect.serviceserver.serviceremote.dto.response.room.RoomDetailInfoResponse;
-import com.virnect.serviceserver.serviceremote.dto.response.room.RoomHistoryDetailInfoResponse;
-import com.virnect.serviceserver.serviceremote.dto.response.room.RoomHistoryInfoListResponse;
-import com.virnect.serviceserver.serviceremote.dto.response.room.RoomHistoryInfoResponse;
 
 @Slf4j
 @Service
@@ -44,7 +42,10 @@ public class HistoryService {
 	private final WorkspaceRestService workspaceRestService;
 	private final RoomHistoryRepository roomHistoryRepository;
 	private final MemberHistoryRepository memberHistoryRepository;
-	private final ModelMapper modelMapper;
+	//private final ModelMapper modelMapper;
+	private final RoomHistoryDetailInfoMapper roomHistoryDetailMapper;
+	private final RoomHistoryInfoMapper roomHistoryInfoMapper;
+	private final MemberHistoryMapper memberHistoryMapper;
 
 	private List<MemberInfoResponse> setLeader(List<MemberInfoResponse> members) {
 		members.sort((t1, t2) -> {
@@ -157,11 +158,14 @@ public class HistoryService {
 		ApiResponse<WorkspaceMemberInfoListResponse> memberInfo = workspaceRestService.getWorkspaceMemberInfoList(workspaceId, userIds);
 
 		// mapping data
-		RoomHistoryDetailInfoResponse resultResponse = modelMapper.map(roomHistory, RoomHistoryDetailInfoResponse.class);
+		//RoomHistoryDetailInfoResponse resultResponse = modelMapper.map(roomHistory, RoomHistoryDetailInfoResponse.class);
+		RoomHistoryDetailInfoResponse resultResponse = roomHistoryDetailMapper.toDto(roomHistory);
+
 		resultResponse.setSessionType(roomHistory.getSessionPropertyHistory().getSessionType());
 
 		List<MemberInfoResponse> memberInfoList = roomHistory.getMemberHistories().stream()
-			.map(member -> modelMapper.map(member, MemberInfoResponse.class))
+			//.map(member -> modelMapper.map(member, MemberInfoResponse.class))
+			.map(memberHistory -> memberHistoryMapper.toDto(memberHistory))
 			.collect(Collectors.toList());
 
 		for (MemberInfoResponse memberInfoResponse : memberInfoList) {
@@ -273,11 +277,13 @@ public class HistoryService {
 
 		// Make Response data
 		for (RoomHistory roomHistory : roomHistoryPage.getContent()) {
-			RoomHistoryInfoResponse roomHistoryInfoResponse = modelMapper.map(roomHistory, RoomHistoryInfoResponse.class);
+			//RoomHistoryInfoResponse roomHistoryInfoResponse = modelMapper.map(roomHistory, RoomHistoryInfoResponse.class);
+			RoomHistoryInfoResponse roomHistoryInfoResponse = roomHistoryInfoMapper.toDto(roomHistory);
 			roomHistoryInfoResponse.setSessionType(roomHistory.getSessionPropertyHistory().getSessionType());
 
 			List<MemberInfoResponse> memberInfoList = roomHistory.getMemberHistories().stream()
-					.map(member -> modelMapper.map(member, MemberInfoResponse.class))
+					//.map(member -> modelMapper.map(member, MemberInfoResponse.class))
+					.map(memberHistory -> memberHistoryMapper.toDto(memberHistory))
 					.collect(Collectors.toList());
 
 			// find and get extra information from use-server using uuid

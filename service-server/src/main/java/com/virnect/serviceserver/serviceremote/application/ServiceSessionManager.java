@@ -16,10 +16,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.DependsOn;
 import org.springframework.data.redis.listener.ChannelTopic;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.util.ObjectUtils;
-import org.springframework.web.client.RestTemplate;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -33,6 +31,7 @@ import lombok.extern.slf4j.Slf4j;
 import com.virnect.client.RemoteServiceException;
 import com.virnect.data.application.workspace.WorkspaceRestService;
 import com.virnect.data.dto.PageMetadataResponse;
+import com.virnect.data.dto.mapper.MemberWorkspaceMapper;
 import com.virnect.data.dto.rest.WorkspaceMemberInfoResponse;
 import com.virnect.data.error.ErrorCode;
 import com.virnect.data.global.common.ApiResponse;
@@ -56,11 +55,11 @@ import com.virnect.mediaserver.core.SessionManager;
 import com.virnect.mediaserver.kurento.core.KurentoSession;
 import com.virnect.mediaserver.kurento.core.KurentoSessionListener;
 import com.virnect.mediaserver.kurento.core.KurentoTokenOptions;
-import com.virnect.serviceserver.serviceremote.dto.request.session.ForceLogoutRequest;
-import com.virnect.serviceserver.serviceremote.dto.response.member.MemberInfoListResponse;
-import com.virnect.serviceserver.serviceremote.dto.response.member.MemberInfoResponse;
-import com.virnect.serviceserver.serviceremote.dto.response.session.SessionData;
-import com.virnect.serviceserver.serviceremote.dto.response.session.SessionTokenData;
+import com.virnect.data.dto.request.session.ForceLogoutRequest;
+import com.virnect.data.dto.response.member.MemberInfoListResponse;
+import com.virnect.data.dto.response.member.MemberInfoResponse;
+import com.virnect.data.dto.response.session.SessionData;
+import com.virnect.data.dto.response.session.SessionTokenData;
 import com.virnect.serviceserver.serviceremote.dao.SessionDataRepository;
 
 @Slf4j
@@ -78,9 +77,11 @@ public class ServiceSessionManager {
 
 	private final AccessStatusService accessStatusService;
 	private final WorkspaceRestService workspaceRestService;
-	private final ModelMapper modelMapper;
+	//private final ModelMapper modelMapper;
 	private static final ChannelTopic REDIS_CHANNEL = new ChannelTopic("force-logout");
 	private final RedisPublisher redisPublisher;
+
+	private final MemberWorkspaceMapper memberWorkspaceMapper;
 
 	@Autowired
 	public void setSessionManager(SessionManager sessionManager) {
@@ -754,7 +755,8 @@ public class ServiceSessionManager {
 			}
 			// Mapper Response
 			failMembersResponse = failMembers.stream()
-				.map(memberInfo -> modelMapper.map(memberInfo, MemberInfoResponse.class))
+				//.map(memberInfo -> modelMapper.map(memberInfo, MemberInfoResponse.class))
+				.map(workspaceMemberInfoResponse -> memberWorkspaceMapper.toDto(workspaceMemberInfoResponse))
 				.collect(Collectors.toList());
 			// 페이징 데이터 셋팅 (페이징 사용안함)
 			pageMeta = PageMetadataResponse.builder()
@@ -810,7 +812,7 @@ public class ServiceSessionManager {
 		if (failMembers.size() > 0) {
 			// Mapper Response
 			failMembersResponse = failMembers.stream()
-				.map(memberInfo -> modelMapper.map(memberInfo, MemberInfoResponse.class))
+				.map(workspaceMemberInfoResponse -> memberWorkspaceMapper.toDto(workspaceMemberInfoResponse))
 				.collect(Collectors.toList());
 			// 페이징 데이터 셋팅 (페이징 사용안함)
 			pageMeta = PageMetadataResponse.builder()

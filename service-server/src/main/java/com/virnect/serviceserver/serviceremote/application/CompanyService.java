@@ -1,28 +1,5 @@
 package com.virnect.serviceserver.serviceremote.application;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
-import com.virnect.data.dao.company.CompanyRepository;
-import com.virnect.data.domain.Company;
-import com.virnect.data.domain.Language;
-import com.virnect.data.domain.session.SessionType;
-import com.virnect.data.error.ErrorCode;
-import com.virnect.data.global.common.ApiResponse;
-import com.virnect.data.infra.utils.JsonUtil;
-import com.virnect.data.infra.utils.LogMessage;
-import com.virnect.serviceserver.serviceremote.dto.constraint.CompanyConstants;
-import com.virnect.serviceserver.serviceremote.dto.constraint.LanguageCode;
-import com.virnect.serviceserver.serviceremote.dto.constraint.LicenseItem;
-import com.virnect.serviceserver.serviceremote.dto.constraint.TranslationItem;
-import com.virnect.serviceserver.serviceremote.dto.request.company.CompanyRequest;
-import com.virnect.serviceserver.serviceremote.dto.request.company.CompanyResponse;
-import com.virnect.serviceserver.serviceremote.dto.response.company.CompanyInfoResponse;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang.StringUtils;
-import org.modelmapper.ModelMapper;
-import org.springframework.stereotype.Service;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Path;
@@ -31,6 +8,32 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
+import org.springframework.stereotype.Service;
+
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+
+import com.virnect.data.dao.company.CompanyRepository;
+import com.virnect.data.domain.Company;
+import com.virnect.data.domain.Language;
+import com.virnect.data.domain.session.SessionType;
+import com.virnect.data.dto.constraint.CompanyConstants;
+import com.virnect.data.dto.constraint.LanguageCode;
+import com.virnect.data.dto.constraint.LicenseItem;
+import com.virnect.data.dto.constraint.TranslationItem;
+import com.virnect.data.dto.mapper.CompanyMapper;
+import com.virnect.data.dto.request.company.CompanyRequest;
+import com.virnect.data.dto.request.company.CompanyResponse;
+import com.virnect.data.dto.response.company.CompanyInfoResponse;
+import com.virnect.data.error.ErrorCode;
+import com.virnect.data.global.common.ApiResponse;
+import com.virnect.data.infra.utils.JsonUtil;
+import com.virnect.data.infra.utils.LogMessage;
+
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -38,7 +41,9 @@ public class CompanyService {
 
 	private static final String TAG = CompanyService.class.getSimpleName();
 
-	private final ModelMapper modelMapper;
+	//private final ModelMapper modelMapper;
+	private final CompanyMapper companyMapper;
+
 	private final SessionTransactionalService sessionService;
 	private final CompanyRepository companyRepository;
 
@@ -175,7 +180,8 @@ public class CompanyService {
 			return new ApiResponse<>(ErrorCode.ERR_COMPANY_INVALID_CODE);
 		}
 
-		CompanyInfoResponse companyInfoResponse = modelMapper.map(company, CompanyInfoResponse.class);
+		//CompanyInfoResponse companyInfoResponse = modelMapper.map(company, CompanyInfoResponse.class);
+		CompanyInfoResponse companyInfoResponse = companyMapper.toDto(company);
 		Language language = company.getLanguage();
 		List<LanguageCode> languageCodes = combineLanguageCode(language);
 		companyInfoResponse.setLanguageCodes(languageCodes);

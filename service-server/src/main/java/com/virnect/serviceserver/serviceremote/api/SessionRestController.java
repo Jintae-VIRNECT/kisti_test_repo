@@ -24,6 +24,9 @@ import lombok.extern.slf4j.Slf4j;
 import springfox.documentation.annotations.ApiIgnore;
 
 import com.virnect.data.dto.PushSendRequest;
+import com.virnect.data.dto.push.SendSignalRequest;
+import com.virnect.data.dto.request.PageRequest;
+import com.virnect.data.dto.response.ResultResponse;
 import com.virnect.data.dto.rest.PushResponse;
 import com.virnect.data.error.ErrorCode;
 import com.virnect.data.error.exception.RestServiceException;
@@ -32,20 +35,17 @@ import com.virnect.data.infra.utils.LogMessage;
 import com.virnect.serviceserver.serviceremote.application.PushMessageClient;
 import com.virnect.serviceserver.serviceremote.application.RoomService;
 import com.virnect.serviceserver.serviceremote.application.ServiceSessionManager;
-import com.virnect.serviceserver.serviceremote.dto.push.SendSignalRequest;
-import com.virnect.serviceserver.serviceremote.dto.request.room.InviteRoomRequest;
-import com.virnect.serviceserver.serviceremote.dto.request.room.JoinRoomRequest;
-import com.virnect.serviceserver.serviceremote.dto.request.room.KickRoomRequest;
-import com.virnect.serviceserver.serviceremote.dto.request.room.ModifyRoomInfoRequest;
-import com.virnect.serviceserver.serviceremote.dto.request.room.RoomRequest;
-import com.virnect.serviceserver.serviceremote.dto.request.session.ForceLogoutRequest;
-import com.virnect.serviceserver.serviceremote.dto.response.PageRequest;
-import com.virnect.serviceserver.serviceremote.dto.response.ResultResponse;
-import com.virnect.serviceserver.serviceremote.dto.response.member.MemberInfoListResponse;
-import com.virnect.serviceserver.serviceremote.dto.response.room.RoomDeleteResponse;
-import com.virnect.serviceserver.serviceremote.dto.response.room.RoomDetailInfoResponse;
-import com.virnect.serviceserver.serviceremote.dto.response.room.RoomInfoListResponse;
-import com.virnect.serviceserver.serviceremote.dto.response.room.RoomResponse;
+import com.virnect.data.dto.request.room.InviteRoomRequest;
+import com.virnect.data.dto.request.room.JoinRoomRequest;
+import com.virnect.data.dto.request.room.KickRoomRequest;
+import com.virnect.data.dto.request.room.ModifyRoomInfoRequest;
+import com.virnect.data.dto.request.room.RoomRequest;
+import com.virnect.data.dto.request.session.ForceLogoutRequest;
+import com.virnect.data.dto.response.member.MemberInfoListResponse;
+import com.virnect.data.dto.response.room.RoomDeleteResponse;
+import com.virnect.data.dto.response.room.RoomDetailInfoResponse;
+import com.virnect.data.dto.response.room.RoomInfoListResponse;
+import com.virnect.data.dto.response.room.RoomResponse;
 
 @Slf4j
 @RestController

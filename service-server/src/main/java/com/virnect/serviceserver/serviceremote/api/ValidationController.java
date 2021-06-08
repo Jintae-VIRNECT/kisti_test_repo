@@ -16,7 +16,7 @@ import com.virnect.data.error.exception.RestServiceException;
 import com.virnect.data.global.common.ApiResponse;
 import com.virnect.data.infra.utils.LogMessage;
 import com.virnect.serviceserver.serviceremote.application.ValidationService;
-import com.virnect.serviceserver.serviceremote.dto.response.license.LicenseItemResponse;
+import com.virnect.data.dto.response.license.LicenseItemResponse;
 
 @Slf4j
 @RestController
