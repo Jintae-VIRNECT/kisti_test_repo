@@ -36,19 +36,19 @@ public class MessageDelegator implements MessageListener {
 			StatusMessage statusMessage = objectMapper.readValue(body, StatusMessage.class);
 			switch (statusMessage.getStatus()) {
 				case LOGIN_STATUS :
-					log.info("[REDIS:POST] login uuid : " + statusMessage.getUserUUID());
+					log.info("[REDIS:POST] login uuid : " + statusMessage.getUserId());
 					accessStatusService.saveAccessStatus(
-						statusMessage.getWorkspaceId() + "_" + statusMessage.getUserUUID(),
+						statusMessage.getWorkspaceId() + "_" + statusMessage.getUserId(),
 						AccessType.LOGIN,
-						statusMessage.getUserUUID()
+						statusMessage.getUserId()
 					);
 					break;
 				case LOGOUT_STATUS :
-					log.info("[REDIS:POST] logout uuid : " + statusMessage.getUserUUID());
+					log.info("[REDIS:POST] logout uuid : " + statusMessage.getUserId());
 					accessStatusService.saveAccessStatus(
-						statusMessage.getWorkspaceId() + "_" + statusMessage.getUserUUID(),
+						statusMessage.getWorkspaceId() + "_" + statusMessage.getUserId(),
 						AccessType.LOGOUT,
-						statusMessage.getUserUUID()
+						statusMessage.getUserId()
 					);
 					break;
 			}
