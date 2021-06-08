@@ -25,15 +25,17 @@ let myWorkspaces = []
 const intervalTime = 5 * 60 * 1000 // 5 minutes
 const renewvalTime = 10 * 60 // 5 minutes
 const statusReconnectIntervalTime = 4 * 1000 // 4sec
-const reRegistIntervalTime = 4 * 1000 // 4sec
+//const reRegistIntervalTime = 4 * 1000 // 4sec
 const pingCheckIntervalTime = 12 * 1000 //12sec
 let interval
 let socket //멤버 상태 소켓
 let reConnectIntervalId
 let pingIntervalId
 let reRegistIntervalId
-let reRegistCount = 0 //재등록 실패시 실행하는 재등록 시도 횟수 (3회 까지시도하고 중지하기 위함)
+//let reRegistCount = 0 //재등록 실패시 실행하는 재등록 시도 횟수 (3회 까지시도하고 중지하기 위함)
 let isRegisted = false //이미 등록완료된 상태에서 멤버 상태 소켓에 재연결 방지하기 위한 플래그
+let savedWorkspaceId //기존 workspaceId, workspaceId 변경 확인 하기 위함
+let changingWorkspaceId //변경 요청 중인 workspaceId 변경 완료 응답 받은 후 savedWorksapceId에 저장
 
 /**
  * 메소드
@@ -115,9 +117,13 @@ const resetPingCheckInterval = () => {
 
 //사용자 상태 소켓 연결/등록
 const initLoginStatus = (
+  workspaceId,
   onDuplicatedRegistrationCallback,
   onRemoteExitReceivedCallback,
   onForceLogoutReceivedCallback,
+  onWorkspaceDuplicatedCallback,
+  onRegistrationFailCallback,
+  onWorkspaceUpdateFailCallback,
 ) => {
   if (window.urls && window.urls['ws']) {
     const wssUrl = window.urls['ws']
@@ -127,19 +133,27 @@ const initLoginStatus = (
       socket = new WebSocket(`${wssUrl}/auth/status`)
     } catch (e) {
       //초기 연결 실패시 재접속 인터벌 실행
-      console.error('auth status websocket connection error', e)
+      console.error('[auth status] websocket connection error', e)
       reConnectIntervalId = setInterval(() => {
         isRegisted = false
-        logger('connect retry')
-        initLoginStatus(onDuplicatedRegistrationCallback)
+        logger('[auth status] connect retry')
+        initLoginStatus(
+          workspaceId,
+          onDuplicatedRegistrationCallback,
+          onRemoteExitReceivedCallback,
+          onForceLogoutReceivedCallback,
+          onWorkspaceDuplicatedCallback,
+          onRegistrationFailCallback,
+          onWorkspaceUpdateFailCallback,
+        )
       }, statusReconnectIntervalTime)
       return
     }
 
     //소켓 연결
     socket.onopen = e => {
-      logger('auth status opened', e)
-      reRegistCount = 0 //재등록 실패시 재등록 시도 수 초기화
+      logger('[auth status] socket opened', e)
+      //reRegistCount = 0 //재등록 실패시 재등록 시도 수 초기화
 
       //메시지 수신
       socket.onmessage = e => {
@@ -154,11 +168,19 @@ const initLoginStatus = (
             pingIntervalId = setInterval(() => {
               isRegisted = false
               console.error(
-                'auth status websocket ping not received, reconnect',
+                '[auth status] websocket ping not received, reconnect',
               )
               socket.close()
               resetReRegistInterval() //재등록 실패 후 소켓연결이 끊긴 경우라면 재등록 시도를 초기화하기 위함
-              initLoginStatus(onDuplicatedRegistrationCallback) //재접속 시도
+              initLoginStatus(
+                workspaceId,
+                onDuplicatedRegistrationCallback,
+                onRemoteExitReceivedCallback,
+                onForceLogoutReceivedCallback,
+                onWorkspaceDuplicatedCallback,
+                onRegistrationFailCallback,
+                onWorkspaceUpdateFailCallback,
+              ) //재접속 시도
             }, pingCheckIntervalTime)
             return
           }
@@ -170,7 +192,7 @@ const initLoginStatus = (
             //연결 수립 완료 메시지 수신 시 유저 정보 전송하여 등록절차를 밟는다.
             case AUTH_STATUS.CONNECT_SUCCESS:
               logger(
-                'connect success, regist : ',
+                '[auth status] connect success, regist : ',
                 myInfo.uuid,
                 myInfo.name,
                 myInfo.email,
@@ -178,82 +200,152 @@ const initLoginStatus = (
 
               //유저 정보 등록
               sendCommand(COMMAND.REGISTER, {
-                uuid: myInfo.uuid,
-                name: myInfo.name,
+                userId: myInfo.uuid,
+                nickname: myInfo.name,
                 email: myInfo.email,
+                workspaceId,
               })
+
               break
 
             //등록완료
             case AUTH_STATUS.REGISTRATION_SUCCESS:
               isRegisted = true
-              logger('Registration Success : ', e.data)
-              //session id 저장 : 중복 로그인으로 인한 로그아웃 요청 수신 시 로그아웃 시킬 기기 구분하기 위해 사용
-              window.vue.$store.commit(STATUS_SESSION_ID_SET, data.sessionId)
+              savedWorkspaceId = workspaceId // 기존 workspaceId 업데이트
+              logger('[auth status] Registration Success : ', e.data)
               break
 
             //중복 로그인 등록 or 해당 유저 협업 중
             case AUTH_STATUS.DUPLICATED_REGISTRATION:
               isRegisted = false
-              logger('Registration Fail(duplcated session exist) : ', e.data)
-
-              //session id 저장 : 기접속자 로그아웃 요청 시 로그아웃 시킬 기기 구분하기 위해 저장
-              window.vue.$store.commit(STATUS_SESSION_ID_SET, data.sessionId)
+              logger(
+                '[auth status] Registration Fail(duplcated session exist) : ',
+                e.data,
+              )
 
               //중복된 기 접속자가 있는 경우 처리 콜백
               onDuplicatedRegistrationCallback(
                 {
                   currentStatus: data.currentStatus,
-                  sessionId: data.sessionId,
-                  userId: data.userUUID,
+                  userId: data.userId,
                   myInfo,
                 },
                 socket,
               )
               break
 
-            //등록 실패 시 재등록 시도
+            //등록 실패 시 재시도/종료 팝업
             case AUTH_STATUS.REGISTRATION_FAIL:
               isRegisted = false
-              console.error('Registration Fail : ', e.data)
+              console.error('[auth status] Registration Fail : ', e.data)
+              onRegistrationFailCallback(
+                {
+                  userId: myInfo.uuid,
+                  nickname: myInfo.name,
+                  email: myInfo.email,
+                  workspaceId,
+                },
+                socket,
+              )
 
-              //3번까지 재등록 시도
-              if (reRegistCount < 3) {
-                reRegistIntervalId = setInterval(() => {
-                  isRegisted = false
-                  reRegistCount++
-                  sendCommand(COMMAND.REGISTER, {
-                    uuid: myInfo.uuid,
-                    name: myInfo.name,
-                    email: myInfo.email,
-                  })
-                }, reRegistIntervalTime)
-              }
+              // //3번까지 재등록 시도
+              // if (reRegistCount < 3) {
+              //   reRegistIntervalId = setInterval(() => {
+              //     isRegisted = false
+              //     reRegistCount++
+              //     sendCommand(COMMAND.REGISTER, {
+              //       userId: myInfo.uuid,
+              //       nickname: myInfo.name,
+              //       email: myInfo.email,
+              //       workspaceId,
+              //     })
+              //   }, reRegistIntervalTime)
+              // }
               break
 
             //원격 종료 요청 성공 시 (서버에서 당사자 상태 값이 변경되므로, 이 응답이 해당 유저 로그아웃 완료를 보장함)
             case AUTH_STATUS.REMOTE_EXIT_REQ_SUCCESS:
-              //자신이 보낸 요청에 대한 응답인지를 체크한 후 재등록 실행한다
-              if (
-                window.vue.$store.getters.statusSessionId === data.sessionId
-              ) {
+              //워스크페이스 변경에 대한 원격 종료
+              if (changingWorkspaceId) {
+                //workspace 변경 재요청
+                sendCommand(COMMAND.WORKSPACE_UPDATE, {
+                  userId: myInfo.uuid,
+                  workspaceId: changingWorkspaceId,
+                })
+              } else {
                 //유저 정보 재등록 요청
                 sendCommand(COMMAND.REGISTER, {
-                  uuid: myInfo.uuid,
-                  name: myInfo.name,
+                  userId: myInfo.uuid,
+                  nickname: myInfo.name,
                   email: myInfo.email,
+                  workspaceId,
                 })
               }
+
               break
 
-            //원격 종료 요청 실패
+            //원격 종료 요청 실패 - 워크스페이스 되돌리기 & 재시도
             case AUTH_STATUS.REMOTE_EXIT_REQ_FAIL_NOT_FOUND:
-              console.error('Remote exit request not found')
+              console.error('[auth status] Remote exit request not found')
+
+              //재등록 혹은 재변경 요청을 실행해 정상적으로 진입 혹은 변경되거나, 중복 로그인 팝업 띄우는 케이스로 보낸다.
+
+              //워스크페이스 변경에 대한 원격 종료
+              if (changingWorkspaceId) {
+                //workspace 변경 재요청
+                sendCommand(COMMAND.WORKSPACE_UPDATE, {
+                  userId: myInfo.uuid,
+                  workspaceId: changingWorkspaceId,
+                })
+              } else {
+                //유저 정보 재등록 요청
+                sendCommand(COMMAND.REGISTER, {
+                  userId: myInfo.uuid,
+                  nickname: myInfo.name,
+                  email: myInfo.email,
+                  workspaceId,
+                })
+              }
               break
 
             //원격 종료
             case AUTH_STATUS.REMOTE_EXIT_RECEIVED:
               onRemoteExitReceivedCallback()
+              break
+
+            //워크스페이스 변경 성공
+            case AUTH_STATUS.WORKSPACE_UPDATE_SUCCESS:
+              savedWorkspaceId = changingWorkspaceId
+              changingWorkspaceId = null
+              logger('[auth status] Workspace Update Success : ', e.data)
+              break
+
+            //워스스페이스 변경 실패 - 중복 로그인
+            case AUTH_STATUS.WORKSPACE_UPDATE_DUPLICATED:
+              logger('[auth status] Workspace Update Duplicated : ', e.data)
+              onWorkspaceDuplicatedCallback(
+                {
+                  currentStatus: data.currentStatus,
+                  workspaceId: changingWorkspaceId,
+                  oldWorkspaceId: savedWorkspaceId,
+                  userId: myInfo.uuid,
+                },
+                socket,
+              )
+              break
+
+            //워크스페이스 변경 실패 - 워크스페이스 되돌리기 & 재시도
+            case AUTH_STATUS.WORKSPACE_UPDATE_FAIL:
+              console.error('[auth status] Workspace update fail')
+              onWorkspaceUpdateFailCallback(
+                {
+                  oldWorkspaceId: savedWorkspaceId,
+                  workspaceId: changingWorkspaceId,
+                  userId: myInfo.uuid,
+                },
+                socket,
+              )
+              changingWorkspaceId = null
               break
 
             //마스터 강제 로그아웃 수신
@@ -264,7 +356,7 @@ const initLoginStatus = (
             //예외 케이스
             default:
               isRegisted = false
-              console.error('auth status exception : ', e.data)
+              console.error('[auth status] exception : ', e.data)
           }
         }
       }
@@ -284,7 +376,7 @@ const sendCommand = (command, data) => {
 //사용자 상태 소켓 연결 해제
 const endLoginStatus = () => {
   if (socket) {
-    debug('auth status socket close')
+    debug('[auth status] socket close')
     isRegisted = false
     resetPingCheckInterval()
     resetReConnectInterval()
@@ -387,22 +479,12 @@ class Auth {
    * @param {Function} onForceLogoutReceivedCallback - 마스터에 의한 강제로그아웃 수신시 콜백함수
    * @returns { account, workspace }
    */
-  async init(
-    onDuplicatedRegistrationCallback,
-    onRemoteExitReceivedCallback,
-    onForceLogoutReceivedCallback,
-  ) {
+  async init() {
     if (Cookies.get('accessToken')) {
       try {
         await getMyInfo()
         isLogin = true
         tokenRenewal()
-        if (!isRegisted)
-          initLoginStatus(
-            onDuplicatedRegistrationCallback,
-            onRemoteExitReceivedCallback,
-            onForceLogoutReceivedCallback,
-          ) //로그인 상태 업데이트를 위한 소켓 접속 (workspace 진행 시마다 init이 호출되나, 이미 등록완료한 경우 실행하지 않는다)
       } catch (e) {
         console.error('Token is expired')
         isLogin = false
@@ -411,6 +493,40 @@ class Auth {
     return {
       account: this.myInfo,
       workspace: this.myWorkspaces,
+    }
+  }
+  initAuthConnection(
+    workspaceId,
+    onDuplicatedRegistrationCallback,
+    onRemoteExitReceivedCallback,
+    onForceLogoutReceivedCallback,
+    onWorkspaceDuplicatedCallback,
+    onRegistrationFailCallback,
+    onWorkspaceUpdateFailCallback,
+  ) {
+    //로그인 상태 업데이트를 위한 소켓 접속 (workspace 값이 변경될 때마다 호출되나, 이미 등록 완료한 경우 실행하지 않는다)
+    if (!isRegisted) {
+      initLoginStatus(
+        workspaceId,
+        onDuplicatedRegistrationCallback,
+        onRemoteExitReceivedCallback,
+        onForceLogoutReceivedCallback,
+        onWorkspaceDuplicatedCallback,
+        onRegistrationFailCallback,
+        onWorkspaceUpdateFailCallback,
+      )
+    }
+    //workspace만 변경된 경우
+    else if (isRegisted && savedWorkspaceId !== workspaceId) {
+      logger(
+        `[auth status] workspace changed : update member status. before: ${savedWorkspaceId}, after: ${workspaceId}`,
+      )
+      changingWorkspaceId = workspaceId
+      //workspace 변경 요청
+      sendCommand(COMMAND.WORKSPACE_UPDATE, {
+        userId: myInfo.uuid,
+        workspaceId,
+      })
     }
   }
   login() {

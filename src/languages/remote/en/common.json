@@ -35,7 +35,9 @@
     "progress": "Progress",
     "reconnect": "Reconnect",
     "manual": "Manual Download",
-    "force_logout": "Log out"
+    "force_logout": "Log out",
+    "retry":"Retry",
+    "leave_exit": "Leave"
   },
   "date": {
     "lastday": "[Yesterday]",

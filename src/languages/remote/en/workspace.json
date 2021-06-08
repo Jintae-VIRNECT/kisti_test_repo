@@ -172,6 +172,9 @@
 
     "confirm_duplicated_session_logout": "Another device is already logged in.\nPlease close the other party's connection to continue.",
     "confirm_duplicated_session_joined":"Another device is already collaborating.\nPlease try again after the other person ends the Collabo.",
-    "confirm_duplicated_session_logout_received":"You are logged in from another device with the same account."
+    "confirm_duplicated_session_logout_received":"You are logged in from another device with the same account.",
+
+    "workspace_update_failed": "Failed to change workspace.\nplease try it again.",
+    "auth_status_failed": "Failed to authenticate, \nplease try it again."
   }
 }

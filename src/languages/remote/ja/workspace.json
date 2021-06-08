@@ -172,6 +172,9 @@
 
     "confirm_duplicated_session_logout": "他のデバイスですでにログイン中です。\n続行するには、相手の接続を終了させてください。",
     "confirm_duplicated_session_joined":"他のデバイスですでにコラボ中です。\n相手がコラボを終了した後に再度お試しください。",
-    "confirm_duplicated_session_logout_received":"同じアカウントで他のデバイスでログインしました。"
+    "confirm_duplicated_session_logout_received":"同じアカウントで他のデバイスでログインしました。",
+
+    "workspace_update_failed": "ワークスペースの変更を失敗しました。\nもう一度試してください。",
+    "auth_status_failed": "認証に失敗しました。\nもう一度試してください。"
   }
 }

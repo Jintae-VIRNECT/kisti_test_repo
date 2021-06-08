@@ -35,7 +35,9 @@
     "progress": "スタート",
     "reconnect": "再接続",
     "manual": "マニュアルダウンロード",
-    "force_logout": "遠隔終了"
+    "force_logout": "遠隔終了",
+    "retry":"リトライ",
+    "leave_exit": "終了"
   },
   "date": {
     "lastday": "[昨日] A",

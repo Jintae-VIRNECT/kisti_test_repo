@@ -44,13 +44,12 @@ import RecordList from 'LocalRecordList'
 import confirmMixin from 'mixins/confirm'
 import langMixin from 'mixins/language'
 import toastMixin from 'mixins/toast'
+import authStatusCallbackMixin from 'mixins/authStatusCallbackMixin'
 import DeviceDenied from './modal/WorkspaceDeviceDenied'
 import PlanOverflow from './modal/WorkspacePlanOverflow'
 import { mapActions, mapGetters } from 'vuex'
 import { PLAN_STATUS } from 'configs/status.config'
-import { URLS } from 'configs/env.config'
 import { MyStorage } from 'utils/storage'
-import { COMMAND } from 'configs/push.config'
 
 export default {
   name: 'WorkspaceLayout',
@@ -65,7 +64,7 @@ export default {
       })
     }
   },
-  mixins: [confirmMixin, langMixin, toastMixin],
+  mixins: [confirmMixin, langMixin, toastMixin, authStatusCallbackMixin],
   components: {
     HeaderSection,
     WorkspaceWelcome,
@@ -94,6 +93,16 @@ export default {
         this.checkPlan(val)
         this.checkCompany(val.uuid)
         this.checkLicense(val.uuid)
+
+        //멤버 상태 유저 정보 등록/워크스페이스 업데이트
+        auth.initAuthConnection(
+          val.uuid,
+          this.onDuplicatedRegistration,
+          this.onRemoteExitReceived,
+          this.onForceLogoutReceived,
+          this.onWorkspaceDuplicated,
+          this.onRegistrationFail,
+        )
       } else if (!val.uuid) {
         const res = await getLicense({ userId: this.account.uuid })
         const myPlans = res.myPlanInfoList.filter(
@@ -131,92 +140,9 @@ export default {
       'clearWorkspace',
     ]),
 
-    //중복된 기 접속자가 있는 경우 처리 콜백
-    onDuplicatedRegistration({ currentStatus, sessionId, userId }, socket) {
-      //로그인 된 기 접속자가 있는 경우 : 팝업으로 강제 로그아웃 실행 여부 확인
-      if (currentStatus === 'LOGIN') {
-        const text = this.$t('workspace.confirm_duplicated_session_logout')
-        const contents = { sessionId }
-
-        //원격종료
-        const confirmAction = () => {
-          //기 접속자 원격 종료 요청
-          socket.send(
-            JSON.stringify({
-              command: COMMAND.REMOTE_EXIT,
-              data: {
-                service: 'remote',
-                workspaceId: this.workspace.uuid,
-                userId,
-                targetUserId: userId,
-                event: 'remoteExit',
-                contents,
-              },
-            }),
-          )
-        }
-        //취소 : 로그인 시도했던 사용자 로그아웃 처리 및 로그인 페이지로 리디렉트
-        const cancelAction = () => auth.logout()
-
-        const confirm = {
-          text: this.$t('button.force_logout'),
-          action: confirmAction,
-        }
-
-        const cancel = {
-          text: this.$t('button.cancel'),
-          action: cancelAction,
-        }
-
-        this.confirmCancel(text, confirm, cancel)
-      }
-      //협업 중인 경우 : 팝업 띄운 후 로그인 페이지로 리디렉트
-      else {
-        const redirect = false
-        auth.logout(redirect) //바로 로그아웃 처리하고, 리디렉트는 팝업 엑션에서 실행한다
-
-        const text = this.$t('workspace.confirm_duplicated_session_joined')
-        const action = () =>
-          (location.href = `${URLS['console']}/?continue=${location.href}`) //리디렉트
-        this.confirmDefault(text, { action })
-      }
-    },
-
-    onRemoteExitReceived() {
-      auth.logout(false) //바로 로그아웃 처리
-      //팝업 표시 후 리디렉트 실행
-      this.confirmDefault(
-        this.$t('workspace.confirm_duplicated_session_logout_received'),
-        {
-          action: () =>
-            (location.href = `${URLS['console']}/?continue=${location.href}`),
-        },
-      )
-    },
-
-    onForceLogoutReceived() {
-      if (!this.isOnpremise) return
-      this.debug('force logout received')
-      const redirect = false
-      auth.logout(redirect)
-
-      //로그아웃 처리
-      const action = () =>
-        (location.href = `${URLS['console']}/?continue=${location.href}`)
-
-      //강제 로그아웃 알림 팝업
-      this.confirmDefault(this.$t('workspace.confirm_force_logout_received'), {
-        action,
-      })
-    },
-
     async init() {
       this.inited = false
-      const authInfo = await auth.init(
-        this.onDuplicatedRegistration,
-        this.onRemoteExitReceived,
-        this.onForceLogoutReceived,
-      )
+      const authInfo = await auth.init()
       if (!auth.isLogin) {
         auth.login()
         return
