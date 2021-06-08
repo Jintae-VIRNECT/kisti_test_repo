@@ -1,6 +1,7 @@
 package com.virnect.data.redis.application;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
@@ -12,7 +13,6 @@ import lombok.extern.slf4j.Slf4j;
 
 import com.virnect.data.application.user.UserRestService;
 import com.virnect.data.dto.rest.UserInfoResponse;
-import com.virnect.data.global.common.ApiResponse;
 import com.virnect.data.redis.dao.AccessStatusRepository;
 import com.virnect.data.redis.domain.AccessStatus;
 import com.virnect.data.redis.domain.AccessType;
@@ -121,7 +121,7 @@ public class AccessStatusServiceImpl implements AccessStatusService {
 				LogMessage.formedInfo("[REDIS:DELETE] findData is null");
 				result = false;
 			}
-			accessStatusRepository.delete(targetData);
+			accessStatusRepository.delete(Objects.requireNonNull(targetData));
 		} catch (Exception e) {
 			result = false;
 			log.info("[REDIS:DELETE] Error exception message : " + e.getMessage());

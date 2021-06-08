@@ -10,7 +10,7 @@ import lombok.Setter;
 public class StatusMessage implements Serializable {
 
 	private static final long serialVersionUID = 2082503192322391880L;
-	private String uuid;
+	private String userUUID;
 	private String nickname;
 	private String email;
 	private String status;
@@ -19,7 +19,7 @@ public class StatusMessage implements Serializable {
 	@Override
 	public String toString() {
 		return "StatusMessage{" +
-			"uuid='" + uuid + '\'' +
+			"userUUID='" + userUUID + '\'' +
 			", nickname='" + nickname + '\'' +
 			", email='" + email + '\'' +
 			", status='" + status + '\'' +
