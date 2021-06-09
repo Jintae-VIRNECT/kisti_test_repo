@@ -91,7 +91,7 @@ export default {
       if (this.shareFile && this.shareFile.id) {
         if (!this.shareFile.json || this.shareFile.json.length === 0) {
           //협업보드 활성화 상태에서 신규 참가자 진입 시 fileShare 이벤트 전송하는 부분
-          this.sendImage([connectionId])
+          setTimeout(() => this.sendImage([connectionId]), 1000) //신규 참가자에게 전달되는 이벤트가 누락되는 경우 있어 이벤트 전송시점을 좀 딜레이함
           return
         }
         this.confirmDefault(this.$t('service.drawing_sync'), {
@@ -102,11 +102,12 @@ export default {
       }
     },
     sendImage(target = null) {
-      const index = this.shareFile.pageNum || 0 //pdf의 경우 pageNum이 0이상의 수로 존재, image의 경우 0으로 세팅되어 옴
+      const index = this.shareFile.pageNum ? this.shareFile.pageNum - 1 : 0 //pdf의 경우 pageNum이 0이상의 수로 존재, image의 경우 0으로 세팅되어 옴
+      const name = this.shareFile.oriName || this.shareFile.name
       this.$call.sendDrawing(
         DRAWING.FILE_SHARE,
         {
-          name: this.shareFile.name,
+          name,
           objectName: this.shareFile.objectName,
           contentType: this.shareFile.contentType,
           width: this.shareFile.width,
