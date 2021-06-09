@@ -18,6 +18,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.util.ObjectUtils;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
@@ -29,6 +32,8 @@ import lombok.extern.slf4j.Slf4j;
 
 import com.virnect.client.RemoteServiceException;
 import com.virnect.data.application.workspace.WorkspaceRestService;
+import com.virnect.data.dao.member.MemberRepository;
+import com.virnect.data.domain.member.Member;
 import com.virnect.data.dto.PageMetadataResponse;
 import com.virnect.serviceserver.serviceremote.dto.mapper.MemberWorkspaceMapper;
 import com.virnect.data.dto.rest.WorkspaceMemberInfoResponse;
@@ -155,7 +160,7 @@ public class ServiceSessionManager {
                         Participant evict = session.getParticipantByPublicId(participant.getParticipantPublicId());
                         sessionManager.evictParticipant(evict, null, null, EndReason.forceDisconnectByServer);*/
 					} else {
-						sessionDataRepository.setAccessStatus(participant, AccessType.JOIN);
+						sessionDataRepository.setAccessStatus(participant, sessionId, AccessType.JOIN);
 						//todo: after log here
 						return true;
 					}
@@ -187,7 +192,7 @@ public class ServiceSessionManager {
 				} else {
 					sessionDataRepository.leaveSession(participant, sessionId, reason);
 				}
-				sessionDataRepository.setAccessStatus(participant, AccessType.LEAVE);
+				sessionDataRepository.setAccessStatus(participant, sessionId, AccessType.LEAVE);
 			}
 
 			@Override
@@ -729,7 +734,7 @@ public class ServiceSessionManager {
 		// 로그아웃 및 협업 중인 멤버 필터링
 		List<String> failUserIds = new ArrayList<>();
 		for(Iterator<String> targetUuidList = forceLogoutRequest.getTargetUserIds().iterator(); targetUuidList.hasNext();){
-			AccessStatus targetUser = accessStatusService.getAccessStatus(targetUuidList.next());
+			AccessStatus targetUser = accessStatusService.getAccessStatus(forceLogoutRequest.getWorkspaceId() + "_" + targetUuidList.next());
 			if (!ObjectUtils.isEmpty(targetUser)) {
 				if (targetUser.getAccessType() == AccessType.LOGOUT || targetUser.getAccessType() == AccessType.JOIN) {
 					targetUuidList.remove();
@@ -780,7 +785,7 @@ public class ServiceSessionManager {
 
 		// Logout 상태 확인 (in Redis)
 		for (String targetUserId : forceLogoutRequest.getTargetUserIds()) {
-			AccessStatus checkLogout = accessStatusService.getAccessStatus(targetUserId);
+			AccessStatus checkLogout = accessStatusService.getAccessStatus(forceLogoutRequest.getWorkspaceId() + "_" + targetUserId);
 			if (ObjectUtils.isEmpty(checkLogout)) {
 				for(Iterator<String> failUserId = failUserIds.iterator(); failUserId.hasNext();){
 					if (targetUserId.equals(failUserId.next())) {

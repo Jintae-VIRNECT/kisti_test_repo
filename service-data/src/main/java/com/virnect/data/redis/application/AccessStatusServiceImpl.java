@@ -1,6 +1,7 @@
 package com.virnect.data.redis.application;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
@@ -10,6 +11,8 @@ import org.springframework.util.ObjectUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import com.virnect.data.application.user.UserRestService;
+import com.virnect.data.dto.rest.UserInfoResponse;
 import com.virnect.data.redis.dao.AccessStatusRepository;
 import com.virnect.data.redis.domain.AccessStatus;
 import com.virnect.data.redis.domain.AccessType;
@@ -23,10 +26,12 @@ public class AccessStatusServiceImpl implements AccessStatusService {
 	private static final String TAG = AccessStatusServiceImpl.class.getSimpleName();
 
 	private final AccessStatusRepository accessStatusRepository;
+	private final UserRestService userRestService;
 
 	public AccessStatus saveAccessStatus(
 		String id,
-		AccessType accessType
+		AccessType accessType,
+		String uuid
 	) {
 		LogMessage.formedInfo(
 			TAG,
@@ -54,23 +59,18 @@ public class AccessStatusServiceImpl implements AccessStatusService {
 					"updated status : " + savedTarget.getId()
 						+ "(" + findDataAccessType.toString() + "->" + savedTarget.getAccessType().toString() + ")");
 			} else {
-				/*log.info("findData is null");
-				AccessStatus target = AccessStatus.builder()
-					.id(id)
-					.accessType(accessType)
-					.build();
-				target.setAccessType(AccessType.LOGIN);
+				log.info("findData is null");
+				AccessStatus target = new AccessStatus(id, null, accessType);
 				if (accessType == AccessType.LEAVE) {
-					findData.setAccessType(AccessType.LOGIN);
-				} else {
-					findData.setAccessType(accessType);
+					target.setAccessType(AccessType.LOGIN);
+				}
+				UserInfoResponse userInfo = userRestService.getUserInfoByUserId(uuid).getData();
+				if (!ObjectUtils.isEmpty(userInfo)) {
+					target.setEmail(userInfo.getEmail());
 				}
 				savedTarget = accessStatusRepository.save(target);
-				log.info("saved data : " + savedTarget.toString());*/
+				log.info("saved data : " + savedTarget.toString());
 			}
-			/*if (ObjectUtils.isEmpty(savedTarget)) {
-				LogMessage.formedInfo("[REDIS:POST] saved data is null");
-			}*/
 		} catch (Exception e) {
 			log.info("[REDIS:POST] Error exception message : " + e.getMessage());
 		}
@@ -121,7 +121,7 @@ public class AccessStatusServiceImpl implements AccessStatusService {
 				LogMessage.formedInfo("[REDIS:DELETE] findData is null");
 				result = false;
 			}
-			accessStatusRepository.delete(targetData);
+			accessStatusRepository.delete(Objects.requireNonNull(targetData));
 		} catch (Exception e) {
 			result = false;
 			log.info("[REDIS:DELETE] Error exception message : " + e.getMessage());

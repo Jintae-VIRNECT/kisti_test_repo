@@ -32,4 +32,16 @@ public class CustomMemberRepositoryImpl  extends QuerydslRepositorySupport imple
 			.distinct()
 			.fetchOne();
 	}
+
+	@Override
+	public Member findBySessionIdAndUuid(String sessionId, String uuid) {
+		return query
+			.selectFrom(member)
+			.where(
+				member.sessionId.eq(sessionId),
+				member.uuid.eq(uuid)
+			)
+			.distinct()
+			.fetchOne();
+	}
 }

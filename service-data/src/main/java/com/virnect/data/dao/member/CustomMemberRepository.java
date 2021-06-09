@@ -6,4 +6,6 @@ public interface CustomMemberRepository {
 
 	Member findRoomLeaderBySessionId(String workspaceId, String sessionId);
 
+	Member findBySessionIdAndUuid(String sessionId, String uuid);
+
 }
