@@ -31,7 +31,9 @@ export default {
   watch: {
     mainView: {
       handler() {
-        this.isAvailable = this.mainView.deviceType === DEVICE.MOBILE
+        this.isAvailable =
+          this.mainView.deviceType === DEVICE.MOBILE ||
+          this.mainView.deviceType === DEVICE.GLASSES
         // this.isAvailable = true
       },
       deep: true,
