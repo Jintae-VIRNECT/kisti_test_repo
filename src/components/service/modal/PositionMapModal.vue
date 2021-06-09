@@ -83,6 +83,9 @@ export default {
       this.visibleFlag = flag
       if (flag) {
         this.initStatus()
+      } else {
+        this.map = null
+        this.marker = null
       }
     },
     mainView: {
@@ -129,23 +132,14 @@ export default {
         version: 'weekly',
       }
 
-      //수신된 좌표가 없으면 status  requesting
-
-      //defalut 대한민국
-      // let lat = 37.525061051135225
-      // let lng = 126.96228142617416
-
-      // if (this.location) {
       const { lat, lng } = this.location
-
-      // }
 
       const loader = new Loader(GOOGLE_MAP_API, options)
       const google = await loader.load()
 
       this.map = new google.maps.Map(document.getElementById('map'), {
         center: { lat, lng },
-        zoom: 1,
+        zoom: 17,
         disableDefaultUI: true,
       })
 
