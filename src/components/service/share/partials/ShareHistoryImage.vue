@@ -53,7 +53,7 @@ export default {
     ...mapGetters(['shareFile', 'roomInfo']),
   },
   methods: {
-    ...mapActions(['showImage', 'removeHistory']),
+    ...mapActions(['removeHistory']),
     doEvent() {
       this.show()
     },

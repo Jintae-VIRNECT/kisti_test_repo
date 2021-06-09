@@ -85,11 +85,12 @@ export default {
     },
   },
   methods: {
-    ...mapActions(['showImage', 'addHistory', 'setView']),
+    ...mapActions(['addHistory', 'setView']),
     participantChange(connectionId) {
       if (this.account.roleType !== ROLE.LEADER) return
       if (this.shareFile && this.shareFile.id) {
         if (!this.shareFile.json || this.shareFile.json.length === 0) {
+          //협업보드 활성화 상태에서 신규 참가자 진입 시 fileShare 이벤트 전송하는 부분
           this.sendImage([connectionId])
           return
         }
@@ -101,6 +102,7 @@ export default {
       }
     },
     sendImage(target = null) {
+      const index = this.shareFile.pageNum || 0 //pdf의 경우 pageNum이 0이상의 수로 존재, image의 경우 0으로 세팅되어 옴
       this.$call.sendDrawing(
         DRAWING.FILE_SHARE,
         {
@@ -109,7 +111,7 @@ export default {
           contentType: this.shareFile.contentType,
           width: this.shareFile.width,
           height: this.shareFile.height,
-          index: this.shareFile.pageNum - 1,
+          index,
         },
         target,
       )
@@ -165,23 +167,6 @@ export default {
         img: this.imageData,
         // fileData: this.fileData,
       }
-    },
-    encodeImage(data) {
-      let imgUrl = ''
-      for (let part of this.chunk) {
-        imgUrl += part
-      }
-      this.chunk = []
-      imgUrl = 'data:image/png;base64,' + imgUrl
-      const imageInfo = {
-        id: data.imgId,
-        img: imgUrl,
-        width: data.width,
-        height: data.height,
-        fileName: data.imgName,
-      }
-
-      this.showImage(imageInfo)
     },
   },
 
