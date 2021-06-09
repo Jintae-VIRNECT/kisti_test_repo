@@ -17,13 +17,13 @@
       <p
         class="support-body--description"
         v-html="
-          onpremise ? $t('support.pc_web') : $t('support.header_description')
+          isOnpremise ? $t('support.pc_web') : $t('support.header_description')
         "
       ></p>
       <p
         class="support-body--mobile"
         v-html="
-          onpremise
+          isOnpremise
             ? $t('support.pc_web')
             : $t('support.header_description_mobile')
         "
@@ -31,7 +31,7 @@
       <div>
         <button
           class="support-body--button"
-          v-if="isScreenDesktop && !onpremise"
+          v-if="isScreenDesktop && !isOnpremise"
           @click="pcWeb"
         >
           {{ $t('support.pc_web_button') }}
@@ -39,7 +39,7 @@
       </div>
     </div>
 
-    <footer class="support-footer" v-if="!onpremise">
+    <footer class="support-footer" v-if="!isOnpremise">
       <div class="support-footer__inner">
         <p class="support-footer__copyright">
           &copy; VIRNECT CO., LTD. All rights reserved.
@@ -51,17 +51,11 @@
 
 <script>
 import { getConfigs } from 'utils/auth'
-import { RUNTIME, RUNTIME_ENV } from 'configs/env.config'
 export default {
   name: 'SupportComponent',
   async beforeRouteEnter(to, from, next) {
     await getConfigs()
     next()
-  },
-  computed: {
-    onpremise() {
-      return RUNTIME.ONPREMISE === RUNTIME_ENV
-    },
   },
   methods: {
     pcWeb() {

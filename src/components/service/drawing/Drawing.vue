@@ -44,7 +44,7 @@
 <script>
 import DrawingCanvas from './DrawingCanvas'
 import { mapGetters, mapActions } from 'vuex'
-import { SIGNAL, ROLE, DRAWING } from 'configs/remote.config'
+import { ROLE, DRAWING } from 'configs/remote.config'
 import { VIEW } from 'configs/view.config'
 import confirmMixin from 'mixins/confirm'
 
@@ -61,7 +61,7 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['fileList', 'shareFile', 'view', 'historyList']),
+    ...mapGetters(['fileList', 'shareFile', 'view', 'historyList', 'roomInfo']),
     show() {
       if (this.shareFile && this.shareFile.id) {
         return 'file'
@@ -77,9 +77,10 @@ export default {
       if (val !== VIEW.DRAWING) {
         // clear image
         // TODO: 협업보드 나갈 때 클리어 할지 선택해야함
-        if (this.account.roleType === ROLE.LEADER) {
-          this.showImage({})
-        }
+        // => 협업보드에서 다른 탭으로 이동 시 협업보드는 종료되지 않으므로 데이터 초기화하지 않도록 함 (210504)
+        //if (this.account.roleType === ROLE.LEADER) {
+        //  this.showImage({})
+        //}
       }
     },
   },
@@ -89,23 +90,29 @@ export default {
       if (this.account.roleType !== ROLE.LEADER) return
       if (this.shareFile && this.shareFile.id) {
         if (!this.shareFile.json || this.shareFile.json.length === 0) {
-          this.sendImage(connectionId)
+          this.sendImage([connectionId])
           return
         }
         this.confirmDefault(this.$t('service.drawing_sync'), {
-          action: this.refreshCanvas,
+          action: () => {
+            this.sendImage()
+          },
         })
       }
     },
-    sendImage(connectionId) {
-      const params = {
-        imgId: this.shareFile.id,
-        imgName: this.shareFile.oriName
-          ? this.shareFile.oriName
-          : this.shareFile.fileName,
-        image: this.shareFile.img,
-      }
-      this.$refs['drawingLayout'].sendImage(params, [connectionId])
+    sendImage(target = null) {
+      this.$call.sendDrawing(
+        DRAWING.FILE_SHARE,
+        {
+          name: this.shareFile.name,
+          objectName: this.shareFile.objectName,
+          contentType: this.shareFile.contentType,
+          width: this.shareFile.width,
+          height: this.shareFile.height,
+          index: this.shareFile.pageNum - 1,
+        },
+        target,
+      )
     },
     refreshCanvas() {
       const imgId = parseInt(
@@ -136,31 +143,27 @@ export default {
       const file = event.dataTransfer.files[0]
       this.$eventBus.$emit('addFile', file)
     },
-    getImage(receive) {
-      const data = JSON.parse(receive.data)
-
-      if (data.type === DRAWING.END_DRAWING) {
-        this.showImage({})
-        this.setView(VIEW.STREAM)
-        return
-      }
-
-      if (
-        ![DRAWING.FIRST_FRAME, DRAWING.FRAME, DRAWING.LAST_FRAME].includes(
-          data.type,
-        )
+    getHistoryObject() {
+      // 모바일 수신부 타입: Int32
+      const imgId = parseInt(
+        Date.now()
+          .toString()
+          .substr(-9),
       )
-        return
-
-      if (data.type === DRAWING.FIRST_FRAME) {
-        this.loadingFrame = true
-        this.chunk = []
+      let fileName = this.fileData.name
+      if (this.pdfName) {
+        const idx = this.pdfName.lastIndexOf('.')
+        fileName = `${this.pdfName.slice(0, idx)} [${this.pdfPage}].png`
       }
-      this.chunk.push(data.chunk)
-
-      if (data.type === DRAWING.LAST_FRAME) {
-        // this.loadingFrame = false
-        this.encodeImage(data)
+      return {
+        id: imgId,
+        fileName: fileName,
+        oriName:
+          this.pdfName && this.pdfName.length > 0
+            ? this.pdfName
+            : this.fileData.name,
+        img: this.imageData,
+        // fileData: this.fileData,
       }
     },
     encodeImage(data) {
@@ -184,13 +187,9 @@ export default {
 
   /* Lifecycles */
   created() {
-    if (this.account.roleType !== ROLE.LEADER) {
-      this.$eventBus.$on(SIGNAL.DRAWING, this.getImage)
-    }
     this.$eventBus.$on('participantChange', this.participantChange)
   },
   beforeDestroy() {
-    this.$eventBus.$off(SIGNAL.DRAWING, this.getImage)
     this.$eventBus.$off('participantChange', this.participantChange)
   },
 }

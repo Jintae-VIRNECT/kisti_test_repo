@@ -126,10 +126,11 @@ import NoticeItem from './NoticeItem'
 import alarmMixin from 'mixins/alarm'
 import roomMixin from 'mixins/room'
 import toastMixin from 'mixins/toast'
+import confirmMixin from 'mixins/confirm'
 
 export default {
   name: 'Notice',
-  mixins: [roomMixin, alarmMixin, toastMixin],
+  mixins: [roomMixin, alarmMixin, toastMixin, confirmMixin],
   components: {
     Switcher,
     Popover,
@@ -369,6 +370,7 @@ export default {
   },
   beforeDestroy() {
     this.$push.removeListener(this.key)
+
     if (this.isSafari) {
       window.removeEventListener('touchstart', this.loadAudio)
     }

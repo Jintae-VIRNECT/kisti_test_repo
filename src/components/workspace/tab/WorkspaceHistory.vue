@@ -344,7 +344,7 @@ export default {
           paging: true,
           page,
           search: text,
-          size: 10,
+          size: 15,
           sort: 'createdDate,desc',
           userId: this.account.uuid,
           workspaceId: this.workspace.uuid,

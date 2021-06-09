@@ -8,6 +8,7 @@
  */
 export const DESTINATION = {
   PUSH: '/topic/push',
+  FORCELOGOUT: '/topic/event.force_logout',
 }
 
 /**
@@ -26,4 +27,13 @@ export const EVENT = {
   INVITE: 'invite', //협업 초대
   INVITE_DENIED: 'invitationDenied', //협업 초대 거부
   INVITE_ACCEPTED: 'invitationAccepted', //협업 초대 승인
+}
+
+/**
+ * 인증서버에 전송하는 command
+ */
+export const COMMAND = {
+  REGISTER: 'REGISTER',
+  REMOTE_EXIT: 'REMOTE_EXIT',
+  WORKSPACE_UPDATE: 'WORKSPACE_UPDATE',
 }

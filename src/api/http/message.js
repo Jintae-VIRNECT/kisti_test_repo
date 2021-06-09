@@ -20,3 +20,13 @@ export const sendPush = async function(event, targetUserIds, contents) {
   const returnVal = await http('SEND_PUSH', params)
   return returnVal
 }
+
+export const forceLogout = async ({ workspaceId, userId, targetUserIds }) => {
+  const params = {
+    workspaceId,
+    userId,
+    targetUserIds,
+  }
+  const returnVal = await http('FORCE_LOGOUT', params)
+  return returnVal
+}

@@ -13,7 +13,7 @@ import http from 'api/gateway'
 export const getHistoryList = async function({
   page = 0,
   paging = false,
-  size = 10,
+  size = 15,
   sort = 'createdDate,desc',
   userId,
   workspaceId,
@@ -43,7 +43,7 @@ export const getHistoryList = async function({
 export const searchHistoryList = async function({
   page = 0,
   search = '',
-  size = 10,
+  size = 15,
   sort = 'createdDate,desc',
   userId,
   workspaceId,

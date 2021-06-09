@@ -1,9 +1,9 @@
 <template>
   <tool-button
-    :text="$t('service.tool_redo')"
-    :active="status"
+    :text="$t('전체 삭제')"
     :disabled="!isAvailable"
-    :src="require('assets/image/ic-tool-redo.svg')"
+    :active="status"
+    :src="require('assets/image/ic-tool-delete-all.svg')"
     @click.stop="clickHandler"
   ></tool-button>
 </template>
@@ -13,7 +13,7 @@ import toolMixin from './toolMixin'
 import { VIEW, ACTION } from 'configs/view.config'
 
 export default {
-  name: 'ToolRedo',
+  name: 'ToolClear',
   mixins: [toolMixin],
   data() {
     return {
@@ -31,14 +31,8 @@ export default {
     },
   },
   watch: {
-    //협업보드에서 다른 탭 전환 되더라도 redo 버튼을 비활성화하지 않는다.
-    // view() {
-    //   this.available = false
-    // },
-    viewAction(val) {
-      if ([ACTION.AR_POINTING, ACTION.AR_DRAWING].includes(val)) {
-        this.available = false
-      }
+    view() {
+      this.available = false
     },
   },
   methods: {
@@ -51,7 +45,7 @@ export default {
       } else {
         listener = this.viewAction
       }
-      this.$eventBus.$emit(`control:${listener}:redo`)
+      this.$eventBus.$emit(`control:${listener}:clearall`)
       setTimeout(() => {
         this.status = false
       }, 100)
@@ -63,10 +57,10 @@ export default {
 
   /* Lifecycling */
   created() {
-    this.$eventBus.$on(`tool:redo`, this.setAvailable)
+    this.$eventBus.$on(`tool:clearall`, this.setAvailable)
   },
   beforeDestroy() {
-    this.$eventBus.$off(`tool:redo`, this.setAvailable)
+    this.$eventBus.$off(`tool:clearall`, this.setAvailable)
   },
 }
 </script>

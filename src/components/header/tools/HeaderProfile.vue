@@ -45,7 +45,7 @@ import { mapGetters } from 'vuex'
 import Popover from 'Popover'
 import Profile from 'Profile'
 import auth from 'utils/auth'
-import { URLS, RUNTIME, RUNTIME_ENV } from 'configs/env.config'
+import { URLS } from 'configs/env.config'
 export default {
   name: 'HeaderProfile',
   components: {
@@ -63,9 +63,6 @@ export default {
       } else {
         return false
       }
-    },
-    onpremise() {
-      return RUNTIME.ONPREMISE === RUNTIME_ENV
     },
   },
   methods: {
@@ -89,7 +86,7 @@ export default {
       this.$eventBus.$emit('filelist:open')
     },
     async downloadManual() {
-      if (!this.onpremise) {
+      if (!this.isOnpremise) {
         window.open('https://file.virnect.com/Guide/remote_web_user_guide.pdf')
       } else {
         window.open(`${window.urls.minio}/guide/remote_web_user_guide.pdf`)

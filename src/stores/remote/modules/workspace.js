@@ -32,6 +32,7 @@ const companyInfo = {
   localRecording: false,
   audioRestrictedMode: false,
   videoRestrictedMode: false,
+  timeout: 60, //협업 연장 질의 팝업 싸이클을 정하는 값. 분 단위(기본 한시간)
 }
 
 const state = {
@@ -133,6 +134,7 @@ const getters = {
       video: state.companyInfo.videoRestrictedMode,
     }
   },
+  coworkTimeout: state => state.companyInfo.timeout, //협업 연장 질의 팝업 생성 사이클. 분
 }
 
 export default {

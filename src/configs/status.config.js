@@ -36,3 +36,28 @@ export const ROOM_STATUS = {
   PRIVATE: 'PRIVATE', //원격 협업
   OPEN: 'OPEN', //오픈방
 }
+
+/**
+ * 인증 서버 연결 메시지
+ */
+export const AUTH_STATUS = {
+  CONNECT_SUCCESS: 200,
+  REGISTRATION_SUCCESS: 300,
+  REGISTRATION_FAIL: 301,
+  DUPLICATED_REGISTRATION: 302, //REGISTER 요청에 대한 중복 로그인 에러
+
+  REMOTE_EXIT_REQ_SUCCESS: 400,
+  REMOTE_EXIT_REQ_FAIL_NOT_FOUND: 402,
+  REMOTE_EXIT_RECEIVED: 401,
+
+  WORKSPACE_UPDATE_SUCCESS: 600, //워크스페이스 변경  성공
+  WORKSPACE_UPDATE_DUPLICATED: 601, //워크스페이스 변경 요청에 대한 중복로그인 에러
+  WORKSPACE_UPDATE_FAIL: 602, //워크스페이스 변경 실패
+
+  FORCE_LOGOUT_RECEIVED: 500, //강제로그아웃 메시지 수신
+}
+
+/**
+ * 멤버 상태
+ */
+export const MEMBER_STATUS = ['login', 'join', 'logout']
