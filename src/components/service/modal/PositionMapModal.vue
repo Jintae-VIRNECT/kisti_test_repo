@@ -145,14 +145,12 @@ export default {
 
       this.map.setCenter({ lat, lng })
 
-      if (this.location) {
-        const pos = new google.maps.LatLng(lat, lng)
-        this.marker = new google.maps.Marker({
-          position: pos,
-        })
+      const pos = new google.maps.LatLng(lat, lng)
+      this.marker = new google.maps.Marker({
+        position: pos,
+      })
 
-        this.marker.setMap(this.map)
-      }
+      this.marker.setMap(this.map)
     },
     refresh() {
       this.$call.sendRequestLocation([this.mainView.connectionId])
