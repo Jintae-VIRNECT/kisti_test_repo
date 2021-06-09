@@ -40,6 +40,16 @@ const productionWebpackConfig = merge(baseWebpackConfig(mode), {
       filename: 'account/index.html',
       chunks: ['account'],
     }),
+    // test
+    new HtmlWebpackPlugin({
+      inject: 'body',
+      hash: true,
+      favicon: './src/assets/favicon.ico',
+      template: './src/apps/test/app.html',
+      filename: 'test/index.html',
+      chunks: ['test'],
+    }),
+
     new MiniCssExtractPlugin({
       filename: './assets/style/[name].[hash:5].css',
     }),
