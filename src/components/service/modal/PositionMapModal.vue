@@ -159,7 +159,7 @@ export default {
       this.marker.setMap(this.map)
     },
     refresh() {
-      this.$call.sendRequestLocation([this.mainView.connectionId])
+      this.$call.sendRequestLocation(true, [this.mainView.connectionId])
       this.isRefreshing = true
     },
   },

@@ -683,9 +683,10 @@ const _ = {
    * @TARGET
    * 지정한 참가자에게 위치 요청
    */
-  sendRequestLocation: target => {
+  sendRequestLocation: (isRefresh = false, target) => {
     const params = {
       type: LOCATION.REQUEST,
+      isRefresh: isRefresh,
     }
     _.session.signal({
       data: JSON.stringify(params),
