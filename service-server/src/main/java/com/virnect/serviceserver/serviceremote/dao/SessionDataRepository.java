@@ -66,7 +66,7 @@ public class SessionDataRepository {
     public static final String WS_PATH = "/remote/websocket";
 
     private static final String TAG = SessionDataRepository.class.getSimpleName();
-    private final int ROOM_MEMBER_LIMIT = 30;
+    private final int ROOM_MEMBER_LIMIT = 6;
 
     private final ObjectMapper objectMapper;
 
