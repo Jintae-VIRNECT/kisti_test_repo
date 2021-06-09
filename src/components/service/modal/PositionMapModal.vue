@@ -65,7 +65,7 @@ export default {
   },
   data() {
     return {
-      state: null, //requesting, showing, gpsOff
+      state: 'requesting', //requesting, showing, gpsOff
       visibleFlag: false,
 
       location: null, //{lat, lng}
@@ -82,7 +82,7 @@ export default {
     visible(flag) {
       this.visibleFlag = flag
       if (flag) {
-        this.showMap()
+        this.initStatus()
       }
     },
     mainView: {
@@ -108,18 +108,23 @@ export default {
     },
     updatePosition(location) {
       this.location = location
+      this.state = 'showing'
       if (this.map) {
         this.map.setCenter(this.location)
+        this.marker.setMap(this.map)
         this.marker.setPosition(this.location)
-        this.isRefreshing = false
+      } else {
+        this.initMap()
       }
+      this.isRefreshing = false
     },
     showGpsOff() {
       this.state = 'gpsOff'
     },
-    async showMap() {
+    async initStatus() {
       this.state = 'requesting'
-
+    },
+    async initMap() {
       const options = {
         version: 'weekly',
       }
@@ -127,16 +132,17 @@ export default {
       //수신된 좌표가 없으면 status  requesting
 
       //defalut 대한민국
-      let lat = 37.525061051135225
-      let lng = 126.96228142617416
+      // let lat = 37.525061051135225
+      // let lng = 126.96228142617416
 
-      if (this.location) {
-        lat = this.location.lat
-        lng = this.location.lng
-      }
-      this.state = 'showing'
+      // if (this.location) {
+      const { lat, lng } = this.location
+
+      // }
+
       const loader = new Loader(GOOGLE_MAP_API, options)
       const google = await loader.load()
+
       this.map = new google.maps.Map(document.getElementById('map'), {
         center: { lat, lng },
         zoom: 1,
