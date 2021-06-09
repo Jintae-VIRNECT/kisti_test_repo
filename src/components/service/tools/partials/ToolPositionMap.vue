@@ -45,7 +45,7 @@ export default {
     requestLocation() {
       if (!this.isAvailable) return
 
-      this.$call.sendRequestLocation([this.mainView.connectionId])
+      this.$call.sendRequestLocation(false, [this.mainView.connectionId])
     },
     toggleMap(enable) {
       if (enable) {
