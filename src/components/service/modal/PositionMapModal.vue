@@ -11,7 +11,7 @@
     <div class="modal-position-map__body">
       <div v-if="state === 'requesting'" class="modal-position-map__request">
         <p class="modal-position-map__request">
-          위치 정보를 요청 중 입니다.
+          {{ $t('service.map_request_position') }}
         </p>
       </div>
       <div v-else-if="state === 'showing'" class="modal-position-map__showing">
@@ -21,21 +21,21 @@
           class="modal-position-map__showing--refresh"
           :class="{ refreshing: isRefreshing }"
         >
-          위치 새로고침
+          {{ $t('service.map_refresh') }}
         </button>
       </div>
       <div v-else-if="state === 'gpsOff'" class="modal-position-map__gpsoff">
         <p class="modal-position-map__gpsoff--title">
-          GPS 정보를 확인할 수 없습니다.
+          {{ $t('service.map_cannot_check_gps') }}
         </p>
         <p class="modal-position-map__gpsoff--description">
-          요청한 참가자에게 GPS 기능 사용여부를 확인해 주세요.
+          {{ $t('service.map_check_use_gps_description') }}
         </p>
         <button
           @click="beforeClose"
           class="modal-position-map__gpsoff--close btn"
         >
-          닫기
+          {{ $t('common.close') }}
         </button>
       </div>
     </div>
@@ -191,7 +191,7 @@ export default {
   & > p {
     color: #dedede;
     font-weight: normal;
-    font-size: 16px;
+    font-size: 1.1429rem;
   }
 }
 .modal-position-map__showing {
@@ -201,12 +201,12 @@ export default {
   }
   .modal-position-map__showing--refresh {
     position: absolute;
-    bottom: 30px;
-    width: 136px;
-    height: 44px;
+    bottom: 2.1429rem;
+    width: 9.7143rem;
+    height: 3.1429rem;
     color: #dedede;
     font-weight: normal;
-    font-size: 14px;
+    font-size: 1rem;
     background: #000000;
     border-radius: 24px;
     opacity: 0.9;
@@ -230,21 +230,21 @@ export default {
 
 .modal-position-map__gpsoff {
   .modal-position-map__gpsoff--title {
-    color: rgb(250, 250, 250);
+    color: #fafafa;
     font-weight: 500;
-    font-size: 24px;
+    font-size: 1.7143rem;
   }
 
   .modal-position-map__gpsoff--description {
-    color: rgb(250, 250, 250);
+    color: #fafafa;
     font-weight: normal;
-    font-size: 18px;
+    font-size: 1.2857rem;
     opacity: 0.5;
   }
   .modal-position-map__gpsoff--close {
-    width: 120px;
-    height: 38px;
-    margin-top: 30px;
+    width: 8.5714rem;
+    height: 2.7143rem;
+    margin-top: 2.1429rem;
     padding: 0;
     border-radius: 4px;
   }

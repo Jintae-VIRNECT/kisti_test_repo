@@ -43,7 +43,10 @@ export default {
 
   methods: {
     requestLocation() {
-      if (!this.isAvailable) return
+      if (!this.isAvailable) {
+        this.toastDefault(this.$t('service.map_cannot_use_gps'))
+        return
+      }
 
       this.$call.sendRequestLocation(false, [this.mainView.connectionId])
     },
@@ -51,7 +54,7 @@ export default {
       if (enable) {
         this.showMap()
       } else {
-        this.toastDefault('위치정보 요청이 거절되었습니다.​')
+        this.toastDefault(this.$t('service.map_request_rejected'))
       }
     },
     showMap() {
