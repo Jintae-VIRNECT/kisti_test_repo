@@ -9,7 +9,6 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.RandomStringUtils;
-import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
@@ -31,7 +30,7 @@ import lombok.extern.slf4j.Slf4j;
 import com.virnect.client.RemoteServiceException;
 import com.virnect.data.application.workspace.WorkspaceRestService;
 import com.virnect.data.dto.PageMetadataResponse;
-import com.virnect.data.dto.mapper.MemberWorkspaceMapper;
+import com.virnect.serviceserver.serviceremote.dto.mapper.MemberWorkspaceMapper;
 import com.virnect.data.dto.rest.WorkspaceMemberInfoResponse;
 import com.virnect.data.error.ErrorCode;
 import com.virnect.data.global.common.ApiResponse;

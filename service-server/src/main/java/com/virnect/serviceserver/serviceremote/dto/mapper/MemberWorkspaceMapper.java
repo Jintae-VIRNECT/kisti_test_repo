@@ -1,4 +1,4 @@
-package com.virnect.data.dto.mapper;
+package com.virnect.serviceserver.serviceremote.dto.mapper;
 
 import org.mapstruct.Mapper;
 

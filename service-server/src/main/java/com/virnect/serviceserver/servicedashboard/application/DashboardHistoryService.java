@@ -13,7 +13,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -47,6 +46,15 @@ import com.virnect.data.error.exception.RestServiceException;
 import com.virnect.data.global.common.ApiResponse;
 import com.virnect.data.global.util.ListUtils;
 import com.virnect.serviceserver.servicedashboard.dto.PageMetadataResponse;
+import com.virnect.serviceserver.servicedashboard.dto.mapper.file.DashboardFileInfoMapper;
+import com.virnect.serviceserver.servicedashboard.dto.mapper.file.DashboardFileUserInfoMapper;
+import com.virnect.serviceserver.servicedashboard.dto.mapper.member.DashboardMemberInfoMapper;
+import com.virnect.serviceserver.servicedashboard.dto.mapper.memberhistroy.DashboardMemberHistoryMapper;
+import com.virnect.serviceserver.servicedashboard.dto.mapper.record.DashboardRecordFileDetailMapper;
+import com.virnect.serviceserver.servicedashboard.dto.mapper.room.OngoingRoomInfoMapper;
+import com.virnect.serviceserver.servicedashboard.dto.mapper.room.DashboardRoomDetailInfoMapper;
+import com.virnect.serviceserver.servicedashboard.dto.mapper.roomhistory.DashboardRoomHistoryDetailInfoMapper;
+import com.virnect.serviceserver.servicedashboard.dto.mapper.roomhistory.DashboardRoomHistoryInfoMapper;
 import com.virnect.serviceserver.servicedashboard.dto.request.RoomHistoryDetailRequest;
 import com.virnect.serviceserver.servicedashboard.dto.request.RoomHistoryListRequest;
 import com.virnect.serviceserver.servicedashboard.dto.request.RoomHistoryStatsRequest;
@@ -66,7 +74,7 @@ import com.virnect.serviceserver.servicedashboard.dto.response.RoomHistoryInfoRe
 @Transactional(readOnly = true)
 public class DashboardHistoryService {
 
-	private final ModelMapper modelMapper;
+	//private final ModelMapper modelMapper;
 
 	private final WorkspaceRestService workspaceRestService;
 	private final UserRestService userRestService;
@@ -78,6 +86,16 @@ public class DashboardHistoryService {
 
 	private final FileRepository fileRepository;
 	private final RecordFileRepository recordFileRepository;
+
+	private final DashboardRoomDetailInfoMapper dashboardRoomDetailInfoMapper;
+	private final DashboardMemberInfoMapper dashboardMemberInfoMapper;
+	private final DashboardRoomHistoryDetailInfoMapper dashboardRoomHistoryDetailInfoMapper;
+	private final DashboardRoomHistoryInfoMapper dashboardRoomHistoryInfoMapper;
+	private final DashboardMemberHistoryMapper dashboardMemberHistoryMapper;
+	private final DashboardFileInfoMapper dashboardFileInfoMapper;
+	private final DashboardFileUserInfoMapper dashboardFileUserInfoMapper;
+	private final DashboardRecordFileDetailMapper dashboardRecordFileDetailMapper;
+	private final OngoingRoomInfoMapper ongoingRoomInfoMapper;
 
 	/**
 	 * 협업 히스토리 요청 처리
@@ -294,12 +312,14 @@ public class DashboardHistoryService {
 			-> new RestServiceException(ErrorCode.ERR_ROOM_NOT_FOUND));
 
 		try {
-			roomDetailInfoResponse = modelMapper.map(ongoingRoom, RoomDetailInfoResponse.class);
+			roomDetailInfoResponse = dashboardRoomDetailInfoMapper.toDto(ongoingRoom);
+			//roomDetailInfoResponse = modelMapper.map(ongoingRoom, RoomDetailInfoResponse.class);
 			roomDetailInfoResponse.setSessionType(ongoingRoom.getSessionProperty().getSessionType());
 
 			List<MemberInfoResponse> memberInfoResponses = ongoingRoom.getMembers()
 				.stream()
-				.map(member -> modelMapper.map(member, MemberInfoResponse.class))
+				//.map(member -> modelMapper.map(member, MemberInfoResponse.class))
+				.map(member -> dashboardMemberInfoMapper.toDto(member))
 				.collect(Collectors.toList());
 
 			memberInfoResponses.removeIf(
@@ -348,12 +368,14 @@ public class DashboardHistoryService {
 		).orElseThrow(() -> new RestServiceException(ErrorCode.ERR_ROOM_HISTORY_FOUND));
 
 		try {
-			roomHistoryDetailInfoResponse = modelMapper.map(endRoom, RoomHistoryDetailInfoResponse.class);
+			//roomHistoryDetailInfoResponse = modelMapper.map(endRoom, RoomHistoryDetailInfoResponse.class);
+			roomHistoryDetailInfoResponse = dashboardRoomHistoryDetailInfoMapper.toDto(endRoom);
 			roomHistoryDetailInfoResponse.setSessionType(endRoom.getSessionPropertyHistory().getSessionType());
 
 			List<MemberInfoResponse> memberInfoList = endRoom.getMemberHistories()
 				.stream()
-				.map(member -> modelMapper.map(member, MemberInfoResponse.class))
+				//.map(member -> modelMapper.map(member, MemberInfoResponse.class))
+				.map(memberHistory -> dashboardMemberHistoryMapper.toDto(memberHistory))
 				.collect(Collectors.toList());
 
 			memberInfoList.removeIf(
@@ -755,7 +777,8 @@ public class DashboardHistoryService {
 			List<File> files = fileRepository.findByWorkspaceIdAndDeleted(workspaceId, deleted);
 
 			fileInfoResponses = files.stream()
-				.map(file -> modelMapper.map(file, FileInfoResponse.class))
+				//.map(file -> modelMapper.map(file, FileInfoResponse.class))
+				.map(file -> dashboardFileInfoMapper.toDto(file))
 				.collect(Collectors.toList());
 		} catch (Exception exception) {
 			throw new RestServiceException(ErrorCode.ERR_ATTACHED_FILE_FOUND);
@@ -796,9 +819,10 @@ public class DashboardHistoryService {
 						userInfo = response;
 					}
 				}
-				FileUserInfoResponse fileUserInfoResponse = modelMapper.map(userInfo, FileUserInfoResponse.class);
-				FileDetailInfoResponse fileDetailInfoResponse = modelMapper.map(
-					recordFile, FileDetailInfoResponse.class);
+				//FileUserInfoResponse fileUserInfoResponse = modelMapper.map(userInfo, FileUserInfoResponse.class);
+				FileUserInfoResponse fileUserInfoResponse = dashboardFileUserInfoMapper.toDto(userInfo);
+				//FileDetailInfoResponse fileDetailInfoResponse = modelMapper.map(recordFile, FileDetailInfoResponse.class);
+				FileDetailInfoResponse fileDetailInfoResponse = dashboardRecordFileDetailMapper.toDto(recordFile);
 				fileDetailInfoResponse.setFileUserInfo(fileUserInfoResponse);
 				fileDetailInfoResponses.add(fileDetailInfoResponse);
 			}
@@ -1092,12 +1116,17 @@ public class DashboardHistoryService {
 
 		return myRoomHistory.stream()
 			.map(room -> {
-				RoomHistoryInfoResponse roomHistoryInfoResponse = modelMapper.map(room, RoomHistoryInfoResponse.class);
+				//RoomHistoryInfoResponse roomHistoryInfoResponse = modelMapper.map(room, RoomHistoryInfoResponse.class);
+				RoomHistoryInfoResponse roomHistoryInfoResponse = ongoingRoomInfoMapper.toDto(room);
 				roomHistoryInfoResponse.setSessionType(room.getSessionProperty().getSessionType());
 
 				List<MemberInfoResponse> memberInfoResponses = room.getMembers().stream()
 					.filter(member -> member.getMemberStatus() != MemberStatus.EVICTED)
-					.map(member -> modelMapper.map(member, MemberInfoResponse.class)).collect(Collectors.toList());
+					.map(
+						//member -> modelMapper.map(member, MemberInfoResponse.class)
+						member -> dashboardMemberInfoMapper.toDto(member)
+					)
+					.collect(Collectors.toList());
 
 				roomHistoryInfoResponse.setStatus(false);
 				roomHistoryInfoResponse.setMemberList(memberInfoResponses);
@@ -1122,13 +1151,17 @@ public class DashboardHistoryService {
 
 		return roomHistories.stream()
 			.map(roomHistory -> {
-				RoomHistoryInfoResponse endRoomHistoryInfoResponse = modelMapper.map(roomHistory, RoomHistoryInfoResponse.class);
+				//RoomHistoryInfoResponse endRoomHistoryInfoResponse = modelMapper.map(roomHistory, RoomHistoryInfoResponse.class);
+				RoomHistoryInfoResponse endRoomHistoryInfoResponse = dashboardRoomHistoryInfoMapper.toDto(roomHistory);
 				endRoomHistoryInfoResponse.setSessionType(roomHistory.getSessionPropertyHistory().getSessionType());
 				endRoomHistoryInfoResponse.setStatus(true);
 
 				// MemberHistory 도메인 객체의 경우 MemberStatus 값이 없기에, 회원 정보 필터링 불가능
 				List<MemberInfoResponse> memberInfoResponses = roomHistory.getMemberHistories().stream()
-					.map(memberHistory -> modelMapper.map(memberHistory, MemberInfoResponse.class))
+					.map(
+						//memberHistory -> modelMapper.map(memberHistory, MemberInfoResponse.class)
+						memberHistory -> dashboardMemberHistoryMapper.toDto(memberHistory)
+					)
 					.collect(Collectors.toList());
 
 				endRoomHistoryInfoResponse.setMemberList(memberInfoResponses);

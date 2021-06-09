@@ -10,9 +10,9 @@ spring:
         allow-bean-definition-overriding: true
     datasource:
         driver-class-name: com.mysql.cj.jdbc.Driver
-        url: jdbc:mysql://192.168.6.3:4336/remote?serverTimezone=UTC&characterEncoding=UTF-8
-        username: virnect-remote2
-        password: virnect1234
+        url: jdbc:mysql://localhost:3306/woong?serverTimezone=UTC&characterEncoding=UTF-8
+        username: root
+        password: dndqmffldb
     jpa:
         database: mysql
         database-platform: org.hibernate.dialect.MySQL5InnoDBDialect

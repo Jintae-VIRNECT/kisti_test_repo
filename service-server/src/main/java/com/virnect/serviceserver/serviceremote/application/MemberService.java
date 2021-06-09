@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
@@ -24,8 +23,7 @@ import com.virnect.data.domain.member.MemberType;
 import com.virnect.data.domain.room.Room;
 import com.virnect.data.dto.PageMetadataResponse;
 import com.virnect.data.dto.constraint.LicenseConstants;
-import com.virnect.data.dto.mapper.MemberMapper;
-import com.virnect.data.dto.mapper.MemberWorkspaceMapper;
+import com.virnect.serviceserver.serviceremote.dto.mapper.MemberWorkspaceMapper;
 import com.virnect.data.dto.rest.WorkspaceMemberInfoListResponse;
 import com.virnect.data.dto.rest.WorkspaceMemberInfoResponse;
 import com.virnect.data.error.ErrorCode;

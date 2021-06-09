@@ -60,7 +60,6 @@ public class MemberInfoResponse {
         position = 11)
     private AccessType accessType = AccessType.LOGOUT;
 
-
     @Override
     public String toString() {
         return "MemberInfoResponse{" +
