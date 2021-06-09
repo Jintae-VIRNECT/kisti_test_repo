@@ -16,7 +16,11 @@
       </div>
       <div v-else-if="state === 'showing'" class="modal-position-map__showing">
         <div class="modal-position-map__showing--map" id="map"></div>
-        <button @click="refresh" class="modal-position-map__showing--refresh">
+        <button
+          @click="refresh"
+          class="modal-position-map__showing--refresh"
+          :class="{ refreshing: isRefreshing }"
+        >
           위치 새로고침
         </button>
       </div>
@@ -30,7 +34,6 @@
         <button
           @click="beforeClose"
           class="modal-position-map__gpsoff--close btn"
-          :class="{ refreshing: isRefreshing }"
         >
           닫기
         </button>
@@ -120,7 +123,6 @@ export default {
       const options = {
         version: 'weekly',
       }
-      const loader = new Loader(GOOGLE_MAP_API, options)
 
       //수신된 좌표가 없으면 status  requesting
 
@@ -131,9 +133,9 @@ export default {
       if (this.location) {
         lat = this.location.lat
         lng = this.location.lng
-        this.state = 'showing'
       }
-
+      this.state = 'showing'
+      const loader = new Loader(GOOGLE_MAP_API, options)
       const google = await loader.load()
       this.map = new google.maps.Map(document.getElementById('map'), {
         center: { lat, lng },
@@ -143,12 +145,14 @@ export default {
 
       this.map.setCenter({ lat, lng })
 
-      const pos = new google.maps.LatLng(lat, lng)
-      this.marker = new google.maps.Marker({
-        position: pos,
-      })
+      if (this.location) {
+        const pos = new google.maps.LatLng(lat, lng)
+        this.marker = new google.maps.Marker({
+          position: pos,
+        })
 
-      this.marker.setMap(this.map)
+        this.marker.setMap(this.map)
+      }
     },
     refresh() {
       this.$call.sendRequestLocation([this.mainView.connectionId])
