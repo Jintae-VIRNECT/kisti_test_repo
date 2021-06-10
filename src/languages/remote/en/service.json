@@ -228,11 +228,11 @@
     "camera_control_every_on": "Turn on all cameras",
     "camera_control_every_off": "Turn off all cameras",
 
-    "map_request_position": "위치 정보를 요청 중 입니다.",
-    "map_refresh":"위치 새로고침",
-    "map_cannot_check_gps":"GPS 정보를 확인할 수 없습니다.",
-    "map_check_use_gps_description":"요청한 참가자에게 GPS 기능 사용여부를 확인해 주세요.",
-    "map_request_rejected" :"위치정보 요청이 거절되었습니다.",
+    "map_request_position": "Requesting location information.",
+    "map_refresh":"Refresh Location",
+    "map_cannot_check_gps":"Unable to verify GPS information.",
+    "map_check_use_gps_description":"Please check whether the GPS function is used by the requested participant.",
+    "map_request_rejected" :"The location information request has been rejected. ",
     "map_cannot_use_gps":"This device does not support the location information function."
   }
 }
