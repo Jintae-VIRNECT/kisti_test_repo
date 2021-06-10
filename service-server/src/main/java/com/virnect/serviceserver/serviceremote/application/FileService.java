@@ -88,7 +88,7 @@ public class FileService {
 
 	private final IFileManagementService fileManagementService;
 	private final UserRestService userRestService;
-	//private final ModelMapper modelMapper;
+
 	private final FileUploadMapper fileUploadMapper;
 	private final RecordFileMapper recordFileMapper;
 	private final FileInfoMapper fileInfoMapper;
@@ -156,7 +156,6 @@ public class FileService {
 			return new ApiResponse<>(ErrorCode.ERR_FILE_UPLOAD_FAILED);
 		}
 
-		//FileUploadResponse fileUploadResponse = modelMapper.map(file, FileUploadResponse.class);
 		FileUploadResponse fileUploadResponse = fileUploadMapper.toDto(file);
 
 		return new ApiResponse<>(fileUploadResponse);
@@ -448,7 +447,6 @@ public class FileService {
 
 		List<FileInfoResponse> fileInfoList = filePage.toList()
 			.stream()
-			//.map(file -> modelMapper.map(file, FileInfoResponse.class))
 			.map(file -> fileInfoMapper.toDto(file))
 			.collect(Collectors.toList());
 
@@ -475,9 +473,6 @@ public class FileService {
 		for (RecordFile recordFile : recordFilePage.toList()) {
 			log.info("getRecordFileInfoList : {}", recordFile.getObjectName());
 			ApiResponse<UserInfoResponse> feignResponse = userRestService.getUserInfoByUserId(recordFile.getUuid());
-
-			/*FileUserInfoResponse fileUserInfoResponse = modelMapper.map(feignResponse.getData(), FileUserInfoResponse.class);
-			FileDetailInfoResponse fileDetailInfoResponse = modelMapper.map(recordFile, FileDetailInfoResponse.class);*/
 
 			FileUserInfoResponse fileUserInfoResponse = fileUserInfoMapper.toDto(feignResponse.getData());
 			FileDetailInfoResponse fileDetailInfoResponse = recordFileDetailMapper.toDto(recordFile);
@@ -698,7 +693,6 @@ public class FileService {
 			return new ApiResponse<>(fileUploadResult.getErrorCode());
 		}
 
-		//ShareFileUploadResponse fileUploadResponse = modelMapper.map(fileUploadResult.getFile(), ShareFileUploadResponse.class);
 		ShareFileUploadResponse fileUploadResponse = shareUploadFileMapper.toDto(fileUploadResult.getFile());
 
 		// Get File thumbnail download url
@@ -815,7 +809,6 @@ public class FileService {
 		if (!shareFilePage.isEmpty()) {
 			shareFileInfoResponses = shareFilePage
 				.stream()
-				//.map(file -> modelMapper.map(file, ShareFileInfoResponse.class))
 				.map(file -> shareFileInfoMapper.toDto(file))
 				.collect(Collectors.toList());
 		}

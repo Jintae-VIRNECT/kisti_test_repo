@@ -41,8 +41,8 @@ import com.virnect.data.dto.response.member.MemberSecessionResponse;
 @RequiredArgsConstructor
 public class MemberService {
 
-	//private final ModelMapper modelMapper;
 	private final WorkspaceRestService workspaceRestService;
+
 	private final RoomRepository roomRepository;
 	private final MemberHistoryRepository memberHistoryRepository;
 
@@ -144,7 +144,6 @@ public class MemberService {
 			.build();
 
 		List<MemberInfoResponse> memberInfoList = workspaceMemberInfoList.stream()
-			//.map(memberInfo -> modelMapper.map(memberInfo, MemberInfoResponse.class))
 			.map(workspaceMemberInfoResponse -> memberWorkspaceMapper.toDto(workspaceMemberInfoResponse))
 			.collect(Collectors.toList());
 
@@ -188,7 +187,6 @@ public class MemberService {
 		workspaceMemberInfoList = finalWorkspaceMemberInfoList;
 
 		List<MemberInfoResponse> memberInfoList = workspaceMemberInfoList.stream()
-			//.map(memberInfo -> modelMapper.map(memberInfo, MemberInfoResponse.class))
 			.map(workspaceMemberInfoResponse -> memberWorkspaceMapper.toDto(workspaceMemberInfoResponse))
 			.collect(Collectors.toList());
 

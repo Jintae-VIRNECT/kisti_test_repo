@@ -50,8 +50,6 @@ import com.virnect.serviceserver.servicedashboard.dto.response.FileUserInfoRespo
 @Transactional
 public class DashboardFileService {
 
-	//private final ModelMapper modelMapper;
-
 	private final WorkspaceRestService workspaceRestService;
 	private final UserRestService userRestService;
 	private final IFileManagementService fileManagementService;
@@ -109,7 +107,6 @@ public class DashboardFileService {
 			fileInfoList = files
 				.stream()
 				.map(
-					//file -> modelMapper.map(file, FileInfoResponse.class)
 					file -> dashboardFileInfoMapper.toDto(file)
 				)
 				.sorted((Comparator.comparing(FileInfoResponse::getCreatedDate)))
@@ -159,8 +156,6 @@ public class DashboardFileService {
 		try {
 			for (RecordFile recordFile : recordFiles) {
 				ApiResponse<UserInfoResponse> feignResponse = userRestService.getUserInfoByUserId(recordFile.getUuid());
-				//FileUserInfoResponse fileUserInfoResponse = modelMapper.map(feignResponse.getData(), FileUserInfoResponse.class);
-				//FileDetailInfoResponse fileDetailInfoResponse = modelMapper.map(recordFile, FileDetailInfoResponse.class);
 
 				FileUserInfoResponse fileUserInfoResponse = dashboardFileUserInfoMapper.toDto(feignResponse.getData());
 				FileDetailInfoResponse fileDetailInfoResponse = dashboardRecordFileDetailMapper.toDto(recordFile);
@@ -233,7 +228,6 @@ public class DashboardFileService {
 					file.getName(),
 					FileType.FILE
 				);
-				//filePreSignedResponse = modelMapper.map(file, FilePreSignedResponse.class);
 				filePreSignedResponse = dashboardFilePreSignedMapper.toDto(file);
 				filePreSignedResponse.setExpiry(expiry);
 				filePreSignedResponse.setUrl(url);
@@ -283,7 +277,7 @@ public class DashboardFileService {
 					recordFile.getName(),
 					FileType.RECORD
 				);
-				//filePreSignedResponse = modelMapper.map(recordFile, FilePreSignedResponse.class);
+
 				filePreSignedResponse = dashboardRecordFilePreSignedMapper.toDto(recordFile);
 				filePreSignedResponse.setExpiry(expiry);
 				filePreSignedResponse.setUrl(url);

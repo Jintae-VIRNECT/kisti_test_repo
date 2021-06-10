@@ -41,7 +41,6 @@ public class CompanyService {
 
 	private static final String TAG = CompanyService.class.getSimpleName();
 
-	//private final ModelMapper modelMapper;
 	private final CompanyMapper companyMapper;
 
 	private final SessionTransactionalService sessionService;
@@ -180,7 +179,6 @@ public class CompanyService {
 			return new ApiResponse<>(ErrorCode.ERR_COMPANY_INVALID_CODE);
 		}
 
-		//CompanyInfoResponse companyInfoResponse = modelMapper.map(company, CompanyInfoResponse.class);
 		CompanyInfoResponse companyInfoResponse = companyMapper.toDto(company);
 		Language language = company.getLanguage();
 		List<LanguageCode> languageCodes = combineLanguageCode(language);

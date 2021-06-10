@@ -73,8 +73,6 @@ public class RoomService {
 	private static final String TAG = SessionRestController.class.getSimpleName();
 	private static final String REST_PATH = "/remote/room";
 
-	//private final ModelMapper modelMapper;
-
 	private final RoomRepository roomRepository;
 	private final SessionDataRepository sessionDataRepository;
 	private final RoomHistoryRepository roomHistoryRepository;
@@ -529,11 +527,9 @@ public class RoomService {
 
 		// mapping data
 		RoomDetailInfoResponse roomDetailInfoResponse = roomDetailMapper.toDto(room);
-		//RoomDetailInfoResponse roomDetailInfoResponse = modelMapper.map(room, RoomDetailInfoResponse.class);
 		roomDetailInfoResponse.setSessionType(room.getSessionProperty().getSessionType());
 
 		List<MemberInfoResponse> memberInfoList = room.getMembers().stream()
-			//.map(member -> modelMapper.map(member, MemberInfoResponse.class))
 			.map(member -> memberMapper.toDto(member))
 			.collect(Collectors.toList());
 
@@ -680,14 +676,12 @@ public class RoomService {
 
 		// mapping data
 		RoomDetailInfoResponse roomDetailInfoResponse = roomDetailMapper.toDto(room);
-		//RoomDetailInfoResponse roomDetailInfoResponse = modelMapper.map(updatedRoom, RoomDetailInfoResponse.class);
 		roomDetailInfoResponse.setSessionType(updatedRoom.getSessionProperty().getSessionType());
 		// Get Member List by Room Session ID
 		// Mapping Member List Data to Member Information List
 		List<MemberInfoResponse> memberInfoList = memberRepository.findAllBySessionId(sessionId)
 			.stream()
 			.filter(member -> !(member.getMemberStatus() == MemberStatus.EVICTED))
-			//.map(member -> modelMapper.map(member, MemberInfoResponse.class))
 			.map(member -> memberMapper.toDto(member))
 			.collect(Collectors.toList());
 
@@ -845,12 +839,10 @@ public class RoomService {
 		for (Room room : roomPage.getContent()) {
 
 			RoomInfoResponse roomInfoResponse = roomInfoMapper.toDto(room);
-			//RoomInfoResponse roomInfoResponse = modelMapper.map(room, RoomInfoResponse.class);
 			roomInfoResponse.setSessionType(room.getSessionProperty().getSessionType());
 
 			// Mapping Member List Data to Member Information List
 			List<MemberInfoResponse> memberInfoList = room.getMembers().stream()
-				//.map(member -> modelMapper.map(member, MemberInfoResponse.class))
 				.map(member -> memberMapper.toDto(member))
 				.collect(Collectors.toList());
 

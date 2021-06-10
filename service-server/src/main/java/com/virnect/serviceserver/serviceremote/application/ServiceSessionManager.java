@@ -76,7 +76,7 @@ public class ServiceSessionManager {
 
 	private final AccessStatusService accessStatusService;
 	private final WorkspaceRestService workspaceRestService;
-	//private final ModelMapper modelMapper;
+
 	private static final ChannelTopic REDIS_CHANNEL = new ChannelTopic("force-logout");
 	private final RedisPublisher redisPublisher;
 
@@ -754,7 +754,6 @@ public class ServiceSessionManager {
 			}
 			// Mapper Response
 			failMembersResponse = failMembers.stream()
-				//.map(memberInfo -> modelMapper.map(memberInfo, MemberInfoResponse.class))
 				.map(workspaceMemberInfoResponse -> memberWorkspaceMapper.toDto(workspaceMemberInfoResponse))
 				.collect(Collectors.toList());
 			// 페이징 데이터 셋팅 (페이징 사용안함)

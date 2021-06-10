@@ -42,7 +42,7 @@ public class HistoryService {
 	private final WorkspaceRestService workspaceRestService;
 	private final RoomHistoryRepository roomHistoryRepository;
 	private final MemberHistoryRepository memberHistoryRepository;
-	//private final ModelMapper modelMapper;
+
 	private final RoomHistoryDetailInfoMapper roomHistoryDetailMapper;
 	private final RoomHistoryInfoMapper roomHistoryInfoMapper;
 	private final MemberHistoryMapper memberHistoryMapper;
@@ -158,13 +158,11 @@ public class HistoryService {
 		ApiResponse<WorkspaceMemberInfoListResponse> memberInfo = workspaceRestService.getWorkspaceMemberInfoList(workspaceId, userIds);
 
 		// mapping data
-		//RoomHistoryDetailInfoResponse resultResponse = modelMapper.map(roomHistory, RoomHistoryDetailInfoResponse.class);
 		RoomHistoryDetailInfoResponse resultResponse = roomHistoryDetailMapper.toDto(roomHistory);
 
 		resultResponse.setSessionType(roomHistory.getSessionPropertyHistory().getSessionType());
 
 		List<MemberInfoResponse> memberInfoList = roomHistory.getMemberHistories().stream()
-			//.map(member -> modelMapper.map(member, MemberInfoResponse.class))
 			.map(memberHistory -> memberHistoryMapper.toDto(memberHistory))
 			.collect(Collectors.toList());
 
@@ -277,12 +275,10 @@ public class HistoryService {
 
 		// Make Response data
 		for (RoomHistory roomHistory : roomHistoryPage.getContent()) {
-			//RoomHistoryInfoResponse roomHistoryInfoResponse = modelMapper.map(roomHistory, RoomHistoryInfoResponse.class);
 			RoomHistoryInfoResponse roomHistoryInfoResponse = roomHistoryInfoMapper.toDto(roomHistory);
 			roomHistoryInfoResponse.setSessionType(roomHistory.getSessionPropertyHistory().getSessionType());
 
 			List<MemberInfoResponse> memberInfoList = roomHistory.getMemberHistories().stream()
-					//.map(member -> modelMapper.map(member, MemberInfoResponse.class))
 					.map(memberHistory -> memberHistoryMapper.toDto(memberHistory))
 					.collect(Collectors.toList());
 

@@ -70,9 +70,6 @@ dependencies {
 
     implementation group: 'io.github.openfeign.form', name: 'feign-form', version: '3.8.0'
 
-    // ModelMapper
-    implementation group: 'org.modelmapper', name: 'modelmapper', version: '2.3.0'
-
 // Query DSL
     implementation("com.querydsl:querydsl-jpa") // querydsl
     implementation("com.querydsl:querydsl-apt") // querydsl
