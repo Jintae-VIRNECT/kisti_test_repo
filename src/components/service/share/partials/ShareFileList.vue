@@ -164,13 +164,17 @@ export default {
             objectName: data.objectName,
             userId: this.account.uuid,
           })
+          //image shareFile(vuex) set되는 곳
           this.addHistory({
-            objectName: res.objectName,
             id: Date.now(),
-            img: res.url,
+            name: res.name,
+            fileName: res.name,
             width: data.width,
             height: data.height,
-            fileName: res.name,
+            img: res.url,
+            pageNum: 0, //image인 경우 pageNum은 0으로 보내도록한다.
+            objectName: res.objectName,
+            contentType: res.contentType,
           })
         }
       }

@@ -275,6 +275,7 @@ export default {
           objectName: this.fileInfo.objectName,
           contentType: this.fileInfo.contentType,
         }
+        //pdf shareFile(vuex) set 되는 곳
         this.addHistory(history)
       }
       fileReader.readAsDataURL(blob)
