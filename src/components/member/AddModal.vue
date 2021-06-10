@@ -139,11 +139,9 @@ export default {
         email: [
           {
             required: true,
-            trigger: 'blur',
             message: this.$t('invalid.required'),
           },
           {
-            trigger: 'blur',
             type: 'email',
             message: this.$t('invalid.format', [this.$t('members.add.email')]),
           },
