@@ -1,4 +1,4 @@
-package com.virnect.serviceserver.serviceremote.dto.mapper;
+package com.virnect.serviceserver.serviceremote.dto.mapper.roomhistory;
 
 import org.mapstruct.Mapper;
 

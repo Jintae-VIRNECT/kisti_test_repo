@@ -36,9 +36,9 @@ import com.virnect.data.domain.session.SessionPropertyHistory;
 import com.virnect.data.domain.session.SessionType;
 import com.virnect.data.dto.PageMetadataResponse;
 import com.virnect.data.dto.constraint.LicenseItem;
-import com.virnect.serviceserver.serviceremote.dto.mapper.MemberMapper;
-import com.virnect.serviceserver.serviceremote.dto.mapper.RoomDetailMapper;
-import com.virnect.serviceserver.serviceremote.dto.mapper.RoomMapper;
+import com.virnect.serviceserver.serviceremote.dto.mapper.member.MemberMapper;
+import com.virnect.serviceserver.serviceremote.dto.mapper.room.RoomDetailMapper;
+import com.virnect.serviceserver.serviceremote.dto.mapper.room.RoomInfoMapper;
 import com.virnect.data.dto.push.SendSignalRequest;
 import com.virnect.data.dto.request.room.InviteRoomRequest;
 import com.virnect.data.dto.request.room.JoinRoomRequest;
@@ -83,7 +83,7 @@ public class RoomService {
 	private final ServiceSessionManager serviceSessionManager;
 	private final FileService fileService;
 
-	private final RoomMapper roomMapper;
+	private final RoomInfoMapper roomInfoMapper;
 	private final RoomDetailMapper roomDetailMapper;
 	private final MemberMapper memberMapper;
 
@@ -844,7 +844,7 @@ public class RoomService {
 		// Make Response data
 		for (Room room : roomPage.getContent()) {
 
-			RoomInfoResponse roomInfoResponse = roomMapper.toDto(room);
+			RoomInfoResponse roomInfoResponse = roomInfoMapper.toDto(room);
 			//RoomInfoResponse roomInfoResponse = modelMapper.map(room, RoomInfoResponse.class);
 			roomInfoResponse.setSessionType(room.getSessionProperty().getSessionType());
 

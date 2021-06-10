@@ -18,9 +18,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.util.ObjectUtils;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
@@ -32,10 +29,8 @@ import lombok.extern.slf4j.Slf4j;
 
 import com.virnect.client.RemoteServiceException;
 import com.virnect.data.application.workspace.WorkspaceRestService;
-import com.virnect.data.dao.member.MemberRepository;
-import com.virnect.data.domain.member.Member;
 import com.virnect.data.dto.PageMetadataResponse;
-import com.virnect.serviceserver.serviceremote.dto.mapper.MemberWorkspaceMapper;
+import com.virnect.serviceserver.serviceremote.dto.mapper.member.MemberWorkspaceMapper;
 import com.virnect.data.dto.rest.WorkspaceMemberInfoResponse;
 import com.virnect.data.error.ErrorCode;
 import com.virnect.data.global.common.ApiResponse;

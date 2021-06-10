@@ -25,7 +25,7 @@ import com.virnect.data.dto.constraint.CompanyConstants;
 import com.virnect.data.dto.constraint.LanguageCode;
 import com.virnect.data.dto.constraint.LicenseItem;
 import com.virnect.data.dto.constraint.TranslationItem;
-import com.virnect.serviceserver.serviceremote.dto.mapper.CompanyMapper;
+import com.virnect.serviceserver.serviceremote.dto.mapper.company.CompanyMapper;
 import com.virnect.data.dto.request.company.CompanyRequest;
 import com.virnect.data.dto.request.company.CompanyResponse;
 import com.virnect.data.dto.response.company.CompanyInfoResponse;
