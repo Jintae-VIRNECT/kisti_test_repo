@@ -1,26 +1,20 @@
 # Build Stage
-FROM gradle:6.8-jdk8 AS builder
-ENV APP_HOME=/usr/app/
-WORKDIR $APP_HOME
+FROM gradle:6.8-jdk11 AS builder
 
 # Only copy dependency-related files
 COPY build.gradle settings.gradle ./
 
 # Copy Sourcefile
 COPY virnect.pfx .
-
-# Donwload dependencies. docker layer caching
-RUN gradle clean build --no-daemon > /dev/null 2>&1 || true
-
 COPY src src
 
-# build soruce file with dependnecies
-RUN gradle clean build -x test --console=plain
+# Build soruce file with dependnecies
+RUN gradle clean build -x test --info  --no-daemon
 
 RUN java -Djarmode=layertools -jar build/libs/*.jar extract
 
 # Runtime Stage
-FROM openjdk:8-jre-alpine
+FROM openjdk:11-jdk-slim
 
 ENV APP_HOME=/usr/app/
 WORKDIR $APP_HOME
