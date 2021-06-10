@@ -12,12 +12,18 @@
         :name="name"
         :key="name"
       >
-        <el-row>
+        <el-row v-for="category in product.categories" :key="category">
           <el-col :md="5" :span="24">
-            <h4>{{ name }}</h4>
+            <h4>{{ category }}</h4>
           </el-col>
           <el-col :md="19" :span="24">
-            <Item v-for="app in product" :key="app.id" :app="app" />
+            <Item
+              v-for="app in product.list.filter(
+                app => app.deviceType === category,
+              )"
+              :key="app.id"
+              :app="app"
+            />
           </el-col>
         </el-row>
       </el-tab-pane>
@@ -27,6 +33,8 @@
 
 <script>
 import { filters } from '@/plugins/dayjs'
+import storeIds from '@/models/storeIds'
+
 export default {
   data() {
     return {
@@ -45,17 +53,12 @@ export default {
   watch: {
     async activeTab(tab) {
       window.history.replaceState({}, null, tab)
-      if (this.products[tab].length) return false
-      const data = await this.$api('APP_LIST', {
-        route: { productName: tab },
-      })
-      this.products[tab] = data.appInfoList
+      if (!this.products[tab].length) {
+        this.products[tab] = await this.loadList(tab)
+      }
     },
     async '$i18n.locale'() {
-      const data = await this.$api('APP_LIST', {
-        route: { productName: this.activeTab },
-      })
-      this.products[this.activeTab] = data.appInfoList
+      this.products[this.activeTab] = await this.loadList(this.activeTab)
     },
   },
   filters,
@@ -77,6 +80,25 @@ export default {
     tabClick() {
       if (window.pageYOffset > this.snbTop) {
         window.scrollTo(0, this.snbTop)
+      }
+    },
+    storeId(productName) {
+      return app => {
+        if (storeIds[productName])
+          app.storeId = storeIds[productName][app.os][app.deviceType]
+        return app
+      }
+    },
+    async loadList(productName) {
+      const data = await this.$api('APP_LIST', {
+        route: { productName },
+      })
+      const categories = new Set()
+      data.appInfoList.forEach(app => categories.add(app.deviceType))
+
+      return {
+        categories,
+        list: data.appInfoList.map(this.storeId(productName)),
       }
     },
   },

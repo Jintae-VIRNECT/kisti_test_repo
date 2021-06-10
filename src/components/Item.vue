@@ -2,18 +2,22 @@
   <el-card class="item">
     <el-row>
       <el-col :xs="24" :sm="13">
-        <h6 v-html="app.deviceType" />
+        <h6 v-html="app.os" />
         <h5 v-html="app.deviceName" />
         <p class="version">{{ app.version }}</p>
         <p class="release">Released: {{ app.releaseTime | dateFormat }}</p>
       </el-col>
       <el-col :xs="24" :sm="11">
-        <el-button type="primary" @click="link('app', app)">
+        <el-button v-if="app.storeId" type="primary" @click="store(app)">
           {{ downloadText(app) }}
         </el-button>
-        <!-- <el-button type="simple" @click="link('app', app)">
-          {{ downloadText(app) }}
-        </el-button> -->
+        <el-button
+          v-if="app.appUrl"
+          :type="app.storeId ? 'simple' : 'primary'"
+          @click="link('app', app)"
+        >
+          {{ $t('home.download') }}
+        </el-button>
         <el-button
           type="text"
           @click="link('guide', app)"
@@ -39,8 +43,8 @@ export default {
   methods: {
     downloadText(app) {
       let str = this.$t('home.download')
-      if (/play\.google\.com/.test(app.appUrl)) str = 'Google Play'
-      if (/apps\.apple\.com/.test(app.appUrl)) str = 'App Store'
+      if (app.os === 'Android') str = 'Google Play'
+      if (app.os === 'iOS') str = 'App Store'
       return str
     },
     async download(type, app) {
@@ -71,6 +75,13 @@ export default {
       this.download(type, app).then(url => {
         popup.location = url
       })
+    },
+    store(app) {
+      const popup = window.open()
+      if (app.os === 'Android')
+        popup.location = `https://play.google.com/store/apps/details?id=${app.storeId}`
+      if (app.os === 'iOS')
+        popup.location = `https://apps.apple.com/kr/app/${app.storeId}`
     },
   },
 }
