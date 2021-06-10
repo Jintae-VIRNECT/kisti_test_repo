@@ -228,6 +228,7 @@
     "camera_control_every_on": "카메라 전체 켜기",
     "camera_control_every_off": "카메라 전체 끄기",
 
+    "map_information":"위치 정보",
     "map_request_position": "위치 정보를 요청 중 입니다.",
     "map_refresh":"위치 새로고침",
     "map_cannot_check_gps":"GPS 정보를 확인할 수 없습니다.",

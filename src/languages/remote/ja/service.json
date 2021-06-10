@@ -228,6 +228,7 @@
     "camera_control_every_on": "全体カメラオン",
     "camera_control_every_off": "全体カメラオフ",
 
+    "map_information":"位置情報",
     "map_request_position": "位置情報を要請中です。",
     "map_refresh":"位置の改変",
     "map_cannot_check_gps":"GPS情報を確認できません。",

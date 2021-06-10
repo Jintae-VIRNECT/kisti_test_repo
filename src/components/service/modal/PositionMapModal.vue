@@ -6,7 +6,7 @@
     height="43.3571rem"
     :beforeClose="beforeClose"
     class="modal-position-map"
-    :title="'위치 정보'"
+    :title="$t('service.map_information')"
   >
     <div class="modal-position-map__body">
       <div v-if="state === 'requesting'" class="modal-position-map__request">
@@ -35,7 +35,7 @@
           @click="beforeClose"
           class="modal-position-map__gpsoff--close btn"
         >
-          {{ $t('common.close') }}
+          {{ $t('button.close') }}
         </button>
       </div>
     </div>
@@ -44,13 +44,10 @@
 
 <script>
 import Modal from 'Modal'
-
 import toastMixin from 'mixins/toast'
-// import { Loader } from '@googlemaps/js-api-loader'
-import { Loader, LoaderOptions } from 'google-maps'
-// import { mapGetters, mapActions } from 'vuex'
-// import { ROLE } from 'configs/remote.config'
+import { Loader } from 'google-maps'
 import { mapGetters } from 'vuex'
+
 export default {
   name: 'PositionMapModal',
   mixins: [toastMixin],
@@ -121,13 +118,14 @@ export default {
       }
       this.isRefreshing = false
     },
-    showGpsOff() {
-      this.state = 'gpsOff'
-    },
+
     async initStatus() {
       this.state = 'requesting'
     },
     async initMap() {
+      //모달이 닫혀있는 상태에서 동작 방지
+      if (!this.visibleFlag) return
+
       const options = {
         version: 'weekly',
       }
@@ -152,9 +150,14 @@ export default {
 
       this.marker.setMap(this.map)
     },
+    showGpsOff() {
+      this.state = 'gpsOff'
+    },
     refresh() {
-      this.$call.sendRequestLocation(true, [this.mainView.connectionId])
       this.isRefreshing = true
+      this.$call.sendRequestLocation(this.isRefreshing, [
+        this.mainView.connectionId,
+      ])
     },
   },
 
@@ -171,6 +174,12 @@ export default {
 }
 </script>
 <style lang="scss">
+.modal-position-map {
+  .modal--body {
+    padding: 1.4286rem;
+  }
+}
+
 .modal-position-map__body {
   width: 100%;
   height: 100%;
@@ -188,6 +197,7 @@ export default {
 }
 
 .modal-position-map__request {
+  border-radius: 6px;
   & > p {
     color: #dedede;
     font-weight: normal;
@@ -198,6 +208,7 @@ export default {
   .modal-position-map__showing--map {
     width: 100%;
     height: 100%;
+    border-radius: 6px;
   }
   .modal-position-map__showing--refresh {
     position: absolute;

@@ -25,7 +25,6 @@ export default {
     }
   },
   computed: {
-    // ...mapGetters(['myInfo', 'myTempStream', 'settingInfo', 'video']),
     ...mapGetters(['mainView']),
   },
   watch: {
@@ -34,7 +33,6 @@ export default {
         this.isAvailable =
           this.mainView.deviceType === DEVICE.MOBILE ||
           this.mainView.deviceType === DEVICE.GLASSES
-        // this.isAvailable = true
       },
       deep: true,
       immediate: true,
@@ -49,11 +47,10 @@ export default {
       }
 
       this.$call.sendRequestLocation(false, [this.mainView.connectionId])
+      this.showMap()
     },
-    toggleMap(enable) {
-      if (enable) {
-        this.showMap()
-      } else {
+    rejected(enable) {
+      if (!enable) {
         this.toastDefault(this.$t('service.map_request_rejected'))
       }
     },
@@ -67,11 +64,11 @@ export default {
   },
   mounted() {
     this.$eventBus.$on('map:closed', this.closeMap)
-    this.$eventBus.$on('map:enable', this.toggleMap)
+    this.$eventBus.$on('map:enable', this.rejected)
   },
   beforeDestroy() {
     this.$eventBus.$off('map:closed', this.closeMap)
-    this.$eventBus.$off('map:enable', this.toggleMap)
+    this.$eventBus.$off('map:enable', this.rejected)
   },
 }
 </script>

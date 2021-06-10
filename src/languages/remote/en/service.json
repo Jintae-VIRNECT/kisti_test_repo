@@ -228,6 +228,8 @@
     "camera_control_every_on": "Turn on all cameras",
     "camera_control_every_off": "Turn off all cameras",
 
+
+    "map_information":"Location information",
     "map_request_position": "Requesting location information.",
     "map_refresh":"Refresh Location",
     "map_cannot_check_gps":"Unable to verify GPS information.",
