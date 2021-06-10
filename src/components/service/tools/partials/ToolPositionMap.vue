@@ -1,6 +1,6 @@
 <template>
   <tool-button
-    :text="'지도'"
+    :text="$t('service.map_information')"
     :active="status"
     :disabled="!isAvailable"
     :src="require('assets/image/call/ic_location.svg')"
@@ -12,7 +12,7 @@
 import toolMixin from './toolMixin'
 import toastMixin from 'mixins/toast'
 import { DEVICE } from 'configs/device.config'
-// import { CAMERA as CAMERA_STATUS } from 'configs/device.config'
+
 import { mapGetters } from 'vuex'
 export default {
   name: 'ToolPositionMap',
@@ -46,8 +46,8 @@ export default {
         return
       }
 
-      this.$call.sendRequestLocation(false, [this.mainView.connectionId])
       this.showMap()
+      this.$call.sendRequestLocation(false, [this.mainView.connectionId])
     },
     rejected(enable) {
       if (!enable) {
