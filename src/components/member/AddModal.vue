@@ -107,7 +107,7 @@
       <el-button
         type="primary"
         @click="submit"
-        :disabled="!userInfoList.length"
+        :disabled="userInfoList.length < 1"
       >
         {{ $t('members.add.submit') }}
         <span class="number">{{ userInfoList.length }}</span>
@@ -140,17 +140,12 @@ export default {
           {
             required: true,
             trigger: 'blur',
-            message: this.$t('invalid.required', [
-              this.$t('members.add.email'),
-            ]),
+            message: this.$t('invalid.required'),
           },
           {
             trigger: 'blur',
             type: 'email',
-            message: this.$t('invalid.format', [
-              this.$t('members.add.email'),
-              this.$t('members.add.email'),
-            ]),
+            message: this.$t('invalid.format', [this.$t('members.add.email')]),
           },
         ],
       },
