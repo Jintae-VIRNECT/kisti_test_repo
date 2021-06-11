@@ -546,6 +546,8 @@ export const addSessionEventListener = session => {
       if (data.reason === 'GPSoff') {
         //위치 정보 공유 중단 by GPS off
         window.vue.$eventBus.$emit('map:gpsoff')
+      } else if (data.reason === 'BadSignal') {
+        window.vue.$eventBus.$emit('map:timeout')
       } else {
         window.vue.$eventBus.$emit('map:close')
       }

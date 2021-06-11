@@ -161,17 +161,22 @@ export default {
         this.mainView.connectionId,
       ])
     },
+    timeout() {
+      this.toastDefault(this.$t('service.map_timeout'))
+    },
   },
 
   mounted() {
     this.$eventBus.$on('map:location', this.updatePosition)
     this.$eventBus.$on('map:gpsoff', this.showGpsOff)
     this.$eventBus.$on('map:close', this.beforeClose)
+    this.$eventBus.$on('map:timeout', this.timeout)
   },
   beforeDestroy() {
     this.$eventBus.$off('map:location', this.updatePosition)
     this.$eventBus.$off('map:gpsoff', this.showGpsOff)
     this.$eventBus.$off('map:close', this.beforeClose)
+    this.$eventBus.$off('map:timeout', this.timeout)
   },
 }
 </script>

@@ -234,6 +234,7 @@
     "map_cannot_check_gps":"GPS 정보를 확인할 수 없습니다.",
     "map_check_use_gps_description":"요청한 참가자에게 GPS 기능 사용여부를 확인해 주세요.",
     "map_request_rejected" :"위치정보 요청이 거절되었습니다.",
-    "map_cannot_use_gps":"위치 정보 기능을 사용할 수 없는 장치입니다."
+    "map_cannot_use_gps":"위치 정보 기능을 사용할 수 없는 장치입니다.",
+    "map_timeout":"GPS 정보를 확인할 수 없습니다. 요청한 참가자에게 GPS 기능 사용여부를 확인해 주세요."
   }
 }
