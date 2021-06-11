@@ -25,11 +25,15 @@ public interface WorkspaceMapStruct {
 
     WorkspaceInfoListResponse.WorkspaceInfo workspaceToWorkspaceInfo(Workspace workspace);
 
-    @Mapping(target = "settingValue", source = "value")
+    @Mapping(target = "settingId", expression = "java(workspaceCustomSetting.getSetting().getId())")
     @Mapping(target = "settingName", expression = "java(workspaceCustomSetting.getSetting().getName())")
+    @Mapping(target = "settingDescription", expression = "java(workspaceCustomSetting.getSetting().getDescription())")
+    @Mapping(target = "settingValue", source = "value")
     @Mapping(target = "paymentType", expression = "java(workspaceCustomSetting.getSetting().getPaymentType())")
     WorkspaceSettingInfoResponse workspaceCustomSettingToWorkspaceSettingInfoResponse(WorkspaceCustomSetting workspaceCustomSetting);
 
+
     @Mapping(target = "settingName", source = "name")
+    @Mapping(target = "settingDescription", source = "description")
     SettingInfoResponse settingToSettingInfoResponse(Setting setting);
 }

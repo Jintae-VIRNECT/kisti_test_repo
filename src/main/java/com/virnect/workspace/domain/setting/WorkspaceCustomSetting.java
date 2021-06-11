@@ -33,7 +33,6 @@ public class WorkspaceCustomSetting extends TimeEntity {
     @Column(name = "value", nullable = false)
     private SettingValue value;
 
-
     @ManyToOne(targetEntity = Setting.class, fetch = FetchType.LAZY)
     @JoinColumn(name = "setting_id")
     @NotAudited

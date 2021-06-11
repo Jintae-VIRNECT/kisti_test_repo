@@ -36,6 +36,11 @@ public enum ErrorCode {
     ERR_WORKSPACE_CREATE_INVALID_PROFILE(1101, "Workspace create fail. Because invalid workspace profile image."),
     ERR_WORKSPACE_CREATE_MAX_CREATE(1102, "Workspace create fail. Because over maximum number of workspace creation."),
 
+    //워크스페이스 설정 관련 에러
+    ERR_WORKSPACE_SETTING(1200, "Workspace setting fail. Please Contact Administrator."),
+    ERR_WORKSPACE_SETTING_NOT_FOUND(1201, "Workspace setting fail. Not found setting info."),
+    ERR_WORKSPACE_SETTING_VALUE_INVALID(1202, "Workspace setting fail. Invalid setting value."),
+
     //라이선스 관련 에러
     ERR_WORKSPACE_USER_LICENSE_GRANT_FAIL(2000, "Workspace user license grant fail"),
 
@@ -47,9 +52,7 @@ public enum ErrorCode {
 
     //파일 관련 에러
     ERR_NOT_ALLOW_FILE_EXTENSION(3000, "Not Allow file extension."),
-
     ERR_NOT_ALLOW_FILE_SIZE(3001, "Not Allow file size."),
-
     ERR_NOT_FOUND_FILE(3002, "Not Found file."),
 
     // 공통 에러

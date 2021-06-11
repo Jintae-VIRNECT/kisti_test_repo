@@ -27,7 +27,10 @@ public class Setting extends TimeEntity {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "name", nullable = false, unique = true)
-    private SettingName name; //유니크 걸기
+    private SettingName name;
+
+    @Column(name = "description")
+    private String description;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)
@@ -42,8 +45,9 @@ public class Setting extends TimeEntity {
     private PaymentType paymentType;
 
     @Builder
-    public Setting(SettingName settingName, Status status, Product product, PaymentType paymentType) {
+    public Setting(SettingName settingName, String description, Status status, Product product, PaymentType paymentType) {
         this.name = settingName;
+        this.description = description;
         this.status = status;
         this.product = product;
         this.paymentType = paymentType;

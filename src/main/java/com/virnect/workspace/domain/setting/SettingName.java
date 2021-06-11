@@ -9,18 +9,18 @@ package com.virnect.workspace.domain.setting;
  */
 public enum SettingName {
     //멤버
-    PUBLIC_USER_MANAGEMENT_ROLE_SETTING(Product.WORKSTATION, SettingValue.UNUSED, new SettingValue[]{SettingValue.MASTER_OR_MANEGER, SettingValue.MASTER, SettingValue.MASTER_OR_MANGER_OR_MEMBER}),
-    PRIVATE_USER_MANAGEMENT_ROLE_SETTING(Product.WORKSTATION, SettingValue.UNUSED, new SettingValue[]{SettingValue.MASTER_OR_MANEGER, SettingValue.MASTER, SettingValue.MASTER_OR_MANGER_OR_MEMBER}),
-    SHEET_MANAGEMENT_ROLE_SETTING(Product.WORKSTATION, SettingValue.UNUSED, new SettingValue[]{SettingValue.MASTER_OR_MANEGER, SettingValue.MASTER, SettingValue.MASTER_OR_MANGER_OR_MEMBER}),
-    USER_PLAN_MANAGEMENT_ROLE_SETTING(Product.WORKSTATION, SettingValue.UNUSED, new SettingValue[]{SettingValue.MASTER_OR_MANEGER, SettingValue.MASTER, SettingValue.MASTER_OR_MANGER_OR_MEMBER}),
-    USER_ROLE_MANAGEMENT_ROLE_SETTING(Product.WORKSTATION, SettingValue.UNUSED, new SettingValue[]{SettingValue.MASTER, SettingValue.MASTER_OR_MANEGER, SettingValue.MASTER_OR_MANGER_OR_MEMBER}),
+    PUBLIC_USER_MANAGEMENT_ROLE_SETTING(Product.WORKSTATION, SettingValue.MASTER_OR_MANEGER, new SettingValue[]{SettingValue.MASTER_OR_MANEGER, SettingValue.MASTER, SettingValue.MASTER_OR_MANGER_OR_MEMBER}),
+    PRIVATE_USER_MANAGEMENT_ROLE_SETTING(Product.WORKSTATION, SettingValue.MASTER_OR_MANEGER, new SettingValue[]{SettingValue.MASTER_OR_MANEGER, SettingValue.MASTER, SettingValue.MASTER_OR_MANGER_OR_MEMBER}),
+    SHEET_MANAGEMENT_ROLE_SETTING(Product.WORKSTATION, SettingValue.MASTER_OR_MANEGER, new SettingValue[]{SettingValue.MASTER_OR_MANEGER, SettingValue.MASTER, SettingValue.MASTER_OR_MANGER_OR_MEMBER}),
+    USER_PLAN_MANAGEMENT_ROLE_SETTING(Product.WORKSTATION, SettingValue.MASTER_OR_MANEGER, new SettingValue[]{SettingValue.MASTER_OR_MANEGER, SettingValue.MASTER, SettingValue.MASTER_OR_MANGER_OR_MEMBER}),
+    USER_ROLE_MANAGEMENT_ROLE_SETTING(Product.WORKSTATION, SettingValue.MASTER, new SettingValue[]{SettingValue.MASTER, SettingValue.MASTER_OR_MANEGER, SettingValue.MASTER_OR_MANGER_OR_MEMBER}),
     //콘텐츠
     OPEN_CONTENTS_SHARE_SETTING(Product.WORKSTATION, SettingValue.UNUSED, new SettingValue[]{SettingValue.UNUSED, SettingValue.USE}),
     //작업
-    TASK_REGISTER_ROLE_SETTING(Product.WORKSTATION, SettingValue.UNUSED, new SettingValue[]{SettingValue.MASTER_OR_MANGER_OR_MEMBER, SettingValue.MASTER_OR_MANEGER, SettingValue.MASTER}),
-    TASK_UPDATE_ROLE_SETTING(Product.WORKSTATION, SettingValue.UNUSED, new SettingValue[]{SettingValue.MASTER_OR_MANGER_OR_MEMBER, SettingValue.MASTER_OR_MANEGER, SettingValue.MASTER}),
-    TASK_FINISH_ROLE_SETTING(Product.WORKSTATION, SettingValue.UNUSED, new SettingValue[]{SettingValue.MASTER_OR_MANGER_OR_MEMBER, SettingValue.MASTER_OR_MANEGER, SettingValue.MASTER}),
-    TASK_DELETE_ROLE_SETTING(Product.WORKSTATION, SettingValue.UNUSED, new SettingValue[]{SettingValue.MASTER_OR_MANGER_OR_MEMBER, SettingValue.MASTER_OR_MANEGER, SettingValue.MASTER}),
+    TASK_REGISTER_ROLE_SETTING(Product.WORKSTATION, SettingValue.MASTER_OR_MANGER_OR_MEMBER, new SettingValue[]{SettingValue.MASTER_OR_MANGER_OR_MEMBER, SettingValue.MASTER_OR_MANEGER, SettingValue.MASTER}),
+    TASK_UPDATE_ROLE_SETTING(Product.WORKSTATION, SettingValue.MASTER_OR_MANGER_OR_MEMBER, new SettingValue[]{SettingValue.MASTER_OR_MANGER_OR_MEMBER, SettingValue.MASTER_OR_MANEGER, SettingValue.MASTER}),
+    TASK_FINISH_ROLE_SETTING(Product.WORKSTATION, SettingValue.MASTER_OR_MANGER_OR_MEMBER, new SettingValue[]{SettingValue.MASTER_OR_MANGER_OR_MEMBER, SettingValue.MASTER_OR_MANEGER, SettingValue.MASTER}),
+    TASK_DELETE_ROLE_SETTING(Product.WORKSTATION, SettingValue.MASTER_OR_MANGER_OR_MEMBER, new SettingValue[]{SettingValue.MASTER_OR_MANGER_OR_MEMBER, SettingValue.MASTER_OR_MANEGER, SettingValue.MASTER}),
     //리모트 협업룸 설정
     COOPERATION_ROOM_PARTICIPANTS_SETTING(Product.REMOTE, SettingValue.UNUSED, new SettingValue[]{SettingValue.TWO, SettingValue.THREE, SettingValue.FOUR, SettingValue.FIVE, SettingValue.SIX}),
     COOPERATION_ROOM_CREATION_ROLE_SETTING(Product.REMOTE, SettingValue.UNUSED, new SettingValue[]{SettingValue.MASTER, SettingValue.MASTER_OR_MANEGER}),

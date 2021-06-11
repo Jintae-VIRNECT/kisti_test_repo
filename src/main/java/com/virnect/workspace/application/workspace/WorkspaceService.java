@@ -15,7 +15,10 @@ import com.virnect.workspace.domain.workspace.WorkspaceUser;
 import com.virnect.workspace.domain.workspace.WorkspaceUserPermission;
 import com.virnect.workspace.dto.WorkspaceInfoDTO;
 import com.virnect.workspace.dto.onpremise.*;
-import com.virnect.workspace.dto.request.*;
+import com.virnect.workspace.dto.request.SettingUpdateRequest;
+import com.virnect.workspace.dto.request.WorkspaceCreateRequest;
+import com.virnect.workspace.dto.request.WorkspaceSettingUpdateRequest;
+import com.virnect.workspace.dto.request.WorkspaceUpdateRequest;
 import com.virnect.workspace.dto.response.*;
 import com.virnect.workspace.dto.rest.MailRequest;
 import com.virnect.workspace.dto.rest.PageMetadataRestResponse;
@@ -372,21 +375,6 @@ public abstract class WorkspaceService {
     @Profile("onpremise")
     public abstract WorkspaceCustomSettingResponse getWorkspaceCustomSetting();
 
-    public WorkspaceSettingInfoListResponse addWorkspaceSetting(String workspaceId, WorkspaceSettingAddRequest workspaceSettingAddRequest) {
-        Workspace workspace = workspaceRepository.findByUuid(workspaceId).orElseThrow(() -> new WorkspaceException(ErrorCode.ERR_UNEXPECTED_SERVER_ERROR));
-        List<WorkspaceSettingInfoResponse> workspaceSettingInfoResponseList = workspaceSettingAddRequest.getSettingNameList().stream().map(settingName -> {
-            Setting setting = settingRepository.findByName(settingName).orElseThrow(() -> new WorkspaceException(ErrorCode.ERR_UNEXPECTED_SERVER_ERROR));
-            SettingValue defaultValue = SettingName.valueOf(settingName.toString()).getDefaultSettingValue();
-            WorkspaceCustomSetting workspaceCustomSetting = WorkspaceCustomSetting.builder()
-                    .setting(setting)
-                    .settingValue(defaultValue)
-                    .workspace(workspace)
-                    .build();
-            workspaceCustomSettingRepository.save(workspaceCustomSetting);
-            return workspaceMapStruct.workspaceCustomSettingToWorkspaceSettingInfoResponse(workspaceCustomSetting);
-        }).collect(Collectors.toList());
-        return new WorkspaceSettingInfoListResponse(workspaceSettingInfoResponseList);
-    }
 
     /**
      * 워크스페이스 설정 조회
@@ -397,42 +385,65 @@ public abstract class WorkspaceService {
      */
     public WorkspaceSettingInfoListResponse getWorkspaceSettingList(String workspaceId, Product product) {
         //유효성 검증
-        Workspace workspace = workspaceRepository.findByUuid(workspaceId).orElseThrow(() -> new WorkspaceException(ErrorCode.ERR_UNEXPECTED_SERVER_ERROR));
+        Workspace workspace = workspaceRepository.findByUuid(workspaceId).orElseThrow(() -> new WorkspaceException(ErrorCode.ERR_WORKSPACE_NOT_FOUND));
 
         //조회
         List<WorkspaceCustomSetting> workspaceCustomSettingList = workspaceCustomSettingRepository.findByWorkspace_UuidAndSetting_Product(workspaceId, product);
         List<Setting> settingList = settingRepository.findByStatusAndProduct(Status.ACTIVE, product);
+
         List<WorkspaceSettingInfoResponse> workspaceSettingInfoResponseList = settingList.stream().map(setting -> {
             Optional<WorkspaceCustomSetting> workspaceCustomSettingOptional = workspaceCustomSettingList.stream().findAny().filter(workspaceCustomSetting -> workspaceCustomSetting.getSetting() == setting);
+            List<SettingValue> settingValueOptionList = Arrays.asList(SettingName.valueOf(setting.getName().toString()).getSettingValues());
             if (workspaceCustomSettingOptional.isPresent()) {
-                return workspaceMapStruct.workspaceCustomSettingToWorkspaceSettingInfoResponse(workspaceCustomSettingOptional.get());
+                WorkspaceSettingInfoResponse workspaceSettingInfoResponse = workspaceMapStruct.workspaceCustomSettingToWorkspaceSettingInfoResponse(workspaceCustomSettingOptional.get());
+                workspaceSettingInfoResponse.setSettingValue(workspaceCustomSettingOptional.get().getValue());
+                workspaceSettingInfoResponse.setSettingValueOptionList(settingValueOptionList);
+                return workspaceSettingInfoResponse;
             } else {
                 WorkspaceSettingInfoResponse workspaceSettingInfoResponse = new WorkspaceSettingInfoResponse();
+                workspaceSettingInfoResponse.setSettingId(setting.getId());
                 workspaceSettingInfoResponse.setSettingName(setting.getName());
                 workspaceSettingInfoResponse.setPaymentType(setting.getPaymentType());
+                workspaceSettingInfoResponse.setSettingValueOptionList(settingValueOptionList);
+                workspaceSettingInfoResponse.setSettingDescription(setting.getDescription());
                 return workspaceSettingInfoResponse;
             }
         }).collect(Collectors.toList());
         return new WorkspaceSettingInfoListResponse(workspaceSettingInfoResponseList);
     }
 
+    /**
+     * 워크스페이스 설정 값 변경
+     *
+     * @param workspaceId                   - 워크스페이스 식별자
+     * @param userId                        - 변경 요청 유저 식별자
+     * @param workspaceSettingUpdateRequest - 설정 변경 요청 정보
+     * @return - 설정 변경 요청 결과
+     */
+    public WorkspaceSettingUpdateResponse updateWorkspaceSetting(String workspaceId, String userId, WorkspaceSettingUpdateRequest workspaceSettingUpdateRequest) {
+        log.info("[WORKSPACE SETTING UPDATE] request workspace uuid : [{}], user uuid : [{}] update info : {}", workspaceId, userId, workspaceSettingUpdateRequest);
 
-    public WorkspaceSettingInfoListResponse updateWorkspaceSetting(String workspaceId, String userId, WorkspaceSettingUpdateRequest workspaceSettingUpdateRequest) {
         //유효성 검증
-        Workspace workspace = workspaceRepository.findByUuid(workspaceId).orElseThrow(() -> new WorkspaceException(ErrorCode.ERR_UNEXPECTED_SERVER_ERROR));
+        Workspace workspace = workspaceRepository.findByUuid(workspaceId).orElseThrow(() -> new WorkspaceException(ErrorCode.ERR_WORKSPACE_NOT_FOUND));
         if (!workspace.getUserId().equals(userId)) {
+            log.error("[WORKSPACE SETTING UPDATE] use setting update only master user. request user : [{}], master user : [{}]", userId, workspace.getUserId());
             throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_INVALID_PERMISSION);
         }
 
         //업데이트
         List<WorkspaceSettingInfoResponse> workspaceSettingInfoResponseList = workspaceSettingUpdateRequest.getWorkspaceSettingUpdateInfoList().stream().map(workspaceSettingUpdateInfo -> {
             //변경 대상 설정이 유료인경우, 그설정을 사용할 수 있는 워크스페이스인지 체크
-            Setting setting = settingRepository.findByName(workspaceSettingUpdateInfo.getSettingName()).orElseThrow(() -> new WorkspaceException(ErrorCode.ERR_UNEXPECTED_SERVER_ERROR));
+            Setting setting = settingRepository.findByName(workspaceSettingUpdateInfo.getSettingName()).orElseThrow(() -> new WorkspaceException(ErrorCode.ERR_WORKSPACE_SETTING_NOT_FOUND));
             if (setting.getPaymentType() != PaymentType.FREE) {
-                //워크스페이스 라이선스 체크
+                //TODO 라이선스 체크하고 설정값을 변경할 수 있는 워크스페이스인지 체크
             }
             Optional<WorkspaceCustomSetting> workspaceCustomSettingOptional = workspaceCustomSettingRepository.findByWorkspace_UuidAndSetting_Name(workspaceId, workspaceSettingUpdateInfo.getSettingName());
-
+            //setting value 유효성 검증
+            SettingValue[] usefulSettingValues = SettingName.valueOf(workspaceSettingUpdateInfo.getSettingName().toString()).getSettingValues();
+            if (Arrays.stream(usefulSettingValues).noneMatch(settingValue -> settingValue == workspaceSettingUpdateInfo.getSettingValue())) {
+                log.error("[WORKSPACE SETTING UPDATE] invalid setting value. request value : [{}], useful value : [{}]", workspaceSettingUpdateInfo.getSettingValue(), Arrays.toString(usefulSettingValues));
+                throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_SETTING_VALUE_INVALID);
+            }
             //원래 있던 값이면 value만 수정
             if (workspaceCustomSettingOptional.isPresent()) {
                 workspaceCustomSettingOptional.get().setValue(workspaceSettingUpdateInfo.getSettingValue());
@@ -441,7 +452,7 @@ public abstract class WorkspaceService {
             } else {
                 // 없던 값이면
                 Setting newSetting = settingRepository.findByNameAndStatus(workspaceSettingUpdateInfo.getSettingName(), Status.ACTIVE)
-                        .orElseThrow(() -> new WorkspaceException(ErrorCode.ERR_UNEXPECTED_SERVER_ERROR));
+                        .orElseThrow(() -> new WorkspaceException(ErrorCode.ERR_WORKSPACE_SETTING_NOT_FOUND));
                 WorkspaceCustomSetting workspaceCustomSetting = WorkspaceCustomSetting.builder()
                         .workspace(workspace)
                         .setting(newSetting)
@@ -451,17 +462,31 @@ public abstract class WorkspaceService {
                 return workspaceMapStruct.workspaceCustomSettingToWorkspaceSettingInfoResponse(workspaceCustomSetting);
             }
         }).collect(Collectors.toList());
-        return new WorkspaceSettingInfoListResponse(workspaceSettingInfoResponseList);
+        return new WorkspaceSettingUpdateResponse(true, LocalDateTime.now(), workspaceSettingInfoResponseList);
     }
 
+    /**
+     * 설정 인덱스 정보 변경
+     *
+     * @param settingUpdateRequest - 변경 요청 정보
+     * @return - 변경 결과
+     */
     public SettingUpdateResponse updateSetting(SettingUpdateRequest settingUpdateRequest) {
-        Setting setting = settingRepository.findByName(settingUpdateRequest.getSettingName()).orElseThrow(() -> new WorkspaceException(ErrorCode.ERR_UNEXPECTED_SERVER_ERROR));
+        log.info("[SETTING INDEX UPDATE] request update info : {}", settingUpdateRequest);
+
+        Setting setting = settingRepository.findByName(settingUpdateRequest.getSettingName()).orElseThrow(() -> new WorkspaceException(ErrorCode.ERR_WORKSPACE_SETTING_NOT_FOUND));
         setting.setStatus(settingUpdateRequest.getStatus());
         setting.setPaymentType(settingUpdateRequest.getPaymentType());
         settingRepository.save(setting);
+        //TODO 향후 라이선스와 묶였을 때 라이선스 플랜에 종속되는 설정들을 기획에 따른 대응 필요
         return new SettingUpdateResponse(setting.getName(), setting.getUpdatedDate());
     }
 
+    /**
+     * 설정 인덱스 정보 전체 조회
+     *
+     * @return - 설정 정보 목록
+     */
     public SettingInfoListResponse getSettingList() {
         List<SettingInfoResponse> settingInfoResponseList =
                 settingRepository.findAll().stream().map(setting -> {

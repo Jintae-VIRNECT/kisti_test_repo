@@ -20,6 +20,9 @@ import java.util.List;
 public class SettingInfoResponse {
     @ApiModelProperty(value = "설정 이름", required = true, example = "")
     private SettingName settingName;
+    
+    @ApiModelProperty(value = "설정 설명", required = true, example = "")
+    private String settingDescription;
 
     @ApiModelProperty(value = "설정 기본 값", required = true, example = "")
     private SettingValue settingDefaultValue;
@@ -29,7 +32,7 @@ public class SettingInfoResponse {
 
     @ApiModelProperty(value = "설정 상태 값", required = true, example = "")
     private Status status;
-
+    
     @ApiModelProperty(value = "설정 라이선스 상품", required = true, example = "")
     private Product product;
 

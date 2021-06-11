@@ -8,8 +8,8 @@ package com.virnect.workspace.domain.setting;
  * DESCRIPTION:
  */
 public enum SettingValue {
-    USE("USE"),
-    UNUSED("UNUSED"),
+    USE("ON"),
+    UNUSED("OFF"),
     MASTER("MASTER"),
     MANAGER("MANAGER"),
     MEMBER("MEMBER"),
