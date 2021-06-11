@@ -1,7 +1,7 @@
 package com.virnect.workspace.dao.setting;
 
+import com.virnect.workspace.domain.setting.Product;
 import com.virnect.workspace.domain.setting.SettingName;
-import com.virnect.workspace.domain.setting.Status;
 import com.virnect.workspace.domain.setting.WorkspaceCustomSetting;
 import org.springframework.data.jpa.repository.JpaRepository;
 
@@ -16,11 +16,11 @@ import java.util.Optional;
  * DESCRIPTION:
  */
 public interface WorkspaceCustomSettingRepository extends JpaRepository<WorkspaceCustomSetting, Long> {
-    List<WorkspaceCustomSetting> findByWorkspace_UuidAndStatus(String workspaceId, Status status);
 
     Optional<WorkspaceCustomSetting> findByWorkspace_UuidAndSetting_Name(String workspaceId, SettingName settingName);
 
     List<WorkspaceCustomSetting> findBySetting_Name(SettingName settingName);
 
-    Optional<WorkspaceCustomSetting> findByWorkspace_UuidAndStatusAndSetting_Name(String workspaceId, Status status, SettingName settingName);
+
+    List<WorkspaceCustomSetting> findByWorkspace_UuidAndSetting_Product(String workspaceId, Product product);
 }

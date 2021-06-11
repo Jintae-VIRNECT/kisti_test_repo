@@ -6,7 +6,9 @@ import com.virnect.workspace.application.user.UserRestService;
 import com.virnect.workspace.dao.history.HistoryRepository;
 import com.virnect.workspace.dao.setting.SettingRepository;
 import com.virnect.workspace.dao.setting.WorkspaceCustomSettingRepository;
-import com.virnect.workspace.dao.workspace.*;
+import com.virnect.workspace.dao.workspace.WorkspaceRepository;
+import com.virnect.workspace.dao.workspace.WorkspaceUserPermissionRepository;
+import com.virnect.workspace.dao.workspace.WorkspaceUserRepository;
 import com.virnect.workspace.domain.setting.*;
 import com.virnect.workspace.domain.workspace.Workspace;
 import com.virnect.workspace.domain.workspace.WorkspaceUser;
@@ -370,48 +372,86 @@ public abstract class WorkspaceService {
     @Profile("onpremise")
     public abstract WorkspaceCustomSettingResponse getWorkspaceCustomSetting();
 
-    public WorkspaceSettingAddResponse addWorkspaceSetting(String workspaceId, WorkspaceSettingAddRequest workspaceSettingAddRequest) {
+    public WorkspaceSettingInfoListResponse addWorkspaceSetting(String workspaceId, WorkspaceSettingAddRequest workspaceSettingAddRequest) {
         Workspace workspace = workspaceRepository.findByUuid(workspaceId).orElseThrow(() -> new WorkspaceException(ErrorCode.ERR_UNEXPECTED_SERVER_ERROR));
-        Setting setting = settingRepository.findByName(workspaceSettingAddRequest.getSettingName()).orElseThrow(() -> new WorkspaceException(ErrorCode.ERR_UNEXPECTED_SERVER_ERROR));
-        SettingValue defaultValue = SettingName.valueOf(workspaceSettingAddRequest.getSettingName().toString()).getDefaultSettingValue();//todo null 체크
-        WorkspaceCustomSetting workspaceCustomSetting = WorkspaceCustomSetting.builder()
-                .setting(setting)
-                .settingValue(defaultValue)
-                .workspace(workspace)
-                .build();
-        workspaceCustomSettingRepository.save(workspaceCustomSetting);
-        return new WorkspaceSettingAddResponse(setting.getName(), workspaceCustomSetting.getCreatedDate());
-    }
-
-    public WorkspaceSettingInfoListResponse getWorkspaceSettingList(String workspaceId, Product product) {
-        Workspace workspace = workspaceRepository.findByUuid(workspaceId).orElseThrow(() -> new WorkspaceException(ErrorCode.ERR_UNEXPECTED_SERVER_ERROR));
-        List<WorkspaceCustomSetting> workspaceCustomSettingList = workspaceCustomSettingRepository.findByWorkspace_UuidAndStatus(workspaceId, Status.ACTIVE);
-        //데이터 마이그레이션
-        if (workspaceCustomSettingList.isEmpty()) {
-            settingRepository.findByStatusAndPaymentType(Status.ACTIVE, PaymentType.FREE).forEach(setting -> {
-                WorkspaceCustomSetting workspaceCustomSetting = WorkspaceCustomSetting.builder()
-                        .setting(setting)
-                        .settingValue(SettingName.valueOf(setting.getName().toString()).getDefaultSettingValue())
-                        .status(Status.ACTIVE)
-                        .workspace(workspace)
-                        .build();
-                workspaceCustomSettingRepository.save(workspaceCustomSetting);
-            });
-        }
-        List<WorkspaceSettingInfoResponse> workspaceSettingInfoResponseList =
-                workspaceCustomSettingList.stream()
-                        .filter(workspaceCustomSetting -> SettingName.valueOf(workspaceCustomSetting.getSetting().getName().toString()).getProduct() == product)
-                        .map(workspaceMapStruct::workspaceCustomSettingToWorkspaceSettingInfoResponse).collect(Collectors.toList());
+        List<WorkspaceSettingInfoResponse> workspaceSettingInfoResponseList = workspaceSettingAddRequest.getSettingNameList().stream().map(settingName -> {
+            Setting setting = settingRepository.findByName(settingName).orElseThrow(() -> new WorkspaceException(ErrorCode.ERR_UNEXPECTED_SERVER_ERROR));
+            SettingValue defaultValue = SettingName.valueOf(settingName.toString()).getDefaultSettingValue();
+            WorkspaceCustomSetting workspaceCustomSetting = WorkspaceCustomSetting.builder()
+                    .setting(setting)
+                    .settingValue(defaultValue)
+                    .workspace(workspace)
+                    .build();
+            workspaceCustomSettingRepository.save(workspaceCustomSetting);
+            return workspaceMapStruct.workspaceCustomSettingToWorkspaceSettingInfoResponse(workspaceCustomSetting);
+        }).collect(Collectors.toList());
         return new WorkspaceSettingInfoListResponse(workspaceSettingInfoResponseList);
     }
 
-    public WorkspaceSettingUpdateResponse updateWorkspaceSetting(String id, String workspaceId, WorkspaceSettingUpdateRequest workspaceSettingUpdateRequest) {
-        /*WorkspaceCustomSetting workspaceCustomSetting = workspaceCustomSettingRepository.findByWorkspace_UuidAndSetting_Name(workspaceId, workspaceSettingUpdateRequest.getSettingName()).orElseThrow(() -> new WorkspaceException(ErrorCode.ERR_UNEXPECTED_SERVER_ERROR));
-        workspaceCustomSetting.setValue(workspaceSettingUpdateRequest.getSettingValue());
-        workspaceCustomSetting.setStatus(workspaceSettingUpdateRequest.getStatus());
-        workspaceCustomSettingRepository.save(workspaceCustomSetting);
-        return new WorkspaceSettingUpdateResponse(workspaceSettingUpdateRequest.getSettingName(), workspaceCustomSetting.getUpdatedDate());*/
-        return null;
+    /**
+     * 워크스페이스 설정 조회
+     *
+     * @param workspaceId - 조회 대상 워크스페이스 식별자
+     * @param product     - 조회 대상 product
+     * @return - 워크스페이스 설정 목록
+     */
+    public WorkspaceSettingInfoListResponse getWorkspaceSettingList(String workspaceId, Product product) {
+        //유효성 검증
+        Workspace workspace = workspaceRepository.findByUuid(workspaceId).orElseThrow(() -> new WorkspaceException(ErrorCode.ERR_UNEXPECTED_SERVER_ERROR));
+
+        //조회
+        List<WorkspaceCustomSetting> workspaceCustomSettingList = workspaceCustomSettingRepository.findByWorkspace_UuidAndSetting_Product(workspaceId, product);
+        List<Setting> settingList = settingRepository.findByStatusAndProduct(Status.ACTIVE, product);
+        List<WorkspaceSettingInfoResponse> workspaceSettingInfoResponseList = settingList.stream().map(setting -> {
+            Optional<WorkspaceCustomSetting> workspaceCustomSettingOptional = workspaceCustomSettingList.stream().findAny().filter(workspaceCustomSetting -> workspaceCustomSetting.getSetting() == setting);
+            if (workspaceCustomSettingOptional.isPresent()) {
+                return workspaceMapStruct.workspaceCustomSettingToWorkspaceSettingInfoResponse(workspaceCustomSettingOptional.get());
+            } else {
+                WorkspaceSettingInfoResponse workspaceSettingInfoResponse = new WorkspaceSettingInfoResponse();
+                workspaceSettingInfoResponse.setSettingName(setting.getName());
+                workspaceSettingInfoResponse.setPaymentType(setting.getPaymentType());
+                return workspaceSettingInfoResponse;
+            }
+        }).collect(Collectors.toList());
+        return new WorkspaceSettingInfoListResponse(workspaceSettingInfoResponseList);
+    }
+
+
+    public WorkspaceSettingInfoListResponse updateWorkspaceSetting(String workspaceId, String userId, WorkspaceSettingUpdateRequest workspaceSettingUpdateRequest) {
+        //유효성 검증
+        Workspace workspace = workspaceRepository.findByUuid(workspaceId).orElseThrow(() -> new WorkspaceException(ErrorCode.ERR_UNEXPECTED_SERVER_ERROR));
+        if (!workspace.getUserId().equals(userId)) {
+            throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_INVALID_PERMISSION);
+        }
+
+        //업데이트
+        List<WorkspaceSettingInfoResponse> workspaceSettingInfoResponseList = workspaceSettingUpdateRequest.getWorkspaceSettingUpdateInfoList().stream().map(workspaceSettingUpdateInfo -> {
+            //변경 대상 설정이 유료인경우, 그설정을 사용할 수 있는 워크스페이스인지 체크
+            Setting setting = settingRepository.findByName(workspaceSettingUpdateInfo.getSettingName()).orElseThrow(() -> new WorkspaceException(ErrorCode.ERR_UNEXPECTED_SERVER_ERROR));
+            if (setting.getPaymentType() != PaymentType.FREE) {
+                //워크스페이스 라이선스 체크
+            }
+            Optional<WorkspaceCustomSetting> workspaceCustomSettingOptional = workspaceCustomSettingRepository.findByWorkspace_UuidAndSetting_Name(workspaceId, workspaceSettingUpdateInfo.getSettingName());
+
+            //원래 있던 값이면 value만 수정
+            if (workspaceCustomSettingOptional.isPresent()) {
+                workspaceCustomSettingOptional.get().setValue(workspaceSettingUpdateInfo.getSettingValue());
+                workspaceCustomSettingRepository.save(workspaceCustomSettingOptional.get());
+                return workspaceMapStruct.workspaceCustomSettingToWorkspaceSettingInfoResponse(workspaceCustomSettingOptional.get());
+            } else {
+                // 없던 값이면
+                Setting newSetting = settingRepository.findByNameAndStatus(workspaceSettingUpdateInfo.getSettingName(), Status.ACTIVE)
+                        .orElseThrow(() -> new WorkspaceException(ErrorCode.ERR_UNEXPECTED_SERVER_ERROR));
+                WorkspaceCustomSetting workspaceCustomSetting = WorkspaceCustomSetting.builder()
+                        .workspace(workspace)
+                        .setting(newSetting)
+                        .settingValue(workspaceSettingUpdateInfo.getSettingValue())
+                        .build();
+                workspaceCustomSettingRepository.save(workspaceCustomSetting);
+                return workspaceMapStruct.workspaceCustomSettingToWorkspaceSettingInfoResponse(workspaceCustomSetting);
+            }
+        }).collect(Collectors.toList());
+        return new WorkspaceSettingInfoListResponse(workspaceSettingInfoResponseList);
     }
 
     public SettingUpdateResponse updateSetting(SettingUpdateRequest settingUpdateRequest) {

@@ -30,11 +30,12 @@ public class SettingSyncRunner implements ApplicationRunner {
                 if (!settingRepository.findByName(value).isPresent()) {
                     Setting setting = Setting.builder()
                             .settingName(value)
-                            .status(Status.INACTIVE)
+                            .status(Status.ACTIVE)
                             .paymentType(PaymentType.NON_FREE)
+                            .product(value.getProduct())
                             .build();
                     log.info("[SETTING INFO SYNC] new Setting name : {}, status : {}, paymentType : {}", setting.getName(), setting.getStatus(), setting.getPaymentType());
-                    settingRepository.save(setting);
+                    //settingRepository.save(setting);
                 }
             }
         }

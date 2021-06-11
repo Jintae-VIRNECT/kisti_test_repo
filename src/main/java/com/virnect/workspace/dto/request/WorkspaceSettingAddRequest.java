@@ -1,10 +1,10 @@
 package com.virnect.workspace.dto.request;
 
 import com.virnect.workspace.domain.setting.SettingName;
-import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
+import lombok.Setter;
 
-import javax.validation.constraints.NotNull;
+import java.util.List;
 
 /**
  * Project: PF-Workspace
@@ -14,9 +14,7 @@ import javax.validation.constraints.NotNull;
  * DESCRIPTION:
  */
 @Getter
+@Setter
 public class WorkspaceSettingAddRequest {
-    @ApiModelProperty(value = "추가 할 설정 이름", required = true, example = "")
-    @NotNull
-    private SettingName settingName;
-
+    private List<SettingName> settingNameList;
 }

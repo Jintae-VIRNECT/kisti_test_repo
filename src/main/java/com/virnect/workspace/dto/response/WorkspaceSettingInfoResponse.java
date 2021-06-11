@@ -3,7 +3,6 @@ package com.virnect.workspace.dto.response;
 import com.virnect.workspace.domain.setting.PaymentType;
 import com.virnect.workspace.domain.setting.SettingName;
 import com.virnect.workspace.domain.setting.SettingValue;
-import com.virnect.workspace.domain.setting.Status;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
 import lombok.Setter;
@@ -24,17 +23,14 @@ public class WorkspaceSettingInfoResponse {
     private SettingName settingName;
 
     @ApiModelProperty(value = "워크스페이스 설정 값", required = true, example = "")
-    private SettingValue settingValue;
-
-    @ApiModelProperty(value = "워크스페이스 설정 상태 값", required = true, example = "")
-    private Status status;
+    private SettingValue settingValue = SettingValue.UNUSED;
 
     @ApiModelProperty(value = "워크스페이스 설정 결제 타입", required = true, example = "")
     private PaymentType paymentType;
 
     @ApiModelProperty(value = "워크스페이스 설정 추가 일자", required = true, example = "")
-    private LocalDateTime createdDate;
-
+    private LocalDateTime createdDate = LocalDateTime.now();
+    
     @ApiModelProperty(value = "워크스페이스 설정 수정 일자", required = true, example = "")
-    private LocalDateTime updatedDate;
+    private LocalDateTime updatedDate = LocalDateTime.now();
 }

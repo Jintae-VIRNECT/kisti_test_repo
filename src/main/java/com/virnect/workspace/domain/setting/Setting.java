@@ -34,13 +34,18 @@ public class Setting extends TimeEntity {
     private Status status;
 
     @Enumerated(EnumType.STRING)
+    @Column(name = "product", nullable = false)
+    private Product product;
+
+    @Enumerated(EnumType.STRING)
     @Column(name = "payment_type", nullable = false)
     private PaymentType paymentType;
 
     @Builder
-    public Setting(SettingName settingName, Status status, PaymentType paymentType) {
+    public Setting(SettingName settingName, Status status, Product product, PaymentType paymentType) {
         this.name = settingName;
         this.status = status;
+        this.product = product;
         this.paymentType = paymentType;
     }
 

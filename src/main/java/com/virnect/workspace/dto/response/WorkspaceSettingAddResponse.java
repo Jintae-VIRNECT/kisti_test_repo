@@ -1,12 +1,13 @@
 package com.virnect.workspace.dto.response;
 
 import com.virnect.workspace.domain.setting.SettingName;
+import com.virnect.workspace.domain.setting.SettingValue;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 import javax.validation.constraints.NotNull;
-import java.time.LocalDateTime;
+import java.util.List;
 
 /**
  * Project: PF-Workspace
@@ -18,11 +19,17 @@ import java.time.LocalDateTime;
 @Getter
 @RequiredArgsConstructor
 public class WorkspaceSettingAddResponse {
-    @ApiModelProperty(value = "추가 된 설정 이름", required = true, example = "")
-    @NotNull
-    private final SettingName settingName;
+    private final List<AddedWorkspaceSettingInfo> addedWorkspaceSettingInfoList;
 
-    @ApiModelProperty(value = "추가 된 일자", required = true, example = "")
-    @NotNull
-    private final LocalDateTime addedDate;
+    @Getter
+    @RequiredArgsConstructor
+    public static class AddedWorkspaceSettingInfo {
+        @ApiModelProperty(value = "추가 된 설정 이름", required = true, example = "")
+        @NotNull
+        private final SettingName settingName;
+
+        @ApiModelProperty(value = "추가 할 설정 값", required = true, example = "")
+        @NotNull
+        private final SettingValue settingValue;
+    }
 }

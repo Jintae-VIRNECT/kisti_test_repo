@@ -250,12 +250,12 @@ public class WorkspaceController {
 
     @ApiOperation(value = "워크스페이스 설정 추가")
     @PostMapping("/{workspaceId}/settings")
-    public ResponseEntity<ApiResponse<WorkspaceSettingAddResponse>> addWorkspaceSetting(@PathVariable("workspaceId") String workspaceId,
+    public ResponseEntity<ApiResponse<WorkspaceSettingInfoListResponse>> addWorkspaceSetting(@PathVariable("workspaceId") String workspaceId,
                                                                                         @RequestBody @Valid WorkspaceSettingAddRequest workspaceSettingAddRequest, BindingResult bindingResult) {
         if (bindingResult.hasErrors() || !StringUtils.hasText(workspaceId)) {
 
         }
-        WorkspaceSettingAddResponse responseMessage = workspaceService.addWorkspaceSetting(workspaceId, workspaceSettingAddRequest);
+        WorkspaceSettingInfoListResponse responseMessage = workspaceService.addWorkspaceSetting(workspaceId, workspaceSettingAddRequest);
         return ResponseEntity.ok(new ApiResponse<>(responseMessage));
     }
 
@@ -269,17 +269,17 @@ public class WorkspaceController {
         return ResponseEntity.ok(new ApiResponse<>(responseMessage));
     }
 
-    @ApiOperation(value = "워크스페이스 설정 정보 수정")
-    @PutMapping("/{workspaceId}/{userId}/settings")
-    public ResponseEntity<ApiResponse<WorkspaceSettingUpdateResponse>> updateWorkspaceSetting(@PathVariable("workspaceId") String workspaceId,
-                                                                                              @RequestParam("userId") String userId,
+    @ApiOperation(value = "워크스페이스 설정")
+    @PostMapping("/{workspaceId}/{userId}/settings")
+    public ResponseEntity<ApiResponse<WorkspaceSettingInfoListResponse>> updateWorkspaceSetting(@PathVariable("workspaceId") String workspaceId,
+                                                                                              @PathVariable("userId") String userId,
                                                                                               @RequestBody WorkspaceSettingUpdateRequest workspaceSettingUpdateRequest
             , BindingResult bindingResult
     ) {
         if (bindingResult.hasErrors() || !StringUtils.hasText(workspaceId) || !StringUtils.hasText(userId)) {
 
         }
-        WorkspaceSettingUpdateResponse responseMessage = workspaceService.updateWorkspaceSetting(workspaceId, userId, workspaceSettingUpdateRequest);
+        WorkspaceSettingInfoListResponse responseMessage = workspaceService.updateWorkspaceSetting(workspaceId, userId, workspaceSettingUpdateRequest);
         return ResponseEntity.ok(new ApiResponse<>(responseMessage));
     }
 

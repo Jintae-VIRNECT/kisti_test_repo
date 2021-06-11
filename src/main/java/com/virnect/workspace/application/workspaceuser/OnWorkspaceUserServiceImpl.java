@@ -22,7 +22,6 @@ import com.virnect.workspace.global.common.RedirectProperty;
 import com.virnect.workspace.global.common.mapper.rest.RestMapStruct;
 import com.virnect.workspace.global.constant.*;
 import com.virnect.workspace.global.error.ErrorCode;
-import com.virnect.workspace.global.util.RandomStringTokenUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.MessageSource;
@@ -34,12 +33,9 @@ import org.thymeleaf.context.Context;
 import org.thymeleaf.spring5.SpringTemplateEngine;
 
 import java.io.IOException;
-import java.time.Duration;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -91,13 +87,13 @@ public class OnWorkspaceUserServiceImpl extends WorkspaceUserService {
     @Override
     public ApiResponse<Boolean> inviteWorkspace(
             String workspaceId, WorkspaceInviteRequest workspaceInviteRequest, Locale locale
-    ) {
-        /*
+    ) {/*
+        *//*
          * 권한체크
          * 초대하는 사람 권한 - 마스터, 매니저만 가능
          * 초대받는 사람 권한 - 매니저, 멤버만 가능
          * 초대하는 사람이 매니저일때 - 멤버만 초대할 수 있음.
-         */
+         *//*
 
         //1-1. 초대하는 유저 권한 체크
         Optional<WorkspaceUserPermission> requestUserPermission = workspaceUserPermissionRepository.findWorkspaceUser(workspaceId, workspaceInviteRequest.getUserId());
@@ -245,7 +241,7 @@ public class OnWorkspaceUserServiceImpl extends WorkspaceUserService {
                 emailReceiverList.add(userInfo.getEmail());
                 sendMailRequest(html, emailReceiverList, MailSender.MASTER.getValue(), subject);
             }
-        });
+        });*/
         return new ApiResponse<>(true);
     }
 

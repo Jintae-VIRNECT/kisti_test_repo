@@ -33,9 +33,6 @@ public class WorkspaceCustomSetting extends TimeEntity {
     @Column(name = "value", nullable = false)
     private SettingValue value;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "status", nullable = false)
-    private Status status;
 
     @ManyToOne(targetEntity = Setting.class, fetch = FetchType.LAZY)
     @JoinColumn(name = "setting_id")
@@ -48,9 +45,8 @@ public class WorkspaceCustomSetting extends TimeEntity {
     private Workspace workspace;
 
     @Builder
-    public WorkspaceCustomSetting(SettingValue settingValue, Status status, Setting setting, Workspace workspace) {
+    public WorkspaceCustomSetting(SettingValue settingValue, Setting setting, Workspace workspace) {
         this.value = settingValue;
-        this.status=status;
         this.setting = setting;
         this.workspace = workspace;
     }
@@ -59,8 +55,5 @@ public class WorkspaceCustomSetting extends TimeEntity {
         this.value = value;
     }
 
-    public void setStatus(Status status) {
-        this.status = status;
-    }
 
 }
