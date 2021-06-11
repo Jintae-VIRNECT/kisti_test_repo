@@ -14,16 +14,6 @@
           {{ $t('service.map_request_position') }}
         </p>
       </div>
-      <div v-else-if="state === 'showing'" class="modal-position-map__showing">
-        <div class="modal-position-map__showing--map" id="map"></div>
-        <button
-          @click="refresh"
-          class="modal-position-map__showing--refresh"
-          :class="{ refreshing: isRefreshing }"
-        >
-          {{ $t('service.map_refresh') }}
-        </button>
-      </div>
       <div v-else-if="state === 'gpsOff'" class="modal-position-map__gpsoff">
         <p class="modal-position-map__gpsoff--title">
           {{ $t('service.map_cannot_check_gps') }}
@@ -36,6 +26,16 @@
           class="modal-position-map__gpsoff--close btn"
         >
           {{ $t('button.close') }}
+        </button>
+      </div>
+      <div v-show="state === 'showing'" class="modal-position-map__showing">
+        <div class="modal-position-map__showing--map" id="map"></div>
+        <button
+          @click="refresh"
+          class="modal-position-map__showing--refresh"
+          :class="{ refreshing: isRefreshing }"
+        >
+          {{ $t('service.map_refresh') }}
         </button>
       </div>
     </div>
@@ -130,25 +130,27 @@ export default {
         version: 'weekly',
       }
 
-      const { lat, lng } = this.location
+      this.$nextTick(async () => {
+        const { lat, lng } = this.location
 
-      const loader = new Loader(GOOGLE_MAP_API, options)
-      const google = await loader.load()
+        const loader = new Loader(GOOGLE_MAP_API, options)
+        const google = await loader.load()
 
-      this.map = new google.maps.Map(document.getElementById('map'), {
-        center: { lat, lng },
-        zoom: 17,
-        disableDefaultUI: true,
+        this.map = new google.maps.Map(document.getElementById('map'), {
+          center: { lat, lng },
+          zoom: 17,
+          disableDefaultUI: true,
+        })
+
+        this.map.setCenter({ lat, lng })
+
+        const pos = new google.maps.LatLng(lat, lng)
+        this.marker = new google.maps.Marker({
+          position: pos,
+        })
+
+        this.marker.setMap(this.map)
       })
-
-      this.map.setCenter({ lat, lng })
-
-      const pos = new google.maps.LatLng(lat, lng)
-      this.marker = new google.maps.Marker({
-        position: pos,
-      })
-
-      this.marker.setMap(this.map)
     },
     showGpsOff() {
       this.state = 'gpsOff'
