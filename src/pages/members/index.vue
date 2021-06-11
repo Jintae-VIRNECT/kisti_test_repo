@@ -95,6 +95,7 @@ export default {
     async searchMembers(searchParams) {
       this.loading = true
       const { list, total } = await workspaceService.searchMembers(searchParams)
+      this.membersPage = searchParams === undefined ? 1 : searchParams.page
       this.membersList = list
       this.membersTotal = total
       this.loading = false
@@ -108,9 +109,9 @@ export default {
     },
   },
   beforeMount() {
-    this.searchMembers()
+    this.searchMembers({ page: 1 })
     workspaceService.watchActiveWorkspace(this, () =>
-      this.searchMembers(this.searchParams),
+      this.searchMembers({ page: 1 }),
     )
   },
   mounted() {

@@ -116,13 +116,14 @@ export default {
       const { list, total } = await workspaceService.searchMembersActivity(
         searchParams,
       )
+      this.activityPage = searchParams === undefined ? 1 : searchParams.page
       this.activityList = list
       this.activityTotal = total
     },
   },
   beforeMount() {
     workspaceService.watchActiveWorkspace(this, () =>
-      this.searchMembersActivity(this.searchParams),
+      this.searchMembersActivity({ page: 1 }),
     )
   },
 }
