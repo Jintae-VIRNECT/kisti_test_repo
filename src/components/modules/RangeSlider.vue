@@ -46,6 +46,11 @@ export default {
       isChanging: false,
     }
   },
+  watch: {
+    value() {
+      this.$emit('update:value', this.value)
+    },
+  },
   methods: {
     setCSSProperty() {
       const slider = this.$refs['slider']

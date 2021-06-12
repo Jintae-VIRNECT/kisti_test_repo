@@ -56,7 +56,12 @@
         <p class="setting__label">
           FPS
         </p>
-        <range-slider :min="1" :max="30" :initValue="30"></range-slider>
+        <range-slider
+          :value.sync="fps"
+          :min="1"
+          :max="30"
+          :initValue="30"
+        ></range-slider>
       </figure>
     </div>
   </section>
@@ -82,6 +87,7 @@ export default {
       videoQuality: '',
       invalid: false,
       checking: false,
+      fps: 30,
     }
   },
   props: {
