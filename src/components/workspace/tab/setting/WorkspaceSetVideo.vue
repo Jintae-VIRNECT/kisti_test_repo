@@ -33,7 +33,7 @@
         </r-select>
       </figure>
     </div>
-    <div class="setting-section__body">
+    <div class="setting-section__body horizon">
       <figure class="setting__figure">
         <p class="setting__label" :class="{ warning: !!invalid }">
           {{ sumnailTitle }}
@@ -52,11 +52,18 @@
           </div>
         </div>
       </figure>
+      <figure class="setting__figure slidecontainer">
+        <p class="setting__label">
+          FPS
+        </p>
+        <range-slider :min="1" :max="30" :initValue="30"></range-slider>
+      </figure>
     </div>
   </section>
 </template>
 <script>
 import RSelect from 'RemoteSelect'
+import RangeSlider from 'RangeSlider'
 import { mapGetters, mapActions } from 'vuex'
 import { resolution } from 'utils/settingOptions'
 import { getUserMedia } from 'utils/deviceCheck'
@@ -64,6 +71,7 @@ import { getUserMedia } from 'utils/deviceCheck'
 export default {
   components: {
     RSelect,
+    RangeSlider,
   },
   data() {
     return {
