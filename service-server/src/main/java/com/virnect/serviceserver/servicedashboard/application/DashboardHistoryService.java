@@ -517,7 +517,6 @@ public class DashboardHistoryService {
 						.getData()
 						.getInfos();
 
-
 				for (RoomHistoryInfoResponse roomHistory : roomHistories) {
 					for (MemberInfoResponse memberInfoResponse : roomHistory.getMemberList()) {
 						for (WorkspaceMemberInfoResponse memberInfo : workspaceMembers) {
@@ -533,11 +532,8 @@ public class DashboardHistoryService {
 						}
 					}
 
-					roomHistory.setMemberList(
-						setLeader(roomHistory.getMemberList())
-					);
-
 					roomHistory.setMemberList(roomHistory.getMemberList());
+					roomHistory.setMemberList(setLeader(roomHistory.getMemberList()));
 
 					roomHistory.setLeaderNickName(
 						roomHistory.getMemberList()
@@ -565,23 +561,6 @@ public class DashboardHistoryService {
 							.filter(recordFiles -> recordFiles.getSessionId().equals(roomHistory.getSessionId()))
 							.count()
 					);
-
-					/*roomHistory.setServerRecord(
-						serverRecFileAll
-							.stream()
-							.count()
-					);
-					roomHistory.setLocalRecord(
-						localRecFileAll
-							.stream()
-							.count()
-					);
-					roomHistory.setAttach(
-						attachFileAll
-							.stream()
-							.count()
-					);*/
-
 				}
 
 				if (request.getSearchWord() != null) {
@@ -656,17 +635,17 @@ public class DashboardHistoryService {
 		//String sessionId,
 		boolean deleted
 	) {
-		List<FileInfoResponse> fileInfoResponses;
+		List<FileInfoResponse> fileInfoResponses = new ArrayList<>();
 		try {
 			List<File> files = fileRepository.findByWorkspaceIdAndDeleted(workspaceId, deleted);
-
-			fileInfoResponses = files.stream()
-				.map(file -> dashboardFileInfoMapper.toDto(file))
-				.collect(Collectors.toList());
+			if (files.size() > 0) {
+				fileInfoResponses = files.stream()
+					.map(file -> dashboardFileInfoMapper.toDto(file))
+					.collect(Collectors.toList());
+			}
 		} catch (Exception exception) {
 			throw new RestServiceException(ErrorCode.ERR_ATTACHED_FILE_FOUND);
 		}
-
 		return fileInfoResponses;
 	}
 

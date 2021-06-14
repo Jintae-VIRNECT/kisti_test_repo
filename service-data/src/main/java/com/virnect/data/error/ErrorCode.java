@@ -93,7 +93,7 @@ public enum ErrorCode {
 	ERR_ROOM_MAPPER(4104, "Room mapper fail"),
 	ERR_ROOM_HISTORY_MAPPER(4103, "Room history mapper fail"),
 	// error code for file upload and download
-	ERR_ATTACHED_FILE_FOUND(7101, "Attached file can can not found"),
+	ERR_ATTACHED_FILE_FOUND(7101, "Attached file can not found"),
 	ERR_LOCAL_RECORD_FILE_FOUND(7102, "Local record file can not found"),
 	ERR_SERVER_RECORD_FILE_FOUND(7103, "Server record file can not found"),
 	ERR_SERVER_RECORD_URL_FOUND(7104, "Server record file can not found"),
