@@ -4,6 +4,7 @@ import com.virnect.workspace.application.license.LicenseRestService;
 import com.virnect.workspace.application.message.MessageRestService;
 import com.virnect.workspace.application.user.UserRestService;
 import com.virnect.workspace.dao.cache.UserInviteRepository;
+import com.virnect.workspace.dao.setting.WorkspaceCustomSettingRepository;
 import com.virnect.workspace.dao.workspace.*;
 import com.virnect.workspace.domain.redis.UserInvite;
 import com.virnect.workspace.domain.workspace.*;
@@ -66,8 +67,8 @@ public class OnWorkspaceUserServiceImpl extends WorkspaceUserService {
     private static final int MAX_INVITE_USER_AMOUNT = 49;//최대 초대 가능한 워크스페이스 멤버 수
     private static final int MAX_WORKSPACE_USER_AMOUNT = 50;//워크스페이스 최대 멤버 수(마스터 본인 포함)
 
-    public OnWorkspaceUserServiceImpl(WorkspaceRepository workspaceRepository, WorkspaceUserRepository workspaceUserRepository, WorkspaceRoleRepository workspaceRoleRepository, WorkspaceUserPermissionRepository workspaceUserPermissionRepository, UserRestService userRestService, MessageRestService messageRestService, SpringTemplateEngine springTemplateEngine, MessageSource messageSource, LicenseRestService licenseRestService, RedirectProperty redirectProperty, RestMapStruct restMapStruct, ApplicationEventPublisher applicationEventPublisher, WorkspacePermissionRepository workspacePermissionRepository, UserInviteRepository userInviteRepository) {
-        super(workspaceRepository, workspaceUserRepository, workspaceRoleRepository, workspaceUserPermissionRepository, userRestService, messageRestService, springTemplateEngine, messageSource, licenseRestService, redirectProperty, restMapStruct, applicationEventPublisher);
+    public OnWorkspaceUserServiceImpl(WorkspaceRepository workspaceRepository, WorkspaceUserRepository workspaceUserRepository, WorkspaceRoleRepository workspaceRoleRepository, WorkspaceUserPermissionRepository workspaceUserPermissionRepository, UserRestService userRestService, MessageRestService messageRestService, SpringTemplateEngine springTemplateEngine, MessageSource messageSource, LicenseRestService licenseRestService, RedirectProperty redirectProperty, RestMapStruct restMapStruct, ApplicationEventPublisher applicationEventPublisher, WorkspacePermissionRepository workspacePermissionRepository, UserInviteRepository userInviteRepository, WorkspaceCustomSettingRepository workspaceCustomSettingRepository) {
+        super(workspaceRepository, workspaceUserRepository, workspaceRoleRepository, workspaceUserPermissionRepository, userRestService, messageRestService, springTemplateEngine, messageSource, licenseRestService, redirectProperty, restMapStruct, applicationEventPublisher, workspaceCustomSettingRepository);
         this.workspaceRepository = workspaceRepository;
         this.workspaceUserRepository = workspaceUserRepository;
         this.workspaceRoleRepository = workspaceRoleRepository;
@@ -88,12 +89,12 @@ public class OnWorkspaceUserServiceImpl extends WorkspaceUserService {
     public ApiResponse<Boolean> inviteWorkspace(
             String workspaceId, WorkspaceInviteRequest workspaceInviteRequest, Locale locale
     ) {/*
-        *//*
-         * 권한체크
-         * 초대하는 사람 권한 - 마스터, 매니저만 가능
-         * 초대받는 사람 권한 - 매니저, 멤버만 가능
-         * 초대하는 사람이 매니저일때 - 멤버만 초대할 수 있음.
-         *//*
+     *//*
+     * 권한체크
+     * 초대하는 사람 권한 - 마스터, 매니저만 가능
+     * 초대받는 사람 권한 - 매니저, 멤버만 가능
+     * 초대하는 사람이 매니저일때 - 멤버만 초대할 수 있음.
+     *//*
 
         //1-1. 초대하는 유저 권한 체크
         Optional<WorkspaceUserPermission> requestUserPermission = workspaceUserPermissionRepository.findWorkspaceUser(workspaceId, workspaceInviteRequest.getUserId());

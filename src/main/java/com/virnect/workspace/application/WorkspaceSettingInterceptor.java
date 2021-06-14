@@ -1,6 +1,7 @@
 package com.virnect.workspace.application;
 
 import org.springframework.web.servlet.HandlerInterceptor;
+import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -13,9 +14,14 @@ import javax.servlet.http.HttpServletResponse;
  * DESCRIPTION:
  */
 public class WorkspaceSettingInterceptor implements HandlerInterceptor {
-    private static ThreadLocal<String> THREAD_LOCAL_INFO = new ThreadLocal<>();
+
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
-        return false;
+        return true;
+    }
+
+
+    @Override
+    public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler, ModelAndView modelAndView) throws Exception {
     }
 }
