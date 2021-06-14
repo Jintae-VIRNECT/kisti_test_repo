@@ -10,6 +10,7 @@ import {
   VIDEO,
   FILE,
   LINKFLOW,
+  LOCATION,
 } from 'configs/remote.config'
 import {
   FLASH as FLASH_STATUS,
@@ -521,6 +522,36 @@ export const addSessionEventListener = session => {
   /** AR Drawing */
   session.on(SIGNAL.AR_DRAWING, event => {
     window.vue.$eventBus.$emit(SIGNAL.AR_DRAWING, event)
+  })
+
+  /** 위치 정보*/
+  session.on(SIGNAL.LOCATION, event => {
+    const connectionId = event.from.connectionId
+    const participants = Store.getters['participants']
+    const idx = participants.findIndex(
+      user => user.connectionId === connectionId,
+    )
+    if (idx < 0) return
+
+    const data = JSON.parse(event.data)
+
+    if (data.type === LOCATION.RESPONSE) {
+      //위치 요청 동의 / 거부 관련 처리
+      window.vue.$eventBus.$emit('map:enable', data.enable)
+    } else if (data.type === LOCATION.INFO) {
+      //위치 정보
+      const location = { lat: data.lat, lng: data.lon }
+      window.vue.$eventBus.$emit('map:location', location)
+    } else if (data.type === LOCATION.STOPPED) {
+      if (data.reason === 'GPSoff') {
+        //위치 정보 공유 중단 by GPS off
+        window.vue.$eventBus.$emit('map:gpsoff')
+      } else if (data.reason === 'BadSignal') {
+        window.vue.$eventBus.$emit('map:timeout')
+      } else {
+        window.vue.$eventBus.$emit('map:close')
+      }
+    }
   })
 }
 

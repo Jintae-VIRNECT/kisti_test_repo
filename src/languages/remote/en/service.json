@@ -226,6 +226,15 @@
     "camera_control": "Camera Control",
     "camera_control_allow": "Allow camera control",
     "camera_control_every_on": "Turn on all cameras",
-    "camera_control_every_off": "Turn off all cameras"
+    "camera_control_every_off": "Turn off all cameras",
+
+
+    "map_information":"Location information",
+    "map_request_position": "Requesting location information.",
+    "map_refresh":"Refresh Location",
+    "map_cannot_check_gps":"Unable to verify GPS information.",
+    "map_check_use_gps_description":"Please check whether the GPS function is used by the requested participant.",
+    "map_request_rejected" :"The location information request has been rejected. ",
+    "map_cannot_use_gps":"This device does not support the location information function."
   }
 }

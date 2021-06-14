@@ -55,6 +55,7 @@
     <reconnect-modal :visible.sync="connectVisible"></reconnect-modal>
     <setting-modal></setting-modal>
     <record-list v-if="useLocalRecording"></record-list>
+    <map-modal :visible.sync="positionMapVisible"></map-modal>
   </section>
 </template>
 
@@ -99,6 +100,7 @@ export default {
     CaptureModal: () => import('./modal/CaptureModal'),
     RecordList: () => import('LocalRecordList'),
     SettingModal: () => import('./modal/SettingModal'),
+    MapModal: () => import('./modal/PositionMapModal'),
   },
   data() {
     return {
@@ -107,6 +109,7 @@ export default {
       isFullScreen: false,
       connectVisible: false,
       isVideoLoaded: false,
+      positionMapVisible: false,
     }
   },
   computed: {
@@ -235,6 +238,9 @@ export default {
     setVideoLoaded(flag) {
       this.isVideoLoaded = flag
     },
+    togglePositionMap(flag) {
+      this.positionMapVisible = flag
+    },
   },
 
   /* Lifecycles */
@@ -253,6 +259,7 @@ export default {
     this.$call.addListener('sessionDisconnected', this.reconnect)
     this.$eventBus.$on('video:fullscreen', this.setFullScreen)
     this.$eventBus.$on('video:loaded', this.setVideoLoaded)
+    this.$eventBus.$on('map:show', this.togglePositionMap)
   },
   beforeDestroy() {
     if (this.callTimeout) {
@@ -273,6 +280,7 @@ export default {
 
     this.$eventBus.$off('video:fullscreen', this.setFullScreen)
     this.$eventBus.$off('video:loaded', this.setVideoLoaded)
+    this.$eventBus.$off('map:show', this.togglePositionMap)
   },
 
   mounted() {

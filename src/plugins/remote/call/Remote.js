@@ -12,6 +12,7 @@ import {
   FILE,
   CONTROL,
   LINKFLOW,
+  LOCATION,
 } from 'configs/remote.config'
 import { URLS, setRecordInfo } from 'configs/env.config'
 import {
@@ -675,6 +676,37 @@ const _ = {
       type: SIGNAL.VIDEO,
       to: target,
       data: JSON.stringify(params),
+    })
+  },
+
+  /**
+   * @TARGET
+   * 지정한 참가자에게 위치 요청
+   */
+  sendRequestLocation: (isRefresh = false, target) => {
+    const params = {
+      type: LOCATION.REQUEST,
+      isRefresh: isRefresh,
+    }
+    _.session.signal({
+      data: JSON.stringify(params),
+      to: target,
+      type: SIGNAL.LOCATION,
+    })
+  },
+
+  /**
+   * @TARGET
+   * 지정한 참가자에게 위치 그만 보내라는 요청
+   */
+  sendStopLocation: target => {
+    const params = {
+      type: LOCATION.STOP_SEND,
+    }
+    _.session.signal({
+      data: JSON.stringify(params),
+      to: target,
+      type: SIGNAL.LOCATION,
     })
   },
 
