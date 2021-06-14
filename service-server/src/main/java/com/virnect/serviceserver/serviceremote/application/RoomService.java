@@ -36,6 +36,9 @@ import com.virnect.data.domain.session.SessionPropertyHistory;
 import com.virnect.data.domain.session.SessionType;
 import com.virnect.data.dto.PageMetadataResponse;
 import com.virnect.data.dto.constraint.LicenseItem;
+import com.virnect.data.redis.application.AccessStatusService;
+import com.virnect.data.redis.domain.AccessStatus;
+import com.virnect.data.redis.domain.AccessType;
 import com.virnect.serviceserver.serviceremote.dto.mapper.member.MemberMapper;
 import com.virnect.serviceserver.serviceremote.dto.mapper.room.RoomDetailMapper;
 import com.virnect.serviceserver.serviceremote.dto.mapper.room.RoomInfoMapper;
@@ -84,6 +87,8 @@ public class RoomService {
 	private final RoomInfoMapper roomInfoMapper;
 	private final RoomDetailMapper roomDetailMapper;
 	private final MemberMapper memberMapper;
+
+	private final AccessStatusService accessStatusService;
 
 	@Override
 	protected Object clone() throws CloneNotSupportedException {
@@ -544,6 +549,12 @@ public class RoomService {
 				}
 			}
 		}
+
+		// Redis 내 멤버 접속상태 확인
+		for (MemberInfoResponse memberInfoResponse : memberInfoList) {
+			memberInfoResponse.setAccessType(loadAccessType(memberInfoResponse.getUuid()));
+		}
+
 		roomDetailInfoResponse.setMemberList(setLeader(memberInfoList));
 		return new ApiResponse<>(roomDetailInfoResponse);
 	}
@@ -861,6 +872,20 @@ public class RoomService {
 			roomInfoResponses.add(roomInfoResponse);
 		}
 		return roomInfoResponses;
+	}
+
+	public AccessType loadAccessType(String uuid) {
+		AccessType result = AccessType.LOGOUT;
+		try {
+			AccessStatus accessStatus = accessStatusService.getAccessStatus(uuid);
+			if (ObjectUtils.isEmpty(accessStatus) || accessStatus.getAccessType() == AccessType.LOGOUT) {
+				return AccessType.LOGOUT;
+			}
+			return accessStatus.getAccessType();
+		} catch (Exception e) {
+			log.info("SET MEMBER STATUS EXCEPTION => [{}]", uuid);
+		}
+		return result;
 	}
 
 }
