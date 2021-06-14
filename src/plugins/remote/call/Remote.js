@@ -129,7 +129,6 @@ const _ = {
 
       if (options !== false) {
         const settingInfo = Store.getters['settingInfo']
-
         const publishOptions = {
           // audioSource: options.audioSource,
           // videoSource: options.videoSource,
@@ -142,7 +141,8 @@ const _ = {
           resolution: settingInfo.quality,
           // resolution: '1920x1080', // FHD
           // resolution: '3840x2160', // 4K
-          frameRate: 30,
+          // frameRate: 30,
+          frameRate: settingInfo.fps ? settingInfo.fps : 30,
           insertMode: 'PREPEND',
           mirror: false,
         }
@@ -677,6 +677,18 @@ const _ = {
       data: JSON.stringify(params),
     })
   },
+
+  setFrameRate: async fps => {
+    if (_.publisher && _.publisher.stream) {
+      const track = _.publisher.stream.getVideoTracks()[0]
+      await track.applyConstraints({
+        frameRate: {
+          max: fps,
+        },
+      })
+    }
+  },
+
   getState: () => {
     if (_.publisher) {
       return {
@@ -779,7 +791,7 @@ const _ = {
           resolution: settingInfo.quality,
           // resolution: '1920x1080', // FHD
           // resolution: '3840x2160', // 4K
-          frameRate: 30,
+          frameRate: settingInfo.fps ? settingInfo.fps : 30,
           insertMode: 'PREPEND',
           mirror: false,
         }

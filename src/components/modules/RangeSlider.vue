@@ -37,7 +37,6 @@ export default {
     },
     initValue: {
       type: Number,
-      require: true,
     },
   },
   data() {
@@ -48,7 +47,7 @@ export default {
   },
   watch: {
     value() {
-      this.$emit('update:value', this.value)
+      this.$emit('update:value', Number.parseInt(this.value, 10))
     },
   },
   methods: {

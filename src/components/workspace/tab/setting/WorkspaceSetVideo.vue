@@ -57,10 +57,11 @@
           FPS
         </p>
         <range-slider
-          :value.sync="fps"
+          v-if="videoFPS"
+          :value.sync="videoFPS"
           :min="1"
           :max="30"
-          :initValue="30"
+          :initValue="videoFPS"
         ></range-slider>
       </figure>
     </div>
@@ -82,12 +83,11 @@ export default {
     return {
       resolutions: resolution,
       stream: null,
-      currentVideo: null,
       videoId: '',
       videoQuality: '',
       invalid: false,
       checking: false,
-      fps: 30,
+      videoFPS: null,
     }
   },
   props: {
@@ -138,6 +138,17 @@ export default {
       this.setVideo(id)
       this.initStream()
     },
+    async videoFPS(fps) {
+      if (this.stream) {
+        const videoTrack = this.stream.getVideoTracks()[0]
+        await videoTrack.applyConstraints({
+          frameRate: {
+            max: Number.parseInt(fps, 10),
+          },
+        })
+        this.setFPS(Number.parseInt(fps, 10))
+      }
+    },
   },
   methods: {
     ...mapActions(['setDevices']),
@@ -145,7 +156,6 @@ export default {
       this.setDevices({
         video: { deviceId: deviceId },
       })
-      this.currentVideo = deviceId
       window.myStorage.setDevice('video', 'deviceId', deviceId)
     },
     setQuality(quality) {
@@ -153,6 +163,12 @@ export default {
         video: { quality: quality },
       })
       window.myStorage.setDevice('video', 'quality', quality)
+    },
+    setFPS(fps) {
+      this.setDevices({
+        video: { fps: fps },
+      })
+      window.myStorage.setDevice('video', 'fps', fps)
     },
     async initStream() {
       if (this.checking) return
@@ -224,6 +240,12 @@ export default {
     this.initStream()
     this.videoId = this.video['deviceId']
     this.videoQuality = this.video['quality']
+
+    if (this.video['fps']) {
+      this.videoFPS = Number.parseInt(this.video['fps'], 10)
+    } else {
+      this.videoFPS = 30
+    }
   },
   beforeDestroy() {
     if (this.stream) {
