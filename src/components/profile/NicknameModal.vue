@@ -57,15 +57,7 @@ export default {
           {
             validator: (rule, value, callback) => {
               if (!value.length || value.length > 20) {
-                callback(
-                  new Error(
-                    this.$t('invalid.char.between', [
-                      this.$t('profile.nicknameChangeModal.nickname'),
-                      1,
-                      20,
-                    ]),
-                  ),
-                )
+                callback(new Error(this.$t('invalid.string.range', [1, 20])))
               } else {
                 callback()
               }

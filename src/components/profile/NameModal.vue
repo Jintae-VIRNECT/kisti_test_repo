@@ -15,11 +15,11 @@
         :model="form"
         @submit.native.prevent="submit"
       >
-        <el-form-item :label="$t('profile.nameChangeModal.lastName')">
-          <el-input v-model="form.lastName" />
+        <el-form-item :label="$t(`profile.nameChangeModal.${name[0]}`)">
+          <el-input v-model="form[name[0]]" />
         </el-form-item>
-        <el-form-item :label="$t('profile.nameChangeModal.firstName')">
-          <el-input v-model="form.firstName" />
+        <el-form-item :label="$t(`profile.nameChangeModal.${name[1]}`)">
+          <el-input v-model="form[name[1]]" />
         </el-form-item>
       </el-form>
     </div>
@@ -48,6 +48,13 @@ export default {
         firstName: '',
       },
     }
+  },
+  computed: {
+    name() {
+      return /^(ko|ja|zh)/.test(this.$i18n.locale)
+        ? ['lastName', 'firstName']
+        : ['firstName', 'lastName']
+    },
   },
   watch: {
     visible() {

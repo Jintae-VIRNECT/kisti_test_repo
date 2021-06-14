@@ -1483,10 +1483,10 @@
     eslint-plugin-vue "^6.0.1"
     prettier "^2.2.1"
 
-"@virnect/i18n@^1.1.0":
-  version "1.1.0"
-  resolved "http://192.168.6.3:4873/@virnect%2fi18n/-/i18n-1.1.0.tgz#15741b02e6770e7e13ed2ae0e48166bd2398582e"
-  integrity sha512-LAr2A6qZ5z41RVurmvXyJxgyHgokxI7K0R7T4rWPmPvFWZA4iGnV3zOWVf+9s0M1M8rne4eZ249X+i80kchOWA==
+"@virnect/i18n@^1.1.1":
+  version "1.1.1"
+  resolved "http://192.168.6.3:4873/@virnect%2fi18n/-/i18n-1.1.1.tgz#00c285f1d89edb4e78ca0d76e82673293c786cef"
+  integrity sha512-3GsHkYAk3JAMqTd0eRoyoUYUEm8C+Ysv1quTwNDsqjlzOYXmha6+RWKQTwm+hVD7Lun6jicyKxgwnFF4q07JIg==
   dependencies:
     commander "^7.2.0"
     google-spreadsheet "^3.1.15"

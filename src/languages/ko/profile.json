@@ -139,17 +139,16 @@
       "contactPlaceholder": "전화번호를 입력해 주세요",
       "submit": "변경",
       "message": {
-        "wrong": "올바른 전화번호 형식이 아닙니다",
         "success": "연락처 변경에 성공하였습니다.",
         "fail": "연락처 변경에 실패하였습니다. 잠시 후 다시 이용해 주세요."
       }
     },
     "recoveryEmailChangeModal": {
       "title": "복구 이메일 변경",
+      "email": "이메일",
       "recoveryEmail": "복구 이메일",
       "submit": "변경",
       "message": {
-        "wrong": "올바른 이메일 형식이 아닙니다",
         "success": "복구 이메일 변경에 성공하였습니다.",
         "fail": "복구 이메일 변경에 실패하였습니다. 잠시 후 다시 이용해 주세요."
       }

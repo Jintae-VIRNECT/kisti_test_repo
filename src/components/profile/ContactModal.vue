@@ -64,10 +64,11 @@ export default {
       rules: {
         phone: [
           {
-            trigger: 'blur',
             validator: (rule, value, callback) => {
               const e = new Error(
-                this.$t('profile.contactChangeModal.message.wrong'),
+                this.$t('invalid.format', [
+                  this.$t('profile.contactChangeModal.contact'),
+                ]),
               )
               if (value === '') callback(e)
               else if (value.length < 10) callback(e)
