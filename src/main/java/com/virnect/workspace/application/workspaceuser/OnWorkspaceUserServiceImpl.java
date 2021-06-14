@@ -7,6 +7,9 @@ import com.virnect.workspace.dao.cache.UserInviteRepository;
 import com.virnect.workspace.dao.setting.WorkspaceCustomSettingRepository;
 import com.virnect.workspace.dao.workspace.*;
 import com.virnect.workspace.domain.redis.UserInvite;
+import com.virnect.workspace.domain.setting.SettingName;
+import com.virnect.workspace.domain.setting.SettingValue;
+import com.virnect.workspace.domain.setting.WorkspaceCustomSetting;
 import com.virnect.workspace.domain.workspace.*;
 import com.virnect.workspace.dto.onpremise.MemberAccountCreateRequest;
 import com.virnect.workspace.dto.request.MemberAccountDeleteRequest;
@@ -23,6 +26,7 @@ import com.virnect.workspace.global.common.RedirectProperty;
 import com.virnect.workspace.global.common.mapper.rest.RestMapStruct;
 import com.virnect.workspace.global.constant.*;
 import com.virnect.workspace.global.error.ErrorCode;
+import com.virnect.workspace.global.util.RandomStringTokenUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.MessageSource;
@@ -34,9 +38,12 @@ import org.thymeleaf.context.Context;
 import org.thymeleaf.spring5.SpringTemplateEngine;
 
 import java.io.IOException;
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -63,6 +70,7 @@ public class OnWorkspaceUserServiceImpl extends WorkspaceUserService {
     private final LicenseRestService licenseRestService;
     private final RedirectProperty redirectProperty;
     private final ApplicationEventPublisher applicationEventPublisher;
+    private final WorkspaceCustomSettingRepository workspaceCustomSettingRepository;
     private static final int MAX_JOIN_WORKSPACE_AMOUNT = 49;//최대 참여 가능한 워크스페이스 수
     private static final int MAX_INVITE_USER_AMOUNT = 49;//최대 초대 가능한 워크스페이스 멤버 수
     private static final int MAX_WORKSPACE_USER_AMOUNT = 50;//워크스페이스 최대 멤버 수(마스터 본인 포함)
@@ -82,22 +90,51 @@ public class OnWorkspaceUserServiceImpl extends WorkspaceUserService {
         this.licenseRestService = licenseRestService;
         this.redirectProperty = redirectProperty;
         this.applicationEventPublisher = applicationEventPublisher;
+        this.workspaceCustomSettingRepository = workspaceCustomSettingRepository;
     }
 
 
     @Override
     public ApiResponse<Boolean> inviteWorkspace(
             String workspaceId, WorkspaceInviteRequest workspaceInviteRequest, Locale locale
-    ) {/*
-     *//*
-     * 권한체크
-     * 초대하는 사람 권한 - 마스터, 매니저만 가능
-     * 초대받는 사람 권한 - 매니저, 멤버만 가능
-     * 초대하는 사람이 매니저일때 - 멤버만 초대할 수 있음.
-     *//*
+    ) {
+        /*
+         * 권한체크
+         * 초대하는 사람 권한 - 마스터, 매니저만 가능
+         * 초대받는 사람 권한 - 매니저, 멤버만 가능
+         * 초대하는 사람이 매니저일때 - 멤버만 초대할 수 있음.*/
+        Optional<WorkspaceCustomSetting> workspaceCustomSettingOptional = workspaceCustomSettingRepository.findByWorkspace_UuidAndSetting_Name(workspaceId, SettingName.PUBLIC_USER_MANAGEMENT_ROLE_SETTING);
+        Optional<WorkspaceUserPermission> requestUserPermission = workspaceUserPermissionRepository.findWorkspaceUser(workspaceId, workspaceInviteRequest.getUserId());
+        if (!requestUserPermission.isPresent()) {
+            throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_INVALID_PERMISSION);
+        }
+        workspaceInviteRequest.getUserInfoList().forEach(userInfo -> {
+            if (workspaceCustomSettingOptional.isPresent()) {
+                if (workspaceCustomSettingOptional.get().getValue() == SettingValue.UNUSED || workspaceCustomSettingOptional.get().getValue() == SettingValue.MASTER_OR_MANAGER) {
+                    if (!checkWorkspaceRole(SettingValue.MASTER_OR_MANAGER, requestUserPermission.get().getWorkspaceRole().getRole(), userInfo.getRole())) {
+                        throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_INVALID_PERMISSION);
+                    }
+                }
+                if (workspaceCustomSettingOptional.get().getValue() == SettingValue.MASTER) {
+                    if (!checkWorkspaceRole(SettingValue.MASTER, requestUserPermission.get().getWorkspaceRole().getRole(), userInfo.getRole())) {
+                        throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_INVALID_PERMISSION);
+                    }
+                }
+                if (workspaceCustomSettingOptional.get().getValue() == SettingValue.MASTER_OR_MANAGER_OR_MEMBER) {
+                    if (!checkWorkspaceRole(SettingValue.MASTER_OR_MANAGER_OR_MEMBER, requestUserPermission.get().getWorkspaceRole().getRole(), userInfo.getRole())) {
+                        throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_INVALID_PERMISSION);
+                    }
+                }
+            } else {
+                if (!checkWorkspaceRole(SettingValue.MASTER_OR_MANAGER, requestUserPermission.get().getWorkspaceRole().getRole(), userInfo.getRole())) {
+                    throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_INVALID_PERMISSION);
+                }
+            }
+        });
 
         //1-1. 초대하는 유저 권한 체크
-        Optional<WorkspaceUserPermission> requestUserPermission = workspaceUserPermissionRepository.findWorkspaceUser(workspaceId, workspaceInviteRequest.getUserId());
+/*
+      Optional<WorkspaceUserPermission> requestUserPermission = workspaceUserPermissionRepository.findWorkspaceUser(workspaceId, workspaceInviteRequest.getUserId());
         if (!requestUserPermission.isPresent() || requestUserPermission.get().getWorkspaceRole().getRole().equals("MEMBER")) {
             throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_INVALID_PERMISSION);
         }
@@ -110,6 +147,7 @@ public class OnWorkspaceUserServiceImpl extends WorkspaceUserService {
                 throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_INVALID_PERMISSION);
             }
         });
+        */
 
         //1-2. 워크스페이스 최대 초대가능 멤버 수 체크
         if (workspaceInviteRequest.getUserInfoList().size() > MAX_INVITE_USER_AMOUNT) {
@@ -242,8 +280,51 @@ public class OnWorkspaceUserServiceImpl extends WorkspaceUserService {
                 emailReceiverList.add(userInfo.getEmail());
                 sendMailRequest(html, emailReceiverList, MailSender.MASTER.getValue(), subject);
             }
-        });*/
+        });
         return new ApiResponse<>(true);
+    }
+
+    /*
+    하위유저는 상위유저 또는 동급유저에 대한 권한이 없으므로 이에 대해 체크한다.
+    단 멤버유저의 경우 동급유저(멤버)에 대한 권한을 허용한다.
+     */
+    private boolean checkWorkspaceRole(SettingValue settingValue, String requestUserRole, String responseUserRole) {
+        log.info("[WORKSPACE ROLE CHECK] setting value : [{}], request user role : [{}] , response user role : [{}]", settingValue, requestUserRole, responseUserRole);
+        //요청자가 마스터 -> 대상자는 매니저, 멤버
+        if (settingValue == SettingValue.MASTER) {
+            if (!requestUserRole.equals("MASTER") || !responseUserRole.matches("MANAGER|MEMBER")) {
+                return false;
+            }
+
+        }
+        //요청자가 마스터 -> 대상자는 매니저, 멤버
+        //요청자가 매니저 -> 대상자는 멤버
+        if (settingValue == SettingValue.MASTER_OR_MANAGER) {
+            if (requestUserRole.equals("MASTER") && !responseUserRole.matches("MANAGER|MEMBER")) {
+                return false;
+            }
+            if (requestUserRole.equals("MANAGER") && !responseUserRole.equals("MEMBER")) {
+                return false;
+            }
+            if (requestUserRole.equals("MEMBER")) {
+                return false;
+            }
+        }
+        //요청자가 마스터  -> 대상자는 매니저, 멤버
+        //요청자가 매니저 -> 대상자는 멤버
+        //요청자가 멤버 -> 대상자는 멤버
+        if (settingValue == SettingValue.MASTER_OR_MANAGER_OR_MEMBER) {
+            if (requestUserRole.equals("MASTER") && !responseUserRole.matches("MANAGER|MEMBER")) {
+                return false;
+            }
+            if (requestUserRole.equals("MANAGER") && !responseUserRole.equals("MEMBER")) {
+                return false;
+            }
+            if (requestUserRole.equals("MEMBER") && !responseUserRole.equals("MEMBER")) {
+                return false;
+            }
+        }
+        return true;
     }
 
     private WorkspaceLicensePlanInfoResponse getWorkspaceLicenses(String workspaceId) {

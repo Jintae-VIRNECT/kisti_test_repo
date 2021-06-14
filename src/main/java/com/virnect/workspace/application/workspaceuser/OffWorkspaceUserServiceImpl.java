@@ -5,6 +5,9 @@ import com.virnect.workspace.application.message.MessageRestService;
 import com.virnect.workspace.application.user.UserRestService;
 import com.virnect.workspace.dao.setting.WorkspaceCustomSettingRepository;
 import com.virnect.workspace.dao.workspace.*;
+import com.virnect.workspace.domain.setting.SettingName;
+import com.virnect.workspace.domain.setting.SettingValue;
+import com.virnect.workspace.domain.setting.WorkspaceCustomSetting;
 import com.virnect.workspace.domain.workspace.*;
 import com.virnect.workspace.dto.onpremise.MemberAccountCreateInfo;
 import com.virnect.workspace.dto.onpremise.MemberAccountCreateRequest;
@@ -56,6 +59,7 @@ public class OffWorkspaceUserServiceImpl extends WorkspaceUserService {
     private final UserRestService userRestService;
     private final LicenseRestService licenseRestService;
     private final RestMapStruct restMapStruct;
+    private final WorkspaceCustomSettingRepository workspaceCustomSettingRepository;
 
     public OffWorkspaceUserServiceImpl(WorkspaceRepository workspaceRepository, WorkspaceUserRepository workspaceUserRepository, WorkspaceRoleRepository workspaceRoleRepository, WorkspaceUserPermissionRepository workspaceUserPermissionRepository, UserRestService userRestService, MessageRestService messageRestService, SpringTemplateEngine springTemplateEngine, MessageSource messageSource, LicenseRestService licenseRestService, RedirectProperty redirectProperty, RestMapStruct restMapStruct, ApplicationEventPublisher applicationEventPublisher, WorkspacePermissionRepository workspacePermissionRepository, WorkspaceCustomSettingRepository workspaceCustomSettingRepository) {
         super(workspaceRepository, workspaceUserRepository, workspaceRoleRepository, workspaceUserPermissionRepository, userRestService, messageRestService, springTemplateEngine, messageSource, licenseRestService, redirectProperty, restMapStruct, applicationEventPublisher, workspaceCustomSettingRepository);
@@ -67,6 +71,7 @@ public class OffWorkspaceUserServiceImpl extends WorkspaceUserService {
         this.userRestService = userRestService;
         this.licenseRestService = licenseRestService;
         this.restMapStruct = restMapStruct;
+        this.workspaceCustomSettingRepository = workspaceCustomSettingRepository;
     }
 
 
@@ -76,7 +81,33 @@ public class OffWorkspaceUserServiceImpl extends WorkspaceUserService {
             String workspaceId, MemberAccountCreateRequest memberAccountCreateRequest
     ) {
         //1. 요청한 사람의 권한 체크
-        Workspace workspace = checkWorkspaceAndUserRole(workspaceId, memberAccountCreateRequest.getUserId(), new String[]{"MASTER", "MANAGER"});
+        Workspace workspace = workspaceRepository.findByUuid(workspaceId).orElseThrow(() -> new WorkspaceException(ErrorCode.ERR_WORKSPACE_NOT_FOUND));
+        WorkspaceUserPermission requestUserPermission = workspaceUserPermissionRepository.findByWorkspaceUser_WorkspaceAndWorkspaceUser_UserId(workspace, memberAccountCreateRequest.getUserId()).orElseThrow(() -> new WorkspaceException(ErrorCode.ERR_WORKSPACE_USER_NOT_FOUND));
+        Optional<WorkspaceCustomSetting> workspaceCustomSettingOptional = workspaceCustomSettingRepository.findByWorkspace_UuidAndSetting_Name(workspaceId, SettingName.PRIVATE_USER_MANAGEMENT_ROLE_SETTING);
+        memberAccountCreateRequest.getMemberAccountCreateRequest().forEach(memberAccountCreateInfo -> {
+            if (workspaceCustomSettingOptional.isPresent()) {
+                if (workspaceCustomSettingOptional.get().getValue() == SettingValue.UNUSED || workspaceCustomSettingOptional.get().getValue() == SettingValue.MASTER_OR_MANAGER) {
+                    if (!checkWorkspaceRole(SettingValue.MASTER_OR_MANAGER, requestUserPermission.getWorkspaceRole().getRole(), memberAccountCreateInfo.getRole())) {
+                        throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_INVALID_PERMISSION);
+                    }
+                }
+                if (workspaceCustomSettingOptional.get().getValue() == SettingValue.MASTER) {
+                    if (!checkWorkspaceRole(SettingValue.MASTER, requestUserPermission.getWorkspaceRole().getRole(), memberAccountCreateInfo.getRole())) {
+                        throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_INVALID_PERMISSION);
+                    }
+                }
+                if (workspaceCustomSettingOptional.get().getValue() == SettingValue.MASTER_OR_MANAGER_OR_MEMBER) {
+                    if (!checkWorkspaceRole(SettingValue.MASTER_OR_MANAGER_OR_MEMBER, requestUserPermission.getWorkspaceRole().getRole(), memberAccountCreateInfo.getRole())) {
+                        throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_INVALID_PERMISSION);
+                    }
+                }
+            } else {
+                if (!checkWorkspaceRole(SettingValue.MASTER_OR_MANAGER, requestUserPermission.getWorkspaceRole().getRole(), memberAccountCreateInfo.getRole())) {
+                    throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_INVALID_PERMISSION);
+                }
+            }
+        });
+
 
         List<String> responseLicense = new ArrayList<>();
         List<WorkspaceUserInfoResponse> workspaceUserInfoResponseList = new ArrayList<>();
@@ -205,6 +236,49 @@ public class OffWorkspaceUserServiceImpl extends WorkspaceUserService {
         }
 
         return new WorkspaceMemberInfoListResponse(workspaceUserInfoResponseList);
+    }
+
+    /*
+    하위유저는 상위유저 또는 동급유저에 대한 권한이 없으므로 이에 대해 체크한다.
+    단 멤버유저의 경우 동급유저(멤버)에 대한 권한을 허용한다.
+     */
+    private boolean checkWorkspaceRole(SettingValue settingValue, String requestUserRole, String responseUserRole) {
+        log.info("[WORKSPACE ROLE CHECK] setting value : [{}], request user role : [{}] , response user role : [{}]", settingValue, requestUserRole, responseUserRole);
+        //요청자가 마스터 -> 대상자는 매니저, 멤버
+        if (settingValue == SettingValue.MASTER) {
+            if (!requestUserRole.equals("MASTER") || !responseUserRole.matches("MANAGER|MEMBER")) {
+                return false;
+            }
+
+        }
+        //요청자가 마스터 -> 대상자는 매니저, 멤버
+        //요청자가 매니저 -> 대상자는 멤버
+        if (settingValue == SettingValue.MASTER_OR_MANAGER) {
+            if (requestUserRole.equals("MASTER") && !responseUserRole.matches("MANAGER|MEMBER")) {
+                return false;
+            }
+            if (requestUserRole.equals("MANAGER") && !responseUserRole.equals("MEMBER")) {
+                return false;
+            }
+            if (requestUserRole.equals("MEMBER")) {
+                return false;
+            }
+        }
+        //요청자가 마스터  -> 대상자는 매니저, 멤버
+        //요청자가 매니저 -> 대상자는 멤버
+        //요청자가 멤버 -> 대상자는 멤버
+        if (settingValue == SettingValue.MASTER_OR_MANAGER_OR_MEMBER) {
+            if (requestUserRole.equals("MASTER") && !responseUserRole.matches("MANAGER|MEMBER")) {
+                return false;
+            }
+            if (requestUserRole.equals("MANAGER") && !responseUserRole.equals("MEMBER")) {
+                return false;
+            }
+            if (requestUserRole.equals("MEMBER") && !responseUserRole.equals("MEMBER")) {
+                return false;
+            }
+        }
+        return true;
     }
 
     @Override
