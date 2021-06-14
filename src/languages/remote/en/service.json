@@ -235,6 +235,7 @@
     "map_cannot_check_gps":"Unable to verify GPS information.",
     "map_check_use_gps_description":"Please check whether the GPS function is used by the requested participant.",
     "map_request_rejected" :"The location information request has been rejected. ",
-    "map_cannot_use_gps":"This device does not support the location information function."
+    "map_cannot_use_gps":"This device does not support the location information function.",
+    "map_timeout":"Unable to verify GPS information. Please check whether the GPS function is used by the requested participant."
   }
 }
