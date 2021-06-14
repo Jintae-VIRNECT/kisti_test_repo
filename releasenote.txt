@@ -3,6 +3,7 @@ RELEASE v2.3.5.3
 ### New Features
 * 협업보드 전체 참가자 파일 업로드 및 드로잉
 * CPU 점유율 및 데이터 전송량 낮추기 | 영상크기 1/8 전송
+* FPS 설정 기능
 ### Bug Fixes
 ### Improvement
 ### UI
