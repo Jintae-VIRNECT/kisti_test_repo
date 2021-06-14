@@ -193,6 +193,9 @@ export default {
             deviceId: {
               exact: this.videoId,
             },
+            frameRate: {
+              max: this.videoFPS,
+            },
           }
           this.stream = await getUserMedia({
             audio: false,
@@ -237,7 +240,6 @@ export default {
     },
   },
   mounted() {
-    this.initStream()
     this.videoId = this.video['deviceId']
     this.videoQuality = this.video['quality']
 
@@ -246,6 +248,8 @@ export default {
     } else {
       this.videoFPS = 30
     }
+
+    this.initStream()
   },
   beforeDestroy() {
     if (this.stream) {
