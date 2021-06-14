@@ -360,6 +360,11 @@ public abstract class WorkspaceService {
         // workspace 삭제
         workspaceRepository.delete(workspace);
 
+        // 타 워크스페이스 소속 삭제
+        List<WorkspaceUser> workspaceUserRepositoryByUserId = workspaceUserRepository.findByUserId(workspace.getUserId());
+        workspaceUserPermissionRepository.deleteAllWorkspaceUserPermissionByWorkspaceUser(workspaceUserRepositoryByUserId);
+        workspaceUserRepositoryByUserId.forEach(workspaceUserRepository::delete);
+
         return new WorkspaceSecessionResponse(workspaceUUID, true, LocalDateTime.now());
     }
 

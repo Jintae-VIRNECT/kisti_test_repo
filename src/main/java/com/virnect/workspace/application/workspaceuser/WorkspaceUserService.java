@@ -305,6 +305,13 @@ public abstract class WorkspaceUserService {
         UserInfoRestResponse user = getUserInfoByUserId(memberUpdateRequest.getUserId());
         UserInfoRestResponse requestUser = getUserInfoByUserId(memberUpdateRequest.getRequestUserId());
 
+        //플랜 변경
+        workspaceUserLicenseHandling(
+                memberUpdateRequest.getUserId(), workspace, masterUser, user, requestUser,
+                memberUpdateRequest.getLicenseRemote(), memberUpdateRequest.getLicenseMake(),
+                memberUpdateRequest.getLicenseView(), locale
+        );
+
         //권한 변경
         if (!userPermission.getWorkspaceRole().equals(workspaceRole)) {
             updateUserPermission(
@@ -313,12 +320,6 @@ public abstract class WorkspaceUserService {
             );
         }
 
-        //플랜 변경
-        workspaceUserLicenseHandling(
-                memberUpdateRequest.getUserId(), workspace, masterUser, user, requestUser,
-                memberUpdateRequest.getLicenseRemote(), memberUpdateRequest.getLicenseMake(),
-                memberUpdateRequest.getLicenseView(), locale
-        );
 
         return new ApiResponse<>(true);
     }
