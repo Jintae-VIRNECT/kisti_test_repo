@@ -151,8 +151,9 @@ export default {
     changedSearchParams(searchParams) {
       this.searchTasks(searchParams)
     },
-    async searchTasks() {
-      const { list, total } = await taskService.searchTasks(this.searchParams)
+    async searchTasks(searchParams) {
+      const { list, total } = await taskService.searchTasks(searchParams)
+      this.taskPage = searchParams === undefined ? 1 : searchParams.page
       this.taskList = list
       this.taskTotal = total
     },
@@ -160,7 +161,7 @@ export default {
       if (!filter.length) this.activeTab = 'allTasks'
     },
     async refresh() {
-      this.searchTasks()
+      this.searchTasks({ page: 1 })
       this.taskStatistics = await taskService.getTaskStatistics()
     },
   },
