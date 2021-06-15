@@ -1,5 +1,5 @@
 # Build Stage
-FROM gradle:6.8-jdk11 AS builder
+FROM gradle:6.8-jdk8 AS builder
 ENV APP_HOME=/usr/app/
 WORKDIR $APP_HOME
 
@@ -8,15 +8,16 @@ COPY build.gradle settings.gradle ./
 
 # Copy Sourcefile
 COPY virnect.pfx .
+
 COPY src src
 
-# Build soruce file with dependnecies
-RUN gradle clean build -x test --info  --no-daemon
+# build soruce file with dependnecies
+RUN gradle clean build -x test --console=plain
 
 RUN java -Djarmode=layertools -jar build/libs/*.jar extract
 
 # Runtime Stage
-FROM openjdk:11-jdk-slim
+FROM openjdk:8-jre-alpine
 
 ENV APP_HOME=/usr/app/
 WORKDIR $APP_HOME
