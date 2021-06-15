@@ -59,17 +59,20 @@ import SpotCameraBlock from './SpotCameraBlock.vue'
 export default {
   components: { SpotCameraBlock },
   props: {
-    video: {
-      type: Object,
-      default: () => {
-        return {
-          fl: null,
-          fr: null,
-          sl: null,
-          sr: null,
-          b: null,
-        }
-      },
+    frontLeftImage: {
+      type: String,
+    },
+    frontRightImage: {
+      type: String,
+    },
+    sideLeftImage: {
+      type: String,
+    },
+    sideRightImage: {
+      type: String,
+    },
+    backImage: {
+      type: String,
     },
   },
   data() {
@@ -80,12 +83,12 @@ export default {
             name: 'fl',
             title: 'Front Camera 01',
             ratio: 'potrait',
-            video: null,
+            video: this.frontLeft,
             option: {
-              clearRect: [0, 0, 480, 640],
-              translate: [240, 320],
-              rotate: (90 * Math.PI) / 180,
-              drawImage: [-320, -240],
+              //clearRect: [0, 0, 480, 640],
+              //translate: [240, 320],
+              //rotate: (90 * Math.PI) / 180,
+              //drawImage: [-320, -240],
             },
           },
           {
@@ -94,10 +97,10 @@ export default {
             ratio: 'potrait',
             video: null,
             option: {
-              clearRect: [0, 0, 480, 640],
-              translate: [240, 320],
-              rotate: (90 * Math.PI) / 180,
-              drawImage: [-320, -240],
+              //clearRect: [0, 0, 480, 640],
+              //translate: [240, 320],
+              //rotate: (90 * Math.PI) / 180,
+              //drawImage: [-320, -240],
             },
           },
         ],
@@ -115,10 +118,11 @@ export default {
             ratio: 'landscape',
             video: null,
             option: {
-              clearRect: [0, 0, 640, 480],
-              translate: [320, 240],
-              rotate: (180 * Math.PI) / 180,
-              drawImage: [-320, -240],
+              upsideDown: true,
+              //clearRect: [0, 0, 640, 480],
+              //translate: [320, 240],
+              //rotate: (180 * Math.PI) / 180,
+              //drawImage: [-320, -240],
             },
           },
         ],
@@ -135,15 +139,20 @@ export default {
     }
   },
   watch: {
-    video: {
-      deep: true,
-      handler(val) {
-        this.cameraBlockList['front'][0].video = val['fl']
-        this.cameraBlockList['front'][1].video = val['fr']
-        this.cameraBlockList['side'][0].video = val['sl']
-        this.cameraBlockList['side'][1].video = val['sr']
-        this.cameraBlockList['back'][0].video = val['b']
-      },
+    frontLeftImage(val) {
+      this.cameraBlockList['front'][0].video = val
+    },
+    frontRightImage(val) {
+      this.cameraBlockList['front'][1].video = val
+    },
+    sideLeftImage(val) {
+      this.cameraBlockList['side'][0].video = val
+    },
+    sideRightImage(val) {
+      this.cameraBlockList['side'][1].video = val
+    },
+    backImage(val) {
+      this.cameraBlockList['back'][0].video = val
     },
   },
   computed: {

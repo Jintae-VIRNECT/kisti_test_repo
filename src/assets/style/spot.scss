@@ -62,10 +62,17 @@
     background-position: center;
   }
 
+  &.upside-down{
+    img{
+      transform : rotate(180deg)
+    }
+  }
+
   .camera-title{
     position: absolute;
     top: 0.74vh; //0.571rem;
     left: 0.74vh;//0.571rem;
+    z-index: 2;
 
     color: #ffd717;
     background-color: #000000;
@@ -78,9 +85,17 @@
 
   &.potrait{
     //width: 18.857rem; //264px;
-    aspect-ratio: 0.754/1;
+    aspect-ratio: 0.75/1;
     height: 32.4vh;//350px; //auto;
-    transition: .7s height ;
+    transition: .7s height;
+
+    img{
+      -webkit-transform: rotate(90deg);
+      -moz-transform: rotate(90deg);
+      -o-transform: rotate(90deg);
+      -ms-transform: rotate(90deg);
+      transform: rotate(90deg) scale(1.33) translateX(22%)
+    }
   }
   
   &.landscape{
@@ -115,13 +130,16 @@
     display: flex;
     align-items: center;
     justify-content: center;
+    background-color: rgba(white, 0);
   }
 
   &:hover > .back{
-      background-color: #5c5c63;  //opacity로 필요
+      //background-color: #5c5c63;  //opacity로 필요
+      background-color: rgba(white, 0.1);
   }
   &:active > .back{
-      background-color: #74747a;  //opacity로 필요
+      //background-color: #74747a;  //opacity로 필요
+      background-color: rgba(white, 0.3);
   }
 
   //버튼 비활성화시

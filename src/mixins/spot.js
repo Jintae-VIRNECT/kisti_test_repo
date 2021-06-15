@@ -10,6 +10,7 @@ import {
 } from 'plugins/remote/spot/spotSocket'
 
 import { ESTOP_STATE, MOTOR_POWER } from 'configs/spot.config.js'
+import { mapGetters } from 'vuex'
 
 export default {
   data() {
@@ -41,6 +42,8 @@ export default {
       backImage: null,
 
       batteryWarnIntervalId: null,
+
+      isConnectionErrorPopup: false
     }
   },
   watch: {
@@ -50,11 +53,14 @@ export default {
       }
     },
   },
+  computed:{
+    ...mapGetters(['isSpotStand'])
+  },
   methods: {
     async connectAndActivateListener() {
       try {
         await spotServerConnect(
-          'REOMTE',
+          'REMOTE',
           this.onConnectionError,
           this.onSpotError,
         )
@@ -101,7 +107,7 @@ export default {
         })
       }) //왼쪽 카메라가 오른쪽공간을 비추고 있으므로 바꿔줌
     },
-    //spot error 발생 시
+    //spot error 발생 시 (현재 미사용)
     onSpotError() {},
 
     //spot 연결 여부 응답 콜백
@@ -133,19 +139,29 @@ export default {
         this.estopHighlight = false
         this.sitStandBtn = false
         this.motorBtn = false
+        this.moveBtn = false
       } else {
         //켜져있는 상태 - estop(비상정지) 버튼 비활성화, sit/stand 가능, 모터 활성화 상태 표시
         if (power === MOTOR_POWER.ON) {
           this.estopBtn = false
           this.sitStandBtn = true
           this.motorHighlight = true
+
+          if(this.isSpotStand)
+            this.moveBtn = true
+          else
+            this.moveBtn = false
         }
         //motor 꺼져있는 상태 - motor 킬 수 있어야하고, sit/stand 불가능, estop 불가능
         else if (power === MOTOR_POWER.OFF) {
           this.estopBtn = true
           this.sitStandBtn = false
           this.motorHighlight = false
+          this.moveBtn = false
         }
+        else
+          this.moveBtn = false
+        
 
         this.motorBtn = true
         this.estopHighlight = true
@@ -154,8 +170,20 @@ export default {
 
     //spot 서버와 연결 상태가 불량인 경우 - 재시도/종료
     onConnectionError() {
-      const retryAction = () => this.connectAndActivateListener()
-      const cancelAction = () => close()
+
+      //이미 떠있는 경우 재실행 X
+      if(this.isConnectionErrorPopup) return
+
+      this.isConnectionErrorPopup = true
+
+      const retryAction = () => {
+        this.isConnectionErrorPopup = false
+        this.connectAndActivateListener()
+      }
+      const cancelAction = () => {
+        this.isConnectionErrorPopup = false
+        close()
+      }
 
       this.confirmCancel(
         this.$t('service.spot_networ_error'),
@@ -171,7 +199,8 @@ export default {
     },
 
     showBatteryWarning(battery) {
-      if (battery <= 15)
+      //초기에 battery값이 0으로 오는 상황 발생하므로 예외처리
+      if (battery && battery <= 20)
         this.confirmDefault(
           this.$t('service.spot_battery_warning', { battery }),
         )

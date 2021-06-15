@@ -15,15 +15,15 @@ const initConnectStatus = () => {
 }
 
 //초기 spot 서버 연결 & 연결 성공 여부 수신
-export const spotServerConnect = (remoteId, onConnectionError, onSpotError) => {
+export const spotServerConnect = (remoteId="REMOTE", onConnectionError, onSpotError) => {
   return new Promise((res, rej) => {
-    const wsUrl = URLS['spot'] || ''
+    const wsUrl = URLS['spot-ws'] || 'wss://192.168.6.3:3458' //'wss://192.168.6.3:3458'
     const connectOption = {
       transports: ['websocket'],
       upgrade: false,
       reconnection: false,
     }
-    socket = io(connectOption).connect(wsUrl)
+    socket = io(wsUrl, connectOption)
     initConnectStatus()
 
     socket.on('connect', () => {

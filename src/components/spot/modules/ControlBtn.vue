@@ -1,5 +1,10 @@
 <template>
-  <button class="spot-control-btn" :disabled="disabled" @click="clickListener">
+  <button
+    class="spot-control-btn"
+    :disabled="disabled"
+    @click="clickListener"
+    @mousedown="mousedown"
+    @mouseup="mouseup">
     <div class="back">
       <img class="icon" :src="imgSrc" />
     </div>
@@ -20,6 +25,12 @@ export default {
   methods: {
     clickListener() {
       this.$emit('click')
+    },
+    mouseup() {
+      this.$emit('mouseup')
+    },
+    mousedown() {
+      this.$emit('mousedown')
     },
   },
 }

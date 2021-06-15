@@ -2,7 +2,7 @@
   <section class="main-control-group">
     <control-btn
       class="estop"
-      :disabled="!estopPossible"
+      :disabled="motorBtn && motorHighlight && estopHighlight && !estopBtn"
       :class="{
         active: motorBtn && !motorHighlight && estopHighlight && estopBtn,
         inactive: motorBtn && motorHighlight && estopHighlight && !estopBtn,
@@ -12,7 +12,7 @@
     ></control-btn>
     <control-btn
       :disabled="!motorPossible"
-      class="motor inactive"
+      class="motor"
       :class="{
         inactive: !motorBtn,
         possible: motorBtn,
@@ -44,6 +44,12 @@ export default {
     ControlBtn,
   },
   props: {
+    estop: {
+      type: String,
+    },
+    power: {
+      type: String,
+    },
     estopBtn: {
       type: Boolean,
     },
@@ -59,16 +65,6 @@ export default {
   },
   computed: {
     ...mapGetters(['isSpotFullscreen', 'isSpotStand']),
-    estopPossible() {
-      if (
-        this.motorBtn &&
-        !this.motorHighlight &&
-        this.estopHighlight &&
-        this.estopBtn
-      )
-        return true
-      return false
-    },
     motorPossible() {
       if (this.motorBtn) return true
       return false
@@ -86,11 +82,17 @@ export default {
       )
         return
 
+      this.logger('[SPOT] estop')
       spotControl.estop()
     },
     motorClick() {
-      if (this.power === MOTOR_POWER.ON) spotControl.powerOff()
-      else if (this.power === MOTOR_POWER.OFF) spotControl.powerOn()
+      if (this.power === MOTOR_POWER.ON) {
+        this.logger('[SPOT] motor power off')
+        spotControl.powerOff()
+      } else if (this.power === MOTOR_POWER.OFF) {
+        this.logger('[SPOT] motor power on')
+        spotControl.powerOn()
+      }
       //끄거나 키고 있는 중
       else this.logger('[SPOT POWER PROGRESSING] ', this.power)
     },

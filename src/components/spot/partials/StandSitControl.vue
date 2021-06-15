@@ -26,6 +26,7 @@
 <script>
 import { mapGetters } from 'vuex'
 import Store from 'stores/remote/store'
+import { spotControl } from 'plugins/remote/spot/spotSocket'
 
 export default {
   props: {
@@ -39,6 +40,10 @@ export default {
   methods: {
     setStand(isStand) {
       Store.commit('SET_IS_SPOT_STAND', isStand)
+      if(isStand)
+        spotControl.stand()
+      else 
+        spotControl.sit()
     },
   },
 }

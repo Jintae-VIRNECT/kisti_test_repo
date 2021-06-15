@@ -5,19 +5,18 @@
       ratio,
       {
         'no-video': noVideo,
+        'upside-down': option ? option.upsideDown : false,
       },
     ]"
   >
     <figcaption class="camera-title">
       {{ title }}
     </figcaption>
-    <canvas ref="video-canvas"></canvas>
+    <img :id="`video-canvas_${title}`" />
   </figure>
 </template>
 
 <script>
-let resource = null
-
 export default {
   props: {
     video: {
@@ -32,49 +31,34 @@ export default {
     },
     option: {
       type: Object,
-      default: () => {
-        return {
-          clearRect: [],
-          translate: [],
-          rotate: null,
-          drawImage: [0, 0],
-        }
-      },
     },
   },
   watch: {
     video(val) {
       if (val === null) this.noVideo = true
       else {
-        resource.src = this.video
+        document.getElementById(`video-canvas_${this.title}`).src = this.video
       }
     },
   },
   data() {
     return {
       noVideo: true,
+      resource: null,
+
+      clearRect: [],
+      translate: [],
+      drawImage: [0, 0],
     }
   },
-  methods: {},
-  async created() {
-    await this.$nextTick()
-    const canvas = this.$refs['video-canvas']
-    resource = new Image()
-    resource.onload = () => {
-      const { clearRect, translate, rotate, drawImage } = this.option
-
-      if (clearRect.length) {
-        canvas.clearRect(...clearRect)
-        canvas.save()
-      }
-
-      if (translate.length) canvas.translate(...translate)
-      if (rotate) canvas.rotate(rotate)
-
-      canvas.drawImage(resource, ...drawImage)
-
-      if (clearRect.length && translate.length && rotate) canvas.restore()
-    }
+  methods: {
+    setOption(clientWidth, clientHeight) {
+      this.clearRect = new Array(0, 0, clientWidth, clientHeight)
+      this.translate = new Array(clientWidth / 2, clientHeight / 2)
+      const max = Math.max(clientWidth, clientHeight)
+      const min = max === clientWidth ? clientHeight : clientWidth
+      this.drawImage = new Array(-(max / 2), -(min / 2))
+    },
   },
 }
 </script>

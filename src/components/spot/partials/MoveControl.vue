@@ -35,7 +35,7 @@ export default {
       btnList: [
         {
           ref: 'left-btn',
-          key: SPOT_CONTROL_KEYCODE.a,
+          key: SPOT_CONTROL_KEYCODE.q,
           imgSrc: require('assets/image/spot/ic_move_left.svg'),
         },
         {
@@ -45,12 +45,12 @@ export default {
         },
         {
           ref: 'right-btn',
-          key: SPOT_CONTROL_KEYCODE.d,
+          key: SPOT_CONTROL_KEYCODE.e,
           imgSrc: require('assets/image/spot/ic_move_right.svg'),
         },
         {
           ref: 'left-turn-btn',
-          key: SPOT_CONTROL_KEYCODE.q,
+          key: SPOT_CONTROL_KEYCODE.a,
           imgSrc: require('assets/image/spot/ic_move_round_left.svg'),
         },
         {
@@ -60,7 +60,7 @@ export default {
         },
         {
           ref: 'right-turn-btn',
-          key: SPOT_CONTROL_KEYCODE.e,
+          key: SPOT_CONTROL_KEYCODE.d,
           imgSrc: require('assets/image/spot/ic_move_round_right.svg'),
         },
       ],
@@ -106,13 +106,13 @@ export default {
       this.key[key].state = false
     },
     onKeyDown(event) {
-      if (this.key[keyCode] && this.moveBtn) {
+      if (this.moveBtn) {
         var keyCode = event.keyCode
         this.key[keyCode].state = true
       }
     },
     onKeyUp(event) {
-      if (this.key[keyCode] && this.moveBtn) {
+      if (this.moveBtn) {
         var keyCode = event.keyCode
         this.key[keyCode].state = false
       }

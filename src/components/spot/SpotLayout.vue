@@ -1,19 +1,19 @@
 <template>
   <section class="spot-control-layout">
     <spot-camera-layer
-      :video="{
-        fl: frontLeftImage,
-        fr: frontRightImage,
-        sl: sideLeftImage,
-        sr: sideRightImage,
-        b: backImage,
-      }"
+      :frontLeftImage="frontLeftImage"
+      :frontRightImage="frontRightImage"
+      :sideLeftImage="sideLeftImage"
+      :sideRightImage="sideRightImage"
+      :backImage="backImage"
     ></spot-camera-layer>
 
     <!--카메라 전체화면 -->
     <!-- <spot-camera-full></spot-camera-full> -->
 
     <main-control
+      :estop="estop"
+      :power="power"
       :estopBtn="estopBtn"
       :estopHighlight="estopHighlight"
       :motorBtn="motorBtn"
@@ -62,7 +62,7 @@ export default {
   methods: {
     onReconnectCancel() {
       this.visibleSpotConnectModal = false
-      //close()
+      close()
     },
   },
 }
