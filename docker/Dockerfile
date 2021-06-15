@@ -1,5 +1,7 @@
 # Build Stage
 FROM gradle:6.8-jdk11 AS builder
+ENV APP_HOME=/usr/app/
+WORKDIR $APP_HOME
 
 # Only copy dependency-related files
 COPY build.gradle settings.gradle ./
