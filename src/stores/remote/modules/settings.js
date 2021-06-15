@@ -21,6 +21,7 @@ const state = {
     deviceId: null,
     isOn: true,
     quality: '720',
+    fps: 30,
   },
   localRecordInfo: {
     time: '60',
@@ -142,6 +143,7 @@ const getters = {
       video: state.video.deviceId,
       videoOn: state.video.isOn,
       quality: resolution[idx].resolution,
+      fps: state.video.fps,
     }
   },
 

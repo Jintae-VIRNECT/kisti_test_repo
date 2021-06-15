@@ -4,13 +4,16 @@
       <li>
         <button
           class="share-title__button"
-          :class="{ active: ['file', 'pdfview'].indexOf(list) > -1 }"
+          :class="{
+            active: ['file', 'pdfview'].indexOf(list) > -1,
+            disable: !isLeader,
+          }"
           @click="changeTab('file')"
         >
           {{ $t('service.file_list') }}
         </button>
       </li>
-      <li>
+      <li v-if="isLeader">
         <button
           class="share-title__button"
           :class="{ active: list === 'history' }"
@@ -24,6 +27,7 @@
       <div class="share-body" v-show="list === 'file'">
         <transition name="share-list__left">
           <file-list
+            ref="shareFileList"
             v-show="!file || !file.id"
             @pdfView="changePdfView"
           ></file-list>
@@ -37,22 +41,27 @@
         </transition>
       </div>
     </transition>
-    <transition name="share-list__right">
-      <history-list v-show="list === 'history'"></history-list>
+    <transition v-if="isLeader" name="share-list__right">
+      <history-list
+        ref="shareHistoryList"
+        v-show="list === 'history'"
+      ></history-list>
     </transition>
   </div>
 </template>
 
 <script>
 import { mapGetters } from 'vuex'
+import { SIGNAL, DRAWING, ROLE } from 'configs/remote.config'
 import FileList from './partials/ShareFileList'
-import HistoryList from './partials/ShareHistoryList'
 import PdfView from './partials/SharePdfView'
+import HistoryList from './partials/ShareHistoryList'
 export default {
   name: 'Share',
   components: {
     FileList,
     HistoryList,
+    // HistoryList: import('./partials/ShareHistoryList'),
     PdfView,
   },
   data() {
@@ -62,7 +71,7 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['shareFile', 'fileList']),
+    ...mapGetters(['shareFile']),
     show() {
       if (this.list === 'file') {
         if (!this.file || !this.file.id) {
@@ -74,24 +83,21 @@ export default {
         return 'history'
       }
     },
+    isLeader() {
+      return this.account.roleType === ROLE.LEADER
+    },
   },
   watch: {
     shareFile: {
       deep: true,
       handler(e) {
-        if (e && e.id) {
+        if (e && e.objectName && this.isLeader) {
           this.changeTab('history')
         }
       },
     },
-    'fileList.length': 'addFile',
   },
   methods: {
-    addFile(list, oldList) {
-      if (list > oldList) {
-        this.changeTab('file')
-      }
-    },
     changePdfView(fileInfo) {
       this.file = fileInfo
     },
@@ -102,10 +108,25 @@ export default {
       this.list = val
       // this.$eventBus.$emit('scroll:reset')
     },
+    signalDrawing(receive) {
+      const data = JSON.parse(receive.data)
+
+      if (data.type === DRAWING.ADDED) {
+        this.$refs['shareFileList'].getFileList()
+        this.changeTab('file')
+      } else if (data.type === DRAWING.DELETED) {
+        this.$refs['shareFileList'].getFileList()
+      }
+    },
   },
 
   /* Lifecycles */
-  mounted() {},
+  created() {
+    this.$eventBus.$on(SIGNAL.DRAWING, this.signalDrawing)
+  },
+  beforeDestroy() {
+    this.$eventBus.$off(SIGNAL.DRAWING, this.signalDrawing)
+  },
 }
 </script>
 <style>

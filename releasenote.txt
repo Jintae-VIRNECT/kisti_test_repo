@@ -1,16 +1,14 @@
-RELEASE v2.3.1.2
+RELEASE v2.3.5.3
 
 ### New Features
+* 협업보드 전체 참가자 파일 업로드 및 드로잉
+* CPU 점유율 및 데이터 전송량 낮추기 | 영상크기 1/8 전송
+* FPS 설정 기능
+* GPS 위치표시기능
 ### Bug Fixes
 ### Improvement
 ### UI
 ### Limitation
 ### Chore
-
-Bug Fixes
-* [DPLA-2461] gif 파일 허용 추가
-* [DPLA-2457] 채팅 비노출 상태에서 채팅 추가 시 스크롤 리셋 이슈 해결
-* [DPLA-2447] 최근기록 검색 후 목록 삭제 시 삭제한 목록이 제거 안되는 이슈 해결
-* [DPLA-2445] 검색 빠르게 입력 시 검색 결과 오류 수정
 
 Copyright (C) 2021, VIRNECT CO., LTD. - All Rights Reserved

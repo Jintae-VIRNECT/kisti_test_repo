@@ -21,7 +21,7 @@
         ></workspace-tab>
       </div>
       <cookie-policy
-        v-if="!onpremise && showCookie"
+        v-if="!isOnpremise && showCookie"
         :visible.sync="showCookie"
       ></cookie-policy>
       <record-list
@@ -45,12 +45,12 @@ import RecordList from 'LocalRecordList'
 import confirmMixin from 'mixins/confirm'
 import langMixin from 'mixins/language'
 import toastMixin from 'mixins/toast'
+import authStatusCallbackMixin from 'mixins/authStatusCallback'
 import DeviceDenied from './modal/WorkspaceDeviceDenied'
 import PlanOverflow from './modal/WorkspacePlanOverflow'
 import RoomLoading from './modal/WorkspaceRoomLoading'
 import { mapActions, mapGetters } from 'vuex'
 import { PLAN_STATUS } from 'configs/status.config'
-import { RUNTIME, RUNTIME_ENV } from 'configs/env.config'
 import { MyStorage } from 'utils/storage'
 
 export default {
@@ -66,7 +66,7 @@ export default {
       })
     }
   },
-  mixins: [confirmMixin, langMixin, toastMixin],
+  mixins: [confirmMixin, langMixin, toastMixin, authStatusCallbackMixin],
   components: {
     HeaderSection,
     WorkspaceWelcome,
@@ -92,19 +92,42 @@ export default {
     }
   },
   watch: {
-    workspace(val, oldVal) {
+    async workspace(val, oldVal) {
       if (val.uuid && val.uuid !== oldVal.uuid) {
         this.checkPlan(val)
         this.checkCompany(val.uuid)
         this.checkLicense(val.uuid)
+
+        //멤버 상태 유저 정보 등록/워크스페이스 업데이트
+        auth.initAuthConnection(
+          val.uuid,
+          this.onDuplicatedRegistration,
+          this.onRemoteExitReceived,
+          this.onForceLogoutReceived,
+          this.onWorkspaceDuplicated,
+          this.onRegistrationFail,
+        )
+      } else if (!val.uuid) {
+        const res = await getLicense({ userId: this.account.uuid })
+        const myPlans = res.myPlanInfoList.filter(
+          plan => plan.planProduct === 'REMOTE',
+        )
+        if (myPlans.length === 0) {
+          this.license = false
+        } else {
+          this.license = true
+        }
+        this.updateAccount({
+          licenseEmpty: this.license,
+        })
       }
     },
   },
   computed: {
-    ...mapGetters(['useLocalRecording']),
-    onpremise() {
-      return RUNTIME.ONPREMISE === RUNTIME_ENV
-    },
+    ...mapGetters([
+      'useLocalRecording',
+      'statusSessionId', //멤버 상태 소켓에서 발급받은 session id
+    ]),
   },
   methods: {
     ...mapActions([
@@ -120,6 +143,7 @@ export default {
       'setScreenStrict',
       'clearWorkspace',
     ]),
+
     async init() {
       this.inited = false
       const authInfo = await auth.init()
@@ -262,6 +286,7 @@ export default {
         languageCodes,
         audioRestrictedMode: false, //res.audioRestrictedMode,
         videoRestrictedMode: res.videoRestrictedMode,
+        timeout: res.timeout !== undefined ? res.timeout : 60, //협업 연장 질의 팝업 싸이클을 정하는 값. 분 단위
       })
     },
     showRoomLoading(toggle) {

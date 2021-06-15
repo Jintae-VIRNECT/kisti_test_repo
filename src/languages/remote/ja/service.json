@@ -226,6 +226,15 @@
     "camera_control": "カメラ制御",
     "camera_control_allow": "カメラ制御許容",
     "camera_control_every_on": "全体カメラオン",
-    "camera_control_every_off": "全体カメラオフ"
+    "camera_control_every_off": "全体カメラオフ",
+
+    "map_information":"位置情報",
+    "map_request_position": "位置情報を要請中です。",
+    "map_refresh":"位置の改変",
+    "map_cannot_check_gps":"GPS情報を確認できません。",
+    "map_check_use_gps_description":"要請した参加者にGPS機能を使用しているかどうかを確認してください。",
+    "map_request_rejected" :"位置情報リクエストは拒否されました。",
+    "map_cannot_use_gps":"位置情報機能を使用できない機械です。",
+    "map_timeout":"GPS情報を確認できません。要請した参加者にGPS機能を使用しているかどうかを確認してください。"
   }
 }

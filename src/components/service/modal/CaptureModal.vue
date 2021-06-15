@@ -41,6 +41,8 @@ import confirmMixin from 'mixins/confirm'
 import FileSaver from 'file-saver'
 import { VIEW } from 'configs/view.config'
 import { base64ToBlob } from 'utils/file'
+import { drawingUpload } from 'api/http/drawing'
+import { DRAWING } from 'configs/remote.config'
 export default {
   name: 'CaptureModal',
   mixins: [shutterMixin, confirmMixin],
@@ -59,7 +61,7 @@ export default {
     },
   },
   computed: {
-    ...mapGetters(['view']),
+    ...mapGetters(['view', 'roomInfo']),
   },
   watch: {
     file: {
@@ -111,17 +113,45 @@ export default {
         }
       }
     },
-    shareCapture() {
-      const history = {
-        id: this.file.id,
-        fileName: this.file.fileName,
-        // fileData: this.file.fileData,
-        img: this.imageData,
-      }
-      this.addHistory(history)
+    async shareCapture() {
+      // const history = {
+      //   id: this.file.id,
+      //   fileName: this.file.fileName,
+      //   // fileData: this.file.fileData,
+      //   img: this.imageData,
+      // }
+      // this.addHistory(history)
+      await this.uploadImage()
       this.setView('drawing')
       this.$nextTick(() => {
         this.close()
+      })
+    },
+    async uploadImage() {
+      const dataType = 'image/jpg'
+      const file = await base64ToBlob(
+        this.imageData,
+        dataType,
+        this.file.fileName,
+      )
+      const res = await drawingUpload({
+        file: file,
+        sessionId: this.roomInfo.sessionId,
+        userId: this.account.uuid,
+        workspaceId: this.workspace.uuid,
+      })
+      this.$call.sendDrawing(DRAWING.ADDED, {
+        deleted: false, //false
+        expired: false, //false
+        sessionId: res.sesssionId,
+        name: res.name,
+        objectName: res.objectName,
+        contentType: res.contentType, // "image/jpeg", "image/bmp", "image/gif", "application/pdf",
+        size: res.size,
+        createdDate: res.createdDate,
+        expirationDate: res.expirationDate,
+        width: res.width, //pdf 는 0
+        height: res.height,
       })
     },
     close() {

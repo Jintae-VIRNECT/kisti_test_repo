@@ -258,7 +258,7 @@ export default {
         const response = await doTranslate(this.chat.text, this.translateCode)
         this.translateText = response
         this.translateActive = true
-        if (!this.chat.mute && this.chat.text !== response) {
+        if (!this.chat.mute) {
           this.$emit('tts', response)
         }
       } catch (err) {

@@ -1,10 +1,24 @@
 import { OpenVidu } from '@virnect/remote-webrtc'
+// import { OpenVidu } from './openvidu'
 import { addSessionEventListener } from './RemoteUtils'
 import sender from './RemoteSender'
 import Store from 'stores/remote/store'
+import {
+  SIGNAL,
+  ROLE,
+  CAMERA,
+  FLASH,
+  VIDEO,
+  AR_FEATURE,
+  FILE,
+  CONTROL,
+  LINKFLOW,
+  LOCATION,
+} from 'configs/remote.config'
 import { URLS, setRecordInfo } from 'configs/env.config'
 import { DEVICE, CAMERA as CAMERA_STATUS } from 'configs/device.config'
 import { logger, debug } from 'utils/logger'
+import { getResolutionScale } from 'utils/settingOptions'
 import { wsUri } from 'api/gateway/api'
 
 let OV = null
@@ -22,6 +36,8 @@ const _ = {
 
   configs: null,
   options: null,
+
+  stream: null,
 
   /**
    * join session
@@ -129,6 +145,12 @@ const _ = {
       throw err
     }
   },
+
+  setScaleResolution: async scaleResolution => {
+    if (_.stream) {
+      return await _.stream.webRtcPeer.setScaleResolution(scaleResolution)
+    }
+  },
   /**
    * @BROADCATE
    * chatting
@@ -155,7 +177,22 @@ const _ = {
    * @param {String} uuid
    * @param {Boolean} force true / false
    */
-  sendVideo: sender.video,
+
+  // sendVideo: sender.video,
+
+  sendVideo: (uuid, force = false, target = null) => {
+    // if (_.account.roleType !== ROLE.LEADER) return
+    if (!uuid) uuid = _.account.uuid
+    const params = {
+      id: uuid,
+      type: force ? VIDEO.SHARE : VIDEO.NORMAL,
+    }
+    _.session.signal({
+      data: JSON.stringify(params),
+      to: target,
+      type: SIGNAL.VIDEO,
+    })
+  },
 
   /**
    * @BROADCATE
@@ -325,7 +362,62 @@ const _ = {
    * @param {Boolean} enable 화면 공유 기능 사용 여부 true, false
    * @param {Array[String]} target 신호를 보낼 대상 커넥션 id String 배열
    */
-  sendScreenSharing: sender.screenSharing,
+
+  // sendScreenSharing: sender.screenSharing,
+
+  sendScreenSharing: (enable, target = null) => {
+    const params = {
+      type: VIDEO.SCREEN_SHARE,
+      enable: enable,
+    }
+    _.session.signal({
+      type: SIGNAL.VIDEO,
+      to: target,
+      data: JSON.stringify(params),
+    })
+  },
+
+  /**
+   * @TARGET
+   * 지정한 참가자에게 위치 요청
+   */
+  sendRequestLocation: (isRefresh = false, target) => {
+    const params = {
+      type: LOCATION.REQUEST,
+      isRefresh: isRefresh,
+    }
+    _.session.signal({
+      data: JSON.stringify(params),
+      to: target,
+      type: SIGNAL.LOCATION,
+    })
+  },
+
+  /**
+   * @TARGET
+   * 지정한 참가자에게 위치 그만 보내라는 요청
+   */
+  sendStopLocation: target => {
+    const params = {
+      type: LOCATION.STOP_SEND,
+    }
+    _.session.signal({
+      data: JSON.stringify(params),
+      to: target,
+      type: SIGNAL.LOCATION,
+    })
+  },
+
+  setFrameRate: async fps => {
+    if (_.publisher && _.publisher.stream) {
+      const track = _.publisher.stream.getVideoTracks()[0]
+      await track.applyConstraints({
+        frameRate: {
+          max: fps,
+        },
+      })
+    }
+  },
 
   getState: () => {
     if (_.publisher) {
@@ -500,7 +592,7 @@ const _ = {
       audioSource: false,
       videoSource: videoSource,
       resolution: settingInfo.quality,
-      frameRate: 30,
+      frameRate: settingInfo.fps ? settingInfo.fps : 30,
     })
 
     mediaStream = new MediaStream()
@@ -641,6 +733,11 @@ const getStreamCreatedCallBack = ({ publisher, isRepublish, configs }) => {
     logger('room', logText + 'publish success')
     debug(logText + 'publisher stream :: ', publisher.stream)
     const mediaStream = publisher.stream.mediaStream
+
+    const video = Store.getters['video']
+    const quality = Number.parseInt(video.quality, 10)
+    const scale = getResolutionScale(quality)
+    _.setScaleResolution(scale)
 
     //자신의 스트림에 video가 있다면
     // -> 비디오 제한 모드인지 체크
