@@ -73,6 +73,7 @@ import RangeSlider from 'RangeSlider'
 import { mapGetters, mapActions } from 'vuex'
 import { resolution } from 'utils/settingOptions'
 import { getUserMedia } from 'utils/deviceCheck'
+import _ from 'lodash'
 
 export default {
   components: {
@@ -138,17 +139,21 @@ export default {
       this.setVideo(id)
       this.initStream()
     },
-    async videoFPS(fps) {
-      if (this.stream) {
-        const videoTrack = this.stream.getVideoTracks()[0]
-        await videoTrack.applyConstraints({
-          frameRate: {
-            max: Number.parseInt(fps, 10),
-          },
-        })
+    videoFPS: [
+      function(fps) {
         this.setFPS(Number.parseInt(fps, 10))
-      }
-    },
+      },
+      _.debounce(function(fps) {
+        if (this.stream) {
+          const videoTrack = this.stream.getVideoTracks()[0]
+          videoTrack.applyConstraints({
+            frameRate: {
+              max: Number.parseInt(fps, 10),
+            },
+          })
+        }
+      }, 100),
+    ],
   },
   methods: {
     ...mapActions(['setDevices']),
