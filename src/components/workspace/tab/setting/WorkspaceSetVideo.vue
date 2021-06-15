@@ -152,7 +152,7 @@ export default {
             },
           })
         }
-      }, 100),
+      }, 200),
     ],
   },
   methods: {

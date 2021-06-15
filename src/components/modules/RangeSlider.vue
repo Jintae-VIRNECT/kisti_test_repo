@@ -14,6 +14,9 @@
       @mousedown="handleDown"
       @mouseup="handleUpAndLeave"
       @mouseleave="handleUpAndLeave"
+      @touchmove="handleMove"
+      @touchend="handleUpAndLeave"
+      @touchstart="handleDown"
       @input="setValue"
     />
   </div>
@@ -48,6 +51,7 @@ export default {
   watch: {
     value() {
       this.$emit('update:value', Number.parseInt(this.value, 10))
+      this.setCSSProperty()
     },
   },
   methods: {
