@@ -226,6 +226,11 @@
     "camera_control": "Camera Control",
     "camera_control_allow": "Allow camera control",
     "camera_control_every_on": "Turn on all cameras",
-    "camera_control_every_off": "Turn off all cameras"
+    "camera_control_every_off": "Turn off all cameras",
+
+    "spot_networ_error" : "The Spot connection was terminated due to a network/server problem.​\nWould you like to reconnect?​",
+    "spot_connecting" : "Connecting to Spot…",
+    "spot_reconnecting" : "Spot reconnecting…",
+    "spot_battery_warning" : "Spot 배터리 잔량이 {battery}% 남았습니다"
   }
 }

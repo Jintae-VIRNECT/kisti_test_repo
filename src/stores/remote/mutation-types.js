@@ -73,3 +73,8 @@ export const UPDATE_ALARM = 'UPDATE_ALARM'
 
 // 360 Stream
 export const MAIN_PANO_CANVAS = 'MAIN_PANO_CANVAS'
+
+//spot fullscreen mode
+export const SET_SPOT_FULLSCREEN = 'SET_SPOT_FULLSCREEN'
+
+export const SET_IS_SPOT_STAND = 'SET_IS_SPOT_STAND'

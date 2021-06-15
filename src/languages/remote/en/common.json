@@ -60,7 +60,8 @@
     "local_record_file": "Local recording file",
     "no_sharing_file": "No shared files",
     "workstation": "Workstation",
-    "dashboard": "Dashboard"
+    "dashboard": "Dashboard",
+    "spot_control": "Spot control"
   },
   "confirm": {
     "network_error": "Unstable connection with the server. Please try again later.",

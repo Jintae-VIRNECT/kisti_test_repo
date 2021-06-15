@@ -1,0 +1,136 @@
+@import "_vars";
+
+.spot-control-layout{
+  width: 100vw;
+  height: 100vh;
+  background: url(~assets/image/spot/img_bg_spot.svg) no-repeat center;
+  background-size: cover;
+  position: relative;
+  overflow: hidden;
+}
+
+.spot-camera-layer{
+  width: 100vw;//62vw;  //1202px
+  height: 100vh;
+  //width: 100vw;
+  // padding-top: 4.8vh;
+  // padding-bottom: 5.7vh;
+
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  left: 50%;
+  transform: translateX(-50%);
+
+  .front-camera-row{
+    flex-grow: 3;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    transition: .7s;
+
+    .spot-camera-block{
+      margin: 0 0.462vh;
+    }
+  }
+  .side-camera-row{
+    flex-grow: 0.5;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    align-items: flex-start;
+  }
+  .back-camera-row{
+    flex-grow: 1.5;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+  }
+}
+
+.spot-camera-block{
+  border-radius: 3px;
+  border: 2px solid rgb(255, 255, 255);
+  background: #1c1c1c;
+  position: relative;
+
+  &.no-video{
+    background-image: url(~assets/image/spot/noact_ic_videocam.svg);
+    background-repeat: no-repeat;
+    background-position: center;
+  }
+
+  .camera-title{
+    position: absolute;
+    top: 0.74vh; //0.571rem;
+    left: 0.74vh;//0.571rem;
+
+    color: #ffd717;
+    background-color: #000000;
+    padding: 0.74vh 1.08vh; //0.571rem 0.714rem;
+    font-family: $font_family2;
+    font-weight: 500;
+    font-size: 1.481vh;
+    line-height: 1.481vh;
+  }
+
+  &.potrait{
+    //width: 18.857rem; //264px;
+    aspect-ratio: 0.754/1;
+    height: 32.4vh;//350px; //auto;
+    transition: .7s height ;
+  }
+  
+  &.landscape{
+    //width: 25.714rem; //360px;
+    aspect-ratio: 1/0.75;
+    height: 25vh//270px; //auto;
+  }
+
+  canvas{
+    width: 100%;
+    height: 100%;
+  }
+}
+
+.spot-control-btn {
+  width: 5.18vh;  //56px;
+  height: 5.18vh; //56px;
+  position: relative;
+
+  border-radius: 3px;
+  border: 1px solid;
+  background-color: #3c3c3f;
+  border-color: #979797;
+
+  .back{
+    position: absolute;
+    top: 0.462vh; //0.357rem;
+    bottom: 0.462vh; //0.357rem;
+    left: 0.462vh; //0.357rem;
+    right: 0.462vh; //0.357rem;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  &:hover > .back{
+      background-color: #5c5c63;  //opacity로 필요
+  }
+  &:active > .back{
+      background-color: #74747a;  //opacity로 필요
+  }
+
+  //버튼 비활성화시
+  &.inactive{
+    &:hover > .back{
+      background-color: initial;
+    }
+    &:active > .back{
+      background-color: initial;
+    }
+  }
+}
