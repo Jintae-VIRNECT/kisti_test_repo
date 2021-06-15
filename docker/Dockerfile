@@ -26,4 +26,4 @@ COPY --from=builder ${APP_HOME}/snapshot-dependencies/ ./
 COPY --from=builder ${APP_HOME}/application/ ./
 
 EXPOSE 8073
-CMD ["java", "-Xms400M", "-Xmx400M", "org.springframework.boot.loader.JarLauncher"]
+CMD ["java", "org.springframework.boot.loader.JarLauncher"]
