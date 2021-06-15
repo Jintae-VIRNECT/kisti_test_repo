@@ -106,12 +106,16 @@ export default {
       this.key[key].state = false
     },
     onKeyDown(event) {
-      var keyCode = event.keyCode
-      this.key[keyCode].state = true
+      if (this.key[keyCode] && this.moveBtn) {
+        var keyCode = event.keyCode
+        this.key[keyCode].state = true
+      }
     },
     onKeyUp(event) {
-      var keyCode = event.keyCode
-      this.key[keyCode].state = false
+      if (this.key[keyCode] && this.moveBtn) {
+        var keyCode = event.keyCode
+        this.key[keyCode].state = false
+      }
     },
   },
   created() {
