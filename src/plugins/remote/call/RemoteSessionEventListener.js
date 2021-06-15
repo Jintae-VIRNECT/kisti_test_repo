@@ -55,6 +55,15 @@ const streamCreated = event => {
   })
 }
 
+const streamDestroyed = event => {
+  logger('room', 'stream destroy', event.reason)
+  if (event.reason === 'streamNotExist') {
+    const connectionId = event.stream.connection.connectionId
+    Store.commit('removeStream', connectionId)
+    _.removeSubscriber(connectionId)
+  }
+}
+
 /** session closed */
 const sessionDisconnected = event => {
   if (event.reason === 'sessionClosedByServer') {
@@ -109,8 +118,6 @@ const signalVideo = event => {
   window.vue.$eventBus.$emit(SIGNAL.VIDEO, event)
   // if (session.connection.connectionId === event.from.connectionId) return
   const data = JSON.parse(event.data)
-
-  //전체 공유
   if (data.type === VIDEO.SHARE) {
     if (data.id === _.account.uuid && Store.getters['restrictedRoom']) {
       _.sendCamera(CAMERA_STATUS.CAMERA_ON)
@@ -120,10 +127,17 @@ const signalVideo = event => {
         },
       })
     }
+
     Store.dispatch('setMainView', { id: data.id, force: true })
-  }
-  //PC 화면 공유
-  else if (data.type === VIDEO.SCREEN_SHARE) {
+
+    const participants = Store.getters['participants']
+    participants.forEach(pt => {
+      Store.commit('updateParticipant', {
+        connectionId: pt.connectionId,
+        currentWatching: data.id,
+      })
+    })
+  } else if (data.type === VIDEO.SCREEN_SHARE) {
     const isLeader = _.account.roleType === ROLE.LEADER
     const participants = Store.getters['participants']
     const idx = participants.findIndex(
@@ -167,9 +181,9 @@ const signalVideo = event => {
     if (noStream) {
       Store.commit('clearMainView', event.from.connectionId)
     }
-  }
-  // 그외
-  else {
+
+    //end of screen share
+  } else {
     if (Store.getters['restrictedRoom']) {
       Store.dispatch('setMainView', {
         force: false,
@@ -177,6 +191,13 @@ const signalVideo = event => {
       })
     } else {
       Store.dispatch('setMainView', { force: false })
+
+      if (data.type === VIDEO.NORMAL) {
+        Store.commit('updateParticipant', {
+          connectionId: event.from.connectionId,
+          currentWatching: data.id,
+        })
+      }
     }
   }
 }
@@ -430,6 +451,7 @@ const signalArDrawing = event => {
 
 export default {
   streamCreated,
+  streamDestroyed,
   sessionDisconnected,
   connectionDestroyed,
   signalVideo,
