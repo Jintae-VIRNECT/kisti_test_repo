@@ -737,10 +737,9 @@ public class ServiceSessionManager {
 			AccessStatus targetUser = accessStatusService.getAccessStatus(forceLogoutRequest.getWorkspaceId() + "_" + targetUuidList.next());
 			if (!ObjectUtils.isEmpty(targetUser)) {
 				if (targetUser.getAccessType() == AccessType.LOGOUT
-					|| (
-						targetUser.getAccessType() == AccessType.JOIN
-							|| checkLoading(forceLogoutRequest.getWorkspaceId(), forceLogoutRequest.getUserId())
-				)) {
+					|| targetUser.getAccessType() == AccessType.JOIN
+					|| checkLoading(forceLogoutRequest.getWorkspaceId(), forceLogoutRequest.getUserId())
+				) {
 					targetUuidList.remove();
 					failUserIds.add(targetUser.getId());
 				}
@@ -849,7 +848,7 @@ public class ServiceSessionManager {
 
 	public Boolean checkLoading(String workspaceId, String uuid) {
 		Boolean result = false;
-		List<Member> members = memberRepository.findByWorkspaceIdAndUuidAndRoomNotNull(workspaceId, uuid);
+		List<Member> members = memberRepository.findByWorkspaceIdAndUuid(workspaceId, uuid);
 		if (members.size() > 0) {
 			for (Member member : members) {
 				if (member.getMemberStatus() == MemberStatus.LOADING) {
