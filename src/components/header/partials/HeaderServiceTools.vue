@@ -1,6 +1,6 @@
 <template>
   <div class="header-tools">
-    <spot-control v-if="isLeader"></spot-control>
+    <spot-control v-if="isLeader && isOnpremise"></spot-control>
 
     <chat v-if="!isScreenDesktop"></chat>
 

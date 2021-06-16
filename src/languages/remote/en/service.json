@@ -231,6 +231,6 @@
     "spot_networ_error" : "The Spot connection was terminated due to a network/server problem.​\nWould you like to reconnect?​",
     "spot_connecting" : "Connecting to Spot…",
     "spot_reconnecting" : "Spot reconnecting…",
-    "spot_battery_warning" : "Spot 배터리 잔량이 {battery}% 남았습니다"
+    "spot_battery_warning" : "Spot battery is {battery}% remaining."
   }
 }

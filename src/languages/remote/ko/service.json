@@ -231,6 +231,6 @@
     "spot_networ_error" : "네트워크/서버 문제로 Spot 연결이 종료되었습니다.​\n재연결을 하시겠습니까?​",
     "spot_connecting" : "Spot 연결 중…",
     "spot_reconnecting" : "Spot 재연결 중…",
-    "spot_battery_warning" : "Spot 배터리 잔량이 {battery}% 남았습니다"
+    "spot_battery_warning" : "Spot 배터리 잔량이 {battery}% 남았습니다."
   }
 }
