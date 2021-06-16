@@ -1,4 +1,7 @@
-RELEASE v2.3.5.1
+RELEASE v2.3.6.0
+
+### Update
+- 언어 표기 변경
 
 ### Chore
 - UI 라이브러리 최신화
