@@ -64,12 +64,12 @@ export default {
       defaultLanguage: null,
       menuVisible: false,
       langs: [
-        { text: 'KOR', key: 'ko' },
-        { text: 'ENG', key: 'en' },
-        { text: 'JPN', key: 'ja' },
+        { text: '한국어 ', key: 'ko' },
+        { text: 'English ', key: 'en' },
+        { text: '日本語 ', key: 'ja' },
         //@TODO : 중국어 추가시 주석해제 및 언어 표기 확인
-        // { text: 'ZH-CH', key: 'zh-CN' },
-        // { text: 'ZH-TW', key: 'zh-TW' },
+        // { text: '简体中文', key: 'zh-CN' },
+        // { text: '繁體中文', key: 'zh-TW' },
       ],
     }
   },
