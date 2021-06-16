@@ -191,7 +191,7 @@ public class MemberService {
 			.collect(Collectors.toList());
 
 
-		for(Iterator<MemberInfoResponse> memberInfoResponseIterator = memberInfoList.iterator(); memberInfoResponseIterator.hasNext();){
+		/*for(Iterator<MemberInfoResponse> memberInfoResponseIterator = memberInfoList.iterator(); memberInfoResponseIterator.hasNext();){
 			AccessStatus targetUser = accessStatusService.getAccessStatus(
 				workspaceId + "_" + memberInfoResponseIterator.next().getUuid());
 			if (ObjectUtils.isEmpty(targetUser)) {
@@ -204,7 +204,7 @@ public class MemberService {
 					memberInfoResponseIterator.remove();
 				}
 			}
-		}
+		}*/
 
 		for (MemberInfoResponse memberInfoResponse : memberInfoList) {
 			AccessStatus targetUser = accessStatusService.getAccessStatus(workspaceId + "_" + memberInfoResponse.getUuid());
