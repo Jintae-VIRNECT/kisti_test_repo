@@ -11,7 +11,13 @@ export default {
     ...mapGetters(['settingInfo']),
   },
   methods: {
+    /**
+     * 사용할 장치 id를 반환
+     *
+     * @returns {Object}
+     */
     async getDeviceId() {
+      //장치 접근 및 id 획득
       const { videoSource, audioSource } = await getInputDevice(
         {
           video: true,
@@ -22,13 +28,19 @@ export default {
           mic: this.settingInfo.mic,
         },
       )
+
       if (videoSource === false && audioSource === false) {
         if (!ALLOW_NO_DEVICE) {
           throw 'nodevice'
         } else {
-          return false
+          return {
+            videoSource: false,
+            audioSource: false,
+          }
         }
       }
+
+      //오디오 장비가 없는경우
       if (!ALLOW_NO_AUDIO && audioSource === false) {
         throw 'nodevice'
       }

@@ -1,30 +1,16 @@
 import { OpenVidu } from '@virnect/remote-webrtc'
 // import { OpenVidu } from './openvidu'
 import { addSessionEventListener } from './RemoteUtils'
+import sender from './RemoteSender'
 import Store from 'stores/remote/store'
-import {
-  SIGNAL,
-  ROLE,
-  CAMERA,
-  FLASH,
-  VIDEO,
-  AR_FEATURE,
-  FILE,
-  CONTROL,
-  LINKFLOW,
-  LOCATION,
-} from 'configs/remote.config'
+import { SIGNAL, VIDEO, LOCATION } from 'configs/remote.config'
 import { URLS, setRecordInfo } from 'configs/env.config'
-import {
-  DEVICE,
-  FLASH as FLASH_STATUS,
-  CAMERA as CAMERA_STATUS,
-} from 'configs/device.config'
+import { DEVICE, CAMERA as CAMERA_STATUS } from 'configs/device.config'
 import { logger, debug } from 'utils/logger'
 import { getResolutionScale } from 'utils/settingOptions'
 import { wsUri } from 'api/gateway/api'
 
-let OV
+let OV = null
 
 const _ = {
   account: null,
@@ -46,22 +32,27 @@ const _ = {
    * join session
    * @param {Object} configs {coturn, wss, token}
    * @param {String} role remote.config.ROLE
+   * @param {Object|Boolean} options 장치 device id or false
+   * @param {MediaStream} mediaStream 미디어 스트림
    */
-  connect: async (configs, role, options) => {
+  connect: async (configs, role, options, mediaStream) => {
     try {
       _.account = Store.getters['account']
 
       Store.commit('callClear')
-      OV = new OpenVidu()
-      if (
-        process.env.NODE_ENV === 'production' &&
-        !(window.env && window.env === 'develop')
-      ) {
+
+      initOpenVidu()
+
+      const isProduction = process.env.NODE_ENV === 'production'
+      const isNotDevelop = !(window.env && window.env === 'develop')
+
+      if (isProduction && isNotDevelop) {
         OV.enableProdMode()
       }
+
       if (!_.session) {
         _.session = OV.initSession()
-        addSessionEventListener(_.session, Store)
+        addSessionEventListener(_.session)
       }
 
       const metaData = {
@@ -71,8 +62,11 @@ const _ = {
       }
 
       // const iceServers = URLS.coturn
+
       let ws = configs.wss || `${URLS['ws']}${wsUri['REMOTE']}`
       // const ws = 'wss://192.168.6.3:8000/remote/websocket'
+
+      //config 서버에 정의된 coturnUrl 우선 설정
       if (URLS['coturnUrl']) {
         for (let config of configs.coturn) {
           config.url = URLS['coturnUrl']
@@ -85,6 +79,7 @@ const _ = {
         ice['urls'] = ice['url']
       }
 
+      //서버 녹화 정보 설정
       setRecordInfo({
         token: configs['token'],
         coturn: iceServers,
@@ -111,7 +106,7 @@ const _ = {
       const connectOption = {
         iceServers,
         wsUri: ws,
-        role: options === false ? 'SUBSCRIBER' : 'PUSLISHER',
+        role: mediaStream ? 'PUBLISHER' : 'SUBSCRIBER',
       }
 
       await _.session.connect(
@@ -128,109 +123,8 @@ const _ = {
       _.configs = configs
       _.options = options
 
-      if (options !== false) {
-        const settingInfo = Store.getters['settingInfo']
-        const publishOptions = {
-          // audioSource: options.audioSource,
-          // videoSource: options.videoSource,
-          audioSource: options ? options.audioSource : false,
-          videoSource: options ? options.videoSource : false,
-          publishAudio: configs.audioRestrictedMode ? false : settingInfo.micOn,
-          publishVideo: configs.videoRestrictedMode
-            ? false
-            : settingInfo.videoOn,
-          resolution: settingInfo.quality,
-          // resolution: '1920x1080', // FHD
-          // resolution: '3840x2160', // 4K
-          // frameRate: 30,
-          frameRate: settingInfo.fps ? settingInfo.fps : 30,
-          insertMode: 'PREPEND',
-          mirror: false,
-        }
-        debug('call::publish::', publishOptions)
-
-        _.publisher = OV.initPublisher('', publishOptions)
-        _.publisher.onIceStateChanged(state => {
-          if (['failed', 'disconnected', 'closed'].includes(state)) {
-            Store.commit('updateParticipant', {
-              connectionId: _.publisher.stream.connection.connectionId,
-              status: 'disconnected',
-            })
-          } else if (['connected', 'completed'].includes(state)) {
-            Store.commit('updateParticipant', {
-              connectionId: _.publisher.stream.connection.connectionId,
-              status: 'good',
-            })
-          } else {
-            Store.commit('updateParticipant', {
-              connectionId: _.publisher.stream.connection.connectionId,
-              status: 'normal',
-            })
-          }
-          logger('ice state change', state)
-        })
-
-        _.publisher.on('streamCreated', () => {
-          logger('room', 'publish success')
-          debug('publisher stream :: ', _.publisher.stream)
-          const mediaStream = _.publisher.stream.mediaStream
-          _.stream = _.publisher.stream
-
-          const video = Store.getters['video']
-          const quality = Number.parseInt(video.quality, 10)
-          const scale = getResolutionScale(quality)
-          _.setScaleResolution(scale)
-
-          const participantInfo = {
-            connectionId: _.publisher.stream.connection.connectionId,
-            stream: mediaStream,
-            hasVideo: _.publisher.stream.hasVideo,
-            hasCamera: _.publisher.stream.hasVideo,
-            hasAudio: _.publisher.stream.hasAudio,
-            video: _.publisher.stream.videoActive, // settingInfo.videoOn,
-            audio: _.publisher.stream.audioActive,
-            cameraStatus: _.publisher.stream.hasVideo
-              ? configs.videoRestrictedMode
-                ? CAMERA_STATUS.CAMERA_OFF
-                : _.publisher.stream.videoActive
-                ? CAMERA_STATUS.CAMERA_ON
-                : CAMERA_STATUS.CAMERA_OFF
-              : CAMERA_STATUS.CAMERA_NONE,
-          }
-
-          Store.commit('updateParticipant', participantInfo)
-          if (_.publisher.stream.hasVideo) {
-            const track = mediaStream.getVideoTracks()[0]
-            const settings = track.getSettings()
-            const capability = track.getCapabilities()
-            logger('call', `resolution::${settings.width}X${settings.height}`)
-            debug('call::setting::', settings)
-            debug('call::capability::', capability)
-            if ('zoom' in capability) {
-              track.applyConstraints({
-                advanced: [{ zoom: capability['zoom'].min }],
-              })
-              _.maxZoomLevel = parseInt(
-                capability.zoom.max / capability.zoom.min,
-              )
-              _.minZoomLevel = parseInt(capability.zoom.min)
-            }
-            // _.sendCamera(
-            //   options.videoSource !== false
-            //     ? settingInfo.videoOn
-            //       ? CAMERA_STATUS.CAMERA_ON
-            //       : CAMERA_STATUS.CAMERA_OFF
-            //     : CAMERA_STATUS.CAMERA_NONE,
-            // )
-            _.sendResolution({
-              width: settings.width,
-              height: settings.height,
-              orientation: '',
-            })
-          }
-        })
-
-        _.session.publish(_.publisher)
+      if (mediaStream) {
+        await doPublish({ mediaStream, options, configs })
       } else {
         updateParticipantEmpty(_.connectionId)
       }
@@ -242,8 +136,10 @@ const _ = {
   },
 
   setScaleResolution: async scaleResolution => {
-    if (_.stream) {
-      return await _.stream.webRtcPeer.setScaleResolution(scaleResolution)
+    if (_.publisher && _.publisher.stream) {
+      return await _.publisher.stream.webRtcPeer.setScaleResolution(
+        scaleResolution,
+      )
     }
   },
   /**
@@ -251,67 +147,30 @@ const _ = {
    * chatting
    * @param {String} text
    */
-  sendChat: (text, code = 'ko-KR') => {
-    if (!_.session) return
-    if (text.trim().length === 0) return
-    const params = {
-      text: text.trim(),
-      languageCode: code,
-    }
-    _.session.signal({
-      data: JSON.stringify(params),
-      to: null,
-      type: SIGNAL.CHAT,
-    })
-  },
+  sendChat: sender.chat,
 
   /**
    * @BROADCATE
    * chatting-file
    */
-  sendFile: params => {
-    if (!_.session) return
-    params.type = FILE.UPLOADED
-
-    //파일 관련 정보 전송하기
-    _.session.signal({
-      data: JSON.stringify(params),
-      to: null,
-      type: SIGNAL.FILE,
-    })
-  },
+  sendFile: sender.file,
 
   /**
    * @TARGET
    * resolution
    * @param {Object} resolution = {width, height, orientation}
    */
-  sendResolution: (resolution, target = null) => {
-    if (!_.session) return
-    if (resolution) {
-      _.resolution = resolution
+  sendResolution: sender.resolution,
 
-      Store.commit('updateResolution', {
-        connectionId: _.session.connection.connectionId,
-        width: resolution.width,
-        height: resolution.height,
-      })
-    } else {
-      resolution = _.resolution
-    }
-    if (!resolution || !resolution.width) return
-    _.session.signal({
-      data: JSON.stringify(resolution),
-      to: target,
-      type: SIGNAL.RESOLUTION,
-    })
-  },
   /**
    * @BROADCATE
    * main view change (only leader)
    * @param {String} uuid
    * @param {Boolean} force true / false
    */
+
+  // sendVideo: sender.video,
+
   sendVideo: (uuid, force = false, target = null) => {
     // if (_.account.roleType !== ROLE.LEADER) return
     if (!uuid) uuid = _.account.uuid
@@ -325,144 +184,76 @@ const _ = {
       type: SIGNAL.VIDEO,
     })
   },
+
   /**
    * @BROADCATE
    * pointing
    * @param {Object} params
    *  = {color, opacity, width, posX, posY}
    */
-  sendPointing: params => {
-    if (!_.session) return
-    _.session.signal({
-      data: JSON.stringify(params),
-      to: null,
-      type: SIGNAL.POINTING,
-    })
-  },
+  sendPointing: sender.pointing,
+
   /**
    * @BROADCATE
    * sharing drawing
    * @param {String} type = remote.config.DRAWING
    * @param {Object} params
    */
-  sendDrawing: (type, params = {}, target = null) => {
-    params.type = type
-    _.session.signal({
-      type: SIGNAL.DRAWING,
-      to: target,
-      data: JSON.stringify(params),
-    })
-  },
+  sendDrawing: sender.drawing,
+
   /**
    * @BROADCATE
    * @TARGET
    * other user's pointing, recording control
    * @param {String} type = remote.config.CONTROL
    */
-  sendControl: (type, enable, target = null) => {
-    const params = {
-      type,
-      enable,
-    }
-    _.session.signal({
-      data: JSON.stringify(params),
-      to: target,
-      type: SIGNAL.CONTROL,
-    })
-  },
+  sendControl: sender.control,
+
   /**
    * @BROADCATE
    * @TARGET
    * other user's pointing, recording control
    * @param {String} type = remote.config.CONTROL
    */
-  sendControlRestrict: (device, enable, target = null) => {
-    const params = {
-      type: CONTROL.RESTRICTED_MODE,
-      target: device,
-      enable,
-    }
-    _.session.signal({
-      data: JSON.stringify(params),
-      to: target,
-      type: SIGNAL.CONTROL,
-    })
-  },
+  sendControlRestrict: sender.controlRestrict,
+
   /**
    * @BROADCATE
    * AR feature status
    * @param {String} type = remote.config.AR_FEATURE
    */
-  sendArFeatureStart: targetId => {
-    const params = {
-      type: AR_FEATURE.START_AR_FEATURE,
-      targetUserId: targetId,
-    }
-    _.session.signal({
-      data: JSON.stringify(params),
-      to: null,
-      type: SIGNAL.AR_FEATURE,
-    })
-  },
+  sendArFeatureStart: sender.arFeatureStart,
+
   /**
    * @BROADCATE
    * AR feature status
    * @param {String} type = remote.config.AR_FEATURE
    */
-  sendArFeatureStop: () => {
-    const params = {
-      type: AR_FEATURE.STOP_AR_FEATURE,
-    }
-    _.session.signal({
-      data: JSON.stringify(params),
-      to: null,
-      type: SIGNAL.AR_FEATURE,
-    })
-  },
+  sendArFeatureStop: sender.arFeatureStop,
+
   /**
    * @TARGET
    * AR pointing
    * @param {String} type = remote.config.AR_POINTING
    * @param {Object} params (문서참조)
    */
-  sendArPointing: (type, params = {}, target = null) => {
-    params.type = type
-    _.session.signal({
-      data: JSON.stringify(params),
-      to: target,
-      type: SIGNAL.AR_POINTING,
-    })
-  },
+  sendArPointing: sender.arPointing,
+
   /**
    * @TARGET
    * request screen capture permission
    * @param {Object} params
    */
-  sendCapturePermission: (target = null) => {
-    const params = {
-      type: 'request',
-    }
-    _.session.signal({
-      type: SIGNAL.CAPTURE_PERMISSION,
-      to: target,
-      data: JSON.stringify(params),
-    })
-  },
+  sendCapturePermission: sender.capturePermission,
+
   /**
    * @TARGET
    * AR drawing
    * @param {String} type = remote.config.AR_DRAWING
    * @param {Object} params (문서참조)
    */
-  sendArDrawing: (type, params = {}, target = null) => {
-    if (!_.session) return
-    params.type = type
-    _.session.signal({
-      type: SIGNAL.AR_DRAWING,
-      to: target,
-      data: JSON.stringify(params),
-    })
-  },
+  sendArDrawing: sender.arDrawing,
+
   /**
    * @BROADCATE
    * @TARGET
@@ -470,104 +261,32 @@ const _ = {
    * @param {Boolean, String} status CAMERA_STATUS
    * @param {Boolean} publish video publish 여부. 기본값 true
    */
-  sendCamera: (
-    status = CAMERA_STATUS.CAMERA_NONE,
-    target = null,
-    publish = true,
-  ) => {
-    if (!_.publisher) return
-    // if (!_.publisher.stream.hasVideo) return
-    if (
-      status === CAMERA_STATUS.CAMERA_ON ||
-      status === CAMERA_STATUS.CAMERA_OFF
-    ) {
-      if (publish) {
-        _.publisher.publishVideo(status === CAMERA_STATUS.CAMERA_ON)
-      }
-    }
+  sendCamera: sender.camera,
 
-    const params = {
-      type: CAMERA.STATUS,
-      status: status,
-      currentZoomLevel: _.currentZoomLevel,
-      maxZoomLevel: _.maxZoomLevel,
-    }
-    try {
-      _.session.signal({
-        data: JSON.stringify(params),
-        to: target,
-        type: SIGNAL.CAMERA,
-      })
-    } catch (err) {
-      return false
-    }
-  },
   /**
    * @BROADCATE
    * @TARGET
    * my mic control
    * @param {Boolean} active
    */
-  sendMic: (active, target = null) => {
-    if (_.publisher) {
-      _.publisher.publishAudio(active)
-    }
+  sendMic: sender.mic,
 
-    const params = {
-      isOn: active,
-    }
-    try {
-      _.session.signal({
-        data: JSON.stringify(params),
-        to: target,
-        type: SIGNAL.MIC,
-      })
-    } catch (err) {
-      return false
-    }
-  },
   /**
    * @BROADCATE
    * @TARGET
    * my speaker control
    * @param {Boolean} active
    */
-  sendSpeaker: (active, target = null) => {
-    for (let subscriber of _.subscribers) {
-      if (subscriber.stream && subscriber.stream.mediaStream) {
-        subscriber.subscribeToAudio(active)
-      }
-    }
-    const params = {
-      isOn: active,
-    }
-    try {
-      _.session.signal({
-        data: JSON.stringify(params),
-        to: target,
-        type: SIGNAL.SPEAKER,
-      })
-    } catch (err) {
-      return false
-    }
-  },
+  sendSpeaker: sender.speaker,
+
   /**
    * @BROADCATE
    * @TARGET
    * other user's flash control
    * @param {Boolean} active
    */
-  sendFlashStatus: (status = FLASH_STATUS.FLASH_NONE, target = null) => {
-    const params = {
-      status: status,
-      type: FLASH.STATUS,
-    }
-    _.session.signal({
-      data: JSON.stringify(params),
-      to: target,
-      type: SIGNAL.FLASH,
-    })
-  },
+  sendFlashStatus: sender.flashStatus,
+
   /**
    * @BROADCATE
    * @TARGET
@@ -575,57 +294,23 @@ const _ = {
    * @param {Boolean} active
    * @param {String} id : target id
    */
-  sendFlash: (active, target) => {
-    const params = {
-      enable: active,
-      type: FLASH.FLASH,
-    }
-    _.session.signal({
-      data: JSON.stringify(params),
-      to: target,
-      type: SIGNAL.FLASH,
-    })
-  },
+  sendFlash: sender.flash,
+
   /**
    * @BROADCATE
    * @TARGET
    * other user's camera control
    * @param {Boolean} active
    */
-  sendCameraZoom: (level, target) => {
-    const params = {
-      type: CAMERA.ZOOM,
-      level: level,
-    }
-    _.session.signal({
-      data: JSON.stringify(params),
-      to: target,
-      type: SIGNAL.CAMERA,
-    })
-  },
+  sendCameraZoom: sender.cameraZoom,
+
   /**
    * 현재 전체 공유중인 360 스트림의 제어 정보를 전송
    * @BROADCATE
    * @TARGET
    * @param {Object} info 제어정보(yaw, pitch)
    */
-  sendPanoRotation: info => {
-    const params = {
-      type: LINKFLOW.ROTATION,
-      yaw: info.yaw,
-      pitch: info.pitch,
-      //fov:fov.pitch - 차후 fov 필요하면 전달
-    }
-    if (info.origin) {
-      params.origin = info.origin
-    }
-
-    _.session.signal({
-      data: JSON.stringify(params),
-      to: null,
-      type: SIGNAL.LINKFLOW,
-    })
-  },
+  sendPanoRotation: sender.panoRotation,
 
   /**
    * @BROADCATE
@@ -662,11 +347,15 @@ const _ = {
     }
     _.session.forceDisconnect(_.subscribers[idx].stream.connection)
   },
+
   /**
    * 화면 공유 여부
-   * @param {Boolean} enable 화면 공유 기능 중단 여부 true, false
+   * @param {Boolean} enable 화면 공유 기능 사용 여부 true, false
    * @param {Array[String]} target 신호를 보낼 대상 커넥션 id String 배열
    */
+
+  // sendScreenSharing: sender.screenSharing,
+
   sendScreenSharing: (enable, target = null) => {
     const params = {
       type: VIDEO.SCREEN_SHARE,
@@ -768,19 +457,17 @@ const _ = {
    * 현재 자신의 비디오 트랙을 교체할 비디오 트랙으로 변경
    *
    * @param {MediaStreamTrack} track 교체할 비디오 트랙
-   * @param {MediaStream} originStream 보존할 원래 스트림
    */
   async replaceTrack(track) {
-    // if (originStream) {
-    //   Store.commit('setMyTempStream', originStream.clone())
-    // }
     await _.publisher.replaceTrack(track)
     await new Promise(resolve => setTimeout(resolve, 200))
     const settings = track.getSettings()
     const capability = track.getCapabilities()
+
     logger('call', `resolution::${settings.width}X${settings.height}`)
     debug('call::setting::', settings)
     debug('call::capability::', capability)
+
     if ('zoom' in capability) {
       track.applyConstraints({
         advanced: [{ zoom: capability['zoom'].min }],
@@ -788,13 +475,7 @@ const _ = {
       _.maxZoomLevel = parseInt(capability.zoom.max / capability.zoom.min)
       _.minZoomLevel = parseInt(capability.zoom.min)
     }
-    // _.sendCamera(
-    //   options.videoSource !== false
-    //     ? settingInfo.videoOn
-    //       ? CAMERA_STATUS.CAMERA_ON
-    //       : CAMERA_STATUS.CAMERA_OFF
-    //     : CAMERA_STATUS.CAMERA_NONE,
-    // )
+
     _.sendResolution({
       width: settings.width,
       height: settings.height,
@@ -807,113 +488,40 @@ const _ = {
    * initPublisher를 실행.
    *
    * @param {MediaStreamTrack} videoTrack 교체할 비디오 트랙
+   * @returns {Boolean} 성공 여부
    */
   async rePublish({ videoSource = false, audioSource }) {
     try {
       const settingInfo = Store.getters['settingInfo']
 
       if (videoSource || audioSource) {
-        const publishOptions = {
+        const publishOptions = getPublishOptions({
           audioSource: audioSource,
           videoSource: videoSource,
-          publishAudio: _.configs.audioRestrictedMode
-            ? false
-            : settingInfo.micOn,
-          publishVideo: videoSource ? true : false,
-          resolution: settingInfo.quality,
-          // resolution: '1920x1080', // FHD
-          // resolution: '3840x2160', // 4K
-          frameRate: settingInfo.fps ? settingInfo.fps : 30,
-          insertMode: 'PREPEND',
-          mirror: false,
-        }
-        debug('call::republish::', publishOptions)
-
-        const tempPublisher = OV.initPublisher('', publishOptions)
-        tempPublisher.onIceStateChanged(state => {
-          if (['failed', 'disconnected', 'closed'].includes(state)) {
-            Store.commit('updateParticipant', {
-              connectionId: tempPublisher.stream.connection.connectionId,
-              status: 'disconnected',
-            })
-          } else if (['connected', 'completed'].includes(state)) {
-            Store.commit('updateParticipant', {
-              connectionId: tempPublisher.stream.connection.connectionId,
-              status: 'good',
-            })
-          } else {
-            Store.commit('updateParticipant', {
-              connectionId: tempPublisher.stream.connection.connectionId,
-              status: 'normal',
-            })
-          }
-          logger('ice state change', state)
+          configs: _.configs,
+          settingInfo: settingInfo,
+          isRepublish: true,
         })
-        tempPublisher.on('streamCreated', () => {
-          logger('room', 'republish success')
-          debug('republisher stream :: ', tempPublisher.stream)
-          const mediaStream = tempPublisher.stream.mediaStream
-          _.stream = tempPublisher.stream
 
-          const video = Store.getters['video']
-          const quality = Number.parseInt(video.quality, 10)
-          const scale = getResolutionScale(quality)
-          _.setScaleResolution(scale)
+        debug('call::republish', publishOptions)
 
-          const participantInfo = {
-            connectionId: tempPublisher.stream.connection.connectionId,
-            stream: mediaStream,
-            hasVideo: tempPublisher.stream.hasVideo,
-            // hasCamera: tempPublisher.stream.hasVideo,
-            hasAudio: tempPublisher.stream.hasAudio,
-            video: tempPublisher.stream.videoActive, // settingInfo.videoOn,
-            audio: tempPublisher.stream.audioActive,
-            cameraStatus: tempPublisher.stream.hasVideo
-              ? _.configs.videoRestrictedMode
-                ? CAMERA_STATUS.CAMERA_OFF
-                : tempPublisher.stream.videoActive
-                ? CAMERA_STATUS.CAMERA_ON
-                : CAMERA_STATUS.CAMERA_OFF
-              : CAMERA_STATUS.CAMERA_NONE,
-          }
+        const rePublisher = OV.initPublisher('', publishOptions)
+        const iceStateChangedCallBack = getIceStateChangedCallBack(rePublisher)
+        rePublisher.onIceStateChanged(iceStateChangedCallBack)
 
-          Store.commit('updateParticipant', participantInfo)
-          _.sendCamera(
-            tempPublisher.stream.hasVideo
-              ? CAMERA_STATUS.CAMERA_ON
-              : CAMERA_STATUS.CAMERA_NONE,
-          )
-          if (tempPublisher.stream.hasVideo) {
-            const track = mediaStream.getVideoTracks()[0]
-            const settings = track.getSettings()
-            const capability = track.getCapabilities()
-            logger('call', `resolution::${settings.width}X${settings.height}`)
-            debug('call::setting::', settings)
-            debug('call::capability::', capability)
-            if ('zoom' in capability) {
-              track.applyConstraints({
-                advanced: [{ zoom: capability['zoom'].min }],
-              })
-              _.maxZoomLevel = parseInt(
-                capability.zoom.max / capability.zoom.min,
-              )
-              _.minZoomLevel = parseInt(capability.zoom.min)
-            }
-
-            _.sendResolution({
-              width: settings.width,
-              height: settings.height,
-              orientation: '',
-            })
-          }
+        const streamCreatedCallBack = getStreamCreatedCallBack({
+          publisher: rePublisher,
+          configs: _.configs,
+          isRepublish: true,
         })
+        rePublisher.on('streamCreated', streamCreatedCallBack)
 
         if (_.publisher) {
           await _.session.unpublish(_.publisher)
           _.publisher = null
         }
 
-        _.publisher = tempPublisher
+        _.publisher = rePublisher
         _.session.publish(_.publisher)
       } else {
         //republish 과정에서 비디오, 마이크가 없는경우
@@ -937,6 +545,261 @@ const _ = {
       throw err
     }
   },
+
+  /**
+   * 오디오 디바이스, 비디오 디바이스에 접근하여 오디오 트랙, 비디오 트랙을
+   * 하나의 미디어 스트림으로 합쳐서 반환
+   *
+   * 협업시 오디오 디바이스는 필수임으로 오디오 디바이스가 없으면 에러 반환
+   *
+   * @param {Object} options 옵션 객체
+   * @returns {MediaStream | null} 미디어 스트림 반환
+   * @public
+   * @throws nodevice
+   */
+  getStream: async options => {
+    let mediaStream = null
+    const settingInfo = Store.getters['settingInfo']
+
+    const { audioSource, videoSource } = options
+
+    //오디오, 비디오 둘다 사용하지 않을때,
+    if (audioSource === false && videoSource === false) {
+      return null
+    }
+
+    //get audio stream
+    const audioStream = await getMediaStream({
+      audioSource: audioSource,
+      videoSource: false,
+    })
+
+    if (!audioStream) {
+      throw 'nodevice'
+    }
+
+    //get video stream
+    const videoStream = await getMediaStream({
+      audioSource: false,
+      videoSource: videoSource,
+      resolution: settingInfo.quality,
+      frameRate: settingInfo.fps ? settingInfo.fps : 30,
+    })
+
+    mediaStream = new MediaStream()
+    if (videoStream) {
+      mediaStream.addTrack(audioStream.getAudioTracks()[0])
+      mediaStream.addTrack(videoStream.getVideoTracks()[0])
+    } else {
+      mediaStream.addTrack(audioStream.getAudioTracks()[0])
+    }
+
+    return mediaStream
+  },
+}
+
+/**
+ * publish 수행
+ * OV.initPublisher를 실행하고 콜백 함수를 설정
+ * @param {Object} Object
+ * @param {Object} Object.options
+ * @param {Object} Object.configs
+ */
+const doPublish = async ({ mediaStream, configs }) => {
+  const settingInfo = Store.getters['settingInfo']
+
+  const audioTracks = mediaStream.getAudioTracks()
+  const videoTracks = mediaStream.getVideoTracks()
+
+  const audioTrack = audioTracks.length > 0 ? audioTracks[0] : false
+  const videoTrack = videoTracks.length > 0 ? videoTracks[0] : false
+
+  //퍼블리시 옵션 셋팅
+  const publishOptions = getPublishOptions({
+    audioSource: audioTrack,
+    videoSource: videoTrack,
+    configs: configs,
+    settingInfo: settingInfo,
+    isRepublish: false,
+  })
+
+  debug('call::publish::', publishOptions)
+
+  _.publisher = OV.initPublisher('', publishOptions)
+
+  //ice 상태 변경 관련 콜백 설정
+  const iceStateChangedCallBack = getIceStateChangedCallBack(_.publisher)
+  _.publisher.onIceStateChanged(iceStateChangedCallBack)
+
+  //streamCreated 관련 콜백 파라미터
+  const streamCreatedParams = {
+    publisher: _.publisher,
+    configs: configs,
+    isRepublish: false,
+  }
+
+  const streamCreatedCallBack = getStreamCreatedCallBack(streamCreatedParams)
+  _.publisher.on('streamCreated', streamCreatedCallBack)
+
+  _.session.publish(_.publisher)
+}
+
+/**
+ * PublisherProperties 설정을 위한 객체 반환
+ * @param {Object} Object 설정을 위한 객체
+ * @param {MediaStreamTrack|string} Object.audioSource 오디오 소스 or device id
+ * @param {MediaStreamTrack|string} Object.videoSource 비디오 소스 or device id
+ * @param {Object} Object.configs 설정 정보
+ * @param {Object} Object.settingInfo 설정 정보
+ * @param {Boolean} Object.isRepublish republish 여부
+ * @returns {Object} PublisherProperties 객체
+ */
+const getPublishOptions = ({
+  audioSource,
+  videoSource,
+  configs,
+  settingInfo,
+  isRepublish = false,
+}) => {
+  const publishOptions = {
+    // audioSource: options.audioSource,
+    // videoSource: options.videoSource,
+    audioSource: audioSource,
+    videoSource: videoSource,
+    publishAudio: configs.audioRestrictedMode ? false : settingInfo.micOn,
+    publishVideo: configs.videoRestrictedMode ? false : settingInfo.videoOn,
+    resolution: settingInfo.quality,
+    // resolution: '1920x1080', // FHD
+    // resolution: '3840x2160', // 4K
+    frameRate: 30,
+    insertMode: 'PREPEND',
+    mirror: false,
+  }
+
+  if (isRepublish) {
+    publishOptions.publishVideo = videoSource ? true : false
+  }
+
+  return publishOptions
+}
+
+/**
+ * iceStateChanged 이벤트 리스너 콜백 함수 반환
+ * @param {Object} publisher publisher 객체
+ * @returns iceStateChanged 콜백 함수
+ */
+const getIceStateChangedCallBack = publisher => {
+  return state => {
+    if (['failed', 'disconnected', 'closed'].includes(state)) {
+      Store.commit('updateParticipant', {
+        connectionId: publisher.stream.connection.connectionId,
+        status: 'disconnected',
+      })
+    } else if (['connected', 'completed'].includes(state)) {
+      Store.commit('updateParticipant', {
+        connectionId: publisher.stream.connection.connectionId,
+        status: 'good',
+      })
+    } else {
+      Store.commit('updateParticipant', {
+        connectionId: publisher.stream.connection.connectionId,
+        status: 'normal',
+      })
+    }
+    logger('ice state change', state)
+  }
+}
+
+/**
+ * streamCreated 이벤트에 실행될 콜백 함수 생성
+ * @param {Object} Object 설정을 위한 객체
+ * @param {Object} Object.publisher publisher 객체
+ * @param {Boolean} Object.isRepublish republish 유무
+ * @param {Object} Object.configs 컨피그 객체
+ * @returns streamCreated 이벤트에 실행될 콜백 함수
+ */
+const getStreamCreatedCallBack = ({ publisher, isRepublish, configs }) => {
+  return () => {
+    const logText = isRepublish ? 're' : ''
+    logger('room', logText + 'publish success')
+    debug(logText + 'publisher stream :: ', publisher.stream)
+    const mediaStream = publisher.stream.mediaStream
+
+    const video = Store.getters['video']
+    const quality = Number.parseInt(video.quality, 10)
+    const scale = getResolutionScale(quality)
+    _.setScaleResolution(scale)
+
+    //자신의 스트림에 video가 있다면
+    // -> 비디오 제한 모드인지 체크
+    //    -> 비디오 제한 모드이면 CAMERA_OFF
+    // -> 제한 모드가 아니면 video 활성화(active) 체크
+    //     -> 활성화일때 CAMERA_ON
+    //     -> 비활성화일때 CAMERA_OFF
+    //자신의 스트림에 video가 없다면 CAMERA_NONE
+    const cameraStatus = publisher.stream.hasVideo
+      ? configs.videoRestrictedMode
+        ? CAMERA_STATUS.CAMERA_OFF
+        : publisher.stream.videoActive
+        ? CAMERA_STATUS.CAMERA_ON
+        : CAMERA_STATUS.CAMERA_OFF
+      : CAMERA_STATUS.CAMERA_NONE
+
+    const participantInfo = {
+      connectionId: publisher.stream.connection.connectionId,
+      stream: mediaStream,
+      hasVideo: publisher.stream.hasVideo,
+      hasCamera: publisher.stream.hasVideo,
+      hasAudio: publisher.stream.hasAudio,
+      video: publisher.stream.videoActive, // settingInfo.videoOn,
+      audio: publisher.stream.audioActive,
+      cameraStatus: cameraStatus,
+    }
+
+    if (isRepublish) {
+      delete participantInfo.hasCamera
+    }
+
+    Store.commit('updateParticipant', participantInfo)
+
+    if (isRepublish) {
+      _.sendCamera(
+        publisher.stream.hasVideo
+          ? CAMERA_STATUS.CAMERA_ON
+          : CAMERA_STATUS.CAMERA_NONE,
+      )
+    }
+
+    if (publisher.stream.hasVideo) {
+      const track = mediaStream.getVideoTracks()[0]
+      const settings = track.getSettings()
+      const capability = track.getCapabilities()
+
+      logger('call', `resolution::${settings.width}X${settings.height}`)
+      debug('call::setting::', settings)
+      debug('call::capability::', capability)
+
+      if ('zoom' in capability) {
+        track.applyConstraints({
+          advanced: [{ zoom: capability['zoom'].min }],
+        })
+        _.maxZoomLevel = parseInt(capability.zoom.max / capability.zoom.min, 10)
+        _.minZoomLevel = parseInt(capability.zoom.min, 10)
+      }
+      // _.sendCamera(
+      //   options.videoSource !== false
+      //     ? settingInfo.videoOn
+      //       ? CAMERA_STATUS.CAMERA_ON
+      //       : CAMERA_STATUS.CAMERA_OFF
+      //     : CAMERA_STATUS.CAMERA_NONE,
+      // )
+      _.sendResolution({
+        width: settings.width,
+        height: settings.height,
+        orientation: '',
+      })
+    }
+  }
 }
 
 /**
@@ -952,6 +815,34 @@ const updateParticipantEmpty = connectionId => {
     video: false,
     audio: false,
   })
+}
+
+/**
+ * 오디오 or 비디오 장치에 접근하여 스트림 반환
+ * @param {Object} options PublisherProperties
+ * @returns {MediaStream|null} 오디오 or 비디오 스트림 or null
+ *
+ */
+const getMediaStream = async options => {
+  let mediaStream = null
+  try {
+    initOpenVidu()
+    mediaStream = await OV.getUserMedia(options)
+  } catch (e) {
+    if (e && e.name === 'DEVICE_ACCESS_DENIED') {
+      logger('getMediaStream', 'DEVICE_ACCESS_DENIED')
+    } else {
+      console.error(e)
+    }
+  }
+
+  return mediaStream
+}
+
+const initOpenVidu = () => {
+  if (OV === null) {
+    OV = new OpenVidu()
+  }
 }
 
 export const addSubscriber = subscriber => {
