@@ -29,6 +29,9 @@ import lombok.extern.slf4j.Slf4j;
 
 import com.virnect.client.RemoteServiceException;
 import com.virnect.data.application.workspace.WorkspaceRestService;
+import com.virnect.data.dao.member.MemberRepository;
+import com.virnect.data.domain.member.Member;
+import com.virnect.data.domain.member.MemberStatus;
 import com.virnect.data.dto.PageMetadataResponse;
 import com.virnect.serviceserver.serviceremote.dto.mapper.member.MemberWorkspaceMapper;
 import com.virnect.data.dto.rest.WorkspaceMemberInfoResponse;
@@ -81,6 +84,8 @@ public class ServiceSessionManager {
 	private final RedisPublisher redisPublisher;
 
 	private final MemberWorkspaceMapper memberWorkspaceMapper;
+
+	private final MemberRepository memberRepository;
 
 	@Autowired
 	public void setSessionManager(SessionManager sessionManager) {
@@ -731,7 +736,11 @@ public class ServiceSessionManager {
 		for(Iterator<String> targetUuidList = forceLogoutRequest.getTargetUserIds().iterator(); targetUuidList.hasNext();){
 			AccessStatus targetUser = accessStatusService.getAccessStatus(forceLogoutRequest.getWorkspaceId() + "_" + targetUuidList.next());
 			if (!ObjectUtils.isEmpty(targetUser)) {
-				if (targetUser.getAccessType() == AccessType.LOGOUT || targetUser.getAccessType() == AccessType.JOIN) {
+				if (targetUser.getAccessType() == AccessType.LOGOUT
+					|| (
+						targetUser.getAccessType() == AccessType.JOIN
+							|| checkLoading(forceLogoutRequest.getWorkspaceId(), forceLogoutRequest.getUserId())
+				)) {
 					targetUuidList.remove();
 					failUserIds.add(targetUser.getId());
 				}
@@ -836,5 +845,18 @@ public class ServiceSessionManager {
 				new MemberInfoListResponse(failMembersResponse, pageMeta),
 				ErrorCode.ERR_SUCCESS
 			);
+	}
+
+	public Boolean checkLoading(String workspaceId, String uuid) {
+		Boolean result = false;
+		List<Member> members = memberRepository.findByWorkspaceIdAndUuidAndRoomNotNull(workspaceId, uuid);
+		if (members.size() > 0) {
+			for (Member member : members) {
+				if (member.getMemberStatus() == MemberStatus.LOADING) {
+					result = true;
+				}
+			}
+		}
+		return result;
 	}
 }
