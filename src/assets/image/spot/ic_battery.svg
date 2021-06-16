@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="24px" height="24px" viewBox="0 0 24 24" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>E9474E29-740B-4B19-AB76-A7DDA9ED8857@1x</title>
+    <defs>
+        <path d="M15.67,4 L14,4 L14,2 L10,2 L10,4 L8.33,4 C7.6,4 7,4.6 7,5.33 L7,20.66 C7,21.4 7.6,22 8.33,22 L15.66,22 C16.4,22 17,21.4 17,20.67 L17,5.33 C17,4.6 16.4,4 15.67,4 Z" id="path-1"></path>
+    </defs>
+    <g id="Remote_Spot" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="RSS_0007_Spot-연결_조작키-활성화" transform="translate(-1777.000000, -66.000000)">
+            <g id="battery" transform="translate(1767.000000, 60.000000)">
+                <g id="Group-13" transform="translate(10.000000, 6.000000)">
+                    <rect id="tr" x="0" y="0" width="24" height="24"></rect>
+                    <mask id="mask-2" fill="white">
+                        <use xlink:href="#path-1"></use>
+                    </mask>
+                    <use id="icon/device/battery_full_24px" fill="#FFFFFF" fill-rule="nonzero" transform="translate(12.000000, 12.000000) rotate(-270.000000) translate(-12.000000, -12.000000) " xlink:href="#path-1"></use>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

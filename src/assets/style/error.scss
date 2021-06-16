@@ -19,7 +19,7 @@ body {
 @import "font";
 @import "reset";
 
-.support {
+.error {
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -29,7 +29,7 @@ body {
   background: url("~assets/image/support/img_support_bg.svg") $color_bg_display;
 }
 
-.support-body {
+.error-body {
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -48,7 +48,7 @@ body {
   }
 }
 
-.support-body__graphic {
+.error-body__graphic {
   width: 24.857em;
   margin: 0 auto;
   padding: 0.714em 0;
@@ -61,7 +61,7 @@ body {
   }
 }
 
-.support-body__title {
+.error-body__title {
   margin: 2em 1.429em 0;
   color: $color_text;
   font-weight: 700;
@@ -77,7 +77,7 @@ body {
   }
 }
 
-.support-body--description {
+.error-body--description {
   margin: 1em 0 2.857em;
   color: $color_text;
   font-size: 1.143em;
@@ -94,7 +94,7 @@ body {
   }
 }
 
-.support-body--mobile {
+.error-body--mobile {
   display: none;
   margin: 1em 0 2.857em;
   color: $color_text;
@@ -108,36 +108,38 @@ body {
   }
 }
 
-.support-body--button {
-  width: 18em;
-  height: 3.571em;
-  color: $color_primary;
-  font-weight: 500;
-  background: #ffffff;
-  border: 1px solid #ccd1d7;
-  border-radius: 4px;
-  box-shadow: 0px 1px 1px 0px rgba(#000000, 0.05);
+.error-body-button__container{
+  button {
+    width: 18em;
+    height: 3.571em;
+    color: $color_primary;
+    font-weight: 500;
+    background: #ffffff;
+    border: 1px solid #ccd1d7;
+    border-radius: 4px;
+    box-shadow: 0px 1px 1px 0px rgba(#000000, 0.05);
 
-  &:hover {
-    background: #d8d8d8;
-  }
+    &:hover {
+      background: #d8d8d8;
+    }
 
-  &:active {
-    background: #afafaf;
-    border: none;
-  }
+    &:active {
+      background: #afafaf;
+      border: none;
+    }
 
-  @include tablet {
-    width: 200px;
-    padding: 1.071em 1.429em;
-    font-size: 0.857em;
-  }
-  @include mobile {
-    display: none;
+    @include tablet {
+      width: 200px;
+      padding: 1.071em 1.429em;
+      font-size: 0.857em;
+    }
+    @include mobile {
+      display: none;
+    }
   }
 }
 
-.support-footer {
+.error-footer {
   position: absolute;
   right: 0;
   bottom: 0;
@@ -145,11 +147,11 @@ body {
   padding-bottom: 2.857em;
   text-align: center;
 
-  .support-footer__inner {
+  .error-footer__inner {
     margin: 0 auto;
   }
 
-  .support-footer__copyright {
+  .error-footer__copyright {
     margin-top: 0.429em;
     color: $color_text;
     opacity: 50%;
@@ -161,4 +163,9 @@ body {
 
 .c-remote {
   color: $color_primary;
+}
+
+
+.c-remote-y{
+  color: #fdc32e;
 }

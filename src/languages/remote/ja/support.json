@@ -4,6 +4,9 @@
     "header_description": "下のショートカットボタンからRemote Serviceをご利用ください。<br>詳細は<a href=\"https://virnect.com/contact/inquiry\" target=\"_blank\"><u>カスタマーセンター</u></a>へお問い合わせください。",
     "header_description_mobile": "詳細は<a href=\"https://virnect.com/contact/inquiry\" target=\"_blank\"><u>カスタマーセンター</u></a>へお問い合わせください。",
     "pc_web": "VIRNECTRemote WebサイトはPC用Chromeブラウザからご利用いただけます。",
-    "pc_web_button": "PC用Chromeダウンロード"
+    "pc_web_button": "PC用Chromeダウンロード",
+    "spot_already_use" :"既に使用されている<span class='c-remote-y'>Spotコントロ</span><br>ールブラウザがあります。",
+    "spot_already_use_description" :"他のブラウザでSpotコントロールを使用中です。<br>再試してください。",
+    "close_browser": "ブラウザを閉じる"
   }
 }
