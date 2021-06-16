@@ -5,8 +5,13 @@
       class="card-menu"
       popperClass="card-menu__popover"
       placement="bottom-start"
+      :scrollHide="true"
     >
-      <button slot="reference" class="card-menu__btn"></button>
+      <button
+        slot="reference"
+        class="card-menu__btn"
+        ref="card-menu__btn"
+      ></button>
       <ul>
         <li>
           <button
@@ -134,7 +139,12 @@ export default {
   },
 
   /* Lifecycles */
-  mounted() {},
+  mounted() {
+    //활성화된 popoever 버튼 focus 해제
+    this.$eventBus.$on('scroll:memberlist', () =>
+      this.$refs['card-menu__btn'].blur(),
+    )
+  },
 }
 </script>
 
