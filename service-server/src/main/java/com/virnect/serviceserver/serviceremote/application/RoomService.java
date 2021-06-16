@@ -552,7 +552,7 @@ public class RoomService {
 
 		// Redis 내 멤버 접속상태 확인
 		for (MemberInfoResponse memberInfoResponse : memberInfoList) {
-			memberInfoResponse.setAccessType(loadAccessType(memberInfoResponse.getUuid()));
+			memberInfoResponse.setAccessType(loadAccessType(workspaceId, memberInfoResponse.getUuid()));
 		}
 
 		roomDetailInfoResponse.setMemberList(setLeader(memberInfoList));
@@ -874,10 +874,10 @@ public class RoomService {
 		return roomInfoResponses;
 	}
 
-	public AccessType loadAccessType(String uuid) {
+	public AccessType loadAccessType(String workspaceId, String uuid) {
 		AccessType result = AccessType.LOGOUT;
 		try {
-			AccessStatus accessStatus = accessStatusService.getAccessStatus(uuid);
+			AccessStatus accessStatus = accessStatusService.getAccessStatus(workspaceId + "_" + uuid);
 			if (ObjectUtils.isEmpty(accessStatus) || accessStatus.getAccessType() == AccessType.LOGOUT) {
 				return AccessType.LOGOUT;
 			}
