@@ -1,6 +1,6 @@
 <template>
   <tool-button
-    :text="$t('전체 삭제')"
+    :text="$t('button.remove_all')"
     :disabled="!isAvailable"
     :active="status"
     :src="require('assets/image/ic-tool-delete-all.svg')"
