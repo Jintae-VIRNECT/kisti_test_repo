@@ -228,7 +228,6 @@
     "camera_control_every_on": "Turn on all cameras",
     "camera_control_every_off": "Turn off all cameras",
 
-
     "map_information":"Location information",
     "map_request_position": "Requesting location information.",
     "map_refresh":"Refresh Location",
@@ -236,6 +235,11 @@
     "map_check_use_gps_description":"Please check whether the GPS function is used by the requested participant.",
     "map_request_rejected" :"The location information request has been rejected. ",
     "map_cannot_use_gps":"This device does not support the location information function.",
-    "map_timeout":"Unable to verify GPS information. Please check whether the GPS function is used by the requested participant."
+    "map_timeout":"Unable to verify GPS information. Please check whether the GPS function is used by the requested participant.",
+
+    "spot_networ_error" : "The Spot connection was terminated due to a network/server problem.​\nWould you like to reconnect?​",
+    "spot_connecting" : "Connecting to Spot…",
+    "spot_reconnecting" : "Spot reconnecting…",
+    "spot_battery_warning" : "Spot battery is {battery}% remaining."
   }
 }

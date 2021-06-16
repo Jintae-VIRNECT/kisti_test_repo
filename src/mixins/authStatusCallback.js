@@ -5,6 +5,11 @@ import auth from 'utils/auth'
 //멤버 상태 소켓의 응답에 따라 실행할 callback methods 모음
 //WorkspaceLayout의 watch : workspace에서 auth.initAuthConnection의 파라미터로 해당 메서드들을 넘긴다.
 
+//esc key로 팝업 탈출 방지
+const option = {
+  allowEscapeKey: false,
+}
+
 export default {
   methods: {
     //worksspace 변경 실패 시 - 워크스페이스 롤백 & 재시도/취소 팝업
@@ -35,7 +40,7 @@ export default {
         text: this.$t('button.leave_exit'),
         action: () => {},
       }
-      this.confirmCancel(text, confirm, cancel)
+      this.confirmCancel(text, confirm, cancel, option)
     },
 
     //유저 정보 등록 실패시 - 재시도/종료 팝업
@@ -69,7 +74,7 @@ export default {
           auth.logout()
         },
       }
-      this.confirmCancel(text, confirm, cancel)
+      this.confirmCancel(text, confirm, cancel, option)
     },
 
     //중복된 기 접속자가 있는 경우
@@ -117,7 +122,7 @@ export default {
           action: cancelAction,
         }
 
-        this.confirmCancel(text, confirm, cancel)
+        this.confirmCancel(text, confirm, cancel, option)
       }
       //협업 중인 경우 : 팝업 띄운 후 로그인 페이지로 리디렉트
       else if (currentStatus === 'JOIN') {
@@ -127,7 +132,7 @@ export default {
         const text = this.$t('workspace.confirm_duplicated_session_joined')
         const action = () =>
           (location.href = `${URLS['console']}/?continue=${location.href}`) //리디렉트
-        this.confirmDefault(text, { action })
+        this.confirmDefault(text, { action }, option)
       }
     },
 
@@ -141,6 +146,7 @@ export default {
           action: () =>
             (location.href = `${URLS['console']}/?continue=${location.href}`),
         },
+        option,
       )
     },
 
@@ -156,9 +162,13 @@ export default {
         (location.href = `${URLS['console']}/?continue=${location.href}`)
 
       //강제 로그아웃 알림 팝업
-      this.confirmDefault(this.$t('workspace.confirm_force_logout_received'), {
-        action,
-      })
+      this.confirmDefault(
+        this.$t('workspace.confirm_force_logout_received'),
+        {
+          action,
+        },
+        option,
+      )
     },
 
     //워크스페이스 변경 시 해당 워스크페이스에 중복 로그인인 경우
@@ -196,6 +206,7 @@ export default {
         const confirm = {
           text: this.$t('button.force_logout'),
           action: confirmAction,
+          option,
         }
 
         const cancel = {
@@ -206,12 +217,12 @@ export default {
           },
         }
 
-        this.confirmCancel(text, confirm, cancel)
+        this.confirmCancel(text, confirm, cancel, option)
       }
       //협업 중인 경우 : 팝업 띄운 후 로그인 페이지로 리디렉트
       else {
         const text = this.$t('workspace.confirm_duplicated_session_joined')
-        this.confirmDefault(text)
+        this.confirmDefault(text, option)
       }
     },
   },

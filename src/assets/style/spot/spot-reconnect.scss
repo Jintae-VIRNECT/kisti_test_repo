@@ -1,0 +1,66 @@
+@import "~assets/style/vars";
+
+.modal.spot-reconnect .modal--inner {
+  padding: 0;
+  background-color: $color_darkgray_500;
+  border: solid 1px #38383a;
+  border-radius: 4px;
+  box-shadow: none;
+  > .modal--header {
+    display: none;
+  }
+  > .modal--body {
+    padding: 0;
+  }
+}
+
+.spot-reconnect__layout {
+  .spot-reconnect__img {
+    background-color: #29292d;
+  }
+  .spot-reconnect__body {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    height: 6.285em;
+    padding-top: 1.035em;
+
+    .reconnect-title {
+      margin-bottom: 0.125em;
+      color: #ababab;
+      font-size: 1.142rem;
+      line-height: 1.5em;
+    }
+    .reconnect-timer {
+      font-size: 1.285rem;
+      line-height: 1.333em;
+    }
+  }
+}
+
+.spot-reconnect__footer {
+  display: flex;
+  justify-content: center;
+  height: 5.142em;
+  font-weight: 500;
+
+  font-size: 1em;
+
+  .cancel {
+    width: 9.285em;
+    height: 2.714em;
+    background-color: #54545c;
+    border-radius: 0.142em;
+    box-shadow: 0px 1px 1px 0px rgba(0, 0, 0, 0.05);
+
+    &:focus {
+      background-color: #54545c;
+    }
+    &:hover {
+      background-color: #64646b;
+    }
+    &:active {
+      background-color: #434346;
+    }
+  }
+}

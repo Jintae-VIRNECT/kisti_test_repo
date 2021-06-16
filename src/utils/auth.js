@@ -33,7 +33,7 @@ let reConnectIntervalId
 let pingIntervalId
 let reRegistIntervalId
 //let reRegistCount = 0 //재등록 실패시 실행하는 재등록 시도 횟수 (3회 까지시도하고 중지하기 위함)
-let isRegisted = false //이미 등록완료된 상태에서 멤버 상태 소켓에 재연결 방지하기 위한 플래그
+export let isRegisted = false //이미 등록완료된 상태에서 멤버 상태 소켓에 재연결 방지하기 위한 플래그
 let savedWorkspaceId //기존 workspaceId, workspaceId 변경 확인 하기 위함
 let changingWorkspaceId //변경 요청 중인 workspaceId 변경 완료 응답 받은 후 savedWorksapceId에 저장
 

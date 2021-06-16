@@ -62,7 +62,8 @@
     "local_record_file": "로컬 녹화 파일",
     "no_sharing_file": "공유된 파일이 없습니다.",
     "workstation": "워크스테이션",
-    "dashboard": "대시보드"
+    "dashboard": "대시보드",
+    "spot_control": "Spot 컨트롤"
   },
   "confirm": {
     "network_error": "서버와 통신이 원활하지 않습니다. 잠시 후 다시 시도해 주세요.",

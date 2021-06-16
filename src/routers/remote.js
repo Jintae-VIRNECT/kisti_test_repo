@@ -6,6 +6,7 @@ const WorkspaceComponent = () =>
   import(
     /* webpackChunkName: "workspace" */ 'components/workspace/WorkspaceLayout'
   )
+import SpotRouter from './spot'
 
 Vue.use(VueRouter)
 
@@ -32,5 +33,6 @@ export default new VueRouter({
       path: '*',
       redirect: 'workspace',
     },
+    ...SpotRouter,
   ],
 })
