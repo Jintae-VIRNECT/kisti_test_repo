@@ -18,7 +18,6 @@
 import { mapGetters, mapActions, mapMutations } from 'vuex'
 import {
   SIGNAL,
-  DRAWING,
   AR_FEATURE,
   CAPTURE_PERMISSION,
   ROLE,

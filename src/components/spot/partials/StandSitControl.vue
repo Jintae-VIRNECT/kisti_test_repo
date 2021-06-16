@@ -40,10 +40,8 @@ export default {
   methods: {
     setStand(isStand) {
       Store.commit('SET_IS_SPOT_STAND', isStand)
-      if(isStand)
-        spotControl.stand()
-      else 
-        spotControl.sit()
+      if (isStand) spotControl.stand()
+      else spotControl.sit()
     },
   },
 }

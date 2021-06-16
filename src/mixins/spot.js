@@ -43,7 +43,7 @@ export default {
 
       batteryWarnIntervalId: null,
 
-      isConnectionErrorPopup: false
+      isConnectionErrorPopup: false,
     }
   },
   watch: {
@@ -53,8 +53,8 @@ export default {
       }
     },
   },
-  computed:{
-    ...mapGetters(['isSpotStand'])
+  computed: {
+    ...mapGetters(['isSpotStand']),
   },
   methods: {
     async connectAndActivateListener() {
@@ -147,10 +147,8 @@ export default {
           this.sitStandBtn = true
           this.motorHighlight = true
 
-          if(this.isSpotStand)
-            this.moveBtn = true
-          else
-            this.moveBtn = false
+          if (this.isSpotStand) this.moveBtn = true
+          else this.moveBtn = false
         }
         //motor 꺼져있는 상태 - motor 킬 수 있어야하고, sit/stand 불가능, estop 불가능
         else if (power === MOTOR_POWER.OFF) {
@@ -158,10 +156,7 @@ export default {
           this.sitStandBtn = false
           this.motorHighlight = false
           this.moveBtn = false
-        }
-        else
-          this.moveBtn = false
-        
+        } else this.moveBtn = false
 
         this.motorBtn = true
         this.estopHighlight = true
@@ -170,9 +165,8 @@ export default {
 
     //spot 서버와 연결 상태가 불량인 경우 - 재시도/종료
     onConnectionError() {
-
       //이미 떠있는 경우 재실행 X
-      if(this.isConnectionErrorPopup) return
+      if (this.isConnectionErrorPopup) return
 
       this.isConnectionErrorPopup = true
 

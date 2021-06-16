@@ -4,7 +4,8 @@
     :disabled="disabled"
     @click="clickListener"
     @mousedown="mousedown"
-    @mouseup="mouseup">
+    @mouseup="mouseup"
+  >
     <div class="back">
       <img class="icon" :src="imgSrc" />
     </div>
