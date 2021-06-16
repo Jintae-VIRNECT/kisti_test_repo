@@ -41,13 +41,13 @@ logging:
     com.virnect: DEBUG
 #    org.hibernate.type.descriptor.sql: trace
 
-eureka:
-  instance:
-    prefer-ip-address: true
-  client:
-    service-url:
-      defaultZone: http://localhost:8761/eureka
-    enabled: false
+  eureka:trobleMemo
+instance:
+  prefer-ip-address: true
+client:
+  service-url:
+    defaultZone: http://localhost:8761/eureka
+  enabled: false
 
 ## Server Configuration
 server:
