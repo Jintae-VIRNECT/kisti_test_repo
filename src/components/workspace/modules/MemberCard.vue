@@ -226,8 +226,8 @@ export default {
   height: 24px;
   overflow: hidden;
   text-indent: -99px;
-  border-radius: 50%;
   border: 4px solid #313135;
+  border-radius: 50%;
 
   &.join {
     background-color: $color_collabo;
@@ -277,19 +277,18 @@ export default {
 }
 
 .status-tooltip .tooltiptext {
-  background-color: $color_bg;
-  border: 1px solid #3d3f40;
-  text-transform: capitalize;
+  padding: 0.142rem 0.357rem;
   font-weight: 500;
   font-size: 0.857rem;
-  padding: 0.142rem 0.357rem;
+  text-transform: capitalize;
+  background-color: $color_bg;
+  border: 1px solid #3d3f40;
 
   &.top .arrow,
   &.top-start .arrow,
   &.top-end .arrow {
     //꼬리 border 역할
     &:before {
-      content: '';
       position: absolute;
       top: 1px;
       left: 0;
@@ -299,6 +298,7 @@ export default {
       margin-left: -7px;
       border: solid 7px transparent;
       border-top-color: #3d3f40;
+      content: '';
     }
     &:after {
       border-top-color: $color_bg;

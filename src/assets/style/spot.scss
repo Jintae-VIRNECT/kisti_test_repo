@@ -1,153 +1,151 @@
 @import "_vars";
 
-.spot-control-layout{
+.spot-control-layout {
+  position: relative;
   width: 100vw;
   height: 100vh;
+  overflow: hidden;
   background: url(~assets/image/spot/img_bg_spot.svg) no-repeat center;
   background-size: cover;
-  position: relative;
-  overflow: hidden;
 }
 
-.spot-camera-layer{
-  width: 100vw;//62vw;  //1202px
-  height: 100vh;
+.spot-camera-layer {
   //width: 100vw;
   // padding-top: 4.8vh;
   // padding-bottom: 5.7vh;
 
   position: absolute;
+  left: 50%;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  left: 50%;
+  width: 100vw; //62vw;  //1202px
+  height: 100vh;
   transform: translateX(-50%);
 
-  .front-camera-row{
-    flex-grow: 3;
+  .front-camera-row {
     display: flex;
     flex-direction: row;
-    justify-content: center;
+    flex-grow: 3;
     align-items: center;
-    transition: .7s;
+    justify-content: center;
+    transition: 0.7s;
 
-    .spot-camera-block{
+    .spot-camera-block {
       margin: 0 0.462vh;
     }
   }
-  .side-camera-row{
-    flex-grow: 0.5;
+  .side-camera-row {
     display: flex;
     flex-direction: row;
+    flex-grow: 0.5;
+    align-items: flex-start;
     justify-content: space-around;
-    align-items: flex-start;
   }
-  .back-camera-row{
-    flex-grow: 1.5;
+  .back-camera-row {
     display: flex;
-    justify-content: center;
+    flex-grow: 1.5;
     align-items: flex-start;
+    justify-content: center;
   }
 }
 
-.spot-camera-block{
-  border-radius: 3px;
-  border: 2px solid rgb(255, 255, 255);
-  background: #1c1c1c;
+.spot-camera-block {
   position: relative;
+  background: #1c1c1c;
+  border: 2px solid rgb(255, 255, 255);
+  border-radius: 3px;
 
-  &.no-video{
+  &.no-video {
     background-image: url(~assets/image/spot/noact_ic_videocam.svg);
     background-repeat: no-repeat;
     background-position: center;
   }
 
-  &.upside-down{
-    img{
-      transform : rotate(180deg)
+  &.upside-down {
+    img {
+      transform: rotate(180deg);
     }
   }
 
-  .camera-title{
+  .camera-title {
     position: absolute;
     top: 0.74vh; //0.571rem;
-    left: 0.74vh;//0.571rem;
+    left: 0.74vh; //0.571rem;
     z-index: 2;
-
-    color: #ffd717;
-    background-color: #000000;
     padding: 0.74vh 1.08vh; //0.571rem 0.714rem;
-    font-family: $font_family2;
+    color: #ffd717;
     font-weight: 500;
     font-size: 1.481vh;
+    font-family: $font_family2;
     line-height: 1.481vh;
+    background-color: #000000;
   }
 
-  &.potrait{
+  &.potrait {
+    height: 32.4vh; //350px; //auto;
+    transition: 0.7s height;
     //width: 18.857rem; //264px;
     aspect-ratio: 0.75/1;
-    height: 32.4vh;//350px; //auto;
-    transition: .7s height;
 
-    img{
+    img {
       -webkit-transform: rotate(90deg);
       -moz-transform: rotate(90deg);
       -o-transform: rotate(90deg);
       -ms-transform: rotate(90deg);
-      transform: rotate(90deg) scale(1.33) translateX(22%)
+      transform: rotate(90deg) scale(1.33) translateX(22%);
     }
   }
-  
-  &.landscape{
+
+  &.landscape {
+    height: 25vh; //270px; //auto;
     //width: 25.714rem; //360px;
     aspect-ratio: 1/0.75;
-    height: 25vh//270px; //auto;
   }
 
-  canvas{
+  canvas {
     width: 100%;
     height: 100%;
   }
 }
 
 .spot-control-btn {
-  width: 5.18vh;  //56px;
-  height: 5.18vh; //56px;
   position: relative;
-
-  border-radius: 3px;
-  border: 1px solid;
+  width: 5.18vh; //56px;
+  height: 5.18vh; //56px;
   background-color: #3c3c3f;
+  border: 1px solid;
   border-color: #979797;
 
-  .back{
+  border-radius: 3px;
+
+  .back {
     position: absolute;
     top: 0.462vh; //0.357rem;
+    right: 0.462vh; //0.357rem;
     bottom: 0.462vh; //0.357rem;
     left: 0.462vh; //0.357rem;
-    right: 0.462vh; //0.357rem;
-
     display: flex;
     align-items: center;
     justify-content: center;
     background-color: rgba(white, 0);
   }
 
-  &:hover > .back{
-      //background-color: #5c5c63;  //opacity로 필요
-      background-color: rgba(white, 0.1);
+  &:hover > .back {
+    //background-color: #5c5c63;  //opacity로 필요
+    background-color: rgba(white, 0.1);
   }
-  &:active > .back{
-      //background-color: #74747a;  //opacity로 필요
-      background-color: rgba(white, 0.3);
+  &:active > .back {
+    //background-color: #74747a;  //opacity로 필요
+    background-color: rgba(white, 0.3);
   }
 
   //버튼 비활성화시
-  &.inactive{
-    &:hover > .back{
+  &.inactive {
+    &:hover > .back {
       background-color: initial;
     }
-    &:active > .back{
+    &:active > .back {
       background-color: initial;
     }
   }
