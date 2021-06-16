@@ -3,18 +3,7 @@ import { OpenVidu } from '@virnect/remote-webrtc'
 import { addSessionEventListener } from './RemoteUtils'
 import sender from './RemoteSender'
 import Store from 'stores/remote/store'
-import {
-  SIGNAL,
-  ROLE,
-  CAMERA,
-  FLASH,
-  VIDEO,
-  AR_FEATURE,
-  FILE,
-  CONTROL,
-  LINKFLOW,
-  LOCATION,
-} from 'configs/remote.config'
+import { SIGNAL, VIDEO, LOCATION } from 'configs/remote.config'
 import { URLS, setRecordInfo } from 'configs/env.config'
 import { DEVICE, CAMERA as CAMERA_STATUS } from 'configs/device.config'
 import { logger, debug } from 'utils/logger'
@@ -147,8 +136,10 @@ const _ = {
   },
 
   setScaleResolution: async scaleResolution => {
-    if (_.stream) {
-      return await _.stream.webRtcPeer.setScaleResolution(scaleResolution)
+    if (_.publisher && _.publisher.stream) {
+      return await _.publisher.stream.webRtcPeer.setScaleResolution(
+        scaleResolution,
+      )
     }
   },
   /**
