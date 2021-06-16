@@ -44,9 +44,9 @@ pipeline {
                     }
                     steps {
                         sh 'count=`docker ps -a | grep pf-gateway | wc -l`; if [ ${count} -gt 0 ]; then echo "Running STOP&DELETE"; docker stop pf-gateway && docker rm pf-gateway; else echo "Not Running STOP&DELETE"; fi;'
-                        sh 'docker run -p 8073:8073 --restart=always -e "CONFIG_SERVER=http://192.168.6.3:6383" -e "VIRNECT_ENV=develop" -d --name=pf-gateway pf-gateway'
+                        sh 'docker run -p 8073:8073 --restart=always -m 1g -e "CONFIG_SERVER=http://192.168.6.3:6383" -e "VIRNECT_ENV=develop" -d --name=pf-gateway pf-gateway'
                         sh 'count=`docker ps -a | grep pf-gateway-onpremise | wc -l`; if [ ${count} -gt 0 ]; then echo "Running STOP&DELETE"; docker stop pf-gateway-onpremise && docker rm pf-gateway-onpremise; else echo "Not Running STOP&DELETE"; fi;'
-                        sh 'docker run -p 18073:8073 --restart=always -e "CONFIG_SERVER=http://192.168.6.3:6383" -e "VIRNECT_ENV=onpremise" -d --name=pf-gateway-onpremise pf-gateway'
+                        sh 'docker run -p 18073:8073 --restart=always -m 1g -e "CONFIG_SERVER=http://192.168.6.3:6383" -e "VIRNECT_ENV=onpremise" -d --name=pf-gateway-onpremise pf-gateway'
                         catchError() {
                              sh "if [ `docker images | grep pf-gateway | grep -v 103505534696 | wc -l` -gt 2 ]; then docker rmi  -f \$(docker images | grep \"pf-gateway\" | grep -v \\${GIT_TAG} | grep -v \"latest\"  | awk \'{print \$3}\'); else echo \"Just One Images...\"; fi;"
                         }
