@@ -190,7 +190,6 @@ public class MemberService {
 			.map(workspaceMemberInfoResponse -> memberWorkspaceMapper.toDto(workspaceMemberInfoResponse))
 			.collect(Collectors.toList());
 
-
 		/*for(Iterator<MemberInfoResponse> memberInfoResponseIterator = memberInfoList.iterator(); memberInfoResponseIterator.hasNext();){
 			AccessStatus targetUser = accessStatusService.getAccessStatus(
 				workspaceId + "_" + memberInfoResponseIterator.next().getUuid());
@@ -208,7 +207,11 @@ public class MemberService {
 
 		for (MemberInfoResponse memberInfoResponse : memberInfoList) {
 			AccessStatus targetUser = accessStatusService.getAccessStatus(workspaceId + "_" + memberInfoResponse.getUuid());
-			memberInfoResponse.setAccessType(targetUser.getAccessType());
+			if (!ObjectUtils.isEmpty(targetUser)) {
+				memberInfoResponse.setAccessType(targetUser.getAccessType());
+			} else {
+				memberInfoResponse.setAccessType(AccessType.LOGOUT);
+			}
 		}
 
 		int currentPage = page + 1; // current page number (start : 0)
