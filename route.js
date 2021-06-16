@@ -69,12 +69,14 @@ router.get('/healthcheck', function(req, res) {
 if (config.getEnv() === 'onpremise') {
   router.get('/spot-control', function(req, res) {
     const lang = acceptLang(req)
-    res.send(extra[lang])
+    // res.send(extra[lang])
+    res.send(remote[lang])
   })
 
   router.get('/spot-error', function(req, res) {
     const lang = acceptLang(req)
-    res.send(extra[lang])
+    // res.send(extra[lang])
+    res.send(remote[lang])
   })
 }
 
