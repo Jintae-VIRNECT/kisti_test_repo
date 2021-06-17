@@ -92,6 +92,7 @@ public class AppService {
             apps.setGuideUrl(AppGuideUrl.REMOTE_USER_GUIDE.getUrl());
             apps.setImageUrl(AppImageUrl.REMOTE_REALWEAR.getUrl());
         } else if (product.getName().equals("REMOTE") && device.getType().equals("LINKFLOW")) {
+            apps.setGuideUrl(AppGuideUrl.REMOTE_LINKFLOW_USER_GUIDE.getUrl());
             apps.setImageUrl(AppImageUrl.REMOTE_LINKFLOW.getUrl());
         }
 
@@ -100,7 +101,7 @@ public class AppService {
             apps.setGuideUrl(AppGuideUrl.VIEW_MOBILE_USER_GUIDE.getUrl());
             apps.setImageUrl(AppImageUrl.VIEW_MOBILE.getUrl());
         } else if (product.getName().equals("VIEW") && device.getType().equals("REALWEAR")) {
-            apps.setGuideUrl(AppGuideUrl.VIEW_REALWARE_USER_GUIDE.getUrl());
+            apps.setGuideUrl(AppGuideUrl.VIEW_REALWEAR_USER_GUIDE.getUrl());
             apps.setImageUrl(AppImageUrl.VIEW_REALWEAR.getUrl());
         } else if (product.getName().equals("MAKE")) {
             apps.setGuideUrl(AppGuideUrl.MAKE_USER_GUIDE.getUrl());
