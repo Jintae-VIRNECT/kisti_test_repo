@@ -8,7 +8,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -51,8 +50,7 @@ public class DownloadService {
 	private final FileDownloadService fileDownloadService;
 	private final LicenseRestService licenseRestService;
 
-	@Value("${minio.bucket-resource}")
-	private String bucketResource;
+	private static final String BUCKET_RESOURCE = "virnect-platform-qa";
 
 	/**
 	 * 컨텐츠UUID로 컨텐츠 다운로드
@@ -90,7 +88,7 @@ public class DownloadService {
 	}
 
 	private HttpHeaders getHeaders(String path, byte[] bytes) {
-		String resourcePath = path.split(bucketResource)[1];
+		String resourcePath = path.split(BUCKET_RESOURCE)[1];
 		log.info("PARSER - RESOURCE PATH: [{}]", resourcePath);
 		String[] resources = resourcePath.split("/");
 		for (String url : resources) {
