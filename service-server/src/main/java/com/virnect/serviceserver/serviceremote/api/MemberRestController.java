@@ -101,7 +101,6 @@ public class MemberRestController {
         if (Strings.isBlank(workspaceId) || Strings.isBlank(userId)) {
             throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
-
         ApiResponse<MemberInfoListResponse> responseData = memberService.getMembersExceptForMe(
             workspaceId,
             userId,
@@ -110,7 +109,7 @@ public class MemberRestController {
             page,
             size,
             accessTypeFilter
-        );
+        );    
         return ResponseEntity.ok(responseData);
     }
 

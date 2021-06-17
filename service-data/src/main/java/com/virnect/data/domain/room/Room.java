@@ -74,9 +74,6 @@ public class Room extends BaseTimeEntity {
     @Column(name = "active_at")
     private LocalDateTime activeDate;
 
-    /*@Column(name = "restricted_mode")
-    private boolean restrictedMode;*/
-
     @Column(name = "video_restricted_mode")
     private boolean videoRestrictedMode;
 

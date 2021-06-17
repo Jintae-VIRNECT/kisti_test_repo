@@ -72,7 +72,7 @@ public class MemberService {
 		return responseData;
 	}
 
-	public ApiResponse<MemberInfoListResponse> getMembersExceptForMe(
+public ApiResponse<MemberInfoListResponse> getMembersExceptForMe(
 		String workspaceId,
 		String userId,
 		String filter,
@@ -154,8 +154,8 @@ public class MemberService {
 
 		return new ApiResponse<>(new MemberInfoListResponse(memberInfoList,pageMeta));
 	}
-
-	public MemberInfoListResponse getMembersInvitePossible(
+  
+public MemberInfoListResponse getMembersInvitePossible(
 		String workspaceId,
 		String sessionId,
 		String userId,

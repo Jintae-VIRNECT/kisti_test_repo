@@ -154,6 +154,30 @@ public class CustomRoomRepositoryImpl extends QuerydslRepositorySupport implemen
 
 	/**
 	 * 진행 중인 협업 다이나믹 쿼리
+	 *
+	 * @param sessionId - 조회될 대상 세션 식별자
+	 * @return - 해당 사용자가 참여한 room 검색 조건 쿼리
+	 */
+	@Override
+	public Optional<Room> findRoomByWorkspaceIdAndSessionIdNotInEvictedMember(
+		String workspaceId, String sessionId
+	) {
+		return Optional.ofNullable(
+			query.selectFrom(room)
+				.leftJoin(room.members, member).fetchJoin()
+				.innerJoin(room.sessionProperty, sessionProperty).fetchJoin()
+				.where(
+					room.workspaceId.eq(workspaceId),
+					room.sessionId.eq(sessionId),
+					member.memberStatus.ne(MemberStatus.EVICTED)
+				)
+				.distinct()
+				.fetchOne());
+	}
+
+
+	/**
+	 * 진행 중인 협업 다이나믹 쿼리
 	 * @param workspaceId - 진행중인 협업이 속한 워크스페이스
 	 * @param pageable - 페이징
 	 * @return - 해당 사용자가 참여한 room 검색 조건 쿼리
@@ -234,11 +258,12 @@ public class CustomRoomRepositoryImpl extends QuerydslRepositorySupport implemen
 			.leftJoin(room.members, member).fetchJoin()
 			.innerJoin(room.sessionProperty, sessionProperty).fetchJoin()
 			.where(
-				room.workspaceId.eq(room.workspaceId),
+				room.workspaceId.eq(workspaceId),
 				room.roomStatus.eq(RoomStatus.ACTIVE),
 				room.id.in(includeSearch(workspaceId, userId, userIds, search))
 				.or(
-				room.sessionProperty.sessionType.eq(SessionType.OPEN).and(room.title.contains(search))
+					room.sessionProperty.sessionType.eq(SessionType.OPEN)
+						.and(room.title.contains(search).and(room.workspaceId.eq(workspaceId)))
 				)
 			).distinct();
 		long totalCount = queryResult.fetchCount();
