@@ -14,7 +14,7 @@ const devWebpackConfig = merge(baseWebpackConfig, {
     host: '0.0.0.0',
     port: env.LOCAL_PORT,
     disableHostCheck: true,
-    historyApiFallback: { index: '/app.html' },
+    historyApiFallback: { index: '/apps/main/app.html' },
     hot: true,
     noInfo: true,
     https: true,
