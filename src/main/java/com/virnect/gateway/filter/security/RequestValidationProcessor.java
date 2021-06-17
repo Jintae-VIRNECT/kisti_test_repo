@@ -28,28 +28,34 @@ public class RequestValidationProcessor {
 	}
 
 	public static boolean isRequestAuthenticationProcessSkip(ServerHttpRequest request) {
-		return isSkipUrl(request) || allowedRequest(request);
+		return isSkipUrl(request) || allowedOfficeInternalAPKDeployRequest(request);
 	}
 
-	private static boolean allowedRequest(ServerHttpRequest request) {
-		// Client Ip Check
-		String clientIp = request.getHeaders().getFirst("X-Forwarded-For");
-		if (clientIp == null) {
-			clientIp = Objects.requireNonNull(request.getRemoteAddress()).getAddress().getHostAddress();
-		}
+	private static boolean allowedOfficeInternalAPKDeployRequest(ServerHttpRequest request) {
+		String requestUrlPath = request.getURI().getPath();
+		if (requestUrlPath.startsWith("/download/app")) {
+			logger.info(
+				"RequestValidationProcessing - allowedOfficeInternalAPKDeployRequest :: Skip Url Check about [{}]",
+				requestUrlPath
+			);
 
-		logger.info("RequestValidationProcessing - RemoteAddress Check -> [{}]", clientIp);
+			// Client Ip Check
+			String clientIp = request.getHeaders().getFirst("X-Forwarded-For");
 
-		if (clientIp.equals("121.162.3.204")) {
-			logger.info("RequestValidationProcessing - RemoteAddress Check Success. : -> [{}]", clientIp);
-			return true;
-		}
+			if (clientIp == null) {
+				clientIp = Objects.requireNonNull(request.getRemoteAddress()).getAddress().getHostAddress();
+			}
 
-		if (request.getHeaders().getHost() != null) {
-			String hostName = request.getHeaders().getHost().getHostName();
-			logger.info("RequestValidationProcessing - Request HostName Check -> [{}]", hostName);
-			if (hostName.equals("192.168.6.3")) {
-				logger.info("RequestValidationProcessing - Request HostName Check Success. : -> [{}]", hostName);
+			logger.info(
+				"RequestValidationProcessing - allowedOfficeInternalAPKDeployRequest :: RemoteAddress Check -> [{}]",
+				clientIp
+			);
+
+			if (clientIp.equals("121.162.3.204")) {
+				logger.info(
+					"RequestValidationProcessing - allowedOfficeInternalAPKDeployRequest :: RemoteAddress Check Success. : -> [{}]",
+					clientIp
+				);
 				return true;
 			}
 		}
