@@ -9,6 +9,9 @@ COPY build.gradle settings.gradle ./
 # Copy Sourcefile
 COPY virnect.pfx .
 
+# Donwload dependencies. docker layer caching
+RUN gradle clean build --no-daemon > /dev/null 2>&1 || true
+
 COPY src src
 
 # build soruce file with dependnecies
