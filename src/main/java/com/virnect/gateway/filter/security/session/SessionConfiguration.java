@@ -6,6 +6,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.RedisSerializer;
 import org.springframework.security.jackson2.SecurityJackson2Modules;
+import org.springframework.session.data.redis.config.ConfigureRedisAction;
 import org.springframework.session.data.redis.config.annotation.web.server.EnableRedisWebSession;
 import org.springframework.web.server.session.CookieWebSessionIdResolver;
 
@@ -54,6 +55,13 @@ public class SessionConfiguration implements BeanClassLoaderAware {
 
 		return new GenericJackson2JsonRedisSerializer(objectMapper);
 	}
+
+
+	@Bean
+	public ConfigureRedisAction configureRedisAction() {
+		return ConfigureRedisAction.NO_OP;
+	}
+
 
 	@Override
 	public void setBeanClassLoader(ClassLoader classLoader) {
