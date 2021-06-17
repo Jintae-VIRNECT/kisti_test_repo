@@ -1,18 +1,16 @@
 {
   "home": {
     "title": "Download Center",
-    "needPlan": "You need a plan to use the product.",
+    "notice": "Check out the <a href='https://support.virnect.com/notice/new' target='_blank'>new features</a>",
     "visual": {
-      "title": "Adapt our products to optimize <br>your industrial site",
-      "desc": "Download the products and refer <br>the installation guides to install on your devices."
+      "title": "Connect the Future",
+      "desc": "Download new applications to drive XR innovation"
     },
     "make": "VIRNECT Make",
     "view": "VIRNECT View",
     "remote": "VIRNECT Remote",
     "track": "VIRNECT Track",
-    "installFileDownload": "Download",
-    "fileDownload": "Download",
-    "downloadLink": "Shortcut to downloads",
-    "guideDownload": "User's Manual"
+    "download": "Download",
+    "guide": "User Manual"
   }
 }

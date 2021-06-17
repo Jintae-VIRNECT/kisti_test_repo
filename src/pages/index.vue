@@ -1,12 +1,10 @@
 <template>
   <div id="home">
-    <div class="ribbon">
-      {{ $t('home.needPlan') }}
-    </div>
     <div class="visual">
       <h3 v-html="$t('home.visual.title')" />
       <p v-html="$t('home.visual.desc')" />
     </div>
+    <div class="ribbon" v-html="$t('home.notice')" />
     <el-tabs v-model="activeTab" @tab-click="tabClick">
       <el-tab-pane
         v-for="(product, name) in products"
@@ -14,25 +12,20 @@
         :name="name"
         :key="name"
       >
-        <el-card v-for="app in product" :key="app.id">
-          <h6 v-html="app.deviceType" />
-          <h5 v-html="app.deviceName" />
-          <img :src="app.imageUrl" />
-          <span class="release">
-            Release: {{ app.releaseTime | dateFormat }}
-          </span>
-          <span class="version">{{ app.version }}</span>
-          <el-button type="primary" @click="link('app', app)">
-            {{ downloadText(app) }}
-          </el-button>
-          <el-button
-            type="text"
-            @click="link('guide', app)"
-            :disabled="!app.guideUrl"
-          >
-            {{ $t('home.guideDownload') }}
-          </el-button>
-        </el-card>
+        <el-row v-for="category in product.categories" :key="category">
+          <el-col :md="5" :span="24">
+            <h4>{{ category }}</h4>
+          </el-col>
+          <el-col :md="19" :span="24">
+            <Item
+              v-for="app in product.list.filter(
+                app => app.deviceType === category,
+              )"
+              :key="app.id"
+              :app="app"
+            />
+          </el-col>
+        </el-row>
       </el-tab-pane>
     </el-tabs>
   </div>
@@ -40,6 +33,8 @@
 
 <script>
 import { filters } from '@/plugins/dayjs'
+import storeIds from '@/models/storeIds'
+
 export default {
   data() {
     return {
@@ -58,51 +53,16 @@ export default {
   watch: {
     async activeTab(tab) {
       window.history.replaceState({}, null, tab)
-      if (this.products[tab].length) return false
-      const data = await this.$api('APP_LIST', {
-        route: { productName: tab },
-      })
-      this.products[tab] = data.appInfoList
+      if (!this.products[tab].length) {
+        this.products[tab] = await this.loadList(tab)
+      }
+    },
+    async '$i18n.locale'() {
+      this.products[this.activeTab] = await this.loadList(this.activeTab)
     },
   },
   filters,
   methods: {
-    downloadText(app) {
-      let str = this.$t('home.installFileDownload')
-      if (this.activeTab === 'track') str = this.$t('home.fileDownload')
-      if (/(play\.google|apps\.apple)\.com/.test(app.appUrl))
-        str = this.$t('home.downloadLink')
-      return str
-    },
-    async download(type, app) {
-      let uri, downloadUrl
-      if (type === 'app') {
-        uri = 'DOWNLOAD_APP'
-        downloadUrl = app.appUrl
-      }
-      if (type === 'guide') {
-        uri = 'DOWNLOAD_GUIDE'
-        downloadUrl = app.guideUrl
-      }
-      try {
-        await this.$api(uri, {
-          route: { uuid: app.uuid },
-        })
-        return downloadUrl
-      } catch (e) {
-        this.$message.error({
-          message: e,
-          duration: 2000,
-          showClose: true,
-        })
-      }
-    },
-    link(type, app) {
-      const popup = window.open()
-      this.download(type, app).then(url => {
-        popup.location = url
-      })
-    },
     snbNav() {
       const scrollY = window.pageYOffset
       const tab = document.querySelector('.el-tabs')
@@ -120,6 +80,25 @@ export default {
     tabClick() {
       if (window.pageYOffset > this.snbTop) {
         window.scrollTo(0, this.snbTop)
+      }
+    },
+    storeId(productName) {
+      return app => {
+        if (storeIds[productName])
+          app.storeId = storeIds[productName][app.os][app.deviceType]
+        return app
+      }
+    },
+    async loadList(productName) {
+      const data = await this.$api('APP_LIST', {
+        route: { productName },
+      })
+      const categories = new Set()
+      data.appInfoList.forEach(app => categories.add(app.deviceType))
+
+      return {
+        categories,
+        list: data.appInfoList.map(this.storeId(productName)),
       }
     },
   },
