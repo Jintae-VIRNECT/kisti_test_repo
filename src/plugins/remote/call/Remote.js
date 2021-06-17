@@ -476,6 +476,12 @@ const _ = {
       _.minZoomLevel = parseInt(capability.zoom.min)
     }
 
+    const settingInfo = Store.getters['settingInfo']
+
+    await track.applyConstraints({
+      frameRate: settingInfo.fps ? settingInfo.fps : 30,
+    })
+
     _.sendResolution({
       width: settings.width,
       height: settings.height,
