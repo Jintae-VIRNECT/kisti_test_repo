@@ -1,13 +1,14 @@
 package com.virnect.workspace;
 
-import com.virnect.workspace.dao.WorkspaceSettingRepository;
-import com.virnect.workspace.domain.WorkspaceSetting;
+import com.virnect.workspace.dao.workspace.WorkspaceSettingRepository;
+import com.virnect.workspace.domain.workspace.WorkspaceSetting;
 import com.virnect.workspace.infra.file.FileService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.context.annotation.Profile;
+import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -24,6 +25,7 @@ import java.util.Optional;
 @Service
 @RequiredArgsConstructor
 @Profile("onpremise")
+@Order(1)
 public class WorkspaceRunner implements ApplicationRunner {
 	private final WorkspaceSettingRepository workspaceSettingRepository;
 	private final FileService fileService;

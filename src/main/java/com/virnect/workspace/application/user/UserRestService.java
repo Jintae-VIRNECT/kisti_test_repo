@@ -47,7 +47,7 @@ public interface UserRestService {
 	 * @return - 유저 정보
 	 */
 	@GetMapping("/users/invite")
-	ApiResponse<InviteUserInfoResponse> getUserInfoByEmail(@RequestParam("email") String email);
+	ApiResponse<InviteUserInfoResponse> getInviteUserInfoByEmail(@RequestParam("email") String email);
 
 	@PostMapping("/users/list")
 	ApiResponse<UserInfoListRestResponse> getUserInfoList(

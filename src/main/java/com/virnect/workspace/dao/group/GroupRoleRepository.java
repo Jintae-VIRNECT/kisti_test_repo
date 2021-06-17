@@ -1,6 +1,6 @@
 package com.virnect.workspace.dao.group;
 
-import com.virnect.workspace.domain.GroupRole;
+import com.virnect.workspace.domain.group.GroupRole;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 /**

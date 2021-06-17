@@ -1,8 +1,8 @@
 package com.virnect.workspace.dao.group;
 
-import com.virnect.workspace.domain.Group;
-import com.virnect.workspace.domain.GroupUser;
-import com.virnect.workspace.domain.WorkspaceUser;
+import com.virnect.workspace.domain.group.Group;
+import com.virnect.workspace.domain.group.GroupUser;
+import com.virnect.workspace.domain.workspace.WorkspaceUser;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 /**
