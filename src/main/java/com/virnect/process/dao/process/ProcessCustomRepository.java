@@ -20,6 +20,13 @@ public interface ProcessCustomRepository {
 	Optional<Process> findByTargetDataAndState(String targetData, State state);
 
 	/**
+	 * 상태로 작업 찾기
+	 * @param state 작업 상태
+	 * @return 작업목록
+	 */
+	List<Process> findByState(State state);
+	
+	/**
 	 * 상태와 컨텐츠 식별자로 작업 찾기
 	 * @param targetData
 	 * @param state

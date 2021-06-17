@@ -10,6 +10,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.support.QuerydslRepositorySupport;
+import org.springframework.util.StringUtils;
 
 import com.querydsl.jpa.JPQLQuery;
 
@@ -62,11 +63,16 @@ public class SubProcessCustomRepositoryImpl extends QuerydslRepositorySupport im
 
 	@Override
 	public Page<SubProcess> getSubProcessPage(
-		String workspaceUUID, Long processId, String search, List<String> userUUIDList, Pageable pageable
+		String workspaceUUID, Long processId, String search, List<String> userUUIDList, String userUUID,
+		Pageable pageable
 	) {
 		QSubProcess qSubProcess = QSubProcess.subProcess;
 		QProcess qProcess = QProcess.process;
 		JPQLQuery<SubProcess> query = from(qSubProcess).join(qSubProcess.process, qProcess);
+
+		if (StringUtils.hasText(userUUID)) {
+			query = query.where(qSubProcess.workerUUID.eq(userUUID));
+		}
 
 		if (userUUIDList != null && userUUIDList.size() > 0) {
 			query = query.where(qSubProcess.workerUUID.in(userUUIDList));
@@ -92,13 +98,17 @@ public class SubProcessCustomRepositoryImpl extends QuerydslRepositorySupport im
 	@Override
 	public Page<SubProcess> getFilteredSubProcessPage(
 		String workspaceUUID, Long processId, String search, List<String> userUUIDList, Pageable pageable,
-		List<Conditions> filter
+		List<Conditions> filter,
+		String myUUID
 	) {
 		QSubProcess qSubProcess = QSubProcess.subProcess;
 		QProcess qProcess = QProcess.process;
 		JPQLQuery<SubProcess> query = from(qSubProcess).join(qSubProcess.process, qProcess);
 		List<SubProcess> subProcessList = query.fetch();
 
+		if (StringUtils.hasText(myUUID)) {
+			query = query.where(qSubProcess.workerUUID.eq(myUUID));
+		}
 		if (filter != null && !filter.isEmpty() && !filter.contains(Conditions.ALL)) {
 			List<SubProcess> filterdSubProcessList = new ArrayList<>();
 			subProcessList.forEach(subProcess -> {
@@ -112,12 +122,12 @@ public class SubProcessCustomRepositoryImpl extends QuerydslRepositorySupport im
 			query = query.where(qSubProcess.in(subProcessList));
 		}
 
-		if (userUUIDList != null && userUUIDList.size() > 0) {
+		if (!userUUIDList.isEmpty()) {
 			query = query.where(qSubProcess.workerUUID.in(userUUIDList));
 		}
 
-		if (search != null) {
-			query = query.where(qSubProcess.name.contains(search));
+		if (StringUtils.hasText(search) && userUUIDList.isEmpty()) {
+			query = query.where(qSubProcess.name.contains(search).or(qSubProcess.process.name.contains(search)));
 		}
 
 		if (processId != null) {

@@ -176,11 +176,11 @@ public class IssueCustomRepositoryImpl extends QuerydslRepositorySupport impleme
 
 		query.where(qIssue.job.isNull());
 
-		if (Objects.nonNull(search)) {
+		if (Objects.nonNull(search) && workspaceUserList.isEmpty()) {
 			query.where(qIssue.content.contains(search));
 		}
 
-		if (Objects.nonNull(workspaceUserList)) {
+		if (!workspaceUserList.isEmpty()) {
 			query.where(qIssue.workerUUID.in(workspaceUserList));
 		}
 

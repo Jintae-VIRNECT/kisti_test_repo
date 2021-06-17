@@ -3,7 +3,7 @@ import com.github.jk1.license.filter.LicenseBundleNormalizer
 import com.github.jk1.license.render.InventoryMarkdownReportRenderer
 
 plugins {
-    id 'org.springframework.boot' version '2.2.2.RELEASE'
+    id 'org.springframework.boot' version '2.3.8.RELEASE'
     id 'io.spring.dependency-management' version '1.0.8.RELEASE'
     id "edu.sc.seis.launch4j" version "2.4.6"
     id "com.ewerk.gradle.plugins.querydsl" version "1.0.10"
@@ -17,7 +17,7 @@ version = '1.0.0'
 sourceCompatibility = '1.8'
 
 ext {
-    set('springCloudVersion', "Hoxton.SR1")
+    set('springCloudVersion', "Hoxton.SR10")
 }
 
 
