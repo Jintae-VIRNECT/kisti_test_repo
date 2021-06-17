@@ -1,45 +1,32 @@
-# Build Stage #1 build depency
-FROM gradle:6.8-jdk11 AS build_dependency
+# Build Stage
+FROM gradle:6.8-jdk8 AS builder
 ENV APP_HOME=/usr/app/
 WORKDIR $APP_HOME
-
-# Only copy dependency-related files
-COPY build.gradle settings.gradle ./
-
-RUN gradle build --info --no-daemon  > /dev/null 2>&1 || true
-
-
-FROM gradle:6.8-jdk11 AS builder
-ENV APP_HOME=/usr/app/
-WORKDIR $APP_HOME
-
-# Copy gradle cache 
-COPY --from=build_dependency /home/gradle/.gradle /home/gradle
-COPY --from=build_dependency ${APP_HOME}/.gradle ${APP_HOME}
 
 # Only copy dependency-related files
 COPY build.gradle settings.gradle ./
 
 # Copy Sourcefile
 COPY virnect.pfx .
+
 COPY src src
 
 # build soruce file with dependnecies
-RUN gradle clean build -x test --info  --no-daemon
+RUN gradle clean build -x test --console=plain
+
+RUN java -Djarmode=layertools -jar build/libs/*.jar extract
 
 # Runtime Stage
-FROM openjdk:11-jdk-slim
-
-# Label
-LABEL APPLICATION="PF-License"
+FROM openjdk:8-jre-alpine
 
 ENV APP_HOME=/usr/app/
 WORKDIR $APP_HOME
-ARG buildDir=$APP_HOME/build/unpack
 
-COPY --from=builder ${APP_HOME}/virnect.pfx .
-COPY --from=builder ${buildDir}/lib BOOT-INF/lib
-COPY --from=builder ${buildDir}/app .
+COPY --from=builder ${APP_HOME}/virnect.pfx ./
+COPY --from=builder ${APP_HOME}/dependencies/ ./
+COPY --from=builder ${APP_HOME}/spring-boot-loader/ ./
+COPY --from=builder ${APP_HOME}/snapshot-dependencies/ ./
+COPY --from=builder ${APP_HOME}/application/ ./
 
 EXPOSE 8632
 CMD ["java", "-Xms400M", "-Xmx400M", "org.springframework.boot.loader.JarLauncher"]

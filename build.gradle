@@ -13,7 +13,7 @@ plugins {
 
 group = 'com.virnect'
 version = '1.0.0'
-sourceCompatibility = '11'
+sourceCompatibility = '1.8'
 
 configurations {
     compileOnly {
@@ -111,29 +111,10 @@ sourceSets {
     }
 }
 
-
 //License Reporting Configuration
 licenseReport {
     renderers = [new InventoryMarkdownReportRenderer()]
     filters = [new LicenseBundleNormalizer(), new ExcludeTransitiveDependenciesFilter()]
-}
-
-// separate jar into app and library layers
-task moveLib {
-    doLast {
-        def unpackDir = "$buildDir/unpack"
-        ant.move(file: "${unpackDir}/app/BOOT-INF/lib", toFile: "${unpackDir}/lib")
-    }
-}
-
-task unpackJar(type: Copy) {
-    def unpackDir = "$buildDir/unpack"
-
-    delete unpackDir
-    from zipTree(jar.getArchiveFile())
-    into "$unpackDir/app"
-
-    finalizedBy moveLib
 }
 
 build {
