@@ -1560,12 +1560,12 @@
   dependencies:
     "@types/node" "*"
 
-"@virnect/components@^1.1.11":
-  version "1.1.11"
-  resolved "http://192.168.6.3:4873/@virnect%2fcomponents/-/components-1.1.11.tgz#e3c96f8a9f708672618b0bd5a2ad449514dbf1ad"
-  integrity sha512-VPRHdfLVHzpjenVlPcF5dZbD9LbETvv/FMuUsKNvFr8E8Au+sEYk/xe4UcOGIyDtLIvkMHr57c8t0p08tQSDAQ==
+"@virnect/components@^1.6.0":
+  version "1.6.0"
+  resolved "http://192.168.6.3:4873/@virnect%2fcomponents/-/components-1.6.0.tgz#2c2ab9f956dac3f46517364f2ca51314154ee82f"
+  integrity sha512-duzy1ooCFEBrbE3NdEXJ2OR4i4qFaefI0NxjcWrLzieGA3e5XSsPhsyLrMyKCAEsA8zya9VmtfBPAaIZP4KwPA==
   dependencies:
-    "@virnect/ui-assets" "^1.1.21"
+    "@virnect/ui-assets" "^1.1.20"
     "@vue/composition-api" "^1.0.0-rc.2"
     js-cookie "^2.2.1"
     v-tooltip "^2.1.3"
@@ -1624,10 +1624,10 @@
     stylelint-prettier "^1.1.2"
     stylelint-scss "^3.18.0"
 
-"@virnect/ui-assets@^1.1.21":
-  version "1.1.21"
-  resolved "http://192.168.6.3:4873/@virnect%2fui-assets/-/ui-assets-1.1.21.tgz#d09895ff3f36d5193914e8f2b985e1d58d44cf29"
-  integrity sha512-xy/jbhE6q41TKsf3pXblu81a65mY/EIHf19ckbhY6cs18rHo/fbJXLNqefmyvbaiNHrrLVQ9MOV5qS688LROjQ==
+"@virnect/ui-assets@^1.1.20", "@virnect/ui-assets@^1.5.0":
+  version "1.5.0"
+  resolved "http://192.168.6.3:4873/@virnect%2fui-assets/-/ui-assets-1.5.0.tgz#412550ca21cd60dcc2e8b2b5e13c1e5a0c34de05"
+  integrity sha512-kVxKcXy23KUsW9VyHIj+grkINsK+12bHFT9Vesx5NI/cbAWQeUw0BZmIkL+wH7KDUWDVZYcMV4UPDuWt98CcoA==
 
 "@vue/babel-helper-vue-jsx-merge-props@^1.2.1":
   version "1.2.1"
