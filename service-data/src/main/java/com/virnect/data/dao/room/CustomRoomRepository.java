@@ -37,6 +37,7 @@ public interface CustomRoomRepository {
 	Page<Room> findMyRoomSpecificUserIdBySearch(String workspaceId, String userId, List<String> userIds, String search, Pageable pageable);
 
 	Page<Room> findMyRoomSpecificUserIdBySearch(String workspaceId, String userId, String search, Pageable pageable);
+
 }
 
  

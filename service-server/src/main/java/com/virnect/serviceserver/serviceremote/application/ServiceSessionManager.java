@@ -1,15 +1,19 @@
 package com.virnect.serviceserver.serviceremote.application;
 
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.DependsOn;
+import org.springframework.data.redis.listener.ChannelTopic;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.util.ObjectUtils;
@@ -24,8 +28,21 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import com.virnect.client.RemoteServiceException;
+import com.virnect.data.application.workspace.WorkspaceRestService;
+import com.virnect.data.dao.member.MemberRepository;
+import com.virnect.data.domain.member.Member;
+import com.virnect.data.domain.member.MemberStatus;
+import com.virnect.data.dto.PageMetadataResponse;
+import com.virnect.serviceserver.serviceremote.dto.mapper.member.MemberWorkspaceMapper;
+import com.virnect.data.dto.rest.WorkspaceMemberInfoResponse;
 import com.virnect.data.error.ErrorCode;
+import com.virnect.data.global.common.ApiResponse;
 import com.virnect.data.infra.utils.LogMessage;
+import com.virnect.data.redis.RedisPublisher;
+import com.virnect.data.redis.application.AccessStatusService;
+import com.virnect.data.redis.domain.AccessStatus;
+import com.virnect.data.redis.domain.AccessType;
+import com.virnect.data.redis.domain.ForceLogoutMessage;
 import com.virnect.java.client.MediaMode;
 import com.virnect.java.client.Recording;
 import com.virnect.java.client.RecordingLayout;
@@ -40,8 +57,11 @@ import com.virnect.mediaserver.core.SessionManager;
 import com.virnect.mediaserver.kurento.core.KurentoSession;
 import com.virnect.mediaserver.kurento.core.KurentoSessionListener;
 import com.virnect.mediaserver.kurento.core.KurentoTokenOptions;
-import com.virnect.serviceserver.serviceremote.dto.response.session.SessionData;
-import com.virnect.serviceserver.serviceremote.dto.response.session.SessionTokenData;
+import com.virnect.data.dto.request.session.ForceLogoutRequest;
+import com.virnect.data.dto.response.member.MemberInfoListResponse;
+import com.virnect.data.dto.response.member.MemberInfoResponse;
+import com.virnect.data.dto.response.session.SessionData;
+import com.virnect.data.dto.response.session.SessionTokenData;
 import com.virnect.serviceserver.serviceremote.dao.SessionDataRepository;
 
 @Slf4j
@@ -56,6 +76,16 @@ public class ServiceSessionManager {
 	SessionManager sessionManager;
 	private final SessionDataRepository sessionDataRepository;
 	private final FileService fileService;
+
+	private final AccessStatusService accessStatusService;
+	private final WorkspaceRestService workspaceRestService;
+
+	private static final ChannelTopic REDIS_CHANNEL = new ChannelTopic("force-logout");
+	private final RedisPublisher redisPublisher;
+
+	private final MemberWorkspaceMapper memberWorkspaceMapper;
+
+	private final MemberRepository memberRepository;
 
 	@Autowired
 	public void setSessionManager(SessionManager sessionManager) {
@@ -130,6 +160,7 @@ public class ServiceSessionManager {
                         Participant evict = session.getParticipantByPublicId(participant.getParticipantPublicId());
                         sessionManager.evictParticipant(evict, null, null, EndReason.forceDisconnectByServer);*/
 					} else {
+						sessionDataRepository.setAccessStatus(participant, sessionId, AccessType.JOIN);
 						//todo: after log here
 						return true;
 					}
@@ -161,6 +192,7 @@ public class ServiceSessionManager {
 				} else {
 					sessionDataRepository.leaveSession(participant, sessionId, reason);
 				}
+				sessionDataRepository.setAccessStatus(participant, sessionId, AccessType.LEAVE);
 			}
 
 			@Override
@@ -686,4 +718,144 @@ public class ServiceSessionManager {
 		}
 	}
 
+	public ApiResponse<MemberInfoListResponse> forceLogout(ForceLogoutRequest forceLogoutRequest) {
+		// Master uuid 및 권한 체크
+		WorkspaceMemberInfoResponse masterUserInfo = workspaceRestService.getWorkspaceMemberInfo(
+			forceLogoutRequest.getWorkspaceId(), forceLogoutRequest.getUserId()).getData();
+		if (StringUtils.isBlank(masterUserInfo.getUuid())) {
+			log.info("Master uuid is null");
+			return new ApiResponse<>(ErrorCode.ERR_API_AUTHENTICATION);
+		}
+		if (!("MASTER".equals(masterUserInfo.getRole()))) {
+			log.info("This user is not Master");
+			return new ApiResponse<>(ErrorCode.ERR_API_AUTHENTICATION);
+		}
+
+		// 로그아웃 및 협업 중인 멤버 필터링
+		List<String> failUserIds = new ArrayList<>();
+		for(Iterator<String> targetUuidList = forceLogoutRequest.getTargetUserIds().iterator(); targetUuidList.hasNext();){
+			AccessStatus targetUser = accessStatusService.getAccessStatus(forceLogoutRequest.getWorkspaceId() + "_" + targetUuidList.next());
+			if (!ObjectUtils.isEmpty(targetUser)) {
+				if (targetUser.getAccessType() == AccessType.LOGOUT
+					|| targetUser.getAccessType() == AccessType.JOIN
+					|| checkLoading(forceLogoutRequest.getWorkspaceId(), forceLogoutRequest.getUserId())
+				) {
+					targetUuidList.remove();
+					failUserIds.add(targetUser.getId());
+				}
+			}
+		}
+
+		List<WorkspaceMemberInfoResponse> failMembers = new ArrayList<>();
+		List<MemberInfoResponse> failMembersResponse = new ArrayList<>();
+		PageMetadataResponse pageMeta;
+
+		// 강제 로그 아웃 대상이 없을 경우 (대상 전체가 이미 로그아웃 또는 협업 중인 경우)
+		if (forceLogoutRequest.getTargetUserIds().size() == 0) {
+			for (String failMemberUuid : failUserIds) {
+				ApiResponse<WorkspaceMemberInfoResponse> workspaceMemberInfo = workspaceRestService.getWorkspaceMemberInfo(
+					forceLogoutRequest.getWorkspaceId(), failMemberUuid);
+				if (workspaceMemberInfo.getCode() != ErrorCode.ERR_SUCCESS.getCode()) {
+					return new ApiResponse<>(ErrorCode.ERR_UNEXPECTED_SERVER_ERROR);
+				}
+				failMembers.add(workspaceMemberInfo.getData());
+			}
+			// Mapper Response
+			failMembersResponse = failMembers.stream()
+				.map(workspaceMemberInfoResponse -> memberWorkspaceMapper.toDto(workspaceMemberInfoResponse))
+				.collect(Collectors.toList());
+			// 페이징 데이터 셋팅 (페이징 사용안함)
+			pageMeta = PageMetadataResponse.builder()
+				.currentPage(1)
+				.currentSize(failMembersResponse.size())
+				.totalPage(1)
+				.totalElements(failMembersResponse.size())
+				.numberOfElements(failMembersResponse.size())
+				.build();
+			return
+				new ApiResponse<>(new MemberInfoListResponse(failMembersResponse, pageMeta), ErrorCode.ERR_MEMBER_LOGOUT_OR_JOIN);
+		}
+
+		// Redis force-logout 채널로 정보 전송
+		ForceLogoutMessage forceLogoutMessage = ForceLogoutMessage.builder()
+			.workspaceId(forceLogoutRequest.getWorkspaceId())
+			.userId(forceLogoutRequest.getUserId())
+			.targetUserIds(forceLogoutRequest.getTargetUserIds())
+			.build();
+		log.info("ForceLogoutMessage to string : " + forceLogoutMessage.toString());
+		redisPublisher.publish(REDIS_CHANNEL, forceLogoutMessage);
+
+		// Logout 상태 확인 (in Redis)
+		for (String targetUserId : forceLogoutRequest.getTargetUserIds()) {
+			AccessStatus checkLogout = accessStatusService.getAccessStatus(forceLogoutRequest.getWorkspaceId() + "_" + targetUserId);
+			if (ObjectUtils.isEmpty(checkLogout)) {
+				for(Iterator<String> failUserId = failUserIds.iterator(); failUserId.hasNext();){
+					if (targetUserId.equals(failUserId.next())) {
+						failUserId.remove();
+					}
+				}
+			} else {
+				if (checkLogout.getAccessType() == AccessType.LOGOUT) {
+					for(Iterator<String> failUserId = failUserIds.iterator(); failUserId.hasNext();){
+						if (targetUserId.equals(failUserId.next())) {
+							failUserId.remove();
+						}
+					}
+				}
+			}
+		}
+
+		// 강제 로그아웃 대상에서 제외된 유저들 정보
+		for (String failMemberUuid : failUserIds) {
+			ApiResponse<WorkspaceMemberInfoResponse> workspaceMemberInfo = workspaceRestService.getWorkspaceMemberInfo(
+				forceLogoutRequest.getWorkspaceId(), failMemberUuid);
+			if (workspaceMemberInfo.getCode() != ErrorCode.ERR_SUCCESS.getCode()) {
+				return new ApiResponse<>(ErrorCode.ERR_UNEXPECTED_SERVER_ERROR);
+			}
+			failMembers.add(workspaceMemberInfo.getData());
+		}
+
+		if (failMembers.size() > 0) {
+			// Mapper Response
+			failMembersResponse = failMembers.stream()
+				.map(workspaceMemberInfoResponse -> memberWorkspaceMapper.toDto(workspaceMemberInfoResponse))
+				.collect(Collectors.toList());
+			// 페이징 데이터 셋팅 (페이징 사용안함)
+			pageMeta = PageMetadataResponse.builder()
+				.currentPage(1)
+				.currentSize(failMembersResponse.size())
+				.totalPage(1)
+				.totalElements(failMembersResponse.size())
+				.numberOfElements(failMembersResponse.size())
+				.build();
+		} else {
+			// 페이징 데이터 셋팅 (페이징 사용안함)
+			pageMeta = PageMetadataResponse.builder()
+				.currentPage(1)
+				.currentSize(1)
+				.totalPage(1)
+				.totalElements(0)
+				.numberOfElements(0)
+				.build();
+		}
+
+		return
+			new ApiResponse<>(
+				new MemberInfoListResponse(failMembersResponse, pageMeta),
+				ErrorCode.ERR_SUCCESS
+			);
+	}
+
+	public Boolean checkLoading(String workspaceId, String uuid) {
+		Boolean result = false;
+		List<Member> members = memberRepository.findByWorkspaceIdAndUuid(workspaceId, uuid);
+		if (members.size() > 0) {
+			for (Member member : members) {
+				if (member.getMemberStatus() == MemberStatus.LOADING) {
+					result = true;
+				}
+			}
+		}
+		return result;
+	}
 }

@@ -22,81 +22,63 @@ public class ConfigRestController {
 
     private final ConfigService configService;
 
-    /*protected HttpHeaders getResponseHeaders() {
-        HttpHeaders responseHeaders = new HttpHeaders();
-        responseHeaders.setContentType(MediaType.APPLICATION_JSON);
-        return responseHeaders;
-    }*/
-
     @GetMapping(value = "config")
     public ResponseEntity<String> getRemoteServiceConfiguration() {
-
         LogMessage.formedInfo(
             TAG,
             "REST API: GET " + REST_PATH,
             "getRemoteServiceConfiguration"
         );
-
         return configService.getRemoteServiceConfiguration();
     }
 
     @GetMapping(value = "config/version")
     public String getRemoteServiceServerVersion() {
-
         LogMessage.formedInfo(
             TAG,
             "REST API: GET " + REST_PATH,
             "getRemoteServiceServerVersion"
         );
-
         return configService.getRemoteServiceServerVersion();
     }
 
     @GetMapping(value = "config/publicurl")
     public String getRemoteServicePublicUrl() {
-
         LogMessage.formedInfo(
             TAG,
             "REST API: GET " + REST_PATH,
             "getRemoteServicePublicUrl"
         );
-
         return configService.getRemoteServicePublicUrl();
     }
 
     @GetMapping(value = "config/recording")
     public Boolean getRemoteServiceRecordingEnabled() {
-
         LogMessage.formedInfo(
             TAG,
             "REST API: GET " + REST_PATH,
             "getRemoteServicePublicUrl"
         );
-
         return configService.getRemoteServiceRecordingEnabled();
     }
 
     @GetMapping(value = "config/recording-path")
     public String getRemoteServiceRecordingPath() {
-
         LogMessage.formedInfo(
             TAG,
             "REST API: GET " + REST_PATH,
             "getRemoteServiceRecordingPath"
         );
-
         return configService.getRemoteServiceRecordingPath();
     }
 
     @GetMapping(value = "config/cdr")
     public Boolean getRemoteServiceCdrEnabled() {
-
         LogMessage.formedInfo(
             TAG,
             "REST API: GET " + REST_PATH,
             "getRemoteServiceCdrEnabled"
         );
-
         return configService.getRemoteServiceCdrEnabled();
     }
 

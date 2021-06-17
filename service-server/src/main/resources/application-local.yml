@@ -1,4 +1,8 @@
+
 spring:
+    redis:
+        host: 192.168.6.3
+        port: 6379
     application:
         name: remote-service-server-local
     profiles: local
@@ -9,7 +13,6 @@ spring:
         url: jdbc:mysql://192.168.6.3:4336/remote?serverTimezone=UTC&characterEncoding=UTF-8
         username: virnect-remote2
         password: virnect1234
-
     jpa:
         database: mysql
         database-platform: org.hibernate.dialect.MySQL5InnoDBDialect
@@ -21,6 +24,9 @@ spring:
                 format_sql: true
                 use_sql_comments: false
         show-sql: true
+    mvc:
+        async:
+            request-timeout: 10000
 
 eureka:
     client:
@@ -91,22 +97,42 @@ server:
         key-store-type: PKCS12
 
 service:
-    certificate_type: selfsigned
     coturn-credential: remote
-    coturn-mysql-connect-timeout: 100
-    coturn-mysql-dbname: coturn
-    coturn-mysql-ip: 192.168.6.3:4336
-    coturn-mysql-password: virnect1234
-    coturn-mysql-username: virnect-coturn
-    coturn-name: remot
-    coturn-uris-conference: '["turn:192.168.6.3:3478"]'
-    coturn-uris-streaming: '[]'
+    coturn-name: remote
+    coturn-uris-conference: ["turn:192.168.6.3:3478"]
+    coturn-uris-streaming: ["turn:192.168.6.3:3478"]
     domain_or_public_ip: 192.168.13.36
     https_port: 8000
-    kms-uris-conference: '["ws://192.168.6.3:8888/kurento"]'
-    kms-uris-streaming: '[]'
-    policy-location: '"policy/privateServicePolicy.json"'
-    wss: wss://192.168.13.36:8000
+    kms-uris-conference: ["ws://192.168.6.3:8888/kurento"]
+    kms-uris-streaming: []
+
+
+    policy-location: policy/publicServicePolicy.json
+    wss: wss://192.168.13.36:8000/remote/websocket
+    certificate_type: owncert
+    remote_cdr: true
+    remote_cdr_path: /var/log/remote/cdr
+    remote_log_path: /var/log/remote/service
+    remote_recording: false
+    remote_recording_autostop_timeout: 120
+    remote_recording_composed_url: ''
+    remote_recording_custom_layout: /opt/remote/custom-layout
+    remote_recording_debug: false
+    remote_recording_notification: publisher_moderator
+    remote_recording_path: /opt/remote/recordings
+    remote_recording_public_access: true
+    remote_recording_version: 2.15.0
+    remote_secret: remote
+    remote_sessions_garbage_interval: 900
+    remote_sessions_garbage_threshold: 3600
+    remote_streams_video_max_recv_bandwidth: 0
+    remote_streams_video_max_send_bandwidth: 0
+    remote_streams_video_min_recv_bandwidth: 1000
+    remote_streams_video_min_send_bandwidth: 1000
+    remote_webhook: false
+    remote_webhook_endpoint: https://webhook.site/67d3ca77-8754-428f-b814-91f45146a26a
+    remote_webhook_events: '["sessionCreated","sessionDestroyed","participantJoined","participantLeft","webrtcConnectionCreated","webrtcConnectionDestroyed","recordingStatusChanged","filterEventDispatched","mediaNodeStatusChanged"]'
+    remote_webhook_headers: '[]'
 
 storage:
     enabled: true
@@ -118,8 +144,8 @@ storage:
     bucket-profile-name: profile
     bucket-record-name: record
     policy-enabled: true
-    policy-lifecycle:
-    policy-location: ""
+    policy-lifecycle: 
+    policy-location:
 
 hystrix:
     command.default.execution.isolation.thread.timeoutInMilliseconds: 10000

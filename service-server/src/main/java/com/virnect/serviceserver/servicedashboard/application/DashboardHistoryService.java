@@ -13,7 +13,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -47,6 +46,15 @@ import com.virnect.data.error.exception.RestServiceException;
 import com.virnect.data.global.common.ApiResponse;
 import com.virnect.data.global.util.ListUtils;
 import com.virnect.serviceserver.servicedashboard.dto.PageMetadataResponse;
+import com.virnect.serviceserver.servicedashboard.dto.mapper.file.DashboardFileInfoMapper;
+import com.virnect.serviceserver.servicedashboard.dto.mapper.file.DashboardFileUserInfoMapper;
+import com.virnect.serviceserver.servicedashboard.dto.mapper.member.DashboardMemberInfoMapper;
+import com.virnect.serviceserver.servicedashboard.dto.mapper.memberhistroy.DashboardMemberHistoryMapper;
+import com.virnect.serviceserver.servicedashboard.dto.mapper.record.DashboardRecordFileDetailMapper;
+import com.virnect.serviceserver.servicedashboard.dto.mapper.room.OngoingRoomInfoMapper;
+import com.virnect.serviceserver.servicedashboard.dto.mapper.room.DashboardRoomDetailInfoMapper;
+import com.virnect.serviceserver.servicedashboard.dto.mapper.roomhistory.DashboardRoomHistoryDetailInfoMapper;
+import com.virnect.serviceserver.servicedashboard.dto.mapper.roomhistory.DashboardRoomHistoryInfoMapper;
 import com.virnect.serviceserver.servicedashboard.dto.request.RoomHistoryDetailRequest;
 import com.virnect.serviceserver.servicedashboard.dto.request.RoomHistoryListRequest;
 import com.virnect.serviceserver.servicedashboard.dto.request.RoomHistoryStatsRequest;
@@ -66,8 +74,6 @@ import com.virnect.serviceserver.servicedashboard.dto.response.RoomHistoryInfoRe
 @Transactional(readOnly = true)
 public class DashboardHistoryService {
 
-	private final ModelMapper modelMapper;
-
 	private final WorkspaceRestService workspaceRestService;
 	private final UserRestService userRestService;
 	private final RecordRestService recordRestService;
@@ -78,6 +84,16 @@ public class DashboardHistoryService {
 
 	private final FileRepository fileRepository;
 	private final RecordFileRepository recordFileRepository;
+
+	private final DashboardRoomDetailInfoMapper dashboardRoomDetailInfoMapper;
+	private final DashboardMemberInfoMapper dashboardMemberInfoMapper;
+	private final DashboardRoomHistoryDetailInfoMapper dashboardRoomHistoryDetailInfoMapper;
+	private final DashboardRoomHistoryInfoMapper dashboardRoomHistoryInfoMapper;
+	private final DashboardMemberHistoryMapper dashboardMemberHistoryMapper;
+	private final DashboardFileInfoMapper dashboardFileInfoMapper;
+	private final DashboardFileUserInfoMapper dashboardFileUserInfoMapper;
+	private final DashboardRecordFileDetailMapper dashboardRecordFileDetailMapper;
+	private final OngoingRoomInfoMapper ongoingRoomInfoMapper;
 
 	/**
 	 * 협업 히스토리 요청 처리
@@ -294,12 +310,12 @@ public class DashboardHistoryService {
 			-> new RestServiceException(ErrorCode.ERR_ROOM_NOT_FOUND));
 
 		try {
-			roomDetailInfoResponse = modelMapper.map(ongoingRoom, RoomDetailInfoResponse.class);
+			roomDetailInfoResponse = dashboardRoomDetailInfoMapper.toDto(ongoingRoom);
 			roomDetailInfoResponse.setSessionType(ongoingRoom.getSessionProperty().getSessionType());
 
 			List<MemberInfoResponse> memberInfoResponses = ongoingRoom.getMembers()
 				.stream()
-				.map(member -> modelMapper.map(member, MemberInfoResponse.class))
+				.map(member -> dashboardMemberInfoMapper.toDto(member))
 				.collect(Collectors.toList());
 
 			memberInfoResponses.removeIf(
@@ -348,12 +364,13 @@ public class DashboardHistoryService {
 		).orElseThrow(() -> new RestServiceException(ErrorCode.ERR_ROOM_HISTORY_FOUND));
 
 		try {
-			roomHistoryDetailInfoResponse = modelMapper.map(endRoom, RoomHistoryDetailInfoResponse.class);
+
+			roomHistoryDetailInfoResponse = dashboardRoomHistoryDetailInfoMapper.toDto(endRoom);
 			roomHistoryDetailInfoResponse.setSessionType(endRoom.getSessionPropertyHistory().getSessionType());
 
 			List<MemberInfoResponse> memberInfoList = endRoom.getMemberHistories()
 				.stream()
-				.map(member -> modelMapper.map(member, MemberInfoResponse.class))
+				.map(memberHistory -> dashboardMemberHistoryMapper.toDto(memberHistory))
 				.collect(Collectors.toList());
 
 			memberInfoList.removeIf(
@@ -500,7 +517,6 @@ public class DashboardHistoryService {
 						.getData()
 						.getInfos();
 
-
 				for (RoomHistoryInfoResponse roomHistory : roomHistories) {
 					for (MemberInfoResponse memberInfoResponse : roomHistory.getMemberList()) {
 						for (WorkspaceMemberInfoResponse memberInfo : workspaceMembers) {
@@ -516,11 +532,8 @@ public class DashboardHistoryService {
 						}
 					}
 
-					roomHistory.setMemberList(
-						setLeader(roomHistory.getMemberList())
-					);
-
 					roomHistory.setMemberList(roomHistory.getMemberList());
+					roomHistory.setMemberList(setLeader(roomHistory.getMemberList()));
 
 					roomHistory.setLeaderNickName(
 						roomHistory.getMemberList()
@@ -548,23 +561,6 @@ public class DashboardHistoryService {
 							.filter(recordFiles -> recordFiles.getSessionId().equals(roomHistory.getSessionId()))
 							.count()
 					);
-
-					/*roomHistory.setServerRecord(
-						serverRecFileAll
-							.stream()
-							.count()
-					);
-					roomHistory.setLocalRecord(
-						localRecFileAll
-							.stream()
-							.count()
-					);
-					roomHistory.setAttach(
-						attachFileAll
-							.stream()
-							.count()
-					);*/
-
 				}
 
 				if (request.getSearchWord() != null) {
@@ -628,107 +624,6 @@ public class DashboardHistoryService {
 		return roomHistoryInfoListResponse;
 	}
 
-	/*public List<RoomHistoryInfoResponse> ongoingRoomMapper(
-		List<Room> ongoingRooms,
-		List<Member> ongoingRoomMemberHistories
-	) {
-		List<RoomHistoryInfoResponse> roomHistoryResponse = new ArrayList<>();
-		try {
-			for (Room room : ongoingRooms) {
-				RoomHistoryInfoResponse roomInfoResponse = modelMapper.map(room, RoomHistoryInfoResponse.class);
-				roomInfoResponse.setSessionType(room.getSessionProperty().getSessionType());
-				roomInfoResponse.setStatus(false);
-				roomHistoryResponse.add(roomInfoResponse);
-			}
-
-			for (RoomHistoryInfoResponse roomHistoryInfoResponse : roomHistoryResponse) {
-
-				List<Member> ongoingRoomMembers;
-
-				ongoingRoomMembers = ongoingRoomMemberHistories.stream()
-					.filter(member -> member.getSessionId().equals(roomHistoryInfoResponse.getSessionId()))
-					.collect(Collectors.toList());
-
-				List<MemberInfoResponse> memberInfoResponses = ongoingRoomMembers.stream()
-					.map(member -> modelMapper.map(member, MemberInfoResponse.class))
-					.collect(Collectors.toList());
-
-				memberInfoResponses.removeIf(
-					memberInfoResponse -> memberInfoResponse.getMemberStatus().equals(MemberStatus.EVICTED));
-
-				roomHistoryInfoResponse.setMemberList(memberInfoResponses);
-			}
-		} catch (Exception exception) {
-			throw new RestServiceException(ErrorCode.ERR_ROOM_MAPPER);
-		}
-		return roomHistoryResponse;
-	}*/
-
-	/*public List<RoomHistoryInfoResponse> endRoomMapper(
-		List<RoomHistory> endRooms,
-		List<MemberHistory> endRoomMemberHistories
-	) {
-		List<RoomHistoryInfoResponse> roomHistoryResponse = new ArrayList<>();
-		try {
-			for (RoomHistory roomHistory : endRooms) {
-				RoomHistoryInfoResponse endRoomHistoryResponse = modelMapper.map(
-					roomHistory, RoomHistoryInfoResponse.class);
-				endRoomHistoryResponse.setSessionType(roomHistory.getSessionPropertyHistory().getSessionType());
-				endRoomHistoryResponse.setStatus(true);
-				roomHistoryResponse.add(endRoomHistoryResponse);
-			}
-
-			for (RoomHistoryInfoResponse roomHistoryInfoResponse : roomHistoryResponse) {
-
-				List<MemberHistory> endRoomMembers = new ArrayList<>();
-				endRoomMemberHistories.stream()
-					.filter(
-						memberHistory -> memberHistory.getSessionId().equals(roomHistoryInfoResponse.getSessionId()))
-					.forEach(endRoomMembers::add);
-
-				List<MemberInfoResponse> memberInfoResponses = endRoomMembers.stream()
-					.map(memberHistory -> modelMapper.map(memberHistory, MemberInfoResponse.class))
-					.collect(Collectors.toList());
-
-				memberInfoResponses.removeIf(
-					memberInfoResponse -> memberInfoResponse.getMemberStatus().equals(MemberStatus.EVICTED));
-
-				roomHistoryInfoResponse.setMemberList(memberInfoResponses);
-			}
-		} catch (Exception exception) {
-			throw new RestServiceException(ErrorCode.ERR_ROOM_HISTORY_MAPPER);
-		}
-		return roomHistoryResponse;
-	}*/
-
-	/*public List<FileInfoResponse> getAttached1FileList(
-		String workspaceId,
-		boolean deleted
-	) {
-
-		List<FileInfoResponse> fileInfoResponses;
-		try {
-
-			*//*List<File> files;
-
-			if (deleted) {
-				files = fileRepository.findByWorkspaceIdAndSessionIdAndDeletedIsTrue(workspaceId, sessionId);
-			} else {
-				files = fileRepository.findByWorkspaceIdAndSessionIdAndDeletedIsFalse(workspaceId, sessionId);
-			}*//*
-
-			List<File> files = fileRepository.findByWorkspaceIdAndDeleted(workspaceId, deleted);
-
-			fileInfoResponses = files.stream()
-				.map(file -> modelMapper.map(file, FileInfoResponse.class))
-				.collect(Collectors.toList());
-		} catch (Exception exception) {
-			throw new RestServiceException(ErrorCode.ERR_ATTACHED_FILE_FOUND);
-		}
-
-		return fileInfoResponses;
-	}*/
-
 	/**
 	 * 로컬 첨부파일 목록 요청 처리
 	 * @param workspaceId - 대상 Workspace Id
@@ -740,27 +635,17 @@ public class DashboardHistoryService {
 		//String sessionId,
 		boolean deleted
 	) {
-
-		List<FileInfoResponse> fileInfoResponses;
+		List<FileInfoResponse> fileInfoResponses = new ArrayList<>();
 		try {
-
-			/*List<File> files;
-
-			if (deleted) {
-				files = fileRepository.findByWorkspaceIdAndSessionIdAndDeletedIsTrue(workspaceId, sessionId);
-			} else {
-				files = fileRepository.findByWorkspaceIdAndSessionIdAndDeletedIsFalse(workspaceId, sessionId);
-			}*/
-
 			List<File> files = fileRepository.findByWorkspaceIdAndDeleted(workspaceId, deleted);
-
-			fileInfoResponses = files.stream()
-				.map(file -> modelMapper.map(file, FileInfoResponse.class))
-				.collect(Collectors.toList());
+			if (files.size() > 0) {
+				fileInfoResponses = files.stream()
+					.map(file -> dashboardFileInfoMapper.toDto(file))
+					.collect(Collectors.toList());
+			}
 		} catch (Exception exception) {
 			throw new RestServiceException(ErrorCode.ERR_ATTACHED_FILE_FOUND);
 		}
-
 		return fileInfoResponses;
 	}
 
@@ -776,16 +661,6 @@ public class DashboardHistoryService {
 	) {
 		List<FileDetailInfoResponse> fileDetailInfoResponses = new ArrayList<>();
 		try {
-
-			/*List<RecordFile> recordFiles;
-
-			if (deleted) {
-				recordFiles = recordFileRepository.findByWorkspaceIdAndSessionIdAndDeletedIsTrue(workspaceId, sessionId);
-			} else {
-				recordFiles = recordFileRepository.findByWorkspaceIdAndSessionIdAndDeletedIsFalse(
-					workspaceId, sessionId);
-			}
-*/
 			List<RecordFile> recordFiles = recordFileRepository.findByWorkspaceIdAndDeleted(workspaceId, deleted);
 
 			ApiResponse<UserInfoListResponse> listResponse = userRestService.getUserInfo(false);
@@ -796,9 +671,8 @@ public class DashboardHistoryService {
 						userInfo = response;
 					}
 				}
-				FileUserInfoResponse fileUserInfoResponse = modelMapper.map(userInfo, FileUserInfoResponse.class);
-				FileDetailInfoResponse fileDetailInfoResponse = modelMapper.map(
-					recordFile, FileDetailInfoResponse.class);
+				FileUserInfoResponse fileUserInfoResponse = dashboardFileUserInfoMapper.toDto(userInfo);
+				FileDetailInfoResponse fileDetailInfoResponse = dashboardRecordFileDetailMapper.toDto(recordFile);
 				fileDetailInfoResponse.setFileUserInfo(fileUserInfoResponse);
 				fileDetailInfoResponses.add(fileDetailInfoResponse);
 			}
@@ -807,45 +681,6 @@ public class DashboardHistoryService {
 		}
 		return fileDetailInfoResponses;
 	}
-
-	/*public List<FileDetailInfoResponse> getLocalRecordFileList(
-		String workspaceId,
-		String sessionId,
-		boolean deleted
-	) {
-		List<FileDetailInfoResponse> fileDetailInfoResponses = new ArrayList<>();
-		try {
-
-			*//*List<RecordFile> recordFiles;
-
-			if (deleted) {
-				recordFiles = recordFileRepository.findByWorkspaceIdAndSessionIdAndDeletedIsTrue(workspaceId, sessionId);
-			} else {
-				recordFiles = recordFileRepository.findByWorkspaceIdAndSessionIdAndDeletedIsFalse(
-					workspaceId, sessionId);
-			}
-*//*
-			List<RecordFile> recordFiles = recordFileRepository.findByWorkspaceIdAndSessionIdAndDeleted(workspaceId, sessionId, deleted);
-
-			ApiResponse<UserInfoListResponse> listResponse = userRestService.getUserInfo(false);
-			UserInfoResponse userInfo = null;
-			for (RecordFile recordFile : recordFiles) {
-				for (UserInfoResponse response : listResponse.getData().getUserInfoList()) {
-					if (response.getUuid().equals(recordFile.getUuid())) {
-						userInfo = response;
-					}
-				}
-				FileUserInfoResponse fileUserInfoResponse = modelMapper.map(userInfo, FileUserInfoResponse.class);
-				FileDetailInfoResponse fileDetailInfoResponse = modelMapper.map(
-					recordFile, FileDetailInfoResponse.class);
-				fileDetailInfoResponse.setFileUserInfo(fileUserInfoResponse);
-				fileDetailInfoResponses.add(fileDetailInfoResponse);
-			}
-		} catch (Exception exception) {
-			throw new RestServiceException(ErrorCode.ERR_LOCAL_RECORD_FILE_FOUND);
-		}
-		return fileDetailInfoResponses;
-	}*/
 
 	/**
 	 * 정렬, 글 번호 설정
@@ -1092,12 +927,15 @@ public class DashboardHistoryService {
 
 		return myRoomHistory.stream()
 			.map(room -> {
-				RoomHistoryInfoResponse roomHistoryInfoResponse = modelMapper.map(room, RoomHistoryInfoResponse.class);
+				RoomHistoryInfoResponse roomHistoryInfoResponse = ongoingRoomInfoMapper.toDto(room);
 				roomHistoryInfoResponse.setSessionType(room.getSessionProperty().getSessionType());
 
 				List<MemberInfoResponse> memberInfoResponses = room.getMembers().stream()
 					.filter(member -> member.getMemberStatus() != MemberStatus.EVICTED)
-					.map(member -> modelMapper.map(member, MemberInfoResponse.class)).collect(Collectors.toList());
+					.map(
+						member -> dashboardMemberInfoMapper.toDto(member)
+					)
+					.collect(Collectors.toList());
 
 				roomHistoryInfoResponse.setStatus(false);
 				roomHistoryInfoResponse.setMemberList(memberInfoResponses);
@@ -1122,13 +960,15 @@ public class DashboardHistoryService {
 
 		return roomHistories.stream()
 			.map(roomHistory -> {
-				RoomHistoryInfoResponse endRoomHistoryInfoResponse = modelMapper.map(roomHistory, RoomHistoryInfoResponse.class);
+				RoomHistoryInfoResponse endRoomHistoryInfoResponse = dashboardRoomHistoryInfoMapper.toDto(roomHistory);
 				endRoomHistoryInfoResponse.setSessionType(roomHistory.getSessionPropertyHistory().getSessionType());
 				endRoomHistoryInfoResponse.setStatus(true);
 
 				// MemberHistory 도메인 객체의 경우 MemberStatus 값이 없기에, 회원 정보 필터링 불가능
 				List<MemberInfoResponse> memberInfoResponses = roomHistory.getMemberHistories().stream()
-					.map(memberHistory -> modelMapper.map(memberHistory, MemberInfoResponse.class))
+					.map(
+						memberHistory -> dashboardMemberHistoryMapper.toDto(memberHistory)
+					)
 					.collect(Collectors.toList());
 
 				endRoomHistoryInfoResponse.setMemberList(memberInfoResponses);

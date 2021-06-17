@@ -303,6 +303,9 @@ public class RpcHandler extends DefaultJsonRpcHandler<JsonObject> {
 			return;
 		}
 
+		log.info("RpcConnection to string : {}", rpcConnection.toString());
+		log.info("participant to string : {}", participant.toStringAll());
+
 		sessionManager.leaveRoom(participant, request.getId(), EndReason.disconnect, true);
 		log.info("Participant {} has left session {}", participant.getParticipantPublicId(),
 				rpcConnection.getSessionId());

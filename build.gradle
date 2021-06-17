@@ -6,7 +6,7 @@ buildscript {
         mavenCentral()
     }
 
-    ext { set('springCloudVersion', "Hoxton.SR1") }
+    ext { set('springCloudVersion', "Hoxton.SR10") }
 }
 
 
@@ -14,8 +14,8 @@ buildscript {
 // GRADLE PLUGINS.
 //—————————————————————————————————————————————————————————————————————————————————————————————————
 plugins {
-    id("org.springframework.boot") version "2.2.6.RELEASE"
-    id("io.spring.dependency-management") version "1.0.9.RELEASE"
+    id("org.springframework.boot") version "2.3.8.RELEASE"
+    id("io.spring.dependency-management") version "1.0.10.RELEASE"
     id("java")
 }
 
@@ -88,6 +88,7 @@ project(":service-data") {
     dependencies {
         // Lombok and Annotation Configuration Dependencies
         compileOnly 'org.projectlombok:lombok'
+        implementation 'org.springframework.boot:spring-boot-starter'
         annotationProcessor 'org.projectlombok:lombok'
         annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
 
@@ -105,4 +106,8 @@ project(":service-data") {
             }
         }
     }
+}
+
+repositories {
+    mavenCentral()
 }
