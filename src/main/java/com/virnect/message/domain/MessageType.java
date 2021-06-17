@@ -12,7 +12,8 @@ import lombok.Getter;
 @Getter
 public enum MessageType {
     EMAIL("email"),
-    PUSH("push");
+    PUSH("push"),
+    EVENT("event");
 
     private String value;
     MessageType(String value) {

@@ -1,5 +1,5 @@
 plugins {
-    id 'org.springframework.boot' version '2.2.2.RELEASE'
+    id 'org.springframework.boot' version '2.3.8.RELEASE'
     id 'io.spring.dependency-management' version '1.0.8.RELEASE'
     id "com.ewerk.gradle.plugins.querydsl" version "1.0.10"
     id "io.franzbecker.gradle-lombok" version "3.3.0"
@@ -75,6 +75,15 @@ dependencies {
 
     // feign oktthp
     implementation 'io.github.openfeign:feign-okhttp'
+
+    // Redis
+    implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+
+    implementation 'io.jsonwebtoken:jjwt-api:0.11.2'
+
+    // Minio
+    implementation 'io.minio:minio:7.1.4'
+
 }
 
 test {
@@ -107,7 +116,7 @@ sourceSets {
 }
 
 ext {
-    springCloudVersion = 'Greenwich.SR2'
+    springCloudVersion = 'Hoxton.SR10'
 }
 
 dependencyManagement {
