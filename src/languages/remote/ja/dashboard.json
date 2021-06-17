@@ -1,29 +1,25 @@
 {
   "chart": {
-    "my_collabo_list":"個人協業内訳",
-    "total_collabo_list":"すべて協業内訳",
-
-    "daily_collabo_title":"一日協業",
-    "daily_collabo_description":"設定した日付の一日協業内容を示します。",
-    "daily_total_collabo_count":"すべて日別協業数",
-    "daily_total_collabo_time":"すべて日別協業時間",
-    "daily_my_collabo_count":"MY日別協業数",
-    "daily_my_collabo_time":"MY日別協業時間",
-    "collabo_count_by_time":"時間別完了協業",   
-
-    "monthly_collabo_title":"月別協業",
-    "monthly_collabo_description":"設定した日付の協業内容を示します。",
-    "collabo_count_by_day":"日別完了協業",
-
-    "monthly_total_collabo_count":"すべて月別協業数",
-    "monthly_total_collabo_time":"すべて月別協業時間",
-    "monthly_my_collabo_count":"月別MY協業数",
-    "monthly_my_collabo_time":"月別MY協業時間",
-
-    "collabo_day":"日",
-    "collabo_hour":"時間",
-    "collabo_minute":"分",
-    "collabo_count":"回",
-    "count":"{count} 件"
+    "my_collabo_list": "個人協業内訳",
+    "total_collabo_list": "すべて協業内訳",
+    "daily_collabo_title": "一日協業",
+    "daily_collabo_description": "設定した日付の一日協業内容を示します。",
+    "daily_total_collabo_count": "すべて日別協業数",
+    "daily_total_collabo_time": "すべて日別協業時間",
+    "daily_my_collabo_count": "MY日別協業数",
+    "daily_my_collabo_time": "MY日別協業時間",
+    "collabo_count_by_time": "時間別完了協業",
+    "monthly_collabo_title": "月別協業",
+    "monthly_collabo_description": "設定した日付の協業内容を示します。",
+    "collabo_count_by_day": "日別完了協業",
+    "monthly_total_collabo_count": "すべて月別協業数",
+    "monthly_total_collabo_time": "すべて月別協業時間",
+    "monthly_my_collabo_count": "月別MY協業数",
+    "monthly_my_collabo_time": "月別MY協業時間",
+    "collabo_day": "日",
+    "collabo_hour": "時間",
+    "collabo_minute": "分",
+    "collabo_count": "回",
+    "count": "{count} 件"
   }
 }

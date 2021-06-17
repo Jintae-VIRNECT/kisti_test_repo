@@ -5,29 +5,29 @@
     "refresh": "새로고침",
     "logout": "로그아웃",
     "progress": "진행",
-    "select_download":"선택 다운로드",
-    "select_delete":"선택 삭제"
+    "select_download": "선택 다운로드",
+    "select_delete": "선택 삭제"
   },
   "common": {
-    "dashboard":"대시보드",
+    "dashboard": "대시보드",
     "workstation": "워크스테이션",
-    "collabo_list":"협업내역"
+    "collabo_list": "협업내역"
   },
   "confirm": {
     "network_error": "서버와 통신이 원활하지 않습니다. 잠시 후 다시 시도해 주세요.",
-    "file_not_found":"이미 삭제되었거나 존재하지 않은 파일입니다.",
-    "server_no_response":"서버 응답이 올바르지 않습니다.​\n 잠시 후, 다시 시도해 주세요."
+    "file_not_found": "이미 삭제되었거나 존재하지 않은 파일입니다.",
+    "server_no_response": "서버 응답이 올바르지 않습니다.​\n 잠시 후, 다시 시도해 주세요."
   },
-  "excel":{
-    "room_title":"협업명",
-    "room_description":"협업 내용",
-    "room_leader":"리더",
-    "room_member_list":"참가자",
-    "room_active_date":"시작 시간",
-    "room_unactive_date":"종료 시간",
-    "room_duration_sec":"진행 시간",
-    "file_server_record":"서버 녹화",
-    "file_local_record":"로컬 녹화",
-    "file_attach_file":"첨부 파일"
+  "excel": {
+    "room_title": "협업명",
+    "room_description": "협업 내용",
+    "room_leader": "리더",
+    "room_member_list": "참가자",
+    "room_active_date": "시작 시간",
+    "room_unactive_date": "종료 시간",
+    "room_duration_sec": "진행 시간",
+    "file_server_record": "서버 녹화",
+    "file_local_record": "로컬 녹화",
+    "file_attach_file": "첨부 파일"
   }
 }

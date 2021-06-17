@@ -1,0 +1,33 @@
+{
+  "button": {
+    "confirm": "確認",
+    "cancel": "取消",
+    "refresh": "刷新",
+    "logout": "退出",
+    "progress": "進行",
+    "select_download": "選擇下載",
+    "select_delete": "選擇刪除"
+  },
+  "common": {
+    "dashboard": "儀錶盤",
+    "workstation": "工作區",
+    "collabo_list": "合作明細"
+  },
+  "confirm": {
+    "network_error": "服務器和通信不順暢。請稍後再試。",
+    "file_not_found": "這是已經刪除或不存在的檔。",
+    "server_no_response": "服務器應答不正確。\\n 請稍後再試。"
+  },
+  "excel": {
+    "room_title": "合作名稱",
+    "room_description": "合作內容",
+    "room_leader": "領導",
+    "room_member_list": "參加者",
+    "room_active_date": "開始時間",
+    "room_unactive_date": "結束時間",
+    "room_duration_sec": "進行時間",
+    "file_server_record": "服務器拍攝",
+    "file_local_record": "本地拍攝",
+    "file_attach_file": "附加文件"
+  }
+}

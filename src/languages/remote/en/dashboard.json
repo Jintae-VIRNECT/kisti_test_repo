@@ -2,7 +2,6 @@
   "chart": {
     "my_collabo_list": "My Collabo list",
     "total_collabo_list": "Overall Collabo list",
-
     "daily_collabo_title": "Daily Collabo",
     "daily_collabo_description": "Shows the daily Collabo details of set date.",
     "daily_total_collabo_count": "Overall daily counts",
@@ -10,16 +9,13 @@
     "daily_my_collabo_count": "My daily counts",
     "daily_my_collabo_time": "My daily hours",
     "collabo_count_by_time": "Completed Collabo by hours",
-
     "monthly_collabo_title": "Collabo by months",
     "monthly_collabo_description": "Shows the Collabo details of set date.",
     "collabo_count_by_day": "Completed Collabo by days",
-
     "monthly_total_collabo_count": "Overall monthly counts",
     "monthly_total_collabo_time": "Overall monthly hours",
     "monthly_my_collabo_count": "My monthly counts",
     "monthly_my_collabo_time": "My monthly hours",
-
     "collabo_day": "Day",
     "collabo_hour": "Hour",
     "collabo_minute": "Minute",

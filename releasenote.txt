@@ -1,6 +1,9 @@
-RELEASE v2.3.1.0
+RELEASE v2.4.6.0
+
+### Update
+- 언어 표기 변경
 
 ### Chore
-helmet 적용(보안성 향상)
+- UI 라이브러리 최신화
 
 Copyright (C) 2021, VIRNECT CO., LTD. - All Rights Reserved

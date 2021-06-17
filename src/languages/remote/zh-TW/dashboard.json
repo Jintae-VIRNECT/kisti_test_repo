@@ -1,0 +1,25 @@
+{
+  "chart": {
+    "my_collabo_list": "個人合作明細",
+    "total_collabo_list": "全部合作明細",
+    "daily_collabo_title": "一日合作",
+    "daily_collabo_description": "顯示設置日期的一日合作內容。",
+    "daily_total_collabo_count": "全部每日合作數量",
+    "daily_total_collabo_time": "全部每日合作時間",
+    "daily_my_collabo_count": "我的每日合作數量",
+    "daily_my_collabo_time": "我的每日合作時間",
+    "collabo_count_by_time": "各時間已完成的合作",
+    "monthly_collabo_title": "每月合作",
+    "monthly_collabo_description": "顯示設置期間的合作內容。",
+    "collabo_count_by_day": "每日已完成的合作",
+    "monthly_total_collabo_count": "全部每月合作數量",
+    "monthly_total_collabo_time": "全部每月合作時間",
+    "monthly_my_collabo_count": "我的每月合作數量",
+    "monthly_my_collabo_time": "我的每月合作時間",
+    "collabo_day": "日",
+    "collabo_hour": "小時",
+    "collabo_minute": "分鐘",
+    "collabo_count": "次數",
+    "count": "{count}件"
+  }
+}
