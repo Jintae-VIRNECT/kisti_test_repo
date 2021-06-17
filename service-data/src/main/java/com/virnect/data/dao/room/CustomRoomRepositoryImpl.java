@@ -296,23 +296,6 @@ public class CustomRoomRepositoryImpl extends QuerydslRepositorySupport implemen
 		return new PageImpl<>(results, pageable, totalCount);
 	}
 
-	@Override
-	public Optional<Room> findRoomByWorkspaceIdAndSessionIdNotInEvictedMember(
-		String workspaceId, String sessionId
-	) {
-		return Optional.ofNullable(
-			query.selectFrom(room)
-				.leftJoin(room.members, member).fetchJoin()
-				.innerJoin(room.sessionProperty, sessionProperty).fetchJoin()
-				.where(
-					room.workspaceId.eq(workspaceId),
-					room.sessionId.eq(sessionId),
-					member.memberStatus.ne(MemberStatus.EVICTED)
-				)
-				.distinct()
-				.fetchOne());
-	}
-
 	/**
 	 * 사용자 정보 조회 다이나믹 쿼리
 	 * @param search - 조회될 사용자 정보 식별자
