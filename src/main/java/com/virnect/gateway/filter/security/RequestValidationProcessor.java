@@ -28,7 +28,19 @@ public class RequestValidationProcessor {
 	}
 
 	public static boolean isRequestAuthenticationProcessSkip(ServerHttpRequest request) {
-		return isSkipUrl(request) || allowedOfficeInternalAPKDeployRequest(request);
+		return isSkipUrl(request) || hostNameCheck(request) || allowedOfficeInternalAPKDeployRequest(request);
+	}
+
+	private static boolean hostNameCheck(ServerHttpRequest request) {
+		if (request.getHeaders().getHost() != null) {
+			String hostName = request.getHeaders().getHost().getHostName();
+			logger.info("RequestValidationProcessing - Request HostName Check -> [{}]", hostName);
+			if (hostName.equals("192.168.6.3")) {
+				logger.info("RequestValidationProcessing - Request HostName Check Success. : -> [{}]", hostName);
+				return true;
+			}
+		}
+		return false;
 	}
 
 	private static boolean allowedOfficeInternalAPKDeployRequest(ServerHttpRequest request) {
