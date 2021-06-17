@@ -117,6 +117,7 @@ licenseReport {
     filters = [new LicenseBundleNormalizer(), new ExcludeTransitiveDependenciesFilter()]
 }
 
-build {
-    finalizedBy unpackJar
+
+bootJar {
+    layered()
 }
