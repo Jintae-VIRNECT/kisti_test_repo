@@ -17,6 +17,9 @@ import reactor.core.publisher.Mono;
 import reactor.util.Logger;
 import reactor.util.Loggers;
 
+import com.virnect.gateway.filter.security.GatewayServerAuthenticationException;
+import com.virnect.gateway.filter.security.session.SessionNotFoundException;
+
 /**
  * @author jeonghyeon.chang (johnmark)
  * @project PF-Gateway
@@ -59,10 +62,23 @@ public class GatewayExceptionHandler implements ErrorWebExceptionHandler {
 			|| ex.getClass() == UnsupportedJwtException.class) {
 			message = errorMessage(ErrorCode.ERR_API_AUTHENTICATION);
 		}
+
+		// If Session Error
+		if (ex.getClass() == SessionNotFoundException.class) {
+			logger.error("세션 에러");
+			message = errorMessage(ErrorCode.ERR_API_AUTHENTICATION);
+		}
+
+		if (ex.getClass() == GatewayServerAuthenticationException.class) {
+			logger.error("비 인증 (JWT 토큰이 존재하지 않으며, 세션 쿠기도 없음) 요청 차단.");
+			message = errorMessage(ErrorCode.ERR_API_AUTHENTICATION);
+		}
+
 		ServerHttpResponse response = exchange.getResponse();
 		response.getHeaders().setContentType(MediaType.APPLICATION_JSON);
 		DataBuffer dataBuffer = response.bufferFactory().wrap(message.getBytes(StandardCharsets.UTF_8));
-		logger.error("[GATEWAY EXCEPTION HANDLER][TOKEN_SECURITY] : {}", ex.getMessage());
+		logger.error("[GATEWAY EXCEPTION HANDLER][{}] : {}", ex.getClass().getSimpleName(), ex.getMessage());
+		ex.printStackTrace();
 		return response.writeWith(Mono.just(dataBuffer));
 	}
 }
