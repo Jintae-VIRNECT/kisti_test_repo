@@ -105,29 +105,32 @@ export default {
     },
   },
   methods: {
-    changedSearchParams() {
-      if (this.activeTab === 'task') this.searchSubTasks()
-      else if (this.activeTab === 'issue') this.searchIssues()
-      else if (this.activeTab === 'paper') this.searchPapers()
+    changedSearchParams(searchParams) {
+      if (this.activeTab === 'task') this.searchSubTasks(searchParams)
+      else if (this.activeTab === 'issue') this.searchIssues(searchParams)
+      else if (this.activeTab === 'paper') this.searchPapers(searchParams)
     },
-    async searchSubTasks() {
+    async searchSubTasks(searchParams) {
       const { list, total } = await resultService.searchCurrentSubTasks(
-        this.searchParams,
+        searchParams,
       )
+      this.page = searchParams === undefined ? 1 : searchParams.page
       this.list = list
       this.total = total
     },
-    async searchIssues() {
+    async searchIssues(searchParams) {
       const { list, total } = await resultService.searchIssues(
         this.searchParams,
       )
+      this.page = searchParams === undefined ? 1 : searchParams.page
       this.list = list
       this.total = total
     },
-    async searchPapers() {
+    async searchPapers(searchParams) {
       const { list, total } = await resultService.searchPapers(
         this.searchParams,
       )
+      this.page = searchParams === undefined ? 1 : searchParams.page
       this.list = list
       this.total = total
     },
@@ -149,9 +152,9 @@ export default {
     else if (path === '/tasks/results/papers') this.activeTab = 'paper'
 
     workspaceService.watchActiveWorkspace(this, () => {
-      if (this.activeTab === 'task') this.searchSubTasks()
-      else if (this.activeTab === 'issue') this.searchIssues()
-      else if (this.activeTab === 'paper') this.searchPapers()
+      if (this.activeTab === 'task') this.searchSubTasks({ page: 1 })
+      else if (this.activeTab === 'issue') this.searchIssues({ page: 1 })
+      else if (this.activeTab === 'paper') this.searchPapers({ page: 1 })
     })
   },
 }
