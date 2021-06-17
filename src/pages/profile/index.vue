@@ -35,7 +35,12 @@
           <div class="profile__info">
             <h4>{{ $t('profile.info.name') }}</h4>
             <div class="content">
-              <span class="value">{{ me.lastName }} {{ me.firstName }}</span>
+              <span class="value" v-if="/^(ko|ja|zh)/.test(this.$i18n.locale)">
+                {{ me.lastName }} {{ me.firstName }}
+              </span>
+              <span class="value" v-else>
+                {{ me.firstName }} {{ me.lastName }}
+              </span>
               <span class="desc">
                 {{ $t('profile.info.nameDesc') }}
               </span>
