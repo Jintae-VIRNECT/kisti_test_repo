@@ -30,7 +30,11 @@ export default {
         } else {
           role = room.leaderId === this.account.uuid ? ROLE.LEADER : ROLE.EXPERT
         }
+
+        this.$eventBus.$emit('roomloading:show', true)
+
         const options = await this.getDeviceId()
+        const mediaStream = await this.$call.getStream(options)
 
         const res = await joinRoom({
           uuid: this.account.uuid,
@@ -39,13 +43,19 @@ export default {
           sessionId: room.sessionId,
           workspaceId: this.workspace.uuid,
         })
+
         this.setRoomInfo({
           ...room,
           audioRestrictedMode: res.audioRestrictedMode,
           videoRestrictedMode: res.videoRestrictedMode,
         })
 
-        const joinRtn = await this.$call.connect(res, role, options)
+        const joinRtn = await this.$call.connect(
+          res,
+          role,
+          options,
+          mediaStream,
+        )
         if (joinRtn) {
           this.$nextTick(() => {
             this.$router.push({ name: 'service' })
@@ -58,6 +68,7 @@ export default {
         }
       } catch (err) {
         this.clicked = false
+        this.$eventBus.$emit('roomloading:show', false)
         this.roomClear()
         if (this['init'] && typeof this['init'] === 'function') {
           this.init()

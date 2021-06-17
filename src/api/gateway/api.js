@@ -56,6 +56,22 @@ export default {
   KICKOUT_MEMBER: ['DELETE', '/remote/room/{workspaceId}/{sessionId}/member'],
   SEND_SIGNAL: ['POST', '/remote/room/{workspaceId}/signal'],
 
+  /* Service - Drawing */
+  DRAWING_UPLOAD: ['POST', '/remote/file/upload/share', { type: 'form' }],
+  DRAWING_LIST: ['GET', '/remote/file/share'],
+  DRAWING_DOWNLOAD: [
+    'GET',
+    '/remote/file/download/url/share/{workspaceId}/{sessionId}',
+  ],
+  DRAWING_REMOVE: [
+    'DELETE',
+    '/remote/file/share/{workspaceId}/{sessionId}?leaderUserId={leaderUserId}&objectName={objectName}',
+  ],
+  DRAWING_REMOVE_ALL: [
+    'DELETE',
+    '/remote/files/share/{workspaceId}/{sessionId}?userId={leaderUserId}',
+  ],
+
   /* MESSAGE */
   SEND_PUSH: ['POST', '/remote/message/push'],
 
@@ -88,6 +104,9 @@ export default {
     'GET',
     '/remote/recorder/workspaces/{workspaceId}/users/{userId}/recordings',
   ],
+
+  /* MESSAGE FORCE LOGOUT */
+  FORCE_LOGOUT: ['POST', '/remote/message/push/forced-logout'],
 }
 
 export const wsUri = {

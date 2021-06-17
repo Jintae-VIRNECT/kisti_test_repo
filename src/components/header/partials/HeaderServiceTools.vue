@@ -1,5 +1,7 @@
 <template>
   <div class="header-tools">
+    <spot-control v-if="isLeader && isOnpremise"></spot-control>
+
     <chat v-if="!isScreenDesktop"></chat>
 
     <stream v-if="hasVideo"></stream>
@@ -27,6 +29,8 @@ import Speaker from '../tools/Speaker'
 import Notice from '../tools/Notice'
 import CallTime from '../tools/CallTime'
 import Chat from '../tools/Chat'
+import SpotControl from '../tools/SpotControl'
+import { ROLE } from 'configs/remote.config'
 
 export default {
   name: 'HeaderTools',
@@ -37,6 +41,7 @@ export default {
     Notice,
     CallTime,
     Chat,
+    SpotControl,
   },
   data() {
     return {
@@ -56,6 +61,9 @@ export default {
         return true
       }
       return !!this.myInfo.hasAudio
+    },
+    isLeader() {
+      return this.account.roleType === ROLE.LEADER
     },
   },
   methods: {

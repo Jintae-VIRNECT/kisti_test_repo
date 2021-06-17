@@ -34,7 +34,10 @@
     "exit_room": "End Collabo",
     "progress": "Progress",
     "reconnect": "Reconnect",
-    "manual": "Manual Download"
+    "manual": "Manual Download",
+    "force_logout": "Log out",
+    "retry":"Retry",
+    "leave_exit": "Leave"
   },
   "date": {
     "lastday": "[Yesterday]",
@@ -59,11 +62,12 @@
     "local_record_file": "Local recording file",
     "no_sharing_file": "No shared files",
     "workstation": "Workstation",
-    "dashboard": "Dashboard"
+    "dashboard": "Dashboard",
+    "spot_control": "Spot control"
   },
   "confirm": {
     "network_error": "Unstable connection with the server. Please try again later.",
-    "call_timeout": "Your Collabo has been lasted for 1hr, <br>would you like to continue?",
+    "call_timeout": "Your Collabo has been lasted for {time}min, <br>would you like to continue?",
     "unsupport_feature": "This feature is scheduled to be functional later.",
     "access_remove": "Allow access disabled for the selected member.",
     "access_removed": "Allow access disabled."

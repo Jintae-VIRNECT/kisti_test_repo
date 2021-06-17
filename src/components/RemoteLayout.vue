@@ -43,6 +43,7 @@ export default {
     }
   },
   beforeDestroy() {
+    //이벤트 버스 리스너 청소
     this.$eventBus.$off('reJoin', () => {
       this.key++
     })

@@ -39,12 +39,14 @@ export default {
       text,
       confirm = { text: this.$t('button.confirm') },
       cancel = { text: this.$t('button.cancel') },
+      options = {},
     ) {
       Alert.fire({
         html: text,
         showCancelButton: true,
         confirmButtonText: confirm.text,
         cancelButtonText: cancel.text,
+        ...options,
       }).then(result => {
         if (result.value) {
           if (typeof confirm.action === 'function') {

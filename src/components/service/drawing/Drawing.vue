@@ -44,7 +44,7 @@
 <script>
 import DrawingCanvas from './DrawingCanvas'
 import { mapGetters, mapActions } from 'vuex'
-import { SIGNAL, ROLE, DRAWING } from 'configs/remote.config'
+import { ROLE, DRAWING } from 'configs/remote.config'
 import { VIEW } from 'configs/view.config'
 import confirmMixin from 'mixins/confirm'
 
@@ -61,7 +61,7 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['fileList', 'shareFile', 'view', 'historyList']),
+    ...mapGetters(['fileList', 'shareFile', 'view', 'historyList', 'roomInfo']),
     show() {
       if (this.shareFile && this.shareFile.id) {
         return 'file'
@@ -85,28 +85,37 @@ export default {
     },
   },
   methods: {
-    ...mapActions(['showImage', 'addHistory', 'setView']),
+    ...mapActions(['addHistory', 'setView']),
     participantChange(connectionId) {
       if (this.account.roleType !== ROLE.LEADER) return
       if (this.shareFile && this.shareFile.id) {
         if (!this.shareFile.json || this.shareFile.json.length === 0) {
-          this.sendImage(connectionId)
+          //협업보드 활성화 상태에서 신규 참가자 진입 시 fileShare 이벤트 전송하는 부분
+          setTimeout(() => this.sendImage([connectionId]), 1000) //신규 참가자에게 전달되는 이벤트가 누락되는 경우 있어 이벤트 전송시점을 좀 딜레이함
           return
         }
         this.confirmDefault(this.$t('service.drawing_sync'), {
-          action: this.refreshCanvas,
+          action: () => {
+            this.sendImage()
+          },
         })
       }
     },
-    sendImage(connectionId) {
-      const params = {
-        imgId: this.shareFile.id,
-        imgName: this.shareFile.oriName
-          ? this.shareFile.oriName
-          : this.shareFile.fileName,
-        image: this.shareFile.img,
-      }
-      this.$refs['drawingLayout'].sendImage(params, [connectionId])
+    sendImage(target = null) {
+      const index = this.shareFile.pageNum ? this.shareFile.pageNum - 1 : 0 //pdf의 경우 pageNum이 0이상의 수로 존재, image의 경우 0으로 세팅되어 옴
+      const name = this.shareFile.oriName || this.shareFile.name
+      this.$call.sendDrawing(
+        DRAWING.FILE_SHARE,
+        {
+          name,
+          objectName: this.shareFile.objectName,
+          contentType: this.shareFile.contentType,
+          width: this.shareFile.width,
+          height: this.shareFile.height,
+          index,
+        },
+        target,
+      )
     },
     refreshCanvas() {
       const imgId = parseInt(
@@ -137,61 +146,36 @@ export default {
       const file = event.dataTransfer.files[0]
       this.$eventBus.$emit('addFile', file)
     },
-    getImage(receive) {
-      const data = JSON.parse(receive.data)
-
-      if (data.type === DRAWING.END_DRAWING) {
-        this.showImage({})
-        this.setView(VIEW.STREAM)
-        return
-      }
-
-      if (
-        ![DRAWING.FIRST_FRAME, DRAWING.FRAME, DRAWING.LAST_FRAME].includes(
-          data.type,
-        )
+    getHistoryObject() {
+      // 모바일 수신부 타입: Int32
+      const imgId = parseInt(
+        Date.now()
+          .toString()
+          .substr(-9),
       )
-        return
-
-      if (data.type === DRAWING.FIRST_FRAME) {
-        this.loadingFrame = true
-        this.chunk = []
+      let fileName = this.fileData.name
+      if (this.pdfName) {
+        const idx = this.pdfName.lastIndexOf('.')
+        fileName = `${this.pdfName.slice(0, idx)} [${this.pdfPage}].png`
       }
-      this.chunk.push(data.chunk)
-
-      if (data.type === DRAWING.LAST_FRAME) {
-        // this.loadingFrame = false
-        this.encodeImage(data)
+      return {
+        id: imgId,
+        fileName: fileName,
+        oriName:
+          this.pdfName && this.pdfName.length > 0
+            ? this.pdfName
+            : this.fileData.name,
+        img: this.imageData,
+        // fileData: this.fileData,
       }
-    },
-    encodeImage(data) {
-      let imgUrl = ''
-      for (let part of this.chunk) {
-        imgUrl += part
-      }
-      this.chunk = []
-      imgUrl = 'data:image/png;base64,' + imgUrl
-      const imageInfo = {
-        id: data.imgId,
-        img: imgUrl,
-        width: data.width,
-        height: data.height,
-        fileName: data.imgName,
-      }
-
-      this.showImage(imageInfo)
     },
   },
 
   /* Lifecycles */
   created() {
-    if (this.account.roleType !== ROLE.LEADER) {
-      this.$eventBus.$on(SIGNAL.DRAWING, this.getImage)
-    }
     this.$eventBus.$on('participantChange', this.participantChange)
   },
   beforeDestroy() {
-    this.$eventBus.$off(SIGNAL.DRAWING, this.getImage)
     this.$eventBus.$off('participantChange', this.participantChange)
   },
 }

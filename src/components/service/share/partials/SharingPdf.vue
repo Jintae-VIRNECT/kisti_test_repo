@@ -1,14 +1,19 @@
 <template>
   <li class="sharing-image" @click="pdfPageView">
-    <button class="sharing-image__item pdf">
-      <img :src="thumbnail" />
+    <button
+      class="sharing-image__item pdf"
+      :class="{
+        active: shareFile.objectName === fileInfo.objectName,
+      }"
+    >
+      <img :src="fileInfo.thumbnailDownloadUrl" />
+      <div class="sharing-image__item-active">
+        <p>{{ $t('service.share_current') }}</p>
+      </div>
     </button>
 
-    <p class="sharing-image__name">{{ fileData.name }}</p>
-    <div
-      class="sharing-image__loading"
-      v-if="docPages.length === 0 || docPages.length !== totalPages"
-    >
+    <p class="sharing-image__name">{{ fileInfo.name }}</p>
+    <div class="sharing-image__loading" v-if="!loaded">
       <div class="loading-box">
         <p class="loading-box__title">
           {{ $t('service.share_loading') }}
@@ -24,10 +29,6 @@
         </p>
       </div>
     </div>
-    <canvas
-      style=" z-index: -999;display: none; width: 100%; height: 100%;"
-      ref="backCanvas"
-    ></canvas>
     <button class="sharing-image__remove" @click.stop="deleteImage">
       {{ $t('service.file_remove') }}
     </button>
@@ -36,6 +37,8 @@
 
 <script>
 import { mapGetters, mapActions } from 'vuex'
+import { DRAWING } from 'configs/remote.config'
+import { drawingRemove, drawingDownload } from 'api/http/drawing'
 import toastMixin from 'mixins/toast'
 import confirmMixin from 'mixins/confirm'
 import PDFJS from 'pdfjs-dist'
@@ -49,12 +52,12 @@ export default {
   components: {},
   data() {
     return {
-      thumbnail: '',
       document: null,
       size: {
         width: 300,
         height: 150,
       },
+      cbLoad: () => {},
     }
   },
   props: {
@@ -63,19 +66,12 @@ export default {
     },
   },
   computed: {
-    ...mapGetters(['pdfPages']),
+    ...mapGetters(['pdfPages', 'roomInfo', 'shareFile']),
     docPages() {
-      if (this.fileInfo.id in this.pdfPages) {
-        return this.pdfPages[this.fileInfo.id]
+      if (this.fileInfo.objectName in this.pdfPages) {
+        return this.pdfPages[this.fileInfo.objectName]
       } else {
         return []
-      }
-    },
-    fileData() {
-      if (this.fileInfo && this.fileInfo.filedata) {
-        return this.fileInfo.filedata
-      } else {
-        return {}
       }
     },
     totalPages() {
@@ -89,37 +85,26 @@ export default {
         return 0
       }
     },
-  },
-  watch: {
-    docPages: {
-      deep: true,
-      handler(e) {
-        if (e.length === this.totalPages) {
-          const fileReader = new FileReader()
-          fileReader.onload = e => {
-            this.thumbnail = e.target.result
-          }
-          this.$nextTick(() => {
-            if (this.docPages[0] && this.docPages[0].pageNum) {
-              fileReader.readAsDataURL(this.docPages[0].filedata)
-            }
-          })
-        }
-      },
+    loaded() {
+      return (
+        this.docPages.length !== 0 && this.docPages.length === this.totalPages
+      )
     },
   },
   methods: {
     ...mapActions(['addPdfPage', 'removePdfPage', 'removeFile', 'addHistory']),
-    init() {
+    async init() {
       if (
         this.docPages.length !== 0 &&
         this.docPages.length === this.totalPages
       )
         return
-      this.removePdfPage(this.fileInfo.id)
+      this.removePdfPage(this.fileInfo.objectName)
       let startTime = Date.now()
+      const url = await this.downloadPdfFile()
       // PDFJS.GlobalWorkerOptions.workerSrc = '/pdf.worker'
-      const loadingTask = PDFJS.getDocument(URL.createObjectURL(this.fileData))
+      // const loadingTask = PDFJS.getDocument(URL.createObjectURL(this.fileData))
+      const loadingTask = PDFJS.getDocument(url)
       loadingTask.promise
         .then(async pdfDocument => {
           this.document = pdfDocument
@@ -129,6 +114,7 @@ export default {
           }
           let duration = Date.now() - startTime
           this.logger('pdf loading time', duration)
+          this.cbLoad()
         })
         .catch(err => {
           if (
@@ -145,29 +131,39 @@ export default {
           } else {
             this.toastError(this.$t('service.file_type'))
           }
-          console.error(err)
-          setTimeout(() => {
-            this.remove()
-          }, 3000)
+          // setTimeout(() => {
+          //   this.remove()
+          // }, 3000)
         })
     },
+    async downloadPdfFile() {
+      const res = await drawingDownload({
+        sessionId: this.roomInfo.sessionId,
+        workspaceId: this.workspace.uuid,
+        objectName: this.fileInfo.objectName,
+        userId: this.account.uuid,
+      })
+      return res.url
+    },
     async getPage(index, numPages) {
-      const blobData = await this.loadPage(index)
-      blobData.name = index
+      const { blob, origin } = await this.loadPage(index)
+      blob.name = index
       const docPage = {
-        id: this.fileInfo.id,
+        id: this.fileInfo.objectName,
         total: numPages,
         pageNum: index,
-        // pageData: fileReader,
-        filedata: blobData,
+        filedata: blob,
+        width: origin.width,
+        height: origin.height,
       }
       this.addPdfPage(docPage)
     },
     async loadPage(index, scale = null) {
       const fileReader = await this.document.getPage(index)
       const canvas = document.createElement('canvas')
+      let vp = null
       if (scale === null) {
-        const vp = fileReader.getViewport({ scale: 1 })
+        vp = fileReader.getViewport({ scale: 1 })
         let scaleWidth = this.size.width / vp.width
         let scaleHeight = this.size.height / vp.height
         scale = scaleWidth > scaleHeight ? scaleHeight : scaleWidth
@@ -181,7 +177,18 @@ export default {
       canvas.width = viewport.width
       canvas.height = viewport.height
       await renderTask.promise
-      return await this.getCanvasBlob(canvas)
+      const blob = await this.getCanvasBlob(canvas)
+      return {
+        blob,
+        size: {
+          width: canvas.width,
+          height: canvas.height,
+        },
+        origin: {
+          width: vp ? vp.width : 0,
+          height: vp ? vp.height : 0,
+        },
+      }
     },
     getCanvasBlob(canvas) {
       return new Promise(resolve => {
@@ -200,7 +207,7 @@ export default {
         this.docPages.length !== this.totalPages
       )
         return
-      this.$emit('pdfView', this.fileInfo.id)
+      this.$emit('pdfView', this.fileInfo.objectName)
     },
     deleteImage() {
       this.confirmCancel(
@@ -214,11 +221,32 @@ export default {
         },
       )
     },
-    remove() {
-      this.removeFile(this.fileInfo.id)
+    async remove() {
+      try {
+        await drawingRemove({
+          workspaceId: this.workspace.uuid,
+          sessionId: this.roomInfo.sessionId,
+          leaderUserId: this.account.uuid,
+          objectName: this.fileInfo.objectName,
+        })
+
+        this.$call.sendDrawing(DRAWING.DELETED, {
+          objectNames: [this.fileInfo.objectName],
+        })
+        // this.removeFile(this.fileInfo.id)
+      } catch (err) {
+        console.log(err)
+      }
     },
     async addPdfHistory(page) {
-      const imageBlob = await this.loadPage(page, 1.5)
+      if (!this.loaded) {
+        this.cbLoad = () => {
+          this.cbLoad = () => {}
+          this.addPdfHistory(page)
+        }
+        return
+      }
+      const { blob, size } = await this.loadPage(page, 1.5)
 
       const imgId = parseInt(
         Date.now()
@@ -226,40 +254,37 @@ export default {
           .substr(-9),
       )
 
-      const idx = this.fileData.name.lastIndexOf('.')
-      let fileName = `${this.fileData.name.slice(0, idx)} [${page}].png`
+      const idx = this.fileInfo.name.lastIndexOf('.')
+      let fileName = `${this.fileInfo.name.slice(0, idx)} [${page}].png`
 
       const fileReader = new FileReader()
       fileReader.onload = async e => {
         let imgUrl = e.target.result
         const history = {
           id: imgId,
+          name: fileName,
           fileName: fileName,
           oriName:
             this.pdfName && this.pdfName.length > 0
               ? this.pdfName
-              : this.fileData.name,
+              : this.fileInfo.name,
+          width: size.width,
+          height: size.height,
           img: imgUrl,
+          pageNum: page,
+          objectName: this.fileInfo.objectName,
+          contentType: this.fileInfo.contentType,
         }
+        //pdf shareFile(vuex) set 되는 곳
         this.addHistory(history)
       }
-      fileReader.readAsDataURL(imageBlob)
+      fileReader.readAsDataURL(blob)
     },
   },
 
   /* Lifecycles */
   mounted() {
     this.init()
-    this.size.width = this.$el.querySelector('.sharing-image__item').offsetWidth
-    this.size.height = this.$el.querySelector(
-      '.sharing-image__item',
-    ).offsetHeight
-  },
-  created() {
-    this.$eventBus.$on(`loadPdf_${this.fileInfo.id}`, this.addPdfHistory)
-  },
-  beforeDestroy() {
-    this.$eventBus.$off(`loadPdf_${this.fileInfo.id}`)
   },
 }
 </script>

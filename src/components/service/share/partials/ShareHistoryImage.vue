@@ -27,6 +27,9 @@
 import { mapActions, mapGetters } from 'vuex'
 import confirmMixin from 'mixins/confirm'
 import touchMixin from 'mixins/touch'
+import { base64ToBlob } from 'utils/file'
+import { drawingUpload } from 'api/http/drawing'
+import { DRAWING } from 'configs/remote.config'
 export default {
   name: 'ShareHistoryImage',
   mixins: [confirmMixin, touchMixin],
@@ -47,21 +50,46 @@ export default {
     },
   },
   computed: {
-    ...mapGetters(['shareFile']),
+    ...mapGetters(['shareFile', 'roomInfo']),
   },
   methods: {
-    ...mapActions(['showImage', 'removeHistory']),
+    ...mapActions(['removeHistory']),
     doEvent() {
       this.show()
     },
     oneClick() {
       this.select()
     },
-    show() {
+    async show() {
       this.clicking = false
       if (this.shareFile.id === this.imgInfo.id) return
-      this.showImage(this.imgInfo)
-      // this.$call.shareImage(this.imgInfo)
+      const dataType = 'application/octet-stream'
+
+      const file = await base64ToBlob(
+        this.imgInfo.img,
+        dataType,
+        this.imgInfo.fileName,
+      )
+
+      const res = await drawingUpload({
+        file: file,
+        sessionId: this.roomInfo.sessionId,
+        userId: this.account.uuid,
+        workspaceId: this.workspace.uuid,
+      })
+      this.$call.sendDrawing(DRAWING.ADDED, {
+        deleted: false, //false
+        expired: false, //false
+        sessionId: res.sesssionId,
+        name: res.name,
+        objectName: res.objectName,
+        contentType: res.contentType, // "image/jpeg", "image/bmp", "image/gif", "application/pdf",
+        size: res.size,
+        createdDate: res.createdDate,
+        expirationDate: res.expirationDate,
+        width: res.width, //pdf 는 0
+        height: res.height,
+      })
     },
     deleteImage() {
       if (this.shareFile.id === this.imgInfo.id) return
@@ -77,10 +105,10 @@ export default {
       )
     },
     remove() {
-      this.removeHistory(this.imgInfo.id)
       if (this.selected) {
         this.$emit('unSelected', this.imgInfo.id)
       }
+      this.removeHistory(this.imgInfo.id)
     },
     select() {
       if (!this.clicking) {

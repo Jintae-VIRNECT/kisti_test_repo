@@ -63,9 +63,23 @@ export default {
         ).offsetWidth
       })
     },
+
+    //워크 스페이스 변경 후 변경실패 시 롤백해야하는 경우를 위해 추가한 메서드
+    updateWorkspace(workspaceId) {
+      const workspace = this.workspaceList.find(
+        workspace => workspace.uuid === workspaceId,
+      )
+      console.log(workspaceId, workspace)
+      this.changeSelect(workspace)
+    },
   },
 
   /* Lifecycles */
-  mounted() {},
+  mounted() {
+    this.$eventBus.$on('workspaceChange', this.updateWorkspace)
+  },
+  beforeDestroy() {
+    this.$eventBus.$off('workspaceChange')
+  },
 }
 </script>

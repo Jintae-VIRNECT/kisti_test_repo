@@ -62,7 +62,7 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['tools', 'view', 'viewAction']),
+    ...mapGetters(['tools', 'view', 'viewAction', 'myInfo']),
     uuid() {
       return this.account.uuid
     },
@@ -76,21 +76,22 @@ export default {
      */
     setBG() {
       return new Promise((resolve, reject) => {
-        const bgImage = new Image()
-        bgImage.onload = () => {
-          this.img.width = bgImage.width
-          this.img.height = bgImage.height
-          const fabricImage = new fabric.Image(bgImage)
+        this.img.width = this.file.width
+        this.img.height = this.file.height
+        fabric.Image.fromURL(this.file.img, fabricImage => {
           const canvas = this.canvas
           const parent = this.$el.parentNode
 
           const canvasSize = getCanvasSize(
             parent.offsetWidth,
             parent.offsetHeight,
-            bgImage.width,
-            bgImage.height,
+            // bgImage.width,
+            // bgImage.height,
+            this.img.width,
+            this.img.height,
           )
           fabricImage.set({
+            crossOrigin: 'anonymous',
             originX: 'left',
             originY: 'top',
             scaleX:
@@ -122,17 +123,14 @@ export default {
                   scaleY: canvasSize.scale,
                 })
                 this.backCanvas.renderAll()
+
+                this.updateHistory()
               })
             })
 
             resolve(canvas)
           })
-        }
-        bgImage.onerror = error => {
-          console.error(error)
-          reject()
-        }
-        bgImage.src = this.file.img
+        })
       })
     },
 
@@ -177,25 +175,17 @@ export default {
       if (this.canvas) {
         this.canvas.dispose()
         this.canvas = null
-        this.receivedList = []
+        this.receivedList = {}
       }
       this.editingMode = false
 
       const canvas = new fabric.Canvas('drawingCanvas', {
         backgroundColor: '#000000',
-        isDrawingMode:
-          this.viewAction === ACTION.DRAWING_LINE &&
-          this.account.roleType === ROLE.LEADER,
+        isDrawingMode: this.viewAction === ACTION.DRAWING_LINE,
         freeDrawingCursor:
-          this.account.roleType === ROLE.LEADER &&
-          this.viewAction === ACTION.DRAWING_TEXT
-            ? 'text'
-            : 'default',
+          this.viewAction === ACTION.DRAWING_TEXT ? 'text' : 'default',
         defaultCursor:
-          this.account.roleType === ROLE.LEADER &&
-          this.viewAction === ACTION.DRAWING_TEXT
-            ? 'text'
-            : 'default',
+          this.viewAction === ACTION.DRAWING_TEXT ? 'text' : 'default',
       })
 
       const backCanvas = new fabric.StaticCanvas('backCanvas', {
@@ -215,26 +205,15 @@ export default {
       // 히스토리 초기화
       this.stackClear()
 
-      if (this.account.roleType === ROLE.LEADER) {
-        const params = {
-          imgId: this.file.id,
-          // imgName: this.file.oriName
-          //   ? this.file.oriName
-          //   : this.file.fileName,
-          imgName: this.file.fileName,
-          image: this.file.img,
-        }
-        this.sendImage(params)
-      }
-
       this.isInit = true
       this.$emit('loadingSuccess')
+      this.receiveRender()
 
       return this.canvas
     },
 
     optimizeCanvasSize() {
-      if (!this.file || !this.file.id || !this.canvas) return
+      if (!this.file || !this.file.objectName || !this.canvas) return
       const canvas = this.canvas
       const cursor = this.cursor.canvas
       const image = canvas.backgroundImage
@@ -276,12 +255,14 @@ export default {
       })
     },
     receiveRender() {
-      if (this.receivedList.length === 0) return
+      if (Object.keys(this.receivedList).length === 0) return
 
-      for (let received of this.receivedList) {
-        this.addReceiveObject(received)
+      for (let key in this.receivedList) {
+        for (let received of this.receivedList[key]) {
+          this.addReceiveObject({ data: received.data, owner: received.owner })
+        }
+        delete this.receivedList[key]
       }
-      this.receivedList = []
     },
     windowResize() {
       setTimeout(() => {

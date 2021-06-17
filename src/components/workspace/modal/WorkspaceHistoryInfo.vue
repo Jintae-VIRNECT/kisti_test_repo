@@ -72,7 +72,6 @@ import RoomInfo from '../partials/ModalHistoryRoomInfo'
 import ParticipantsInfo from '../partials/ModalParticipantsInfo'
 // import RoomDownload from '../partials/ModalRoomDownload'
 import Profile from 'Profile'
-// import { RUNTIME_ENV, RUNTIME } from 'configs/env.config'
 
 export default {
   name: 'WorkspaceHistoryInfo',
@@ -95,13 +94,6 @@ export default {
     participants() {
       return this.room.memberList
     },
-    // isOnpremise() {
-    //   if (RUNTIME_ENV === RUNTIME.ONPREMISE) {
-    //     return true
-    //   } else {
-    //     return false
-    //   }
-    // },
   },
   props: {
     visible: {

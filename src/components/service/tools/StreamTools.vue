@@ -7,13 +7,14 @@
       <div class="division"></div>
       <screen-share></screen-share>
     </template>
+    <position-map></position-map>
   </div>
 </template>
 
 <script>
 import { mapGetters } from 'vuex'
 import { ROLE } from 'configs/remote.config'
-import { Pointing, Color, ScreenShare, Moving } from './partials'
+import { Pointing, Color, ScreenShare, Moving, PositionMap } from './partials'
 import { DEVICE } from 'configs/device.config'
 
 export default {
@@ -23,6 +24,7 @@ export default {
     Pointing,
     Color,
     ScreenShare,
+    PositionMap,
   },
   computed: {
     ...mapGetters(['mainView']),

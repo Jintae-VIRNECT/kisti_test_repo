@@ -1,4 +1,5 @@
 'use strict'
+const webpack = require('webpack')
 const merge = require('webpack-merge')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 const baseWebpackConfig = require('./webpack.base.conf')
@@ -55,6 +56,10 @@ const localWebpackConfig = merge(baseWebpackConfig(mode), {
         {
           from: /.*/,
           to: '/remote/index.html',
+        },
+        {
+          from: /test(\/.*)?/,
+          to: '/test/index.html',
         },
       ],
     },
@@ -156,6 +161,19 @@ const localWebpackConfig = merge(baseWebpackConfig(mode), {
       chunks: ['account'],
     }),
 
+    // test
+    new HtmlWebpackPlugin({
+      inject: 'body',
+      hash: true,
+      favicon: './src/assets/favicon.ico',
+      template: './src/apps/test/app.html',
+      filename: 'test/index.html',
+      chunks: ['test'],
+    }),
+
+    new webpack.DefinePlugin({
+      GOOGLE_MAP_API: '"AIzaSyD0JClrnwr2SpYViHpY69M6_euI7GyUpu8"',
+    }),
     // new BundleAnalyzerPlugin({
     //   analyzerHost: '127.0.0.1',
     //   analyzerPort: 8887,

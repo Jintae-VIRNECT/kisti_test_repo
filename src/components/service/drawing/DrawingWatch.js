@@ -21,13 +21,14 @@ export default {
       if (val !== oldVal && val === VIEW.DRAWING) {
         this.optimizeCanvasSize()
         this.$nextTick(() => {
+          if (!this.isInit) return
           this.receiveRender()
         })
       }
     },
     viewAction(value) {
       if (this.view !== VIEW.DRAWING) return
-      if (this.canvas && this.account.roleType === ROLE.LEADER) {
+      if (this.canvas) {
         this.canvas.isDrawingMode = value === ACTION.DRAWING_LINE
         this.canvas.freeDrawingCursor =
           value === ACTION.DRAWING_TEXT ? 'text' : 'default'
@@ -104,6 +105,7 @@ export default {
     toolAble() {
       if (this.undoList.length > 0 || this.redoList.length > 0) {
         this.$eventBus.$emit('tool:clear', true)
+        this.$eventBus.$emit('tool:clearall', true)
         if (this.undoList.length === 0) {
           this.$eventBus.$emit('tool:undo', false)
           this.$eventBus.$emit('tool:redo', true)
@@ -115,6 +117,14 @@ export default {
           this.$eventBus.$emit('tool:redo', true)
         }
       } else {
+        if (
+          Object.keys(this.receiveUndoList).length > 0 ||
+          Object.keys(this.receiveRedoList).length > 0
+        ) {
+          this.$eventBus.$emit('tool:clearall', true)
+        } else {
+          this.$eventBus.$emit('tool:clearall', false)
+        }
         this.$eventBus.$emit('tool:undo', false)
         this.$eventBus.$emit('tool:redo', false)
         this.$eventBus.$emit('tool:clear', false)

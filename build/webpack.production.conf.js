@@ -1,11 +1,11 @@
 'use strict'
+const webpack = require('webpack')
 const merge = require('webpack-merge')
 const CleanWebpackPlugin = require('clean-webpack-plugin')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 const baseWebpackConfig = require('./webpack.base.conf')
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 const CompressionPlugin = require('compression-webpack-plugin')
-const webpack = require('webpack')
 
 const mode = process.env.NODE_ENV === 'develop' ? 'development' : 'production'
 
@@ -43,6 +43,9 @@ const productionWebpackConfig = merge(baseWebpackConfig(mode), {
       algorithm: 'gzip',
       test: /\.(js|html)$/,
       minRatio: 0.8,
+    }),
+    new webpack.DefinePlugin({
+      GOOGLE_MAP_API: '"AIzaSyD0JClrnwr2SpYViHpY69M6_euI7GyUpu8"',
     }),
   ],
   optimization: {},

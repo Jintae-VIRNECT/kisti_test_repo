@@ -65,6 +65,21 @@ router.get('/healthcheck', function(req, res) {
   res.send('200')
 })
 
+//spot 페이지 추가
+if (config.getEnv() === 'onpremise') {
+  router.get('/spot-control', function(req, res) {
+    const lang = acceptLang(req)
+    // res.send(extra[lang])
+    res.send(remote[lang])
+  })
+
+  router.get('/spot-error', function(req, res) {
+    const lang = acceptLang(req)
+    // res.send(extra[lang])
+    res.send(remote[lang])
+  })
+}
+
 router.get('/home', function(req, res) {
   if (IsAllowBrowser(req)) {
     if (IsMobileBrowser(req)) {

@@ -9,6 +9,7 @@
     <undo></undo>
     <redo></redo>
     <clear></clear>
+    <clear-all v-if="isLeader"></clear-all>
   </div>
 </template>
 
@@ -22,7 +23,9 @@ import {
   Undo,
   Redo,
   Clear,
+  ClearAll,
 } from './partials'
+import { ROLE } from 'configs/remote.config'
 
 export default {
   name: 'DrawingTools',
@@ -35,11 +38,16 @@ export default {
     Undo,
     Redo,
     Clear,
+    ClearAll,
   },
   data() {
     return {}
   },
-  computed: {},
+  computed: {
+    isLeader() {
+      return this.account.roleType === ROLE.LEADER
+    },
+  },
   watch: {},
   methods: {},
 

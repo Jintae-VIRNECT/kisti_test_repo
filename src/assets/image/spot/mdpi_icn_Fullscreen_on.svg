@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="32px" height="32px" viewBox="0 0 32 32" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>1C2071A7-538D-4D9F-AC16-04E6079363B6@1x</title>
+    <defs>
+        <path d="M10.25,18.125 L8,18.125 L8,23.75 L13.625,23.75 L13.625,21.5 L10.25,21.5 L10.25,18.125 Z M8,13.625 L10.25,13.625 L10.25,10.25 L13.625,10.25 L13.625,8 L8,8 L8,13.625 Z M21.5,21.5 L18.125,21.5 L18.125,23.75 L23.75,23.75 L23.75,18.125 L21.5,18.125 L21.5,21.5 Z M18.125,8 L18.125,10.25 L21.5,10.25 L21.5,13.625 L23.75,13.625 L23.75,8 L18.125,8 Z" id="path-1"></path>
+    </defs>
+    <g id="Remote_Spot" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="RSS_0005_Spot-연결_카메라-출력안될경우" transform="translate(-200.000000, -72.000000)">
+            <g id="Group-15-Copy" transform="translate(60.000000, 60.000000)">
+                <g id="ic_full" transform="translate(128.000000, 0.000000)">
+                    <g id="icn_Fullscreen" transform="translate(12.000000, 12.000000)">
+                        <rect id="tr" x="0" y="0" width="32" height="32"></rect>
+                        <mask id="mask-2" fill="white">
+                            <use xlink:href="#path-1"></use>
+                        </mask>
+                        <use id="icon/navigation/fullscreen_24px" fill="#FFFFFF" fill-rule="nonzero" xlink:href="#path-1"></use>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>
