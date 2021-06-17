@@ -6,7 +6,6 @@ const glob = require('glob')
 const MODE = /local|develop|onpremise/.test(process.env.NODE_ENV)
   ? 'development'
   : 'production'
-const isProduction = MODE === 'production'
 
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
@@ -19,14 +18,14 @@ const extractCSS = new MiniCssExtractPlugin({
 const entries = {}
 const chunks = []
 const htmlWebpackPluginArray = []
-glob.sync('./src/apps/**/app.js').forEach(path => {
-  const chunk = path.split('./src/apps/')[1].split('/app.js')[0]
+glob.sync('./src/apps/**/*.js').forEach(path => {
+  const chunk = path.split('./src/')[1].split('.js')[0]
   entries[chunk] = path
   chunks.push(chunk)
 
-  const filename = chunk + '.html'
+  const filename = chunk
   const htmlConf = {
-    filename: filename,
+    filename: filename + '.html',
     template: path.replace(/.js/g, '.html'),
     inject: 'body',
     favicon: './src/assets/favicon.ico',

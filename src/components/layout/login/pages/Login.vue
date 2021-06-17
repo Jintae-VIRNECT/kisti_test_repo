@@ -56,7 +56,7 @@
           class="next-btn block-btn"
           type="info"
           @click="handleLogin"
-          :disabled="loading || login.email == '' || login.password == ''"
+          :disabled="isDisable"
           >{{ $t('login.title') }}</el-button
         >
         <div class="find-wrap">
@@ -124,6 +124,17 @@ export default {
     }
   },
   computed: {
+    isDisable() {
+      return (
+        this.loading ||
+        this.login.email == '' ||
+        this.login.password == '' ||
+        this.login.email.replace(/ /gi, '') === '' ||
+        this.login.password.replace(/ /gi, '') === '' ||
+        this.login.email.length < 5 ||
+        this.login.password.length < 8
+      )
+    },
     resetPasswordPath() {
       if (this.$env !== 'onpremise') {
         return {
