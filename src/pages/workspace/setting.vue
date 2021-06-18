@@ -36,7 +36,7 @@
                       <VirnectThumbnail
                         :image="cdn(activeWorkspace.masterProfile)"
                       />
-                      <span>{{ activeWorkspace.masterName }}</span>
+                      <span>{{ activeWorkspace.masterNickName }}</span>
                     </dd>
                   </dl>
                 </el-col>
