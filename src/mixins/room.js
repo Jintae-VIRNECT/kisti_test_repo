@@ -5,6 +5,8 @@ import { ROOM_STATUS } from 'configs/status.config'
 import toastMixin from 'mixins/toast'
 import { mapActions } from 'vuex'
 import callMixin from 'mixins/call'
+import { isRegisted } from 'utils/auth'
+
 export default {
   mixins: [toastMixin, callMixin],
   data() {
@@ -17,6 +19,12 @@ export default {
     async join(room) {
       this.logger('>>> JOIN ROOM')
       try {
+        //멤버 상태 등록 안된 경우 협업방 입장 불가
+        if (!isRegisted) {
+          this.toastDefault(this.$t('workspace.auth_status_failed'))
+          return
+        }
+
         if (this.clicked === true) return
         this.clicked = true
 

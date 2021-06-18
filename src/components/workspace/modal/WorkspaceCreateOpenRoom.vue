@@ -34,6 +34,7 @@ import { ROOM_STATUS } from 'configs/status.config'
 import toastMixin from 'mixins/toast'
 import confirmMixin from 'mixins/confirm'
 import callMixin from 'mixins/call'
+import { isRegisted } from 'utils/auth'
 
 export default {
   name: 'WorkspaceCreateOpenRoom',
@@ -95,6 +96,12 @@ export default {
     },
     async startRemote(info) {
       try {
+        //멤버 상태 등록 안된 경우 협업방 입장 불가
+        if (!isRegisted) {
+          this.toastDefault(this.$t('workspace.auth_status_failed'))
+          return
+        }
+
         if (this.clicked === true) return
         this.clicked = true
 

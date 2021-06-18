@@ -69,8 +69,6 @@ import imageMixin from 'mixins/uploadImage'
 import confirmMixin from 'mixins/confirm'
 import toastMixin from 'mixins/toast'
 
-import { isRegisted } from 'utils/auth'
-
 export default {
   name: 'ModalCreateRoomInfo',
   mixins: [imageMixin, confirmMixin, toastMixin],
@@ -153,12 +151,6 @@ export default {
         } else {
           this.confirmDefault(this.$t('workspace.remote_name_valid2'))
         }
-        return
-      }
-
-      //멤버 상태 등록 안된 경우 협업방 입장 불가
-      if (!isRegisted) {
-        this.toastDefault(this.$t('workspace.auth_status_failed'))
         return
       }
 
