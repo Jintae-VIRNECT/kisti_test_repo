@@ -132,7 +132,7 @@ export default {
         this.login.email.replace(/ /gi, '') === '' ||
         this.login.password.replace(/ /gi, '') === '' ||
         this.login.email.length < 5 ||
-        this.login.password.length < 8
+        this.login.password.length < 1
       )
     },
     resetPasswordPath() {
@@ -185,7 +185,7 @@ export default {
       }
     },
     async handleLogin() {
-      if (this.login.password.length < 8) return
+      if (this.login.password.length < 1) return
       this.loading = true
       this.$validator.validateAll()
       this.$refs.focusOut.focus()
