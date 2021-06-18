@@ -1,6 +1,6 @@
 'use strict'
 
-const { join, resolve, posix } = require('path')
+const { join, resolve } = require('path')
 const webpack = require('webpack')
 const glob = require('glob')
 const MODE = /local|develop|onpremise/.test(process.env.NODE_ENV)
@@ -69,7 +69,7 @@ const config = {
   mode: MODE,
   output: {
     path: resolve(__dirname, '../dist'),
-    filename: posix.join('js/[name].js'),
+    filename: 'js/[name].js',
     publicPath: '/',
   },
   resolve: {

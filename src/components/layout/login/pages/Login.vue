@@ -185,13 +185,10 @@ export default {
       }
     },
     async handleLogin() {
+      if (this.login.password.length < 8) return
       this.loading = true
       this.$validator.validateAll()
       this.$refs.focusOut.focus()
-      if (this.errors.any()) {
-        this.loading = false
-        return
-      }
       try {
         let res = await AuthService.login({ params: this.login })
         if (res.code === 200) {
