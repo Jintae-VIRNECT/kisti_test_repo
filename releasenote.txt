@@ -1,18 +1,12 @@
 RELEASE
 
 New Features
-v1.3.0.0
-- VIRNECT Components 적용
+v1.3.6.0
+ie 에러페이지 작성
 
 Bug Fixes
 -
-v1.3.3.0
-- VIRNECT Components 다크테마 제거
-v1.3.3.1
-- VIRNECT Input reset 스타일 제거
-v1.3.3.2
-- VIRNECT Components 다크테마 제거
-v1.3.3.3
-- base.old.css check
+v1.3.6.1
+비민번호 8미만 시에도 엔터 이벤트가 실행되는 문제
 
 Copyright (C) 2020, VIRNECT CO., LTD. - All Rights Reserved
