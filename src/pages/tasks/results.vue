@@ -147,9 +147,9 @@ export default {
     this.searchParams.search = this.$route.query.search
 
     const { path } = this.$route
-    if (path === '/tasks/results') this.activeTab = 'task'
-    else if (path === '/tasks/results/issues') this.activeTab = 'issue'
-    else if (path === '/tasks/results/papers') this.activeTab = 'paper'
+    if (path === '/tasks/results/') this.activeTab = 'task'
+    else if (path === '/tasks/results/issues/') this.activeTab = 'issue'
+    else if (path === '/tasks/results/papers/') this.activeTab = 'paper'
 
     workspaceService.watchActiveWorkspace(this, () => {
       if (this.activeTab === 'task') this.searchSubTasks({ page: 1 })
