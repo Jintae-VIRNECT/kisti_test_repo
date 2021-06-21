@@ -10,6 +10,7 @@ RELEASE v2.4.6.0
 * 협업 접속시 로딩 출력
 
 ### Bug Fixes
+[DPLA-2910] 지도 출력 중 AR 공유 진행 시 지도 팝업 자동으로 닫히지 않는 현상 수정
 ### Improvement
 ### UI
 ### Limitation
