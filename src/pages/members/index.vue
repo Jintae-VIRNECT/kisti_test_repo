@@ -100,6 +100,9 @@ export default {
       this.membersTotal = total
       this.loading = false
     },
+    async getWorkspacePlansInfo() {
+      await this.$store.dispatch('plan/getPlansInfo')
+    },
     addMember() {
       if (this.$isOnpremise) {
         this.$router.push('/members/create')
@@ -110,9 +113,10 @@ export default {
   },
   beforeMount() {
     this.searchMembers({ page: 1 })
-    workspaceService.watchActiveWorkspace(this, () =>
-      this.searchMembers({ page: 1 }),
-    )
+    workspaceService.watchActiveWorkspace(this, () => {
+      this.searchMembers({ page: 1 })
+      this.getWorkspacePlansInfo()
+    })
   },
   mounted() {
     // modal query
