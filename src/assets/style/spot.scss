@@ -15,13 +15,11 @@
   // padding-bottom: 5.7vh;
 
   position: absolute;
-  left: 50%;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   width: 100vw; //62vw;  //1202px
   height: 100vh;
-  transform: translateX(-50%);
 
   .front-camera-row {
     display: flex;
@@ -101,11 +99,6 @@
     height: 25vh; //270px; //auto;
     //width: 25.714rem; //360px;
     aspect-ratio: 1/0.75;
-  }
-
-  canvas {
-    width: 100%;
-    height: 100%;
   }
 }
 
