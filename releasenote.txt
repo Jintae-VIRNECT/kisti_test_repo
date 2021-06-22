@@ -10,6 +10,7 @@ RELEASE v2.4.6.0
 * 협업 접속시 로딩 출력
 
 ### Bug Fixes
+[DPLA-2914] 아이패드 사파리 환경에서 STT 사용시 에러 메시지 출력
 ### Improvement
 ### UI
 ### Limitation
