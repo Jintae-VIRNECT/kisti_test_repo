@@ -112,7 +112,10 @@ export default {
         searchParams,
       )
       this.page = searchParams === undefined ? 1 : searchParams.page
-      this.list = this.list.splice(0, this.list.length, ...list)
+      console.log(this.list)
+      console.log(...list)
+      this.list.splice(0, this.list.length, ...list)
+      console.log(this.list)
       this.total = total
     },
     async searchIssues(searchParams) {
@@ -120,7 +123,7 @@ export default {
         this.searchParams,
       )
       this.page = searchParams === undefined ? 1 : searchParams.page
-      this.list = this.list.splice(0, this.list.length, ...list)
+      this.list.splice(0, this.list.length, ...list)
       this.total = total
     },
     async searchPapers(searchParams) {
@@ -128,7 +131,7 @@ export default {
         this.searchParams,
       )
       this.page = searchParams === undefined ? 1 : searchParams.page
-      this.list = this.list.splice(0, this.list.length, ...list)
+      this.list.splice(0, this.list.length, ...list)
       this.total = total
     },
     sortChange({ prop, order }) {
