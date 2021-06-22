@@ -10,6 +10,7 @@ RELEASE v2.4.6.0
 * 협업 접속시 로딩 출력
 
 ### Bug Fixes
+[DPLA-2908] 네트워크 차단으로 인한 재연결시 리더 정보 누락 문제 수정
 ### Improvement
 ### UI
 ### Limitation
