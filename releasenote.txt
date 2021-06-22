@@ -10,6 +10,7 @@ RELEASE v2.4.6.0
 * 협업 접속시 로딩 출력
 
 ### Bug Fixes
+[DPLA-2867] FITT360 참가자 위치 정보 공유 가능 처리
 ### Improvement
 ### UI
 ### Limitation
