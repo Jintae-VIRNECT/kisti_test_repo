@@ -10,6 +10,7 @@ RELEASE v2.4.6.0
 * 협업 접속시 로딩 출력
 
 ### Bug Fixes
+[DPLA-2951] 협업 상세보기에서 파일 다운로드시 협업 존재 유무 체크
 ### Improvement
 ### UI
 ### Limitation
