@@ -23,6 +23,7 @@
           :showCount="true"
           :count="50"
           :value.sync="description"
+          :placeholder="$t('workspace.create_remote_description_input')"
         ></input-row>
         <input-row type="buttons" :title="$t('button.image_regist')">
           <div>
