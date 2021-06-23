@@ -33,6 +33,7 @@
     "toast_ar_exit": "リーダーがAR共有を終了しました。",
     "toast_no_sharing": "すべて共有中の映像はありません。",
     "toast_video_restrict_mode": "映像制限モードです。<br>参加者全員がカメラをオフにして接続します。​",
+    "toast_drawing_end" : "協業ボードの共有が終了しました。",
 
     "participant_mute": "ミュート",
     "participant_mute_cancel": "ミュート解除",

@@ -372,6 +372,7 @@ export default {
       const data = JSON.parse(receive.data)
 
       if (data.type === DRAWING.END_DRAWING) {
+        this.toastDefault(this.$t('service.toast_drawing_end'))
         this.showImage({}) //공유중 파일 초기화
         this.goTabConfirm(VIEW.STREAM) //탭 실시간 공유로 이동
       }
