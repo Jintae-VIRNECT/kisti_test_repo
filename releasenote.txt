@@ -10,6 +10,7 @@ RELEASE v2.4.6.0
 * 협업 접속시 로딩 출력
 
 ### Bug Fixes
+[DPLA-2935] 원격협업 상세보기 팝업에서 협업 설명 입력란 Placeholder 문구 수정
 ### Improvement
 ### UI
 ### Limitation
