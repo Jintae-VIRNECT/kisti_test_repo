@@ -78,7 +78,6 @@ public class GatewayExceptionHandler implements ErrorWebExceptionHandler {
 		response.getHeaders().setContentType(MediaType.APPLICATION_JSON);
 		DataBuffer dataBuffer = response.bufferFactory().wrap(message.getBytes(StandardCharsets.UTF_8));
 		logger.error("[GATEWAY EXCEPTION HANDLER][{}] : {}", ex.getClass().getSimpleName(), ex.getMessage());
-		ex.printStackTrace();
 		return response.writeWith(Mono.just(dataBuffer));
 	}
 }
