@@ -50,6 +50,7 @@ export default {
     return {
       status: false,
       imageData: '',
+      doubleCheckFlag: false,
     }
   },
   props: {
@@ -113,6 +114,16 @@ export default {
         }
       }
     },
+
+    //한번만 false를 반환하고, 이후에는 true만 반환. 이미지 등록 후 모달창은 닫히기 때문에 초기화됨
+    doubleCheck() {
+      if (this.doubleCheckFlag) return this.doubleCheckFlag
+      else {
+        this.doubleCheckFlag = true
+        return false
+      }
+    },
+
     async shareCapture() {
       // const history = {
       //   id: this.file.id,
@@ -121,6 +132,9 @@ export default {
       //   img: this.imageData,
       // }
       // this.addHistory(history)
+
+      if (this.doubleCheck()) return
+
       await this.uploadImage()
       this.setView('drawing')
       this.$nextTick(() => {
