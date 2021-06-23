@@ -10,6 +10,7 @@ RELEASE v2.4.6.0
 * 협업 접속시 로딩 출력
 
 ### Bug Fixes
+[DPLA-2912] 재연결 모달 출력시 GPS 지도 출력 모달 닫기 처리
 ### Improvement
 ### UI
 ### Limitation
