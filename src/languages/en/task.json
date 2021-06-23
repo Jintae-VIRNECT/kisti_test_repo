@@ -21,6 +21,7 @@
         "allProgress": "Overall Progress",
         "countOfConditions": "Progress Status Overview",
         "countOfConditionsDesc": "Progress status of task / subtask / step in \"Task management\" depends on the \"Schedule\" and \"Progress rate\"",
+        "countOfTasks": "Cases",
         "graphOn": "Unfold",
         "graphOff": "Fold"
       },
