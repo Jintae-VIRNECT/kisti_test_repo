@@ -234,7 +234,12 @@ export default {
   },
 
   /* Lifecycles */
-  mounted() {},
+  mounted() {
+    this.$eventBus.$on('close:roominfo', this.beforeClose)
+  },
+  beforeDestroy() {
+    this.$eventBus.$off('close:roominfo', this.beforeClose)
+  },
 }
 </script>
 
