@@ -3,7 +3,6 @@ import {
   SETTINGS,
   TOGGLE_CHAT,
   ALLOW_RESET,
-  MAIN_PANO_CANVAS,
   SET_SPOT_FULLSCREEN,
 } from '../mutation-types'
 import { RECORD_TARGET } from 'utils/recordOptions'
@@ -52,8 +51,6 @@ const state = {
   serverRecordStatus: 'STOP', // 'WAIT', 'START', 'STOP', 'PREPARE'
 
   chatBox: false,
-
-  mainPanoCanvas: null,
 
   isSpotFullscreen: false,
 }
@@ -120,10 +117,6 @@ const mutations = {
     state.chatBox = flag
   },
 
-  [MAIN_PANO_CANVAS](state, canvas) {
-    state.mainPanoCanvas = canvas
-  },
-
   [SET_SPOT_FULLSCREEN](state, isFullscreen) {
     state.isSpotFullscreen = isFullscreen
   },
@@ -155,8 +148,6 @@ const getters = {
   },
 
   chatBox: state => state.chatBox,
-
-  mainPanoCanvas: state => state.mainPanoCanvas,
 
   isSpotFullscreen: state => state.isSpotFullscreen,
 }

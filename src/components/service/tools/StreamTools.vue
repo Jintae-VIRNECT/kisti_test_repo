@@ -1,6 +1,5 @@
 <template>
   <div class="stream-tools tools">
-    <moving v-if="isLeader && isFITT360"></moving>
     <pointing></pointing>
     <color></color>
     <template v-if="!isTablet && !isSafari">
@@ -14,13 +13,12 @@
 <script>
 import { mapGetters } from 'vuex'
 import { ROLE } from 'configs/remote.config'
-import { Pointing, Color, ScreenShare, Moving, PositionMap } from './partials'
-import { DEVICE } from 'configs/device.config'
+import { Pointing, Color, ScreenShare, PositionMap } from './partials'
 
 export default {
   name: 'StreamTools',
   components: {
-    Moving,
+    // Moving,
     Pointing,
     Color,
     ScreenShare,
@@ -30,9 +28,6 @@ export default {
     ...mapGetters(['mainView']),
     isLeader() {
       return this.account.roleType === ROLE.LEADER
-    },
-    isFITT360() {
-      return this.mainView.deviceType === DEVICE.FITT360
     },
   },
 }

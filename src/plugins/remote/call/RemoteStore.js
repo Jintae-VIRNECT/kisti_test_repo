@@ -25,7 +25,6 @@ const getDefaultState = () => {
       // zoomMax: 5, // zoom 최대 레벨
       // cameraStatus: 'default', // 'default': 초기세팅
       // flash: 'default', // flash 제어
-      // rotationPos : {yaw, pitch} //PanoViewer의 좌표
       // screenShare: true, false //PC 화면공유 여부
       // currentWatching: uuid //현재 보고있는 참가자의 uuid
     ],

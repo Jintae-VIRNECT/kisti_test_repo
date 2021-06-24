@@ -397,30 +397,6 @@ const cameraZoom = (level, target) => {
 }
 
 /**
- * 현재 전체 공유중인 360 스트림의 제어 정보를 전송
- * @BROADCATE
- * @TARGET
- * @param {Object} info 제어정보(yaw, pitch)
- */
-const panoRotation = info => {
-  const params = {
-    type: LINKFLOW.ROTATION,
-    yaw: info.yaw,
-    pitch: info.pitch,
-    //fov:fov.pitch - 차후 fov 필요하면 전달
-  }
-  if (info.origin) {
-    params.origin = info.origin
-  }
-
-  _.session.signal({
-    data: JSON.stringify(params),
-    to: null,
-    type: SIGNAL.LINKFLOW,
-  })
-}
-
-/**
  * 화면 공유 여부
  * @param {Boolean} enable 화면 공유 기능 사용 여부 true, false
  * @param {Array[String]} target 신호를 보낼 대상 커넥션 id String 배열
@@ -456,6 +432,5 @@ export default {
   flashStatus,
   flash,
   cameraZoom,
-  panoRotation,
   screenSharing,
 }
