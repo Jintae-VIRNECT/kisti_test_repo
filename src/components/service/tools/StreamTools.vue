@@ -18,7 +18,6 @@ import { Pointing, Color, ScreenShare, PositionMap } from './partials'
 export default {
   name: 'StreamTools',
   components: {
-    // Moving,
     Pointing,
     Color,
     ScreenShare,

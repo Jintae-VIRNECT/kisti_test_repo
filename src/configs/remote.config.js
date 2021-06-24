@@ -178,16 +178,6 @@ export const ROLE = {
 }
 
 /**
- * 시그널 - 링크플로우(fitt360) 제어
- */
-export const LINKFLOW = {
-  STITCHING: 'stitching', //연결된 스트림(기본값)
-  SIDE_BY_SIDE: 'sidebyside', //분리된 스트림
-  SINGLE: 'single', //단일 스트림
-  ROTATION: 'rotation', //회전 정보
-}
-
-/**
  * 시그널 - 위치정보 제어
  */
 export const LOCATION = {

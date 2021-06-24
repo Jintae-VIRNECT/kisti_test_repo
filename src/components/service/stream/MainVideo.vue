@@ -147,8 +147,6 @@ export default {
   mixins: [shutterMixin, toastMixin],
   components: {
     Pointing,
-    // Moving: () => import('./StreamMoving'),
-    // MovingViewer: () => import('./StreamMovingViewer'),
     VideoTools,
     Fullscreen,
   },
@@ -170,7 +168,6 @@ export default {
       serverStart: 0,
       hideFullBtn: false,
 
-      activeMovingControl: false,
       backInterval: null,
     }
   },
