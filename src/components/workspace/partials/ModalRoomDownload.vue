@@ -42,8 +42,7 @@
 </template>
 
 <script>
-import { getFileList, downloadFile } from 'api/http/file'
-import { downloadByURL } from 'utils/file'
+import { getFileList } from 'api/http/file'
 import DownloadRow from 'DownloadRow'
 export default {
   name: 'ModalParticipantsInfo',
@@ -99,16 +98,6 @@ export default {
           this.$refs['downloadScrollbar'].calculateSize()
         }
       })
-    },
-    async download(file) {
-      const res = await downloadFile({
-        objectName: file.objectName,
-        sessionId: this.sessionId,
-        workspaceId: this.workspace.uuid,
-        userId: this.account.uuid,
-      })
-
-      downloadByURL(res)
     },
   },
   mounted() {
