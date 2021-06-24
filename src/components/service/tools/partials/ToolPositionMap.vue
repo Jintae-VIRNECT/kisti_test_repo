@@ -32,7 +32,8 @@ export default {
       handler() {
         this.isAvailable =
           this.mainView.deviceType === DEVICE.MOBILE ||
-          this.mainView.deviceType === DEVICE.GLASSES
+          this.mainView.deviceType === DEVICE.GLASSES ||
+          this.mainView.deviceType === DEVICE.FITT360
       },
       deep: true,
       immediate: true,
