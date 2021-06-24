@@ -9,10 +9,10 @@ export default {
     }
   },
   methods: {
-    uploadImage(event) {
-      this.validImage(event)
+    uploadImage(event, isProfile = false) {
+      this.validImage(event, isProfile)
     },
-    validImage(event) {
+    validImage(event, isProfile) {
       const files = event.target.files
 
       this.imageFile = files[0]
@@ -28,7 +28,12 @@ export default {
           return
         }
         if (files[0].size > 20 * 1024 * 1024) {
-          this.toastError(this.$t('service.file_maxsize'))
+          if (isProfile) {
+            this.toastError(this.$t('workspace.profile_size_limit_exceed'))
+          } else {
+            this.toastError(this.$t('service.file_maxsize'))
+          }
+
           this.imageRemove()
           return
         }
