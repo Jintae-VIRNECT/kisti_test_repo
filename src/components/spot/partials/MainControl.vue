@@ -1,5 +1,10 @@
 <template>
-  <section class="main-control-group">
+  <section
+    class="main-control-group"
+    :class="{
+      center: isSpotFullscreen,
+    }"
+  >
     <control-btn
       class="estop"
       :disabled="motorBtn && motorHighlight && estopHighlight && !estopBtn"
@@ -108,6 +113,13 @@ export default {
   position: absolute;
   top: 5.5vh;
   left: 5.5vh;
+  z-index: 3;
+  transition: 0.7s;
+
+  &.center {
+    left: 50%;
+    transform: translateX(-50%);
+  }
 }
 
 .estop {
@@ -116,16 +128,16 @@ export default {
   }
 
   &.active {
-    border-color: #c51212;
     background-color: #a40014;
+    border-color: #c51212;
     .icon {
       opacity: 1;
     }
   }
 
   &.inactive {
-    border-color: #c51212;
     background-color: #a40014;
+    border-color: #c51212;
     .icon {
       opacity: 0.4;
     }
@@ -148,16 +160,16 @@ export default {
   }
 
   &.active {
-    border-color: #ffe23d;
     background-color: #edc000;
+    border-color: #ffe23d;
     .icon {
       opacity: 1;
     }
   }
 
   &.active-disabled {
-    border-color: #ffe23d;
     background-color: #edc000;
+    border-color: #ffe23d;
     .icon {
       opacity: 0.4;
     }
@@ -165,7 +177,7 @@ export default {
 }
 
 .fullscreen {
-  border-color: #979797;
   background-color: #3c3c3f;
+  border-color: #979797;
 }
 </style>

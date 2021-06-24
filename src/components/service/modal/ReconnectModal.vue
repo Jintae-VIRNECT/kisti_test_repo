@@ -40,6 +40,7 @@ import { mapGetters } from 'vuex'
 import { getRoomInfo } from 'api/http/room'
 import roomMixin from 'mixins/room'
 import { checkOnline } from 'utils/network'
+import { ROLE } from 'configs/remote.config'
 
 export default {
   name: 'ReconnectModal',
@@ -148,11 +149,17 @@ export default {
     },
     async tryRoomConnect() {
       try {
-        const info = await getRoomInfo({
+        const room = await getRoomInfo({
           sessionId: this.roomInfo.sessionId,
           workspaceId: this.workspace.uuid,
         })
-        const joinRes = await this.join(info)
+        const user = room.memberList.find(
+          member => member.memberType === ROLE.LEADER,
+        )
+        const joinRes = await this.join({
+          ...room,
+          leaderId: user ? user.uuid : null,
+        })
         if (joinRes) {
           this.lottie.stop()
           this.stopTimeRunner()
