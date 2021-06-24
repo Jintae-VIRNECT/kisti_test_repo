@@ -719,6 +719,11 @@ public class ServiceSessionManager {
 	}
 
 	public ApiResponse<MemberInfoListResponse> forceLogout(ForceLogoutRequest forceLogoutRequest) {
+
+		List<WorkspaceMemberInfoResponse> failMembers = new ArrayList<>();
+		List<MemberInfoResponse> failMembersResponse = new ArrayList<>();
+		PageMetadataResponse pageMeta = PageMetadataResponse.builder().build();
+
 		// Master uuid 및 권한 체크
 		WorkspaceMemberInfoResponse masterUserInfo = workspaceRestService.getWorkspaceMemberInfo(
 			forceLogoutRequest.getWorkspaceId(), forceLogoutRequest.getUserId()).getData();
@@ -746,13 +751,9 @@ public class ServiceSessionManager {
 			}
 		}
 
-		List<WorkspaceMemberInfoResponse> failMembers = new ArrayList<>();
-		List<MemberInfoResponse> failMembersResponse = new ArrayList<>();
-		PageMetadataResponse pageMeta;
-
 		// 강제 로그 아웃 대상이 없을 경우 (대상 전체가 이미 로그아웃 또는 협업 중인 경우)
 		if (forceLogoutRequest.getTargetUserIds().size() == 0) {
-			for (String failMemberUuid : failUserIds) {
+			/*for (String failMemberUuid : failUserIds) {
 				ApiResponse<WorkspaceMemberInfoResponse> workspaceMemberInfo = workspaceRestService.getWorkspaceMemberInfo(
 					forceLogoutRequest.getWorkspaceId(), failMemberUuid);
 				if (workspaceMemberInfo.getCode() != ErrorCode.ERR_SUCCESS.getCode()) {
@@ -767,13 +768,17 @@ public class ServiceSessionManager {
 			// 페이징 데이터 셋팅 (페이징 사용안함)
 			pageMeta = PageMetadataResponse.builder()
 				.currentPage(1)
-				.currentSize(failMembersResponse.size())
+				.currentSize(1)
 				.totalPage(1)
-				.totalElements(failMembersResponse.size())
-				.numberOfElements(failMembersResponse.size())
+				.totalElements(0)
+				.numberOfElements(0)
 				.build();
+			 */
 			return
-				new ApiResponse<>(new MemberInfoListResponse(failMembersResponse, pageMeta), ErrorCode.ERR_MEMBER_LOGOUT_OR_JOIN);
+				new ApiResponse<>(
+					new MemberInfoListResponse(failMembersResponse, pageMeta),
+					ErrorCode.ERR_MEMBER_LOGOUT_OR_JOIN
+				);
 		}
 
 		// Redis force-logout 채널로 정보 전송
@@ -788,20 +793,8 @@ public class ServiceSessionManager {
 		// Logout 상태 확인 (in Redis)
 		for (String targetUserId : forceLogoutRequest.getTargetUserIds()) {
 			AccessStatus checkLogout = accessStatusService.getAccessStatus(forceLogoutRequest.getWorkspaceId() + "_" + targetUserId);
-			if (ObjectUtils.isEmpty(checkLogout)) {
-				for(Iterator<String> failUserId = failUserIds.iterator(); failUserId.hasNext();){
-					if (targetUserId.equals(failUserId.next())) {
-						failUserId.remove();
-					}
-				}
-			} else {
-				if (checkLogout.getAccessType() == AccessType.LOGOUT) {
-					for(Iterator<String> failUserId = failUserIds.iterator(); failUserId.hasNext();){
-						if (targetUserId.equals(failUserId.next())) {
-							failUserId.remove();
-						}
-					}
-				}
+			if (ObjectUtils.isEmpty(checkLogout) || checkLogout.getAccessType() == AccessType.LOGOUT) {
+				failUserIds.removeIf(targetUserId::equals);
 			}
 		}
 
@@ -828,7 +821,8 @@ public class ServiceSessionManager {
 				.totalElements(failMembersResponse.size())
 				.numberOfElements(failMembersResponse.size())
 				.build();
-		} else {
+		}
+		/*else {
 			// 페이징 데이터 셋팅 (페이징 사용안함)
 			pageMeta = PageMetadataResponse.builder()
 				.currentPage(1)
@@ -837,7 +831,7 @@ public class ServiceSessionManager {
 				.totalElements(0)
 				.numberOfElements(0)
 				.build();
-		}
+		}*/
 
 		return
 			new ApiResponse<>(
