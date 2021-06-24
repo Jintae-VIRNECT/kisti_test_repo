@@ -422,19 +422,20 @@ public class FileService {
 	public ApiResponse<FileInfoListResponse> getFileInfoList(
 		String workspaceId,
 		String sessionId,
-		String userId,
 		boolean isDeleted,
-		PageRequest pageable,
-		FileType fileType
+		PageRequest pageable
 	) {
 
-		Page<File> filePage;
+		/*Page<File> filePage;
 		if (isDeleted) {
 			filePage = fileRepository.findByWorkspaceIdAndSessionIdAndDeletedIsTrueAndFileType(
 				workspaceId, sessionId, pageable, fileType);
 		} else {
 			filePage = fileRepository.findByWorkspaceIdAndSessionId(workspaceId, sessionId, pageable);
-		}
+		}*/
+
+		Page<File> filePage = fileRepository.findByWorkspaceIdAndSessionIdAndDeletedAndFileType(
+			workspaceId, sessionId, isDeleted, pageable);
 
 		PageMetadataResponse pageMeta = PageMetadataResponse.builder()
 			.currentPage(pageable.getPageNumber())
@@ -447,7 +448,7 @@ public class FileService {
 
 		List<FileInfoResponse> fileInfoList = filePage.toList()
 			.stream()
-			.map(file -> fileInfoMapper.toDto(file))
+			.map(fileInfoMapper::toDto)
 			.collect(Collectors.toList());
 
 		return new ApiResponse<>(new FileInfoListResponse(fileInfoList, pageMeta));

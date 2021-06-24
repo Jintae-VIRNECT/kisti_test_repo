@@ -80,4 +80,30 @@ public class CustomFileRepositoryImpl extends QuerydslRepositorySupport implemen
 		}
 		return new PageImpl<>(results, pageable, totalCount);
 	}
+
+	@Override
+	public Page<File> findByWorkspaceIdAndSessionIdAndDeletedAndFileType(
+		String workspaceId,
+		String sessionId,
+		boolean deleted,
+		Pageable pageable
+	) {
+		JPQLQuery<File> queryResult = query
+			.selectFrom(file)
+			.where(
+				file.workspaceId.eq(workspaceId),
+				file.sessionId.eq(sessionId),
+				file.deleted.eq(deleted),
+				file.objectName.contains("thumbnail").not(),
+				file.fileType.ne(FileType.RECORD)
+			).distinct();
+		long totalCount = queryResult.fetchCount();
+		List<File> results;
+		if (pageable.isPaged()) {
+			results = Objects.requireNonNull(getQuerydsl()).applyPagination(pageable, queryResult).fetch();
+		} else {
+			results = Objects.requireNonNull(queryResult.fetch());
+		}
+		return new PageImpl<>(results, pageable, totalCount);
+	}
 }

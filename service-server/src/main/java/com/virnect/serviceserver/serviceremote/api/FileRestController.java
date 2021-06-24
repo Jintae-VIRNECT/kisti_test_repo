@@ -283,10 +283,8 @@ public class FileRestController {
         ApiResponse<FileInfoListResponse> responseData = fileService.getFileInfoList(
             workspaceId,
             sessionId,
-            userId,
             deleted,
-            pageRequest.ofSortBy(),
-            FileType.FILE
+            pageRequest.ofSortBy()
         );
         return ResponseEntity.ok(responseData);
     }

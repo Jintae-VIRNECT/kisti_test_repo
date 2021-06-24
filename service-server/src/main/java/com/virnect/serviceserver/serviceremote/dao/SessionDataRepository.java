@@ -823,7 +823,9 @@ public class SessionDataRepository {
         }
 
         if (!room.getMembers().isEmpty()) {
-            long memberCount = room.getMembers().stream().filter(member -> !(member.getMemberStatus() == MemberStatus.UNLOAD)).count();
+            long memberCount = room.getMembers().stream().filter(
+                member -> !(member.getMemberStatus() == MemberStatus.UNLOAD || member.getMemberStatus() == MemberStatus.EVICTED)
+            ).count();
             if (memberCount >= ROOM_MEMBER_LIMIT) {
                 return new ApiResponse<>(false, ErrorCode.ERR_ROOM_MEMBER_MAX_COUNT);
             }
