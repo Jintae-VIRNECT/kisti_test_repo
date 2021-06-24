@@ -127,6 +127,7 @@ import alarmMixin from 'mixins/alarm'
 import roomMixin from 'mixins/room'
 import toastMixin from 'mixins/toast'
 import confirmMixin from 'mixins/confirm'
+import { isRegisted } from 'utils/auth'
 
 export default {
   name: 'Notice',
@@ -202,6 +203,7 @@ export default {
 
       if (body.targetUserIds.indexOf(this.account.uuid) < 0) return
       if (body.userId === this.account.uuid) return
+      if (!isRegisted) return //멤버상태 소켓에 정상등록되지 않은 경우 (협업초대) 알림 띄우지 않는다
 
       this.logger('received message::', body)
 
