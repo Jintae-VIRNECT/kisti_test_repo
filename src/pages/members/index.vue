@@ -52,7 +52,11 @@
         :total="membersTotal"
       />
     </div>
-    <MemberAddModal :visible.sync="showAddModal" :membersTotal="membersTotal" />
+    <MemberAddModal
+      v-if="showAddModal"
+      :membersTotal="membersTotal"
+      @close="closeMemberAddModal"
+    />
   </div>
 </template>
 
@@ -89,6 +93,9 @@ export default {
     }
   },
   methods: {
+    closeMemberAddModal() {
+      this.showAddModal = false
+    },
     changedSearchParams(searchParams) {
       this.searchMembers(searchParams)
     },
