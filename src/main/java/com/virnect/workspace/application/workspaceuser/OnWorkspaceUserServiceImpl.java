@@ -177,11 +177,16 @@ public class OnWorkspaceUserServiceImpl extends WorkspaceUserService {
         //2. 초대 정보 저장
         workspaceInviteRequest.getUserInfoList().forEach(userInfo -> {
             //2-1. 유효한 초대 이메일인지 체크(탈퇴한 유저가 아닌지)
-            InviteUserInfoResponse inviteUserResponse = getInviteUserInfoByEmail(userInfo.getEmail());
-            if (inviteUserResponse == null) {
+            ApiResponse<InviteUserInfoResponse> inviteUserInfoResponseApiResponse = userRestService.getInviteUserInfoByEmail(userInfo.getEmail());
+            if (inviteUserInfoResponseApiResponse.getCode() != 200) {
+                log.error("[GET INVITE USER INFO BY EMAIL] response code : {}, response message : {}", inviteUserInfoResponseApiResponse.getCode(), inviteUserInfoResponseApiResponse.getMessage());
                 log.error("[WORKSPACE INVITE USER] Invalid Invited User Info.");
+                if (inviteUserInfoResponseApiResponse.getCode() == 5002) {
+                    throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_INVITE_SECESSION_USER);
+                }
                 throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_INVITE);
             }
+            InviteUserInfoResponse inviteUserResponse = inviteUserInfoResponseApiResponse.getData();
             //2-2. 유저가 이미 워크스페이스에 소속되어 있는지
             Optional<WorkspaceUser> optionalWorkspaceUser = workspaceUserRepository.findByUserIdAndWorkspace_Uuid(inviteUserResponse.getInviteUserDetailInfo().getUserUUID(), workspaceId);
             if (inviteUserResponse.isMemberUser() && optionalWorkspaceUser.isPresent()) {
@@ -347,7 +352,7 @@ public class OnWorkspaceUserServiceImpl extends WorkspaceUserService {
         //todo : logging
         return userRestService.getUserInfoByUserId(userId).getData();
     }
-
+/*
     private InviteUserInfoResponse getInviteUserInfoByEmail(String email) {
         //todo : logging
         ApiResponse<InviteUserInfoResponse> apiResponse = userRestService.getInviteUserInfoByEmail(email);
@@ -358,7 +363,7 @@ public class OnWorkspaceUserServiceImpl extends WorkspaceUserService {
             //throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_INVITE);
         }
         return apiResponse.getData();
-    }
+    }*/
 
     public RedirectView inviteWorkspaceAccept(String sessionCode, String lang) throws IOException {
         Locale locale = new Locale(lang, "");
@@ -367,22 +372,31 @@ public class OnWorkspaceUserServiceImpl extends WorkspaceUserService {
         if (userInvite == null) {
             log.info("[WORKSPACE INVITE ACCEPT] Workspace invite session Info Not found. session code >> [{}]", sessionCode);
             RedirectView redirectView = new RedirectView();
-            redirectView.setUrl(redirectProperty.getConsoleWeb() + "/?message=workspace.invite.invalid");
+            redirectView.setUrl(redirectProperty.getConsoleWeb() + RedirectPath.WORKSPACE_INVITE_FAIL);
             redirectView.setContentType("application/json");
             return redirectView;
         }
         log.info("[WORKSPACE INVITE ACCEPT] Workspace invite session Info >> [{}]", userInvite.toString());
 
-        InviteUserInfoResponse inviteUserResponse = getInviteUserInfoByEmail(userInvite.getInvitedUserEmail());
         //1-2. 초대받은 유저가 유효한지 체크
-        if (inviteUserResponse == null) {
-            //캐싱은 시간이 지나면 만료되니 일단 삭제 보류. 탈퇴한 유저가 아닐 가능성도 있음.
+        ApiResponse<InviteUserInfoResponse> inviteUserInfoResponseApiResponse = userRestService.getInviteUserInfoByEmail(userInvite.getInvitedUserEmail());
+        if (inviteUserInfoResponseApiResponse.getCode() != 200) {
+            log.error("[GET INVITE USER INFO BY EMAIL] response code : {}, response message : {}", inviteUserInfoResponseApiResponse.getCode(), inviteUserInfoResponseApiResponse.getMessage());
             log.info("[WORKSPACE INVITE ACCEPT] Invalid Invited User Info.");
+            //탈퇴한 유저의 캐싱은 삭제, 이외의 유저는 보류.
+            if (inviteUserInfoResponseApiResponse.getCode() == 5002) {
+                userInviteRepository.delete(userInvite);
+                RedirectView redirectView = new RedirectView();
+                redirectView.setUrl(redirectProperty.getWorkstationWeb() + RedirectPath.WORKSPACE_INVITE_FAIL_USER_SECESSION);
+                redirectView.setContentType("application/json");
+                return redirectView;
+            }
             RedirectView redirectView = new RedirectView();
-            redirectView.setUrl(redirectProperty.getWorkstationWeb() + "/?message=workspace.invite.invalid");
+            redirectView.setUrl(redirectProperty.getWorkstationWeb() + RedirectPath.WORKSPACE_INVITE_FAIL);
             redirectView.setContentType("application/json");
             return redirectView;
         }
+        InviteUserInfoResponse inviteUserResponse = inviteUserInfoResponseApiResponse.getData();
         //1-3. 초대받은 유저가 비회원인지 체크
         if (!inviteUserResponse.isMemberUser()) {
             log.info("[WORKSPACE INVITE ACCEPT] Invited User is Member >> [{}]", inviteUserResponse.isMemberUser());
@@ -683,17 +697,24 @@ public class OnWorkspaceUserServiceImpl extends WorkspaceUserService {
         log.info("[WORKSPACE INVITE REJECT] Workspace Invite Session Info >> [{}] ", userInvite);
 
         //비회원 거절은 메일 전송 안함.
-        InviteUserInfoResponse inviteUserResponse = getInviteUserInfoByEmail(userInvite.getInvitedUserEmail());
-
-        //탈퇴한 유저인 경우나 기타 등등
-        if (inviteUserResponse == null) {
-            //캐싱은 시간이 지나면 만료되니 일단 삭제 보류. 탈퇴한 유저가 아닐 가능성도 있음.
-            log.info("[WORKSPACE INVITE REJECT] Invalid Invited User Info.");
+        ApiResponse<InviteUserInfoResponse> inviteUserInfoResponseApiResponse = userRestService.getInviteUserInfoByEmail(userInvite.getInvitedUserEmail());
+        if (inviteUserInfoResponseApiResponse.getCode() != 200) {
+            log.error("[GET INVITE USER INFO BY EMAIL] response code : {}, response message : {}", inviteUserInfoResponseApiResponse.getCode(), inviteUserInfoResponseApiResponse.getMessage());
+            log.error("[WORKSPACE INVITE REJECT] Invalid Invited User Info.");
+            //탈퇴한 유저의 캐싱은 삭제, 이외의 유저는 보류.
+            if (inviteUserInfoResponseApiResponse.getCode() == 5002) {
+                userInviteRepository.delete(userInvite);
+                RedirectView redirectView = new RedirectView();
+                redirectView.setUrl(redirectProperty.getWorkstationWeb() + RedirectPath.WORKSPACE_INVITE_FAIL_USER_SECESSION);
+                redirectView.setContentType("application/json");
+                return redirectView;
+            }
             RedirectView redirectView = new RedirectView();
             redirectView.setUrl(redirectProperty.getWorkstationWeb());
             redirectView.setContentType("application/json");
             return redirectView;
         }
+        InviteUserInfoResponse inviteUserResponse = inviteUserInfoResponseApiResponse.getData();
 
         //비회원
         if (!inviteUserResponse.isMemberUser()) {
