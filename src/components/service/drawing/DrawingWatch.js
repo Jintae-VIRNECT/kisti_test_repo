@@ -19,7 +19,11 @@ export default {
     },
     view(val, oldVal) {
       if (val !== oldVal && val === VIEW.DRAWING) {
-        this.optimizeCanvasSize()
+        //@TODO - 이미지 렌더링 이후 optimizeCanvasSize() 호출하기
+        setTimeout(() => {
+          this.optimizeCanvasSize()
+        }, 500)
+
         this.$nextTick(() => {
           if (!this.isInit) return
           this.receiveRender()
