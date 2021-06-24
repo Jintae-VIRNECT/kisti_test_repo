@@ -205,8 +205,7 @@ public class FileRestController {
             workspaceId,
             sessionId,
             userId,
-            objectName,
-            FileType.FILE
+            objectName
         );
         return ResponseEntity.ok(responseData);
     }
@@ -492,8 +491,7 @@ public class FileRestController {
             workspaceId,
             sessionId,
             userId,
-            objectName,
-            FileType.SHARE
+            objectName
         );
         return ResponseEntity.ok(responseData);
     }
