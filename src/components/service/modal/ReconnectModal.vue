@@ -104,6 +104,9 @@ export default {
   watch: {
     visible(flag) {
       this.visibleFlag = !!flag
+      if (flag) {
+        this.$eventBus.$emit('map:close')
+      }
     },
   },
   methods: {
