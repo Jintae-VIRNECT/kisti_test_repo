@@ -6,6 +6,7 @@
     width="628px"
     top="11vh"
     :close-on-click-modal="false"
+    :before-close="beforeClose"
   >
     <div>
       <p>{{ $t('members.add.desc') }}</p>
@@ -135,11 +136,14 @@ export default {
       roles: role.options.filter(({ value }) => value !== 'MASTER'),
       availablePlans: { remote: 0, make: 0, view: 0 },
       userInfoList: [new InviteMember()],
+      showMe: true,
       rules: {
         email: [
           {
             required: true,
-            message: this.$t('invalid.required'),
+            message: this.$t('invalid.required', [
+              this.$t('members.add.email'),
+            ]),
           },
           {
             type: 'email',
@@ -162,6 +166,10 @@ export default {
     },
   },
   methods: {
+    beforeClose(done) {
+      this.$emit('close')
+      done()
+    },
     async reset() {
       this.userInfoList = [new InviteMember()]
       this.$refs.form.forEach(form => form.resetFields())
