@@ -1,7 +1,7 @@
 <template>
   <div class="share-body__file">
-    <vue2-scrollbar>
-      <ol class="upload-list">
+    <vue2-scrollbar ref="upload-list-scroll">
+      <ol class="upload-list" ref="upload-list">
         <li>
           <button class="upload-list__button" @click="addFileClick()">
             {{ $t('service.file_add') }}
@@ -40,6 +40,8 @@ import SharingPdf from './SharingPdf'
 import toastMixin from 'mixins/toast'
 import { drawingUpload, drawingList, drawingDownload } from 'api/http/drawing'
 import { SIGNAL, DRAWING } from 'configs/remote.config'
+import { isOverflowY } from 'utils/element.js'
+
 const maxFileSize = 1024 * 1024 * 20
 export default {
   name: 'ShareFileList',
@@ -58,6 +60,20 @@ export default {
     ...mapGetters({
       roomInfo: 'roomInfo',
     }),
+  },
+  watch: {
+    sharingList(val, oldVal) {
+      if (val.length !== oldVal.length) {
+        this.$nextTick(() => {
+          const isNotOverflow = !isOverflowY(
+            this.$refs['upload-list'],
+            this.$refs['upload-list-scroll'].$el,
+          )
+          //overflow 해제 시 scroll을 최상위로 원위치
+          if (isNotOverflow) this.$refs['upload-list-scroll'].scrollToY(0)
+        })
+      }
+    },
   },
   methods: {
     ...mapActions(['addFile', 'addHistory']),
