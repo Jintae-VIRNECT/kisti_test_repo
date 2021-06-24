@@ -47,6 +47,7 @@ import Modal from 'Modal'
 import toastMixin from 'mixins/toast'
 import { Loader } from 'google-maps'
 import { mapGetters } from 'vuex'
+import { VIEW } from 'configs/view.config'
 
 export default {
   name: 'PositionMapModal',
@@ -73,7 +74,7 @@ export default {
   },
 
   computed: {
-    ...mapGetters(['mainView']),
+    ...mapGetters(['mainView', 'view']),
   },
   watch: {
     visible(flag) {
@@ -95,6 +96,13 @@ export default {
         }
       },
       deep: true,
+    },
+    view: {
+      handler(current) {
+        if (current === VIEW.AR) {
+          this.beforeClose()
+        }
+      },
     },
   },
   methods: {
