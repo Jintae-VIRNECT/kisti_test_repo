@@ -291,11 +291,10 @@ public class FileService {
 		String workspaceId,
 		String sessionId,
 		String userId,
-		String objectName,
-		FileType fileType
+		String objectName
 	) {
 
-		File file = fileRepository.findByWorkspaceIdAndSessionIdAndObjectNameAndFileType(workspaceId, sessionId, objectName, fileType).orElse(null);
+		File file = fileRepository.findByWorkspaceIdAndSessionIdAndObjectName(workspaceId, sessionId, objectName).orElse(null);
 		if (ObjectUtils.isEmpty(file)) {
 			return new ApiResponse<>(ErrorCode.ERR_FILE_NOT_FOUND);
 		}
@@ -330,7 +329,7 @@ public class FileService {
 	}
 
 	@Transactional(readOnly = true)
-	public ApiResponse<String> downloadFileUrl(File targetFile) {
+	public ApiResponse<String> downloadThumbnailFileUrl(File targetFile) {
 		log.info("file download: {}", targetFile.getObjectName());
 		try {
 			StringBuilder stringBuilder;
@@ -354,7 +353,7 @@ public class FileService {
 	}
 
 	@Transactional(readOnly = true)
-	public ApiResponse<String> downloadFileUrl(String workspace, String sessionId, String objectName, String name) {
+	public ApiResponse<String> downloadThumbnailFileUrl(String workspace, String sessionId, String objectName, String name) {
 
 		log.info("file download: {}", objectName);
 		try {
@@ -504,7 +503,7 @@ public class FileService {
 		FileType fileType
 	) {
 
-		File file = fileRepository.findByWorkspaceIdAndSessionIdAndObjectNameAndFileType(workspaceId, sessionId, objectName, fileType).orElse(null);
+		File file = fileRepository.findByWorkspaceIdAndSessionIdAndObjectName(workspaceId, sessionId, objectName).orElse(null);
 		if (ObjectUtils.isEmpty(file)) {
 			return new ApiResponse<>(ErrorCode.ERR_FILE_NOT_FOUND);
 		}
@@ -697,7 +696,7 @@ public class FileService {
 		ShareFileUploadResponse fileUploadResponse = shareUploadFileMapper.toDto(fileUploadResult.getFile());
 
 		// Get File thumbnail download url
-		ApiResponse<String> downloadUrl = downloadFileUrl(thumbnailUploadResult.getFile());
+		ApiResponse<String> downloadUrl = downloadThumbnailFileUrl(thumbnailUploadResult.getFile());
 		fileUploadResponse.setThumbnailDownloadUrl(downloadUrl.getData());
 		fileUploadResponse.setDeleted(fileUploadResult.getFile().isDeleted());
 
@@ -719,7 +718,7 @@ public class FileService {
 			return new ApiResponse<>(ErrorCode.ERR_ROOM_MEMBER_STATUS_INVALID);
 		}
 
-		File file = fileRepository.findByWorkspaceIdAndSessionIdAndObjectNameAndFileType(workspaceId, sessionId, objectName, fileType).orElse(null);
+		File file = fileRepository.findByWorkspaceIdAndSessionIdAndObjectName(workspaceId, sessionId, objectName).orElse(null);
 		if (Objects.isNull(file)) {
 			return new ApiResponse<>(ErrorCode.ERR_FILE_NOT_FOUND);
 		}
@@ -815,7 +814,7 @@ public class FileService {
 		}
 
 		for (ShareFileInfoResponse shareFileInfoResponse : shareFileInfoResponses) {
-			ApiResponse<String> downloadUrl = downloadFileUrl(
+			ApiResponse<String> downloadUrl = downloadThumbnailFileUrl(
 				workspaceId,
 				sessionId,
 				shareFileInfoResponse.getObjectName()+"_thumbnail",
