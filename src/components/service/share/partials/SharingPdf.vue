@@ -29,7 +29,11 @@
         </p>
       </div>
     </div>
-    <button class="sharing-image__remove" @click.stop="deleteImage">
+    <button
+      v-if="isLeader"
+      class="sharing-image__remove"
+      @click.stop="deleteImage"
+    >
       {{ $t('service.file_remove') }}
     </button>
   </li>
@@ -37,7 +41,7 @@
 
 <script>
 import { mapGetters, mapActions } from 'vuex'
-import { DRAWING } from 'configs/remote.config'
+import { ROLE, DRAWING } from 'configs/remote.config'
 import { drawingRemove, drawingDownload } from 'api/http/drawing'
 import toastMixin from 'mixins/toast'
 import confirmMixin from 'mixins/confirm'
@@ -89,6 +93,9 @@ export default {
       return (
         this.docPages.length !== 0 && this.docPages.length === this.totalPages
       )
+    },
+    isLeader() {
+      return this.account.roleType === ROLE.LEADER
     },
   },
   methods: {
