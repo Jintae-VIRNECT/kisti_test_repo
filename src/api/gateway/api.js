@@ -57,7 +57,11 @@ export default {
   SEND_SIGNAL: ['POST', '/remote/room/{workspaceId}/signal'],
 
   /* Service - Drawing */
-  DRAWING_UPLOAD: ['POST', '/remote/file/upload/share', { type: 'form' }],
+  DRAWING_UPLOAD: [
+    'POST',
+    '/remote/file/upload/share',
+    { type: 'form', timeout: 15000 },
+  ],
   DRAWING_LIST: ['GET', '/remote/file/share'],
   DRAWING_DOWNLOAD: [
     'GET',

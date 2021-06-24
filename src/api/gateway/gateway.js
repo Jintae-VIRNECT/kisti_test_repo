@@ -13,6 +13,7 @@ import errorList from './gateway.error.json'
 import networkError from './network.error.json'
 import { cookieClear } from 'utils/auth'
 import qs from 'qs'
+import { TIMEOUT } from 'configs/env.config'
 
 const URL = API
 const TOKEN = Cookies.get('accessToken')
@@ -69,6 +70,10 @@ const sender = async function(constant, params, headers = {}, custom) {
 
     //Extract option
     custom = URL[constant][2]
+
+    //timeout 설정
+    if (custom && custom.timeout) option.timeout = custom.timeout
+    else option.timeout = TIMEOUT
 
     if (custom && 'form' === custom.type) {
       option.headers['Content-Type'] = 'multipart/form-data'
