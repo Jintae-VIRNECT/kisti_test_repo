@@ -33,6 +33,7 @@
     "toast_ar_exit": "The leader has ended the AR sharing.",
     "toast_no_sharing": "No videos are being shared.",
     "toast_video_restrict_mode": "This is the video restriction mode.<br>Participants all connect with the camera turned off.​",
+    "toast_drawing_end" : "Collaboard sharing has ended.",
 
     "participant_mute": "Mute",
     "participant_mute_cancel": "Unmute",

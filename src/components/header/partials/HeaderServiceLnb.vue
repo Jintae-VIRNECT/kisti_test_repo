@@ -17,6 +17,7 @@
 <script>
 import { mapGetters, mapActions, mapMutations } from 'vuex'
 import {
+  DRAWING,
   SIGNAL,
   AR_FEATURE,
   CAPTURE_PERMISSION,
@@ -365,17 +366,30 @@ export default {
         this.$call.setScaleResolution(scale)
       }
     },
+
+    //협업보드 공유 종료 메시지 수신 시
+    receiveEndDrawing(receive) {
+      const data = JSON.parse(receive.data)
+
+      if (data.type === DRAWING.END_DRAWING) {
+        this.toastDefault(this.$t('service.toast_drawing_end'))
+        this.showImage({}) //공유중 파일 초기화
+        this.goTabConfirm(VIEW.STREAM) //탭 실시간 공유로 이동
+      }
+    },
   },
 
   /* Lifecycles */
   created() {
     this.$eventBus.$on(SIGNAL.CAPTURE_PERMISSION, this.getPermissionCheck)
     this.$eventBus.$on(SIGNAL.AR_FEATURE, this.checkArFeature)
+    this.$eventBus.$on(SIGNAL.DRAWING, this.receiveEndDrawing)
   },
 
   beforeDestroy() {
     this.$eventBus.$off(SIGNAL.CAPTURE_PERMISSION, this.getPermissionCheck)
     this.$eventBus.$off(SIGNAL.AR_FEATURE, this.checkArFeature)
+    this.$eventBus.$off(SIGNAL.DRAWING, this.receiveEndDrawing)
   },
 }
 </script>
