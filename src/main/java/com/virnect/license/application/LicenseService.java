@@ -351,8 +351,11 @@ public class LicenseService {
 		License currentUserLicense = licenseRepository.licenseAllocationRevokeByUserIdAndLicenseProductId(
 			userId, licenseProduct.getId());
 
-		if(currentUserLicense == null){
-			log.info("Retrieve user license info via license plan : {} and license product: {} , but license info not found", licensePlan, licenseProduct);
+		if (currentUserLicense == null) {
+			log.info(
+				"Retrieve user license info via license plan : {} and license product: {} , but license info not found",
+				licensePlan, licenseProduct
+			);
 			throw new LicenseServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
 		}
 
@@ -469,30 +472,34 @@ public class LicenseService {
 	/**
 	 * 모든 라이선스 플랜 및 라이선스 관련 정보 비활성화 및 삭제
 	 *
-	 * @param workspaceUUID - 워크스페이스 식별자
 	 * @param userUUID      - 사용자 식별자
 	 * @param userNumber - 사용자 고유 식별자
 	 * @return - 비활성화 및 삭제 결과
 	 */
 	@Transactional
-	public LicenseSecessionResponse deleteAllLicenseInfo(String workspaceUUID, String userUUID, long userNumber) {
-		LicensePlan licensePlan = licensePlanRepository.findByUserIdAndWorkspaceIdAndPlanStatus(
-			userUUID, workspaceUUID, PlanStatus.ACTIVE
+	public LicenseSecessionResponse deleteAllLicenseInfo(String userUUID, long userNumber) {
+		// find all license plan of user
+		List<LicensePlan> licensePlanList = licensePlanRepository.findAllByUserIdAndPlanStatus(
+			userUUID, PlanStatus.ACTIVE
 		);
 
-		// 라이선스 플랜 정보가 없는 경우
-		if (licensePlan == null) {
-			log.info("workspaceUUID: {} , userUUID: {} ,  userNumber: {} ", workspaceUUID, userUUID, userNumber);
-			log.info("[LICENSE_PLAN_SECESSION] - License plan not found.");
-			return new LicenseSecessionResponse(workspaceUUID, true, LocalDateTime.now());
+		if (licensePlanList.isEmpty()) {
+			long totalRevertLicense = licenseRepository.revertAllLicenseByUserUUID(userUUID);
+			log.info("[LICENSE_PLAN_SECESSION][REVERT_LICENSE_NUMBER] - {}", totalRevertLicense);
+		} else {
+			for (LicensePlan licensePlan : licensePlanList) {
+				licensePlanTerminateProcess(userUUID, licensePlan);
+			}
+			log.info("[LICENSE_PLAN_SECESSION][TERMINATE_LICENSE_PLAN_NUMBER] - {}", licensePlanList.size());
 		}
-
-		log.info("USER: {} , WORKSPACE: {}, LICENSE_PLAN_ID: {}", userUUID, workspaceUUID, licensePlan.getId());
-		log.info("[LICENSE_PLAN_SECESSION] - {}", licensePlan.toString());
 
 		// 정기 결제 내역 조회 및 취소
 		payAPIService.billingCancelProcess(userNumber);
 
+		return new LicenseSecessionResponse(userUUID, true, LocalDateTime.now());
+	}
+
+	public void licensePlanTerminateProcess(String userUUID, LicensePlan licensePlan) {
 		// license product 정보 조회
 		Set<LicenseProduct> licenseProductSet = licensePlan.getLicenseProductList();
 
@@ -513,12 +520,7 @@ public class LicenseService {
 		licensePlan.setModifiedUser(userUUID + "-" + "secession");
 		licensePlanRepository.save(licensePlan);
 
-		log.info(
-			"[USER_SECESSION_LICENSE_PLAN_INACTIVE]: licensePlanId:{} , userId:{}, WorkspaceId: {}",
-			licensePlan.getId(), licensePlan.getUserId(), licensePlan.getWorkspaceId()
-		);
-
-		return new LicenseSecessionResponse(workspaceUUID, true, LocalDateTime.now());
+		log.info("[LICENSE_PLAN_SECESSION][TERMINATED_DONE] - {}", licensePlan);
 	}
 
 }
