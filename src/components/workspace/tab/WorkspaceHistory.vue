@@ -68,8 +68,6 @@ import {
   searchHistoryList,
 } from 'api/http/history'
 
-import { isOverflowY } from 'utils/element.js'
-
 export default {
   name: 'WorkspaceHistory',
   mixins: [confirmMixin],
