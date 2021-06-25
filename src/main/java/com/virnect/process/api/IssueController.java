@@ -5,6 +5,7 @@ import java.util.Objects;
 import javax.validation.Valid;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.StringUtils;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -157,7 +158,7 @@ public class IssueController {
 		, @RequestParam(value = "myUUID", required = false) String myUUID
 		, @ApiIgnore PageRequest pageable
 	) {
-		if (Objects.isNull(workspaceUUID)) {
+		if (!StringUtils.hasText(workspaceUUID)) {
 			throw new ProcessServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
 		}
 		ApiResponse<IssuesResponse> issuesResponseApiResponse = this.issueService.getIssuesOut(

@@ -175,13 +175,10 @@ public class IssueCustomRepositoryImpl extends QuerydslRepositorySupport impleme
 		JPQLQuery<Issue> query = from(qIssue);
 
 		query.where(qIssue.job.isNull());
-
-		if (Objects.nonNull(search) && workspaceUserList.isEmpty()) {
+		query.where(qIssue.workerUUID.in(workspaceUserList));
+		
+		if (Objects.nonNull(search)) {
 			query.where(qIssue.content.contains(search));
-		}
-
-		if (!workspaceUserList.isEmpty()) {
-			query.where(qIssue.workerUUID.in(workspaceUserList));
 		}
 
 		if (Objects.nonNull(myUUID)) {
