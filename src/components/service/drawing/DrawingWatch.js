@@ -97,7 +97,7 @@ export default {
     },
   },
   computed: {
-    drawingView() {
+    isDrawingView() {
       return this.view === VIEW.DRAWING
     },
   },
