@@ -208,6 +208,11 @@ export default {
     },
     onScroll(scrollX, scrollY) {
       this.$eventBus.$emit('scroll:memberlist')
+
+      if (scrollY === 0 && this.tabFix) {
+        this.scrollTop()
+        return
+      }
       if (scrollY > this.tabTop) {
         this.tabFix = true
       } else {
