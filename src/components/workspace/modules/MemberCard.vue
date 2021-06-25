@@ -136,14 +136,20 @@ export default {
     forceLogout() {
       this.$emit('forceLogout')
     },
+    releaseFocus() {
+      if (this.$refs['card-menu__btn']) {
+        this.$refs['card-menu__btn'].blur()
+      }
+    },
   },
 
   /* Lifecycles */
   mounted() {
     //활성화된 popoever 버튼 focus 해제
-    this.$eventBus.$on('scroll:memberlist', () =>
-      this.$refs['card-menu__btn'].blur(),
-    )
+    this.$eventBus.$on('scroll:memberlist', this.releaseFocus)
+  },
+  beforeDestroy() {
+    this.$eventBus.$off('scroll:memberlist', this.releaseFocus)
   },
 }
 </script>
