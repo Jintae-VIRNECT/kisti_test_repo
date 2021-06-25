@@ -11,8 +11,8 @@ import java.time.LocalDateTime;
 @RequiredArgsConstructor
 @ApiModel
 public class WorkspaceSecessionResponse {
-    @ApiModelProperty(value = "삭제된 워크스페이스의 식별자", example = "12312983asks9d1j")
-    private final String workspaceUUID;
+    @ApiModelProperty(value = "삭제된 유저의 식별자", example = "12312983asks9d1j")
+    private final String userUUID;
     @ApiModelProperty(value = "워크스페이스 정보 삭제 처리 결과", position = 1, example = "true")
     private final boolean result;
     @ApiModelProperty(value = "삭제 처리 일자",  position = 2, example = "2020-01-20T14:05:30")
@@ -21,7 +21,7 @@ public class WorkspaceSecessionResponse {
     @Override
     public String toString() {
         return "WorkspaceSecessionResponse{" +
-                "workspaceUUID='" + workspaceUUID + '\'' +
+                "userUUID='" + userUUID + '\'' +
                 ", result=" + result +
                 ", deletedDate=" + deletedDate +
                 '}';
