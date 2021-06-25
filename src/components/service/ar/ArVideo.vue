@@ -110,7 +110,9 @@ export default {
     view(val) {
       if (val === VIEW.AR) {
         this.$refs['arVideo'].play()
-        this.optimizeVideoSize()
+        setTimeout(() => {
+          this.optimizeVideoSize()
+        }, 500)
       } else {
         this.$refs['arVideo'].pause()
       }
@@ -146,6 +148,7 @@ export default {
       }, 3000)
     },
     optimizeVideoSize() {
+      console.log('optimizeVideoSize ar video')
       if (this.view !== VIEW.AR) return
       const mainWrapper = this.$el
       const videoBox = this.$el.querySelector('.ar-video__box')
@@ -179,7 +182,8 @@ export default {
         // video.style.width = maxWidth + 'px'
       }
       videoBox.style.width = width + 'px'
-      videoBox.style.height = height + 'px'
+      // videoBox.style.height = height + 'px'
+      videoBox.style.height = '100%'
       this.videoSize.width = width
       this.videoSize.height = height
       this.debug('calc size: ', this.videoSize.width, this.videoSize.height)
