@@ -148,7 +148,6 @@ export default {
       }, 3000)
     },
     optimizeVideoSize() {
-      console.log('optimizeVideoSize ar video')
       if (this.view !== VIEW.AR) return
       const mainWrapper = this.$el
       const videoBox = this.$el.querySelector('.ar-video__box')
