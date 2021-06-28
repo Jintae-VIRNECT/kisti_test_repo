@@ -72,6 +72,12 @@ import { mapGetters } from 'vuex'
 import workspaceService from '@/services/workspace'
 
 export default {
+  async asyncData({ store, redirect }) {
+    const myWorkspaces = store.getters['auth/myWorkspaces']
+    if (!myWorkspaces.length) {
+      redirect('/start')
+    }
+  },
   data() {
     return {
       showAlertStorageOverflow: false,
@@ -81,6 +87,7 @@ export default {
   computed: {
     ...mapGetters({
       activeWorkspace: 'auth/activeWorkspace',
+      myWorkspaces: 'auth/myWorkspaces',
       plansInfo: 'plan/plansInfo',
       company: 'layout/title',
     }),
