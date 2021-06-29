@@ -1102,6 +1102,7 @@ public class FileService {
 			errorCode = ErrorCode.ERR_STORAGE_LIMIT_REACHED;
 		}
 
+		log.info("Storage capacity result code : " + errorCode.getCode());
 		return errorCode;
 	}
 
