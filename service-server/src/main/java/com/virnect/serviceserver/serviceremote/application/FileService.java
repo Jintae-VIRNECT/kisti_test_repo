@@ -1048,9 +1048,9 @@ public class FileService {
 
 	public ApiResponse<FileStorageInfoResponse> checkRemoteStorageCapacity(String workspaceId) {
 
-		long profileStorageSize = 0;
-		long attachFileStorageSize = 0;
-		long shareFileStorageSize = 0;
+		Long profileStorageSize = 0L;
+		Long attachFileStorageSize = 0L;
+		Long shareFileStorageSize = 0L;
 
 		List<File> files = fileRepository.findByWorkspaceIdAndDeleted(workspaceId, false);
 		for (File file : files) {
