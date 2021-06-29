@@ -6,7 +6,7 @@
       <div class="division"></div>
       <screen-share></screen-share>
     </template>
-    <position-map></position-map>
+    <position-map v-if="isOnpremise"></position-map>
   </div>
 </template>
 
