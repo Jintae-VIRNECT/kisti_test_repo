@@ -125,7 +125,7 @@ export default {
         })
         // path.set()
         this.canvas.add(path)
-        this.canvas.renderAll()
+        //this.canvas.renderAll()
         this.backCanvas.add(fabric.util.object.clone(path))
         this.backCanvas.renderAll()
         this.$nextTick(() => {
@@ -160,7 +160,7 @@ export default {
         owner: owner,
       })
       this.canvas.add(object)
-      this.canvas.renderAll()
+      //this.canvas.renderAll()
       this.backCanvas.add(fabric.util.object.clone(object))
       this.backCanvas.renderAll()
     },

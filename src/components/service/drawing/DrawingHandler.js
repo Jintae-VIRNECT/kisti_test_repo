@@ -183,7 +183,9 @@ export default {
           // this.addTextObject(mouse.x, mouse.y)
           this.addTextObject(
             mouse.x,
-            mouse.y - this.tools.fontSize / this.origin.scale / 2 - 1,
+            mouse.y -
+              (this.tools.fontSize * (this.origin.width / this.img.width)) / 2 -
+              1,
           )
         }
       })

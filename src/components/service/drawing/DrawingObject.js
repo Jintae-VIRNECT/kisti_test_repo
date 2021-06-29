@@ -26,7 +26,7 @@ export default {
         fontFamily: this.fontFamily,
         fontStyle: this.fontStyle,
         fontWeight: this.fontWeight,
-        fontSize: this.tools.fontSize / this.origin.scale,
+        fontSize: this.tools.fontSize * (this.origin.width / this.img.width), //폰트 사이즈를 캔버스 크기 기준으로 계산
         lineHeight: this.lineHeight,
         hasControls: false,
       })
