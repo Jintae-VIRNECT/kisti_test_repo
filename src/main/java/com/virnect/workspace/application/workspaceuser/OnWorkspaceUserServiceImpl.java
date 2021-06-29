@@ -372,7 +372,7 @@ public class OnWorkspaceUserServiceImpl extends WorkspaceUserService {
         if (userInvite == null) {
             log.info("[WORKSPACE INVITE ACCEPT] Workspace invite session Info Not found. session code >> [{}]", sessionCode);
             RedirectView redirectView = new RedirectView();
-            redirectView.setUrl(redirectProperty.getConsoleWeb() + RedirectPath.WORKSPACE_INVITE_FAIL);
+            redirectView.setUrl(redirectProperty.getConsoleWeb() + RedirectPath.WORKSPACE_INVITE_FAIL.getValue());
             redirectView.setContentType("application/json");
             return redirectView;
         }
@@ -387,12 +387,12 @@ public class OnWorkspaceUserServiceImpl extends WorkspaceUserService {
             if (inviteUserInfoResponseApiResponse.getCode() == 5002) {
                 userInviteRepository.delete(userInvite);
                 RedirectView redirectView = new RedirectView();
-                redirectView.setUrl(redirectProperty.getWorkstationWeb() + RedirectPath.WORKSPACE_INVITE_FAIL_USER_SECESSION);
+                redirectView.setUrl(redirectProperty.getWorkstationWeb() + RedirectPath.WORKSPACE_INVITE_FAIL_USER_SECESSION.getValue());
                 redirectView.setContentType("application/json");
                 return redirectView;
             }
             RedirectView redirectView = new RedirectView();
-            redirectView.setUrl(redirectProperty.getWorkstationWeb() + RedirectPath.WORKSPACE_INVITE_FAIL);
+            redirectView.setUrl(redirectProperty.getWorkstationWeb() + RedirectPath.WORKSPACE_INVITE_FAIL.getValue());
             redirectView.setContentType("application/json");
             return redirectView;
         }
@@ -705,7 +705,7 @@ public class OnWorkspaceUserServiceImpl extends WorkspaceUserService {
             if (inviteUserInfoResponseApiResponse.getCode() == 5002) {
                 userInviteRepository.delete(userInvite);
                 RedirectView redirectView = new RedirectView();
-                redirectView.setUrl(redirectProperty.getWorkstationWeb() + RedirectPath.WORKSPACE_INVITE_FAIL_USER_SECESSION);
+                redirectView.setUrl(redirectProperty.getWorkstationWeb() + RedirectPath.WORKSPACE_INVITE_FAIL_USER_SECESSION.getValue());
                 redirectView.setContentType("application/json");
                 return redirectView;
             }
