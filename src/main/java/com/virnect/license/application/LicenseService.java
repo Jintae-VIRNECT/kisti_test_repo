@@ -24,6 +24,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import com.virnect.license.application.rest.billing.PayAPIService;
 import com.virnect.license.application.rest.content.ContentRestService;
+import com.virnect.license.application.rest.remote.RemoteRestService;
 import com.virnect.license.application.rest.workspace.WorkspaceRestService;
 import com.virnect.license.dao.license.LicenseRepository;
 import com.virnect.license.dao.licenseplan.LicensePlanRepository;
@@ -46,6 +47,7 @@ import com.virnect.license.dto.license.response.MyLicensePlanInfoListResponse;
 import com.virnect.license.dto.license.response.MyLicensePlanInfoResponse;
 import com.virnect.license.dto.license.response.WorkspaceLicensePlanInfoResponse;
 import com.virnect.license.dto.rest.content.ContentResourceUsageInfoResponse;
+import com.virnect.license.dto.rest.remote.FileStorageInfoResponse;
 import com.virnect.license.dto.rest.user.WorkspaceInfoResponse;
 import com.virnect.license.event.license.LicenseExpiredEvent;
 import com.virnect.license.exception.LicenseServiceException;
@@ -68,6 +70,7 @@ public class LicenseService {
 	private final LicensePlanRepository licensePlanRepository;
 	private final LicenseRepository licenseRepository;
 	private final ContentRestService contentRestService;
+	private final RemoteRestService remoteRestService;
 	private final WorkspaceRestService workspaceRestService;
 	private final LicenseProductRepository licenseProductRepository;
 	private final ModelMapper modelMapper;
@@ -145,7 +148,11 @@ public class LicenseService {
 
 		ContentResourceUsageInfoResponse workspaceCurrentResourceUsageInfo = getContentResourceUsageInfoFromContentService(
 			workspaceId, licensePlan.getStartDate(), licensePlan.getEndDate());
+		FileStorageInfoResponse fileStorageInfoResponse = getRemoteFileStorageInformationFromRemoteRestService(
+			workspaceId);
+
 		log.info("[WORKSPACE_USAGE_RESOURCE_REPORT] -> {}", workspaceCurrentResourceUsageInfo.toString());
+		log.info("[REMOTE_SERVICE_USAGE_STORAGE_REPORT] - {}", fileStorageInfoResponse);
 		WorkspaceLicensePlanInfoResponse workspaceLicensePlanInfoResponse = modelMapper.map(
 			licensePlanInfo.get(),
 			WorkspaceLicensePlanInfoResponse.class
@@ -153,8 +160,12 @@ public class LicenseService {
 		workspaceLicensePlanInfoResponse.setMasterUserUUID(licensePlanInfo.get().getUserId());
 		workspaceLicensePlanInfoResponse.setLicenseProductInfoList(new ArrayList<>(licenseProductInfoMap.values()));
 		// current used resource
+
 		workspaceLicensePlanInfoResponse.setCurrentUsageDownloadHit(workspaceCurrentResourceUsageInfo.getTotalHit());
-		workspaceLicensePlanInfoResponse.setCurrentUsageStorage(workspaceCurrentResourceUsageInfo.getStorageUsage());
+		workspaceLicensePlanInfoResponse.setCurrentUsageStorage(
+			workspaceCurrentResourceUsageInfo.getStorageUsage() + fileStorageInfoResponse.getTotalRemoteUseStorageSize()
+		);
+
 		// add service product resource
 		workspaceLicensePlanInfoResponse.setAddCallTime(serviceProductResource.getTotalCallTime());
 		workspaceLicensePlanInfoResponse.setAddStorageSize(serviceProductResource.getTotalStorageSize());
@@ -226,6 +237,14 @@ public class LicenseService {
 		ApiResponse<ContentResourceUsageInfoResponse> workspaceResourceUsageApiResponse =
 			contentRestService.getContentResourceUsageInfoRequest(workspaceId, startDate, endDate);
 		return workspaceResourceUsageApiResponse.getData();
+	}
+
+	private FileStorageInfoResponse getRemoteFileStorageInformationFromRemoteRestService(
+		final String workspaceId
+	) {
+		ApiResponse<FileStorageInfoResponse> fileStorageInfo = remoteRestService.getStorageSizeFromRemoteServiceByWorkspaceId(
+			workspaceId);
+		return fileStorageInfo.getData();
 	}
 
 	/**
