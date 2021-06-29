@@ -202,8 +202,10 @@ export default {
 
       // 배경이미지 설정
       await this.setBG()
-      // 히스토리 초기화
-      this.stackClear()
+
+      //히스토리 초기화
+      this.stackClear() //자신의 히스토리 초기화
+      this.receivedStackClear() // 타참가자에게 받은 히스토리 초기화 및 tool설정 초기화
 
       this.isInit = true
       this.$emit('loadingSuccess')
