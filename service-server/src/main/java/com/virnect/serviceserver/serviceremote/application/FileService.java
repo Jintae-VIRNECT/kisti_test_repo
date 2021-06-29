@@ -699,6 +699,7 @@ public class FileService {
 		String objectName
 	) throws IOException, NoSuchAlgorithmException, InvalidKeyException {
 
+		objectName = objectName + "_thumbnail";
 		UploadResult uploadResult = fileManagementService.upload(
 			targetFile,
 			generateDirPath(fileUploadRequest.getWorkspaceId(), fileUploadRequest.getSessionId()),
