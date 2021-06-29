@@ -571,7 +571,7 @@ public class FileRestController {
     ) {
         LogMessage.formedInfo(
             TAG,
-            "REST API: GET
+            "REST API: GET"
                 + REST_PATH + "::"
                 + "workspaceId:" + workspaceId,
             "checkRemoteStorageCapacity"
