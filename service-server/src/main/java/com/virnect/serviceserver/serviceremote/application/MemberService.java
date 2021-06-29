@@ -144,7 +144,7 @@ public ApiResponse<MemberInfoListResponse> getMembersExceptForMe(
 			.build();
 
 		List<MemberInfoResponse> memberInfoList = workspaceMemberInfoList.stream()
-			.map(workspaceMemberInfoResponse -> memberWorkspaceMapper.toDto(workspaceMemberInfoResponse))
+			.map(memberWorkspaceMapper::toDto)
 			.collect(Collectors.toList());
 
 		// Redis 내 멤버 접속상태 확인
@@ -187,7 +187,7 @@ public MemberInfoListResponse getMembersInvitePossible(
 		workspaceMemberInfoList = finalWorkspaceMemberInfoList;
 
 		List<MemberInfoResponse> memberInfoList = workspaceMemberInfoList.stream()
-			.map(workspaceMemberInfoResponse -> memberWorkspaceMapper.toDto(workspaceMemberInfoResponse))
+			.map(memberWorkspaceMapper::toDto)
 			.collect(Collectors.toList());
 
 		/*for(Iterator<MemberInfoResponse> memberInfoResponseIterator = memberInfoList.iterator(); memberInfoResponseIterator.hasNext();){

@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface RecordFileRepository extends JpaRepository<RecordFile, Long> {
+public interface RecordFileRepository extends JpaRepository<RecordFile, Long>, CustomRecordFileRepository{
     Optional<RecordFile> findByWorkspaceIdAndSessionIdAndObjectName(final String workspaceId, final String sessionId, final String objectName);
 
     Page<RecordFile> findByWorkspaceIdAndSessionId(final String workspaceId, final String sessionId, Pageable pageable);

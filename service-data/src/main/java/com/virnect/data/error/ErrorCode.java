@@ -85,6 +85,8 @@ public enum ErrorCode {
 	ERR_STORAGE_NOT_SUPPORTED(7012, "Storage service is not supported. Please check storage server url."),
 	ERR_FILE_NOT_FOUND(7013, "This file can not found."),
 	ERR_PROFILE_UPLOAD_FAILED(7015, "Profile upload has failed"),
+	ERR_STORAGE_LIMIT_REACHED(7016, "The storage limit is about to be reached"),
+	ERR_STORAGE_CAPACITY_FULL(7017, "The storage capacity is full"),
 
 	ERR_ROOM_HISTORY_FOUND(3101, "Room History can not found"),
 	ERR_ROOM_HISTORY_HANDLE(3102, "Room History handling fail"),

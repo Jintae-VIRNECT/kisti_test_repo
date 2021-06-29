@@ -37,6 +37,7 @@ import org.springframework.web.multipart.commons.CommonsMultipartFile;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import com.virnect.data.application.license.LicenseRestService;
 import com.virnect.data.application.user.UserRestService;
 import com.virnect.data.dao.file.FileRepository;
 import com.virnect.data.dao.file.RecordFileRepository;
@@ -50,6 +51,8 @@ import com.virnect.data.domain.room.Room;
 import com.virnect.data.dto.FileUploadResult;
 import com.virnect.data.dto.PageMetadataResponse;
 import com.virnect.data.dto.UploadResult;
+import com.virnect.data.dto.response.file.FileStorageInfoResponse;
+import com.virnect.data.dto.rest.WorkspaceLicensePlanInfoResponse;
 import com.virnect.serviceserver.serviceremote.dto.mapper.file.FileInfoMapper;
 import com.virnect.serviceserver.serviceremote.dto.mapper.file.FileUploadMapper;
 import com.virnect.serviceserver.serviceremote.dto.mapper.file.FileUserInfoMapper;
@@ -88,6 +91,7 @@ public class FileService {
 
 	private final IFileManagementService fileManagementService;
 	private final UserRestService userRestService;
+	private final LicenseRestService licenseRestService;
 
 	private final FileUploadMapper fileUploadMapper;
 	private final RecordFileMapper recordFileMapper;
@@ -116,6 +120,19 @@ public class FileService {
 
 	@Transactional
 	public ApiResponse<FileUploadResponse> uploadFile(FileUploadRequest fileUploadRequest, FileType fileType) {
+
+		ApiResponse<FileUploadResponse> response = new ApiResponse<>();
+
+		// Storage check
+		ErrorCode storageCheckResult = checkStorageCapacity(fileUploadRequest.getWorkspaceId());
+		if (storageCheckResult != ErrorCode.ERR_SUCCESS) {
+			if (storageCheckResult == ErrorCode.ERR_STORAGE_CAPACITY_FULL) {
+				return new ApiResponse<>(ErrorCode.ERR_STORAGE_CAPACITY_FULL);
+			} else if (storageCheckResult == ErrorCode.ERR_STORAGE_LIMIT_REACHED){
+				response.setCode(ErrorCode.ERR_STORAGE_LIMIT_REACHED.getCode());
+				response.setMessage(ErrorCode.ERR_STORAGE_LIMIT_REACHED.getMessage());
+			}
+		}
 
 		String bucketPath = generateDirPath(fileUploadRequest.getWorkspaceId(), fileUploadRequest.getSessionId());
 		String objectName = null;
@@ -158,7 +175,8 @@ public class FileService {
 
 		FileUploadResponse fileUploadResponse = fileUploadMapper.toDto(file);
 
-		return new ApiResponse<>(fileUploadResponse);
+		response.setData(fileUploadResponse);
+		return response;
 	}
 
 	@Transactional
@@ -216,8 +234,22 @@ public class FileService {
 		RoomProfileUpdateRequest roomProfileUpdateRequest
 	) {
 
+		ApiResponse<RoomProfileUpdateResponse> response = new ApiResponse<>();
+
+		// Storage check
+		ErrorCode storageCheckResult = checkStorageCapacity(workspaceId);
+		if (storageCheckResult != ErrorCode.ERR_SUCCESS) {
+			if (storageCheckResult == ErrorCode.ERR_STORAGE_CAPACITY_FULL) {
+				return new ApiResponse<>(ErrorCode.ERR_STORAGE_CAPACITY_FULL);
+			} else if (storageCheckResult == ErrorCode.ERR_STORAGE_LIMIT_REACHED){
+				response.setCode(ErrorCode.ERR_STORAGE_LIMIT_REACHED.getCode());
+				response.setMessage(ErrorCode.ERR_STORAGE_LIMIT_REACHED.getMessage());
+			}
+		}
+
 		RoomProfileUpdateResponse roomProfileUpdateResponse = new RoomProfileUpdateResponse();
 		String profileUrl = IFileManagementService.DEFAULT_ROOM_PROFILE;
+		String objectName;
 
 		Room room = roomRepository.findRoomByWorkspaceIdAndSessionIdForWrite(workspaceId, sessionId).orElse(null);
 		if (ObjectUtils.isEmpty(room)) {
@@ -254,12 +286,27 @@ public class FileService {
 		roomProfileUpdateResponse.setProfile(profileUrl);
 		room.setProfile(profileUrl);
 
-		Room uploadResult = roomRepository.save(room);
-		if (ObjectUtils.isEmpty(uploadResult)) {
+		Room roomUpdateResult = roomRepository.save(room);
+
+		// 협업 프로필 파일정보 DB 저장
+		File file = File.builder()
+			.workspaceId(workspaceId)
+			.sessionId(sessionId)
+			.uuid(roomProfileUpdateRequest.getUuid())
+			.name(roomProfileUpdateRequest.getProfile().getOriginalFilename())
+			.objectName(profileUrl)
+			.contentType(roomProfileUpdateRequest.getProfile().getContentType())
+			.size(roomProfileUpdateRequest.getProfile().getSize())
+			.fileType(FileType.PROFILE)
+			.build();
+		File fileUploadResult = fileRepository.save(file);
+
+		if (ObjectUtils.isEmpty(roomUpdateResult) || ObjectUtils.isEmpty(fileUploadResult)) {
 			new ApiResponse<>(ErrorCode.ERR_PROFILE_UPLOAD_FAILED);
 		}
 
-		return new ApiResponse<>(roomProfileUpdateResponse);
+		response.setData(roomProfileUpdateResponse);
+		return response;
 	}
 
 	@Transactional
@@ -425,14 +472,6 @@ public class FileService {
 		PageRequest pageable
 	) {
 
-		/*Page<File> filePage;
-		if (isDeleted) {
-			filePage = fileRepository.findByWorkspaceIdAndSessionIdAndDeletedIsTrueAndFileType(
-				workspaceId, sessionId, pageable, fileType);
-		} else {
-			filePage = fileRepository.findByWorkspaceIdAndSessionId(workspaceId, sessionId, pageable);
-		}*/
-
 		Page<File> filePage = fileRepository.findByWorkspaceIdAndSessionIdAndDeletedAndFileType(
 			workspaceId, sessionId, isDeleted, pageable);
 
@@ -462,12 +501,8 @@ public class FileService {
 		PageRequest pageable
 	) {
 
-		Page<RecordFile> recordFilePage;
-		if (isDeleted) {
-			recordFilePage = recordFileRepository.findByWorkspaceIdAndSessionIdAndDeletedIsTrue(workspaceId, sessionId, pageable);
-		} else {
-			recordFilePage = recordFileRepository.findByWorkspaceIdAndSessionId(workspaceId, sessionId, pageable);
-		}
+		Page<RecordFile> recordFilePage = recordFileRepository.findByWorkspaceIdAndSessionIdAndDeletedUsePaging(
+			workspaceId, sessionId, isDeleted, pageable);
 
 		List<FileDetailInfoResponse> fileDetailInfoList = new ArrayList<>();
 		for (RecordFile recordFile : recordFilePage.toList()) {
@@ -499,8 +534,7 @@ public class FileService {
 		String workspaceId,
 		String sessionId,
 		String userId,
-		String objectName,
-		FileType fileType
+		String objectName
 	) {
 
 		File file = fileRepository.findByWorkspaceIdAndSessionIdAndObjectName(workspaceId, sessionId, objectName).orElse(null);
@@ -539,16 +573,6 @@ public class FileService {
 	}
 
 	@Transactional
-	public void deleteFile(File file, boolean drop) {
-		if(drop) {
-			fileRepository.delete(file);
-		} else {
-			file.setDeleted(true);
-			fileRepository.save(file);
-		}
-	}
-
-	@Transactional
 	public void deleteFiles(String workspaceId, String sessionId) {
 		fileRepository.deleteAllByWorkspaceIdAndSessionId(workspaceId, sessionId);
 	}
@@ -559,7 +583,8 @@ public class FileService {
 	) {
 		MultipartFile convertedImg = null;
 		try {
-			java.io.File outputFile = new java.io.File(fileUploadRequest.getFile().getOriginalFilename());
+			java.io.File outputFile = new java.io.File(
+				Objects.requireNonNull(fileUploadRequest.getFile().getOriginalFilename()));
 			ImageIO.write(targetImg, "png", outputFile);
 
 			FileItem fileItem = new DiskFileItem(
@@ -578,21 +603,56 @@ public class FileService {
 
 			convertedImg = new CommonsMultipartFile(fileItem);
 		} catch (Exception e) {
-
+			log.info("Exception : convertBufferImgToMultipartFile");
 		}
 		return convertedImg;
 	}
 
 	@Transactional
-	FileUploadResult saveFile(
-		FileUploadRequest fileUploadRequest,
-		FileType fileType
-	) {
+	FileUploadResult saveShareFile(
+		FileUploadRequest fileUploadRequest
+	) throws IOException, NoSuchAlgorithmException, InvalidKeyException {
 
-		String bucketPath = generateDirPath(fileUploadRequest.getWorkspaceId(), fileUploadRequest.getSessionId());
+		// 공유 파일 업로드 (to Storage)
+		UploadResult uploadResult = fileManagementService.upload(
+			fileUploadRequest.getFile(),
+			generateDirPath(fileUploadRequest.getWorkspaceId(), fileUploadRequest.getSessionId()),
+			FileType.FILE
+		);
+		if (uploadResult.getErrorCode() != ErrorCode.ERR_SUCCESS) {
+			new ApiResponse<>(ErrorCode.ERR_FILE_UPLOAD_EXCEPTION);
+		}
 
-		File file = null;
+		// 공유 파일 정보 저장 (to DB)
+		int width;
+		int height;
+		if (Objects.equals(fileUploadRequest.getFile().getContentType(), "application/pdf")) {
+			width = 0;
+			height = 0;
+		} else {
+			BufferedImage image = ImageIO.read(fileUploadRequest.getFile().getInputStream());
+			width = image.getWidth();
+			height = image.getHeight();
+		}
+
+		File file = File.builder()
+			.workspaceId(fileUploadRequest.getWorkspaceId())
+			.sessionId(fileUploadRequest.getSessionId())
+			.uuid(fileUploadRequest.getUserId())
+			.name(fileUploadRequest.getFile().getOriginalFilename())
+			.objectName(uploadResult.getResult())
+			.contentType(fileUploadRequest.getFile().getContentType())
+			.size(fileUploadRequest.getFile().getSize())
+			.fileType(FileType.SHARE)
+			.width(width)
+			.height(height)
+			.build();
+		fileRepository.save(file);
+
+		return new FileUploadResult(uploadResult.getResult(), file, uploadResult.getErrorCode());
+		/*File file = null;
 		UploadResult uploadResult = null;
+
 		try {
 			uploadResult = fileManagementService.upload(
 				fileUploadRequest.getFile(),
@@ -600,10 +660,10 @@ public class FileService {
 				FileType.FILE
 			);
 
-			Integer width;
-			Integer height;
+			int width;
+			int height;
 
-			if (fileUploadRequest.getFile().getContentType().equals("application/pdf")) {
+			if (Objects.equals(fileUploadRequest.getFile().getContentType(), "application/pdf")) {
 				width = 0;
 				height = 0;
 			} else {
@@ -620,7 +680,7 @@ public class FileService {
 				.objectName(uploadResult.getResult())
 				.contentType(fileUploadRequest.getFile().getContentType())
 				.size(fileUploadRequest.getFile().getSize())
-				.fileType(fileType)
+				.fileType(FileType.SHARE)
 				.width(width)
 				.height(height)
 				.build();
@@ -629,18 +689,43 @@ public class FileService {
 		} catch (IOException | NoSuchAlgorithmException | InvalidKeyException exception) {
 			log.info("{}", exception.getMessage());
 			new ApiResponse<>(ErrorCode.ERR_FILE_UPLOAD_EXCEPTION);
-		}
-		return new FileUploadResult(uploadResult.getResult(), file, uploadResult.getErrorCode());
+		}*/
 	}
 
 	@Transactional
-	FileUploadResult saveThumbnailFile(
+	FileUploadResult saveShareFileThumbnail(
 		FileUploadRequest fileUploadRequest,
 		MultipartFile targetFile,
-		FileType fileType,
 		String objectName
-	) {
-		String bucketPath = generateDirPath(fileUploadRequest.getWorkspaceId(), fileUploadRequest.getSessionId());
+	) throws IOException, NoSuchAlgorithmException, InvalidKeyException {
+
+		UploadResult uploadResult = fileManagementService.upload(
+			targetFile,
+			generateDirPath(fileUploadRequest.getWorkspaceId(), fileUploadRequest.getSessionId()),
+			FileType.FILE,
+			objectName
+		);
+		if (uploadResult.getErrorCode() != ErrorCode.ERR_SUCCESS) {
+			new ApiResponse<>(ErrorCode.ERR_FILE_UPLOAD_EXCEPTION);
+		}
+
+		File file = File.builder()
+			.workspaceId(fileUploadRequest.getWorkspaceId())
+			.sessionId(fileUploadRequest.getSessionId())
+			.uuid(fileUploadRequest.getUserId())
+			.name(fileUploadRequest.getFile().getOriginalFilename())
+			.objectName(objectName)
+			.contentType("image/png")
+			.size(targetFile.getSize())
+			.fileType(FileType.SHARE)
+			.width(THUMBNAIL_WIDTH)
+			.height(THUMBNAIL_HEIGHT)
+			.build();
+		fileRepository.save(file);
+
+		return new FileUploadResult(file, uploadResult.getErrorCode());
+
+		/*String bucketPath = generateDirPath(fileUploadRequest.getWorkspaceId(), fileUploadRequest.getSessionId());
 
 		File file = null;
 		UploadResult uploadResult = null;
@@ -661,7 +746,7 @@ public class FileService {
 				.objectName(objectName)
 				.contentType("image/png")
 				.size(targetFile.getSize())
-				.fileType(fileType)
+				.fileType(FileType.SHARE)
 				.width(THUMBNAIL_WIDTH)
 				.height(THUMBNAIL_HEIGHT)
 				.build();
@@ -672,22 +757,35 @@ public class FileService {
 			new ApiResponse<>(ErrorCode.ERR_FILE_UPLOAD_EXCEPTION);
 		}
 
-		return new FileUploadResult(file, uploadResult.getErrorCode());
+		return new FileUploadResult(file, uploadResult.getErrorCode());*/
 	}
 
 
 	@Transactional
 	public ApiResponse<ShareFileUploadResponse> uploadShareFile(
-		FileUploadRequest fileUploadRequest,
-		FileType fileType
-	) {
+		FileUploadRequest fileUploadRequest
+	) throws IOException, NoSuchAlgorithmException, InvalidKeyException {
+
+		ApiResponse<ShareFileUploadResponse> response = new ApiResponse<>();
+
+		// Storage check
+		ErrorCode storageCheckResult = checkStorageCapacity(fileUploadRequest.getWorkspaceId());
+		if (storageCheckResult != ErrorCode.ERR_SUCCESS) {
+			if (storageCheckResult == ErrorCode.ERR_STORAGE_CAPACITY_FULL) {
+				return new ApiResponse<>(ErrorCode.ERR_STORAGE_CAPACITY_FULL);
+			} else if (storageCheckResult == ErrorCode.ERR_STORAGE_LIMIT_REACHED){
+				response.setCode(ErrorCode.ERR_STORAGE_LIMIT_REACHED.getCode());
+				response.setMessage(ErrorCode.ERR_STORAGE_LIMIT_REACHED.getMessage());
+			}
+		}
+
 		// Make Thumbnail Image
 		BufferedImage bufferedImage = makeThumbnail(fileUploadRequest.getFile());
 		MultipartFile thumbnailFile = convertBufferImgToMultipartFile(fileUploadRequest, bufferedImage);
 
 		// Save Thumbnail and upload file
-		FileUploadResult fileUploadResult = saveFile(fileUploadRequest, FileType.SHARE);
-		FileUploadResult thumbnailUploadResult = saveThumbnailFile(fileUploadRequest, thumbnailFile, FileType.SHARE, fileUploadResult.getObjectName());
+		FileUploadResult fileUploadResult = saveShareFile(fileUploadRequest);
+		FileUploadResult thumbnailUploadResult = saveShareFileThumbnail(fileUploadRequest, thumbnailFile, fileUploadResult.getObjectName());
 
 		if (thumbnailUploadResult.getErrorCode() != ErrorCode.ERR_SUCCESS || fileUploadResult.getErrorCode() != ErrorCode.ERR_SUCCESS) {
 			return new ApiResponse<>(fileUploadResult.getErrorCode());
@@ -700,7 +798,8 @@ public class FileService {
 		fileUploadResponse.setThumbnailDownloadUrl(downloadUrl.getData());
 		fileUploadResponse.setDeleted(fileUploadResult.getFile().isDeleted());
 
-		return new ApiResponse<>(fileUploadResponse);
+		response.setData(fileUploadResponse);
+		return response;
 	}
 
 	@Transactional
@@ -708,8 +807,7 @@ public class FileService {
 		String workspaceId,
 		String sessionId,
 		String leaderUserId,
-		String objectName,
-		FileType fileType
+		String objectName
 	) {
 		FileDeleteResponse fileDeleteResponse = new FileDeleteResponse();
 
@@ -719,7 +817,7 @@ public class FileService {
 		}
 
 		File file = fileRepository.findByWorkspaceIdAndSessionIdAndObjectName(workspaceId, sessionId, objectName).orElse(null);
-		if (Objects.isNull(file)) {
+		if (ObjectUtils.isEmpty(file)) {
 			return new ApiResponse<>(ErrorCode.ERR_FILE_NOT_FOUND);
 		}
 
@@ -809,7 +907,7 @@ public class FileService {
 		if (!shareFilePage.isEmpty()) {
 			shareFileInfoResponses = shareFilePage
 				.stream()
-				.map(file -> shareFileInfoMapper.toDto(file))
+				.map(shareFileInfoMapper::toDto)
 				.collect(Collectors.toList());
 		}
 
@@ -855,7 +953,7 @@ public class FileService {
 			pdfThumbnail = pdfRenderer.renderImageWithDPI( 0, 100, ImageType.RGB );
 			document.close();
 		} catch (Exception e) {
-			System.out.println("Error : " + e.toString());
+			log.info("makePdfThumbnail Error message : " + e.getMessage());
 		}
 		return pdfThumbnail;
 	}
@@ -863,7 +961,7 @@ public class FileService {
 	private BufferedImage makeThumbnail(MultipartFile targetFile) {
 		BufferedImage responseImg;
 		try {
-			if (targetFile.getContentType().equals("application/pdf")) {
+			if (Objects.equals(targetFile.getContentType(), "application/pdf")) {
 				responseImg = makePdfThumbnail(targetFile);
 			} else {
 				InputStream in = targetFile.getInputStream();
@@ -872,13 +970,14 @@ public class FileService {
 				in.close();
 			}
 		} catch (Exception e) {
+			log.info("makeThumbnail Error message : " + e.getMessage());
 			responseImg = null;
 		}
 		return responseImg;
 	}
 
 	private java.io.File convertFile(MultipartFile multipartFile) throws IOException {
-		java.io.File file = new java.io.File(multipartFile.getOriginalFilename());
+		java.io.File file = new java.io.File(Objects.requireNonNull(multipartFile.getOriginalFilename()));
 		file.createNewFile();
 		FileOutputStream fos = new FileOutputStream(file);
 		fos.write(multipartFile.getBytes());
@@ -945,6 +1044,63 @@ public class FileService {
 			e.printStackTrace();
 		}
 		deleteFiles(workspaceId, sessionId);
+	}
+
+	public ApiResponse<FileStorageInfoResponse> checkRemoteStorageCapacity(String workspaceId) {
+
+		long profileStorageSize = 0;
+		long attachFileStorageSize = 0;
+		long shareFileStorageSize = 0;
+
+		List<File> files = fileRepository.findByWorkspaceIdAndDeleted(workspaceId, false);
+		for (File file : files) {
+			switch (file.getFileType()) {
+				case PROFILE: {
+					profileStorageSize = profileStorageSize + file.getSize();
+				}
+				case FILE: {
+					attachFileStorageSize = attachFileStorageSize + file.getSize();
+				}
+				case SHARE: {
+					shareFileStorageSize = shareFileStorageSize + file.getSize();
+				}
+				break;
+			}
+		}
+
+		profileStorageSize = (profileStorageSize / 1024) / 1024;
+		attachFileStorageSize = (attachFileStorageSize / 1024) / 1024;
+		shareFileStorageSize = (shareFileStorageSize / 1024) / 1024;
+
+		FileStorageInfoResponse result = FileStorageInfoResponse.builder()
+			.profileStorageSize(profileStorageSize)
+			.attachFileStorageSize(attachFileStorageSize)
+			.shareFileStorageSize(shareFileStorageSize)
+			.totalRemoteUseStorageSize(profileStorageSize + attachFileStorageSize + shareFileStorageSize)
+			.build();
+
+		return new ApiResponse<>(result);
+	}
+
+	public ErrorCode checkStorageCapacity(String workspaceId) {
+
+		ErrorCode errorCode;
+
+		int UPLOAD_POSSIBLE = 90;
+		int OVER_STORAGE = 100;
+
+		ApiResponse<WorkspaceLicensePlanInfoResponse> licensePlanInfo = licenseRestService.getWorkspacePlan(workspaceId);
+
+		double unusedStorageSizePer = (licensePlanInfo.getData().getCurrentUsageStorage() / licensePlanInfo.getData().getMaxStorageSize()) * 100;
+		if (unusedStorageSizePer < UPLOAD_POSSIBLE) {
+			errorCode = ErrorCode.ERR_SUCCESS;
+		} else if (unusedStorageSizePer >= OVER_STORAGE) {
+			errorCode = ErrorCode.ERR_STORAGE_CAPACITY_FULL;
+		} else {
+			errorCode = ErrorCode.ERR_STORAGE_LIMIT_REACHED;
+		}
+
+		return errorCode;
 	}
 
 }

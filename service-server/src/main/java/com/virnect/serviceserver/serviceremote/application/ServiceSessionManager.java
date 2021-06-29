@@ -70,8 +70,6 @@ import com.virnect.serviceserver.serviceremote.dao.SessionDataRepository;
 public class ServiceSessionManager {
 	private static final String TAG = ServiceSessionManager.class.getSimpleName();
 	private final String SESSION_METHOD = "generateSession";
-	private final String SESSION_MESSAGE_METHOD = "generateMessage";
-	private final String SESSION_TOKEN_METHOD = "generateSessionToken";
 
 	SessionManager sessionManager;
 	private final SessionDataRepository sessionDataRepository;
@@ -311,7 +309,7 @@ public class ServiceSessionManager {
 
 		Session sessionNotActive = sessionManager.storeSessionNotActive(sessionId, sessionProperties);
 		log.info("New session {} initialized {}", sessionId, this.sessionManager.getSessionsWithNotActive().stream()
-			.map(Session::getSessionId).collect(Collectors.toList()).toString());
+			.map(Session::getSessionId).collect(Collectors.toList()));
 		JsonObject sessionJson = new JsonObject();
 		sessionJson.addProperty("id", sessionNotActive.getSessionId());
 		sessionJson.addProperty("createdAt", sessionNotActive.getStartTime());
@@ -401,7 +399,7 @@ public class ServiceSessionManager {
 		log.info(
 			"New session {} initialized with custom id: {}", customSessionId,
 			this.sessionManager.getSessionsWithNotActive().stream()
-				.map(Session::getSessionId).collect(Collectors.toList()).toString()
+				.map(Session::getSessionId).collect(Collectors.toList())
 		);
 		JsonObject sessionJson = new JsonObject();
 		sessionJson.addProperty("id", sessionNotActive.getSessionId());
@@ -420,6 +418,7 @@ public class ServiceSessionManager {
 		tokenData.setRole("PUBLISHER");
 		tokenData.setData("");
 
+		String SESSION_TOKEN_METHOD = "generateSessionToken";
 		if (ObjectUtils.isEmpty(tokenData)) {
 			return generateErrorMessage(
 				"Error in body parameters. Cannot be empty",
@@ -428,7 +427,7 @@ public class ServiceSessionManager {
 			);
 		}
 
-		log.info("INTERNAL API: generateSessionToken {}", tokenData.toString());
+		log.info("INTERNAL API: generateSessionToken {}", tokenData);
 
 		String sessionId;
 		String roleString;
@@ -641,6 +640,7 @@ public class ServiceSessionManager {
 		JsonObject completeMessage = new JsonObject();
 
 		Session session = sessionManager.getSession(sessionId);
+		String SESSION_MESSAGE_METHOD = "generateMessage";
 		if (session == null) {
 			session = sessionManager.getSessionNotActive(sessionId);
 			if (session != null) {
@@ -669,7 +669,7 @@ public class ServiceSessionManager {
 			JsonObject jsonObject = new JsonObject();
 			jsonObject.addProperty("type", data);
 			completeMessage.addProperty("data", jsonObject.toString());
-			log.info("generateMessage data is {}", jsonObject.toString());
+			log.info("generateMessage data is {}", jsonObject);
 			//completeMessage.addProperty("data", data);
 		}
 
@@ -811,7 +811,7 @@ public class ServiceSessionManager {
 		if (failMembers.size() > 0) {
 			// Mapper Response
 			failMembersResponse = failMembers.stream()
-				.map(workspaceMemberInfoResponse -> memberWorkspaceMapper.toDto(workspaceMemberInfoResponse))
+				.map(memberWorkspaceMapper::toDto)
 				.collect(Collectors.toList());
 			// 페이징 데이터 셋팅 (페이징 사용안함)
 			pageMeta = PageMetadataResponse.builder()
@@ -841,12 +841,13 @@ public class ServiceSessionManager {
 	}
 
 	public Boolean checkLoading(String workspaceId, String uuid) {
-		Boolean result = false;
+		boolean result = false;
 		List<Member> members = memberRepository.findByWorkspaceIdAndUuid(workspaceId, uuid);
 		if (members.size() > 0) {
 			for (Member member : members) {
 				if (member.getMemberStatus() == MemberStatus.LOADING) {
 					result = true;
+					break;
 				}
 			}
 		}
