@@ -84,9 +84,9 @@ public class FileRestController {
         if (result.hasErrors()) {
             throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
-        if (!remoteStorageProperties.isEnabled()) {
+        /*if (!remoteStorageProperties.isEnabled()) {
             throw new RestServiceException(ErrorCode.ERR_STORAGE_NOT_SUPPORTED);
-        }
+        }*/
         ApiResponse<FileUploadResponse> responseData = fileService.uploadFile(fileUploadRequest, FileType.FILE);
         return ResponseEntity.ok(responseData);
     }
@@ -145,9 +145,9 @@ public class FileRestController {
         if (result.hasErrors()) {
             throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
-        if (!remoteStorageProperties.isEnabled()) {
+        /*if (!remoteStorageProperties.isEnabled()) {
             throw new RestServiceException(ErrorCode.ERR_STORAGE_NOT_SUPPORTED);
-        }
+        }*/
         ApiResponse<RoomProfileUpdateResponse> responseData = fileService.profileUpload(
             workspaceId,
             sessionId,
@@ -416,9 +416,9 @@ public class FileRestController {
         if (result.hasErrors()) {
             throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
-        if (!remoteStorageProperties.isEnabled()) {
+        /*if (!remoteStorageProperties.isEnabled()) {
             throw new RestServiceException(ErrorCode.ERR_STORAGE_NOT_SUPPORTED);
-        }
+        }*/
         ApiResponse<ShareFileUploadResponse> responseData = fileService.uploadShareFile(fileUploadRequest);
         return ResponseEntity.ok(responseData);
     }
