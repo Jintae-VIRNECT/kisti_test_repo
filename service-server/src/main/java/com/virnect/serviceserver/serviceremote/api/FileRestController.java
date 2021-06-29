@@ -571,10 +571,10 @@ public class FileRestController {
     ) {
         LogMessage.formedInfo(
             TAG,
-            "REST API: DELETE "
+            "REST API: GET
                 + REST_PATH + "::"
                 + "workspaceId:" + workspaceId,
-            "deleteShareFilesRequestHandler"
+            "checkRemoteStorageCapacity"
         );
         if (StringUtils.isBlank(workspaceId)) {
             throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
