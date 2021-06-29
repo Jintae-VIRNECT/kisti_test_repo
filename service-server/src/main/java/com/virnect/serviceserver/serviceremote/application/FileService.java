@@ -1073,6 +1073,7 @@ public class FileService {
 		shareFileStorageSize = (shareFileStorageSize / 1024) / 1024;
 
 		FileStorageInfoResponse result = FileStorageInfoResponse.builder()
+			.workspaceId(workspaceId)
 			.profileStorageSize(profileStorageSize)
 			.attachFileStorageSize(attachFileStorageSize)
 			.shareFileStorageSize(shareFileStorageSize)
