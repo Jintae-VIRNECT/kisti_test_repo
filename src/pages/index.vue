@@ -48,10 +48,16 @@ export default {
         view: [],
         track: [],
       },
+      trackDownloadUrl: 'http://track.virnect.com/download/download/',
     }
   },
   watch: {
-    async activeTab(tab) {
+    async activeTab(tab, oldTab) {
+      if (tab === 'track') {
+        window.open(this.trackDownloadUrl, '_blank')
+        document.querySelector(`#tab-${oldTab}`).click()
+        return
+      }
       window.history.replaceState({}, null, tab)
       if (!this.products[tab].length) {
         this.products[tab] = await this.loadList(tab)
