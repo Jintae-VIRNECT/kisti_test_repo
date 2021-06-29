@@ -15,6 +15,7 @@ import org.springframework.util.StringUtils;
 import com.querydsl.jpa.JPQLQuery;
 
 import com.virnect.process.domain.Conditions;
+import com.virnect.process.domain.Process;
 import com.virnect.process.domain.QProcess;
 import com.virnect.process.domain.QSubProcess;
 import com.virnect.process.domain.QTarget;
@@ -220,4 +221,9 @@ public class SubProcessCustomRepositoryImpl extends QuerydslRepositorySupport im
 		return new PageImpl<>(subProcessList, pageable, query.fetchCount());
 	}
 
+	@Override
+	public long deleteAllSubProcessByProcessList(List<Process> processList) {
+		QSubProcess qSubProcess = QSubProcess.subProcess;
+		return delete(qSubProcess).where(qSubProcess.process.in(processList)).execute();
+	}
 }

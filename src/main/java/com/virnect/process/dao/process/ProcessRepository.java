@@ -1,21 +1,18 @@
 package com.virnect.process.dao.process;
 
-import com.virnect.process.domain.Process;
-import com.virnect.process.dto.response.ProcessesStatisticsResponse;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
-
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.data.jpa.repository.JpaRepository;
+
+import com.virnect.process.domain.Process;
+
 public interface ProcessRepository extends JpaRepository<Process, Long>, ProcessCustomRepository {
-    Optional<Process> findById(Long processId);
+	Optional<Process> findById(Long processId);
 
-    List<Process> findByContentUUID(String contentUUID);
+	List<Process> findByContentUUID(String contentUUID);
 
-    List<Process> findByWorkspaceUUID(String workspaceUUID);
+	List<Process> findByWorkspaceUUID(String workspaceUUID);
+
+	void deleteByWorkspaceUUID(String workspaceUUID);
 }

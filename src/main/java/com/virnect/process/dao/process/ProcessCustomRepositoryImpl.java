@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -36,6 +37,7 @@ public class ProcessCustomRepositoryImpl extends QuerydslRepositorySupport imple
 	QJob qJob = QJob.job;
 	QIssue qIssue = QIssue.issue;
 
+	@Autowired
 	public ProcessCustomRepositoryImpl(JPAQueryFactory queryFactory) {
 		super(Process.class);
 		this.queryFactory = queryFactory;

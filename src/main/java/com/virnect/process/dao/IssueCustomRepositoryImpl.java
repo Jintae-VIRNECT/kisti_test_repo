@@ -14,6 +14,7 @@ import org.thymeleaf.util.StringUtils;
 import com.querydsl.jpa.JPQLQuery;
 
 import com.virnect.process.domain.Issue;
+import com.virnect.process.domain.Job;
 import com.virnect.process.domain.QIssue;
 import com.virnect.process.domain.QJob;
 import com.virnect.process.domain.QProcess;
@@ -176,7 +177,7 @@ public class IssueCustomRepositoryImpl extends QuerydslRepositorySupport impleme
 
 		query.where(qIssue.job.isNull());
 		query.where(qIssue.workerUUID.in(workspaceUserList));
-		
+
 		if (Objects.nonNull(search)) {
 			query.where(qIssue.content.contains(search));
 		}
@@ -211,5 +212,17 @@ public class IssueCustomRepositoryImpl extends QuerydslRepositorySupport impleme
 		}
 
 		return query;
+	}
+
+	@Override
+	public long deleteAllIssueByJobList(List<Job> jobList) {
+		QIssue qIssue = QIssue.issue;
+		return delete(qIssue).where(qIssue.job.in(jobList)).execute();
+	}
+
+	@Override
+	public long deleteAllIssueByUserUUID(String userUUID) {
+		QIssue qIssue = QIssue.issue;
+		return delete(qIssue).where(qIssue.workerUUID.eq(userUUID)).execute();
 	}
 }

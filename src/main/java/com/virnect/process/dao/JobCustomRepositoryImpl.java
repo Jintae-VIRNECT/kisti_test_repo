@@ -1,16 +1,20 @@
 package com.virnect.process.dao;
 
-import com.querydsl.jpa.JPQLQuery;
-import com.virnect.process.domain.Job;
-import com.virnect.process.domain.QJob;
-import lombok.extern.slf4j.Slf4j;
+import java.util.List;
+import java.util.Objects;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.support.QuerydslRepositorySupport;
 
-import java.util.List;
-import java.util.Objects;
+import com.querydsl.jpa.JPQLQuery;
+
+import lombok.extern.slf4j.Slf4j;
+
+import com.virnect.process.domain.Job;
+import com.virnect.process.domain.QJob;
+import com.virnect.process.domain.SubProcess;
 
 /**
  * @author jiyong.heo
@@ -21,26 +25,34 @@ import java.util.Objects;
  */
 @Slf4j
 public class JobCustomRepositoryImpl extends QuerydslRepositorySupport implements JobCustomRepository {
-    public JobCustomRepositoryImpl() { super(Job.class); }
+	public JobCustomRepositoryImpl() {
+		super(Job.class);
+	}
 
-    @Override
-    public Page<Job> getJobPage(String myUUID, Long subProcessId, String search, Pageable pageable) {
-        QJob qJob = QJob.job;
+	@Override
+	public Page<Job> getJobPage(String myUUID, Long subProcessId, String search, Pageable pageable) {
+		QJob qJob = QJob.job;
 
-        JPQLQuery<Job> query = from(qJob);
+		JPQLQuery<Job> query = from(qJob);
 
-        query.where(qJob.subProcess.id.eq(subProcessId));
+		query.where(qJob.subProcess.id.eq(subProcessId));
 
-        if (Objects.nonNull(myUUID)) {
-            query.where(qJob.subProcess.workerUUID.eq(myUUID));
-        }
+		if (Objects.nonNull(myUUID)) {
+			query.where(qJob.subProcess.workerUUID.eq(myUUID));
+		}
 
-        if (Objects.nonNull(search)) {
-            query.where(qJob.name.contains(search));
-        }
+		if (Objects.nonNull(search)) {
+			query.where(qJob.name.contains(search));
+		}
 
-        List<Job> jobList = getQuerydsl().applyPagination(pageable, query).fetch();
+		List<Job> jobList = getQuerydsl().applyPagination(pageable, query).fetch();
 
-        return new PageImpl<>(jobList, pageable, query.fetchCount());
-    }
+		return new PageImpl<>(jobList, pageable, query.fetchCount());
+	}
+
+	@Override
+	public long deleteAllJobBySubProcessList(List<SubProcess> subProcessList) {
+		QJob qJob = QJob.job;
+		return delete(qJob).where(qJob.subProcess.in(subProcessList)).execute();
+	}
 }
