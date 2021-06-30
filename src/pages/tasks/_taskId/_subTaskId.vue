@@ -203,7 +203,7 @@ export default {
   mixins: [searchMixin, columnMixin],
   async asyncData({ params, from, route }) {
     const backUrl =
-      from.name === 'tesks-results'
+      from.name === 'tasks-results'
         ? from.path
         : `/tasks/${route.params.taskId}`
     const promise = {
