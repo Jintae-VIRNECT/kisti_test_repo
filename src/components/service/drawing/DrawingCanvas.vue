@@ -278,14 +278,11 @@ export default {
     //드로잉 브러시 lineWidth가 변경될 때마다 실제 브러쉬 크기를 캔버스 사이즈에 비례하여 업데이트하는 함수
     updateCanvasBrushWidth(lineWidth) {
       if (this.canvas) {
-        console.error(this.origin, this.img)
         //드로잉 굵기를 현재 창 크기에서 캔버스 사이즈 기준으로 계산
         const width = lineWidth * (this.origin.width / this.img.width)
         this.canvas.freeDrawingBrush.width = width
         //커서크기 업데이트
         if (this.cursor) this.cursor.setRadius(width / 2)
-
-        console.error(width, this.tools.lineWidth)
       }
     },
   },
