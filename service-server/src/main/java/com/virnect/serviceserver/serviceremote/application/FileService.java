@@ -121,7 +121,7 @@ public class FileService {
 	@Transactional
 	public ApiResponse<FileUploadResponse> uploadFile(FileUploadRequest fileUploadRequest, FileType fileType) {
 
-		ApiResponse<FileUploadResponse> response = new ApiResponse<>();
+		ErrorCode errorCode = ErrorCode.ERR_SUCCESS;
 
 		// Storage check
 		ErrorCode storageCheckResult = checkStorageCapacity(fileUploadRequest.getWorkspaceId());
@@ -129,8 +129,7 @@ public class FileService {
 			if (storageCheckResult == ErrorCode.ERR_STORAGE_CAPACITY_FULL) {
 				return new ApiResponse<>(ErrorCode.ERR_STORAGE_CAPACITY_FULL);
 			} else if (storageCheckResult == ErrorCode.ERR_STORAGE_LIMIT_REACHED){
-				response.setCode(ErrorCode.ERR_STORAGE_LIMIT_REACHED.getCode());
-				response.setMessage(ErrorCode.ERR_STORAGE_LIMIT_REACHED.getMessage());
+				errorCode = ErrorCode.ERR_STORAGE_LIMIT_REACHED;
 			}
 		}
 
@@ -175,8 +174,7 @@ public class FileService {
 
 		FileUploadResponse fileUploadResponse = fileUploadMapper.toDto(file);
 
-		response.setData(fileUploadResponse);
-		return response;
+		return new ApiResponse<>(fileUploadResponse, errorCode);
 	}
 
 	@Transactional
@@ -234,7 +232,7 @@ public class FileService {
 		RoomProfileUpdateRequest roomProfileUpdateRequest
 	) {
 
-		ApiResponse<RoomProfileUpdateResponse> response = new ApiResponse<>();
+		ErrorCode errorCode = ErrorCode.ERR_SUCCESS;
 
 		// Storage check
 		ErrorCode storageCheckResult = checkStorageCapacity(workspaceId);
@@ -242,8 +240,7 @@ public class FileService {
 			if (storageCheckResult == ErrorCode.ERR_STORAGE_CAPACITY_FULL) {
 				return new ApiResponse<>(ErrorCode.ERR_STORAGE_CAPACITY_FULL);
 			} else if (storageCheckResult == ErrorCode.ERR_STORAGE_LIMIT_REACHED){
-				response.setCode(ErrorCode.ERR_STORAGE_LIMIT_REACHED.getCode());
-				response.setMessage(ErrorCode.ERR_STORAGE_LIMIT_REACHED.getMessage());
+				errorCode = ErrorCode.ERR_STORAGE_LIMIT_REACHED;
 			}
 		}
 
@@ -305,8 +302,7 @@ public class FileService {
 			new ApiResponse<>(ErrorCode.ERR_PROFILE_UPLOAD_FAILED);
 		}
 
-		response.setData(roomProfileUpdateResponse);
-		return response;
+		return new ApiResponse<>(roomProfileUpdateResponse, errorCode);
 	}
 
 	@Transactional
@@ -767,7 +763,7 @@ public class FileService {
 		FileUploadRequest fileUploadRequest
 	) throws IOException, NoSuchAlgorithmException, InvalidKeyException {
 
-		ApiResponse<ShareFileUploadResponse> response = new ApiResponse<>();
+		ErrorCode errorCode = ErrorCode.ERR_SUCCESS;
 
 		// Storage check
 		ErrorCode storageCheckResult = checkStorageCapacity(fileUploadRequest.getWorkspaceId());
@@ -775,8 +771,7 @@ public class FileService {
 			if (storageCheckResult == ErrorCode.ERR_STORAGE_CAPACITY_FULL) {
 				return new ApiResponse<>(ErrorCode.ERR_STORAGE_CAPACITY_FULL);
 			} else if (storageCheckResult == ErrorCode.ERR_STORAGE_LIMIT_REACHED){
-				response.setCode(ErrorCode.ERR_STORAGE_LIMIT_REACHED.getCode());
-				response.setMessage(ErrorCode.ERR_STORAGE_LIMIT_REACHED.getMessage());
+				errorCode = ErrorCode.ERR_STORAGE_LIMIT_REACHED;
 			}
 		}
 
@@ -799,8 +794,7 @@ public class FileService {
 		fileUploadResponse.setThumbnailDownloadUrl(downloadUrl.getData());
 		fileUploadResponse.setDeleted(fileUploadResult.getFile().isDeleted());
 
-		response.setData(fileUploadResponse);
-		return response;
+		return new ApiResponse<>(fileUploadResponse, errorCode);
 	}
 
 	@Transactional
