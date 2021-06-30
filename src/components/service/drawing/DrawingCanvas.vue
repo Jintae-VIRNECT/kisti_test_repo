@@ -234,8 +234,6 @@ export default {
 
       const scale = canvasSize.width / this.origin.width
 
-      // let zoom = canvas.getZoom()
-
       this.origin.scale = scale
 
       canvas.setZoom(scale)
@@ -267,6 +265,7 @@ export default {
     windowResize() {
       setTimeout(() => {
         this.optimizeCanvasSize()
+        this.keepPositionInBounds(this.canvas)
       }, 1000)
     },
   },

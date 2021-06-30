@@ -25,6 +25,14 @@ export default {
           this.receiveRender()
         })
       }
+      // 협업보드에서 이탈 시 기존 줌 상태 초기화
+      else if (oldVal === VIEW.DRAWING) {
+        if (this.canvas)
+          setTimeout(
+            () => this.canvas.setViewportTransform([1, 0, 0, 1, 0, 0]),
+            500,
+          )
+      }
     },
     viewAction(value) {
       if (this.view !== VIEW.DRAWING) return
