@@ -168,6 +168,10 @@ export default {
             }
             const res = await uploadFile(params)
 
+            if (res.code === 7016) {
+              this.toastError(this.$t('alarm.file_storage_about_to_limit'))
+            }
+
             this.$call.sendFile({
               fileInfo: { ...res },
             })
@@ -183,6 +187,8 @@ export default {
               this.toastError(this.$t('service.file_extension_unsupport'))
             } else if (err.code === 7004) {
               this.toastError(this.$t('service.file_size_exceeded'))
+            } else if (err.code === 7017) {
+              this.toastError(this.$t('alarm.file_storage_capacity_full'))
             }
 
             this.clearUploadFile()

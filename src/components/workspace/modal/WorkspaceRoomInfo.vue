@@ -191,6 +191,8 @@ export default {
         if (err.code === 4002) {
           this.toastError(this.$t('workspace.remote_already_removed'))
           this.$emit('update:visible', false)
+        } else if (err.code === 7017) {
+          this.toastError(this.$t('alarm.file_storage_capacity_full'))
         }
       }
     },

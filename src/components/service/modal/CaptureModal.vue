@@ -135,7 +135,9 @@ export default {
 
       if (this.doubleCheck()) return
 
-      await this.uploadImage()
+      const result = await this.uploadImage()
+      if (!result) return
+
       this.setView('drawing')
       this.$nextTick(() => {
         this.close()
@@ -148,12 +150,28 @@ export default {
         dataType,
         this.file.fileName,
       )
-      const res = await drawingUpload({
-        file: file,
-        sessionId: this.roomInfo.sessionId,
-        userId: this.account.uuid,
-        workspaceId: this.workspace.uuid,
-      })
+
+      let res = null
+      try {
+        res = await drawingUpload({
+          file: file,
+          sessionId: this.roomInfo.sessionId,
+          userId: this.account.uuid,
+          workspaceId: this.workspace.uuid,
+        })
+      } catch (err) {
+        if (err.code === 7017) {
+          this.toastError(this.$t('alarm.file_storage_capacity_full'))
+        } else {
+          this.toastError(this.$t('confirm.network_error'))
+        }
+        return false
+      }
+
+      if (res.code === 7016) {
+        this.toastError(this.$t('alarm.file_storage_about_to_limit'))
+      }
+
       this.$call.sendDrawing(DRAWING.ADDED, {
         deleted: false, //false
         expired: false, //false
@@ -167,6 +185,8 @@ export default {
         width: res.width, //pdf 는 0
         height: res.height,
       })
+
+      return true
     },
     close() {
       this.clearCapture()

@@ -282,6 +282,8 @@ export default {
           this.toastError(this.$t('service.file_type'))
         } else if (err.code === 7004) {
           this.toastError(this.$t('service.file_maxsize'))
+        } else if (err.code === 7017) {
+          this.toastError(this.$t('alarm.file_storage_capacity_full'))
         } else {
           console.error(`${err.message} (${err.code})`)
           this.toastError(this.$t('confirm.network_error'))
