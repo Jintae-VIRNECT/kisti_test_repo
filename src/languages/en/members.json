@@ -33,8 +33,8 @@
       "kick": "Remove",
       "message": {
         "notHaveAnyPlan": "At least one plan must be allocated to Workspace members.",
-        "updateFail": "Failed to update member details from the Workspace please try again later",
-        "updateSuccess": "Succesfully updated selected member details"
+        "updateFail": "Failed to update member details from the Workspace please try again later.",
+        "updateSuccess": "Succesfully updated selected member details."
       }
     },
     "kick": {
@@ -56,19 +56,19 @@
       "caution": "Your password must be between 8 and 20 characters long. Your password needs to be included with at least 3 of following character types. <br>- Uppercase letter <br>- Lowercase letter<br>- Number <br>- Special character ( . ! @ # $ % ). <br>Also your password must not contain consecutive numbers and more than four of same characters.",
       "message": {
         "success": "Your password has changed successfully.",
-        "fail": "Failed to change a password, \nplease try again later."
+        "fail": "Failed to change a password, please try again later."
       }
     },
     "delete": {
       "title": "Delete account",
-      "desc": "Deleting the selected member account. \nThe uploaded data from the deleted account will not be deleted and only account related information will be deleted. Deleted data cannot be recovered.",
+      "desc": "Deleting the selected member account. The uploaded data from the deleted account will not be deleted and only account related information will be deleted. Deleted data cannot be recovered.",
       "masterPassword": "Master password",
       "placeholder": "Please enter your password",
       "message": {
         "successTitle": "Account delete complete",
-        "successContent": "Selected account is deleted",
-        "wrongPassword": "Incorrect password",
-        "fail": "Failed to delete the account, \nplease try again later."
+        "successContent": "Selected account is deleted.",
+        "wrongPassword": "Incorrect password.",
+        "fail": "Failed to delete the account, please try again later."
       }
     },
     "add": {
@@ -82,7 +82,7 @@
       "addMember": "Add Members",
       "submit": "Send Invitation",
       "message": {
-        "inviteFail": "Failed to invite a member to Workspace please try again later",
+        "inviteFail": "Failed to invite a member to Workspace please try again later.",
         "inviteSuccess": "The invitation email has been sent. The member is added when this member accepts your invitation.",
         "notHaveAnyPlan": "At least one plan must be allocated when inviting new Workspace members.",
         "enoughPlan": "No plans available to assign to Workspace members please purchase plans and invite them again.",
@@ -104,16 +104,16 @@
       "passwordPlaceholder": "Please enter your password for the account to be created.",
       "caution": {
         "createId": "Enter your ID and password to create a new workspace member account. \n<u>You must allocate at least one plan you have when creating an account.</u>",
-        "validId": "You can choose between 4 and 20 characters of english letters and numbers for the <u>ID</u",
+        "validId": "You can choose between 4 and 20 characters of english letters and numbers for the <u>ID</u.",
         "validPassword": "Your password must be between 8 and 20 characters long. Your password needs to be included with at least 3 of following character types. <br>- Uppercase letter <br>- Lowercase letter<br>- Number <br>- Special character ( . ! @ # $ % ). <br>Also your password must not contain consecutive numbers and more than four of same characters.",
         "canModify": "Logged in user can change the password and account details updated during account registration."
       },
       "message": {
         "successTitle": "Adding member completed",
         "successContent": "The account is created based on the information entered. You may use the service using the created account. Please let the user know of setting up the password recovery question & answer ",
-        "idDuplicated": "This ID is already registered, \nplease enter a different ID.",
+        "idDuplicated": "This ID is already registered, please enter a different ID.",
         "notHaveAnyPlan": "You need to allocate at least one plan to the account you are creating.",
-        "fail": "Failed to add a member, \nplease try again later. If a same problem occurs please contact a network adminitrator."
+        "fail": "Failed to add a member, please try again later. If a same problem occurs please contact a network adminitrator."
       }
     },
     "activity": {

@@ -1,9 +1,9 @@
 {
   "workspace": {
     "welcome": "Hello {nickname} welcome to the Workspace",
-    "master": "Master",
-    "manager": "Manager",
-    "member": "Member",
+    "master": "Workspace Master",
+    "manager": "Workspace Manager",
+    "member": "Workspace Member",
     "create": "Create Workspace",
     "started": {
       "title": "Finish setting up Workspace details",
@@ -11,7 +11,7 @@
     },
     "info": {
       "title": "Workspace details",
-      "descriptionEmpty": "There is no Workspace description",
+      "descriptionEmpty": "There is no Workspace description.",
       "planMemberCount": "Members per plans",
       "planPurchase": "Purchase",
       "addMember": "Add Member"
@@ -21,9 +21,9 @@
       "createdDate": "Created",
       "name": "Workspace Name",
       "namePlaceholder": "{nickname}'s Workspace",
-      "nameComment": "Enter less than 30 characters for your Workspace name",
+      "nameComment": "Enter less than 30 characters for your Workspace name.",
       "desc": "Description",
-      "descPlaceholder": "Enter your Workspace description",
+      "descPlaceholder": "Enter your Workspace description.",
       "descComment": "Enter less than 40 characters for the description.",
       "image": "Profile Image",
       "imageComment": "Update your Workspace profile image. This profile picture is displayed on the sidebar and notifications.",
@@ -46,7 +46,7 @@
       }
     },
     "invite": {
-      "invalid": "Failure to accept invitation"
+      "invalid": "Workspace that has been already refused to participate. : This is a workspace that participation has been refused. Ask the master to invite you again."
     },
     "onpremiseSetting": {
       "title": "Web service settings",
