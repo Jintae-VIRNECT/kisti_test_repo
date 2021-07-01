@@ -24,7 +24,7 @@
       <el-row>
         <el-card class="el-card--table el-card--table--info">
           <div slot="header">
-            <router-link :to="`/tasks/${$route.params.taskId}`">
+            <router-link :to="backUrl">
               <img src="~assets/images/icon/ic-arrow-back.svg" />
             </router-link>
             <h3>
@@ -201,7 +201,11 @@ import taskService from '@/services/task'
 
 export default {
   mixins: [searchMixin, columnMixin],
-  async asyncData({ params }) {
+  async asyncData({ params, from, route }) {
+    const backUrl =
+      from.name === 'tasks-results'
+        ? from.path
+        : `/tasks/${route.params.taskId}`
     const promise = {
       taskDetail: taskService.getTaskDetail(params.taskId),
       subTaskDetail: taskService.getSubTaskDetail(params.subTaskId),
@@ -212,6 +216,7 @@ export default {
       subTaskInfo: await promise.subTaskDetail,
       stepsList: (await promise.steps).list,
       stepsTotal: (await promise.steps).total,
+      backUrl,
     }
   },
   data() {

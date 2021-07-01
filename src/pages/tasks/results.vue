@@ -98,10 +98,7 @@ export default {
       this.$router.replace(pathTo).catch(() => {})
     },
     $route() {
-      const { path } = this.$route
-      if (path === '/tasks/results') this.activeTab = 'task'
-      else if (path === '/tasks/results/issues') this.activeTab = 'issue'
-      else if (path === '/tasks/results/papers') this.activeTab = 'paper'
+      this.setActiveTab()
     },
   },
   methods: {
@@ -115,7 +112,10 @@ export default {
         searchParams,
       )
       this.page = searchParams === undefined ? 1 : searchParams.page
-      this.list = list
+      console.log(this.list)
+      console.log(...list)
+      this.list.splice(0, this.list.length, ...list)
+      console.log(this.list)
       this.total = total
     },
     async searchIssues(searchParams) {
@@ -123,7 +123,7 @@ export default {
         this.searchParams,
       )
       this.page = searchParams === undefined ? 1 : searchParams.page
-      this.list = list
+      this.list.splice(0, this.list.length, ...list)
       this.total = total
     },
     async searchPapers(searchParams) {
@@ -131,7 +131,7 @@ export default {
         this.searchParams,
       )
       this.page = searchParams === undefined ? 1 : searchParams.page
-      this.list = list
+      this.list.splice(0, this.list.length, ...list)
       this.total = total
     },
     sortChange({ prop, order }) {
@@ -141,15 +141,22 @@ export default {
         this.emitChangedSearchParams({ sort })
       }
     },
+    /**
+     * @author YongHo Kim <yhkim@virnect.com>
+     * @description 라우터 이름을 가지고 activeTab 설정하는 함수
+     */
+    setActiveTab() {
+      const { name } = this.$route
+      if (name === 'tasks-results') this.activeTab = 'task'
+      else if (name === 'tasks-results-issues') this.activeTab = 'issue'
+      else if (name === 'tasks-results-papers') this.activeTab = 'paper'
+    },
   },
   beforeMount() {
     this.resultsSearch = this.$route.query.search
     this.searchParams.search = this.$route.query.search
 
-    const { path } = this.$route
-    if (path === '/tasks/results') this.activeTab = 'task'
-    else if (path === '/tasks/results/issues') this.activeTab = 'issue'
-    else if (path === '/tasks/results/papers') this.activeTab = 'paper'
+    this.setActiveTab()
 
     workspaceService.watchActiveWorkspace(this, () => {
       if (this.activeTab === 'task') this.searchSubTasks({ page: 1 })

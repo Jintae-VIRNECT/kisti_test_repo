@@ -21,6 +21,7 @@
         "allProgress": "Overall Progress",
         "countOfConditions": "Progress Status Overview",
         "countOfConditionsDesc": "Progress status of task / subtask / step in \"Task management\" depends on the \"Schedule\" and \"Progress rate\"",
+        "countOfTasks": "Cases",
         "graphOn": "Unfold",
         "graphOff": "Fold"
       },
@@ -50,11 +51,11 @@
       },
       "message": {
         "closeSure": "Are you sure you want to end the selected tasks? If you end it relevant data will be no longer collected.",
-        "closeSuccess": "Selected task is ended",
-        "closeFail": "Failed to end the task please try again later",
+        "closeSuccess": "Selected task is ended.",
+        "closeFail": "Failed to end the task please try again later.",
         "deleteSure": "Are you sure you want to delete the selected tasks? If you delete it relevant data will be no longer collected and be deleted. The deleted data cannot be restored.",
-        "deleteSuccess": "Selected task is deleted",
-        "deleteFail": "Failed to delete the task please try again later"
+        "deleteSuccess": "Selected task is deleted.",
+        "deleteFail": "Failed to delete the task please try again later."
       }
     },
     "detail": {
@@ -160,9 +161,9 @@
       "subTaskWorkerChangeDesc": "Receive subtask reports with updated information",
       "message": {
         "taskUpdateSuccess": "Task details updated.",
-        "taskUpdateFail": "Failed to edit the task please try again later.",
+        "taskUpdateFail": "Failed to edit the task, please try again later.",
         "subTaskUpdateSuccess": "Subtask details are updated.",
-        "subTaskUpdateFail": "Failed to edit the subtask please try again later."
+        "subTaskUpdateFail": "Failed to edit the subtask, please try again later."
       }
     },
     "newTarget": {
@@ -176,8 +177,8 @@
       "register": "Register",
       "registerComment": "Updating a new task with the information you entered.",
       "message": {
-        "registerSuccess": "New task is added",
-        "registerFail": "Failed to update the task please try again later",
+        "registerSuccess": "New task is added.",
+        "registerFail": "Failed to update the task, please try again later.",
         "registerStroageFail": "Updating task failed due to the insuffient storage capacity."
       }
     },
@@ -192,8 +193,8 @@
       "register": "Create New Task",
       "registerComment": "Create additional task with the information you entered.",
       "message": {
-        "registerSuccess": "Creating additional task completed",
-        "registerFail": "Failed to create additional task please try again later",
+        "registerSuccess": "Creating additional task completed.",
+        "registerFail": "Failed to create additional task, please try again later.",
         "registerStroageFail": "Failed to create additional task due to insuffient storage capacity."
       }
     },

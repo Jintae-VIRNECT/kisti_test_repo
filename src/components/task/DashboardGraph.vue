@@ -91,7 +91,9 @@ export default {
         },
         tooltip: {
           format: {
-            name: () => '건수',
+            name: () => {
+              return that.$t('task.list.dashboard.countOfTasks')
+            },
           },
           onshown() {
             const tooltip = this.api.$.tooltip

@@ -52,7 +52,11 @@
         :total="membersTotal"
       />
     </div>
-    <MemberAddModal :visible.sync="showAddModal" :membersTotal="membersTotal" />
+    <MemberAddModal
+      v-if="showAddModal"
+      :membersTotal="membersTotal"
+      @close="closeMemberAddModal"
+    />
   </div>
 </template>
 
@@ -89,6 +93,9 @@ export default {
     }
   },
   methods: {
+    closeMemberAddModal() {
+      this.showAddModal = false
+    },
     changedSearchParams(searchParams) {
       this.searchMembers(searchParams)
     },
@@ -100,6 +107,9 @@ export default {
       this.membersTotal = total
       this.loading = false
     },
+    async getWorkspacePlansInfo() {
+      await this.$store.dispatch('plan/getPlansInfo')
+    },
     addMember() {
       if (this.$isOnpremise) {
         this.$router.push('/members/create')
@@ -110,9 +120,10 @@ export default {
   },
   beforeMount() {
     this.searchMembers({ page: 1 })
-    workspaceService.watchActiveWorkspace(this, () =>
-      this.searchMembers({ page: 1 }),
-    )
+    workspaceService.watchActiveWorkspace(this, () => {
+      this.searchMembers({ page: 1 })
+      this.getWorkspacePlansInfo()
+    })
   },
   mounted() {
     // modal query
