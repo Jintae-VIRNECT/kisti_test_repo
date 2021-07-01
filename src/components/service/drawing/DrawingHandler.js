@@ -258,6 +258,8 @@ export default {
       })
     },
     keepPositionInBounds(canvas) {
+      if (!canvas) return
+
       //줌인/아웃 시 이미지 범위 벗어나 여백 생기지 않도록 제한
       const zoom = canvas.getZoom()
       const xMin = ((2 * this.origin.scale - zoom) * canvas.getWidth()) / 2
