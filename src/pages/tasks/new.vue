@@ -84,6 +84,7 @@
             />
             <template slot="empty">
               <img src="~assets/images/empty/img-content-empty.jpg" />
+              <p>{{ $t('contents.allContents.empty') }}</p>
             </template>
           </el-table>
         </el-card>
