@@ -12,7 +12,7 @@
       name="file"
       accept="image/gif,image/jpeg,image/png"
       style="display: none;"
-      @change="uploadImage($event)"
+      @change="uploadImage($event, (isProfile = true))"
     />
     <button class="btn normal openroom-info_regist-image" @click="imageUpload">
       {{ $t('workspace.create_remote_profile_regist') }}
@@ -55,8 +55,6 @@ import InputRow from 'InputRow'
 import imageMixin from 'mixins/uploadImage'
 import confirmMixin from 'mixins/confirm'
 import toastMixin from 'mixins/toast'
-
-import { isRegisted } from 'utils/auth'
 
 export default {
   name: 'ModalCreateRoomInfo',
@@ -122,12 +120,6 @@ export default {
     async startRemote() {
       if (this.btnDisabled) {
         this.confirmDefault(this.titleValidMessage)
-        return
-      }
-
-      //멤버 상태 등록 안된 경우 협업방 입장 불가
-      if (!isRegisted) {
-        this.toastDefault(this.$t('workspace.auth_status_failed'))
         return
       }
 

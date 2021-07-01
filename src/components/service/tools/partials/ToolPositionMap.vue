@@ -32,7 +32,8 @@ export default {
       handler() {
         this.isAvailable =
           this.mainView.deviceType === DEVICE.MOBILE ||
-          this.mainView.deviceType === DEVICE.GLASSES
+          this.mainView.deviceType === DEVICE.GLASSES ||
+          this.mainView.deviceType === DEVICE.FITT360
       },
       deep: true,
       immediate: true,
@@ -52,22 +53,23 @@ export default {
     rejected(enable) {
       if (!enable) {
         this.toastDefault(this.$t('service.map_request_rejected'))
+        this.$eventBus.$emit('map:close')
       }
     },
     showMap() {
       this.status = true
       this.$eventBus.$emit('map:show', this.status)
     },
-    closeMap() {
+    deactiveSatus() {
       this.status = false
     },
   },
   mounted() {
-    this.$eventBus.$on('map:closed', this.closeMap)
+    this.$eventBus.$on('map:closed', this.deactiveSatus)
     this.$eventBus.$on('map:enable', this.rejected)
   },
   beforeDestroy() {
-    this.$eventBus.$off('map:closed', this.closeMap)
+    this.$eventBus.$off('map:closed', this.deactiveSatus)
     this.$eventBus.$off('map:enable', this.rejected)
   },
 }

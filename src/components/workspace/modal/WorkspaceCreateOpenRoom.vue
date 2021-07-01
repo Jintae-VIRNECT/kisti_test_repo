@@ -34,6 +34,7 @@ import { ROOM_STATUS } from 'configs/status.config'
 import toastMixin from 'mixins/toast'
 import confirmMixin from 'mixins/confirm'
 import callMixin from 'mixins/call'
+import { isRegisted } from 'utils/auth'
 
 export default {
   name: 'WorkspaceCreateOpenRoom',
@@ -95,6 +96,12 @@ export default {
     },
     async startRemote(info) {
       try {
+        //멤버 상태 등록 안된 경우 협업방 입장 불가
+        if (!isRegisted) {
+          this.toastDefault(this.$t('workspace.auth_status_failed'))
+          return
+        }
+
         if (this.clicked === true) return
         this.clicked = true
 
@@ -139,12 +146,16 @@ export default {
           })
         }
         if (info.imageFile) {
-          await updateRoomProfile({
+          const res = await updateRoomProfile({
             profile: info.imageFile,
             sessionId: createdRes.sessionId,
             uuid: this.account.uuid,
             workspaceId: this.workspace.uuid,
           })
+
+          if (res.usedStoragePer >= 90) {
+            this.toastError(this.$t('alarm.file_storage_about_to_limit'))
+          }
         }
         const connRes = await this.$call.connect(
           createdRes,
@@ -198,6 +209,8 @@ export default {
           this.toastError(this.$t('service.file_type'))
         } else if (err.code === 7004) {
           this.toastError(this.$t('service.file_maxsize'))
+        } else if (err.code === 7017) {
+          this.toastError(this.$t('alarm.file_storage_capacity_full'))
         } else {
           console.error(`${err.message} (${err.code})`)
           this.toastError(this.$t('confirm.network_error'))

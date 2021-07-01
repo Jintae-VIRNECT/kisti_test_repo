@@ -305,14 +305,6 @@ const _ = {
   sendCameraZoom: sender.cameraZoom,
 
   /**
-   * 현재 전체 공유중인 360 스트림의 제어 정보를 전송
-   * @BROADCATE
-   * @TARGET
-   * @param {Object} info 제어정보(yaw, pitch)
-   */
-  sendPanoRotation: sender.panoRotation,
-
-  /**
    * @BROADCATE
    * @TARGET
    * user's speaker mute

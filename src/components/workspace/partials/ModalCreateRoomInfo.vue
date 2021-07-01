@@ -12,7 +12,7 @@
       name="file"
       accept="image/gif,image/jpeg,image/png"
       style="display: none;"
-      @change="uploadImage($event)"
+      @change="uploadImage($event, (isProfile = true))"
     />
     <button
       class="btn normal createroom-info_regist-image"
@@ -68,8 +68,6 @@ import ProfileList from 'ProfileList'
 import imageMixin from 'mixins/uploadImage'
 import confirmMixin from 'mixins/confirm'
 import toastMixin from 'mixins/toast'
-
-import { isRegisted } from 'utils/auth'
 
 export default {
   name: 'ModalCreateRoomInfo',
@@ -153,12 +151,6 @@ export default {
         } else {
           this.confirmDefault(this.$t('workspace.remote_name_valid2'))
         }
-        return
-      }
-
-      //멤버 상태 등록 안된 경우 협업방 입장 불가
-      if (!isRegisted) {
-        this.toastDefault(this.$t('workspace.auth_status_failed'))
         return
       }
 

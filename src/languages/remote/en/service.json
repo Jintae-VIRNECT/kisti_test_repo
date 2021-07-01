@@ -33,6 +33,7 @@
     "toast_ar_exit": "The leader has ended the AR sharing.",
     "toast_no_sharing": "No videos are being shared.",
     "toast_video_restrict_mode": "This is the video restriction mode.<br>Participants all connect with the camera turned off.​",
+    "toast_drawing_end" : "Collaboard sharing has ended.",
 
     "participant_mute": "Mute",
     "participant_mute_cancel": "Unmute",
@@ -95,10 +96,10 @@
     "tool_width": "Line thickness",
     "tool_drawing_width": "Drawing thickness",
     "tool_pointing": "Pointing",
-    "tool_pointing_block": "Leader has disabled pointing feature",
+    "tool_pointing_block": "The pointing feature is not allowed for the participants.",
     "tool_enlarge_reduce": "Enlarge / reduce",
     "tool_screen_share": "Screen sharing",
-    "tool_screen_moving": "Move Screen",
+    
 
     "setting": "Settings",
     "setting_service": "Settings",

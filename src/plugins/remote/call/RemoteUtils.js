@@ -129,9 +129,6 @@ export const addSessionEventListener = session => {
   /** 채팅 파일 수신 */
   session.on(SIGNAL.FILE, eventListener.signalChatFile)
 
-  /** LinkFlow 제어 관련 */
-  session.on(SIGNAL.LINKFLOW, eventListener.signalLinkFlow)
-
   /** Pointing */
   session.on(SIGNAL.POINTING, eventListener.signalPointing)
 
@@ -223,7 +220,6 @@ const setUserObject = event => {
     zoomLevel: 1, // zoom 레벨
     zoomMax: 1, // zoom 최대 레벨
     flash: 'default', // flash 제어
-    rotationPos: null, //pano view의 회전 좌표
     screenShare: false,
     currentWatching: uuid, //현재 자신이 보고있는 참가자 uuid
   }

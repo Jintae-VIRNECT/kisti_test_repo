@@ -33,6 +33,7 @@
     "toast_ar_exit": "リーダーがAR共有を終了しました。",
     "toast_no_sharing": "すべて共有中の映像はありません。",
     "toast_video_restrict_mode": "映像制限モードです。<br>参加者全員がカメラをオフにして接続します。​",
+    "toast_drawing_end" : "協業ボードの共有が終了しました。",
 
     "participant_mute": "ミュート",
     "participant_mute_cancel": "ミュート解除",
@@ -95,10 +96,10 @@
     "tool_width": "線の太さ",
     "tool_drawing_width": "手描き線の太さ",
     "tool_pointing": "ポインティング",
-    "tool_pointing_block": "リーダーがポインティングを阻止しました。",
+    "tool_pointing_block": "参加者ポインティング使用が許可されていない。",
     "tool_enlarge_reduce": "拡大／縮小",
     "tool_screen_share": "画面共有",
-    "tool_screen_moving": "画面移動",
+    
     
     "setting": "設定",
     "setting_service": "設定",

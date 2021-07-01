@@ -52,6 +52,7 @@ import RoomLoading from './modal/WorkspaceRoomLoading'
 import { mapActions, mapGetters } from 'vuex'
 import { PLAN_STATUS } from 'configs/status.config'
 import { MyStorage } from 'utils/storage'
+import { initAudio } from 'plugins/remote/tts/audio'
 
 export default {
   name: 'WorkspaceLayout',
@@ -207,6 +208,11 @@ export default {
     },
     onScroll(scrollX, scrollY) {
       this.$eventBus.$emit('scroll:memberlist')
+
+      if (scrollY === 0 && this.tabFix) {
+        this.scrollTop()
+        return
+      }
       if (scrollY > this.tabTop) {
         this.tabFix = true
       } else {
@@ -303,6 +309,7 @@ export default {
     }
   },
   mounted() {
+    initAudio()
     this.mx_changeLang()
     this.tabTop = this.$refs['tabSection'].$el.offsetTop
     this.$eventBus.$on('scroll:reset:workspace', this.scrollTop)

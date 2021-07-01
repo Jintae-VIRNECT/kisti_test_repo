@@ -57,21 +57,6 @@
           class="main-video__pointing"
         ></pointing>
 
-        <!-- 360 화면 컨트롤 only -->
-        <moving
-          v-if="isLeader && isFITT360 && viewForce"
-          class="main-video__moving"
-          :class="{ upper: activeMovingControl }"
-          @panoctl="flag => (activeMovingControl = flag)"
-        ></moving>
-
-        <!-- 360 화면 뷰 only -->
-        <moving-viewer
-          ref="movingViewer"
-          v-if="isFITT360"
-          class="main-video__moving-viewer"
-        ></moving-viewer>
-
         <!-- 디바이스 컨트롤 뷰 -->
         <template v-if="allowTools">
           <transition name="opacity">
@@ -162,8 +147,6 @@ export default {
   mixins: [shutterMixin, toastMixin],
   components: {
     Pointing,
-    Moving: () => import('./StreamMoving'),
-    MovingViewer: () => import('./StreamMovingViewer'),
     VideoTools,
     Fullscreen,
   },
@@ -185,7 +168,6 @@ export default {
       serverStart: 0,
       hideFullBtn: false,
 
-      activeMovingControl: false,
       backInterval: null,
     }
   },
@@ -199,14 +181,10 @@ export default {
       localRecordStatus: 'localRecordStatus',
       serverRecordStatus: 'serverRecordStatus',
       view: 'view',
-      mainPanoCanvas: 'mainPanoCanvas',
       screenSharing: 'screenSharing',
     }),
     isLeader() {
       return this.account.roleType === ROLE.LEADER
-    },
-    isFITT360() {
-      return this.mainView.deviceType === DEVICE.FITT360
     },
     resolution() {
       const idx = this.resolutions.findIndex(
@@ -456,39 +434,8 @@ export default {
         })
       }
 
-      if (this.isFITT360) {
-        //pano canvas -> dummy video element -> capture canvas
-        const panoCanvas = this.$refs['movingViewer'].$el.querySelector(
-          'canvas',
-        )
-
-        const videoElement = document.createElement('video')
-        const canvasStream = panoCanvas.captureStream(24)
-
-        videoElement.srcObject = canvasStream
-
-        videoElement.muted = true
-        videoElement.id = 'screen-capture-video'
-
-        videoElement.style.width = width
-        videoElement.style.height = height
-        videoElement.style.opacity = '0'
-        videoElement.style.position = 'absolute'
-        videoElement.style.zIndex = '-999999'
-
-        document.body.appendChild(videoElement)
-
-        videoElement.onloadeddata = event => {
-          tmpCtx.drawImage(videoElement, 0, 0, width, height)
-          tmpCanvas.toBlob(canvasToBlob, 'image/png')
-          videoElement.remove()
-        }
-
-        videoElement.play()
-      } else {
-        tmpCtx.drawImage(videoEl, 0, 0, width, height)
-        tmpCanvas.toBlob(canvasToBlob, 'image/png')
-      }
+      tmpCtx.drawImage(videoEl, 0, 0, width, height)
+      tmpCanvas.toBlob(canvasToBlob, 'image/png')
     },
     toggleLocalTimer(status) {
       if (status === 'START') {

@@ -11,7 +11,7 @@
         </p>
       </tooltip>
     </button>
-    <vue2-scrollbar>
+    <vue2-scrollbar ref="pdf-list-scroll">
       <ol class="upload-list inner">
         <sharing-pdf-image
           v-for="(sharing, idx) of sharingList"
@@ -58,6 +58,7 @@ export default {
   },
   methods: {
     back() {
+      this.$refs['pdf-list-scroll'].scrollToY(0)
       this.$emit('back')
     },
   },

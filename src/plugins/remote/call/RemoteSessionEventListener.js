@@ -388,37 +388,6 @@ const signalChatFile = event => {
   }
 }
 
-/** LinkFlow 제어 관련 */
-const signalLinkFlow = event => {
-  const connectionId = event.from.connectionId
-  const participants = Store.getters['participants']
-  const idx = participants.findIndex(user => user.connectionId === connectionId)
-  if (idx < 0) return
-
-  let data = JSON.parse(event.data)
-  if (data.type === LINKFLOW.ROTATION) {
-    const originConId = data.origin
-
-    const info = {
-      connectionId: originConId,
-      yaw: data.yaw,
-      pitch: data.pitch,
-    }
-
-    const isNotMe =
-      _.session.connection.connectionId !== event.from.connectionId
-
-    if (isNotMe) {
-      Store.commit('updateParticipant', {
-        connectionId: originConId,
-        rotationPos: { yaw: data.yaw, pitch: data.pitch },
-      })
-    }
-
-    window.vue.$eventBus.$emit('panoview:rotation', info)
-  }
-}
-
 /** Pointing */
 const signalPointing = event => {
   window.vue.$eventBus.$emit(SIGNAL.POINTING, event)
@@ -463,7 +432,6 @@ export default {
   signalControl,
   signalChat,
   signalChatFile,
-  signalLinkFlow,
   signalPointing,
   signalDrawing,
   signalCapturePermission,

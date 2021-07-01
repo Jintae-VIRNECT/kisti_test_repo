@@ -1,7 +1,7 @@
 <template>
   <div class="share-body__file">
-    <vue2-scrollbar>
-      <ol class="upload-list">
+    <vue2-scrollbar ref="upload-list-scroll">
+      <ol class="upload-list" ref="upload-list">
         <li>
           <button class="upload-list__button" @click="addFileClick()">
             {{ $t('service.file_add') }}
@@ -40,6 +40,9 @@ import SharingPdf from './SharingPdf'
 import toastMixin from 'mixins/toast'
 import { drawingUpload, drawingList, drawingDownload } from 'api/http/drawing'
 import { SIGNAL, DRAWING } from 'configs/remote.config'
+import { isOverflowY } from 'utils/element.js'
+import { resetOrientation } from 'utils/file'
+
 const maxFileSize = 1024 * 1024 * 20
 export default {
   name: 'ShareFileList',
@@ -58,6 +61,20 @@ export default {
     ...mapGetters({
       roomInfo: 'roomInfo',
     }),
+  },
+  watch: {
+    sharingList(val, oldVal) {
+      if (val.length !== oldVal.length) {
+        this.$nextTick(() => {
+          const isNotOverflow = !isOverflowY(
+            this.$refs['upload-list'],
+            this.$refs['upload-list-scroll'].$el,
+          )
+          //overflow 해제 시 scroll을 최상위로 원위치
+          if (isNotOverflow) this.$refs['upload-list-scroll'].scrollToY(0)
+        })
+      }
+    },
   },
   methods: {
     ...mapActions(['addFile', 'addHistory']),
@@ -98,21 +115,49 @@ export default {
           return false
         }
 
-        if (
-          [
-            'image/jpeg',
-            'image/png',
-            'image/bmp',
-            'image/gif',
-            'application/pdf',
-          ].includes(file.type)
-        ) {
-          const res = await drawingUpload({
-            file: file,
-            sessionId: this.roomInfo.sessionId,
-            userId: this.account.uuid,
-            workspaceId: this.workspace.uuid,
-          })
+        const isAcceptable = [
+          'image/jpeg',
+          'image/png',
+          'image/bmp',
+          'image/gif',
+          'application/pdf',
+        ].includes(file.type)
+
+        let res = null
+
+        if (isAcceptable) {
+          //image의 경우 orientation 교정 실행
+          if (
+            ['image/jpeg', 'image/png', 'image/bmp', 'image/gif'].includes(
+              file.type,
+            )
+          ) {
+            const resetedFile = await resetOrientation(file)
+            if (resetedFile) file = resetedFile
+          }
+
+          try {
+            res = await drawingUpload({
+              file: file,
+              sessionId: this.roomInfo.sessionId,
+              userId: this.account.uuid,
+              workspaceId: this.workspace.uuid,
+            })
+
+            if (res.usedStoragePer >= 90) {
+              this.toastError(this.$t('alarm.file_storage_about_to_limit'))
+            } else {
+              this.toastDefault(this.$t('alarm.file_uploaded'))
+            }
+          } catch (err) {
+            if (err.code === 7017) {
+              this.toastError(this.$t('alarm.file_storage_capacity_full'))
+            } else {
+              this.toastError(this.$t('confirm.network_error'))
+            }
+            return false
+          }
+
           this.$call.sendDrawing(DRAWING.ADDED, {
             deleted: false, //false
             expired: false, //false

@@ -43,13 +43,15 @@ import { VIEW } from 'configs/view.config'
 import { base64ToBlob } from 'utils/file'
 import { drawingUpload } from 'api/http/drawing'
 import { DRAWING } from 'configs/remote.config'
+import toastMixin from 'mixins/toast'
 export default {
   name: 'CaptureModal',
-  mixins: [shutterMixin, confirmMixin],
+  mixins: [shutterMixin, confirmMixin, toastMixin],
   data() {
     return {
       status: false,
       imageData: '',
+      doubleCheckFlag: false,
     }
   },
   props: {
@@ -113,6 +115,16 @@ export default {
         }
       }
     },
+
+    //한번만 false를 반환하고, 이후에는 true만 반환. 이미지 등록 후 모달창은 닫히기 때문에 초기화됨
+    doubleCheck() {
+      if (this.doubleCheckFlag) return this.doubleCheckFlag
+      else {
+        this.doubleCheckFlag = true
+        return false
+      }
+    },
+
     async shareCapture() {
       // const history = {
       //   id: this.file.id,
@@ -121,7 +133,12 @@ export default {
       //   img: this.imageData,
       // }
       // this.addHistory(history)
-      await this.uploadImage()
+
+      if (this.doubleCheck()) return
+
+      const result = await this.uploadImage()
+      if (!result) return
+
       this.setView('drawing')
       this.$nextTick(() => {
         this.close()
@@ -134,12 +151,29 @@ export default {
         dataType,
         this.file.fileName,
       )
-      const res = await drawingUpload({
-        file: file,
-        sessionId: this.roomInfo.sessionId,
-        userId: this.account.uuid,
-        workspaceId: this.workspace.uuid,
-      })
+
+      let res = null
+      try {
+        res = await drawingUpload({
+          file: file,
+          sessionId: this.roomInfo.sessionId,
+          userId: this.account.uuid,
+          workspaceId: this.workspace.uuid,
+        })
+        if (res.usedStoragePer >= 90) {
+          this.toastError(this.$t('alarm.file_storage_about_to_limit'))
+        } else {
+          this.toastDefault(this.$t('alarm.file_uploaded'))
+        }
+      } catch (err) {
+        if (err.code === 7017) {
+          this.toastError(this.$t('alarm.file_storage_capacity_full'))
+        } else {
+          this.toastError(this.$t('confirm.network_error'))
+        }
+        return false
+      }
+
       this.$call.sendDrawing(DRAWING.ADDED, {
         deleted: false, //false
         expired: false, //false
@@ -153,6 +187,8 @@ export default {
         width: res.width, //pdf 는 0
         height: res.height,
       })
+
+      return true
     },
     close() {
       this.clearCapture()
