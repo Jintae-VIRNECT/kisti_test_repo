@@ -90,7 +90,8 @@
     "invite_accept_name": "<em>[{name}] </em> has<br> accepted the Collabo request.",
     "invite_accept": "Collabo request accepted.",
     "file_link": "Sharing the file link.",
-    "file_storage_about_to_limit":"The storage limit is about to be reached.\nPlease request the master to purchase additional storage capacity.​",
+    "file_uploaded":"The file is uploaded.",
+    "file_storage_about_to_limit":"The file is uploaded. \nThe storage limit is about to be reached.​",
     "file_storage_capacity_full":"The storage capacity is full.\nPlease request the master to purchase additional storage capacity.​"
   }
 }

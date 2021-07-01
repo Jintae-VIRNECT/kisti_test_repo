@@ -165,6 +165,7 @@ export default {
         e.preventDefault()
       }
 
+      let aboutToLimit = false
       if (this.fileList.length > 0) {
         try {
           for (const file of this.fileList) {
@@ -176,13 +177,19 @@ export default {
             }
             const res = await uploadFile(params)
 
-            if (res.code === 7016) {
-              this.toastError(this.$t('alarm.file_storage_about_to_limit'))
+            if (res.usedStoragePer >= 90) {
+              aboutToLimit = true
             }
 
             this.$call.sendFile({
               fileInfo: { ...res },
             })
+          }
+
+          if (aboutToLimit) {
+            this.toastError(this.$t('alarm.file_storage_about_to_limit'))
+          } else {
+            this.toastDefault(this.$t('alarm.file_uploaded'))
           }
 
           this.clearUploadFile()

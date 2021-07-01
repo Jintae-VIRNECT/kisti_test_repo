@@ -90,7 +90,8 @@
     "invite_accept_name": "<em>[{name}] </em>님이<br> 협업 요청을 수락하였습니다.",
     "invite_accept": "협업 요청을 수락하였습니다.",
     "file_link": "파일 링크 전달드립니다.",
-    "file_storage_about_to_limit":"스토리지의 제한 용량에 도달 예정입니다.\n마스터에게 스토리지 용량 추가 구매를 요청해 주세요.",
+    "file_uploaded":"파일이 업로드 되었습니다.",
+    "file_storage_about_to_limit":"파일이 업로드 되었습니다. \n스토리지의 제한 용량에 도달 예정입니다.",
     "file_storage_capacity_full":"스토리지 용량이 가득찼습니다.\n마스터에게 스토리지 용량 추가 구매를 요청해 주세요."
   }
 }

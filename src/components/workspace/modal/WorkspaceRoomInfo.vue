@@ -170,6 +170,11 @@ export default {
             uuid: this.account.uuid,
             workspaceId: this.workspace.uuid,
           })
+
+          if (profile.usedStoragePer >= 90) {
+            this.toastError(this.$t('alarm.file_storage_about_to_limit'))
+          }
+
           delete params['image']
           this.$emit('updatedInfo', profile)
         } else if (

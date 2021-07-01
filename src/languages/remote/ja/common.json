@@ -90,7 +90,8 @@
     "invite_accept_name": "<em>[{name}] </em>様が<br>協業要請を受諾しました。",
     "invite_accept": "協業要請を受諾しました。",
     "file_link": "ファイルリンクを送ります。",
-    "file_storage_about_to_limit":"ストレージ制限容量に到達する予定です。\nストレージ容量の追加購入をマスターに依頼してください。​",
+    "file_uploaded":"Tファイルがアップロードされました。",
+    "file_storage_about_to_limit":"ファイルがアップロードされました。\nストレージ制限容量に到達する予定です。​",
     "file_storage_capacity_full":"ストレージ容量が不足しています。\nストレージ容量の追加購入をマスターに依頼してください。​"
   }
 }

@@ -43,9 +43,10 @@ import { VIEW } from 'configs/view.config'
 import { base64ToBlob } from 'utils/file'
 import { drawingUpload } from 'api/http/drawing'
 import { DRAWING } from 'configs/remote.config'
+import toastMixin from 'mixins/toast'
 export default {
   name: 'CaptureModal',
-  mixins: [shutterMixin, confirmMixin],
+  mixins: [shutterMixin, confirmMixin, toastMixin],
   data() {
     return {
       status: false,
@@ -159,17 +160,19 @@ export default {
           userId: this.account.uuid,
           workspaceId: this.workspace.uuid,
         })
+        if (res.usedStoragePer >= 90) {
+          this.toastError(this.$t('alarm.file_storage_about_to_limit'))
+        } else {
+          this.toastDefault(this.$t('alarm.file_uploaded'))
+        }
       } catch (err) {
+        console.log('err::', err)
         if (err.code === 7017) {
           this.toastError(this.$t('alarm.file_storage_capacity_full'))
         } else {
           this.toastError(this.$t('confirm.network_error'))
         }
         return false
-      }
-
-      if (res.code === 7016) {
-        this.toastError(this.$t('alarm.file_storage_about_to_limit'))
       }
 
       this.$call.sendDrawing(DRAWING.ADDED, {

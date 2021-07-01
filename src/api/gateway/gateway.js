@@ -151,16 +151,10 @@ const receiver = function(res) {
   if (res.data) {
     const code = res.data['code']
     //200 -> 정상응답
-    //7016 -> 스토리지 용량 도달 예정
-    if (code === 200 || code === 7016) {
+    if (code === 200) {
       if ('data' in res.data) {
         debug(res.data['data'])
-        if (code === 7016) {
-          res.data['data'].code = 7016
-          return res.data['data']
-        } else {
-          return res.data['data']
-        }
+        return res.data['data']
       } else {
         return true
       }

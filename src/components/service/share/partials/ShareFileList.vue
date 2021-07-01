@@ -128,6 +128,7 @@ export default {
         if (isAcceptable) {
           const resetedFile = await resetOrientation(file)
           if (resetedFile) file = resetedFile
+
           try {
             res = await drawingUpload({
               file: file,
@@ -135,6 +136,12 @@ export default {
               userId: this.account.uuid,
               workspaceId: this.workspace.uuid,
             })
+
+            if (res.usedStoragePer >= 90) {
+              this.toastError(this.$t('alarm.file_storage_about_to_limit'))
+            } else {
+              this.toastDefault(this.$t('alarm.file_uploaded'))
+            }
           } catch (err) {
             if (err.code === 7017) {
               this.toastError(this.$t('alarm.file_storage_capacity_full'))
@@ -142,10 +149,6 @@ export default {
               this.toastError(this.$t('confirm.network_error'))
             }
             return false
-          }
-
-          if (res.code === 7016) {
-            this.toastError(this.$t('alarm.file_storage_about_to_limit'))
           }
 
           this.$call.sendDrawing(DRAWING.ADDED, {
