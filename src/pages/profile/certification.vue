@@ -18,6 +18,7 @@
               :placeholder="$t('certification.passwordPlaceholder')"
               v-model="form.password"
               show-password
+              @keydown.space.prevent.native
             ></el-input>
           </el-form-item>
           <el-form-item>
