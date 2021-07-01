@@ -173,8 +173,14 @@ export default {
     },
     async submit() {
       const { uploadFiles } = this.$refs.upload
+      const defaultName = this.$t('workspace.setting.namePlaceholder', {
+        nickname: this.myProfile.nickname,
+      })
+      const name =
+        this.form.name.trim().length === 0 ? defaultName : this.form.name.trim()
       const form = {
-        ...this.form,
+        name,
+        description: this.form.description,
         profile: uploadFiles.length
           ? uploadFiles[uploadFiles.length - 1].raw
           : null,
