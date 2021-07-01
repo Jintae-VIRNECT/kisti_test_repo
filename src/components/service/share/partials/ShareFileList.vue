@@ -41,6 +41,7 @@ import toastMixin from 'mixins/toast'
 import { drawingUpload, drawingList, drawingDownload } from 'api/http/drawing'
 import { SIGNAL, DRAWING } from 'configs/remote.config'
 import { isOverflowY } from 'utils/element.js'
+import { resetOrientation } from 'utils/file'
 
 const maxFileSize = 1024 * 1024 * 20
 export default {
@@ -125,6 +126,8 @@ export default {
         let res = null
 
         if (isAcceptable) {
+          const resetedFile = await resetOrientation(file)
+          if (resetedFile) file = resetedFile
           try {
             res = await drawingUpload({
               file: file,

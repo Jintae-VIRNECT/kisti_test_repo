@@ -30,7 +30,7 @@
         ref="inputFile"
         style="display: none"
         class="el-input__form-input"
-        accept=".*"
+        :accept="inputAccept"
         @change="fileUpload($event)"
       />
       <template v-if="fileList.length === 0">
@@ -110,6 +110,14 @@ export default {
       'useTranslate',
       'useStorage',
     ]),
+    inputAccept() {
+      //타블렛은 비디오 업로드 불가능하게 제한 - 카메라 이슈 있음
+      if (this.isTablet) {
+        return 'image/*'
+      } else {
+        return '.*'
+      }
+    },
   },
   watch: {
     fileList: {

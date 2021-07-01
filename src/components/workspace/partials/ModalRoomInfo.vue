@@ -33,7 +33,7 @@
               name="file"
               accept="image/gif,image/jpeg,image/png"
               style="display: none;"
-              @change="uploadImage($event)"
+              @change="uploadImage($event, (isProfile = true))"
             />
             <button class="btn line imageinput regist" @click="imageUpload">
               {{ $t('button.image_regist') }}
