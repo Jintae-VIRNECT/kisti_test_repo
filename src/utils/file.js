@@ -98,15 +98,19 @@ export const resetOrientation = async file => {
       file,
       (img, data) => {
         if (data.imageHead && data.exif) {
-          loadImage.writeExifData(data.imageHead, data, 'Orientation', 1)
+          //loadImage.writeExifData(data.imageHead, data, 'Orientation', 1)
           img.toBlob(blob => {
             if (!blob) res()
-            loadImage.replaceHead(blob, data.imageHead, newBlob => {
-              const newFile = new File([newBlob], file.name, {
-                lastModified: new Date(),
-              })
-              res(newFile)
+            const newFile = new File([blob], file.name, {
+              lastModified: new Date(),
             })
+            res(newFile)
+            // loadImage.replaceHead(blob, data.imageHead, newBlob => {
+            //   const newFile = new File([newBlob], file.name, {
+            //     lastModified: new Date(),
+            //   })
+            //   res(newFile)
+            // })
           }, file.type)
         } else res()
       },
