@@ -96,7 +96,7 @@
     "tool_width": "선 두께",
     "tool_drawing_width": "드로잉 선 굵기",
     "tool_pointing": "포인팅",
-    "tool_pointing_block": "리더가 포인팅을 막았습니다.",
+    "tool_pointing_block": "참가자 포인팅 사용이 허용되지 않았습니다.",
     "tool_enlarge_reduce": "확대 / 축소",
     "tool_screen_share": "화면 공유",
     

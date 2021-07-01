@@ -178,6 +178,8 @@
     "confirm_duplicated_session_logout_received":"You are logged in from another device with the same account.",
 
     "workspace_update_failed": "Failed to change workspace.\nplease try it again.",
-    "auth_status_failed": "Failed to authenticate, \nplease try it again."
+    "auth_status_failed": "Failed to authenticate, \nplease try it again.",
+
+    "profile_size_limit_exceed":"Upload limit(20MB) capacity exceeded.​​"
   }
 }
