@@ -150,6 +150,7 @@ const sender = async function(constant, params, headers = {}, custom) {
 const receiver = function(res) {
   if (res.data) {
     const code = res.data['code']
+    //200 -> 정상응답
     if (code === 200) {
       if ('data' in res.data) {
         debug(res.data['data'])

@@ -115,15 +115,17 @@ export default {
           return false
         }
 
-        if (
-          [
-            'image/jpeg',
-            'image/png',
-            'image/bmp',
-            'image/gif',
-            'application/pdf',
-          ].includes(file.type)
-        ) {
+        const isAcceptable = [
+          'image/jpeg',
+          'image/png',
+          'image/bmp',
+          'image/gif',
+          'application/pdf',
+        ].includes(file.type)
+
+        let res = null
+
+        if (isAcceptable) {
           //image의 경우 orientation 교정 실행
           if (
             ['image/jpeg', 'image/png', 'image/bmp', 'image/gif'].includes(
@@ -134,12 +136,28 @@ export default {
             if (resetedFile) file = resetedFile
           }
 
-          const res = await drawingUpload({
-            file: file,
-            sessionId: this.roomInfo.sessionId,
-            userId: this.account.uuid,
-            workspaceId: this.workspace.uuid,
-          })
+          try {
+            res = await drawingUpload({
+              file: file,
+              sessionId: this.roomInfo.sessionId,
+              userId: this.account.uuid,
+              workspaceId: this.workspace.uuid,
+            })
+
+            if (res.usedStoragePer >= 90) {
+              this.toastError(this.$t('alarm.file_storage_about_to_limit'))
+            } else {
+              this.toastDefault(this.$t('alarm.file_uploaded'))
+            }
+          } catch (err) {
+            if (err.code === 7017) {
+              this.toastError(this.$t('alarm.file_storage_capacity_full'))
+            } else {
+              this.toastError(this.$t('confirm.network_error'))
+            }
+            return false
+          }
+
           this.$call.sendDrawing(DRAWING.ADDED, {
             deleted: false, //false
             expired: false, //false

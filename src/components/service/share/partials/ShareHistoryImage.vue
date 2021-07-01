@@ -71,12 +71,29 @@ export default {
         this.imgInfo.fileName,
       )
 
-      const res = await drawingUpload({
-        file: file,
-        sessionId: this.roomInfo.sessionId,
-        userId: this.account.uuid,
-        workspaceId: this.workspace.uuid,
-      })
+      let res = null
+      try {
+        res = await drawingUpload({
+          file: file,
+          sessionId: this.roomInfo.sessionId,
+          userId: this.account.uuid,
+          workspaceId: this.workspace.uuid,
+        })
+
+        if (res.usedStoragePer >= 90) {
+          this.toastError(this.$t('alarm.file_storage_about_to_limit'))
+        } else {
+          this.toastDefault(this.$t('alarm.file_uploaded'))
+        }
+      } catch (err) {
+        if (err.code === 7017) {
+          this.toastError(this.$t('alarm.file_storage_capacity_full'))
+        } else {
+          this.toastError(this.$t('confirm.network_error'))
+        }
+        return false
+      }
+
       this.$call.sendDrawing(DRAWING.ADDED, {
         deleted: false, //false
         expired: false, //false
