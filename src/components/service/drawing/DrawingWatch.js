@@ -11,15 +11,13 @@ export default {
         this.isInit = false
         if (value && value.id) {
           this.$emit('loadingStart')
-          setTimeout(() => {
-            this.initCanvas()
-          }, 500)
+          setTimeout(() => this.initCanvas(), 500)
         }
       },
     },
     view(val, oldVal) {
       if (val !== oldVal && val === VIEW.DRAWING) {
-        this.optimizeCanvasSize()
+        setTimeout(() => this.optimizeCanvasSize(), 500)
         this.$nextTick(() => {
           if (!this.isInit) return
           this.receiveRender()
