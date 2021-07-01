@@ -41,19 +41,21 @@ export default {
      * @param {Object} object ::변화대상 드로잉객체
      */
     _sendAction(type, object, custom) {
+      const widthScale = this.origin.width / this.img.width
+
       const aId = this.undoList.length
       const state = {
         color: this.tools.color,
         opacity: this.tools.opacity,
-        width: this.tools.lineWidth / this.origin.scale,
-        size: this.tools.fontSize / this.origin.scale,
+        width: this.tools.lineWidth * widthScale, //계산된 브러쉬 크기 값이 아닌 원본 값을 전달해야 한다. getSignalParams에서 가공되는 부분을 무마시키기 위해 widthScale을 곱한다.
+        size: this.tools.fontSize, //계산된 폰트 사이즈가 아닌 원본 값을 전달한다.
         scale: 1 / this.canvas.backgroundImage.scaleX,
         imgWidth: this.canvas.getWidth(),
         imgHeight: this.canvas.getHeight(),
         // oriWidth: this.origin.width,
         // oriHeight: this.origin.height,
         posScale: this.canvas.getWidth() / this.origin.width,
-        widthScale: this.origin.width / this.img.width,
+        widthScale,
       }
       const param = getSignalParams(type, aId, object, state)
       param.objectName = this.file.objectName

@@ -11,23 +11,26 @@ export default {
         this.isInit = false
         if (value && value.id) {
           this.$emit('loadingStart')
-          setTimeout(() => {
-            this.initCanvas()
-          }, 500)
+          setTimeout(() => this.initCanvas(), 500)
         }
       },
     },
     view(val, oldVal) {
       if (val !== oldVal && val === VIEW.DRAWING) {
-        //@TODO - 이미지 렌더링 이후 optimizeCanvasSize() 호출하기
-        setTimeout(() => {
-          this.optimizeCanvasSize()
-        }, 500)
+        setTimeout(() => this.optimizeCanvasSize(), 500)
 
         this.$nextTick(() => {
           if (!this.isInit) return
           this.receiveRender()
         })
+      }
+      // 협업보드에서 이탈 시 기존 줌 상태 초기화
+      else if (oldVal === VIEW.DRAWING) {
+        if (this.canvas)
+          setTimeout(
+            () => this.canvas.setViewportTransform([1, 0, 0, 1, 0, 0]),
+            500,
+          )
       }
     },
     viewAction(value) {
@@ -80,18 +83,9 @@ export default {
         )
       }
     },
-    'tools.lineWidth'(width) {
-      if (this.canvas) {
-        this.canvas.freeDrawingBrush.width = width / this.origin.scale
-      }
-      if (this.cursor) {
-        this.cursor.setRadius(width / this.origin.scale / 2)
-      }
-    },
-    'tools.fontSize'(size) {
-      if (this.textObj) {
-        this.textObj.set('fontSize', size / this.origin.scale)
-      }
+    //사용자가 드로잉 굴기를 변경할때마다 드로잉 브러쉬 크기, 커서 크기를 캔버스 크기를 기준으로 계산해서 업데이트
+    'tools.lineWidth'(lineWidth, oldLineWidth) {
+      if (lineWidth !== oldLineWidth) this.updateCanvasBrushWidth(lineWidth)
     },
     undoList() {
       this.toolAble()
@@ -101,7 +95,7 @@ export default {
     },
   },
   computed: {
-    drawingView() {
+    isDrawingView() {
       return this.view === VIEW.DRAWING
     },
   },

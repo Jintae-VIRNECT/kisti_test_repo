@@ -5,6 +5,7 @@
     @onScroll="onScroll"
     :onMaxScroll="onMaxScroll"
     :style="scrollerStyle"
+    :speed="speed"
   >
     <div class="scroll--inner">
       <slot></slot>
@@ -40,6 +41,10 @@ export default {
     height: {
       type: [Number, String],
       deafult: 0,
+    },
+    speed: {
+      type: Number,
+      default: 53,
     },
   },
   data() {

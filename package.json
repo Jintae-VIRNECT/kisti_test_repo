@@ -52,6 +52,7 @@
     "animejs": "^2.2.0",
     "autoprefixer": "^9.7.6",
     "babel-loader": "^8.2.2",
+    "blueimp-load-image": "^5.14.0",
     "clean-webpack-plugin": "^0.1.19",
     "compression-webpack-plugin": "^7.1.2",
     "copy-webpack-plugin": "^4.6.0",

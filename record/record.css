@@ -186,10 +186,6 @@ video {
   grid-template-columns: repeat(3, 1fr);
 }
 
-.pano-container {
-  position: absolute;
-}
-
 div,
 canvas {
   outline: none;
