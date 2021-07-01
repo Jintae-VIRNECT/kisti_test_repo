@@ -218,8 +218,12 @@ export default {
         const delta = opt.e.deltaY
         let zoom = canvas.getZoom() // / this.origin.scale
         zoom *= 0.999 ** delta
+
+        //zoom in 제한
         if (zoom > 5 * this.origin.scale) zoom = 5 * this.origin.scale
+        //zoom out 제한
         if (zoom < 1 * this.origin.scale) zoom = 1 * this.origin.scale
+
         canvas.zoomToPoint({ x: opt.e.offsetX, y: opt.e.offsetY }, zoom)
         this.cursor.canvas.zoomToPoint(
           { x: opt.e.offsetX, y: opt.e.offsetY },
@@ -254,10 +258,11 @@ export default {
       })
     },
     keepPositionInBounds(canvas) {
+      //줌인/아웃 시 이미지 범위 벗어나 여백 생기지 않도록 제한
       const zoom = canvas.getZoom()
-      const xMin = ((2 - zoom) * canvas.getWidth()) / 2
+      const xMin = ((2 * this.origin.scale - zoom) * canvas.getWidth()) / 2
       const xMax = (zoom * canvas.getWidth()) / 2
-      const yMin = ((2 - zoom) * canvas.getHeight()) / 2
+      const yMin = ((2 * this.origin.scale - zoom) * canvas.getHeight()) / 2
       const yMax = (zoom * canvas.getHeight()) / 2
 
       const point = new fabric.Point(
