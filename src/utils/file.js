@@ -57,7 +57,12 @@ export const getFile = url => {
   })
 }
 
-export const downloadByURL = async file => {
+/**
+ * 파일을 url로부터 다운로드 받는 함수
+ * @param {Object} file 다운로드 받을 파일 정보
+ * @param {Boolean} usingNewTab 새 탭을 열어서 파일을 다운로드
+ */
+export const downloadByURL = async (file, usingNewTab = false) => {
   // let a = document.createElement('a')
   // document.body.appendChild(a)
   // a.style = 'display: none'
@@ -66,21 +71,25 @@ export const downloadByURL = async file => {
   // a.target = '_blank'
   // a.click()
   // window.URL.revokeObjectURL(file.url)
-  let filename = file.name
-  let xhr = new XMLHttpRequest()
-  xhr.responseType = 'blob'
-  xhr.onload = () => {
-    // console.log(xhr.response)
-    let a = document.createElement('a')
-    a.href = window.URL.createObjectURL(xhr.response)
-    a.download = filename
-    a.style.display = 'none'
-    document.body.appendChild(a)
-    a.click()
-    window.URL.revokeObjectURL(xhr.response)
+  if (usingNewTab) {
+    window.open(proxyUrl(file.url))
+  } else {
+    let filename = file.name
+    let xhr = new XMLHttpRequest()
+    xhr.responseType = 'blob'
+    xhr.onload = () => {
+      // console.log(xhr.response)
+      let a = document.createElement('a')
+      a.href = window.URL.createObjectURL(xhr.response)
+      a.download = filename
+      a.style.display = 'none'
+      document.body.appendChild(a)
+      a.click()
+      window.URL.revokeObjectURL(xhr.response)
+    }
+    xhr.open('GET', proxyUrl(file.url))
+    xhr.send()
   }
-  xhr.open('GET', proxyUrl(file.url))
-  xhr.send()
 }
 
 export const proxyUrl = url => {
