@@ -106,7 +106,7 @@ export const resetOrientation = async file => {
     loadImage(
       file,
       (img, data) => {
-        if (data.imageHead && data.exif) {
+        if (data && data.imageHead && data.exif) {
           //loadImage.writeExifData(data.imageHead, data, 'Orientation', 1)
           img.toBlob(blob => {
             if (!blob) res()

@@ -126,8 +126,15 @@ export default {
         let res = null
 
         if (isAcceptable) {
-          const resetedFile = await resetOrientation(file)
-          if (resetedFile) file = resetedFile
+          //image의 경우 orientation 교정 실행
+          if (
+            ['image/jpeg', 'image/png', 'image/bmp', 'image/gif'].includes(
+              file.type,
+            )
+          ) {
+            const resetedFile = await resetOrientation(file)
+            if (resetedFile) file = resetedFile
+          }
 
           try {
             res = await drawingUpload({
