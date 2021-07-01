@@ -1,5 +1,6 @@
 import axios from 'axios'
 import { URLS } from 'configs/env.config'
+import loadImage from 'blueimp-load-image'
 
 /**
  * convert base64 to blob
@@ -88,4 +89,32 @@ export const proxyUrl = url => {
   } else {
     return url
   }
+}
+
+// 모바일 촬영 이미지의 exif 회전 값을 리셋하여 회전되있는 사진 원위치하는 함수
+export const resetOrientation = async file => {
+  return new Promise(res => {
+    loadImage(
+      file,
+      (img, data) => {
+        if (data.imageHead && data.exif) {
+          loadImage.writeExifData(data.imageHead, data, 'Orientation', 1)
+          img.toBlob(blob => {
+            if (!blob) res()
+            loadImage.replaceHead(blob, data.imageHead, newBlob => {
+              const newFile = new File([newBlob], file.name, {
+                lastModified: new Date(),
+              })
+              res(newFile)
+            })
+          }, file.type)
+        } else res()
+      },
+      {
+        canvas: true,
+        orientation: true,
+        meta: true,
+      },
+    )
+  })
 }
