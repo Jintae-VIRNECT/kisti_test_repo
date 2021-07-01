@@ -166,7 +166,6 @@ export default {
           this.toastDefault(this.$t('alarm.file_uploaded'))
         }
       } catch (err) {
-        console.log('err::', err)
         if (err.code === 7017) {
           this.toastError(this.$t('alarm.file_storage_capacity_full'))
         } else {
