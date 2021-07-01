@@ -20,6 +20,7 @@ WORKDIR $APP_HOME
 
 COPY --from=builder cert cert
 COPY --from=builder configs configs
+COPY --from=builder meta.js .
 COPY --from=builder route.js .
 COPY --from=builder server.js .
 COPY --from=builder package.json .

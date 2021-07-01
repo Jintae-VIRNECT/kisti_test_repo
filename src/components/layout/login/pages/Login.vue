@@ -56,7 +56,7 @@
           class="next-btn block-btn"
           type="info"
           @click="handleLogin"
-          :disabled="loading || login.email == '' || login.password == ''"
+          :disabled="isDisable"
           >{{ $t('login.title') }}</el-button
         >
         <div class="find-wrap">
@@ -65,7 +65,7 @@
             v-if="$env !== 'onpremise'"
             >{{ $t('login.findAccount') }}</router-link
           >
-          <router-link :to="setPath">{{
+          <router-link :to="resetPasswordPath">{{
             $t('login.resetPassword')
           }}</router-link>
           <router-link to="/terms" v-if="$env !== 'onpremise'">{{
@@ -124,7 +124,18 @@ export default {
     }
   },
   computed: {
-    setPath() {
+    isDisable() {
+      return (
+        this.loading ||
+        this.login.email == '' ||
+        this.login.password == '' ||
+        this.login.email.replace(/ /gi, '') === '' ||
+        this.login.password.replace(/ /gi, '') === '' ||
+        this.login.email.length < 5 ||
+        this.login.password.length < 1
+      )
+    },
+    resetPasswordPath() {
       if (this.$env !== 'onpremise') {
         return {
           name: 'findTab',
@@ -174,13 +185,10 @@ export default {
       }
     },
     async handleLogin() {
+      if (this.login.password.length < 1) return
       this.loading = true
       this.$validator.validateAll()
       this.$refs.focusOut.focus()
-      if (this.errors.any()) {
-        this.loading = false
-        return
-      }
       try {
         let res = await AuthService.login({ params: this.login })
         if (res.code === 200) {
@@ -219,7 +227,7 @@ export default {
               cancelButtonText: this.$t('login.accountError.btn'),
               dangerouslyUseHTMLString: true,
             },
-          ).then(() => this.$router.push({ name: 'reset_password' }))
+          ).then(() => this.$router.push(this.resetPasswordPath))
         }
         // 계졍 잠김
         else if (e.code === 2002 || failCount === 5) {
@@ -233,7 +241,7 @@ export default {
               cancelButtonText: this.$t('login.accountError.btn'),
               dangerouslyUseHTMLString: true,
             },
-          ).then(() => this.$router.push({ name: 'reset_password' }))
+          ).then(() => this.$router.push(this.resetPasswordPath))
         }
         // 기타
         else {

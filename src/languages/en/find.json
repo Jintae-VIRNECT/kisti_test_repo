@@ -64,7 +64,7 @@
         },
         "sync": {
           "title": "Correct verification code",
-          "message": "Succesfully verified the verification code"
+          "message": "Successfully verified the verification code"
         }
       },
       "error": {
