@@ -18,6 +18,7 @@ export default {
     view(val, oldVal) {
       if (val !== oldVal && val === VIEW.DRAWING) {
         setTimeout(() => this.optimizeCanvasSize(), 500)
+
         this.$nextTick(() => {
           if (!this.isInit) return
           this.receiveRender()
