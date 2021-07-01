@@ -100,7 +100,6 @@ export default {
       hover: false,
     }
   },
-
   methods: {
     scroll(e) {
       e.stopPropagation()
@@ -147,6 +146,12 @@ export default {
             canScrollX ? nextX : 0,
             canScrollY ? nextY : 0,
           )
+        }
+
+        //Y축 스크롤을 할 수 없는 상태일 때 스크롤을 리셋시킴
+        if (!canScrollY) {
+          this.top = 0
+          this.reset()
         }
       })
     },
