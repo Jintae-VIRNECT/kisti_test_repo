@@ -15,4 +15,7 @@ public class RoomProfileUpdateResponse {
     private String sessionId = "";
     @ApiModelProperty(value = "Remote Session Profile Image URL", position = 2, example = "http://localhost:8081/users/upload/2020-04-07_ilzUZjnHMZqhoRpkqMUn.jpg")
     private String profile  = "";
+    @ApiModelProperty(value = "used storage size percent", position = 3)
+    private int usedStoragePer;
+
 }

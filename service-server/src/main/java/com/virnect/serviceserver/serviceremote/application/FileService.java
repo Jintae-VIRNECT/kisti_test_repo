@@ -51,6 +51,7 @@ import com.virnect.data.domain.room.Room;
 import com.virnect.data.dto.FileUploadResult;
 import com.virnect.data.dto.PageMetadataResponse;
 import com.virnect.data.dto.UploadResult;
+import com.virnect.data.dto.response.file.FileStorageCheckResponse;
 import com.virnect.data.dto.response.file.FileStorageInfoResponse;
 import com.virnect.data.dto.rest.WorkspaceLicensePlanInfoResponse;
 import com.virnect.serviceserver.serviceremote.dto.mapper.file.FileInfoMapper;
@@ -121,16 +122,10 @@ public class FileService {
 	@Transactional
 	public ApiResponse<FileUploadResponse> uploadFile(FileUploadRequest fileUploadRequest, FileType fileType) {
 
-		ErrorCode errorCode = ErrorCode.ERR_SUCCESS;
-
 		// Storage check
-		ErrorCode storageCheckResult = checkStorageCapacity(fileUploadRequest.getWorkspaceId());
-		if (storageCheckResult != ErrorCode.ERR_SUCCESS) {
-			if (storageCheckResult == ErrorCode.ERR_STORAGE_CAPACITY_FULL) {
-				return new ApiResponse<>(ErrorCode.ERR_STORAGE_CAPACITY_FULL);
-			} else if (storageCheckResult == ErrorCode.ERR_STORAGE_LIMIT_REACHED){
-				errorCode = ErrorCode.ERR_STORAGE_LIMIT_REACHED;
-			}
+		FileStorageCheckResponse storageCheckResult = checkStorageCapacity(fileUploadRequest.getWorkspaceId());
+		if (storageCheckResult.getErrorCode() == ErrorCode.ERR_STORAGE_CAPACITY_FULL) {
+			return new ApiResponse<>(ErrorCode.ERR_STORAGE_CAPACITY_FULL);
 		}
 
 		String bucketPath = generateDirPath(fileUploadRequest.getWorkspaceId(), fileUploadRequest.getSessionId());
@@ -173,8 +168,9 @@ public class FileService {
 		}
 
 		FileUploadResponse fileUploadResponse = fileUploadMapper.toDto(file);
+		fileUploadResponse.setUsedStoragePer(storageCheckResult.getUsedStoragePer());
 
-		return new ApiResponse<>(fileUploadResponse, errorCode);
+		return new ApiResponse<>(fileUploadResponse);
 	}
 
 	@Transactional
@@ -232,16 +228,10 @@ public class FileService {
 		RoomProfileUpdateRequest roomProfileUpdateRequest
 	) {
 
-		ErrorCode errorCode = ErrorCode.ERR_SUCCESS;
-
 		// Storage check
-		ErrorCode storageCheckResult = checkStorageCapacity(workspaceId);
-		if (storageCheckResult != ErrorCode.ERR_SUCCESS) {
-			if (storageCheckResult == ErrorCode.ERR_STORAGE_CAPACITY_FULL) {
-				return new ApiResponse<>(ErrorCode.ERR_STORAGE_CAPACITY_FULL);
-			} else if (storageCheckResult == ErrorCode.ERR_STORAGE_LIMIT_REACHED){
-				errorCode = ErrorCode.ERR_STORAGE_LIMIT_REACHED;
-			}
+		FileStorageCheckResponse storageCheckResult = checkStorageCapacity(workspaceId);
+		if (storageCheckResult.getErrorCode() == ErrorCode.ERR_STORAGE_CAPACITY_FULL) {
+			return new ApiResponse<>(ErrorCode.ERR_STORAGE_CAPACITY_FULL);
 		}
 
 		RoomProfileUpdateResponse roomProfileUpdateResponse = new RoomProfileUpdateResponse();
@@ -281,6 +271,7 @@ public class FileService {
 
 		roomProfileUpdateResponse.setSessionId(sessionId);
 		roomProfileUpdateResponse.setProfile(profileUrl);
+		roomProfileUpdateResponse.setUsedStoragePer(storageCheckResult.getUsedStoragePer());
 		room.setProfile(profileUrl);
 
 		Room roomUpdateResult = roomRepository.save(room);
@@ -302,7 +293,7 @@ public class FileService {
 			new ApiResponse<>(ErrorCode.ERR_PROFILE_UPLOAD_FAILED);
 		}
 
-		return new ApiResponse<>(roomProfileUpdateResponse, errorCode);
+		return new ApiResponse<>(roomProfileUpdateResponse);
 	}
 
 	@Transactional
@@ -721,40 +712,6 @@ public class FileService {
 		fileRepository.save(file);
 
 		return new FileUploadResult(file, uploadResult.getErrorCode());
-
-		/*String bucketPath = generateDirPath(fileUploadRequest.getWorkspaceId(), fileUploadRequest.getSessionId());
-
-		File file = null;
-		UploadResult uploadResult = null;
-
-		try {
-			objectName = objectName + "_thumbnail";
-			uploadResult = fileManagementService.upload(
-				targetFile,
-				bucketPath,
-				FileType.FILE,
-				objectName
-			);
-			file = File.builder()
-				.workspaceId(fileUploadRequest.getWorkspaceId())
-				.sessionId(fileUploadRequest.getSessionId())
-				.uuid(fileUploadRequest.getUserId())
-				.name(fileUploadRequest.getFile().getOriginalFilename())
-				.objectName(objectName)
-				.contentType("image/png")
-				.size(targetFile.getSize())
-				.fileType(FileType.SHARE)
-				.width(THUMBNAIL_WIDTH)
-				.height(THUMBNAIL_HEIGHT)
-				.build();
-			fileRepository.save(file);
-
-		} catch (IOException | NoSuchAlgorithmException | InvalidKeyException exception) {
-			log.info("{}", exception.getMessage());
-			new ApiResponse<>(ErrorCode.ERR_FILE_UPLOAD_EXCEPTION);
-		}
-
-		return new FileUploadResult(file, uploadResult.getErrorCode());*/
 	}
 
 
@@ -763,16 +720,10 @@ public class FileService {
 		FileUploadRequest fileUploadRequest
 	) throws IOException, NoSuchAlgorithmException, InvalidKeyException {
 
-		ErrorCode errorCode = ErrorCode.ERR_SUCCESS;
-
 		// Storage check
-		ErrorCode storageCheckResult = checkStorageCapacity(fileUploadRequest.getWorkspaceId());
-		if (storageCheckResult != ErrorCode.ERR_SUCCESS) {
-			if (storageCheckResult == ErrorCode.ERR_STORAGE_CAPACITY_FULL) {
-				return new ApiResponse<>(ErrorCode.ERR_STORAGE_CAPACITY_FULL);
-			} else if (storageCheckResult == ErrorCode.ERR_STORAGE_LIMIT_REACHED){
-				errorCode = ErrorCode.ERR_STORAGE_LIMIT_REACHED;
-			}
+		FileStorageCheckResponse storageCheckResult = checkStorageCapacity(fileUploadRequest.getWorkspaceId());
+		if (storageCheckResult.getErrorCode() == ErrorCode.ERR_STORAGE_CAPACITY_FULL) {
+			return new ApiResponse<>(ErrorCode.ERR_STORAGE_CAPACITY_FULL);
 		}
 
 		// Make Thumbnail Image
@@ -793,8 +744,9 @@ public class FileService {
 		ApiResponse<String> downloadUrl = downloadThumbnailFileUrl(thumbnailUploadResult.getFile());
 		fileUploadResponse.setThumbnailDownloadUrl(downloadUrl.getData());
 		fileUploadResponse.setDeleted(fileUploadResult.getFile().isDeleted());
+		fileUploadResponse.setUsedStoragePer(storageCheckResult.getUsedStoragePer());
 
-		return new ApiResponse<>(fileUploadResponse, errorCode);
+		return new ApiResponse<>(fileUploadResponse);
 	}
 
 	@Transactional
@@ -1078,26 +1030,27 @@ public class FileService {
 		return new ApiResponse<>(result);
 	}
 
-	public ErrorCode checkStorageCapacity(String workspaceId) {
+	public FileStorageCheckResponse checkStorageCapacity(String workspaceId) {
 
 		ErrorCode errorCode;
-
-		int UPLOAD_POSSIBLE = 90;
+		//int UPLOAD_POSSIBLE = 90;
 		int OVER_STORAGE = 100;
 
 		ApiResponse<WorkspaceLicensePlanInfoResponse> licensePlanInfo = licenseRestService.getWorkspacePlan(workspaceId);
 
-		double unusedStorageSizePer = (licensePlanInfo.getData().getCurrentUsageStorage() / licensePlanInfo.getData().getMaxStorageSize()) * 100;
-		if (unusedStorageSizePer < UPLOAD_POSSIBLE) {
-			errorCode = ErrorCode.ERR_SUCCESS;
-		} else if (unusedStorageSizePer >= OVER_STORAGE) {
+		double usedStoragePer = (licensePlanInfo.getData().getCurrentUsageStorage() / licensePlanInfo.getData().getMaxStorageSize()) * 100;
+		if (usedStoragePer >= OVER_STORAGE) {
 			errorCode = ErrorCode.ERR_STORAGE_CAPACITY_FULL;
 		} else {
-			errorCode = ErrorCode.ERR_STORAGE_LIMIT_REACHED;
+			errorCode = ErrorCode.ERR_SUCCESS;
 		}
 
 		log.info("Storage capacity result code : " + errorCode.getCode());
-		return errorCode;
+
+		return FileStorageCheckResponse.builder()
+			.errorCode(errorCode)
+			.usedStoragePer((int)usedStoragePer)
+			.build();
 	}
 
 }
