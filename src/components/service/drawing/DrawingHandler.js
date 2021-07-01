@@ -30,6 +30,8 @@ export default {
 
         // object.set('id',getID('object'));
         // object.set('id',canvas.getObjects().length-1);
+
+        //자신이 그린 드로잉이 아닌 경우
         if (object.owner && object.owner !== this.uuid) {
           if (!(object.owner in this.receiveUndoList)) {
             this.receiveUndoList[object.owner] = []
@@ -40,7 +42,9 @@ export default {
             owner: object.owner,
           })
           this.receiveStackAdd('add', object.id, object.owner)
-        } else {
+        }
+        //자신이 그린 드로잉인 경우
+        else {
           object.set({
             id: objID,
             tId: this.undoList.length,
@@ -183,7 +187,9 @@ export default {
           // this.addTextObject(mouse.x, mouse.y)
           this.addTextObject(
             mouse.x,
-            mouse.y - this.tools.fontSize / this.origin.scale / 2 - 1,
+            mouse.y -
+              (this.tools.fontSize * (this.origin.width / this.img.width)) / 2 -
+              1,
           )
         }
       })
@@ -281,7 +287,7 @@ export default {
      * @param {Event} event ::입력 이벤트 객체
      */
     keyEventHandler(event) {
-      if (!this.drawingView) return
+      if (!this.isDrawingView) return
       if (!this.canvas || this.canvas.onDrag === true) return
       // For window event
       if (this.canvas) {
@@ -301,7 +307,7 @@ export default {
      * @param {Event} event ::입력 이벤트 객체
      */
     keyUpEventHandler(event) {
-      if (!this.drawingView) return
+      if (!this.isDrawingView) return
       if (!this.canvas || this.canvas.onDrag === true) return
       if (this.canvas) {
         const keycode = parseInt(event.keyCode)

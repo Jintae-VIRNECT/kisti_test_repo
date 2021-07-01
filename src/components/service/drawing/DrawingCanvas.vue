@@ -140,8 +140,12 @@ export default {
      */
     createCursor(canvas) {
       if (canvas) {
+        //커서를 생성하지만 실제 캔버스 사이즈에 비례한 커서와 브러쉬 사이즈는 캔버스 사이즈가 업데이트 된 후 재 설정된다
+        //optimizeCanvasSize함수에서 실제 드로잉 브러쉬와 커서 사이즈가 캔버스 사이즈에 비례하게 계산되어 정해진다.
+        const width = this.tools.lineWidth
+
         // Set custom cursor
-        canvas.freeDrawingBrush.width = this.tools.lineWidth
+        canvas.freeDrawingBrush.width = width
         canvas.freeDrawingBrush.color = hexToRGBA(
           this.tools.color,
           this.tools.opacity,
@@ -208,6 +212,7 @@ export default {
       this.isInit = true
       this.$emit('loadingSuccess')
       this.receiveRender()
+      this.optimizeCanvasSize() //캔버스 사이즈, scale, 브러시, 커서 크기를 명시적으로 초기화/업데이트 한다.
 
       return this.canvas
     },
@@ -245,10 +250,10 @@ export default {
       canvas.setHeight(canvasSize.height)
       cursor.setWidth(canvas.getWidth())
       cursor.setHeight(canvas.getHeight())
-      canvas.freeDrawingBrush.width = this.tools.lineWidth / this.origin.scale
-      if (this.cursor) {
-        this.cursor.setRadius(this.tools.lineWidth / this.origin.scale / 2)
-      }
+
+      //드로잉 굵기를 현재 창 크기에서 캔버스 사이즈 기준으로 계산
+      this.updateCanvasBrushWidth(this.tools.lineWidth)
+
       canvas.backgroundImage.set({
         scaleX: canvasSize.scale / scale,
         scaleY: canvasSize.scale / scale,
@@ -268,6 +273,17 @@ export default {
       setTimeout(() => {
         this.optimizeCanvasSize()
       }, 1000)
+    },
+
+    //드로잉 브러시 lineWidth가 변경될 때마다 실제 브러쉬 크기를 캔버스 사이즈에 비례하여 업데이트하는 함수
+    updateCanvasBrushWidth(lineWidth) {
+      if (this.canvas) {
+        //드로잉 굵기를 현재 창 크기에서 캔버스 사이즈 기준으로 계산
+        const width = lineWidth * (this.origin.width / this.img.width)
+        this.canvas.freeDrawingBrush.width = width
+        //커서크기 업데이트
+        if (this.cursor) this.cursor.setRadius(width / 2)
+      }
     },
   },
   /* Lifecycles */

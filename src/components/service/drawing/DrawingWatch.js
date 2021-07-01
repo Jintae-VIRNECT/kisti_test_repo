@@ -76,18 +76,9 @@ export default {
         )
       }
     },
-    'tools.lineWidth'(width) {
-      if (this.canvas) {
-        this.canvas.freeDrawingBrush.width = width / this.origin.scale
-      }
-      if (this.cursor) {
-        this.cursor.setRadius(width / this.origin.scale / 2)
-      }
-    },
-    'tools.fontSize'(size) {
-      if (this.textObj) {
-        this.textObj.set('fontSize', size / this.origin.scale)
-      }
+    //사용자가 드로잉 굴기를 변경할때마다 드로잉 브러쉬 크기, 커서 크기를 캔버스 크기를 기준으로 계산해서 업데이트
+    'tools.lineWidth'(lineWidth, oldLineWidth) {
+      if (lineWidth !== oldLineWidth) this.updateCanvasBrushWidth(lineWidth)
     },
     undoList() {
       this.toolAble()
@@ -97,7 +88,7 @@ export default {
     },
   },
   computed: {
-    drawingView() {
+    isDrawingView() {
       return this.view === VIEW.DRAWING
     },
   },
