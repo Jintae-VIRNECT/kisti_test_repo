@@ -433,10 +433,14 @@ public abstract class WorkspaceUserService {
 
         WorkspaceUserPermission requestUserPermission = workspaceUserPermissionRepository.findByWorkspaceUser_WorkspaceAndWorkspaceUser_UserId(workspace, requestUser.getUuid()).orElseThrow(() -> new WorkspaceException(ErrorCode.ERR_WORKSPACE_USER_NOT_FOUND));
         WorkspaceUserPermission responseUserPermission = workspaceUserPermissionRepository.findByWorkspaceUser_WorkspaceAndWorkspaceUser_UserId(workspace, userId).orElseThrow(() -> new WorkspaceException(ErrorCode.ERR_WORKSPACE_USER_NOT_FOUND));
+        //TODO 리팩토링 필요
         if (workspaceCustomSettingOptional.isPresent()) {
             log.info("[REVISE MEMBER INFO] workspace custom setting value : [{}]", workspaceCustomSettingOptional.get().getValue());
             if (workspaceCustomSettingOptional.get().getValue() == SettingValue.UNUSED || workspaceCustomSettingOptional.get().getValue() == SettingValue.MASTER_OR_MANAGER) {
                 if(!requestUserPermission.getWorkspaceRole().getRole().matches("MASTER|MANAGER")){
+                    throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_INVALID_PERMISSION);
+                }
+                if(requestUserPermission.getWorkspaceRole().getRole().equals("MANAGER") && responseUserPermission.getWorkspaceRole().getRole().equals("MASTER")){
                     throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_INVALID_PERMISSION);
                 }
             }
@@ -449,9 +453,21 @@ public abstract class WorkspaceUserService {
                 if(!requestUserPermission.getWorkspaceRole().getRole().matches("MASTER|MANAGER|MEMBER")){
                     throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_INVALID_PERMISSION);
                 }
+                if(requestUserPermission.getWorkspaceRole().getRole().equals("MANAGER") && responseUserPermission.getWorkspaceRole().getRole().equals("MASTER")){
+                    throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_INVALID_PERMISSION);
+                }
+                if(requestUserPermission.getWorkspaceRole().getRole().equals("MEMBER") && responseUserPermission.getWorkspaceRole().getRole().equals("MASTER")){
+                    throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_INVALID_PERMISSION);
+                }
+                if(requestUserPermission.getWorkspaceRole().getRole().equals("MEMBER") && responseUserPermission.getWorkspaceRole().getRole().equals("MANAGER")){
+                    throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_INVALID_PERMISSION);
+                }
             }
         } else {
             if(!requestUserPermission.getWorkspaceRole().getRole().matches("MASTER|MANAGER")){
+                throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_INVALID_PERMISSION);
+            }
+            if(requestUserPermission.getWorkspaceRole().getRole().equals("MANAGER") && responseUserPermission.getWorkspaceRole().getRole().equals("MASTER")){
                 throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_INVALID_PERMISSION);
             }
         }
