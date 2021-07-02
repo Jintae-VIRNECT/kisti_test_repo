@@ -25,6 +25,7 @@
       "desc": "Description",
       "descPlaceholder": "Enter your Workspace description.",
       "descComment": "Enter less than 40 characters for the description.",
+      "defaultDesc": "This is {nickname}'s Workspace",
       "image": "Profile Image",
       "imageComment": "Update your Workspace profile image. This profile picture is displayed on the sidebar and notifications.",
       "start": "Begin Workspace",
