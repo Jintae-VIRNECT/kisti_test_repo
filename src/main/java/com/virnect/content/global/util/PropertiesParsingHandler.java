@@ -45,6 +45,7 @@ public class PropertiesParsingHandler {
             propertiesInfo.setSceneGroups(sceneGroupList);
             return propertiesInfo;
         } catch (NullPointerException | UnsupportedOperationException | JsonParseException e) {
+            log.error(e.getMessage());
             log.error("Properties parsing error. properties >> {}", properties);
             throw new ContentServiceException(ErrorCode.ERR_CONTENT_METADATA_READ);
         }
