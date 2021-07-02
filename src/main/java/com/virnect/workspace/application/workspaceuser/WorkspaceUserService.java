@@ -451,7 +451,7 @@ public abstract class WorkspaceUserService {
                 }
             }
         } else {
-            if (!checkWorkspaceRole(SettingValue.MASTER_OR_MANAGER, requestUserPermission.getWorkspaceRole().getRole(), responseUserPermission.getWorkspaceRole().getRole())) {
+            if(!requestUserPermission.getWorkspaceRole().getRole().matches("MASTER|MANAGER")){
                 throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_INVALID_PERMISSION);
             }
         }
