@@ -1,9 +1,9 @@
-RELEASE v2.4.6.0
+RELEASE v2.4.8.0
 
 ### Update
-- 언어 표기 변경
+- 로컬 녹화 파일 목록 구축형에서만 출력하게 변경
 
-### Chore
-- UI 라이브러리 최신화
+
+
 
 Copyright (C) 2021, VIRNECT CO., LTD. - All Rights Reserved
