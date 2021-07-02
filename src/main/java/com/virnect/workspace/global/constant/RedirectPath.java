@@ -13,8 +13,7 @@ public enum RedirectPath {
     WORKSPACE_OVER_JOIN_FAIL("/?message=members.add.message.workspaceOverflow"),
     WORKSPACE_OVER_MAX_USER_FAIL("/?message=members.add.message.memberOverflow"),
     WORKSPACE_OVER_PLAN_FAIL("/?message=members.add.message.enoughPlan"),
-    WORKSPACE_INVITE_FAIL("/?message=workspace.invite.invalid"),
-    WORKSPACE_INVITE_FAIL_USER_SECESSION("/?message=workspace.invite.invalid.user.secession");
+    WORKSPACE_INVITE_FAIL("/?message=workspace.invite.invalid");
 
     @Getter
     private String value;

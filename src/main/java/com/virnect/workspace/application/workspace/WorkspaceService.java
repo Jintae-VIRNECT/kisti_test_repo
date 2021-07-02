@@ -199,6 +199,10 @@ public abstract class WorkspaceService {
      */
     UserInfoRestResponse getUserInfo(String userId) {
         ApiResponse<UserInfoRestResponse> userInfoResponse = userRestService.getUserInfoByUserId(userId);
+        if (userInfoResponse.getCode() != 200 || userInfoResponse.getData() == null) {
+            log.error("[GET USER INFO] response code : {}, response message : {}", userInfoResponse.getCode(), userInfoResponse.getMessage());
+            throw new WorkspaceException(ErrorCode.ERR_UNEXPECTED_SERVER_ERROR);
+        }
         return userInfoResponse.getData();
     }
 

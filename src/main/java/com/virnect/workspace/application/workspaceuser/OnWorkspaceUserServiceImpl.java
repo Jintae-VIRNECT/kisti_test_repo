@@ -368,14 +368,15 @@ public class OnWorkspaceUserServiceImpl extends WorkspaceUserService {
     public RedirectView inviteWorkspaceAccept(String sessionCode, String lang) throws IOException {
         Locale locale = new Locale(lang, "");
         //1-1. 초대 세션 유효성 체크
-        UserInvite userInvite = userInviteRepository.findById(sessionCode).orElse(null);
-        if (userInvite == null) {
+        Optional<UserInvite> optionalUserInvite = userInviteRepository.findById(sessionCode);
+        if (!optionalUserInvite.isPresent()) {
             log.info("[WORKSPACE INVITE ACCEPT] Workspace invite session Info Not found. session code >> [{}]", sessionCode);
             RedirectView redirectView = new RedirectView();
             redirectView.setUrl(redirectProperty.getConsoleWeb() + RedirectPath.WORKSPACE_INVITE_FAIL.getValue());
             redirectView.setContentType("application/json");
             return redirectView;
         }
+        UserInvite userInvite = optionalUserInvite.get();
         log.info("[WORKSPACE INVITE ACCEPT] Workspace invite session Info >> [{}]", userInvite.toString());
 
         //1-2. 초대받은 유저가 유효한지 체크
@@ -386,13 +387,9 @@ public class OnWorkspaceUserServiceImpl extends WorkspaceUserService {
             //탈퇴한 유저의 캐싱은 삭제, 이외의 유저는 보류.
             if (inviteUserInfoResponseApiResponse.getCode() == 5002) {
                 userInviteRepository.delete(userInvite);
-                RedirectView redirectView = new RedirectView();
-                redirectView.setUrl(redirectProperty.getWorkstationWeb() + RedirectPath.WORKSPACE_INVITE_FAIL_USER_SECESSION.getValue());
-                redirectView.setContentType("application/json");
-                return redirectView;
             }
             RedirectView redirectView = new RedirectView();
-            redirectView.setUrl(redirectProperty.getWorkstationWeb() + RedirectPath.WORKSPACE_INVITE_FAIL.getValue());
+            redirectView.setUrl(redirectProperty.getConsoleWeb() + RedirectPath.WORKSPACE_INVITE_FAIL.getValue());
             redirectView.setContentType("application/json");
             return redirectView;
         }
@@ -686,14 +683,15 @@ public class OnWorkspaceUserServiceImpl extends WorkspaceUserService {
 
     public RedirectView inviteWorkspaceReject(String sessionCode, String lang) {
         Locale locale = new Locale(lang, "");
-        UserInvite userInvite = userInviteRepository.findById(sessionCode).orElse(null);
-        if (userInvite == null) {
+        Optional<UserInvite> optionalUserInvite = userInviteRepository.findById(sessionCode);
+        if (!optionalUserInvite.isPresent()) {
             log.info("[WORKSPACE INVITE REJECT] Workspace invite session Info Not found. session code >> [{}]", sessionCode);
             RedirectView redirectView = new RedirectView();
             redirectView.setUrl(redirectProperty.getWorkstationWeb());
             redirectView.setContentType("application/json");
             return redirectView;
         }
+        UserInvite userInvite = optionalUserInvite.get();
         log.info("[WORKSPACE INVITE REJECT] Workspace Invite Session Info >> [{}] ", userInvite);
 
         //비회원 거절은 메일 전송 안함.
@@ -704,10 +702,6 @@ public class OnWorkspaceUserServiceImpl extends WorkspaceUserService {
             //탈퇴한 유저의 캐싱은 삭제, 이외의 유저는 보류.
             if (inviteUserInfoResponseApiResponse.getCode() == 5002) {
                 userInviteRepository.delete(userInvite);
-                RedirectView redirectView = new RedirectView();
-                redirectView.setUrl(redirectProperty.getWorkstationWeb() + RedirectPath.WORKSPACE_INVITE_FAIL_USER_SECESSION.getValue());
-                redirectView.setContentType("application/json");
-                return redirectView;
             }
             RedirectView redirectView = new RedirectView();
             redirectView.setUrl(redirectProperty.getWorkstationWeb());
