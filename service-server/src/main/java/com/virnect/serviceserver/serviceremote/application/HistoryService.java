@@ -104,11 +104,9 @@ public class HistoryService {
 			99
 		).getData().getMemberInfoList();
 		List<String> userIds = new ArrayList<>();
-		if (!userIds.isEmpty()) {
-			for (WorkspaceMemberInfoResponse memberInfo : members) {
-				if (!StringUtils.isBlank(memberInfo.getUuid())){
-					userIds.add(memberInfo.getUuid());
-				}
+		for (WorkspaceMemberInfoResponse memberInfo : members) {
+			if (!StringUtils.isBlank(memberInfo.getUuid())){
+				userIds.add(memberInfo.getUuid());
 			}
 		}
 
@@ -163,7 +161,7 @@ public class HistoryService {
 		resultResponse.setSessionType(roomHistory.getSessionPropertyHistory().getSessionType());
 
 		List<MemberInfoResponse> memberInfoList = roomHistory.getMemberHistories().stream()
-			.map(memberHistory -> memberHistoryMapper.toDto(memberHistory))
+			.map(memberHistoryMapper::toDto)
 			.collect(Collectors.toList());
 
 		for (MemberInfoResponse memberInfoResponse : memberInfoList) {
@@ -279,7 +277,7 @@ public class HistoryService {
 			roomHistoryInfoResponse.setSessionType(roomHistory.getSessionPropertyHistory().getSessionType());
 
 			List<MemberInfoResponse> memberInfoList = roomHistory.getMemberHistories().stream()
-					.map(memberHistory -> memberHistoryMapper.toDto(memberHistory))
+					.map(memberHistoryMapper::toDto)
 					.collect(Collectors.toList());
 
 			// find and get extra information from use-server using uuid

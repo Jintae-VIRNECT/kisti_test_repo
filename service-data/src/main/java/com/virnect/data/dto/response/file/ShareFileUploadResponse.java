@@ -48,6 +48,9 @@ public class ShareFileUploadResponse {
 	@ApiModelProperty(value = "height", position = 11)
 	private Integer height;
 
+	@ApiModelProperty(value = "used storage size percent", position = 12)
+	private int usedStoragePer;
+
 	@Override
 	public String toString() {
 		return "ShareFileUploadResponse{" +
@@ -63,6 +66,7 @@ public class ShareFileUploadResponse {
 			", thumbnailDownloadUrl='" + thumbnailDownloadUrl + '\'' +
 			", width=" + width +
 			", height=" + height +
+			", usedStoragePer=" + usedStoragePer +
 			'}';
 	}
 }

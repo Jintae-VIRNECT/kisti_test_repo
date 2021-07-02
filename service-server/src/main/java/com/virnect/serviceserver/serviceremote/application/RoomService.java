@@ -535,7 +535,7 @@ public class RoomService {
 		roomDetailInfoResponse.setSessionType(room.getSessionProperty().getSessionType());
 
 		List<MemberInfoResponse> memberInfoList = room.getMembers().stream()
-			.map(member -> memberMapper.toDto(member))
+			.map(memberMapper::toDto)
 			.collect(Collectors.toList());
 
 		for (MemberInfoResponse memberInfoResponse : memberInfoList) {
@@ -693,7 +693,7 @@ public class RoomService {
 		List<MemberInfoResponse> memberInfoList = memberRepository.findAllBySessionId(sessionId)
 			.stream()
 			.filter(member -> !(member.getMemberStatus() == MemberStatus.EVICTED))
-			.map(member -> memberMapper.toDto(member))
+			.map(memberMapper::toDto)
 			.collect(Collectors.toList());
 
 		// find and get extra information from use-server using uuid
@@ -854,7 +854,7 @@ public class RoomService {
 
 			// Mapping Member List Data to Member Information List
 			List<MemberInfoResponse> memberInfoList = room.getMembers().stream()
-				.map(member -> memberMapper.toDto(member))
+				.map(memberMapper::toDto)
 				.collect(Collectors.toList());
 
 			for (MemberInfoResponse memberInfoResponse : memberInfoList) {

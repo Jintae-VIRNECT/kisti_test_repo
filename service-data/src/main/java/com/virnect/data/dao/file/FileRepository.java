@@ -25,7 +25,7 @@ public interface FileRepository extends JpaRepository<File, Long>, CustomFileRep
 
     Page<File> findByWorkspaceIdAndSessionId(final String workspaceId, final String sessionId, Pageable pageable);
 
-    Page<File> findByWorkspaceIdAndSessionIdAndDeletedIsTrueAndFileType(final String workspaceId, final String sessionId, Pageable pageable, FileType fileType);
+    //Page<File> findByWorkspaceIdAndSessionIdAndDeletedIsTrueAndFileType(final String workspaceId, final String sessionId, Pageable pageable, FileType fileType);
 
     @Modifying
     @Query("delete from File f where f.workspaceId = ?1 and f.sessionId = ?2")

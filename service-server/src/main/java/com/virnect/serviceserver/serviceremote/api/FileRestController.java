@@ -1,5 +1,9 @@
 package com.virnect.serviceserver.serviceremote.api;
 
+import java.io.IOException;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
+
 import javax.validation.Valid;
 
 import org.apache.commons.lang.StringUtils;
@@ -24,6 +28,7 @@ import lombok.extern.slf4j.Slf4j;
 import springfox.documentation.annotations.ApiIgnore;
 
 import com.virnect.data.domain.file.FileType;
+import com.virnect.data.dto.response.file.FileStorageInfoResponse;
 import com.virnect.data.error.ErrorCode;
 import com.virnect.data.error.exception.RestServiceException;
 import com.virnect.data.global.common.ApiResponse;
@@ -79,9 +84,9 @@ public class FileRestController {
         if (result.hasErrors()) {
             throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
-        if (!remoteStorageProperties.isEnabled()) {
+        /*if (!remoteStorageProperties.isEnabled()) {
             throw new RestServiceException(ErrorCode.ERR_STORAGE_NOT_SUPPORTED);
-        }
+        }*/
         ApiResponse<FileUploadResponse> responseData = fileService.uploadFile(fileUploadRequest, FileType.FILE);
         return ResponseEntity.ok(responseData);
     }
@@ -140,9 +145,9 @@ public class FileRestController {
         if (result.hasErrors()) {
             throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
-        if (!remoteStorageProperties.isEnabled()) {
+        /*if (!remoteStorageProperties.isEnabled()) {
             throw new RestServiceException(ErrorCode.ERR_STORAGE_NOT_SUPPORTED);
-        }
+        }*/
         ApiResponse<RoomProfileUpdateResponse> responseData = fileService.profileUpload(
             workspaceId,
             sessionId,
@@ -205,8 +210,7 @@ public class FileRestController {
             workspaceId,
             sessionId,
             userId,
-            objectName,
-            FileType.FILE
+            objectName
         );
         return ResponseEntity.ok(responseData);
     }
@@ -283,10 +287,8 @@ public class FileRestController {
         ApiResponse<FileInfoListResponse> responseData = fileService.getFileInfoList(
             workspaceId,
             sessionId,
-            userId,
             deleted,
-            pageRequest.ofSortBy(),
-            FileType.FILE
+            pageRequest.ofSortBy()
         );
         return ResponseEntity.ok(responseData);
     }
@@ -361,8 +363,7 @@ public class FileRestController {
             workspaceId,
             sessionId,
             userId,
-            objectName,
-            FileType.FILE
+            objectName
         );
         return ResponseEntity.ok(responseData);
     }
@@ -404,7 +405,7 @@ public class FileRestController {
     public ResponseEntity<ApiResponse<ShareFileUploadResponse>> shareFileUploadRequestHandler(
         @ModelAttribute @Valid FileUploadRequest fileUploadRequest,
         BindingResult result
-    ) {
+    ) throws IOException, NoSuchAlgorithmException, InvalidKeyException {
         LogMessage.formedInfo(
             TAG,
             "REST API: POST "
@@ -415,10 +416,10 @@ public class FileRestController {
         if (result.hasErrors()) {
             throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
-        if (!remoteStorageProperties.isEnabled()) {
+        /*if (!remoteStorageProperties.isEnabled()) {
             throw new RestServiceException(ErrorCode.ERR_STORAGE_NOT_SUPPORTED);
-        }
-        ApiResponse<ShareFileUploadResponse> responseData = fileService.uploadShareFile(fileUploadRequest, FileType.SHARE);
+        }*/
+        ApiResponse<ShareFileUploadResponse> responseData = fileService.uploadShareFile(fileUploadRequest);
         return ResponseEntity.ok(responseData);
     }
 
@@ -494,8 +495,7 @@ public class FileRestController {
             workspaceId,
             sessionId,
             userId,
-            objectName,
-            FileType.SHARE
+            objectName
         );
         return ResponseEntity.ok(responseData);
     }
@@ -528,8 +528,7 @@ public class FileRestController {
             workspaceId,
             sessionId,
             leaderUserId,
-            objectName,
-            FileType.SHARE
+            objectName
         );
         return ResponseEntity.ok(responseData);
     }
@@ -562,6 +561,25 @@ public class FileRestController {
             leaderUserId,
             FileType.SHARE
         );
+        return ResponseEntity.ok(responseData);
+    }
+
+    @ApiOperation(value = "Storage capacity information", notes = "리모트에서 사용 스토리지 용량 확인")
+    @GetMapping(value = "file/storage/capacity/{workspaceId}")
+    public ResponseEntity<ApiResponse<FileStorageInfoResponse>> checkRemoteStorageCapacity(
+        @PathVariable("workspaceId") String workspaceId
+    ) {
+        LogMessage.formedInfo(
+            TAG,
+            "REST API: GET"
+                + REST_PATH + "::"
+                + "workspaceId:" + workspaceId,
+            "checkRemoteStorageCapacity"
+        );
+        if (StringUtils.isBlank(workspaceId)) {
+            throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
+        }
+        ApiResponse<FileStorageInfoResponse> responseData = fileService.checkRemoteStorageCapacity(workspaceId);
         return ResponseEntity.ok(responseData);
     }
 

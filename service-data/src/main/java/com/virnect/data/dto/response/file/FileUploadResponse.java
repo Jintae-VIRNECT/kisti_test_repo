@@ -32,16 +32,20 @@ public class FileUploadResponse {
     @ApiModelProperty(value = "file size", position = 6)
     private Long size = 0L;
 
+    @ApiModelProperty(value = "used storage size percent", position = 7)
+    private int usedStoragePer;
+
     @Override
     public String toString() {
         return "FileUploadResponse{" +
-                "workspaceId='" + workspaceId + '\'' +
-                ", sessionId='" + sessionId + '\'' +
-                ", uuid='" + uuid + '\'' +
-                ", name='" + name + '\'' +
-                ", objectName='" + objectName + '\'' +
-                ", contentType='" + contentType + '\'' +
-                ", size='" + size + '\'' +
-                '}';
+            "workspaceId='" + workspaceId + '\'' +
+            ", sessionId='" + sessionId + '\'' +
+            ", uuid='" + uuid + '\'' +
+            ", name='" + name + '\'' +
+            ", objectName='" + objectName + '\'' +
+            ", contentType='" + contentType + '\'' +
+            ", size=" + size +
+            ", usedStoragePer=" + usedStoragePer +
+            '}';
     }
 }
