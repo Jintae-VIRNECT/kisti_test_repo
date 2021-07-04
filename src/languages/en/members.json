@@ -34,7 +34,8 @@
       "message": {
         "notHaveAnyPlan": "At least one plan must be allocated to Workspace members.",
         "updateFail": "Failed to update member details from the Workspace please try again later.",
-        "updateSuccess": "Succesfully updated selected member details."
+        "updateSuccess": "Succesfully updated selected member details.",
+        "notChangeMasterPlan": "Master's plan can only be changed by the master."
       }
     },
     "kick": {

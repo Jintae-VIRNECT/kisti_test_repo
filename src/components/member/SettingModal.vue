@@ -169,6 +169,12 @@ export default {
           }).then(() => {
             window.open(`${this.$url.pay}`)
           })
+        } else if (/^Error: 1003/.test(e)) {
+          this.$message.error({
+            message: this.$t('members.setting.message.notChangeMasterPlan'),
+            duration: 2000,
+            showClose: true,
+          })
         } else {
           this.$message.error({
             message: /^Error: 1007/.test(e)
