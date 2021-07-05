@@ -27,12 +27,13 @@
 import { mapActions, mapGetters } from 'vuex'
 import confirmMixin from 'mixins/confirm'
 import touchMixin from 'mixins/touch'
+import toastMixin from 'mixins/toast'
 import { base64ToBlob } from 'utils/file'
 import { drawingUpload } from 'api/http/drawing'
 import { DRAWING } from 'configs/remote.config'
 export default {
   name: 'ShareHistoryImage',
-  mixins: [confirmMixin, touchMixin],
+  mixins: [confirmMixin, touchMixin, toastMixin],
   components: {},
   data() {
     return {
