@@ -163,6 +163,11 @@ export default {
     async refresh() {
       this.searchTasks({ page: 1 })
       this.taskStatistics = await taskService.getTaskStatistics()
+
+      // 검색 조건 초기화
+      this.activeTab = 'allTasks' // 탭
+      this.taskFilter.value = ['ALL'] // 필터
+      this.isGraph = false // 일자별 작업 진행률 그래프
     },
   },
   beforeMount() {
