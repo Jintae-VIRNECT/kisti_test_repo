@@ -143,7 +143,7 @@
 
 <script>
 import { conditions } from '@/models/task/Task'
-
+import workspaceService from '@/services/workspace'
 export default {
   props: {
     stat: Object,
@@ -161,6 +161,12 @@ export default {
     graphToggle() {
       this.isGraph = !this.isGraph
     },
+  },
+  beforeMount() {
+    // 워크스테이션 변경시 초기화
+    workspaceService.watchActiveWorkspace(this, () => {
+      this.isGraph = false
+    })
   },
 }
 </script>
