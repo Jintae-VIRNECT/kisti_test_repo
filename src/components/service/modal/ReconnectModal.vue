@@ -41,13 +41,14 @@ import { getRoomInfo } from 'api/http/room'
 import roomMixin from 'mixins/room'
 import { checkOnline } from 'utils/network'
 import { ROLE } from 'configs/remote.config'
+import toastMixin from 'mixins/toast'
 
 export default {
   name: 'ReconnectModal',
   components: {
     Modal,
   },
-  mixins: [roomMixin],
+  mixins: [roomMixin, toastMixin],
   data() {
     return {
       visibleFlag: false,

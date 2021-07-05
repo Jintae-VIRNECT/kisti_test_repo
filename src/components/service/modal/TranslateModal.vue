@@ -139,7 +139,7 @@ export default {
         if (sendMessage.length > 0) {
           this.sttText = sendMessage
         } else {
-          this.toastDefault('인식된 음성이 없습니다.')
+          this.toastDefault(this.$t('service.stt_no_voice'))
         }
       }
       reader.readAsDataURL(blob)
