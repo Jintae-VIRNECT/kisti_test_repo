@@ -45,7 +45,7 @@ const initHelmet = async app => {
           'img-src': ["'self'", 'blob:', 'data:', ...allows],
           'media-src': ["'self'", 'data:', ...allows],
           'worker-src': ["'self'", 'blob:', ...allows],
-          'child-src': ["blob:'", ...allows],
+          'child-src': ['blob:', ...allows],
         },
       },
     }),
