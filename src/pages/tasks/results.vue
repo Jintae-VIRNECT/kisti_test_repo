@@ -159,12 +159,12 @@ export default {
     this.setActiveTab()
 
     workspaceService.watchActiveWorkspace(this, () => {
-      if (this.activeTab === 'task') this.searchSubTasks({ page: 1 })
-      else if (this.activeTab === 'issue') this.searchIssues({ page: 1 })
-      else if (this.activeTab === 'paper') this.searchPapers({ page: 1 })
-
       // 워크스페이션 변경시 초기화
       this.taskFilter.value = ['ALL']
+      this.activeTab = 'task'
+      this.resultsSearch = ''
+
+      this.searchSubTasks({ page: 1 })
     })
   },
 }
