@@ -36,6 +36,11 @@ import { filters } from '@/plugins/dayjs'
 import storeIds from '@/models/storeIds'
 
 export default {
+  async asyncData({ route }) {
+    return {
+      redirectPath: route.path,
+    }
+  },
   data() {
     return {
       activeTab: null,
@@ -115,7 +120,7 @@ export default {
         '/make': 'make',
         '/view': 'view',
         '/track': 'track',
-      }[this.$route.path] || 'remote'
+      }[this.redirectPath] || 'remote'
     window.addEventListener('scroll', this.snbNav)
   },
   beforeDestroy() {
