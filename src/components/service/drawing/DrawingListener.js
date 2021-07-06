@@ -24,8 +24,7 @@ export default {
     }
   },
   methods: {
-    drawingListener(receive) {
-      const data = JSON.parse(receive.data)
+    drawingListener({ data, receive }) {
       if (data.type === DRAWING.FILE_SHARE) {
         this.receivedList[receive.from.connectionId] = []
         for (let key in this.receivePath) {
@@ -207,10 +206,12 @@ export default {
   /* Lifecycles */
   created() {
     if (this.$call) {
-      this.$eventBus.$on(SIGNAL.DRAWING, this.drawingListener)
+      this.$eventBus.$on(SIGNAL.DRAWING, this.drawingListener) //시그널 데이터 수신시 바로 발생되는 이벤트 리스너
+      this.$eventBus.$on(SIGNAL.DRAWING_FROM_VUEX, this.drawingListener) //vuex 큐에 임시 저장해두었다가 발생시키는 이벤트 리스너
     }
   },
   beforeDestroy() {
     this.$eventBus.$off(SIGNAL.DRAWING, this.drawingListener)
+    this.$eventBus.$off(SIGNAL.DRAWING_FROM_VUEX, this.drawingListener)
   },
 }
