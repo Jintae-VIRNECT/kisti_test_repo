@@ -104,15 +104,22 @@ export default {
       return true
     },
     password1Check(password) {
-      if (!this.validate(password)) return false
-      this.form.confirmPassword1 = true
-      return true
+      if (!this.validate(password)) {
+        this.form.confirmPassword1 = false
+        return false
+      } else {
+        this.form.confirmPassword1 = true
+        return true
+      }
     },
     password2Check(password) {
-      if (!this.validate(password)) return false
-      if (this.form.password1 !== password) return false
-      this.form.confirmPassword2 = true
-      return true
+      if (!this.validate(password)) {
+        this.form.confirmPassword2 = false
+        return false
+      } else {
+        this.form.confirmPassword2 = true
+        return true
+      }
     },
     async submit() {
       if (this.form.password1 !== this.form.password2) {
