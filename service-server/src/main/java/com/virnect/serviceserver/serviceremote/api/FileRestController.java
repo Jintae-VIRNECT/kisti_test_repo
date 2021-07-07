@@ -203,9 +203,9 @@ public class FileRestController {
             || StringUtils.isBlank(userId) || StringUtils.isBlank(objectName)) {
             throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
-        if (!remoteStorageProperties.isEnabled()) {
+        /*if (!remoteStorageProperties.isEnabled()) {
             throw new RestServiceException(ErrorCode.ERR_STORAGE_NOT_SUPPORTED);
-        }
+        }*/
         ApiResponse<FilePreSignedResponse> responseData = fileService.downloadFileUrl(
             workspaceId,
             sessionId,
@@ -281,9 +281,9 @@ public class FileRestController {
         if (StringUtils.isBlank(workspaceId) || StringUtils.isBlank(sessionId) || StringUtils.isBlank(userId)) {
             throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
-        if (!remoteStorageProperties.isEnabled()) {
+        /*if (!remoteStorageProperties.isEnabled()) {
             throw new RestServiceException(ErrorCode.ERR_STORAGE_NOT_SUPPORTED);
-        }
+        }*/
         ApiResponse<FileInfoListResponse> responseData = fileService.getFileInfoList(
             workspaceId,
             sessionId,
@@ -321,9 +321,9 @@ public class FileRestController {
         if (StringUtils.isBlank(workspaceId) || StringUtils.isBlank(sessionId) || StringUtils.isBlank(userId)) {
             throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
-        if (remoteStorageProperties.isEnabled()) {
+        /*if (remoteStorageProperties.isEnabled()) {
             throw new RestServiceException(ErrorCode.ERR_STORAGE_NOT_SUPPORTED);
-        }
+        }*/
         ApiResponse<FileDetailInfoListResponse> responseData = fileService.getRecordFileInfoList(
             workspaceId,
             sessionId,
@@ -356,9 +356,9 @@ public class FileRestController {
             || StringUtils.isBlank(userId) || StringUtils.isBlank(objectName)) {
             throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
-        if (remoteStorageProperties.isEnabled()) {
+        /*if (remoteStorageProperties.isEnabled()) {
             throw new RestServiceException(ErrorCode.ERR_STORAGE_NOT_SUPPORTED);
-        }
+        }*/
         ApiResponse<FileDeleteResponse> responseData = fileService.removeFile(
             workspaceId,
             sessionId,
@@ -451,9 +451,9 @@ public class FileRestController {
         if (Strings.isBlank(workspaceId)|| Strings.isBlank(sessionId)) {
             throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
-        if (!remoteStorageProperties.isEnabled()) {
+        /*if (!remoteStorageProperties.isEnabled()) {
             throw new RestServiceException(ErrorCode.ERR_STORAGE_NOT_SUPPORTED);
-        }
+        }*/
         ApiResponse<ShareFileInfoListResponse> responseData = fileService.getShareFileInfoList(
             workspaceId,
             sessionId,
@@ -488,9 +488,9 @@ public class FileRestController {
         if (Strings.isBlank(userId)|| Strings.isBlank(objectName)) {
             throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
-        if (!remoteStorageProperties.isEnabled()) {
+        /*if (!remoteStorageProperties.isEnabled()) {
             throw new RestServiceException(ErrorCode.ERR_STORAGE_NOT_SUPPORTED);
-        }
+        }*/
         ApiResponse<FilePreSignedResponse> responseData = fileService.downloadFileUrl(
             workspaceId,
             sessionId,
@@ -521,9 +521,9 @@ public class FileRestController {
         if (StringUtils.isBlank(workspaceId) || StringUtils.isBlank(sessionId) || StringUtils.isBlank(leaderUserId)) {
             throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
-        if (!remoteStorageProperties.isEnabled()) {
+        /*if (!remoteStorageProperties.isEnabled()) {
             throw new RestServiceException(ErrorCode.ERR_STORAGE_NOT_SUPPORTED);
-        }
+        }*/
         ApiResponse<FileDeleteResponse> responseData = fileService.removeShareFile(
             workspaceId,
             sessionId,
@@ -552,9 +552,9 @@ public class FileRestController {
         if (!remoteStorageProperties.isEnabled()) {
             throw new RestServiceException(ErrorCode.ERR_STORAGE_NOT_SUPPORTED);
         }
-        if (StringUtils.isBlank(leaderUserId)) {
+        /*if (StringUtils.isBlank(leaderUserId)) {
             throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
-        }
+        }*/
         ApiResponse<FileDeleteResponse> responseData = fileService.removeShareFiles(
             workspaceId,
             sessionId,
