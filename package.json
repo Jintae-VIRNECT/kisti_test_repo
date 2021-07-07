@@ -46,6 +46,7 @@
     "sass-loader": "^8.0.0",
     "style-loader": "^1.0.2",
     "vue-loader": "^15.8.3",
-    "vue-style-loader": "^4.1.2"
+    "vue-style-loader": "^4.1.2",
+    "vee-validate": "2.2.15"
   }
 }
