@@ -152,6 +152,8 @@ export default {
           } catch (err) {
             if (err.code === 7017) {
               this.toastError(this.$t('alarm.file_storage_capacity_full'))
+            } else if (err.code === 7003) {
+              this.toastError(this.$t('service.file_extension_unsupport'))
             } else {
               this.toastError(this.$t('confirm.network_error'))
             }
