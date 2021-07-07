@@ -200,8 +200,9 @@ public abstract class WorkspaceService {
     UserInfoRestResponse getUserInfo(String userId) {
         ApiResponse<UserInfoRestResponse> userInfoResponse = userRestService.getUserInfoByUserId(userId);
         if (userInfoResponse.getCode() != 200 || userInfoResponse.getData() == null) {
-            log.error("[GET USER INFO] response code : {}, response message : {}", userInfoResponse.getCode(), userInfoResponse.getMessage());
-            throw new WorkspaceException(ErrorCode.ERR_UNEXPECTED_SERVER_ERROR);
+            log.error("[GET USER INFO] request userId : {}, response code : {}, response message : {}", userId, userInfoResponse.getCode(), userInfoResponse.getMessage());
+            //throw new WorkspaceException(ErrorCode.ERR_UNEXPECTED_SERVER_ERROR);
+            return null;
         }
         return userInfoResponse.getData();
     }
@@ -257,9 +258,11 @@ public abstract class WorkspaceService {
             workspaceUserList.forEach(workspaceUser -> {
                 applicationEventPublisher.publishEvent(new UserWorkspacesDeleteEvent(workspaceUser.getUserId()));//캐싱 삭제
                 UserInfoRestResponse userInfoRestResponse = getUserInfo(workspaceUser.getUserId());
-                receiverEmailList.add(userInfoRestResponse.getEmail());
-                if (userInfoRestResponse.getUuid().equals(workspace.getUserId())) {
-                    context.setVariable("workspaceMasterNickName", userInfoRestResponse.getNickname());
+                if (userInfoRestResponse != null) {
+                    receiverEmailList.add(userInfoRestResponse.getEmail());
+                    if (userInfoRestResponse.getUuid().equals(workspace.getUserId())) {
+                        context.setVariable("workspaceMasterNickName", userInfoRestResponse.getNickname());
+                    }
                 }
             });
 
