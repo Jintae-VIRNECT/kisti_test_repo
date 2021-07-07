@@ -1335,7 +1335,7 @@
   dependencies:
     consola "^2.4.0"
     glob-all "^3.1.0"
-    sass-resources-loader "^2.0.0"
+    sass-resources-loader "^2.2.1"
 
 "@nuxtjs/youch@^4.2.3":
   version "4.2.3"
@@ -1492,10 +1492,10 @@
     anymatch "^3.0.0"
     source-map "^0.6.0"
 
-"@virnect/components@^1.6.0":
-  version "1.6.0"
-  resolved "http://192.168.6.3:4873/@virnect%2fcomponents/-/components-1.6.0.tgz#2c2ab9f956dac3f46517364f2ca51314154ee82f"
-  integrity sha512-duzy1ooCFEBrbE3NdEXJ2OR4i4qFaefI0NxjcWrLzieGA3e5XSsPhsyLrMyKCAEsA8zya9VmtfBPAaIZP4KwPA==
+"@virnect/components@^1.7.0":
+  version "1.7.0"
+  resolved "http://192.168.6.3:4873/@virnect%2fcomponents/-/components-1.7.0.tgz#6dbb69bb1ca81629cec7332c9f2253807fa30e05"
+  integrity sha512-ILooL+CldohkSTtXkb6qbczLEfO/nrfAFx4WSXTVrD6B7wAxAUR6dVUJh9N0ws4qxYjIhpQE12wdkLfTcJ3wpA==
   dependencies:
     "@virnect/ui-assets" "^1.1.20"
     "@vue/composition-api" "^1.0.0-rc.2"
@@ -9356,10 +9356,10 @@ sass-loader@^8.0.0:
     schema-utils "^2.6.1"
     semver "^6.3.0"
 
-sass-resources-loader@^2.0.0:
-  version "2.1.1"
-  resolved "https://registry.npmjs.org/sass-resources-loader/-/sass-resources-loader-2.1.1.tgz#a231b7c4e326d9c8d141909c901233bef9453151"
-  integrity sha512-/KrD5mEBTj3ZQ49thKSThhpv1OFhc82JbWA0bmv9yANRuPIlQrydNpZG82jdy4pEWY0QcQTGyd5OmCb3xVeZsw==
+sass-resources-loader@^2.2.1:
+  version "2.2.3"
+  resolved "https://registry.yarnpkg.com/sass-resources-loader/-/sass-resources-loader-2.2.3.tgz#1be92ea326a4a2d8d7c3483a01577a70df7d7fa1"
+  integrity sha512-QHyhf1euMF16qC5R24felQYkg7NvSlsNkidUpgrga27hMLqNP5TfmQ6K0iVn7BurKmUU/CDuygZh0py9lXeYPQ==
   dependencies:
     async "^3.2.0"
     chalk "^4.1.0"
@@ -10896,6 +10896,11 @@ vary@^1.1.2, vary@~1.1.2:
   version "1.1.2"
   resolved "https://registry.npmjs.org/vary/-/vary-1.1.2.tgz#2299f02c6ded30d4a5961b0b9f74524a18f634fc"
   integrity sha1-IpnwLG3tMNSllhsLn3RSShj2NPw=
+
+vee-validate@2.2.15:
+  version "2.2.15"
+  resolved "https://registry.yarnpkg.com/vee-validate/-/vee-validate-2.2.15.tgz#dc6c925d21e57288d3308fe5a39a0941036c575a"
+  integrity sha512-4TOsI8XwVkKVLkg8Nhmy+jyoJrR6XcTRDyxBarzcCvYzU61zamipS1WsB6FlDze8eJQpgglS4NXAS6o4NDPs1g==
 
 vendors@^1.0.0:
   version "1.0.4"
