@@ -294,6 +294,7 @@ export default {
   beforeCreate() {
     this.$emit('loadingStart')
   },
+  //참고 : 해당 component는 협업보드 진입 전에 이미 생성된다
   created() {
     window.addEventListener('resize', this.windowResize)
     if (this.file && this.file.id) {
