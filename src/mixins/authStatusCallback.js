@@ -22,7 +22,7 @@ export default {
       //재시도 팝업
       const text = this.$t('workspace.workspace_update_failed')
       const confirm = {
-        text: this.$t('common.retry'),
+        text: this.$t('button.retry'),
         action: () => {
           //워스스페이스 변경 재요청
           socket.send(
@@ -50,7 +50,7 @@ export default {
       const text = this.$t('workspace.auth_status_failed')
 
       const confirm = {
-        text: this.$t('common.retry'),
+        text: this.$t('button.retry'),
         action: () => {
           //인증 등록 재요청
           socket.send(
