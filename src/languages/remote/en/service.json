@@ -202,7 +202,7 @@
     "record_local": "Local recording",
     "record_local_setting": "Local recording settings",
     "record_local_list": "Local recording list",
-    "record_blocked": "Leader has disabled local recording.",
+    "record_blocked": "The local recording feature is not allowed for the participants.",
     "record_server": "Server recording",
     "record_start_message": "Starting the local screen recording. If you wish to end it, click the button again or press [ESC] key.",
     "record_fail_memory": "Stopping the recording due to lack of PC storage. The file being recorded is not saved.",
