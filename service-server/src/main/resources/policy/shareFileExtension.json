@@ -8,14 +8,8 @@
       "jpg",
       "jpeg",
       "png",
-      "tif",
-      "tiff",
       "bmp",
-      "raw",
-      "pic",
-      "pict",
-      "wmf",
-      "emf"
+      "x-ms-bmp"
     ]
   }
 }
