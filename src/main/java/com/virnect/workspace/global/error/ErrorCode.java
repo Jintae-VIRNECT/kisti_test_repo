@@ -19,7 +19,7 @@ public enum ErrorCode {
     ERR_WORKSPACE_INVITE(1006, "Workspace Invite Fail."),
     ERR_WORKSPACE_INVITE_MAX_USER(1016, "Workspace invite fail. Because over maximum number of user participation."),
     ERR_WORKSPACE_INVITE_MAX_JOIN_USER(1017, "Workspace invite fail. Because over maximum number of workspace join."),
-    ERR_WORKSPACE_INVITE_SECESSION_USER(1018,"Workspace invite fail. Because invited user is secession user."),
+    ERR_WORKSPACE_INVITE_SECESSION_USER(1018, "Workspace invite fail. Because invited user is secession user."),
 
     //
     ERR_INCORRECT_USER_LICENSE_INFO(1007, "Users must have at least 1 plan."),
@@ -31,6 +31,10 @@ public enum ErrorCode {
     ERR_WORKSPACE_USER_PASSWORD_CHANGE(1013, "Workspace user password change fail. Workspace Member Type User Not found"),
     ERR_WORKSPACE_ROLE_NOT_FOUND(1014, "Workspace Role not found"),
     ERR_WORKSPACE_PERMISSION_NOT_FOUND(1015, "Workspace Permission not found"),
+
+    //워크스페이스 유저 정보 수정 에러
+    ERR_WORKSPACE_USER_INFO_UPDATE(1020, "Workspace user info update fail."),
+    ERR_WORKSPACE_USER_INFO_UPDATE_MASTER_PLAN(1021, "Workspace user info update fail. Master user plan is only available for master user."),
 
     //워크스페이스 생성 에러
     ERR_WORKSPACE_CREATE(1100, "Workspace Create fail."),

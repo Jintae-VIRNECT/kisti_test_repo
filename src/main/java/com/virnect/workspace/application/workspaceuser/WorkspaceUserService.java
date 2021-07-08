@@ -441,7 +441,7 @@ public abstract class WorkspaceUserService {
                     throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_INVALID_PERMISSION);
                 }
                 if(requestUserPermission.getWorkspaceRole().getRole().equals("MANAGER") && responseUserPermission.getWorkspaceRole().getRole().equals("MASTER")){
-                    throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_INVALID_PERMISSION);
+                    throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_USER_INFO_UPDATE_MASTER_PLAN);
                 }
             }
             if (workspaceCustomSettingOptional.get().getValue() == SettingValue.MASTER) {
@@ -468,7 +468,7 @@ public abstract class WorkspaceUserService {
                 throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_INVALID_PERMISSION);
             }
             if(requestUserPermission.getWorkspaceRole().getRole().equals("MANAGER") && responseUserPermission.getWorkspaceRole().getRole().equals("MASTER")){
-                throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_INVALID_PERMISSION);
+                throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_USER_INFO_UPDATE_MASTER_PLAN);
             }
         }
 
