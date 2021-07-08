@@ -190,21 +190,6 @@ public MemberInfoListResponse getMembersInvitePossible(
 			.map(memberWorkspaceMapper::toDto)
 			.collect(Collectors.toList());
 
-		/*for(Iterator<MemberInfoResponse> memberInfoResponseIterator = memberInfoList.iterator(); memberInfoResponseIterator.hasNext();){
-			AccessStatus targetUser = accessStatusService.getAccessStatus(
-				workspaceId + "_" + memberInfoResponseIterator.next().getUuid());
-			if (ObjectUtils.isEmpty(targetUser)) {
-				memberInfoResponseIterator.remove();
-			} else {
-				if (targetUser.getAccessType() == AccessType.LOGIN) {
-					System.out.println("login user : " + targetUser.getId());
-				} else {
-					System.out.println("not login user : " + targetUser.getId() + ", status : " + targetUser.getAccessType());
-					memberInfoResponseIterator.remove();
-				}
-			}
-		}*/
-
 		for (MemberInfoResponse memberInfoResponse : memberInfoList) {
 			AccessStatus targetUser = accessStatusService.getAccessStatus(workspaceId + "_" + memberInfoResponse.getUuid());
 			if (!ObjectUtils.isEmpty(targetUser)) {
