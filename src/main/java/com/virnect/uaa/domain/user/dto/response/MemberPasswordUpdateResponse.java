@@ -10,7 +10,7 @@ import lombok.RequiredArgsConstructor;
 @Getter
 @RequiredArgsConstructor
 @ApiModel
-public class MemberUserPasswordChangeResponse {
+public class MemberPasswordUpdateResponse {
 	@ApiModelProperty(value = "비밀번호 변경 여부", notes = "true 면 성공적으로 비밀번호가 변경된것입니다.", example = "true")
 	private final boolean isChanged;
 	@ApiModelProperty(value = "비밀번호가 변경된 이메일 정보", position = 1, notes = "새 비밀번호가 설정된 계정의 이메일 정보입니다.", example = "test1234")

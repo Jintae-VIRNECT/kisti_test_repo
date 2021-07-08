@@ -42,31 +42,29 @@ import com.virnect.uaa.domain.user.dao.UserPasswordAuthCodeRepository;
 import com.virnect.uaa.domain.user.dao.user.UserRepository;
 import com.virnect.uaa.domain.user.dao.useraccesslog.UserAccessLogRepository;
 import com.virnect.uaa.domain.user.dao.userpermission.UserPermissionRepository;
-import com.virnect.uaa.domain.user.domain.EmailAuth;
-import com.virnect.uaa.domain.user.domain.Language;
 import com.virnect.uaa.domain.user.domain.PasswordInitAuthCode;
 import com.virnect.uaa.domain.user.domain.SecessionUser;
 import com.virnect.uaa.domain.user.domain.Status;
 import com.virnect.uaa.domain.user.domain.User;
 import com.virnect.uaa.domain.user.domain.UserAccessLog;
 import com.virnect.uaa.domain.user.domain.UserType;
-import com.virnect.uaa.domain.user.dto.request.MemberUserPasswordChangeRequest;
+import com.virnect.uaa.domain.user.dto.request.MemberPasswordUpdateRequest;
 import com.virnect.uaa.domain.user.dto.request.RegisterDetailsRequest;
 import com.virnect.uaa.domain.user.dto.request.RegisterMemberRequest;
 import com.virnect.uaa.domain.user.dto.request.RegisterRequest;
-import com.virnect.uaa.domain.user.dto.request.UserEmailFindRequest;
+import com.virnect.uaa.domain.user.dto.request.EmailFindRequest;
 import com.virnect.uaa.domain.user.dto.request.UserIdentityCheckRequest;
-import com.virnect.uaa.domain.user.dto.request.UserInfoAccessCheckRequest;
+import com.virnect.uaa.domain.user.dto.request.AccessPermissionCheckRequest;
 import com.virnect.uaa.domain.user.dto.request.UserInfoModifyRequest;
 import com.virnect.uaa.domain.user.dto.request.UserPasswordChangeRequest;
 import com.virnect.uaa.domain.user.dto.request.UserPasswordFindAuthCodeCheckRequest;
 import com.virnect.uaa.domain.user.dto.request.UserPasswordFindAuthCodeRequest;
-import com.virnect.uaa.domain.user.dto.request.UserProfileUpdateRequest;
+import com.virnect.uaa.domain.user.dto.request.ProfileImageUpdateRequest;
 import com.virnect.uaa.domain.user.dto.request.UserSecessionRequest;
 import com.virnect.uaa.domain.user.dto.response.InviteUserDetailInfoResponse;
 import com.virnect.uaa.domain.user.dto.response.InviteUserInfoResponse;
 import com.virnect.uaa.domain.user.dto.response.LoginResponse;
-import com.virnect.uaa.domain.user.dto.response.MemberUserPasswordChangeResponse;
+import com.virnect.uaa.domain.user.dto.response.MemberPasswordUpdateResponse;
 import com.virnect.uaa.domain.user.dto.response.PageMetadataResponse;
 import com.virnect.uaa.domain.user.dto.response.UserAccessDeviceInfoResponse;
 import com.virnect.uaa.domain.user.dto.response.UserAccessHistoryResponse;
@@ -551,7 +549,7 @@ public class UserServiceImpl implements UserService {
 	 */
 	@Override
 	public UserInfoAccessCheckResponse userInfoAccessCheck(
-		String userUUID, UserInfoAccessCheckRequest userInfoAccessCheckRequest
+		String userUUID, AccessPermissionCheckRequest userInfoAccessCheckRequest
 	) {
 		User user = userRepository.findByEmail(userInfoAccessCheckRequest.getEmail())
 			.orElseThrow(() -> new UserServiceException(UserAccountErrorCode.ERR_USER_INFO_ACCESS));
@@ -574,21 +572,21 @@ public class UserServiceImpl implements UserService {
 	/**
 	 * 사용자 프로필 업데이트 요청 처리
 	 * @param userUUID - 사용자 식별자
-	 * @param userProfileUpdateRequest - 프로필 이미지 변경 요청 정보
+	 * @param profileImageUpdateRequest - 프로필 이미지 변경 요청 정보
 	 * @return - 프로필 이미지 변경된 사용자 정보
 	 */
 	@Override
 	@Transactional
 	public UserProfileUpdateResponse profileImageUpdate(
-		String userUUID, UserProfileUpdateRequest userProfileUpdateRequest
+		String userUUID, ProfileImageUpdateRequest profileImageUpdateRequest
 	) {
 		User user = userRepository.findByUuid(userUUID)
 			.orElseThrow(() -> new UserServiceException(UserAccountErrorCode.ERR_USER_PROFILE_IMAGE_UPLOAD));
 
 		// if new profile image request
-		if (userProfileUpdateRequest.getProfile() != null) {
+		if (profileImageUpdateRequest.getProfile() != null) {
 			try {
-				String profileUrl = fileService.upload(userProfileUpdateRequest.getProfile());
+				String profileUrl = fileService.upload(profileImageUpdateRequest.getProfile());
 				fileService.delete(user.getProfile());
 				user.setProfile(profileUrl);
 			} catch (IOException e) {
@@ -646,15 +644,15 @@ public class UserServiceImpl implements UserService {
 
 	/**
 	 * 사용자 이메일 아이디 찾기 요청 처리
-	 * @param userEmailFindRequest - 이메일 찾기 요청 정보
+	 * @param emailFindRequest - 이메일 찾기 요청 정보
 	 * @return - 이메일 찾기 결과 정보
 	 */
 	@Override
 	@Transactional(readOnly = true)
-	public UserEmailFindResponse userFindEmailHandler(UserEmailFindRequest userEmailFindRequest) {
-		String name = userEmailFindRequest.getLastName() + userEmailFindRequest.getFirstName();
+	public UserEmailFindResponse userFindEmailHandler(EmailFindRequest emailFindRequest) {
+		String name = emailFindRequest.getLastName() + emailFindRequest.getFirstName();
 		List<User> userList = userRepository.findUserByNameAndRecoveryEmailOrInternationalNumberAndMobile(
-			name, userEmailFindRequest.getRecoveryEmail(), userEmailFindRequest.getMobile());
+			name, emailFindRequest.getRecoveryEmail(), emailFindRequest.getMobile());
 
 		if (userList.isEmpty()) {
 			throw new UserServiceException(UserAccountErrorCode.ERR_USER_NOT_FOUND);
@@ -1191,27 +1189,27 @@ public class UserServiceImpl implements UserService {
 
 	/**
 	 * 멤버 사용자 비밀번호 변경 처리
-	 * @param memberUserPasswordChangeRequest - 비밀번호 변경 요청 정보
+	 * @param memberPasswordUpdateRequest - 비밀번호 변경 요청 정보
 	 * @return - 비밀번호 변경 처리 결과
 	 */
 	@Override
 	@Transactional
-	public MemberUserPasswordChangeResponse memberUserPasswordChangeHandler(
-		MemberUserPasswordChangeRequest memberUserPasswordChangeRequest
+	public MemberPasswordUpdateResponse memberUserPasswordChangeHandler(
+		MemberPasswordUpdateRequest memberPasswordUpdateRequest
 	) {
 		User memberUser = userRepository.findByUuidAndUserType(
-			memberUserPasswordChangeRequest.getUuid(), UserType.MEMBER_USER)
+			memberPasswordUpdateRequest.getUuid(), UserType.MEMBER_USER)
 			.orElseThrow(() -> {
 				log.error(
 					"[MEMBER_USER_PASSWORD_CHANGE] - uuid:[{}], userType:[{}] NOT FOUND",
-					memberUserPasswordChangeRequest.getUuid(), UserType.MEMBER_USER
+					memberPasswordUpdateRequest.getUuid(), UserType.MEMBER_USER
 				);
 				return new UserServiceException(UserAccountErrorCode.ERR_USER_NOT_FOUND);
 			});
 		memberUser.setAnswer(null);
 		memberUser.setQuestion(null);
 		memberUser.setAccountPasswordInitialized(false);
-		memberUser.setPassword(passwordEncoder.encode(memberUserPasswordChangeRequest.getPassword()));
+		memberUser.setPassword(passwordEncoder.encode(memberPasswordUpdateRequest.getPassword()));
 		memberUser.setPasswordUpdateDate(LocalDateTime.now());
 
 		if (!memberUser.isAccountNonLocked()) {
@@ -1224,7 +1222,7 @@ public class UserServiceImpl implements UserService {
 
 		userRepository.save(memberUser);
 
-		MemberUserPasswordChangeResponse response = new MemberUserPasswordChangeResponse(
+		MemberPasswordUpdateResponse response = new MemberPasswordUpdateResponse(
 			true, memberUser.getEmail(), memberUser.getUuid(), LocalDateTime.now()
 		);
 		log.info("[MEMBER_USER_PASSWORD_CHANGE_RESPONSE] - {}", response.toString());

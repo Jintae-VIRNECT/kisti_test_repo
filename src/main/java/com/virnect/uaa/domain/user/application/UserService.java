@@ -10,22 +10,22 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.virnect.uaa.domain.user.domain.User;
-import com.virnect.uaa.domain.user.dto.request.MemberUserPasswordChangeRequest;
+import com.virnect.uaa.domain.user.dto.request.MemberPasswordUpdateRequest;
 import com.virnect.uaa.domain.user.dto.request.RegisterDetailsRequest;
 import com.virnect.uaa.domain.user.dto.request.RegisterMemberRequest;
 import com.virnect.uaa.domain.user.dto.request.RegisterRequest;
-import com.virnect.uaa.domain.user.dto.request.UserEmailFindRequest;
+import com.virnect.uaa.domain.user.dto.request.EmailFindRequest;
 import com.virnect.uaa.domain.user.dto.request.UserIdentityCheckRequest;
-import com.virnect.uaa.domain.user.dto.request.UserInfoAccessCheckRequest;
+import com.virnect.uaa.domain.user.dto.request.AccessPermissionCheckRequest;
 import com.virnect.uaa.domain.user.dto.request.UserInfoModifyRequest;
 import com.virnect.uaa.domain.user.dto.request.UserPasswordChangeRequest;
 import com.virnect.uaa.domain.user.dto.request.UserPasswordFindAuthCodeCheckRequest;
 import com.virnect.uaa.domain.user.dto.request.UserPasswordFindAuthCodeRequest;
-import com.virnect.uaa.domain.user.dto.request.UserProfileUpdateRequest;
+import com.virnect.uaa.domain.user.dto.request.ProfileImageUpdateRequest;
 import com.virnect.uaa.domain.user.dto.request.UserSecessionRequest;
 import com.virnect.uaa.domain.user.dto.response.InviteUserInfoResponse;
 import com.virnect.uaa.domain.user.dto.response.LoginResponse;
-import com.virnect.uaa.domain.user.dto.response.MemberUserPasswordChangeResponse;
+import com.virnect.uaa.domain.user.dto.response.MemberPasswordUpdateResponse;
 import com.virnect.uaa.domain.user.dto.response.UserAccessHistoryResponse;
 import com.virnect.uaa.domain.user.dto.response.UserDeleteResponse;
 import com.virnect.uaa.domain.user.dto.response.UserDetailsInfoResponse;
@@ -136,19 +136,19 @@ public interface UserService {
 	 * @return - 접근 권한 체크 여부 및 사용자 정보 데이터
 	 */
 	UserInfoAccessCheckResponse userInfoAccessCheck(
-		String userUUID, UserInfoAccessCheckRequest userInfoAccessCheckRequest
+		String userUUID, AccessPermissionCheckRequest userInfoAccessCheckRequest
 	);
 
 	/**
 	 * 사용자 프로필 업데이트 요청 처리
 	 * @param userUUID - 사용자 식별자
-	 * @param userProfileUpdateRequest - 프로필 이미지 변경 요청 정보
+	 * @param profileImageUpdateRequest - 프로필 이미지 변경 요청 정보
 	 * @return - 프로필 이미지 변경된 사용자 정보
 	 */
 	@CacheEvict(value = "userInfo", key = "#userUUID")
 	@Transactional
 	UserProfileUpdateResponse profileImageUpdate(
-		String userUUID, UserProfileUpdateRequest userProfileUpdateRequest
+		String userUUID, ProfileImageUpdateRequest profileImageUpdateRequest
 	);
 
 	/**
@@ -161,11 +161,11 @@ public interface UserService {
 
 	/**
 	 * 사용자 이메일 아이디 찾기 요청 처리
-	 * @param userEmailFindRequest - 이메일 찾기 요청 정보
+	 * @param emailFindRequest - 이메일 찾기 요청 정보
 	 * @return - 이메일 찾기 결과 정보
 	 */
 	@Transactional(readOnly = true)
-	UserEmailFindResponse userFindEmailHandler(UserEmailFindRequest userEmailFindRequest);
+	UserEmailFindResponse userFindEmailHandler(EmailFindRequest emailFindRequest);
 
 	/**
 	 * 사용자 정보 전체 조회 (어드민 서비스)
@@ -265,12 +265,12 @@ public interface UserService {
 
 	/**
 	 * 멤버 사용자 비밀번호 변경 처리
-	 * @param memberUserPasswordChangeRequest - 비밀번호 변경 요청 정보
+	 * @param memberPasswordUpdateRequest - 비밀번호 변경 요청 정보
 	 * @return - 비밀번호 변경 처리 결과
 	 */
 	@Transactional
-	MemberUserPasswordChangeResponse memberUserPasswordChangeHandler(
-		MemberUserPasswordChangeRequest memberUserPasswordChangeRequest
+	MemberPasswordUpdateResponse memberUserPasswordChangeHandler(
+		MemberPasswordUpdateRequest memberPasswordUpdateRequest
 	);
 
 	/**

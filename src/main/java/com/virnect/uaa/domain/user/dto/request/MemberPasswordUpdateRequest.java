@@ -12,7 +12,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @ApiModel
-public class MemberUserPasswordChangeRequest {
+public class MemberPasswordUpdateRequest {
 	@NotBlank
 	@ApiModelProperty(value = "새 비밀번호가 설정될 멤버 사용자의 식별자 정보입니다.", example = "498b1839dc29ed7bb2ee90ad6985c608")
 	private String uuid;

@@ -18,7 +18,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @ApiModel
-public class UserProfileUpdateRequest {
+public class ProfileImageUpdateRequest {
 	@ApiModelProperty(value = "변경할 프로필 이미지", notes = "null인 경우 기본 이미지로 설정합니다.")
 	private MultipartFile profile;
 }

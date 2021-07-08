@@ -1,5 +1,7 @@
 package com.virnect.uaa.domain.user.api;
 
+import static com.virnect.uaa.global.common.LogMessagePrefix.*;
+
 import javax.validation.Valid;
 
 import org.apache.commons.lang3.StringUtils;
@@ -23,10 +25,11 @@ import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import com.virnect.uaa.domain.user.dto.request.MemberUserPasswordChangeRequest;
+import com.virnect.uaa.domain.user.application.OffUserService;
+import com.virnect.uaa.domain.user.dto.request.MemberPasswordUpdateRequest;
 import com.virnect.uaa.domain.user.dto.request.RegisterMemberRequest;
 import com.virnect.uaa.domain.user.dto.request.UserIdentityCheckRequest;
-import com.virnect.uaa.domain.user.dto.response.MemberUserPasswordChangeResponse;
+import com.virnect.uaa.domain.user.dto.response.MemberPasswordUpdateResponse;
 import com.virnect.uaa.domain.user.dto.response.UserDeleteResponse;
 import com.virnect.uaa.domain.user.dto.response.UserEmailExistCheckResponse;
 import com.virnect.uaa.domain.user.dto.response.UserIdentityCheckResponse;
@@ -42,11 +45,12 @@ import com.virnect.uaa.global.common.ApiResponse;
 @RequiredArgsConstructor
 @RequestMapping("/users")
 public class OffUserInfoController {
+	private final OffUserService offUserService;
 
 	@ApiImplicitParams(
 		@ApiImplicitParam(name = "serviceID", value = "요청 서버 명", paramType = "header", example = "workspace-server")
 	)
-	@ApiOperation(value = "멤버 등록 API", tags = "onpremise 추가 API")
+	@ApiOperation(value = "멤버 등록 API")
 	@PostMapping(value = "/register/member")
 	public ResponseEntity<ApiResponse<UserInfoResponse>> registerMemberRequestHandler(
 		@RequestBody @Valid RegisterMemberRequest registerMemberRequest,
@@ -57,11 +61,11 @@ public class OffUserInfoController {
 			result.getAllErrors().forEach(message -> log.error(PARAMETER_LOG_MESSAGE, message));
 			throw new UserServiceException(UserAccountErrorCode.ERR_INVALID_REQUEST_PARAMETER);
 		}
-		UserInfoResponse userInfoResponse = userServiceImpl.registerNewMember(registerMemberRequest);
+		UserInfoResponse userInfoResponse = offUserService.registerNewMember(registerMemberRequest);
 		return ResponseEntity.ok(new ApiResponse<>(userInfoResponse));
 	}
 
-	@ApiOperation(value = "멤버 삭제 API", tags = "onpremise 추가 API")
+	@ApiOperation(value = "멤버 삭제 API")
 	@ApiImplicitParams(
 		@ApiImplicitParam(name = "serviceID", value = "요청 서버 명", paramType = "header", example = "workspace-server")
 	)
@@ -73,11 +77,11 @@ public class OffUserInfoController {
 			log.error("SERVICE_ID:[{}]", serviceID);
 			throw new UserServiceException(UserAccountErrorCode.ERR_INVALID_REQUEST_PARAMETER);
 		}
-		UserDeleteResponse userDeleteResponse = userServiceImpl.deleteMemberUser(userUUID);
+		UserDeleteResponse userDeleteResponse = offUserService.deleteMemberUser(userUUID);
 		return ResponseEntity.ok(new ApiResponse<>(userDeleteResponse));
 	}
 
-	@ApiOperation(value = "계정 아이디 확인 API", tags = "onpremise 추가 API")
+	@ApiOperation(value = "계정 아이디 확인 API")
 	@GetMapping("/exist")
 	public ResponseEntity<ApiResponse<UserEmailExistCheckResponse>> userEmailExistCheckRequestHandler(
 		@RequestParam("email") String email
@@ -85,11 +89,11 @@ public class OffUserInfoController {
 		if (StringUtils.isEmpty(email)) {
 			throw new UserServiceException(UserAccountErrorCode.ERR_INVALID_REQUEST_PARAMETER);
 		}
-		UserEmailExistCheckResponse userEmailExistCheckResponse = userServiceImpl.userEmailExistCheck(email);
+		UserEmailExistCheckResponse userEmailExistCheckResponse = offUserService.userEmailDuplicateCheck(email);
 		return ResponseEntity.ok(new ApiResponse<>(userEmailExistCheckResponse));
 	}
 
-	@ApiOperation(value = "비밀번호 변경 질의 응답 확인 API", tags = "onpremise 추가 API")
+	@ApiOperation(value = "비밀번호 변경 질의 응답 확인 API")
 	@PostMapping("/password/identity/check")
 	public ResponseEntity<ApiResponse<UserIdentityCheckResponse>> userIdentityCheckRequestHandler(
 		@RequestBody UserIdentityCheckRequest userIdentityCheckRequest, BindingResult result
@@ -98,18 +102,18 @@ public class OffUserInfoController {
 			result.getAllErrors().forEach(message -> log.error(PARAMETER_LOG_MESSAGE, message));
 			throw new UserServiceException(UserAccountErrorCode.ERR_INVALID_REQUEST_PARAMETER);
 		}
-		UserIdentityCheckResponse userIdentityCheckResponse = userServiceImpl.userIdentityCheck(
+		UserIdentityCheckResponse userIdentityCheckResponse = offUserService.verifyPasswordResetQuestion(
 			userIdentityCheckRequest);
 		return ResponseEntity.ok(new ApiResponse<>(userIdentityCheckResponse));
 	}
 
-	@ApiOperation(value = "멤버 비밀번호 변경 API", tags = "onpremise 추가 API")
+	@ApiOperation(value = "멤버 비밀번호 변경 API")
 	@ApiImplicitParams(
 		@ApiImplicitParam(name = "serviceID", value = "요청 서버 명", paramType = "header", example = "workspace-server")
 	)
 	@PostMapping(value = "/member/password")
-	public ResponseEntity<ApiResponse<MemberUserPasswordChangeResponse>> memberUserPasswordChangeRequest(
-		@RequestBody @Valid MemberUserPasswordChangeRequest memberUserPasswordChangeRequest,
+	public ResponseEntity<ApiResponse<MemberPasswordUpdateResponse>> memberUserPasswordChangeRequest(
+		@RequestBody @Valid MemberPasswordUpdateRequest memberPasswordUpdateRequest,
 		@RequestHeader("serviceID") String serviceID, BindingResult result
 	) {
 		if (result.hasErrors() || StringUtils.isEmpty(serviceID) || !serviceID.equals("workspace-server")) {
@@ -117,8 +121,7 @@ public class OffUserInfoController {
 			result.getAllErrors().forEach(message -> log.error(PARAMETER_LOG_MESSAGE, message));
 			throw new UserServiceException(UserAccountErrorCode.ERR_INVALID_REQUEST_PARAMETER);
 		}
-		MemberUserPasswordChangeResponse responseMessage = userServiceImpl.memberUserPasswordChangeHandler(
-			memberUserPasswordChangeRequest);
+		MemberPasswordUpdateResponse responseMessage = offUserService.updateMemberPassword(memberPasswordUpdateRequest);
 		return ResponseEntity.ok(new ApiResponse<>(responseMessage));
 	}
 }

@@ -18,6 +18,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import springfox.documentation.annotations.ApiIgnore;
 
+import com.virnect.uaa.domain.user.application.InternalUserService;
 import com.virnect.uaa.domain.user.dto.response.UserInfoListResponse;
 import com.virnect.uaa.domain.user.dto.response.UserInfoResponse;
 import com.virnect.uaa.domain.user.error.UserAccountErrorCode;
@@ -30,6 +31,7 @@ import com.virnect.uaa.global.common.ApiResponse;
 @RequiredArgsConstructor
 @RequestMapping("/users")
 public class IntervalUserInformationController {
+	private final InternalUserService internalUserService;
 
 	@ApiOperation(value = "전체 사용자 현황 조회", notes = "어드민 서비스에서 관리자가 전체 사용자 현황을 조회하는 데에 사용하는 api 입니다.", tags = "admin server only")
 	@ApiImplicitParams({
@@ -41,7 +43,7 @@ public class IntervalUserInformationController {
 	public ResponseEntity<ApiResponse<UserInfoListResponse>> findAllUserInfoRequestHandler(
 		@ApiIgnore Pageable pageable
 	) {
-		UserInfoListResponse responseMessage = userServiceImpl.findAllUserInfo(pageable);
+		UserInfoListResponse responseMessage = internalUserService.findAllUserInfo(pageable);
 		return ResponseEntity.ok(new ApiResponse<>(responseMessage));
 	}
 
@@ -57,7 +59,7 @@ public class IntervalUserInformationController {
 		if (workspaceUserIdList == null || workspaceUserIdList.length <= 0) {
 			throw new UserServiceException(UserAccountErrorCode.ERR_INVALID_REQUEST_PARAMETER);
 		}
-		UserInfoListResponse responseMessage = userServiceImpl.getUsersInfoList(search, workspaceUserIdList);
+		UserInfoListResponse responseMessage = internalUserService.getUsersInfoList(search, workspaceUserIdList);
 		return ResponseEntity.ok(new ApiResponse<>(responseMessage));
 	}
 
@@ -70,7 +72,7 @@ public class IntervalUserInformationController {
 		if (userId <= 0) {
 			throw new UserServiceException(UserAccountErrorCode.ERR_INVALID_REQUEST_PARAMETER);
 		}
-		UserInfoResponse responseMessage = userServiceImpl.getUserInfoByUserId(userId);
+		UserInfoResponse responseMessage = internalUserService.getUserInfoByUserId(userId);
 		return ResponseEntity.ok(new ApiResponse<>(responseMessage));
 	}
 

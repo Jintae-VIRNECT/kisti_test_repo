@@ -18,7 +18,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @ApiModel
-public class UserInfoAccessCheckRequest {
+public class AccessPermissionCheckRequest {
 	@NotBlank
 	@ApiModelProperty(value = "계정 이메일 아이디", example = "smic1")
 	private String email;
