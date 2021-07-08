@@ -73,7 +73,8 @@
       "submit": "Edit",
       "message": {
         "success": "Successfully updated your nickname",
-        "fail": "Failed to edit your nickname please try again later"
+        "fail": "Failed to edit your nickname please try again later",
+        "caution": "Please enter 20 characters or less. You can use Korean English special characters (excluding (>), (<)) and spaces."
       }
     },
     "passwordChangeModal": {
