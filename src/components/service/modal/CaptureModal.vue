@@ -137,6 +137,7 @@ export default {
       if (this.doubleCheck()) return
 
       const result = await this.uploadImage()
+
       if (!result) return
 
       this.setView('drawing')
@@ -174,6 +175,7 @@ export default {
         return false
       }
 
+      //파일 업로드
       this.$call.sendDrawing(DRAWING.ADDED, {
         deleted: false, //false
         expired: false, //false
@@ -186,6 +188,16 @@ export default {
         expirationDate: res.expirationDate,
         width: res.width, //pdf 는 0
         height: res.height,
+      })
+
+      //파일 공유
+      this.$call.sendDrawing(DRAWING.FILE_SHARE, {
+        name: res.name,
+        objectName: res.objectName,
+        contentType: res.contentType,
+        width: res.width,
+        height: res.height,
+        index: 0,
       })
 
       return true
