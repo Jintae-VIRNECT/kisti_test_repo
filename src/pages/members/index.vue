@@ -123,6 +123,10 @@ export default {
     workspaceService.watchActiveWorkspace(this, () => {
       this.searchMembers({ page: 1 })
       this.getWorkspacePlansInfo()
+
+      // 검색 필터 초기화
+      this.memberSort.value = 'role,asc'
+      this.memberFilter.value = ['ALL']
     })
   },
   mounted() {

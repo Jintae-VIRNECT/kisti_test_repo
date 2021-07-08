@@ -105,6 +105,7 @@ export default {
   beforeMount() {
     workspaceService.watchActiveWorkspace(this, () => {
       this.searchTroubles({ page: 1 })
+      this.troubleSearch = ''
     })
   },
 }

@@ -176,11 +176,18 @@ export default {
       const defaultName = this.$t('workspace.setting.namePlaceholder', {
         nickname: this.myProfile.nickname,
       })
+      const defaultDescription = this.$t('workspace.setting.defaultDesc', {
+        nickname: this.myProfile.nickname,
+      })
       const name =
         this.form.name.trim().length === 0 ? defaultName : this.form.name.trim()
+      const description =
+        this.form.description.trim().length === 0
+          ? defaultDescription
+          : this.form.description.trim()
       const form = {
         name,
-        description: this.form.description,
+        description,
         profile: uploadFiles.length
           ? uploadFiles[uploadFiles.length - 1].raw
           : null,

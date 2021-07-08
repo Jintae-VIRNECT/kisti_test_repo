@@ -6,6 +6,7 @@
 </template>
 
 <script>
+import workspaceService from '@/services/workspace'
 export default {
   props: {
     mineLabel: String,
@@ -25,6 +26,12 @@ export default {
     change(label) {
       this.$emit('change', label)
     },
+  },
+  beforeMount() {
+    // 워크스테이션 변경시 초기화
+    workspaceService.watchActiveWorkspace(this, () => {
+      this.showMyList = this.$t('common.all')
+    })
   },
 }
 </script>
