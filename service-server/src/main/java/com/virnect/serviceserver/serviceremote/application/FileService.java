@@ -5,7 +5,9 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.nio.charset.StandardCharsets;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
@@ -14,6 +16,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+import javax.annotation.PostConstruct;
 import javax.imageio.ImageIO;
 
 import org.apache.commons.fileupload.FileItem;
@@ -33,6 +36,13 @@ import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.commons.CommonsMultipartFile;
+
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.io.Files;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -54,6 +64,7 @@ import com.virnect.data.dto.UploadResult;
 import com.virnect.data.dto.response.file.FileStorageCheckResponse;
 import com.virnect.data.dto.response.file.FileStorageInfoResponse;
 import com.virnect.data.dto.rest.WorkspaceLicensePlanInfoResponse;
+import com.virnect.data.infra.utils.JsonUtil;
 import com.virnect.serviceserver.serviceremote.dto.mapper.file.FileInfoMapper;
 import com.virnect.serviceserver.serviceremote.dto.mapper.file.FileUploadMapper;
 import com.virnect.serviceserver.serviceremote.dto.mapper.file.FileUserInfoMapper;
@@ -109,6 +120,8 @@ public class FileService {
 	private final SessionTransactionalService sessionTransactionalService;
 
 	private final MemberRepository memberRepository;
+
+	private List<String> shareFileAllowExtensionList = null;
 
 	private String generateDirPath(String... args) {
 		StringBuilder stringBuilder;
@@ -637,46 +650,6 @@ public class FileService {
 		fileRepository.save(file);
 
 		return new FileUploadResult(uploadResult.getResult(), file, uploadResult.getErrorCode());
-		/*File file = null;
-		UploadResult uploadResult = null;
-
-		try {
-			uploadResult = fileManagementService.upload(
-				fileUploadRequest.getFile(),
-				bucketPath,
-				FileType.FILE
-			);
-
-			int width;
-			int height;
-
-			if (Objects.equals(fileUploadRequest.getFile().getContentType(), "application/pdf")) {
-				width = 0;
-				height = 0;
-			} else {
-				BufferedImage image = ImageIO.read(fileUploadRequest.getFile().getInputStream());
-				width = image.getWidth();
-				height = image.getHeight();
-			}
-
-			file = File.builder()
-				.workspaceId(fileUploadRequest.getWorkspaceId())
-				.sessionId(fileUploadRequest.getSessionId())
-				.uuid(fileUploadRequest.getUserId())
-				.name(fileUploadRequest.getFile().getOriginalFilename())
-				.objectName(uploadResult.getResult())
-				.contentType(fileUploadRequest.getFile().getContentType())
-				.size(fileUploadRequest.getFile().getSize())
-				.fileType(FileType.SHARE)
-				.width(width)
-				.height(height)
-				.build();
-			fileRepository.save(file);
-
-		} catch (IOException | NoSuchAlgorithmException | InvalidKeyException exception) {
-			log.info("{}", exception.getMessage());
-			new ApiResponse<>(ErrorCode.ERR_FILE_UPLOAD_EXCEPTION);
-		}*/
 	}
 
 	@Transactional
@@ -719,6 +692,11 @@ public class FileService {
 	public ApiResponse<ShareFileUploadResponse> uploadShareFile(
 		FileUploadRequest fileUploadRequest
 	) throws IOException, NoSuchAlgorithmException, InvalidKeyException {
+
+		// Check Extension
+		if (!checkShareFileExtension(fileUploadRequest.getFile())) {
+			return new ApiResponse<>(ErrorCode.ERR_FILE_UNSUPPORTED_EXTENSION);
+		}
 
 		// Storage check
 		FileStorageCheckResponse storageCheckResult = checkStorageCapacity(fileUploadRequest.getWorkspaceId());
@@ -1051,6 +1029,41 @@ public class FileService {
 			.errorCode(errorCode)
 			.usedStoragePer((int)usedStoragePer)
 			.build();
+	}
+
+	@PostConstruct
+	private void init() throws IOException {
+
+		shareFileAllowExtensionList = new ArrayList<>();
+		InputStream inputStream = getClass().getClassLoader().getResourceAsStream("policy/shareFileExtension.json");
+
+		JsonUtil jsonUtil = new JsonUtil();
+		JsonObject jsonObject = jsonUtil.fromInputStreamToJsonObject(inputStream);
+
+		ObjectMapper objectMapper = new ObjectMapper();
+		JsonObject resourceObject = jsonObject.getAsJsonObject("resource");
+		try {
+			List<String> docPDFList = objectMapper.readValue(resourceObject.getAsJsonArray("document_pdf").toString(), new TypeReference<List<String>>(){});
+			shareFileAllowExtensionList.addAll(docPDFList);
+
+			List<String> imageList = objectMapper.readValue(resourceObject.getAsJsonArray("image").toString(), new TypeReference<List<String>>(){});
+			shareFileAllowExtensionList.addAll(imageList);
+
+			inputStream.close();
+
+		} catch (Exception e) {
+			log.info("shareFileAllowExtensionList init fail");
+		}
+	}
+
+	private boolean checkShareFileExtension(MultipartFile multipartFile) {
+		String fileExtension = Files.getFileExtension(Objects.requireNonNull(multipartFile.getOriginalFilename())).toLowerCase();
+		for (String extension : shareFileAllowExtensionList) {
+			if (fileExtension.equals(extension)) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 }

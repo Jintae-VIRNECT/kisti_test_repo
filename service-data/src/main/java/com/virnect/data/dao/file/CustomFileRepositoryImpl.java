@@ -95,7 +95,8 @@ public class CustomFileRepositoryImpl extends QuerydslRepositorySupport implemen
 				file.sessionId.eq(sessionId),
 				file.deleted.eq(deleted),
 				file.objectName.contains("thumbnail").not(),
-				file.fileType.ne(FileType.RECORD)
+				file.fileType.ne(FileType.RECORD),
+				file.fileType.ne(FileType.PROFILE)
 			).distinct();
 		long totalCount = queryResult.fetchCount();
 		List<File> results;
