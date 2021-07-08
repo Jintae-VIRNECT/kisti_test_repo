@@ -368,9 +368,7 @@ export default {
     },
 
     //협업보드 공유 종료 메시지 수신 시
-    receiveEndDrawing(receive) {
-      const data = JSON.parse(receive.data)
-
+    receiveEndDrawing({ data }) {
       if (data.type === DRAWING.END_DRAWING) {
         this.toastDefault(this.$t('service.toast_drawing_end'))
         this.showImage({}) //공유중 파일 초기화

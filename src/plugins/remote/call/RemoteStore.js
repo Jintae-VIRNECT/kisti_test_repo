@@ -137,6 +137,7 @@ const getDefaultState = () => {
     //화면 공유시 카메라 스트림을 보관하기 위함
     myTempStream: null, //MediaStream
     screenSharing: false,
+    fileShareEventQueue: [], //이벤트가 누락되는 것을 방지하기 위해 이벤트를 저장하는 LIST, 큐처럼 첫번째 요소부터 순차적으로 item을 사용
   }
 }
 
@@ -354,6 +355,9 @@ const mutations = {
   setScreenSharing(state, payload) {
     state.screenSharing = payload
   },
+  addFileShareEvent(state, eventData) {
+    state.fileShareEventQueue.push(eventData)
+  },
 }
 
 const actions = {
@@ -398,6 +402,7 @@ const getters = {
   initing: state => state.initing,
   myTempStream: state => state.myTempStream,
   screenSharing: state => state.screenSharing,
+  fileShareEventQueue: state => state.fileShareEventQueue,
 }
 
 export default {

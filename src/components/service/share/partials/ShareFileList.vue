@@ -42,6 +42,7 @@ import { drawingUpload, drawingList, drawingDownload } from 'api/http/drawing'
 import { SIGNAL, DRAWING } from 'configs/remote.config'
 import { isOverflowY } from 'utils/element.js'
 import { resetOrientation } from 'utils/file'
+import { setQueueAct } from 'plugins/remote/call/RemoteSessionEventListener'
 
 const maxFileSize = 1024 * 1024 * 20
 export default {
@@ -58,9 +59,7 @@ export default {
     }
   },
   computed: {
-    ...mapGetters({
-      roomInfo: 'roomInfo',
-    }),
+    ...mapGetters(['roomInfo', 'fileShareEventQueue']),
   },
   watch: {
     sharingList(val, oldVal) {
@@ -74,6 +73,21 @@ export default {
           if (isNotOverflow) this.$refs['upload-list-scroll'].scrollToY(0)
         })
       }
+    },
+    //해당 component 생성 전에 발생했던 이벤트를 vuex에 저장해두고 처리한다.
+    fileShareEventQueue: {
+      immediate: true,
+      handler(newVal) {
+        if (newVal.length) {
+          //해당 component에 created에서 이벤트버스 리스너가 활성화된 후 이벤트를 발생 시킨다
+          this.$nextTick(() => {
+            this.$eventBus.$emit(
+              SIGNAL.DRAWING_FROM_VUEX,
+              this.fileShareEventQueue.shift(), //첫번째 요소부터 실행 시키고, 제거
+            )
+          })
+        } else setQueueAct(false) //큐 안에 데이터를 모두 처리한 후 큐는 비활성화 한다. (정상적으로 시그널데이터를 바로 이벤트로 발생시키도록)
+      },
     },
   },
   methods: {
@@ -195,9 +209,7 @@ export default {
       this.$refs['sharing_' + data.objectName][0].addPdfHistory(data.index + 1)
     },
 
-    async fileShare(receive) {
-      const data = JSON.parse(receive.data)
-
+    async fileShare({ data }) {
       if (data.type === DRAWING.FILE_SHARE) {
         if (data.contentType === 'application/pdf') {
           this.loadPdf(data)
@@ -229,12 +241,18 @@ export default {
   /* Lifecycles */
   created() {
     this.$eventBus.$on('addFile', this.addFileClick)
-    this.$eventBus.$on(SIGNAL.DRAWING, this.fileShare)
+    this.$eventBus.$on(SIGNAL.DRAWING_FROM_VUEX, this.fileShare) //vuex 큐에 임시 저장해두었다가 발생시키는 이벤트 리스너
+    this.$eventBus.$on(SIGNAL.DRAWING, this.fileShare) //누락 이벤트가 모두 처리된 후 정상적으로 이벤트 직접 수신
     this.getFileList()
   },
   beforeDestroy() {
     this.$eventBus.$off('addFile', this.addFileClick)
+    this.$eventBus.$off(SIGNAL.DRAWING_FROM_VUEX, this.fileShare)
     this.$eventBus.$off(SIGNAL.DRAWING, this.fileShare)
+  },
+  destroyed() {
+    //해당 component가 제거되면 다시 queue를 활성화 시키도록한다.
+    setQueueAct(true)
   },
 }
 </script>

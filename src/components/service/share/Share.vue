@@ -108,9 +108,7 @@ export default {
       this.list = val
       // this.$eventBus.$emit('scroll:reset')
     },
-    signalDrawing(receive) {
-      const data = JSON.parse(receive.data)
-
+    signalDrawing({ data }) {
       if (data.type === DRAWING.ADDED) {
         this.$refs['shareFileList'].getFileList()
         this.changeTab('file')
