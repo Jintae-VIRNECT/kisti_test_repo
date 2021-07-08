@@ -1035,7 +1035,7 @@ public class FileService {
 	private void init() throws IOException {
 
 		shareFileAllowExtensionList = new ArrayList<>();
-		InputStream inputStream = getClass().getClassLoader().getResourceAsStream("policy/storagePolicy.json");
+		InputStream inputStream = getClass().getClassLoader().getResourceAsStream("policy/shareFileExtension.json");
 
 		JsonUtil jsonUtil = new JsonUtil();
 		JsonObject jsonObject = jsonUtil.fromInputStreamToJsonObject(inputStream);

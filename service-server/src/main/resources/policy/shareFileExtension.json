@@ -1,0 +1,21 @@
+{
+  "resource": {
+    "document_pdf": [
+      "pdf"
+    ],
+    "image": [
+      "gif",
+      "jpg",
+      "jpeg",
+      "png",
+      "tif",
+      "tiff",
+      "bmp",
+      "raw",
+      "pic",
+      "pict",
+      "wmf",
+      "emf"
+    ]
+  }
+}
