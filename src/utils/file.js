@@ -72,7 +72,11 @@ export const downloadByURL = async (file, usingNewTab = false) => {
   // a.click()
   // window.URL.revokeObjectURL(file.url)
   if (usingNewTab) {
-    window.open(proxyUrl(file.url))
+    const result = window.open(proxyUrl(file.url))
+    //@TODO result가 null이면 새로운 창을 호출하지 못한 상황임. 안내 메시지 필요함.
+    if (result === null) {
+      throw 'popup blocked'
+    }
   } else {
     let filename = file.name
     let xhr = new XMLHttpRequest()
