@@ -59,6 +59,9 @@ export default {
         height: 0,
       },
       zoom: false,
+
+      resizeObserveIntervalId: null,
+      parentOffsetWidth: 0,
     }
   },
   computed: {
@@ -270,10 +273,8 @@ export default {
       }
     },
     windowResize() {
-      setTimeout(() => {
-        this.optimizeCanvasSize()
-        this.keepPositionInBounds(this.canvas)
-      }, 1000)
+      this.optimizeCanvasSize()
+      this.keepPositionInBounds(this.canvas)
     },
 
     //드로잉 브러시 lineWidth가 변경될 때마다 실제 브러쉬 크기를 캔버스 사이즈에 비례하여 업데이트하는 함수
@@ -286,17 +287,38 @@ export default {
         if (this.cursor) this.cursor.setRadius(width / 2)
       }
     },
+
+    drawingResizeObserve() {
+      //parentNode의 크기의 변동이 감지되지 않아, polling방식으로 크기 변동을 체크하여 canvas 크기를 optimize한다
+
+      if (this.resizeObserveIntervalId) this.stopResizeObserveInterval()
+      //변경 된 경우
+      if (this.$el.parentNode.offsetWidth !== this.parentOffsetWidth)
+        this.windowResize()
+      this.parentOffsetWidth = this.$el.parentNode.offsetWidth
+      this.resizeObserveIntervalId = requestAnimationFrame(
+        this.drawingResizeObserve,
+      )
+    },
+
+    stopResizeObserveInterval() {
+      if (this.resizeObserveIntervalId) {
+        cancelAnimationFrame(this.resizeObserveIntervalId)
+        this.resizeObserveIntervalId = null
+      }
+    },
   },
   /* Lifecycles */
   beforeDestroy() {
-    window.removeEventListener('resize', this.windowResize)
+    //window.removeEventListener('resize', this.windowResize)
+    this.stopResizeObserveInterval()
   },
   beforeCreate() {
     this.$emit('loadingStart')
   },
-  //참고 : 해당 component는 협업보드 진입 전에 이미 생성된다
   created() {
-    window.addEventListener('resize', this.windowResize)
+    this.$nextTick(() => this.drawingResizeObserve())
+    //window.addEventListener('resize', this.windowResize)
     if (this.file && this.file.id) {
       setTimeout(() => {
         this.initCanvas()
