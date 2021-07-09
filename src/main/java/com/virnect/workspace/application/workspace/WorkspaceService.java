@@ -199,6 +199,11 @@ public abstract class WorkspaceService {
      */
     UserInfoRestResponse getUserInfo(String userId) {
         ApiResponse<UserInfoRestResponse> userInfoResponse = userRestService.getUserInfoByUserId(userId);
+        if (userInfoResponse.getCode() != 200 || userInfoResponse.getData() == null) {
+            log.error("[GET USER INFO] request userId : {}, response code : {}, response message : {}", userId, userInfoResponse.getCode(), userInfoResponse.getMessage());
+            //throw new WorkspaceException(ErrorCode.ERR_UNEXPECTED_SERVER_ERROR);
+            return null;
+        }
         return userInfoResponse.getData();
     }
 
@@ -253,9 +258,11 @@ public abstract class WorkspaceService {
             workspaceUserList.forEach(workspaceUser -> {
                 applicationEventPublisher.publishEvent(new UserWorkspacesDeleteEvent(workspaceUser.getUserId()));//캐싱 삭제
                 UserInfoRestResponse userInfoRestResponse = getUserInfo(workspaceUser.getUserId());
-                receiverEmailList.add(userInfoRestResponse.getEmail());
-                if (userInfoRestResponse.getUuid().equals(workspace.getUserId())) {
-                    context.setVariable("workspaceMasterNickName", userInfoRestResponse.getNickname());
+                if (userInfoRestResponse != null) {
+                    receiverEmailList.add(userInfoRestResponse.getEmail());
+                    if (userInfoRestResponse.getUuid().equals(workspace.getUserId())) {
+                        context.setVariable("workspaceMasterNickName", userInfoRestResponse.getNickname());
+                    }
                 }
             });
 
@@ -329,43 +336,38 @@ public abstract class WorkspaceService {
      * @return - 삭제 처리 결과
      */
     @Transactional
-    public WorkspaceSecessionResponse deleteAllWorkspaceInfo(String workspaceUUID) {
-        Optional<Workspace> workspaceInfo = workspaceRepository.findByUuid(workspaceUUID);
+    public WorkspaceSecessionResponse deleteAllWorkspaceInfo(String userUUID) {
+        List<WorkspaceUserPermission> workspaceUserPermissionList = workspaceUserPermissionRepository.findByWorkspaceUser_UserId(userUUID);
+        workspaceUserPermissionList.forEach(workspaceUserPermission -> {
+            if (workspaceUserPermission.getWorkspaceRole().getRole().equals("MASTER")) {
+                Workspace workspace = workspaceUserPermission.getWorkspaceUser().getWorkspace();
 
-        // workspace 정보가 없는 경우
-        if (!workspaceInfo.isPresent()) {
-            return new WorkspaceSecessionResponse(workspaceUUID, true, LocalDateTime.now());
-        }
+                List<WorkspaceUser> workspaceUserList = workspace.getWorkspaceUserList();
 
-        Workspace workspace = workspaceInfo.get();
+                // workspace user permission 삭제
+                workspaceUserPermissionRepository.deleteAllWorkspaceUserPermissionByWorkspaceUser(workspaceUserList);
 
-        List<WorkspaceUser> workspaceUserList = workspace.getWorkspaceUserList();
+                // workspace user 삭제
+                workspaceUserRepository.deleteAllWorkspaceUserByWorkspace(workspace);
 
-        // workspace user permission 삭제
-        workspaceUserPermissionRepository.deleteAllWorkspaceUserPermissionByWorkspaceUser(workspaceUserList);
+                // workspace history 삭제
+                historyRepository.deleteAllHistoryInfoByWorkspace(workspace);
 
-        // workspace user 삭제
-        workspaceUserRepository.deleteAllWorkspaceUserByWorkspace(workspace);
+                // workspace profile 삭제 (기본 이미지인 경우 제외)
+                fileUploadService.delete(workspace.getProfile());
 
-        // workspace history 삭제
-        historyRepository.deleteAllHistoryInfoByWorkspace(workspace);
+                // workspace 삭제
+                workspaceRepository.delete(workspace);
+            } else {
+                WorkspaceUser workspaceUser = workspaceUserPermission.getWorkspaceUser();
 
-        // workspace profile 삭제 (기본 이미지인 경우 제외)
-       /* if (!workspace.getProfile().equals("default")) {
-            fileUploadService.delete(workspace.getProfile());
-        }*/
-        //file service로 default 이미지 체크 옮김
-        fileUploadService.delete(workspace.getProfile());
-
-        // workspace 삭제
-        workspaceRepository.delete(workspace);
-
-        // 타 워크스페이스 소속 삭제
-        List<WorkspaceUser> workspaceUserRepositoryByUserId = workspaceUserRepository.findByUserId(workspace.getUserId());
-        workspaceUserPermissionRepository.deleteAllWorkspaceUserPermissionByWorkspaceUser(workspaceUserRepositoryByUserId);
-        workspaceUserRepositoryByUserId.forEach(workspaceUserRepository::delete);
-
-        return new WorkspaceSecessionResponse(workspaceUUID, true, LocalDateTime.now());
+                // workspace user permission 삭제
+                workspaceUserPermissionRepository.delete(workspaceUserPermission);
+                // workspace user 삭제
+                workspaceUserRepository.delete(workspaceUser);
+            }
+        });
+        return new WorkspaceSecessionResponse(userUUID, true, LocalDateTime.now());
     }
 
     @Profile("onpremise")
@@ -425,7 +427,8 @@ public abstract class WorkspaceService {
      * @param workspaceSettingUpdateRequest - 설정 변경 요청 정보
      * @return - 설정 변경 요청 결과
      */
-    public WorkspaceSettingUpdateResponse updateWorkspaceSetting(String workspaceId, String userId, WorkspaceSettingUpdateRequest workspaceSettingUpdateRequest) {
+    public WorkspaceSettingUpdateResponse updateWorkspaceSetting(String workspaceId, String
+            userId, WorkspaceSettingUpdateRequest workspaceSettingUpdateRequest) {
         log.info("[WORKSPACE SETTING UPDATE] request workspace uuid : [{}], user uuid : [{}] update info : {}", workspaceId, userId, workspaceSettingUpdateRequest);
 
         //유효성 검증

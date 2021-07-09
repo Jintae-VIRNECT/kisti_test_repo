@@ -59,6 +59,7 @@ public class WorkspaceController {
             @ModelAttribute @Valid WorkspaceCreateRequest workspaceCreateRequest, BindingResult bindingResult
     ) {
         if (bindingResult.hasErrors()) {
+            bindingResult.getAllErrors().forEach(objectError -> log.error("[CREATE WORKSPACE INFO] Parameter Error Message : [{}]", objectError));
             throw new WorkspaceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
         WorkspaceInfoDTO response = workspaceService.createWorkspace(workspaceCreateRequest);
@@ -72,7 +73,7 @@ public class WorkspaceController {
     @ApiImplicitParams({
             @ApiImplicitParam(name = "workspaceId", value = "워크스페이스 uuid", dataType = "string", paramType = "form", defaultValue = "4d6eab0860969a50acbfa4599fbb5ae8", required = true),
             @ApiImplicitParam(name = "userId", value = "마스터 유저 uuid", dataType = "string", paramType = "form", defaultValue = "498b1839dc29ed7bb2ee90ad6985c608", required = true),
-            @ApiImplicitParam(name = "name", value = "워크스페이스 이름", dataType = "string", paramType = "form", defaultValue = "USER's Workspace", required = true),
+            @ApiImplicitParam(name = "name", value = "워크스페이스 이름", dataType = "string", paramType = "form", defaultValue = "USER's Workspace", required = false),
             @ApiImplicitParam(name = "profile", value = "워크스페이스 프로필", dataType = "__file", paramType = "form"),
             @ApiImplicitParam(name = "description", value = "워크스페이스 설명", dataType = "string", paramType = "form", defaultValue = "워크스페이스 입니다.", required = true)
     })
@@ -82,6 +83,7 @@ public class WorkspaceController {
             @Validated @ApiIgnore Locale locale
     ) {
         if (bindingResult.hasErrors()) {
+            bindingResult.getAllErrors().forEach(objectError -> log.error("[UPDATE WORKSPACE INFO] Parameter Error Message : [{}]", objectError));
             throw new WorkspaceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
         WorkspaceInfoDTO response = workspaceService.setWorkspace(workspaceUpdateRequest, locale);
@@ -103,6 +105,7 @@ public class WorkspaceController {
             @RequestParam("userId") String userId, @ApiIgnore PageRequest pageRequest
     ) {
         if (!StringUtils.hasText(userId)) {
+            log.error("[GET MY WORKSPACE INFO] Parameter Error Message : userId=[{}]", userId);
             throw new WorkspaceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
         WorkspaceInfoListResponse workspaceInfoListResponse = workspaceService.getUserWorkspaces(userId, pageRequest);
@@ -118,6 +121,7 @@ public class WorkspaceController {
             @PathVariable("workspaceId") String workspaceId
     ) {
         if (!StringUtils.hasText(workspaceId)) {
+            log.error("[GET DETAIL WORKSPACE INFO] Parameter Error Message : workspaceId=[{}]", workspaceId);
             throw new WorkspaceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
         WorkspaceInfoResponse response = workspaceService.getWorkspaceDetailInfo(workspaceId);
@@ -136,6 +140,7 @@ public class WorkspaceController {
             @PathVariable("workspaceId") String workspaceId
     ) {
         if (!StringUtils.hasText(workspaceId)) {
+            log.error("[GET WORKSPACE LICENSE INFO] Parameter Error Message : workspaceId=[{}]", workspaceId);
             throw new WorkspaceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
         WorkspaceLicenseInfoResponse response = workspaceService.getWorkspaceLicenseInfo(workspaceId);
@@ -150,7 +155,8 @@ public class WorkspaceController {
     public ResponseEntity<ApiResponse<WorkspaceInfoDTO>> getWorkspaceInfo(
             @PathVariable("workspaceId") String workspaceId
     ) {
-        if (StringUtils.isEmpty(workspaceId)) {
+        if (!StringUtils.hasText(workspaceId)) {
+            log.error("[GET WORKSPACE INFO] Parameter Error Message : workspaceId=[{}]", workspaceId);
             throw new WorkspaceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
         WorkspaceInfoDTO response = workspaceService.getWorkspaceInfo(workspaceId);
@@ -159,18 +165,18 @@ public class WorkspaceController {
 
     @ApiOperation(value = "워크스페이스 관련 정보 삭제 - 회원탈퇴", tags = "user server only")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "workspaceUUID", value = "삭제할 워크스페이스의 식별자", paramType = "path", example = "4d6eab0860969a50acbfa4599fbb5ae8"),
+            @ApiImplicitParam(name = "userUUID", value = "유저의 식별자", paramType = "path", example = "LtvGcPoq0WUFv"),
             @ApiImplicitParam(name = "serviceID", value = "요청 서버 명", paramType = "header", example = "user-server")
     })
-    @DeleteMapping("/secession/{workspaceUUID}")
+    @DeleteMapping("/secession/{userUUID}")
     public ResponseEntity<ApiResponse<WorkspaceSecessionResponse>> workspaceSecessionRequest(
-            @PathVariable("workspaceUUID") String workspaceUUID, @RequestHeader("serviceID") String requestServiceID
+            @PathVariable("userUUID") String userUUID, @RequestHeader("serviceID") String requestServiceID
     ) {
-        if (!StringUtils.hasText(workspaceUUID) || !StringUtils.hasText(requestServiceID) || !requestServiceID.equals(
-                "user-server")) {
+        if (!StringUtils.hasText(userUUID) || !StringUtils.hasText(requestServiceID) || !requestServiceID.equals("user-server")) {
+            log.error("[DELETE WORKSPACE INFO] Parameter Error Message : userUUID=[{}], requestServiceID=[{}]", userUUID, requestServiceID);
             throw new WorkspaceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
-        WorkspaceSecessionResponse responseMessage = workspaceService.deleteAllWorkspaceInfo(workspaceUUID);
+        WorkspaceSecessionResponse responseMessage = workspaceService.deleteAllWorkspaceInfo(userUUID);
         return ResponseEntity.ok(new ApiResponse<>(responseMessage));
     }
 
@@ -185,9 +191,8 @@ public class WorkspaceController {
             @RequestBody @Valid WorkspaceTitleUpdateRequest workspaceTitleUpdateRequest, BindingResult bindingResult
     ) {
         if (!StringUtils.hasText(workspaceId) || bindingResult.hasErrors()) {
-            bindingResult.getAllErrors()
-                    .forEach(
-                            objectError -> log.error("[UPDATE WORKSPACE TITLE] Parameter Error Message : [{}]", objectError));
+            log.error("[UPDATE WORKSPACE TITLE] Parameter Error Message : workspaceId=[{}]", workspaceId);
+            bindingResult.getAllErrors().forEach(objectError -> log.error("[UPDATE WORKSPACE TITLE] Parameter Error Message : [{}]", objectError));
             throw new WorkspaceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
         WorkspaceTitleUpdateResponse workspaceTitleUpdateResponse = workspaceService.updateWorkspaceTitle(
@@ -211,6 +216,7 @@ public class WorkspaceController {
             @ModelAttribute @Valid WorkspaceLogoUpdateRequest workspaceLogoUpdateRequest, BindingResult bindingResult
     ) {
         if (!StringUtils.hasText(workspaceId) || bindingResult.hasErrors()) {
+            log.error("[UPDATE WORKSPACE LOGO] Parameter Error Message : workspaceId=[{}]", workspaceId);
             bindingResult.getAllErrors()
                     .forEach(
                             objectError -> log.error("[UPDATE WORKSPACE LOGO] Parameter Error Message : [{}]", objectError));
@@ -235,6 +241,7 @@ public class WorkspaceController {
             @ModelAttribute WorkspaceFaviconUpdateRequest workspaceFaviconUpdateRequest
     ) {
         if (!StringUtils.hasText(workspaceId) || !StringUtils.hasText(workspaceFaviconUpdateRequest.getUserId())) {
+            log.error("[UPDATE WORKSPACE FAVICON] Parameter Error Message : workspaceId=[{}], workspaceFaviconUpdateRequest.getUserId()=[{}] ", workspaceId, workspaceFaviconUpdateRequest.getUserId());
             throw new WorkspaceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
         WorkspaceFaviconUpdateResponse workspaceFaviconUpdateResponse = workspaceService.updateWorkspaceFavicon(
@@ -259,6 +266,7 @@ public class WorkspaceController {
     @GetMapping("/{workspaceId}/settings")
     public ResponseEntity<ApiResponse<WorkspaceSettingInfoListResponse>> findWorkspaceSettingList(@PathVariable("workspaceId") String workspaceId, @RequestParam("product") Product product) {
         if (!StringUtils.hasText(workspaceId) || product == null) {
+            log.error("[GET WORKSPACE SETTINGS] Parameter Error Message : workspaceId=[{}], product=[{}]", workspaceId, product);
             throw new WorkspaceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
         WorkspaceSettingInfoListResponse responseMessage = workspaceService.getWorkspaceSettingList(workspaceId, product);
@@ -279,7 +287,7 @@ public class WorkspaceController {
         if (bindingResult.hasErrors() || !StringUtils.hasText(workspaceId) || !StringUtils.hasText(userId)) {
             bindingResult.getAllErrors()
                     .forEach(
-                            objectError -> log.error("Parameter Error Message : [{}]", objectError));
+                            objectError -> log.error("[CREATE WORKSPACE SETTING] Parameter Error Message : [{}]", objectError));
             throw new WorkspaceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
         WorkspaceSettingUpdateResponse responseMessage = workspaceService.updateWorkspaceSetting(workspaceId, userId, workspaceSettingUpdateRequest);
@@ -299,7 +307,7 @@ public class WorkspaceController {
         if (bindingResult.hasErrors()) {
             bindingResult.getAllErrors()
                     .forEach(
-                            objectError -> log.error("Parameter Error Message : [{}]", objectError));
+                            objectError -> log.error("[UPDATE SETTING] Parameter Error Message : [{}]", objectError));
             throw new WorkspaceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
         SettingUpdateResponse responseMessage = workspaceService.updateSetting(settingUpdateRequest);

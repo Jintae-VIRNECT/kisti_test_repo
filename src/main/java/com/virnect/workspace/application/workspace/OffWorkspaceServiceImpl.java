@@ -85,7 +85,7 @@ public class OffWorkspaceServiceImpl extends WorkspaceService {
         //User Service 에서 유저 조회
         UserInfoRestResponse userInfoRestResponse = getUserInfo(workspaceCreateRequest.getUserId());
         //서브유저(유저가 만들어낸 유저)는 워크스페이스를 가질 수 없다.
-        if (userInfoRestResponse.getUserType().equals("SUB_USER")) {
+        if (userInfoRestResponse == null || userInfoRestResponse.getUserType().equals("SUB_USER")) {
             throw new WorkspaceException(ErrorCode.ERR_UNEXPECTED_SERVER_ERROR);
         }
 
