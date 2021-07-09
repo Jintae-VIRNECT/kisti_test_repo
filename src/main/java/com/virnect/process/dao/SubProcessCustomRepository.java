@@ -7,6 +7,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 import com.virnect.process.domain.Conditions;
+import com.virnect.process.domain.Process;
 import com.virnect.process.domain.SubProcess;
 import com.virnect.process.domain.YesOrNo;
 
@@ -33,4 +34,6 @@ public interface SubProcessCustomRepository {
 	Page<SubProcess> getMyWorksInProcess(
 		String workspaceUUID, String workerUUID, Long processId, String search, Pageable pageable, String targetType
 	);
+
+	long deleteAllSubProcessByProcessList(List<Process> processList);
 }

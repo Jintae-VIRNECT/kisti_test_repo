@@ -1,10 +1,11 @@
 package com.virnect.process.dao;
 
-import com.virnect.process.domain.Item;
-import com.virnect.process.domain.Report;
+import java.util.List;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import java.util.List;
+import com.virnect.process.domain.Item;
+import com.virnect.process.domain.Report;
 
 /**
  * Project: PF-ProcessManagement
@@ -13,7 +14,10 @@ import java.util.List;
  * EMAIL: practice1356@gmail.com
  * DESCRIPTION:
  */
-public interface ItemRepository extends JpaRepository<Item, Long> {
-    List<Item> findByReport(Report report);
-    void deleteAllByReport(Report report);
+public interface ItemRepository extends JpaRepository<Item, Long>, ItemCustomRepository {
+	List<Item> findByReportIn(List<Report> reportList);
+
+	List<Item> findByReport(Report report);
+
+	void deleteAllByReport(Report report);
 }

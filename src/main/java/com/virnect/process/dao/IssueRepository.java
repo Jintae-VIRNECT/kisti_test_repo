@@ -10,6 +10,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import com.virnect.process.domain.Issue;
+import com.virnect.process.domain.Job;
 
 /**
  * Project: PF-ProcessManagement
@@ -90,5 +91,9 @@ public interface IssueRepository extends JpaRepository<Issue, Long>, IssueCustom
 
 	List<Issue> findByWorkerUUIDIsInAndJobIsNull(List<String> workerUUIDList);
 
-	List<Issue> findAllByWorkerUUID(String workerUUID);
+	List<Issue> findAllByWorkerUUIDAndJobIsNull(String workerUUID);
+
+	List<Issue> findByJob(Job job);
+
+	List<Issue> findByJobIn(List<Job> job);
 }

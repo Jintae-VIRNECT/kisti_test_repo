@@ -34,15 +34,15 @@ import lombok.extern.slf4j.Slf4j;
 import com.virnect.process.application.content.ContentRestService;
 import com.virnect.process.application.user.UserRestService;
 import com.virnect.process.application.workspace.WorkspaceRestService;
-import com.virnect.process.dao.DailyTotalRepository;
-import com.virnect.process.dao.DailyTotalWorkspaceRepository;
 import com.virnect.process.dao.IssueRepository;
 import com.virnect.process.dao.ItemRepository;
 import com.virnect.process.dao.JobRepository;
 import com.virnect.process.dao.ReportRepository;
 import com.virnect.process.dao.SubProcessRepository;
-import com.virnect.process.dao.TargetRepository;
+import com.virnect.process.dao.dailytotal.DailyTotalRepository;
+import com.virnect.process.dao.dailytotalworkspace.DailyTotalWorkspaceRepository;
 import com.virnect.process.dao.process.ProcessRepository;
+import com.virnect.process.dao.target.TargetRepository;
 import com.virnect.process.domain.Conditions;
 import com.virnect.process.domain.DailyTotalWorkspace;
 import com.virnect.process.domain.Issue;
@@ -182,7 +182,7 @@ public class TaskService {
 
 		// 워크스페이스 설정 검증 - TASK_REGISTER_ROLE_SETTING
 		//todo 등록하는 유저의 식별자를 필수 파라미터로 추가해야 함.
-		
+
 		log.info("CONTENT_METADATA: [{}]", contentApiResponse.getData().getContents().toString());
 		log.debug("----------content uuid : {}", contentApiResponse.getData().getContents().getUuid());
 
@@ -1957,54 +1957,78 @@ public class TaskService {
 			.build();
 	}
 
+	@Transactional
 	public TaskSecessionResponse deleteAllTaskInfo(String workspaceUUID, String userUUID) {
-		//1. daily_total, daily_total_workspace 삭제
-		List<DailyTotalWorkspace> dailyTotalWorkspaceList = this.dailyTotalWorkspaceRepository.findAllByWorkspaceUUID(
+		log.info("[DELETE ALL TASK] request workspace = [{}], request user = [{}]", workspaceUUID, userUUID);
+		List<DailyTotalWorkspace> dailyTotalWorkspaceList = dailyTotalWorkspaceRepository.findAllByWorkspaceUUID(
 			workspaceUUID);
-		dailyTotalWorkspaceList.forEach(dailyTotalWorkspace -> {
-			dailyTotalWorkspaceRepository.delete(dailyTotalWorkspace);
-			dailyTotalRepository.delete(dailyTotalWorkspace.getDailyTotal());
-		});
 
 		List<Process> processList = processRepository.findByWorkspaceUUID(workspaceUUID);
-		processList.forEach(process -> {
-			process.getSubProcessList().forEach(subProcess -> {
-				subProcess.getJobList().forEach(job -> {
-					job.getReportList().forEach(report -> {
-						report.getItemList().forEach(item -> {
-							//2. item 삭제
-							fileUploadService.delete(item.getPath());
-							itemRepository.delete(item);
-						});
-						//3. report 삭제
-						reportRepository.delete(report);
-					});
-					job.getIssueList().forEach(issue -> {
-						//4. issue 삭제
-						fileUploadService.delete(issue.getPath());
-						issueRepository.delete(issue);
-						List<Issue> issueList = issueRepository.findAllByWorkerUUID(userUUID);
-						issueList.forEach(issueRepository::delete);
-					});
-					//5. job 삭제
-					jobRepository.delete(job);
-				});
-				//6. sub process 삭제
-				subProcessRepository.delete(subProcess);
-			});
+		if (processList.isEmpty()) {
+			return new TaskSecessionResponse(workspaceUUID, true, LocalDateTime.now());
+		}
+		List<SubProcess> subProcessList = subProcessRepository.findByProcessIn(processList);
+		List<Job> jobList = jobRepository.findBySubProcessIn(subProcessList);
+		List<Report> reportList = reportRepository.findByJobIn(jobList);
+		List<Item> itemList = itemRepository.findByReportIn(reportList);
+		List<Issue> issueList = issueRepository.findByJobIn(jobList);
+		List<Issue> troubleMemoList = issueRepository.findAllByWorkerUUIDAndJobIsNull(userUUID);
+		List<Target> targetList = targetRepository.findByProcessIn(processList);
 
-			process.getTargetList().forEach(target -> {
-				//7. target 삭제
-				if (!FilenameUtils.getBaseName(target.getImgPath()).equals("virnect_target")) {
-					fileUploadService.delete(target.getImgPath());
-				}
-				targetRepository.delete(target);
-			});
-
-			//8. process 삭제
-			processRepository.delete(process);
-
+		// 이미지 삭제 -> item, issue, troubleMemo, target
+		itemList.forEach(item -> {
+			if (StringUtils.hasText(item.getPath())) {
+				fileUploadService.delete(item.getPath());
+			}
 		});
+		issueList.forEach(issue -> {
+			if (StringUtils.hasText(issue.getPath())) {
+				fileUploadService.delete(issue.getPath());
+			}
+		});
+		troubleMemoList.forEach(issue -> {
+			if (StringUtils.hasText(issue.getPath())) {
+				fileUploadService.delete(issue.getPath());
+			}
+		});
+		targetList.forEach(target -> {
+			if (StringUtils.hasText(target.getImgPath()) && !FilenameUtils.getBaseName(target.getImgPath())
+				.equals("virnect_target")) {
+				fileUploadService.delete(target.getImgPath());
+			}
+		});
+
+		// daily_total_workspace 삭제
+		dailyTotalWorkspaceRepository.deleteAllDailyTotalWorkspaceByWorkspaceUUID(workspaceUUID);
+
+		// daily_total 삭제
+		dailyTotalWorkspaceList.forEach(
+			dailyTotalWorkspace -> dailyTotalRepository.delete(dailyTotalWorkspace.getDailyTotal()));
+
+		// item 삭제
+		itemRepository.deleteAllItemByReportList(reportList);
+
+		// report 삭제
+		reportRepository.deleteAllReportByJobList(jobList);
+
+		// issue 삭제
+		issueRepository.deleteAllIssueByJobList(jobList);
+
+		// 트러블 메모 삭제
+		issueRepository.deleteAllIssueByUserUUID(userUUID);
+
+		// job 삭제
+		jobRepository.deleteAllJobBySubProcessList(subProcessList);
+
+		// sub process 삭제
+		subProcessRepository.deleteAllSubProcessByProcessList(processList);
+
+		// target 삭제
+		targetRepository.deleteAllTargetByProcessList(processList);
+
+		// process 삭제
+		processRepository.deleteByWorkspaceUUID(workspaceUUID);
+
 		return new TaskSecessionResponse(workspaceUUID, true, LocalDateTime.now());
 
 	}

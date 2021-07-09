@@ -19,6 +19,7 @@ import com.querydsl.jpa.JPQLQuery;
 
 import lombok.extern.slf4j.Slf4j;
 
+import com.virnect.process.domain.Job;
 import com.virnect.process.domain.QJob;
 import com.virnect.process.domain.QProcess;
 import com.virnect.process.domain.QReport;
@@ -153,6 +154,12 @@ public class ReportCustomRepositoryImpl extends QuerydslRepositorySupport implem
 		List<HourlyReportCountOfaDayResponse> resultList = query.fetch();
 
 		return resultList;
+	}
+
+	@Override
+	public long deleteAllReportByJobList(List<Job> jobList) {
+		QReport qReport = QReport.report;
+		return delete(qReport).where(qReport.job.in(jobList)).execute();
 	}
 }
 
