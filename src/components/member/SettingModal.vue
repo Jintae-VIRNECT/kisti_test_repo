@@ -169,7 +169,7 @@ export default {
           }).then(() => {
             window.open(`${this.$url.pay}`)
           })
-        } else if (/^Error: 1003/.test(e)) {
+        } else if (/^Error: 1021/.test(e)) {
           this.$message.error({
             message: this.$t('members.setting.message.notChangeMasterPlan'),
             duration: 2000,
