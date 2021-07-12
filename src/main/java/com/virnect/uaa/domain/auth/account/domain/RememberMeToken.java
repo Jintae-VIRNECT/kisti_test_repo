@@ -1,11 +1,12 @@
 package com.virnect.uaa.domain.auth.account.domain;
 
-import lombok.Getter;
-import lombok.Setter;
+import java.util.Date;
+
 import org.springframework.data.annotation.Id;
 import org.springframework.data.redis.core.RedisHash;
 
-import java.util.Date;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  * Project: PF-Auth
@@ -18,26 +19,26 @@ import java.util.Date;
 @Setter
 @RedisHash("RememberMeToken")
 public class RememberMeToken {
-    private String username;
-    @Id
-    private String series;
-    private String tokenValue;
-    private Date date;
+	private String username;
+	@Id
+	private String series;
+	private String tokenValue;
+	private Date date;
 
-    public RememberMeToken(String username, String series, String tokenValue, Date date) {
-        this.username = username;
-        this.series = series;
-        this.tokenValue = tokenValue;
-        this.date = date;
-    }
+	public RememberMeToken(String username, String series, String tokenValue, Date date) {
+		this.username = username;
+		this.series = series;
+		this.tokenValue = tokenValue;
+		this.date = date;
+	}
 
-    @Override
-    public String toString() {
-        return "RememberMeToken{" +
-                "username='" + username + '\'' +
-                ", series='" + series + '\'' +
-                ", tokenValue='" + tokenValue + '\'' +
-                ", date=" + date +
-                '}';
-    }
+	@Override
+	public String toString() {
+		return "RememberMeToken{" +
+			"username='" + username + '\'' +
+			", series='" + series + '\'' +
+			", tokenValue='" + tokenValue + '\'' +
+			", date=" + date +
+			'}';
+	}
 }

@@ -35,7 +35,7 @@ public class HealthCheckController {
 		return ResponseEntity.ok(message);
 	}
 
-	@ApiOperation(value = "dummy",hidden = true)
+	@ApiOperation(value = "dummy", hidden = true)
 	@GetMapping("/v1/auth/hihi")
 	public ResponseEntity userPrincipalResponseEntity(@AuthenticationPrincipal Authentication authentication) {
 		return ResponseEntity.ok(authentication.getPrincipal());

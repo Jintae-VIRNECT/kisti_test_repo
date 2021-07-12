@@ -144,9 +144,8 @@ public class SessionSecurityConfiguration<S extends Session> extends WebSecurity
 		return new RememberMeAuthenticationProvider(rememberMeCookieProperty.getName());
 	}
 
-
 	@Bean
-	CommonAuthenticationDetailsSource commonAuthenticationDetailsSource(){
+	CommonAuthenticationDetailsSource commonAuthenticationDetailsSource() {
 		return new CommonAuthenticationDetailsSource();
 	}
 }

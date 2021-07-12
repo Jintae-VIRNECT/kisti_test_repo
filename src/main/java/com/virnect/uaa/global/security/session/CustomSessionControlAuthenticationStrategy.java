@@ -24,8 +24,8 @@ import org.springframework.util.Assert;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import com.virnect.uaa.domain.auth.account.event.session.SessionFlushEvent;
 import com.virnect.security.UserDetailsImpl;
+import com.virnect.uaa.domain.auth.account.event.session.SessionFlushEvent;
 
 @Slf4j
 @RequiredArgsConstructor

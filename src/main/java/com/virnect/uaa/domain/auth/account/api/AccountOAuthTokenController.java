@@ -31,8 +31,6 @@ public class AccountOAuthTokenController {
 	private static final String PARAMETER_LOG_MESSAGE = "[PARAMETER ERROR]:: {}";
 	private final AccountTokenService accountTokenService;
 
-
-
 	@ApiOperation(value = "인증 토큰 재발급")
 	@PostMapping("/oauth/token")
 	public ResponseEntity<ApiResponse<RefreshTokenResponse>> refreshTokenRequestHandler(

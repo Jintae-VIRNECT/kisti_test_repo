@@ -27,7 +27,7 @@ public class TokenSecurityConfiguration extends WebSecurityConfigurerAdapter {
 	private final RestAuthenticationEntryPoint restAuthenticationEntryPoint;
 
 	@PostConstruct
-	public void init(){
+	public void init() {
 		log.info("Spring Security - Token Based Security Configuration Activate !");
 	}
 
@@ -40,7 +40,7 @@ public class TokenSecurityConfiguration extends WebSecurityConfigurerAdapter {
 		http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
 
 		http.authorizeRequests()
-			.antMatchers("/auth/**","/healthcheck","/swagger-ui.html", "/v2/api-docs").permitAll()
+			.antMatchers("/auth/**", "/healthcheck", "/swagger-ui.html", "/v2/api-docs").permitAll()
 			.and()
 			.exceptionHandling()
 			.authenticationEntryPoint(restAuthenticationEntryPoint);

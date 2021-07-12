@@ -18,8 +18,8 @@ import com.vdurmont.semver4j.Semver;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import com.virnect.uaa.domain.user.domain.User;
-import com.virnect.uaa.infra.rest.app.AppRestService;
+import com.virnect.uaa.domain.auth.account.error.AuthenticationErrorCode;
+import com.virnect.uaa.domain.auth.account.error.exception.DeviceAuthenticationServiceException;
 import com.virnect.uaa.domain.auth.device.dao.DeviceAccessLogRepository;
 import com.virnect.uaa.domain.auth.device.dao.DeviceAuthRepository;
 import com.virnect.uaa.domain.auth.device.dao.DeviceRepository;
@@ -29,11 +29,11 @@ import com.virnect.uaa.domain.auth.device.domain.DeviceAuth;
 import com.virnect.uaa.domain.auth.device.dto.request.DeviceAuthenticationInfo;
 import com.virnect.uaa.domain.auth.device.dto.request.DeviceAuthenticationRequest;
 import com.virnect.uaa.domain.auth.device.dto.response.DeviceAuthenticationResponse;
-import com.virnect.uaa.infra.rest.app.dto.AppDetailInfoResponse;
-import com.virnect.uaa.domain.auth.account.error.exception.DeviceAuthenticationServiceException;
+import com.virnect.uaa.domain.user.domain.User;
 import com.virnect.uaa.global.common.AES256Utils;
 import com.virnect.uaa.global.common.ApiResponse;
-import com.virnect.uaa.domain.auth.account.error.AuthenticationErrorCode;
+import com.virnect.uaa.infra.rest.app.AppRestService;
+import com.virnect.uaa.infra.rest.app.dto.AppDetailInfoResponse;
 
 @Slf4j
 @Service

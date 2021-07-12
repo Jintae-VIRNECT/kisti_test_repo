@@ -89,7 +89,8 @@ public class OffUserInfoController {
 		if (StringUtils.isEmpty(email)) {
 			throw new UserServiceException(UserAccountErrorCode.ERR_INVALID_REQUEST_PARAMETER);
 		}
-		UserEmailExistCheckResponse userEmailExistCheckResponse = offUserInformationService.userEmailDuplicateCheck(email);
+		UserEmailExistCheckResponse userEmailExistCheckResponse = offUserInformationService.userEmailDuplicateCheck(
+			email);
 		return ResponseEntity.ok(new ApiResponse<>(userEmailExistCheckResponse));
 	}
 
@@ -121,7 +122,8 @@ public class OffUserInfoController {
 			result.getAllErrors().forEach(message -> log.error(PARAMETER_LOG_MESSAGE, message));
 			throw new UserServiceException(UserAccountErrorCode.ERR_INVALID_REQUEST_PARAMETER);
 		}
-		MemberPasswordUpdateResponse responseMessage = offUserInformationService.updateMemberPassword(memberPasswordUpdateRequest);
+		MemberPasswordUpdateResponse responseMessage = offUserInformationService.updateMemberPassword(
+			memberPasswordUpdateRequest);
 		return ResponseEntity.ok(new ApiResponse<>(responseMessage));
 	}
 }

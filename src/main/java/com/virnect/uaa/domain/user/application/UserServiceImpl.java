@@ -48,18 +48,18 @@ import com.virnect.uaa.domain.user.domain.Status;
 import com.virnect.uaa.domain.user.domain.User;
 import com.virnect.uaa.domain.user.domain.UserAccessLog;
 import com.virnect.uaa.domain.user.domain.UserType;
+import com.virnect.uaa.domain.user.dto.request.AccessPermissionCheckRequest;
+import com.virnect.uaa.domain.user.dto.request.EmailFindRequest;
 import com.virnect.uaa.domain.user.dto.request.MemberPasswordUpdateRequest;
+import com.virnect.uaa.domain.user.dto.request.ProfileImageUpdateRequest;
 import com.virnect.uaa.domain.user.dto.request.RegisterDetailsRequest;
 import com.virnect.uaa.domain.user.dto.request.RegisterMemberRequest;
 import com.virnect.uaa.domain.user.dto.request.RegisterRequest;
-import com.virnect.uaa.domain.user.dto.request.EmailFindRequest;
 import com.virnect.uaa.domain.user.dto.request.UserIdentityCheckRequest;
-import com.virnect.uaa.domain.user.dto.request.AccessPermissionCheckRequest;
 import com.virnect.uaa.domain.user.dto.request.UserInfoModifyRequest;
 import com.virnect.uaa.domain.user.dto.request.UserPasswordChangeRequest;
 import com.virnect.uaa.domain.user.dto.request.UserPasswordFindAuthCodeCheckRequest;
 import com.virnect.uaa.domain.user.dto.request.UserPasswordFindAuthCodeRequest;
-import com.virnect.uaa.domain.user.dto.request.ProfileImageUpdateRequest;
 import com.virnect.uaa.domain.user.dto.request.UserSecessionRequest;
 import com.virnect.uaa.domain.user.dto.response.InviteUserDetailInfoResponse;
 import com.virnect.uaa.domain.user.dto.response.InviteUserInfoResponse;
@@ -1158,7 +1158,7 @@ public class UserServiceImpl implements UserService {
 		// 계정이 없는 경우
 		if (!user.isPresent()) {
 			return new UserEmailExistCheckResponse(email, false, LocalDateTime.now());
-		}	
+		}
 
 		//  비밀번호 찾기 질의 정보가 설정되어있지 않은 경우
 		if (StringUtils.isEmpty(user.get().getQuestion()) && StringUtils.isEmpty(user.get().getAnswer())) {

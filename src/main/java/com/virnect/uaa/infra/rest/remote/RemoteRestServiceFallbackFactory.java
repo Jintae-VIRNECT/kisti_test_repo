@@ -13,12 +13,12 @@ import com.virnect.uaa.infra.rest.remote.dto.RemoteSecessionResponse;
 @Slf4j
 @Component
 public class RemoteRestServiceFallbackFactory implements FallbackFactory<RemoteRestService> {
-    @Override
-    public RemoteRestService create(Throwable cause) {
-        return userId -> {
-            log.error("[REMOTE_SECESSION_ERROR] - [userUUID: {}]", userId);
-            log.error(cause.getMessage(), cause);
-            return new ApiResponse<>(new RemoteSecessionResponse(userId, false, LocalDateTime.now()));
-        };
-    }
+	@Override
+	public RemoteRestService create(Throwable cause) {
+		return userId -> {
+			log.error("[REMOTE_SECESSION_ERROR] - [userUUID: {}]", userId);
+			log.error(cause.getMessage(), cause);
+			return new ApiResponse<>(new RemoteSecessionResponse(userId, false, LocalDateTime.now()));
+		};
+	}
 }

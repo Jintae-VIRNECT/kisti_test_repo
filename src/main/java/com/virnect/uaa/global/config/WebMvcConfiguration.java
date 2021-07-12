@@ -25,7 +25,7 @@ public class WebMvcConfiguration implements WebMvcConfigurer, WebMvcRegistration
 	}
 
 	@Bean
-	public FilterRegistrationBean<SpringSecurityRestRequestSupportFilter> springSecurityRestRequestSupportFilterFilterRegistrationBean(){
+	public FilterRegistrationBean<SpringSecurityRestRequestSupportFilter> springSecurityRestRequestSupportFilterFilterRegistrationBean() {
 		FilterRegistrationBean<SpringSecurityRestRequestSupportFilter> registrationBean = new FilterRegistrationBean<>();
 		registrationBean.setFilter(new SpringSecurityRestRequestSupportFilter());
 		registrationBean.addUrlPatterns("/v1/auth/signin", "/v1/auth/signout");

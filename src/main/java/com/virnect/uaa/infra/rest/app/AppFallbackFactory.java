@@ -5,8 +5,8 @@ import org.springframework.stereotype.Service;
 import feign.hystrix.FallbackFactory;
 import lombok.extern.slf4j.Slf4j;
 
-import com.virnect.uaa.infra.rest.app.dto.AppDetailInfoResponse;
 import com.virnect.uaa.global.common.ApiResponse;
+import com.virnect.uaa.infra.rest.app.dto.AppDetailInfoResponse;
 
 @Slf4j
 @Service

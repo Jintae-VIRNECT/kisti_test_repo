@@ -8,8 +8,6 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
 import lombok.Setter;
 
-import com.virnect.uaa.global.validator.UserLoginIdValidation;
-
 /**
  * @author jeonghyeon.chang (johnmark)
  * @project PF-Auth

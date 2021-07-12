@@ -47,7 +47,8 @@ public class WorkspaceRestFallbackFactory implements FallbackFactory<WorkspaceRe
 			public void acceptInviteSession(String sessionCode, String lang) {
 				log.error(WORKSPACE_INVITE_ACCEPT_FALLBACK_MESSAGE + "SESSION:[{}] , LANG:[{}]", sessionCode, lang);
 				log.error(
-					WORKSPACE_INVITE_ACCEPT_FALLBACK_MESSAGE + "- Fail to send session code to workspace for accept invite."
+					WORKSPACE_INVITE_ACCEPT_FALLBACK_MESSAGE
+						+ "- Fail to send session code to workspace for accept invite."
 				);
 			}
 		};

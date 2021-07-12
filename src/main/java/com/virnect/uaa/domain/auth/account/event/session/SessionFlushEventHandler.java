@@ -34,7 +34,8 @@ public class SessionFlushEventHandler {
 		log.info("Session Flush Event Receive User - {}", sessionFlushEvent.getUserDetails().toString());
 
 		EventSendResponse eventSendResponse = messageRestService.sendMessage(
-			new EventSendRequest("session_flush", sessionFlushEvent.getUserDetails().getUuid(), "pf-auth", new HashMap<>())).getData();
+			new EventSendRequest(
+				"session_flush", sessionFlushEvent.getUserDetails().getUuid(), "pf-auth", new HashMap<>())).getData();
 		log.info("Session Flush Event Response - {}", eventSendResponse.toString());
 	}
 

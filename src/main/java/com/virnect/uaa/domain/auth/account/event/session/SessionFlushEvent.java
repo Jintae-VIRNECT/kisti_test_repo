@@ -1,14 +1,14 @@
 package com.virnect.uaa.domain.auth.account.event.session;
 
-import com.virnect.security.UserDetailsImpl;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.springframework.security.core.session.SessionInformation;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
-import org.springframework.security.core.session.SessionInformation;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import com.virnect.security.UserDetailsImpl;
 
 /**
  * Project: PF-Auth
@@ -21,9 +21,9 @@ import javax.servlet.http.HttpServletResponse;
 @RequiredArgsConstructor
 public class SessionFlushEvent {
 	private final UserDetailsImpl userDetails;
-    private final SessionInformation session;
-    private final HttpServletRequest request;
-    private final HttpServletResponse response;
+	private final SessionInformation session;
+	private final HttpServletRequest request;
+	private final HttpServletResponse response;
 
 	@Override
 	public String toString() {

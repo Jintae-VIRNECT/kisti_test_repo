@@ -66,11 +66,13 @@ public class AccountTokenServiceImpl implements AccountTokenService {
 			}
 
 			User user = userRepository.findByUuid(refreshToken.getUuid())
-				.orElseThrow(() -> new UserAuthenticationServiceException(AuthenticationErrorCode.ERR_API_AUTHENTICATION));
+				.orElseThrow(
+					() -> new UserAuthenticationServiceException(AuthenticationErrorCode.ERR_API_AUTHENTICATION));
 
 			ClientGeoIPInfo clientGeoIPInfo = clientUserAgentInformationParser.getClientGeoIPInformation(request);
 
-			refreshTokenResponse.setAccessToken(jwtTokenProvider.createAccessToken(user, accessToken.getJwtId(), clientGeoIPInfo));
+			refreshTokenResponse.setAccessToken(
+				jwtTokenProvider.createAccessToken(user, accessToken.getJwtId(), clientGeoIPInfo));
 			refreshTokenResponse.setRefreshToken(tokenRefreshRequest.getRefreshToken());
 			refreshTokenResponse.setExpireIn(jwtTokenProvider.getAccessTokenExpire());
 			refreshTokenResponse.setRefreshed(true);

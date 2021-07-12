@@ -1,7 +1,8 @@
 package com.virnect.uaa.domain.auth.account.dao;
 
-import com.virnect.uaa.domain.auth.account.domain.RememberMeToken;
 import org.springframework.data.repository.CrudRepository;
+
+import com.virnect.uaa.domain.auth.account.domain.RememberMeToken;
 
 /**
  * Project: PF-Auth

@@ -56,7 +56,6 @@ public class UserInfoUpdateController {
 		});
 	}
 
-
 	/**
 	 * 개인 정보 수정 권한 확인 API
 	 * @param userId - 사용자 식별자
