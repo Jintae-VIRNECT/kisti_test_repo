@@ -120,6 +120,8 @@ export default {
   },
   beforeMount() {
     this.searchMembers({ page: 1 })
+    this.getWorkspacePlansInfo()
+
     workspaceService.watchActiveWorkspace(this, () => {
       this.searchMembers({ page: 1 })
       this.getWorkspacePlansInfo()
