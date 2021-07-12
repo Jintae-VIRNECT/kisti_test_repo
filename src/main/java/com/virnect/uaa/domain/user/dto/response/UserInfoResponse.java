@@ -3,13 +3,14 @@ package com.virnect.uaa.domain.user.dto.response;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
 import lombok.Setter;
 
-import com.virnect.uaa.domain.user.domain.LoginStatus;
 import com.virnect.uaa.domain.user.domain.SecessionUser;
-import com.virnect.uaa.domain.user.domain.Status;
+import com.virnect.uaa.domain.user.domain.AcceptOrReject;
 import com.virnect.uaa.domain.user.domain.UserType;
 
 /**
@@ -25,39 +26,70 @@ import com.virnect.uaa.domain.user.domain.UserType;
 public class UserInfoResponse {
 	@ApiModelProperty(value = "사용자 식별자", example = "498b1839dc29ed7bb2ee90ad6985c608")
 	private String uuid = "";
+
 	@ApiModelProperty(value = "사용자 이메일", position = 1, example = "smic1")
 	private String email = "";
+
 	@ApiModelProperty(value = "사용자 이름", notes = "사라질 필드 정보입니다", position = 2, example = "SMIC Master")
 	private String name = "";
+
 	@ApiModelProperty(value = "사용자 이름", position = 3, example = "길동")
 	private String firstName = "";
+
 	@ApiModelProperty(value = "사용자 이름 성", position = 4, example = "홍")
 	private String lastName = "";
+
 	@ApiModelProperty(value = "사용자 닉네임", position = 5, example = "마스터는 나다.")
 	private String nickname = "";
+
 	@ApiModelProperty(value = "사용자 소개", position = 6, example = "smic 워크스페이스 유저")
 	private String description = "";
+
 	@ApiModelProperty(value = "사용자 프로필 이미지 URL", position = 7, example = "smic 워크스페이스 유저")
 	private String profile = "";
+
 	@ApiModelProperty(value = "생년월일", position = 8, example = "2020-01-02")
 	private LocalDate birth;
+
 	@ApiModelProperty(value = "휴대폰 번호", position = 9, example = "+82-01012341234")
 	private String mobile = "";
+
 	@ApiModelProperty(value = "복구 이메일", position = 10, example = "test@test.com")
 	private String recoveryEmail = "";
-	@ApiModelProperty(value = "계정 잠금 여부 ( ACTIVE(잠금), INACTIVE(해제) )", position = 11, example = "smic 워크스페이스 유저")
-	private LoginStatus loginLock;
+
+	// @ApiModelProperty(value = "계정 잠금 여부 ( ACTIVE(잠금), INACTIVE(해제) )", position = 11, example = "smic 워크스페이스 유저")
+	@JsonIgnore
+	private String loginLock;
+
 	@ApiModelProperty(value = "사용자 타입 ( USER(일반), MEMBER_USER(멤버유저), VIRNECT_USER(사내 유저) )", position = 12, example = "smic 워크스페이스 유저")
 	private UserType userType;
+
 	@ApiModelProperty(value = "마케팅 정보 수신 동의 여부", position = 13, example = "ACCEPT")
-	private Status marketInfoReceive;
+	private AcceptOrReject marketInfoReceive;
+
 	@ApiModelProperty(value = "비밀번호 찾기 질문", position = 14, example = "집에 가고 싶습니까?")
 	private String question;
+
 	@ApiModelProperty(value = "비밀번호 찾기 답변", position = 15, example = "네 완죤!")
 	private String answer;
-	@ApiModelProperty(value = "계정 생성 일자", position = 16, example = "2020-01-20T14:05:30")
+
+	@ApiModelProperty(value = "계정 만료 유무(휴면계정)", position = 16, example = "true")
+	private boolean accountNonExpired;
+
+	@ApiModelProperty(value = "계정 잠금 유무(비밀번호 잠금)", position = 17, example = "true")
+	private boolean accountNonLocked;
+
+	// @ApiModelProperty(value = "비밀번호 만료 유무(비밀번호 갱신)", position = 17, example = "true")
+	@JsonIgnore
+	private boolean credentialsNonExpired = true;
+
+	@ApiModelProperty(value = "계정 활성화 유무", position = 18, example = "true")
+	private boolean enabled;
+
+	@ApiModelProperty(value = "계정 생성 일자", position = 19, example = "2020-01-20T14:05:30")
 	private LocalDateTime createdDate;
-	@ApiModelProperty(value = "최종 계정 정보 수정 일자", position = 17, example = "2020-01-20T14:05:30")
+
+	@ApiModelProperty(value = "최종 계정 정보 수정 일자", position = 20, example = "2020-01-20T14:05:30")
 	private LocalDateTime updatedDate;
 
 	@Override
@@ -74,11 +106,15 @@ public class UserInfoResponse {
 			", birth=" + birth +
 			", mobile='" + mobile + '\'' +
 			", recoveryEmail='" + recoveryEmail + '\'' +
-			", loginLock=" + loginLock +
-			", userType=" + userType +
-			", marketInfoReceive=" + marketInfoReceive +
+			// ", loginLock='" + loginLock + '\'' +
+			", userType='" + userType + '\'' +
+			", marketInfoReceive='" + marketInfoReceive + '\'' +
 			", question='" + question + '\'' +
 			", answer='" + answer + '\'' +
+			", accountNonExpired=" + accountNonExpired +
+			", accountNonLocked=" + accountNonLocked +
+			// ", credentialsNonExpired=" + credentialsNonExpired +
+			", enabled=" + enabled +
 			", createdDate=" + createdDate +
 			", updatedDate=" + updatedDate +
 			'}';
@@ -96,9 +132,9 @@ public class UserInfoResponse {
 		this.birth = LocalDate.now();
 		this.mobile = "";
 		this.recoveryEmail = "";
-		this.loginLock = LoginStatus.ACTIVE;
+		// this.loginLock = LoginStatus.ACTIVE;
 		this.userType = UserType.SECESSION_USER;
-		this.marketInfoReceive = Status.REJECT;
+		this.marketInfoReceive = AcceptOrReject.REJECT;
 		this.createdDate = secessionUserInfo.getCreatedDate();
 		this.updatedDate = secessionUserInfo.getUpdatedDate();
 	}

@@ -1,12 +1,12 @@
 package com.virnect.uaa.global.common;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+
 import io.swagger.annotations.ApiModelProperty;
-import lombok.Builder;
 import lombok.Getter;
-import lombok.Setter;
 
 @Getter
-@Setter
 public class PageMetadataResponse {
 	@ApiModelProperty(value = "현재 조회한 페이지 번호", notes = "현재 페이지 번호", example = "1")
 	private final int currentPage;
@@ -20,11 +20,19 @@ public class PageMetadataResponse {
 	@ApiModelProperty(value = "조회 된 전체 데이터의 수", notes = "조회 된 전체 데이터의 수", example = "20")
 	private final long totalElements;
 
-	@Builder
 	public PageMetadataResponse(int currentPage, int currentSize, int totalPage, long totalElements) {
-		this.currentPage = currentPage + 1;
+		this.currentPage = currentPage;
 		this.currentSize = currentSize;
 		this.totalPage = totalPage;
 		this.totalElements = totalElements;
+	}
+
+	public static PageMetadataResponse of(Pageable pagingRequest, Page pagingResult) {
+		return new PageMetadataResponse(
+			pagingRequest.getPageNumber(),
+			pagingRequest.getPageSize(),
+			pagingResult.getTotalPages(),
+			pagingResult.getTotalElements()
+		);
 	}
 }

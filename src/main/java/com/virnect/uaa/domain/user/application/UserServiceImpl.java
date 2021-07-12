@@ -44,7 +44,7 @@ import com.virnect.uaa.domain.user.dao.useraccesslog.UserAccessLogRepository;
 import com.virnect.uaa.domain.user.dao.userpermission.UserPermissionRepository;
 import com.virnect.uaa.domain.user.domain.PasswordInitAuthCode;
 import com.virnect.uaa.domain.user.domain.SecessionUser;
-import com.virnect.uaa.domain.user.domain.Status;
+import com.virnect.uaa.domain.user.domain.AcceptOrReject;
 import com.virnect.uaa.domain.user.domain.User;
 import com.virnect.uaa.domain.user.domain.UserAccessLog;
 import com.virnect.uaa.domain.user.domain.UserType;
@@ -378,15 +378,9 @@ public class UserServiceImpl implements UserService {
 				.collect(Collectors.toList());
 
 			// Page metadata
-			PageMetadataResponse pageMeta = PageMetadataResponse.builder()
-				.currentPage(pageable.getPageNumber())
-				.currentSize(pageable.getPageSize())
-				.totalPage(userPage.getTotalPages())
-				.totalElements(userPage.getTotalElements())
-				.build();
-
+			PageMetadataResponse pageMeta = PageMetadataResponse.of(pageable, userPage);
 			userInfoList.forEach(info -> log.info("{}", info));
-			log.info("Paging Metadata: {}", pageMeta.toString());
+			log.info("Paging Metadata: {}", pageMeta);
 
 			return new UserInfoListResponse(userInfoList, pageMeta);
 		}
@@ -516,7 +510,7 @@ public class UserServiceImpl implements UserService {
 		}
 
 		if (userInfoModifyRequest.getMarketInfoReceive() != null) {
-			user.setMarketInfoReceive(Status.valueOf(userInfoModifyRequest.getMarketInfoReceive()));
+			user.setMarketInfoReceive(AcceptOrReject.valueOf(userInfoModifyRequest.getMarketInfoReceive()));
 		}
 
 		if (userInfoModifyRequest.getQuestion() != null) {
@@ -683,12 +677,13 @@ public class UserServiceImpl implements UserService {
 			.map(user -> modelMapper.map(user, UserInfoResponse.class))
 			.collect(Collectors.toList());
 
-		PageMetadataResponse pageMeta = PageMetadataResponse.builder()
-			.currentPage(pageable.getPageNumber())
-			.currentSize(pageable.getPageSize())
-			.totalPage(userPage.getTotalPages())
-			.totalElements(userPage.getTotalElements())
-			.build();
+		PageMetadataResponse pageMeta = PageMetadataResponse.of(pageable, userPage);
+		// PageMetadataResponse pageMeta = PageMetadataResponse.builder()
+		// 	.currentPage(pageable.getPageNumber())
+		// 	.currentSize(pageable.getPageSize())
+		// 	.totalPage(userPage.getTotalPages())
+		// 	.totalElements(userPage.getTotalElements())
+		// 	.build();
 
 		return new UserInfoListResponse(userInfoResponseList, pageMeta);
 	}
@@ -949,12 +944,13 @@ public class UserServiceImpl implements UserService {
 			.collect(Collectors.toList());
 
 		// Page metadata
-		PageMetadataResponse pageMeta = PageMetadataResponse.builder()
-			.currentPage(pageable.getPageNumber())
-			.currentSize(pageable.getPageSize())
-			.totalPage(deviceMetadataPage.getTotalPages())
-			.totalElements(deviceMetadataPage.getTotalElements())
-			.build();
+		PageMetadataResponse pageMeta = PageMetadataResponse.of(pageable, deviceMetadataPage);
+		// PageMetadataResponse pageMeta = PageMetadataResponse.builder()
+		// 	.currentPage(pageable.getPageNumber())
+		// 	.currentSize(pageable.getPageSize())
+		// 	.totalPage(deviceMetadataPage.getTotalPages())
+		// 	.totalElements(deviceMetadataPage.getTotalElements())
+		// 	.build();
 
 		return new UserAccessHistoryResponse(accessDeviceInfoList, pageMeta);
 	}

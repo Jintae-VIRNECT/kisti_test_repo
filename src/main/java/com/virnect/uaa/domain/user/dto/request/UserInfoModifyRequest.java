@@ -8,7 +8,7 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
 import lombok.Setter;
 
-import com.virnect.uaa.domain.user.domain.Status;
+import com.virnect.uaa.domain.user.domain.AcceptOrReject;
 import com.virnect.uaa.domain.user.validator.ValueOfEnum;
 
 /**
@@ -39,7 +39,7 @@ public class UserInfoModifyRequest {
 	@Email
 	@ApiModelProperty(value = "변경할 복구 이메일 주소", position = 6, notes = "변경할 경우 입력하면됩니다.", example = "test@test.com")
 	private String recoveryEmail;
-	@ValueOfEnum(enumClass = Status.class)
+	@ValueOfEnum(enumClass = AcceptOrReject.class)
 	@ApiModelProperty(value = "마케팅 정보 수신 동의 여부", position = 7, notes = "변경할 경우 입력하면됩니다.", example = "ACCEPT")
 	private String marketInfoReceive;
 	@ApiModelProperty(value = "비밀번호 찾기 질문", position = 8, example = "집에 가고 싶나요?")

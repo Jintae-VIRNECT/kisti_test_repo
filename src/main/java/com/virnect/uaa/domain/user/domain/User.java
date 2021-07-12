@@ -96,7 +96,7 @@ public class User extends BaseTimeEntity {
 
 	@Column(name = "market_info_receive", nullable = false)
 	@Enumerated(EnumType.STRING)
-	private Status marketInfoReceive = Status.REJECT;
+	private AcceptOrReject marketInfoReceive = AcceptOrReject.REJECT;
 
 	@Column(name = "language", nullable = false)
 	@Enumerated(EnumType.STRING)
@@ -156,7 +156,7 @@ public class User extends BaseTimeEntity {
 		this.joinInfo = "워크스페이스 멤버 등록";
 		this.serviceInfo = "워크스페이스 멤버 등록";
 		this.language = Language.KO;
-		this.marketInfoReceive = Status.REJECT;
+		this.marketInfoReceive = AcceptOrReject.REJECT;
 		this.accountPasswordInitialized = false;
 	}
 
@@ -176,7 +176,7 @@ public class User extends BaseTimeEntity {
 		this.recoveryEmail = registerRequest.getRecoveryEmail();
 		this.joinInfo = registerRequest.getJoinInfo();
 		this.serviceInfo = registerRequest.getServiceInfo();
-		this.marketInfoReceive = Status.valueOf(registerRequest.getMarketInfoReceive());
+		this.marketInfoReceive = AcceptOrReject.valueOf(registerRequest.getMarketInfoReceive());
 		this.language = Language.KO;
 		this.userType = UserType.USER;
 	}

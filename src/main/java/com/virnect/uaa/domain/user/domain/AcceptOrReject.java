@@ -7,7 +7,7 @@ package com.virnect.uaa.domain.user.domain;
  * EMAIL: practice1356@gmail.com
  * DESCRIPTION: COMMON Enum class for checking Active and Inactive status
  */
-public enum Status {
+public enum AcceptOrReject {
 	ACCEPT,
 	REJECT
 }

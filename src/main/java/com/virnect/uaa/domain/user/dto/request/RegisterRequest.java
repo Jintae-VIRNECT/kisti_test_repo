@@ -15,7 +15,7 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
 import lombok.Setter;
 
-import com.virnect.uaa.domain.user.domain.Status;
+import com.virnect.uaa.domain.user.domain.AcceptOrReject;
 import com.virnect.uaa.domain.user.validator.UserLoginIdValidation;
 
 /**
@@ -79,7 +79,7 @@ public class RegisterRequest {
 
 	@ApiModelProperty(value = "광고 수신 동의 여부", position = 11, example = "ACTIVE")
 	@NotNull(message = "광고 수신 동의 여부 정보는 반드시 입력되어야 합니다.")
-	private Status marketInfoReceive;
+	private AcceptOrReject marketInfoReceive;
 
 	@ApiModelProperty(value = "닉네임", position = 12, example = "닉넴")
 	private String nickname = "";

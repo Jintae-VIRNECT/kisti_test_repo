@@ -17,7 +17,7 @@ import lombok.Setter;
 
 import com.virnect.uaa.domain.auth.account.validator.BirthDateValidate;
 import com.virnect.uaa.domain.auth.account.validator.MobileNumberValidate;
-import com.virnect.uaa.domain.user.domain.Status;
+import com.virnect.uaa.domain.user.domain.AcceptOrReject;
 import com.virnect.uaa.global.validator.PasswordFormatPolicyValidate;
 import com.virnect.uaa.global.validator.ValueOfEnum;
 
@@ -84,7 +84,7 @@ public class RegisterRequest {
 
 	@ApiModelProperty(value = "광고 수신 동의 여부", position = 11, example = "ACCEPT")
 	@NotNull(message = "광고 수신 동의 여부 정보는 반드시 입력되어야 합니다.")
-	@ValueOfEnum(enumClass = Status.class)
+	@ValueOfEnum(enumClass = AcceptOrReject.class)
 	private String marketInfoReceive;
 
 	@ApiModelProperty(value = "닉네임", position = 12, example = "닉넴")

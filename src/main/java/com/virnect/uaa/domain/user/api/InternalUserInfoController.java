@@ -43,6 +43,7 @@ public class InternalUserInfoController {
 	public ResponseEntity<ApiResponse<UserInfoListResponse>> findAllUserInfoRequestHandler(
 		@ApiIgnore Pageable pageable
 	) {
+		log.info("hit!");
 		UserInfoListResponse responseMessage = internalUserInformationService.findAllUserInfo(pageable);
 		return ResponseEntity.ok(new ApiResponse<>(responseMessage));
 	}
