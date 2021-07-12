@@ -172,7 +172,10 @@ export default {
     },
     async reset() {
       this.userInfoList = [new InviteMember()]
-      this.$refs.form.forEach(form => form.resetFields())
+      if (this.$refs.from) {
+        this.$refs.form.forEach(form => form.resetFields())
+      }
+
       if (!this.plansInfo.planStatus) {
         await this.$store.dispatch('plan/getPlansInfo')
       }
@@ -257,6 +260,9 @@ export default {
         }
       }
     },
+  },
+  mounted() {
+    this.opened()
   },
 }
 </script>
