@@ -94,7 +94,7 @@ export default {
       if (/[A-Z]/.test(password)) typeCount++
       if (/[$.$,$!$@$#$$$%]/.test(password)) typeCount++
 
-      if (typeCount < 4) return false
+      if (typeCount < 3) return false
       if (!/^.{8,20}$/.test(password)) return false
       if (/(.)\1\1\1/.test(password)) return false
       if (/(0123|1234|2345|3456|4567|5678|6789|7890)/.test(password))
