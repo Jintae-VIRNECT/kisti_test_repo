@@ -12,8 +12,10 @@
         <VirnectWorkspaceSelect
           :activeWorkspace="activeWorkspace"
           :workspaceList="myWorkspaces"
+          :newWorkspace="true"
           @onChange="changeActiveWorkspace"
           @click.native.prevent
+          @addNewWorkspaceButton="$router.push({ path: '/start' })"
         />
       </template>
     </VirnectHeader>
@@ -74,6 +76,10 @@ export default {
   methods: {
     changeActiveWorkspace(workspace) {
       this.$store.commit('auth/SET_ACTIVE_WORKSPACE', workspace.uuid)
+    },
+    test() {
+      console.log(this.$router)
+      this.$router.push('/start')
     },
   },
   mounted() {

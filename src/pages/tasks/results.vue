@@ -112,10 +112,7 @@ export default {
         searchParams,
       )
       this.page = searchParams === undefined ? 1 : searchParams.page
-      console.log(this.list)
-      console.log(...list)
       this.list.splice(0, this.list.length, ...list)
-      console.log(this.list)
       this.total = total
     },
     async searchIssues(searchParams) {
@@ -147,6 +144,7 @@ export default {
      */
     setActiveTab() {
       const { name } = this.$route
+      console.log(name)
       if (name === 'tasks-results') this.activeTab = 'task'
       else if (name === 'tasks-results-issues') this.activeTab = 'issue'
       else if (name === 'tasks-results-papers') this.activeTab = 'paper'
