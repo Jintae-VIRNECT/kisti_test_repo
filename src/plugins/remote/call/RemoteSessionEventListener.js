@@ -197,13 +197,23 @@ const signalVideo = event => {
         id: Store.getters['account'].uuid,
       })
     } else {
-      Store.dispatch('setMainView', { force: false })
-
       if (data.type === VIDEO.NORMAL) {
         Store.commit('updateParticipant', {
           connectionId: event.from.connectionId,
           currentWatching: data.id,
         })
+
+        //리더가 VIDEO.NORMAL 시그널을 보냈을 때만 전체화면 공유를 풀어야함.
+        const participants = Store.getters['participants']
+        const idx = participants.findIndex(
+          user =>
+            user.roleType === ROLE.LEADER &&
+            user.connectionId === event.from.connectionId,
+        )
+
+        if (idx >= 0) {
+          Store.dispatch('setMainView', { force: false })
+        }
       }
     }
   }

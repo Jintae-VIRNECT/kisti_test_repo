@@ -16,15 +16,25 @@ export default {
       },
     },
     view(val, oldVal) {
+      //협업보드 탭에 진입 시 실행 (첫진입 포함)
       if (val !== oldVal && val === VIEW.DRAWING) {
-        setTimeout(() => this.optimizeCanvasSize(), 500)
-
+        this.toolAble()
         this.$nextTick(() => {
           if (!this.isInit) return
-          this.receiveRender()
+          /*
+          캔버스 사이즈를 먼저 맞춘 후,
+          수신해왔던 드로잉 객체들을 추가해주어야 한다
+      
+          이 타이밍을 nextTick만으로 맞춰지지 않아 아래와 같은 이슈가 발생하여, timeout을 통한 조정하였음
+          - 협업보드 첫 진입 시 이전 드로잉 추가되지 않는 이슈 발생
+          */
+          setTimeout(() => {
+            this.optimizeCanvasSize()
+            this.receiveRender()
+          }, 400)
         })
       }
-      // 협업보드에서 이탈 시 기존 줌 상태 초기화
+      // 협업보드 탭에서 이탈 시 기존 줌 상태 초기화
       else if (oldVal === VIEW.DRAWING) {
         if (this.canvas)
           setTimeout(
