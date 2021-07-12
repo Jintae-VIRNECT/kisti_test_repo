@@ -1553,10 +1553,10 @@
   dependencies:
     "@types/node" "*"
 
-"@virnect/components@^1.7.0":
-  version "1.7.0"
-  resolved "http://192.168.6.3:4873/@virnect%2fcomponents/-/components-1.7.0.tgz#6dbb69bb1ca81629cec7332c9f2253807fa30e05"
-  integrity sha512-ILooL+CldohkSTtXkb6qbczLEfO/nrfAFx4WSXTVrD6B7wAxAUR6dVUJh9N0ws4qxYjIhpQE12wdkLfTcJ3wpA==
+"@virnect/components@^1.8.0":
+  version "1.8.0"
+  resolved "http://192.168.6.3:4873/@virnect%2fcomponents/-/components-1.8.0.tgz#e1a482aff8e03f7ee4ced17343e5079b392f8f68"
+  integrity sha512-K1A0AgHTu6mGDOVCBfyrycFz38UQLk0W82wdLq6wzudNb1tLMTr0ZcPpJ81ym9NzdL8XP28T3WjSlt8Is5Dpsg==
   dependencies:
     "@virnect/ui-assets" "^1.1.20"
     "@vue/composition-api" "^1.0.0-rc.2"
