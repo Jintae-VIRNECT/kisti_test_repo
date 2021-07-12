@@ -1,5 +1,7 @@
 package com.virnect.uaa.domain.user.api;
 
+import java.util.Arrays;
+
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -43,7 +45,6 @@ public class InternalUserInfoController {
 	public ResponseEntity<ApiResponse<UserInfoListResponse>> findAllUserInfoRequestHandler(
 		@ApiIgnore Pageable pageable
 	) {
-		log.info("hit!");
 		UserInfoListResponse responseMessage = internalUserInformationService.findAllUserInfo(pageable);
 		return ResponseEntity.ok(new ApiResponse<>(responseMessage));
 	}
@@ -61,7 +62,7 @@ public class InternalUserInfoController {
 			throw new UserServiceException(UserAccountErrorCode.ERR_INVALID_REQUEST_PARAMETER);
 		}
 		UserInfoListResponse responseMessage = internalUserInformationService.getUsersInfoList(
-			search, workspaceUserIdList);
+			search, Arrays.asList(workspaceUserIdList));
 		return ResponseEntity.ok(new ApiResponse<>(responseMessage));
 	}
 

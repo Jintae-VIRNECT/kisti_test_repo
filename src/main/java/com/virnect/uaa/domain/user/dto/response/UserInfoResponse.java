@@ -9,8 +9,8 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
 import lombok.Setter;
 
-import com.virnect.uaa.domain.user.domain.SecessionUser;
 import com.virnect.uaa.domain.user.domain.AcceptOrReject;
+import com.virnect.uaa.domain.user.domain.SecessionUser;
 import com.virnect.uaa.domain.user.domain.UserType;
 
 /**
@@ -81,7 +81,7 @@ public class UserInfoResponse {
 
 	// @ApiModelProperty(value = "비밀번호 만료 유무(비밀번호 갱신)", position = 17, example = "true")
 	@JsonIgnore
-	private boolean credentialsNonExpired = true;
+	private boolean credentialsNonExpired;
 
 	@ApiModelProperty(value = "계정 활성화 유무", position = 18, example = "true")
 	private boolean enabled;
@@ -91,6 +91,31 @@ public class UserInfoResponse {
 
 	@ApiModelProperty(value = "최종 계정 정보 수정 일자", position = 20, example = "2020-01-20T14:05:30")
 	private LocalDateTime updatedDate;
+
+	public void setSecessionUserInfo(SecessionUser secessionUserInfo) {
+		this.uuid = secessionUserInfo.getUserUUID();
+		this.email = secessionUserInfo.getEmail();
+		this.name = "secessionUser";
+		this.firstName = "secessionUser";
+		this.lastName = "";
+		this.nickname = secessionUserInfo.getNickName();
+		this.description = "secession User Info";
+		this.profile = "default";
+		this.birth = LocalDate.now();
+		this.mobile = "";
+		this.recoveryEmail = "";
+		// this.loginLock = LoginStatus.ACTIVE;
+		this.userType = UserType.SECESSION_USER;
+		this.marketInfoReceive = AcceptOrReject.REJECT;
+		this.question = "";
+		this.answer = "";
+		this.accountNonExpired = true;
+		this.accountNonLocked = true;
+		this.credentialsNonExpired = true;
+		this.enabled = false;
+		this.createdDate = secessionUserInfo.getCreatedDate();
+		this.updatedDate = secessionUserInfo.getUpdatedDate();
+	}
 
 	@Override
 	public String toString() {
@@ -118,24 +143,5 @@ public class UserInfoResponse {
 			", createdDate=" + createdDate +
 			", updatedDate=" + updatedDate +
 			'}';
-	}
-
-	public void setSecessionUserInfo(SecessionUser secessionUserInfo) {
-		this.uuid = secessionUserInfo.getUserUUID();
-		this.email = secessionUserInfo.getEmail();
-		this.name = "secessionUser";
-		this.firstName = "secessionUser";
-		this.lastName = "";
-		this.nickname = secessionUserInfo.getNickName();
-		this.description = "secession User Info";
-		this.profile = "default";
-		this.birth = LocalDate.now();
-		this.mobile = "";
-		this.recoveryEmail = "";
-		// this.loginLock = LoginStatus.ACTIVE;
-		this.userType = UserType.SECESSION_USER;
-		this.marketInfoReceive = AcceptOrReject.REJECT;
-		this.createdDate = secessionUserInfo.getCreatedDate();
-		this.updatedDate = secessionUserInfo.getUpdatedDate();
 	}
 }
