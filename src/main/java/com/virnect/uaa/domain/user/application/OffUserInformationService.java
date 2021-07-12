@@ -9,7 +9,7 @@ import com.virnect.uaa.domain.user.dto.response.UserEmailExistCheckResponse;
 import com.virnect.uaa.domain.user.dto.response.UserIdentityCheckResponse;
 import com.virnect.uaa.domain.user.dto.response.UserInfoResponse;
 
-public class OffUserService {
+public class OffUserInformationService {
 	/**
 	 * 새 멤버 사용자 등록
 	 * @param registerMemberRequest - 멤버 사용자 데이터

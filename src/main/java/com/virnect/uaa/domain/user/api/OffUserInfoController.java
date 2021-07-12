@@ -25,7 +25,7 @@ import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import com.virnect.uaa.domain.user.application.OffUserService;
+import com.virnect.uaa.domain.user.application.OffUserInformationService;
 import com.virnect.uaa.domain.user.dto.request.MemberPasswordUpdateRequest;
 import com.virnect.uaa.domain.user.dto.request.RegisterMemberRequest;
 import com.virnect.uaa.domain.user.dto.request.UserIdentityCheckRequest;
@@ -45,7 +45,7 @@ import com.virnect.uaa.global.common.ApiResponse;
 @RequiredArgsConstructor
 @RequestMapping("/users")
 public class OffUserInfoController {
-	private final OffUserService offUserService;
+	private final OffUserInformationService offUserInformationService;
 
 	@ApiImplicitParams(
 		@ApiImplicitParam(name = "serviceID", value = "요청 서버 명", paramType = "header", example = "workspace-server")
@@ -61,7 +61,7 @@ public class OffUserInfoController {
 			result.getAllErrors().forEach(message -> log.error(PARAMETER_LOG_MESSAGE, message));
 			throw new UserServiceException(UserAccountErrorCode.ERR_INVALID_REQUEST_PARAMETER);
 		}
-		UserInfoResponse userInfoResponse = offUserService.registerNewMember(registerMemberRequest);
+		UserInfoResponse userInfoResponse = offUserInformationService.registerNewMember(registerMemberRequest);
 		return ResponseEntity.ok(new ApiResponse<>(userInfoResponse));
 	}
 
@@ -77,7 +77,7 @@ public class OffUserInfoController {
 			log.error("SERVICE_ID:[{}]", serviceID);
 			throw new UserServiceException(UserAccountErrorCode.ERR_INVALID_REQUEST_PARAMETER);
 		}
-		UserDeleteResponse userDeleteResponse = offUserService.deleteMemberUser(userUUID);
+		UserDeleteResponse userDeleteResponse = offUserInformationService.deleteMemberUser(userUUID);
 		return ResponseEntity.ok(new ApiResponse<>(userDeleteResponse));
 	}
 
@@ -89,7 +89,7 @@ public class OffUserInfoController {
 		if (StringUtils.isEmpty(email)) {
 			throw new UserServiceException(UserAccountErrorCode.ERR_INVALID_REQUEST_PARAMETER);
 		}
-		UserEmailExistCheckResponse userEmailExistCheckResponse = offUserService.userEmailDuplicateCheck(email);
+		UserEmailExistCheckResponse userEmailExistCheckResponse = offUserInformationService.userEmailDuplicateCheck(email);
 		return ResponseEntity.ok(new ApiResponse<>(userEmailExistCheckResponse));
 	}
 
@@ -102,7 +102,7 @@ public class OffUserInfoController {
 			result.getAllErrors().forEach(message -> log.error(PARAMETER_LOG_MESSAGE, message));
 			throw new UserServiceException(UserAccountErrorCode.ERR_INVALID_REQUEST_PARAMETER);
 		}
-		UserIdentityCheckResponse userIdentityCheckResponse = offUserService.verifyPasswordResetQuestion(
+		UserIdentityCheckResponse userIdentityCheckResponse = offUserInformationService.verifyPasswordResetQuestion(
 			userIdentityCheckRequest);
 		return ResponseEntity.ok(new ApiResponse<>(userIdentityCheckResponse));
 	}
@@ -121,7 +121,7 @@ public class OffUserInfoController {
 			result.getAllErrors().forEach(message -> log.error(PARAMETER_LOG_MESSAGE, message));
 			throw new UserServiceException(UserAccountErrorCode.ERR_INVALID_REQUEST_PARAMETER);
 		}
-		MemberPasswordUpdateResponse responseMessage = offUserService.updateMemberPassword(memberPasswordUpdateRequest);
+		MemberPasswordUpdateResponse responseMessage = offUserInformationService.updateMemberPassword(memberPasswordUpdateRequest);
 		return ResponseEntity.ok(new ApiResponse<>(responseMessage));
 	}
 }
