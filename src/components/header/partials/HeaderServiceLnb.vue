@@ -133,6 +133,15 @@ export default {
     goTab(type) {
       if (type === this.view) return
 
+      //ice 커넥션이 끊어진 경우 메뉴 이동 불가
+      const idx = this.participants.findIndex(
+        user => user.me && user.status === 'disconnected',
+      )
+      if (idx >= 0) {
+        this.toastError(this.$t('confirm.network_error'))
+        return false
+      }
+
       // leader
       if (this.account.roleType === ROLE.LEADER) {
         //현재 view가 AR일때 다른 view를 선택하면 정말 이동할건지 확인 메시지
