@@ -64,12 +64,12 @@ import workspaceSerivce from '@/services/workspace'
 
 export default {
   layout: 'noSidebar',
-  middleware({ store, redirect }) {
-    // 마스터 워크스페이스가 존재할 경우 튕겨냄
-    if (store.getters['auth/myWorkspaces'].some(w => w.role === 'MASTER')) {
-      redirect('/')
-    }
-  },
+  //middleware({ store, redirect }) {
+  // 마스터 워크스페이스가 존재할 경우 튕겨냄
+  // if (store.getters['auth/myWorkspaces'].some(w => w.role === 'MASTER')) {
+  //   redirect('/')
+  // }
+  //},
   data() {
     return {
       file: null,
