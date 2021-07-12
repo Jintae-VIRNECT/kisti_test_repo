@@ -10,10 +10,17 @@ import {
   VIDEO,
   FILE,
   LINKFLOW,
+  DRAWING,
 } from 'configs/remote.config'
 import { CAMERA as CAMERA_STATUS } from 'configs/device.config'
 
 import { logger, debug } from 'utils/logger'
+
+//DRAWING FILE SHARE시그날 이벤트 vuex에 큐로 저장 활성화 여부
+export let queueAvtivated = true
+export const setQueueAct = isActiv => {
+  queueAvtivated = isActiv
+}
 
 const streamCreated = event => {
   const connectionId = _.session.connection.connectionId
@@ -190,13 +197,23 @@ const signalVideo = event => {
         id: Store.getters['account'].uuid,
       })
     } else {
-      Store.dispatch('setMainView', { force: false })
-
       if (data.type === VIDEO.NORMAL) {
         Store.commit('updateParticipant', {
           connectionId: event.from.connectionId,
           currentWatching: data.id,
         })
+
+        //리더가 VIDEO.NORMAL 시그널을 보냈을 때만 전체화면 공유를 풀어야함.
+        const participants = Store.getters['participants']
+        const idx = participants.findIndex(
+          user =>
+            user.roleType === ROLE.LEADER &&
+            user.connectionId === event.from.connectionId,
+        )
+
+        if (idx >= 0) {
+          Store.dispatch('setMainView', { force: false })
+        }
       }
     }
   }
@@ -395,7 +412,14 @@ const signalPointing = event => {
 
 /** Drawing */
 const signalDrawing = event => {
-  window.vue.$eventBus.$emit(SIGNAL.DRAWING, event)
+  const data = JSON.parse(event.data)
+  //큐가 활성화된 상태고, FILE SHARE 이벤트인 경우 Vuex에 저장해둔다.
+  //해당 이벤트를 필요로하는 component가 활성화 되었을 경우 해당 vuex내 값을 큐처럼 순차적으로 처리한다.
+  if (queueAvtivated && data.type === DRAWING.FILE_SHARE) {
+    Store.commit('addFileShareEvent', { data, receive: event })
+  }
+  //큐가 활성화되지 않은 경우와 다른 DRAWING 타입의 경우 일반적으로 이벤트로 전달한다
+  else window.vue.$eventBus.$emit(SIGNAL.DRAWING, { data, receive: event })
 }
 
 /** screen capture permission 수신 */

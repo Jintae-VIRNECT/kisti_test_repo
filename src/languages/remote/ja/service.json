@@ -96,7 +96,7 @@
     "tool_width": "線の太さ",
     "tool_drawing_width": "手描き線の太さ",
     "tool_pointing": "ポインティング",
-    "tool_pointing_block": "参加者ポインティング使用が許可されていない。",
+    "tool_pointing_block": "参加者ポインティング使用が許可されていません。",
     "tool_enlarge_reduce": "拡大／縮小",
     "tool_screen_share": "画面共有",
     
@@ -202,7 +202,7 @@
     "record_local": "ローカル録画",
     "record_local_setting": "ローカル録画設定",
     "record_local_list": "ローカル録画リスト",
-    "record_blocked": "リーダーがローカル録画を阻止しました。",
+    "record_blocked": "参加者ローカル録画使用が許可されていません。",
     "record_server": "サーバー録画",
     "record_start_message": "ローカル画面録画を開始します。録画を終了するには、ボタンをもう一度クリック、又は[ESC]キーを押してください。",
     "record_fail_memory": "PCの容量が不足して録画を中止します。進行中録画ファイルは保存されません。​",

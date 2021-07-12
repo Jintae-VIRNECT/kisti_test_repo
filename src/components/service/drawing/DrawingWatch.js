@@ -18,6 +18,7 @@ export default {
     view(val, oldVal) {
       //협업보드 탭에 진입 시 실행 (첫진입 포함)
       if (val !== oldVal && val === VIEW.DRAWING) {
+        this.toolAble()
         this.$nextTick(() => {
           if (!this.isInit) return
           /*

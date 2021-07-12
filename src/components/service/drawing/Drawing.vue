@@ -91,7 +91,7 @@ export default {
       if (this.shareFile && this.shareFile.id) {
         if (!this.shareFile.json || this.shareFile.json.length === 0) {
           //협업보드 활성화 상태에서 신규 참가자 진입 시 fileShare 이벤트 전송하는 부분
-          setTimeout(() => this.sendImage([connectionId]), 1000) //신규 참가자에게 전달되는 이벤트가 누락되는 경우 있어 이벤트 전송시점을 좀 딜레이함
+          this.sendImage([connectionId])
           return
         }
         this.confirmDefault(this.$t('service.drawing_sync'), {
