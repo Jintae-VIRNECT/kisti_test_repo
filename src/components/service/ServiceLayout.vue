@@ -73,7 +73,7 @@ import confirmMixin from 'mixins/confirm'
 import { checkInput } from 'utils/deviceCheck'
 import ReconnectModal from './modal/ReconnectModal'
 
-import { mapGetters } from 'vuex'
+import { mapGetters, mapActions } from 'vuex'
 export default {
   name: 'ServiceLayout',
   beforeRouteEnter(to, from, next) {
@@ -148,6 +148,7 @@ export default {
   },
 
   methods: {
+    ...mapActions(['useStt']),
     changeOrientation(event) {
       if (!this.myInfo || !this.myInfo.stream) return
       const tracks = this.myInfo.stream.getVideoTracks()
@@ -281,6 +282,9 @@ export default {
     this.$eventBus.$off('video:fullscreen', this.setFullScreen)
     this.$eventBus.$off('video:loaded', this.setVideoLoaded)
     this.$eventBus.$off('map:show', this.togglePositionMap)
+
+    //협업 종료시 stt 종료
+    this.useStt(false)
   },
 
   mounted() {

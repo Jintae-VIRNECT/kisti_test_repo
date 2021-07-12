@@ -153,9 +153,11 @@ def main():
     
     client = NotionClient(token_v2=MY_NOTION_TOKEN)
 
-    page = client.get_block(NOTION_PAGE_URL)
+    print("client", client)
 
+    page = client.get_block(NOTION_PAGE_URL)
     
+    print("page", page)
     print("page title", page.title)
 
     # clear page

@@ -162,15 +162,22 @@ export default {
       if (this.titleValid) {
         return false
       }
+
       if (this.title !== this.room.title) {
         return true
       }
       if (this.description !== this.room.description) {
         return true
       }
+
       if (this.image !== this.room.profile) {
         return true
       }
+
+      if (this.image === '' && this.room.profile === 'default') {
+        return true
+      }
+
       return false
     },
   },

@@ -26,6 +26,7 @@ export const SIGNAL = {
   FILE: 'signal:file',
   LINKFLOW: 'signal:linkflow',
   LOCATION: 'signal:location',
+  DRAWING_FROM_VUEX: 'signal:drawingFromVuex',
 }
 
 /**
