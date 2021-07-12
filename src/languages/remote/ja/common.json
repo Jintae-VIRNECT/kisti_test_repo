@@ -70,7 +70,8 @@
     "call_timeout": "協業に接続してから{time}分になりました。<br>協業を継続しますか？",
     "unsupport_feature": "この機能は後日の予定です。",
     "access_remove": "選択したメンバーの参加権限を削除します。",
-    "access_removed": "参加権限を削除します。"
+    "access_removed": "参加権限を削除します。",
+    "please_allow_popup":"ポップアップを遮断することを許可してください。"
   },
   "alarm": {
     "no_alarm": "受信通知がありません。",

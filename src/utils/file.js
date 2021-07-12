@@ -62,20 +62,12 @@ export const getFile = url => {
  * @param {Object} file 다운로드 받을 파일 정보
  * @param {Boolean} usingNewTab 새 탭을 열어서 파일을 다운로드
  */
-export const downloadByURL = async (file, usingNewTab = false) => {
-  // let a = document.createElement('a')
-  // document.body.appendChild(a)
-  // a.style = 'display: none'
-  // a.href = file.url
-  // a.download = file.name
-  // a.target = '_blank'
-  // a.click()
-  // window.URL.revokeObjectURL(file.url)
+export const downloadByURL = (file, usingNewTab = false) => {
   if (usingNewTab) {
     const result = window.open(proxyUrl(file.url))
     //@TODO result가 null이면 새로운 창을 호출하지 못한 상황임. 안내 메시지 필요함.
     if (result === null) {
-      throw 'popup blocked'
+      throw 'popup_blocked'
     }
   } else {
     let filename = file.name
