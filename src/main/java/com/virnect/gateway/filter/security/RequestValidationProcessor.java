@@ -22,7 +22,7 @@ public class RequestValidationProcessor {
 			requestUrlPath.startsWith("/licenses/deallocate") ||
 			requestUrlPath.contains("/licenses/deallocate") ||
 			requestUrlPath.contains("/licenses/sdk/authentication") ||
-			requestUrlPath.contains(" /workspaces/setting") ||
+			requestUrlPath.contains("/workspaces/setting") ||
 			requestUrlPath.matches("^/workspaces/([a-zA-Z0-9]+)/invite/accept$") ||
 			requestUrlPath.matches("^/workspaces/invite/[a-zA-Z0-9]+/(accept|reject).*$");
 	}
