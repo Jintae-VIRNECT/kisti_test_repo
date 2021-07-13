@@ -22,7 +22,7 @@ public class RequestValidationProcessor {
 			requestUrlPath.startsWith("/licenses/deallocate") ||
 			requestUrlPath.contains("/licenses/deallocate") ||
 			requestUrlPath.contains("/licenses/sdk/authentication") ||
-			requestUrlPath.contains(" /workspaces/setting") ||
+			requestUrlPath.contains("/workspaces/setting") ||
 			requestUrlPath.matches("^/workspaces/([a-zA-Z0-9]+)/invite/accept$") ||
 			requestUrlPath.matches("^/workspaces/invite/[a-zA-Z0-9]+/(accept|reject).*$");
 	}
@@ -34,7 +34,7 @@ public class RequestValidationProcessor {
 	private static boolean hostNameCheck(ServerHttpRequest request) {
 		if (request.getHeaders().getHost() != null) {
 			String hostName = request.getHeaders().getHost().getHostName();
-			logger.info("RequestValidationProcessing - Request HostName Check -> [{}]", hostName);
+			logger.debug("RequestValidationProcessing - Request HostName Check -> [{}]", hostName);
 			if (hostName.equals("192.168.6.3")) {
 				logger.info("RequestValidationProcessing - Request HostName Check Success. : -> [{}]", hostName);
 				return true;
@@ -58,7 +58,7 @@ public class RequestValidationProcessor {
 				clientIp = Objects.requireNonNull(request.getRemoteAddress()).getAddress().getHostAddress();
 			}
 
-			logger.info(
+			logger.debug(
 				"RequestValidationProcessing - allowedOfficeInternalAPKDeployRequest :: RemoteAddress Check -> [{}]",
 				clientIp
 			);
@@ -76,7 +76,7 @@ public class RequestValidationProcessor {
 	}
 
 	public static boolean isSwaggerApiDocsUrl(ServerHttpRequest request) {
-		logger.info(
+		logger.debug(
 			"RequestValidationProcessing - SwaggerUrl :: Skip Url Check about [{}]", request.getURI().getPath());
 		return request.getURI().getPath().contains("/v2/api-docs");
 	}
@@ -84,8 +84,6 @@ public class RequestValidationProcessor {
 	public static boolean isSessionAuthenticationRequest(ServerHttpRequest request) {
 		logger.info("RequestValidationProcessing - Session :: Session Cookie Exist Check");
 		return request.getCookies().keySet().stream().anyMatch(key -> key.contains("VSESSION"));
-		// return request.getCookies().size() > 0 && !request.getHeaders().containsKey(HttpHeaders.AUTHORIZATION);
-
 	}
 
 	public static boolean isJwtAuthenticationRequest(ServerHttpRequest request) {
