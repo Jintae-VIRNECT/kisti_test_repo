@@ -18,6 +18,8 @@ import com.virnect.uaa.domain.user.domain.User;
 import com.virnect.uaa.domain.user.dto.response.PageMetadataResponse;
 import com.virnect.uaa.domain.user.dto.response.UserInfoListResponse;
 import com.virnect.uaa.domain.user.dto.response.UserInfoResponse;
+import com.virnect.uaa.domain.user.error.UserAccountErrorCode;
+import com.virnect.uaa.domain.user.exception.UserServiceException;
 import com.virnect.uaa.domain.user.mapper.UserInfoMapper;
 
 @Slf4j
@@ -50,7 +52,9 @@ public class InternalUserInformationServiceImpl implements InternalUserInformati
 
 	@Override
 	public UserInfoResponse getUserInfoByUserId(long userId) {
-		return null;
+		User user = userRepository.findById(userId)
+			.orElseThrow(() -> new UserServiceException(UserAccountErrorCode.ERR_USER_NOT_FOUND));
+		return userInfoMapper.toUserInfoResponse(user);
 	}
 
 	private void addNormalStateUserInformation(
