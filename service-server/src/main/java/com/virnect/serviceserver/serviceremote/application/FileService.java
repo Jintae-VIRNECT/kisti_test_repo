@@ -1010,7 +1010,7 @@ public class FileService {
 
 	public FileStorageCheckResponse checkStorageCapacity(String workspaceId) {
 
-		ErrorCode errorCode;
+		ErrorCode errorCode = ErrorCode.ERR_SUCCESS;
 
 		int OVER_STORAGE = 100;
 		int MIN_STORAGE = 100;
@@ -1018,10 +1018,9 @@ public class FileService {
 		ApiResponse<WorkspaceLicensePlanInfoResponse> licensePlanInfo = licenseRestService.getWorkspacePlan(workspaceId);
 		double residualStorageValue = (double)licensePlanInfo.getData().getMaxStorageSize() - (double)licensePlanInfo.getData().getCurrentUsageStorage();
 		double usedStoragePer = ((double)licensePlanInfo.getData().getCurrentUsageStorage() / (double)licensePlanInfo.getData().getMaxStorageSize()) * 100;
+
 		if (usedStoragePer >= OVER_STORAGE || residualStorageValue <= MIN_STORAGE) {
 			errorCode = ErrorCode.ERR_STORAGE_CAPACITY_FULL;
-		} else {
-			errorCode = ErrorCode.ERR_SUCCESS;
 		}
 
 		log.info("Storage capacity result code : " + errorCode.getCode());
