@@ -40,7 +40,7 @@ public class TokenSecurityConfiguration extends WebSecurityConfigurerAdapter {
 		http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
 
 		http.authorizeRequests()
-			.antMatchers("/auth/**", "/healthcheck", "/swagger-ui.html", "/v2/api-docs").permitAll()
+			.antMatchers("/auth/**", "/users/**", "/healthcheck", "/swagger-ui.html", "/v2/api-docs").permitAll()
 			.and()
 			.exceptionHandling()
 			.authenticationEntryPoint(restAuthenticationEntryPoint);

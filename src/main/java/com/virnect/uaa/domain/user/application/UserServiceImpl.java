@@ -37,7 +37,7 @@ import lombok.extern.slf4j.Slf4j;
 import com.virnect.security.UserDetailsImpl;
 import com.virnect.uaa.domain.auth.account.dao.UserOTPRepository;
 import com.virnect.uaa.domain.user.dao.EmailAuthRepository;
-import com.virnect.uaa.domain.user.dao.SecessionUserRepository;
+import com.virnect.uaa.domain.user.dao.secession.SecessionUserRepository;
 import com.virnect.uaa.domain.user.dao.UserPasswordAuthCodeRepository;
 import com.virnect.uaa.domain.user.dao.user.UserRepository;
 import com.virnect.uaa.domain.user.dao.useraccesslog.UserAccessLogRepository;

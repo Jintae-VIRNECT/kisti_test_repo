@@ -3,7 +3,6 @@ package com.virnect.uaa.domain.user.mapper;
 import org.mapstruct.BeanMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
-import org.mapstruct.NullValueMappingStrategy;
 import org.mapstruct.NullValuePropertyMappingStrategy;
 
 import com.virnect.uaa.domain.user.domain.SecessionUser;
@@ -15,6 +14,7 @@ public interface UserInfoMapper {
 	@BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.SET_TO_DEFAULT)
 	UserInfoResponse toUserInfoResponse(User user);
 
+	@Mapping(source = "secessionUser.nickName", target = "nickname")
 	@Mapping(source = "secessionUser.userUUID", target = "uuid")
 	@Mapping(target = "name", constant = "secessionUser")
 	@Mapping(target = "firstName", constant = "secessionUser")

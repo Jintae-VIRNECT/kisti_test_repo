@@ -1,5 +1,6 @@
 package com.virnect.uaa.domain.user.api;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 
 import org.springframework.data.domain.Pageable;
@@ -51,7 +52,7 @@ public class InternalUserInfoController {
 
 	@ApiOperation(value = "사용자 정보 목록 조회(Workspace 서버에서 사용)", notes = "타 서버에서 사용하는 api 입니다.", tags = "workspace server only")
 	@ApiImplicitParams({
-		@ApiImplicitParam(name = "search", value = "닉네임,이메일", dataType = "string", paramType = "query", defaultValue = ""),
+		@ApiImplicitParam(name = "search", value = "닉네임,이메일", dataType = "string", paramType = "query"),
 		@ApiImplicitParam(name = "workspaceUserIdList", value = "사용자 식별번호", dataType = "array", paramType = "body", required = true, defaultValue = "[\"498b1839dc29ed7bb2ee90ad6985c608\"]"),
 	})
 	@PostMapping("/list")
@@ -62,7 +63,8 @@ public class InternalUserInfoController {
 			throw new UserServiceException(UserAccountErrorCode.ERR_INVALID_REQUEST_PARAMETER);
 		}
 		UserInfoListResponse responseMessage = internalUserInformationService.getUsersInfoList(
-			search, Arrays.asList(workspaceUserIdList));
+			search, new ArrayList<>(Arrays.asList(workspaceUserIdList))
+		);
 		return ResponseEntity.ok(new ApiResponse<>(responseMessage));
 	}
 

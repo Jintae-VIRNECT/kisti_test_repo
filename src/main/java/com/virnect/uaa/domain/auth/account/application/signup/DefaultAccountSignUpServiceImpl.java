@@ -33,7 +33,7 @@ import com.virnect.uaa.domain.auth.account.dto.response.EmailVerificationRespons
 import com.virnect.uaa.domain.auth.account.dto.response.OAuthTokenResponse;
 import com.virnect.uaa.domain.auth.account.error.AuthenticationErrorCode;
 import com.virnect.uaa.domain.auth.account.error.exception.UserAuthenticationServiceException;
-import com.virnect.uaa.domain.user.dao.SecessionUserRepository;
+import com.virnect.uaa.domain.user.dao.secession.SecessionUserRepository;
 import com.virnect.uaa.domain.user.dao.user.UserRepository;
 import com.virnect.uaa.domain.user.domain.User;
 import com.virnect.uaa.global.security.token.JwtTokenProvider;

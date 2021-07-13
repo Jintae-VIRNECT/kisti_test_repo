@@ -1,4 +1,4 @@
-package com.virnect.auth.validator;
+package com.virnect.uaa.validator;
 
 import static org.assertj.core.api.Assertions.*;
 

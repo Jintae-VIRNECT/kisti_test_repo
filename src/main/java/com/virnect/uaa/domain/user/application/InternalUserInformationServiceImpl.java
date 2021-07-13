@@ -7,12 +7,11 @@ import java.util.stream.Collectors;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import com.virnect.uaa.domain.user.dao.SecessionUserRepository;
+import com.virnect.uaa.domain.user.dao.secession.SecessionUserRepository;
 import com.virnect.uaa.domain.user.dao.user.UserRepository;
 import com.virnect.uaa.domain.user.domain.SecessionUser;
 import com.virnect.uaa.domain.user.domain.User;
@@ -44,38 +43,40 @@ public class InternalUserInformationServiceImpl implements InternalUserInformati
 	@Override
 	public UserInfoListResponse getUsersInfoList(String search, List<String> workspaceUserIdList) {
 		List<UserInfoResponse> userInfos = new ArrayList<>();
-		// 1. 탈퇴 회원 조회
-		List<SecessionUser> secessionUsers = secessionUserRepository.findByUserUUIDIn(workspaceUserIdList);
-
-		if (!secessionUsers.isEmpty()) {
-			List<String> secessionUserUUIDList = secessionUsers.stream()
-				.map(SecessionUser::getUserUUID)
-				.collect(Collectors.toList());
-			workspaceUserIdList.removeAll(secessionUserUUIDList);
-		}
-
-		List<User> userList = userRepository.findByUuidIn(workspaceUserIdList);
-
-		for (SecessionUser secessionUser : secessionUsers) {
-			userInfos.add(userInfoMapper.toUserInfoResponse(secessionUser));
-		}
-
-		for (User user : userList) {
-			userInfos.add(userInfoMapper.toUserInfoResponse(user));
-		}
-
-		if (StringUtils.hasText(search)) {
-			log.info("[User Info Search][keyword] -> [{}]", search);
-			userInfos = userInfos.stream()
-				.filter(u -> u.getEmail().contains(search) || u.getNickname().contains(search))
-				.collect(Collectors.toList());
-		}
-
+		addNormalStateUserInformation(userInfos, workspaceUserIdList, search);
+		addSecessionUserInformation(userInfos, workspaceUserIdList, search);
 		return new UserInfoListResponse(userInfos, null);
 	}
 
 	@Override
 	public UserInfoResponse getUserInfoByUserId(long userId) {
 		return null;
+	}
+
+	private void addNormalStateUserInformation(
+		List<UserInfoResponse> userInfos, List<String> workspaceUserIdList, String search
+	) {
+		List<User> users = userRepository.findUserInformationInUUIDListWithSearchQuery(workspaceUserIdList, search);
+		List<UserInfoResponse> userInfoResponseList = users.stream()
+			.map(userInfoMapper::toUserInfoResponse)
+			.collect(Collectors.toList());
+		userInfos.addAll(userInfoResponseList);
+	}
+
+	private void addSecessionUserInformation(
+		List<UserInfoResponse> userInfos, List<String> workspaceUserIdList, String search
+	) {
+		// if, already fetch all workspace user info then didn't querying secession user information
+		if (userInfos.size() == workspaceUserIdList.size()) {
+			return;
+		}
+
+		// remove normal user uuid list in secession user search uuid list
+		List<String> removeUUIDList = userInfos.stream().map(UserInfoResponse::getUuid).collect(Collectors.toList());
+		workspaceUserIdList.removeAll(removeUUIDList);
+		List<SecessionUser> secessionUsers = secessionUserRepository.findSecessionUserInformationByUUIDListWithSearchQuery(
+			workspaceUserIdList, search
+		);
+		userInfos.addAll(secessionUsers.stream().map(userInfoMapper::toUserInfoResponse).collect(Collectors.toList()));
 	}
 }

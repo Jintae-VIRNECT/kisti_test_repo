@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.data.jpa.repository.support.QuerydslRepositorySupport;
 
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -22,19 +21,28 @@ import com.virnect.uaa.domain.user.domain.User;
  * @description
  * @since 2020.04.10
  */
-public class UserCustomRepositoryImpl extends QuerydslRepositorySupport implements UserCustomRepository {
-	private final JPAQueryFactory jpaQueryFactory;
+public class UserCustomRepositoryImpl implements UserCustomRepository {
+	private final JPAQueryFactory query;
 
-	public UserCustomRepositoryImpl(JPAQueryFactory jpaQueryFactory) {
-		super(User.class);
-		this.jpaQueryFactory = jpaQueryFactory;
+	public UserCustomRepositoryImpl(JPAQueryFactory Query) {
+		this.query = Query;
+	}
+
+	@Override
+	public List<User> findUserInformationInUUIDListWithSearchQuery(List<String> uuidList, String search) {
+		return query.selectFrom(user)
+			.where(
+				user.uuid.in(uuidList),
+				searchQuery(search)
+			)
+			.fetch();
 	}
 
 	@Override
 	public List<User> findUserByNameAndRecoveryEmailOrInternationalNumberAndMobile(
 		String name, String recoveryEmail, String mobile
 	) {
-		return jpaQueryFactory.selectFrom(user)
+		return query.selectFrom(user)
 			.where(
 				equalName(name), equalRecoveryEmail(recoveryEmail), equalInternationalNumber(mobile),
 				equalMobile(mobile)
@@ -45,7 +53,7 @@ public class UserCustomRepositoryImpl extends QuerydslRepositorySupport implemen
 	@Override
 	public Optional<User> findLoginUserInformationByUserEmail(String email) {
 		return Optional.ofNullable(
-			jpaQueryFactory.selectFrom(user)
+			query.selectFrom(user)
 				.innerJoin(user.userPermissionList, userPermission).fetchJoin()
 				.innerJoin(userPermission.permission, permission1).fetchJoin()
 				.where(user.email.eq(email))
@@ -81,4 +89,12 @@ public class UserCustomRepositoryImpl extends QuerydslRepositorySupport implemen
 		String mobileNumber = mobile.split("-")[1];
 		return user.mobile.eq(mobileNumber);
 	}
+
+	private BooleanExpression searchQuery(String search) {
+		if (StringUtils.isEmpty(search)) {
+			return null;
+		}
+		return user.email.contains(search).or(user.nickname.contains(search));
+	}
+
 }

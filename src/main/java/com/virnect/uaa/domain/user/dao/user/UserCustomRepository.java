@@ -13,6 +13,7 @@ import com.virnect.uaa.domain.user.domain.User;
  * @since 2020.04.10
  */
 public interface UserCustomRepository {
+	List<User> findUserInformationInUUIDListWithSearchQuery(List<String> uuidList, String search);
 	List<User> findUserByNameAndRecoveryEmailOrInternationalNumberAndMobile(
 		String name, String recoveryEmail, String mobile
 	);

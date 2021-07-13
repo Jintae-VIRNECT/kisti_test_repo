@@ -1,4 +1,4 @@
-package com.virnect.auth.service;
+package com.virnect.uaa.service;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
