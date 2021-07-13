@@ -1016,7 +1016,7 @@ public class FileService {
 
 		ApiResponse<WorkspaceLicensePlanInfoResponse> licensePlanInfo = licenseRestService.getWorkspacePlan(workspaceId);
 
-		double usedStoragePer = (licensePlanInfo.getData().getCurrentUsageStorage() / licensePlanInfo.getData().getMaxStorageSize()) * 100;
+		double usedStoragePer = ((double)licensePlanInfo.getData().getCurrentUsageStorage() / (double)licensePlanInfo.getData().getMaxStorageSize()) * 100;
 		if (usedStoragePer >= OVER_STORAGE) {
 			errorCode = ErrorCode.ERR_STORAGE_CAPACITY_FULL;
 		} else {
