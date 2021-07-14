@@ -13,6 +13,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
 
 import com.google.gson.JsonObject;
@@ -841,14 +842,15 @@ public class RoomService {
 				}
 			}
 		}
-		String[] userIds = userList.stream().distinct().toArray(String[]::new);
 
+		ApiResponse<WorkspaceMemberInfoListResponse> memberInfo = null;
 		// Receive User list from Workspace
-		ApiResponse<WorkspaceMemberInfoListResponse> memberInfo = workspaceRestService.getWorkspaceMemberInfoList(workspaceId, userIds);
+		if (!CollectionUtils.isEmpty(userList)) {
+			memberInfo = workspaceRestService.getWorkspaceMemberInfoList(workspaceId, userList.stream().distinct().toArray(String[]::new));
+		}
 
 		// Make Response data
 		for (Room room : roomPage.getContent()) {
-
 			RoomInfoResponse roomInfoResponse = roomInfoMapper.toDto(room);
 			roomInfoResponse.setSessionType(room.getSessionProperty().getSessionType());
 
@@ -857,14 +859,16 @@ public class RoomService {
 				.map(memberMapper::toDto)
 				.collect(Collectors.toList());
 
-			for (MemberInfoResponse memberInfoResponse : memberInfoList) {
-				for (WorkspaceMemberInfoResponse workspaceMemberInfo : memberInfo.getData().getMemberInfoList()) {
-					if (memberInfoResponse.getUuid().equals(workspaceMemberInfo.getUuid())) {
-						memberInfoResponse.setRole(workspaceMemberInfo.getRole());
-						memberInfoResponse.setEmail(workspaceMemberInfo.getEmail());
-						memberInfoResponse.setName(workspaceMemberInfo.getName());
-						memberInfoResponse.setNickName(workspaceMemberInfo.getNickName());
-						memberInfoResponse.setProfile(workspaceMemberInfo.getProfile());
+			if (!CollectionUtils.isEmpty(memberInfo.getData().getMemberInfoList())) {
+				for (MemberInfoResponse memberInfoResponse : memberInfoList) {
+					for (WorkspaceMemberInfoResponse workspaceMemberInfo : memberInfo.getData().getMemberInfoList()) {
+						if (memberInfoResponse.getUuid().equals(workspaceMemberInfo.getUuid())) {
+							memberInfoResponse.setRole(workspaceMemberInfo.getRole());
+							memberInfoResponse.setEmail(workspaceMemberInfo.getEmail());
+							memberInfoResponse.setName(workspaceMemberInfo.getName());
+							memberInfoResponse.setNickName(workspaceMemberInfo.getNickName());
+							memberInfoResponse.setProfile(workspaceMemberInfo.getProfile());
+						}
 					}
 				}
 			}

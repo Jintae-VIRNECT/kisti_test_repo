@@ -5,9 +5,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.OutputStream;
-import java.nio.charset.StandardCharsets;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
@@ -40,9 +38,7 @@ import org.springframework.web.multipart.commons.CommonsMultipartFile;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.io.Files;
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -61,21 +57,6 @@ import com.virnect.data.domain.room.Room;
 import com.virnect.data.dto.FileUploadResult;
 import com.virnect.data.dto.PageMetadataResponse;
 import com.virnect.data.dto.UploadResult;
-import com.virnect.data.dto.response.file.FileStorageCheckResponse;
-import com.virnect.data.dto.response.file.FileStorageInfoResponse;
-import com.virnect.data.dto.rest.WorkspaceLicensePlanInfoResponse;
-import com.virnect.data.infra.utils.JsonUtil;
-import com.virnect.serviceserver.serviceremote.dto.mapper.file.FileInfoMapper;
-import com.virnect.serviceserver.serviceremote.dto.mapper.file.FileUploadMapper;
-import com.virnect.serviceserver.serviceremote.dto.mapper.file.FileUserInfoMapper;
-import com.virnect.serviceserver.serviceremote.dto.mapper.file.RecordFileDetailMapper;
-import com.virnect.serviceserver.serviceremote.dto.mapper.file.RecordFileMapper;
-import com.virnect.serviceserver.serviceremote.dto.mapper.file.ShareFileInfoMapper;
-import com.virnect.serviceserver.serviceremote.dto.mapper.file.ShareUploadFileMapper;
-import com.virnect.data.dto.rest.UserInfoResponse;
-import com.virnect.data.error.ErrorCode;
-import com.virnect.data.global.common.ApiResponse;
-import com.virnect.data.infra.file.IFileManagementService;
 import com.virnect.data.dto.request.file.FileUploadRequest;
 import com.virnect.data.dto.request.file.RecordFileUploadRequest;
 import com.virnect.data.dto.request.file.RoomProfileUpdateRequest;
@@ -86,12 +67,27 @@ import com.virnect.data.dto.response.file.FileDetailInfoResponse;
 import com.virnect.data.dto.response.file.FileInfoListResponse;
 import com.virnect.data.dto.response.file.FileInfoResponse;
 import com.virnect.data.dto.response.file.FilePreSignedResponse;
+import com.virnect.data.dto.response.file.FileStorageCheckResponse;
+import com.virnect.data.dto.response.file.FileStorageInfoResponse;
 import com.virnect.data.dto.response.file.FileUploadResponse;
 import com.virnect.data.dto.response.file.FileUserInfoResponse;
 import com.virnect.data.dto.response.file.RoomProfileUpdateResponse;
 import com.virnect.data.dto.response.file.ShareFileInfoListResponse;
 import com.virnect.data.dto.response.file.ShareFileInfoResponse;
 import com.virnect.data.dto.response.file.ShareFileUploadResponse;
+import com.virnect.data.dto.rest.UserInfoResponse;
+import com.virnect.data.dto.rest.WorkspaceLicensePlanInfoResponse;
+import com.virnect.data.error.ErrorCode;
+import com.virnect.data.global.common.ApiResponse;
+import com.virnect.data.infra.file.IFileManagementService;
+import com.virnect.data.infra.utils.JsonUtil;
+import com.virnect.serviceserver.serviceremote.dto.mapper.file.FileInfoMapper;
+import com.virnect.serviceserver.serviceremote.dto.mapper.file.FileUploadMapper;
+import com.virnect.serviceserver.serviceremote.dto.mapper.file.FileUserInfoMapper;
+import com.virnect.serviceserver.serviceremote.dto.mapper.file.RecordFileDetailMapper;
+import com.virnect.serviceserver.serviceremote.dto.mapper.file.RecordFileMapper;
+import com.virnect.serviceserver.serviceremote.dto.mapper.file.ShareFileInfoMapper;
+import com.virnect.serviceserver.serviceremote.dto.mapper.file.ShareUploadFileMapper;
 
 @Slf4j
 @Service
@@ -173,6 +169,8 @@ public class FileService {
 			.contentType(fileUploadRequest.getFile().getContentType())
 			.size(fileUploadRequest.getFile().getSize())
 			.fileType(fileType)
+			.width(0)
+			.height(0)
 			.build();
 
 		File uploadResult = fileRepository.save(file);
@@ -299,6 +297,8 @@ public class FileService {
 			.contentType(roomProfileUpdateRequest.getProfile().getContentType())
 			.size(roomProfileUpdateRequest.getProfile().getSize())
 			.fileType(FileType.PROFILE)
+			.width(0)
+			.height(0)
 			.build();
 		File fileUploadResult = fileRepository.save(file);
 
@@ -973,9 +973,9 @@ public class FileService {
 
 	public ApiResponse<FileStorageInfoResponse> checkRemoteStorageCapacity(String workspaceId) {
 
-		Long profileStorageSize = 0L;
-		Long attachFileStorageSize = 0L;
-		Long shareFileStorageSize = 0L;
+		long profileStorageSize = 0L;
+		long attachFileStorageSize = 0L;
+		long shareFileStorageSize = 0L;
 
 		List<File> files = fileRepository.findByWorkspaceIdAndDeleted(workspaceId, false);
 		for (File file : files) {
@@ -1018,6 +1018,9 @@ public class FileService {
 		ApiResponse<WorkspaceLicensePlanInfoResponse> licensePlanInfo = licenseRestService.getWorkspacePlan(workspaceId);
 		double residualStorageValue = (double)licensePlanInfo.getData().getMaxStorageSize() - (double)licensePlanInfo.getData().getCurrentUsageStorage();
 		double usedStoragePer = ((double)licensePlanInfo.getData().getCurrentUsageStorage() / (double)licensePlanInfo.getData().getMaxStorageSize()) * 100;
+
+		log.info("Max storage size : " + (double)licensePlanInfo.getData().getMaxStorageSize());
+		log.info("Current use storage size : " + (double)licensePlanInfo.getData().getCurrentUsageStorage());
 
 		if (usedStoragePer >= OVER_STORAGE || residualStorageValue <= MIN_STORAGE) {
 			errorCode = ErrorCode.ERR_STORAGE_CAPACITY_FULL;
