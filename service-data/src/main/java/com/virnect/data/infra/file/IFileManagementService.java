@@ -36,6 +36,8 @@ public interface IFileManagementService {
      */
     UploadResult upload(MultipartFile file, String dirPath, FileType fileType) throws IOException, NoSuchAlgorithmException, InvalidKeyException;
 
+    UploadResult upload(MultipartFile file, String dirPath, FileType fileType, String objectName) throws IOException, NoSuchAlgorithmException, InvalidKeyException;
+
     UploadResult uploadProfile(MultipartFile file, String dirPath) throws IOException, NoSuchAlgorithmException, InvalidKeyException;
 
     boolean removeObject(String objectPathToName) throws IOException, NoSuchAlgorithmException, InvalidKeyException;

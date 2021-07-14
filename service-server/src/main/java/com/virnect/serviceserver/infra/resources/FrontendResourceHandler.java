@@ -37,9 +37,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @Configuration
 public class FrontendResourceHandler implements WebMvcConfigurer {
 
-	@Autowired
-	RemoteServiceConfig remoteServiceConfig;
-
+	private final String remoteServiceFrontendDefaultPath = "dashboard";
 
 	@Override
 	public void addCorsMappings(CorsRegistry registry) {
@@ -51,10 +49,10 @@ public class FrontendResourceHandler implements WebMvcConfigurer {
 
 	@Override
 	public void addViewControllers(ViewControllerRegistry registry) {
-		registry.addViewController("/" + remoteServiceConfig.getRemoteServiceFrontendDefaultPath())
-				.setViewName("redirect:/" + remoteServiceConfig.getRemoteServiceFrontendDefaultPath() + "/");
-		registry.addViewController("/" + remoteServiceConfig.getRemoteServiceFrontendDefaultPath() + "/")
-				.setViewName("forward:/" + remoteServiceConfig.getRemoteServiceFrontendDefaultPath() + "/index.html");
+		registry.addViewController("/" + remoteServiceFrontendDefaultPath)
+				.setViewName("redirect:/" + remoteServiceFrontendDefaultPath + "/");
+		registry.addViewController("/" + remoteServiceFrontendDefaultPath + "/")
+				.setViewName("forward:/" + remoteServiceFrontendDefaultPath + "/index.html");
 		//super.addViewControllers(registry);
 	}
 

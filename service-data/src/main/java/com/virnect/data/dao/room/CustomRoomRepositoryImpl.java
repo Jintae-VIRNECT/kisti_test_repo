@@ -140,7 +140,7 @@ public class CustomRoomRepositoryImpl extends QuerydslRepositorySupport implemen
 	public Optional<Room> findRoomByWorkspaceIdAndSessionIdForWrite(
 		String workspaceId, String sessionId
 	) {
-		return Optional.ofNullable(
+      return Optional.ofNullable(
 			query.selectFrom(room)
 			.leftJoin(room.members, member).fetchJoin()
 			.innerJoin(room.sessionProperty, sessionProperty).fetchJoin()
@@ -295,6 +295,7 @@ public class CustomRoomRepositoryImpl extends QuerydslRepositorySupport implemen
 		List<Room> results = Objects.requireNonNull(getQuerydsl()).applyPagination(pageable, queryResult).fetch();
 		return new PageImpl<>(results, pageable, totalCount);
 	}
+
 	/**
 	 * 사용자 정보 조회 다이나믹 쿼리
 	 * @param search - 조회될 사용자 정보 식별자

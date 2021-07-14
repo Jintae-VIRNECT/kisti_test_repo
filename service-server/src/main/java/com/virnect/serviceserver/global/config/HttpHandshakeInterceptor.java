@@ -20,8 +20,8 @@ package com.virnect.serviceserver.global.config;
 import java.util.Map;
 
 import javax.servlet.http.HttpSession;
+import javax.validation.constraints.NotNull;
 
-import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.server.ServerHttpRequest;

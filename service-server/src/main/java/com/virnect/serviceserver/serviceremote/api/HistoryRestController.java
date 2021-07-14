@@ -2,6 +2,8 @@ package com.virnect.serviceserver.serviceremote.api;
 
 import javax.validation.Valid;
 
+import org.apache.commons.lang.StringUtils;
+import org.apache.logging.log4j.util.Strings;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -21,15 +23,15 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import springfox.documentation.annotations.ApiIgnore;
 
-import com.virnect.serviceserver.serviceremote.dto.request.room.RoomHistoryDeleteRequest;
-import com.virnect.serviceserver.serviceremote.dto.request.room.RoomRequest;
+import com.virnect.data.dto.request.PageRequest;
+import com.virnect.data.dto.request.room.RoomHistoryDeleteRequest;
+import com.virnect.data.dto.request.room.RoomRequest;
 import com.virnect.serviceserver.serviceremote.application.HistoryService;
 import com.virnect.serviceserver.serviceremote.application.RoomService;
-import com.virnect.serviceserver.serviceremote.dto.response.PageRequest;
-import com.virnect.serviceserver.serviceremote.dto.response.ResultResponse;
-import com.virnect.serviceserver.serviceremote.dto.response.room.RoomHistoryDetailInfoResponse;
-import com.virnect.serviceserver.serviceremote.dto.response.room.RoomHistoryInfoListResponse;
-import com.virnect.serviceserver.serviceremote.dto.response.room.RoomResponse;
+import com.virnect.data.dto.response.ResultResponse;
+import com.virnect.data.dto.response.room.RoomHistoryDetailInfoResponse;
+import com.virnect.data.dto.response.room.RoomHistoryInfoListResponse;
+import com.virnect.data.dto.response.room.RoomResponse;
 import com.virnect.data.error.ErrorCode;
 import com.virnect.data.error.exception.RestServiceException;
 import com.virnect.data.global.common.ApiResponse;
@@ -43,8 +45,6 @@ public class HistoryRestController {
 
     private static final String TAG = HistoryRestController.class.getSimpleName();
     private static final String REST_PATH = "/remote/history";
-
-    private final String PARAMETER_LOG_MESSAGE = "[PARAMETER ERROR]:: {}";
 
     private final RoomService roomService;
     private final HistoryService historyService;
@@ -69,14 +69,15 @@ public class HistoryRestController {
             TAG,
             "REST API: GET "
                 + REST_PATH + "::"
-                + "workspaceId:" + (workspaceId != null ? workspaceId : "{}") + "/"
-                + "userId:" + (userId != null ? userId : "{}"),
+                + "workspaceId:" + workspaceId + "/"
+                + "userId:" + userId,
             "getHistoryListCurrent"
         );
-
+        if (StringUtils.isBlank(workspaceId) || StringUtils.isBlank(userId)) {
+            throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
+        }
         RoomHistoryInfoListResponse responseData = historyService.getRoomHistoryCurrent(
             workspaceId, userId, paging, pageable.ofSortBy());
-
         return ResponseEntity.ok(new ApiResponse<>(responseData));
     }
 
@@ -99,15 +100,21 @@ public class HistoryRestController {
             TAG,
             "REST API: GET "
                 + REST_PATH + "::"
-                + "workspaceId:" + (workspaceId != null ? workspaceId : "{}") + "/"
-                + "userId:" + (userId != null ? userId : "{}") + "/"
-                + "search:" + (search != null ? search : "{}"),
+                + "workspaceId:" + workspaceId + "/"
+                + "userId:" + userId + "/"
+                + "search:" + search,
             "getHistoryListStandardSearch"
         );
+        if (StringUtils.isBlank(workspaceId) || StringUtils.isBlank(userId)) {
+            throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
+        }
 
-        RoomHistoryInfoListResponse responseData = historyService.getHistoryListStandardSearch(
-            workspaceId, userId, search, pageable.ofSortBy());
-
+        RoomHistoryInfoListResponse responseData;
+        if (Strings.isBlank(search)) {
+            responseData = historyService.getRoomHistoryCurrent(workspaceId, userId, true, pageable.ofSortBy());
+        } else {
+            responseData = historyService.getHistoryListStandardSearch(workspaceId, userId, search, pageable.ofSortBy());
+        }
         return ResponseEntity.ok(new ApiResponse<>(responseData));
 
     }
@@ -124,32 +131,19 @@ public class HistoryRestController {
             TAG,
             "REST API: POST "
                 + REST_PATH + "::"
-                + (roomRequest.toString() != null ? roomRequest.toString() : "{}") + "/"
-                + "sessionId:" + (sessionId != null ? sessionId : "{}") + "/"
+                + roomRequest.toString() + "/"
+                + "sessionId:" + sessionId + "/"
                 + "companyCode:" + companyCode,
             "redialRoomRequest"
         );
-
-        // check room request handler
         if (result.hasErrors()) {
-            result.getAllErrors().forEach(message ->
-                LogMessage.formedError(
-                    TAG,
-                    "REST API: POST " + REST_PATH,
-                    "redialRoomRequest",
-                    LogMessage.PARAMETER_ERROR,
-                    message.toString()
-                )
-            );
             throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
-
         ApiResponse<RoomResponse> responseData = roomService.redialRoomRequest(
             roomRequest,
             sessionId,
             companyCode
         );
-
         return ResponseEntity.ok(responseData);
     }
 
@@ -167,27 +161,16 @@ public class HistoryRestController {
             TAG,
             "REST API: POST "
                 + REST_PATH + "::"
-                + (roomRequest.toString() != null ? roomRequest.toString() : "{}") + "/"
-                + "client:" + (client != null ? client : "{}") + "/"
-                + "userId:" + (userId != null ? userId : "{}") + "/"
-                + "sessionId:" + (sessionId != null ? sessionId : "{}") + "/"
+                + roomRequest.toString() + "/"
+                + "client:" + client + "/"
+                + "userId:" + userId + "/"
+                + "sessionId:" + sessionId + "/"
                 + "companyCode:" + companyCode,
             "redialRoomRequestByUserId"
         );
-        // check room request handler
         if (result.hasErrors()) {
-            result.getAllErrors().forEach(message ->
-                LogMessage.formedError(
-                    TAG,
-                    "REST API: POST " + REST_PATH,
-                    "redialRoomRequestHandler",
-                    LogMessage.PARAMETER_ERROR,
-                    message.toString()
-                )
-            );
             throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
-
         ApiResponse<RoomResponse> responseData = roomService.redialRoomRequestByUserId(
             client,
             userId,
@@ -195,7 +178,6 @@ public class HistoryRestController {
             sessionId,
             companyCode
         );
-
         return ResponseEntity.ok(responseData);
     }
 
@@ -209,18 +191,14 @@ public class HistoryRestController {
             TAG,
             "REST API: GET "
                 + REST_PATH + "/"
-                + (workspaceId != null ? workspaceId : "{}") + "/"
-                + (sessionId != null ? sessionId : "{}"),
+                + workspaceId + "/"
+                + sessionId,
             "getHistoryByWorkspaceIdAndSessionId"
         );
-
-        if ((workspaceId == null || workspaceId.isEmpty()) ||
-            (sessionId == null || sessionId.isEmpty())) {
+        if (StringUtils.isBlank(workspaceId) || StringUtils.isBlank(sessionId)) {
             throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
-
         ApiResponse<RoomHistoryDetailInfoResponse> responseData = historyService.getHistoryBySessionId(workspaceId, sessionId);
-
         return ResponseEntity.ok(responseData);
     }
 
@@ -234,17 +212,14 @@ public class HistoryRestController {
             TAG,
             "REST API: DELETE "
                 + REST_PATH + "/"
-                + (workspaceId != null ? workspaceId : "{}") + "/"
-                + (userId != null ? userId : "{}"),
+                + workspaceId + "/"
+                + userId,
             "deleteHistoryByWorkspaceIdAndUserId"
         );
-        if ((workspaceId == null || workspaceId.isEmpty()) ||
-            (userId == null || userId.isEmpty())) {
+        if (StringUtils.isBlank(workspaceId) || StringUtils.isBlank(userId)) {
             throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
-
         ApiResponse<ResultResponse> responseData = historyService.deleteHistory(workspaceId, userId);
-
         return ResponseEntity.ok(responseData);
     }
 
@@ -259,20 +234,17 @@ public class HistoryRestController {
             TAG,
             "REST API: DELETE "
                 + REST_PATH + "/"
-                + (workspaceId != null ? workspaceId : "{}") + "::"
-                + (roomHistoryDeleteRequest.toString() != null ? roomHistoryDeleteRequest.toString() : "{}"),
+                + workspaceId + "::"
+                + "RoomHistoryDeleteRequest : " + roomHistoryDeleteRequest.toString(),
             "deleteHistoryByWorkspaceId"
         );
-        if (result.hasErrors()) {
-            result.getAllErrors().forEach(message -> log.error(PARAMETER_LOG_MESSAGE, message));
+        if (result.hasErrors() || StringUtils.isBlank(workspaceId)) {
             throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
-
         ApiResponse<ResultResponse> responseData = historyService.deleteHistoryById(
             workspaceId,
             roomHistoryDeleteRequest
         );
-
         return ResponseEntity.ok(responseData);
     }
 }

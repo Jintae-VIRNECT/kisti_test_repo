@@ -56,6 +56,7 @@ import com.virnect.data.error.ErrorCode;
 import com.virnect.data.infra.file.IFileManagementService;
 import com.virnect.data.infra.utils.JsonUtil;
 import com.virnect.data.infra.utils.LogMessage;
+import com.virnect.serviceserver.global.config.RemoteServiceConfig;
 import com.virnect.serviceserver.global.config.property.RemoteStorageProperties;
 
 
@@ -75,9 +76,9 @@ public class LocalFileManagementService implements IFileManagementService {
 
     private boolean policyLifeCycleEnabled;
 
-    //private final RemoteServiceConfig remoteServiceConfig;
+    private final RemoteServiceConfig remoteServiceConfig;
 
-    private final RemoteStorageProperties remoteStorageProperties;
+    //private final RemoteStorageProperties remoteStorageProperties;
 
     /*@Qualifier(value = "remoteServiceConfig")
     @Autowired
@@ -202,10 +203,10 @@ public class LocalFileManagementService implements IFileManagementService {
     @Override
     public void loadStoragePolicy() {
         try {
-            boolean policyEnabled = remoteStorageProperties.isPolicyEnabled();
-            this.policyLifeCycleEnabled = remoteStorageProperties.getPolicyLifeCycle() > 0;
+            boolean policyEnabled = remoteServiceConfig.remoteStorageProperties.isPolicyEnabled();
+            this.policyLifeCycleEnabled = remoteServiceConfig.remoteStorageProperties.getPolicyLifeCycle() > 0;
             if (policyEnabled) {
-                String policyLocation = remoteStorageProperties.getPolicyLocation();
+                String policyLocation = remoteServiceConfig.remoteStorageProperties.getPolicyLocation();
                 JsonUtil jsonUtil;
                 if (policyLocation == null || policyLocation.isEmpty()) {
                     LogMessage.formedInfo(
@@ -243,7 +244,7 @@ public class LocalFileManagementService implements IFileManagementService {
                             "initialise local file service",
                             "init",
                             "storage service policy is enabled",
-                            String.valueOf(remoteStorageProperties.isEnabled())
+                            String.valueOf(remoteServiceConfig.remoteStorageProperties.isEnabled())
                     );
                     fileAllowExtensionList = setFileAllowExtensionList(jsonObject);
                 }
@@ -312,23 +313,23 @@ public class LocalFileManagementService implements IFileManagementService {
 
     @PostConstruct
     public void init() throws NoSuchAlgorithmException, InvalidKeyException {
-        if(remoteStorageProperties.isEnabled()) {
+        if(remoteServiceConfig.remoteStorageProperties.isEnabled()) {
             LogMessage.formedInfo(
                     TAG,
                     "initialise local file service",
                     "init",
                     "storage service is enabled",
-                    String.valueOf(remoteStorageProperties.isEnabled())
+                    String.valueOf(remoteServiceConfig.remoteStorageProperties.isEnabled())
             );
             try {
                 disableSslVerification();
 
                 loadStoragePolicy();
 
-                this.bucketName = remoteStorageProperties.getBucketName();
-                this.fileBucketName = remoteStorageProperties.getBucketFileName();
-                this.profileBucketName = remoteStorageProperties.getBucketProfileName();
-                this.recordBucketName = remoteStorageProperties.getBucketRecordName();
+                this.bucketName = remoteServiceConfig.remoteStorageProperties.getBucketName();
+                this.fileBucketName = remoteServiceConfig.remoteStorageProperties.getBucketFileName();
+                this.profileBucketName = remoteServiceConfig.remoteStorageProperties.getBucketProfileName();
+                this.recordBucketName = remoteServiceConfig.remoteStorageProperties.getBucketRecordName();
 
                 //String accessKey = this.remoteServiceConfig.remoteStorageProperties.getAccessKey();
                 //String secretKey = this.remoteServiceConfig.remoteStorageProperties.getSecretKey();
@@ -367,7 +368,7 @@ public class LocalFileManagementService implements IFileManagementService {
                         "Bucket ConnectException error occurred",
                         e.getMessage()
                 );
-                remoteStorageProperties.setEnabled(false);
+                remoteServiceConfig.remoteStorageProperties.setEnabled(false);
             } catch (MinioException e) {
                 LogMessage.formedError(
                         TAG,
@@ -498,6 +499,105 @@ public class LocalFileManagementService implements IFileManagementService {
                         + "dirPath: " + dirPath + ", " + ", "
                         + "objectPath: " + objectPath + ", " + ", "
                         + "objectName: " + objectName
+        );
+        return new UploadResult(objectName, ErrorCode.ERR_SUCCESS);
+    }
+
+    @Override
+    public UploadResult upload(
+        MultipartFile file, String dirPath, FileType fileType, String objectName
+    ) throws IOException, NoSuchAlgorithmException, InvalidKeyException {
+        // check is file dummy
+        if (file.getSize() == 0) {
+            LogMessage.formedError(
+                TAG,
+                "file upload",
+                "upload",
+                "this file maybe dummy",
+                String.valueOf(file.getSize())
+            );
+            return new UploadResult(null, ErrorCode.ERR_FILE_ASSUME_DUMMY);
+        }
+
+        // check file extension
+        String fileExtension = Files.getFileExtension(Objects.requireNonNull(file.getOriginalFilename())).toLowerCase();
+        if (!fileAllowExtensionList.contains(fileExtension)) {
+            LogMessage.formedError(
+                TAG,
+                "file upload",
+                "upload",
+                "this file is not unsupported",
+                file.getOriginalFilename()
+            );
+            return new UploadResult(null, ErrorCode.ERR_FILE_UNSUPPORTED_EXTENSION);
+        }
+
+        // file upload to create a InputStream for object upload.
+        StringBuilder objectPath = new StringBuilder();
+        switch (fileType) {
+            case FILE: {
+                // check file size
+                if (file.getSize() > MAX_FILE_SIZE) {
+                    LogMessage.formedError(
+                        TAG,
+                        "file upload",
+                        "upload",
+                        "this file size over the max size",
+                        String.valueOf(file.getSize())
+                    );
+                    return new UploadResult(null, ErrorCode.ERR_FILE_SIZE_LIMIT);
+                }
+
+                try {
+                    objectPath.append(dirPath).append(fileBucketName).append("/").append(objectName);
+                    minioClient.putObject(PutObjectArgs.builder().bucket(bucketName).object(objectPath.toString())
+                        .stream(file.getInputStream(), file.getInputStream().available(), -1)
+                        .contentType(file.getContentType()).build());
+                } catch (MinioException e) {
+                    LogMessage.formedError(
+                        TAG,
+                        "file upload",
+                        "upload",
+                        "Upload error occurred",
+                        e.getMessage()
+                    );
+                    return new UploadResult(null, ErrorCode.ERR_FILE_UPLOAD_EXCEPTION);
+                }
+                break;
+            }
+            case RECORD: {
+                try {
+                    objectPath.append(dirPath).append(recordBucketName).append("/").append(objectName);
+                    minioClient.putObject(PutObjectArgs.builder().bucket(bucketName).object(objectPath.toString())
+                        .stream(file.getInputStream(), file.getInputStream().available(), -1)
+                        .contentType(file.getContentType()).build());
+                } catch (MinioException e) {
+                    LogMessage.formedError(
+                        TAG,
+                        "file upload",
+                        "upload",
+                        "Upload error occurred",
+                        e.getMessage()
+                    );
+                    return new UploadResult(null, ErrorCode.ERR_FILE_UPLOAD_EXCEPTION);
+                }
+                break;
+            }
+        }
+
+        LogMessage.formedInfo(
+            TAG,
+            "file upload",
+            "upload",
+            "complete to upload file",
+            "originName: " + file.getOriginalFilename() + ", "
+                + "name: " + file.getName() + ", "
+                + "size: " + file.getSize() + ", "
+                + "contentType: " + file.getContentType() + ", "
+                + "fileExtension: " + fileExtension + ", "
+                + "dirPath: " + dirPath + ", " + ", "
+                + "objectPath: " + objectPath + ", " + ", "
+                + "objectName: " + objectName
         );
         return new UploadResult(objectName, ErrorCode.ERR_SUCCESS);
     }

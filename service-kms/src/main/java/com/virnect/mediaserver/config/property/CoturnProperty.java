@@ -101,8 +101,4 @@ public class CoturnProperty {
     public void setCoturnRedisConnectTimeout(String coturnRedisConnectTimeout) {
         this.coturnRedisConnectTimeout = coturnRedisConnectTimeout;
     }
-
-
-
-
 }

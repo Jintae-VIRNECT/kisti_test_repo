@@ -8,27 +8,38 @@ plugins {
 //—————————————————————————————————————————————————————————————————————————————————————————————————
 dependencies {
     testImplementation 'junit:junit:4.12'
-    implementation "org.springframework.boot:spring-boot-starter-data-jpa"
-    implementation "org.springframework.boot:spring-boot-starter-web"
-    implementation "org.springframework.data:spring-data-envers"
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.data:spring-data-envers'
 
     // Swagger
-    implementation("io.springfox:springfox-swagger2:2.9.2")
-    implementation("io.springfox:springfox-swagger-ui:2.9.2")
+    implementation 'io.springfox:springfox-swagger2:2.9.2'
+    implementation 'io.springfox:springfox-swagger-ui:2.9.2'
 
-    implementation("com.google.code.gson:gson:2.8.6")
+    implementation 'com.google.code.gson:gson:2.8.6'
 
     // Query DSL
     implementation("com.querydsl:querydsl-jpa") // querydsl
     implementation("com.querydsl:querydsl-apt") // querydsl
 
     // Eureka
-    implementation("org.springframework.cloud:spring-cloud-starter-netflix-eureka-client")
-    // Netflex Feign Client
-    implementation("org.springframework.cloud:spring-cloud-starter-openfeign")
+    implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-client'
+    // Netflix Feign Client
+    implementation 'org.springframework.cloud:spring-cloud-starter-openfeign'
 
-    // ModelMapper
-    implementation("org.modelmapper:modelmapper:2.3.0")
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
+    implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+
+    annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
+
+    // jackson
+    implementation group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.10.2'
+    implementation group: 'com.fasterxml.jackson.core', name: 'jackson-core', version: '2.10.2'
+    implementation group: 'com.fasterxml.jackson.core', name: 'jackson-annotations', version: '2.10.2'
+
+    // MapStruct
+    implementation 'org.mapstruct:mapstruct:1.4.2.Final'
+    annotationProcessor 'org.mapstruct:mapstruct-processor:1.4.2.Final'
 }
 
 //—————————————————————————————————————————————————————————————————————————————————————————————————

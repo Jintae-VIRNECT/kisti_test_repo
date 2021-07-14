@@ -8,7 +8,7 @@ service.domain_or_public_ip=192.168.6.3
 service.gateway=192.168.6.3
 service.certificate_type=owncert
 service.https_port=8000
-service.kms_uris=["ws://192.168.6.3:8888/kurento"]
+service.=["ws://192.168.6.3:8888/kurento"]
 service.wss=wss://192.168.6.3:8073
 
 ##logging

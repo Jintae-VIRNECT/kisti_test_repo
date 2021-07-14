@@ -1,5 +1,6 @@
 package com.virnect.serviceserver.serviceremote.api;
 
+import org.apache.logging.log4j.util.Strings;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -14,12 +15,14 @@ import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import com.virnect.data.dto.rest.WorkspaceMemberInfoListResponse;
+import com.virnect.data.error.ErrorCode;
+import com.virnect.data.error.exception.RestServiceException;
+import com.virnect.data.global.common.ApiResponse;
 import com.virnect.data.infra.utils.LogMessage;
 import com.virnect.serviceserver.serviceremote.application.MemberService;
-import com.virnect.serviceserver.serviceremote.dto.response.member.MemberInfoListResponse;
-import com.virnect.serviceserver.serviceremote.dto.response.member.MemberSecessionResponse;
-import com.virnect.data.dto.rest.WorkspaceMemberInfoListResponse;
-import com.virnect.data.global.common.ApiResponse;
+import com.virnect.data.dto.response.member.MemberInfoListResponse;
+import com.virnect.data.dto.response.member.MemberSecessionResponse;
 
 @Slf4j
 @RestController
@@ -28,7 +31,6 @@ import com.virnect.data.global.common.ApiResponse;
 public class MemberRestController {
 
     private static final String TAG = MemberRestController.class.getSimpleName();
-    //private static String PARAMETER_LOG_MESSAGE = "[PARAMETER ERROR]:: {}";
     private static final String REST_PATH = "/remote/member";
     private final MemberService memberService;
 
@@ -51,15 +53,21 @@ public class MemberRestController {
             TAG,
             "REST API: GET "
                 + REST_PATH + "/"
-                + (workspaceId != null ? workspaceId : "{}") + "::"
-                + "search:" + (search != null ? search : "{}"),
+                + workspaceId + "::"
+                + "search:" + search,
             "getMembersByWorkspaceId"
         );
+        if (Strings.isBlank(workspaceId)) {
+            throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
+        }
         //increase page number + 1, cause page index starts 0
         WorkspaceMemberInfoListResponse responseData = memberService.getMembers(
-            workspaceId, filter, search, page + 1, size
+            workspaceId,
+            filter,
+            search,
+            page + 1,
+            size
         );
-
         return ResponseEntity.ok(new ApiResponse<>(responseData));
     }
 
@@ -69,6 +77,7 @@ public class MemberRestController {
         @ApiImplicitParam(name = "page", value = "size 대로 나눠진 페이지를 조회할 번호(Index 0 부터 시작)", dataType = "Integer", paramType = "query", defaultValue = "0"),
         @ApiImplicitParam(name = "size", value = "Paging Data Size", dataType = "number", paramType = "query", defaultValue = "20"),
         @ApiImplicitParam(name = "sort", value = "Sort Option", paramType = "query", defaultValue = "role, desc"),
+        @ApiImplicitParam(name = "accessTypeFilter", value = "로그인상태 필터 여부", dataType = "boolean", allowEmptyValue = true, defaultValue = "false"),
     })
     @GetMapping(value = "members/{workspaceId}/{userId}")
     public ResponseEntity<ApiResponse<MemberInfoListResponse>> getMembersByWorkspaceIdAndUserId(
@@ -77,28 +86,31 @@ public class MemberRestController {
         @RequestParam(value = "filter", required = false) String filter,
         @RequestParam(value = "search", required = false) String search,
         @RequestParam(value = "page") int page,
-        @RequestParam(value = "size") int size
+        @RequestParam(value = "size") int size,
+        @RequestParam(value = "accessTypeFilter", required = false) boolean accessTypeFilter
     ) {
         LogMessage.formedInfo(
             TAG,
             "REST API: GET "
                 + REST_PATH + "/"
-                + (workspaceId != null ? workspaceId : "{}") + "/"
-                + (userId != null ? userId : "{}") + "::"
-                + "search:" + (search != null ? search : "{}"),
+                + workspaceId + "/"
+                + userId + "::"
+                + "search:" + search,
             "getMembersByWorkspaceIdAndUserId"
         );
-        //increase page number + 1, cause page index starts 0
-        MemberInfoListResponse responseData = memberService.getMembersExceptForMe(
+        if (Strings.isBlank(workspaceId) || Strings.isBlank(userId)) {
+            throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
+        }
+        ApiResponse<MemberInfoListResponse> responseData = memberService.getMembersExceptForMe(
             workspaceId,
             userId,
             filter,
             search,
             page,
-            size
-        );
-
-        return ResponseEntity.ok(new ApiResponse<>(responseData));
+            size,
+            accessTypeFilter
+        );    
+        return ResponseEntity.ok(responseData);
     }
 
     @ApiOperation(value = "Lookup Invitable Remote Member Information List", notes = "초대 가능한 워크스페이스 리모트 멤버 리스트를 조회하는 API 입니다.(원격협업 참가자 제외)")
@@ -122,12 +134,15 @@ public class MemberRestController {
             TAG,
             "REST API: GET "
                 + REST_PATH + "/"
-                + (workspaceId != null ? workspaceId : "{}") + "/"
-                + (sessionId != null ? sessionId : "{}") + "/"
-                + (userId != null ? userId : "{}") + "::"
-                + "search:" + (search != null ? search : "{}"),
+                + workspaceId + "/"
+                + sessionId + "/"
+                + userId + "::"
+                + "search:" + search,
             "getMembersByWorkspaceIdAndSessionIdAndUserId"
         );
+        if (Strings.isBlank(workspaceId) || Strings.isBlank(sessionId) || Strings.isBlank(userId)) {
+            throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
+        }
         //increase page number + 1, cause page index starts 0
         MemberInfoListResponse responseData = memberService.getMembersInvitePossible(workspaceId,
             sessionId,
@@ -149,13 +164,13 @@ public class MemberRestController {
             TAG,
             "REST API: DELETE "
                 + REST_PATH + "/"
-                + (userId != null ? userId : "{}"),
+                + userId,
             "deleteMembersByUserId"
         );
-        MemberSecessionResponse responseData = memberService.deleteMembersBySession(
-            userId
-        );
+        if (Strings.isBlank(userId)) {
+            throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
+        }
+        MemberSecessionResponse responseData = memberService.deleteMembersBySession(userId);
         return ResponseEntity.ok(new ApiResponse<>(responseData));
-
     }
 }

@@ -5,7 +5,7 @@
     "license_name": "product",
     "session_type": "open",
     "recording": false,
-    "storage": false,
+    "storage": true,
     "translation": true,
     "stt_sync": true,
     "stt_streaming": true,
