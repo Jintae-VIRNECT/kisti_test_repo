@@ -169,6 +169,8 @@ public class FileService {
 			.contentType(fileUploadRequest.getFile().getContentType())
 			.size(fileUploadRequest.getFile().getSize())
 			.fileType(fileType)
+			.width(0)
+			.height(0)
 			.build();
 
 		File uploadResult = fileRepository.save(file);
@@ -295,6 +297,8 @@ public class FileService {
 			.contentType(roomProfileUpdateRequest.getProfile().getContentType())
 			.size(roomProfileUpdateRequest.getProfile().getSize())
 			.fileType(FileType.PROFILE)
+			.width(0)
+			.height(0)
 			.build();
 		File fileUploadResult = fileRepository.save(file);
 

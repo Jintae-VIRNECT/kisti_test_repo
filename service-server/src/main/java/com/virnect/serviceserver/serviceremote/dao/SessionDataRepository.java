@@ -1120,7 +1120,6 @@ public class SessionDataRepository {
 
             //save room history
             sessionService.setRoomHistory(roomHistory);
-
             sessionService.deleteRoom(room);
         }
     }
