@@ -1,14 +1,13 @@
 RELEASE
 
 New Features
-- 파일 부분 다운로드 기능 추가
-- 컨텐츠 다운로드 횟수 업데이트 API 추가
+- 없음
 
 Bug Fixes
-- 컨텐츠 업데이트 시 타겟 데이터 변경 유무와 산관 없이 타겟 유형 변경 가능하도록 수정
+- 없음
 
 Limitation
-- 컨텐츠 metadata 정보 삭제 및 properties 값으로 대체
+- jvm max heap size 변경 400mb -> 700mb
 
 
 Copyright (C) 2020, VIRNECT CO., LTD. - All Rights Reserved
