@@ -8,6 +8,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import org.apache.commons.io.FilenameUtils;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -50,8 +51,6 @@ public class DownloadService {
 	private final FileDownloadService fileDownloadService;
 	private final LicenseRestService licenseRestService;
 
-	private static final String BUCKET_RESOURCE = "virnect-platform-qa";
-
 	/**
 	 * 컨텐츠UUID로 컨텐츠 다운로드
 	 *
@@ -88,16 +87,12 @@ public class DownloadService {
 	}
 
 	private HttpHeaders getHeaders(String path, byte[] bytes) {
-		String resourcePath = path.split(BUCKET_RESOURCE)[1];
-		log.info("PARSER - RESOURCE PATH: [{}]", resourcePath);
-		String[] resources = resourcePath.split("/");
-		for (String url : resources) {
-			log.info("PARSER - RESOURCE URL: [{}]", url);
-		}
+		String fileName = FilenameUtils.getName(path);
+		log.info("FILE NAME : [{}]", fileName);
 		HttpHeaders httpHeaders = new HttpHeaders();
 		httpHeaders.setContentType(MediaType.APPLICATION_OCTET_STREAM);
 		httpHeaders.setContentLength(bytes.length);
-		httpHeaders.setContentDispositionFormData("attachment", resources[1]);
+		httpHeaders.setContentDispositionFormData("attachment", fileName);
 		return httpHeaders;
 	}
 
