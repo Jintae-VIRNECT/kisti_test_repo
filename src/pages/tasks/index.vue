@@ -55,7 +55,7 @@
             </el-button>
             <div class="right">
               <span>{{ $t('task.list.taskCount') }}</span>
-              <span class="num">{{ taskStatistics.totalTasks }}</span>
+              <span class="num">{{ taskTotal }}</span>
             </div>
           </div>
           <!-- 차트 -->
@@ -77,19 +77,19 @@
 
           <!-- 테이블 -->
           <TaskList
-            v-if="!isGraph"
+            v-show="!isGraph"
             ref="table"
             :data="taskList"
             :clickable="true"
-            @updated="searchTasks"
-            @deleted="searchTasks"
+            @updated="refresh"
+            @deleted="refresh"
           />
           <!-- 차트 -->
-          <TaskDailyGraph v-else />
+          <TaskDailyGraph v-show="isGraph" />
         </el-card>
       </el-row>
       <SearchbarPage
-        v-if="!isGraph"
+        v-show="!isGraph"
         ref="page"
         :value.sync="taskPage"
         :total="taskTotal"
@@ -151,20 +151,27 @@ export default {
     changedSearchParams(searchParams) {
       this.searchTasks(searchParams)
     },
-    async searchTasks() {
-      const { list, total } = await taskService.searchTasks(this.searchParams)
+    async searchTasks(searchParams) {
+      const { list, total } = await taskService.searchTasks(searchParams)
+      this.taskPage = searchParams === undefined ? 1 : searchParams.page
       this.taskList = list
       this.taskTotal = total
     },
     filterChanged(filter) {
       if (!filter.length) this.activeTab = 'allTasks'
     },
+    async refresh() {
+      this.searchTasks({ page: 1 })
+      this.taskStatistics = await taskService.getTaskStatistics()
+
+      // 검색 조건 초기화
+      this.activeTab = 'allTasks' // 탭
+      this.taskFilter.value = ['ALL'] // 필터
+      this.isGraph = false // 일자별 작업 진행률 그래프
+    },
   },
   beforeMount() {
-    workspaceService.watchActiveWorkspace(this, async () => {
-      this.searchTasks()
-      this.taskStatistics = await taskService.getTaskStatistics()
-    })
+    workspaceService.watchActiveWorkspace(this, this.refresh)
   },
 }
 </script>

@@ -19,7 +19,10 @@
           </span>
         </el-button>
       </h3>
-      <div class="right">
+      <div
+        class="right"
+        v-if="$t('guide.taskStatusGuide.url') !== 'guide.taskStatusGuide.url'"
+      >
         <a :href="$t('guide.taskStatusGuide.url')" target="_blank">
           {{ $t('guide.taskStatusGuide.label') }}
         </a>
@@ -140,7 +143,7 @@
 
 <script>
 import { conditions } from '@/models/task/Task'
-
+import workspaceService from '@/services/workspace'
 export default {
   props: {
     stat: Object,
@@ -158,6 +161,12 @@ export default {
     graphToggle() {
       this.isGraph = !this.isGraph
     },
+  },
+  beforeMount() {
+    // 워크스테이션 변경시 초기화
+    workspaceService.watchActiveWorkspace(this, () => {
+      this.isGraph = false
+    })
   },
 }
 </script>

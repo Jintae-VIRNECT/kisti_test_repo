@@ -11,6 +11,7 @@ export default function (con, inject) {
 
   inject('env', con.$config.VIRNECT_ENV)
   inject('isOnpremise', con.$config.VIRNECT_ENV === 'onpremise')
+  inject('onpremiseTarget', url.onpremise_target || '')
   inject('url', url)
   inject(
     'defaultWorkspaceProfile',

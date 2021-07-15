@@ -71,7 +71,10 @@
         <el-dropdown-item @click.native="showTarget(row)">
           {{ $t('task.list.dropdown.targetInfo') }}
         </el-dropdown-item>
-        <el-dropdown-item @click.native="edit(row)">
+        <el-dropdown-item
+          :disabled="row.state == 'CLOSED'"
+          @click.native="edit(row)"
+        >
           {{ $t('task.list.dropdown.taskEdit') }}
         </el-dropdown-item>
         <el-dropdown-item @click.native="add(row)">

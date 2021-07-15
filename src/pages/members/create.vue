@@ -154,7 +154,6 @@ export default {
       rules: {
         id: [
           {
-            trigger: ['blur', 'change'],
             validator: (rule, value, callback) => {
               let err
               if (!/^.{4,20}$/.test(value)) err = new Error()
@@ -166,7 +165,6 @@ export default {
         ],
         password: [
           {
-            trigger: ['blur', 'change'],
             validator: (rule, value, callback) => {
               let err
               let typeCount = 0

@@ -134,13 +134,12 @@ export default {
     }
   },
   methods: {
-    changedSearchParams() {
-      this.searchContents()
+    changedSearchParams(searchParams) {
+      this.searchContents(searchParams)
     },
-    async searchContents() {
-      const { list, total } = await contentService.searchContents(
-        this.searchParams,
-      )
+    async searchContents(searchParams) {
+      const { list, total } = await contentService.searchContents(searchParams)
+      this.contentsPage = searchParams === undefined ? 1 : searchParams.page
       this.contentsList = list
       this.contentsTotal = total
     },
@@ -188,7 +187,9 @@ export default {
     },
   },
   beforeMount() {
-    workspaceService.watchActiveWorkspace(this, this.searchContents)
+    workspaceService.watchActiveWorkspace(this, () => {
+      this.searchContents({ page: 1 })
+    })
   },
 }
 </script>

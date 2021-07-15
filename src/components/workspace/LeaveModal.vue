@@ -14,7 +14,7 @@
           <dt>{{ $t('workspace.master') }}</dt>
           <dd class="column-user">
             <VirnectThumbnail :image="activeWorkspace.masterProfile" />
-            <span>{{ activeWorkspace.masterName }}</span>
+            <span>{{ activeWorkspace.masterNickName }}</span>
           </dd>
         </dl>
       </div>

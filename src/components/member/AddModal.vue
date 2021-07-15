@@ -6,6 +6,7 @@
     width="628px"
     top="11vh"
     :close-on-click-modal="false"
+    :before-close="beforeClose"
   >
     <div>
       <p>{{ $t('members.add.desc') }}</p>
@@ -107,7 +108,7 @@
       <el-button
         type="primary"
         @click="submit"
-        :disabled="!userInfoList.length"
+        :disabled="userInfoList.length < 1"
       >
         {{ $t('members.add.submit') }}
         <span class="number">{{ userInfoList.length }}</span>
@@ -135,8 +136,20 @@ export default {
       roles: role.options.filter(({ value }) => value !== 'MASTER'),
       availablePlans: { remote: 0, make: 0, view: 0 },
       userInfoList: [new InviteMember()],
+      showMe: true,
       rules: {
-        email: [{ required: true, trigger: 'blur', type: 'email' }],
+        email: [
+          {
+            required: true,
+            message: this.$t('invalid.required', [
+              this.$t('members.add.email'),
+            ]),
+          },
+          {
+            type: 'email',
+            message: this.$t('invalid.format', [this.$t('members.add.email')]),
+          },
+        ],
       },
     }
   },
@@ -153,9 +166,16 @@ export default {
     },
   },
   methods: {
+    beforeClose(done) {
+      this.$emit('close')
+      done()
+    },
     async reset() {
       this.userInfoList = [new InviteMember()]
-      this.$refs.form.forEach(form => form.resetFields())
+      if (this.$refs.from) {
+        this.$refs.form.forEach(form => form.resetFields())
+      }
+
       if (!this.plansInfo.planStatus) {
         await this.$store.dispatch('plan/getPlansInfo')
       }
@@ -240,6 +260,9 @@ export default {
         }
       }
     },
+  },
+  mounted() {
+    this.opened()
   },
 }
 </script>

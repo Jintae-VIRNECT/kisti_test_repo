@@ -116,8 +116,8 @@ export default {
         worker: null,
       },
       rules: {
-        schedule: [{ required: true, trigger: 'change' }],
-        worker: [{ required: true, trigger: 'change' }],
+        schedule: [{ required: true }],
+        worker: [{ required: true }],
       },
       workerList: [],
       searchLoading: false,

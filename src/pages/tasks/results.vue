@@ -97,32 +97,38 @@ export default {
       }
       this.$router.replace(pathTo).catch(() => {})
     },
+    $route() {
+      this.setActiveTab()
+    },
   },
   methods: {
-    changedSearchParams() {
-      if (this.activeTab === 'task') this.searchSubTasks()
-      else if (this.activeTab === 'issue') this.searchIssues()
-      else if (this.activeTab === 'paper') this.searchPapers()
+    changedSearchParams(searchParams) {
+      if (this.activeTab === 'task') this.searchSubTasks(searchParams)
+      else if (this.activeTab === 'issue') this.searchIssues(searchParams)
+      else if (this.activeTab === 'paper') this.searchPapers(searchParams)
     },
-    async searchSubTasks() {
+    async searchSubTasks(searchParams) {
       const { list, total } = await resultService.searchCurrentSubTasks(
-        this.searchParams,
+        searchParams,
       )
-      this.list = list
+      this.page = searchParams === undefined ? 1 : searchParams.page
+      this.list.splice(0, this.list.length, ...list)
       this.total = total
     },
-    async searchIssues() {
+    async searchIssues(searchParams) {
       const { list, total } = await resultService.searchIssues(
         this.searchParams,
       )
-      this.list = list
+      this.page = searchParams === undefined ? 1 : searchParams.page
+      this.list.splice(0, this.list.length, ...list)
       this.total = total
     },
-    async searchPapers() {
+    async searchPapers(searchParams) {
       const { list, total } = await resultService.searchPapers(
         this.searchParams,
       )
-      this.list = list
+      this.page = searchParams === undefined ? 1 : searchParams.page
+      this.list.splice(0, this.list.length, ...list)
       this.total = total
     },
     sortChange({ prop, order }) {
@@ -132,20 +138,31 @@ export default {
         this.emitChangedSearchParams({ sort })
       }
     },
+    /**
+     * @author YongHo Kim <yhkim@virnect.com>
+     * @description 라우터 이름을 가지고 activeTab 설정하는 함수
+     */
+    setActiveTab() {
+      const { name } = this.$route
+      console.log(name)
+      if (name === 'tasks-results') this.activeTab = 'task'
+      else if (name === 'tasks-results-issues') this.activeTab = 'issue'
+      else if (name === 'tasks-results-papers') this.activeTab = 'paper'
+    },
   },
   beforeMount() {
     this.resultsSearch = this.$route.query.search
     this.searchParams.search = this.$route.query.search
 
-    const { path } = this.$route
-    if (path === '/tasks/results') this.activeTab = 'task'
-    else if (path === '/tasks/results/issues') this.activeTab = 'issue'
-    else if (path === '/tasks/results/papers') this.activeTab = 'paper'
+    this.setActiveTab()
 
     workspaceService.watchActiveWorkspace(this, () => {
-      if (this.activeTab === 'task') this.searchSubTasks()
-      else if (this.activeTab === 'issue') this.searchIssues()
-      else if (this.activeTab === 'paper') this.searchPapers()
+      // 워크스페이션 변경시 초기화
+      this.taskFilter.value = ['ALL']
+      this.activeTab = 'task'
+      this.resultsSearch = ''
+
+      this.searchSubTasks({ page: 1 })
     })
   },
 }

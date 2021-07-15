@@ -184,8 +184,8 @@ export default {
       searchLoading: false,
       taskInfo: null,
       rules: {
-        schedule: [{ required: true, trigger: 'change' }],
-        worker: [{ required: true, trigger: 'change' }],
+        schedule: [{ required: true }],
+        worker: [{ required: true }],
       },
       subScheduleOption() {
         const schedule = this.mainForm.schedule

@@ -36,7 +36,7 @@
                       <VirnectThumbnail
                         :image="cdn(activeWorkspace.masterProfile)"
                       />
-                      <span>{{ activeWorkspace.masterName }}</span>
+                      <span>{{ activeWorkspace.masterNickName }}</span>
                     </dd>
                   </dl>
                 </el-col>
@@ -49,6 +49,7 @@
                   >
                     <el-form-item
                       class="horizon"
+                      :class="{ disabled: activeWorkspace.role !== 'MASTER' }"
                       :label="$t('workspace.setting.image')"
                     >
                       <el-upload
@@ -125,7 +126,7 @@
             </div>
           </el-card>
         </el-col>
-        <WorkspaceOnpremiseSetting
+        <OnpremiseWorkspaceSetting
           v-if="$isOnpremise"
           class="container__right"
         />
@@ -172,8 +173,21 @@ export default {
     },
     async submit() {
       const { uploadFiles } = this.$refs.upload
+      const defaultName = this.$t('workspace.setting.namePlaceholder', {
+        nickname: this.myProfile.nickname,
+      })
+      const defaultDescription = this.$t('workspace.setting.defaultDesc', {
+        nickname: this.myProfile.nickname,
+      })
+      const name =
+        this.form.name.trim().length === 0 ? defaultName : this.form.name.trim()
+      const description =
+        this.form.description.trim().length === 0
+          ? defaultDescription
+          : this.form.description.trim()
       const form = {
-        ...this.form,
+        name,
+        description,
         profile: uploadFiles.length
           ? uploadFiles[uploadFiles.length - 1].raw
           : null,

@@ -79,6 +79,10 @@ $input-background-color: rgba(233, 237, 244, 0.5);
   }
 }
 
+.disabled .el-upload,
+.disabled .el-upload-dragger {
+  cursor: not-allowed;
+}
 .el-upload-dragger {
   width: 400px;
   height: 100px;

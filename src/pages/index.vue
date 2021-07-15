@@ -32,13 +32,11 @@
         </el-col>
         <!-- 가운데 -->
         <el-col class="container__center">
-          <el-card class="main-banner">
+          <OnpremiseHomeBanner v-if="$isOnpremise" />
+          <el-card v-else class="main-banner">
             <h6>{{ $t('home.banner.sub') }}</h6>
             <h5>{{ $t('home.banner.main', { company }) }}</h5>
-            <p v-if="$isOnpremise">
-              {{ $t('home.banner.desc_op', { company }) }}
-            </p>
-            <p v-else>
+            <p>
               {{ $t('home.banner.desc') }}
             </p>
           </el-card>
@@ -74,6 +72,12 @@ import { mapGetters } from 'vuex'
 import workspaceService from '@/services/workspace'
 
 export default {
+  async asyncData({ store, redirect }) {
+    const myWorkspaces = store.getters['auth/myWorkspaces']
+    if (!myWorkspaces.length) {
+      redirect('/start')
+    }
+  },
   data() {
     return {
       showAlertStorageOverflow: false,
@@ -83,6 +87,7 @@ export default {
   computed: {
     ...mapGetters({
       activeWorkspace: 'auth/activeWorkspace',
+      myWorkspaces: 'auth/myWorkspaces',
       plansInfo: 'plan/plansInfo',
       company: 'layout/title',
     }),
@@ -128,7 +133,7 @@ export default {
     & p {
       margin-top: 20px;
       font-size: 20px;
-      opacity: 0.9;
+      opacity: 0.95;
     }
   }
   .faq-banner {

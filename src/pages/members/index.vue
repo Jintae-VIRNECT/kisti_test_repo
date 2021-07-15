@@ -52,7 +52,11 @@
         :total="membersTotal"
       />
     </div>
-    <MemberAddModal :visible.sync="showAddModal" :membersTotal="membersTotal" />
+    <MemberAddModal
+      v-if="showAddModal"
+      :membersTotal="membersTotal"
+      @close="closeMemberAddModal"
+    />
   </div>
 </template>
 
@@ -89,15 +93,22 @@ export default {
     }
   },
   methods: {
+    closeMemberAddModal() {
+      this.showAddModal = false
+    },
     changedSearchParams(searchParams) {
       this.searchMembers(searchParams)
     },
     async searchMembers(searchParams) {
       this.loading = true
       const { list, total } = await workspaceService.searchMembers(searchParams)
+      this.membersPage = searchParams === undefined ? 1 : searchParams.page
       this.membersList = list
       this.membersTotal = total
       this.loading = false
+    },
+    async getWorkspacePlansInfo() {
+      await this.$store.dispatch('plan/getPlansInfo')
     },
     addMember() {
       if (this.$isOnpremise) {
@@ -108,10 +119,17 @@ export default {
     },
   },
   beforeMount() {
-    this.searchMembers()
-    workspaceService.watchActiveWorkspace(this, () =>
-      this.searchMembers(this.searchParams),
-    )
+    this.searchMembers({ page: 1 })
+    this.getWorkspacePlansInfo()
+
+    workspaceService.watchActiveWorkspace(this, () => {
+      this.searchMembers({ page: 1 })
+      this.getWorkspacePlansInfo()
+
+      // 검색 필터 초기화
+      this.memberSort.value = 'role,asc'
+      this.memberFilter.value = ['ALL']
+    })
   },
   mounted() {
     // modal query

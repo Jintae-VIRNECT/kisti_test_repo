@@ -68,7 +68,10 @@
         :width="70"
       />
       <ColumnDropdown :width="60" v-slot:default="{ row }">
-        <el-dropdown-item @click.native="edit(row)">
+        <el-dropdown-item
+          :disabled="taskInfo.state == 'CLOSED'"
+          @click.native="edit(row)"
+        >
           {{ $t('task.detail.dropdown.subTaskEdit') }}
         </el-dropdown-item>
       </ColumnDropdown>

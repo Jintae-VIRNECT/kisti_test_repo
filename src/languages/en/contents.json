@@ -40,12 +40,12 @@
       "message": {
         "delete": "Delete selected content",
         "deleteSure": "Are you sure you want to delete the selected content?",
-        "deleteSuccess": "Selected content is deleted",
+        "deleteSuccess": "Selected content is deleted.",
         "deleteFail": "Failed to delete selected content please try again later",
         "deleteNotExist": "The selected content does not exist in the Workspace. Please check again.",
         "deleteShared": "It is impossible to delete when the content sharing status is activation.",
         "updateSuccess": "The selected content sharing settings have been updated.",
-        "updateFail": "Failed to update content sharing settings please try again later",
+        "updateFail": "Failed to update content sharing settings please try again later.",
         "updateNotExist": "The selected content does not exist in the Workspace. Please check again."
       }
     }

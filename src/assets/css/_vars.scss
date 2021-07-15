@@ -30,3 +30,35 @@ $color-orange: #f89637;
 $color-green: #2cbc65;
 
 $the-sidebar-width: 60px;
+
+// fonts
+// Poppins font set
+$poppins-weight-light: 300 !default;
+$poppins-weight-regular: 400 !default;
+$poppins-weight-medium: 500 !default;
+$poppins-weight-semibold: 600 !default;
+$poppins-weight-map: (
+  "light": $poppins-weight-light,
+  "regular": $poppins-weight-regular,
+  "semibold": $poppins-weight-semibold,
+) !default;
+$poppins-family: "Poppins" !default;
+$poppins-style: normal !default;
+$poppins-path: "~assets/fonts/Poppins/" !default;
+$poppins-prefix: "poppins-" !default;
+
+@each $name, $weight in $poppins-weight-map {
+  $poppins-weight: to-upper-case(str-slice($name, 1, 1)) + str-slice($name, 2);
+  $poppins-src: $poppins-path + $poppins-prefix + $poppins-weight;
+
+  @font-face {
+    font-weight: $weight;
+    font-family: $poppins-family;
+    font-style: $poppins-style;
+    -webkit-font-smoothing: antialiased;
+    src: url(unquote("#{$poppins-src}.eot"));
+    src: local(※), url(unquote("#{$poppins-src}.woff")) format("font-woff"),
+      url(unquote("#{$poppins-src}.woff2")) format("woff2");
+    font-display: auto;
+  }
+}

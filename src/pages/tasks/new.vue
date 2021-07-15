@@ -84,6 +84,7 @@
             />
             <template slot="empty">
               <img src="~assets/images/empty/img-content-empty.jpg" />
+              <p>{{ $t('contents.allContents.empty') }}</p>
             </template>
           </el-table>
         </el-card>
@@ -151,8 +152,9 @@ export default {
     changedSearchParams(searchParams) {
       this.searchContents(searchParams)
     },
-    async searchContents(params) {
-      const { list, total } = await contentService.searchContents(params)
+    async searchContents(searchParams) {
+      const { list, total } = await contentService.searchContents(searchParams)
+      this.contentsPage = searchParams === undefined ? 1 : searchParams.page
       this.contentsList = list
       this.contentsTotal = total
     },
@@ -177,9 +179,9 @@ export default {
     },
   },
   beforeMount() {
-    this.searchContents()
+    this.searchContents({ page: 1 })
     workspaceService.watchActiveWorkspace(this, () =>
-      this.searchContents(this.searchParams),
+      this.searchContents({ page: 1 }),
     )
   },
   mounted() {

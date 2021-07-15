@@ -87,23 +87,25 @@ export default {
     }
   },
   methods: {
-    rowClick(row) {
-      this.$router.push(`/tasks/troubles/${row.issueId}`)
+    changedSearchParams(searchParams) {
+      this.searchTroubles(searchParams)
     },
     async searchTroubles(searchParams) {
       const { list, total } = await resultService.searchTroubles(searchParams)
+      this.troublesPage = searchParams === undefined ? 1 : searchParams.page
       this.troublesList = list
       this.troublesTotal = total
     },
-    changedSearchParams(searchParams) {
-      this.searchTroubles(searchParams)
+    rowClick(row) {
+      this.$router.push(`/tasks/troubles/${row.issueId}`)
     },
     showAll() {},
     showMine() {},
   },
   beforeMount() {
     workspaceService.watchActiveWorkspace(this, () => {
-      this.searchTroubles(this.searchParams)
+      this.searchTroubles({ page: 1 })
+      this.troubleSearch = ''
     })
   },
 }
