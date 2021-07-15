@@ -11,8 +11,6 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.repository.configuration.EnableRedisRepositories;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -21,8 +19,6 @@ import lombok.extern.slf4j.Slf4j;
 @EnableRedisRepositories
 @RequiredArgsConstructor
 public class RedisConfiguration {
-	private final ObjectMapper objectMapper;
-
 	@Value("${spring.redis.host}")
 	private String host;
 

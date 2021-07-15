@@ -1,6 +1,5 @@
 package com.virnect.gateway.filter.security.jwt;
 
-import java.util.ArrayList;
 import java.util.Base64;
 import java.util.Optional;
 
@@ -9,7 +8,8 @@ import javax.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
 import org.springframework.cloud.gateway.filter.GlobalFilter;
-import org.springframework.context.annotation.Profile;
+import org.springframework.core.annotation.Order;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
@@ -18,11 +18,15 @@ import org.springframework.web.server.ServerWebExchange;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.MalformedJwtException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import reactor.core.publisher.Mono;
 import reactor.util.Logger;
 import reactor.util.Loggers;
+
+import com.virnect.gateway.error.ErrorCode;
+import com.virnect.gateway.filter.security.GatewayServerAuthenticationException;
+import com.virnect.gateway.filter.security.RequestValidationProcessor;
 
 /**
  * @author jeonghyeon.chang (johnmark)
@@ -32,47 +36,65 @@ import reactor.util.Loggers;
  * @since 2020.04.27
  */
 
-@Profile(value = {"staging", "production"})
+@Slf4j
 @Component
 @RequiredArgsConstructor
+@Order(10)
 public class JwtAuthenticationFilter implements GlobalFilter {
 	private final static Logger logger = Loggers.getLogger(
 		"com.virnect.gateway.filter.security.jwt.JwtAuthenticationFilter");
-
 	@Value("${jwt.secret}")
 	private String secretKey;
+	@Value("${spring.profiles.active}")
+	private String activeProfile;
 
 	@PostConstruct
 	protected void init() {
-		logger.info("[JWT AUTHENTICATION FILTER] => ACTIVE");
+		log.info("[JWT Authentication Filter] - Active.");
 		this.secretKey = Base64.getEncoder().encodeToString(secretKey.getBytes());
 	}
 
 	@Override
 	public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
-		String requestUrlPath = exchange.getRequest().getURI().getPath();
-		boolean isAuthenticateSkipUrl = requestUrlPath.startsWith("/auth") ||
-			requestUrlPath.startsWith("/admin") ||
-			requestUrlPath.startsWith("/users/find") ||
-			requestUrlPath.startsWith("/licenses/allocate/check") ||
-			requestUrlPath.startsWith("/licenses/allocate") ||
-			requestUrlPath.startsWith("/licenses/deallocate") ||
-			requestUrlPath.contains("/licenses/deallocate") ||
-			requestUrlPath.contains("/licenses/sdk/authentication") ||
-			requestUrlPath.matches("^/workspaces/([a-zA-Z0-9]+)/invite/accept$")||
-			requestUrlPath.matches("^/workspaces/invite/[a-zA-Z0-9]+/(accept|reject).*$");
+		log.info("JwtAuthenticationFilter - doFilter");
 
-		if (isAuthenticateSkipUrl) {
+		if (RequestValidationProcessor.isRequestAuthenticationProcessSkip(exchange.getRequest())) {
 			return chain.filter(exchange);
 		}
 
-		logger.debug("JWT Authentication Filter Start");
-		String jwt = Optional.ofNullable(getJwtTokenFromRequest(exchange.getRequest()))
-			.orElseThrow(() -> new MalformedJwtException("JWT Token not exist"));
+		// if develop and onpremise environment and request is swagger ui related.
+		if ((activeProfile.equals("develop") || activeProfile.equals("onpremise")) &&
+			RequestValidationProcessor.isSwaggerApiDocsUrl(exchange.getRequest())
+		) {
+			log.info("JwtAuthenticationFilter - Skip swagger json request like [/v2/api-docs] ");
+			return chain.filter(exchange);
+		}
+
+		// Check Request Authentication Type
+		if (RequestValidationProcessor.isSessionAuthenticationRequest(exchange.getRequest())) {
+			log.info("JwtAuthenticationFilter - Find session cookie on request. Ignore jwt authentication process.");
+			return chain.filter(exchange);
+		}
+
+		// if not Jwt Authentication Request
+		if (!RequestValidationProcessor.isJwtAuthenticationRequest(exchange.getRequest())) {
+			log.error("JwtAuthenticationFilter - No Session Cookie, No Authentication Token Request. It will Block.");
+			throw new GatewayServerAuthenticationException(ErrorCode.ERR_API_AUTHENTICATION);
+		}
+
+		Optional<String> jwtInfo = Optional.ofNullable(getJwtTokenFromRequest(exchange.getRequest()));
+
+		if (!jwtInfo.isPresent()) {
+			log.info("JwtAuthenticationFilter - Can't find Jwt on request Authorization Header");
+			log.error("JwtAuthenticationFilter - No Session Cookie, No Authentication Token Request. It will Block.");
+			throw new GatewayServerAuthenticationException(ErrorCode.ERR_API_AUTHENTICATION);
+		}
+
+		String jwt = jwtInfo.get();
 		Jws<Claims> claims = Jwts.parser().setSigningKey(secretKey).parseClaimsJws(jwt);
 		Claims body = claims.getBody();
 
-		logger.debug("[AUTHENTICATION TOKEN]: {}", body.toString());
+		logger.info("JwtAuthenticationFilter - [AUTHENTICATION TOKEN]: {}", body.toString());
 
 		ServerHttpRequest authenticateRequest = exchange.getRequest().mutate()
 			.header("X-jwt-uuid", body.get("uuid", String.class))
@@ -84,12 +106,11 @@ public class JwtAuthenticationFilter implements GlobalFilter {
 			.header("X-jwt-jwtId", body.get("jwtId", String.class))
 			.build();
 
-		return chain.filter(exchange.mutate().request(authenticateRequest).build())
-			.then(Mono.fromRunnable(() -> logger.debug("JWT Authentication Filter end")));
+		return chain.filter(exchange.mutate().request(authenticateRequest).build());
 	}
 
 	private String getJwtTokenFromRequest(ServerHttpRequest request) {
-		String bearerToken = request.getHeaders().get("Authorization").get(0);
+		String bearerToken = request.getHeaders().get(HttpHeaders.AUTHORIZATION).get(0);
 		if (StringUtils.hasText(bearerToken) && bearerToken.startsWith("Bearer ")) {
 			int tokenSize = bearerToken.length();
 			return bearerToken.substring(7, tokenSize);
