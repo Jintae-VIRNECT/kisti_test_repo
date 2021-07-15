@@ -8,19 +8,26 @@
     height: 50px;
     line-height: 50px;
     background: #e6f0ff;
+    a {
+      font-weight: bold;
+      text-decoration: underline;
+    }
   }
   .visual {
     height: 340px;
-    padding: 93px;
+    padding: 129px;
     color: #fff;
     background: url("~assets/images/img-top.jpg") center;
     background-size: cover;
 
     h3 {
-      font-size: 30px;
+      font-weight: bold;
+      font-size: 36px;
+      font-family: Poppins;
+      line-height: normal;
     }
     p {
-      margin-top: 10px;
+      margin-top: 8px;
       font-size: 15px;
     }
   }
@@ -30,7 +37,7 @@
 
     [role="tab"] {
       height: 64px;
-      padding: 0 40px;
+      padding: 0 48px;
       font-size: 18px;
       line-height: 64px;
 
@@ -51,7 +58,7 @@
     border-bottom: solid 1px #f3f6f9;
     .el-tabs__nav-wrap {
       z-index: 10;
-      max-width: 760px;
+      max-width: 810px;
       margin: 0 auto;
     }
   }
@@ -68,52 +75,22 @@
   }
 
   .el-tabs__content {
-    max-width: 1280px;
+    max-width: 810px;
     min-height: 840px;
     margin: 0 auto;
     padding: 184px 0 128px;
-  }
-  .el-tabs__content .el-card {
-    display: inline-block;
-    width: 372px;
-    min-height: 364px;
-    margin: 0 18px 32px;
-    vertical-align: top;
-    box-shadow: none;
-  }
-  .el-card .el-card__body {
-    padding: 36px 44px 20px;
-    h6 {
-      font-size: 18px;
+
+    h4 {
+      font-weight: bold;
+      font-size: 24px;
+      text-align: left;
     }
-    h5 {
-      font-size: 26px;
-      overflow-wrap: break-word;
-      span {
-        color: $color-primary;
+    .el-tab-pane > .el-row {
+      &:not(:first-child) {
+        margin-top: 80px;
+        padding-top: 80px;
+        border-top: solid 1px #eaedf3;
       }
-    }
-    img {
-      width: 248px;
-      margin: 10px auto 16px;
-    }
-    & > span {
-      display: block;
-    }
-    .release {
-      color: #8e95a1;
-      font-weight: normal;
-    }
-    .version {
-      margin-bottom: 23px;
-      color: #3f465a;
-      font-size: 18px;
-    }
-    .el-button {
-      display: block;
-      height: 36px;
-      margin: 8px auto;
-      padding: 10px 20px;
     }
   }
 
@@ -134,7 +111,7 @@
   /**
    * 모바일
    */
-  @media screen and (max-width: $tablet) {
+  @include responsive-to(max, "huge") {
     .el-tabs.sticky .el-tabs__header,
     .el-tabs__header .el-tabs__nav-wrap {
       z-index: 1;
@@ -146,17 +123,26 @@
     .el-tabs__content {
       min-height: 0;
       padding: 60px 0 100px;
-    }
-    .el-tabs__content .el-card {
-      max-width: 372px;
-      margin: 18px 18px 0 18px;
+
+      h4 {
+        margin-bottom: 12px;
+        font-weight: bold;
+        font-size: 20px;
+      }
+
+      .el-tab-pane > .el-row {
+        margin-top: 40px;
+        padding: 0 24px;
+
+        &:not(:first-child) {
+          margin-top: 60px;
+          padding-top: 0;
+          border-top: none;
+        }
+      }
     }
   }
-  @media screen and (max-width: $short) {
-    .el-tabs__content .el-card {
-      width: calc(100% - 36px);
-      max-width: none;
-    }
+  @include responsive-to(max, "small") {
     .visual {
       height: auto;
       padding: 90px 20px;

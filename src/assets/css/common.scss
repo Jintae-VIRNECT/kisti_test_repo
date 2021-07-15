@@ -4,14 +4,25 @@
     .hover-box {
       z-index: 1;
     }
-    @media screen and (max-width: $tiny) {
-      .sub-title {
-        display: none;
-      }
-    }
   }
 
   .el-button {
+    border-radius: 3px;
+
+    &--simple {
+      color: $font-color-content;
+      background: $color-button;
+      border: none;
+      &:hover,
+      &:focus {
+        color: $font-color-content;
+        background: $color-button-hover;
+      }
+      &:active {
+        color: $color-primary;
+        background: $color-button-active;
+      }
+    }
     &--primary {
       background-color: $color-primary;
       border: none;
