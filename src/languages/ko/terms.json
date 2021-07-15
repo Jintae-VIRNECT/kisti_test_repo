@@ -2,6 +2,7 @@
   "terms": {
     "terms": "서비스 이용약관",
     "privacy": "개인정보처리방침",
+    "locationBased": "위치기반서비스 이용약관",
     "page": {
       "title": "약관 동의",
       "pageInfo": "VIRNECT 이용약관에 동의하시면 가입이 진행됩니다.",

@@ -9,7 +9,12 @@
         <a href="https://virnect.com/policy" target="_blank">{{
           $t('terms.privacy')
         }}</a>
-        <!-- <router-link to="/register">도움말</router-link> -->
+        <a
+          href="https://virnect.com/location_based"
+          target="_blank"
+          v-if="false"
+          >{{ $t('terms.locationBased') }}</a
+        >
       </div>
       <p><strong>©VIRNECT CO., LTD</strong>. All rights reserved.</p>
     </el-col>

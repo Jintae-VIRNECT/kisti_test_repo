@@ -1,15 +1,11 @@
 RELEASE
 
 New Features
-v1.3.6.0
-ie 에러페이지 작성
+v1.3.8.0
+footer update
 
 Bug Fixes
 -
-v1.3.6.1
-비밀번호 8미만 시에도 엔터 이벤트가 실행되는 문제
 
-v1.3.6.2
-비밀번호 1글자만 입력 시에도 버튼 활성화
 
 Copyright (C) 2020, VIRNECT CO., LTD. - All Rights Reserved
