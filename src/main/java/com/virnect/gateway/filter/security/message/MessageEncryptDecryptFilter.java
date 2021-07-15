@@ -139,16 +139,16 @@ public class MessageEncryptDecryptFilter extends AbstractGatewayFilterFactory<Me
 		DataBufferUtils.retain(dataBuffer);
 		Flux<DataBuffer> cachedFlux = Flux.defer(() -> Flux.just(dataBuffer.slice(0, dataBuffer.readableByteCount())));
 		String body = toRaw(cachedFlux);
-		logger.info("[REQUEST_ORIGIN_RAW_MESSAGE] - {}", body);
+		logger.debug("[REQUEST_ORIGIN_RAW_MESSAGE] - {}", body);
 		try {
 			EncryptDecryptMessage message = objectMapper.readValue(body, EncryptDecryptMessage.class);
-			logger.info("[ENCRYPTED_MESSAGE] - {}", message.getData());
+			logger.debug("[ENCRYPTED_MESSAGE] - {}", message.getData());
 			String decodeMessage = EncryptDecryptHelper.decrypt(secretKey, message.getData());
 
 			if (decodeMessage.contains("password") || decodeMessage.contains("Password")) {
-				logger.info("[DECRYPTED_MESSAGE] - Skip.. ", decodeMessage);
+				logger.debug("[DECRYPTED_MESSAGE] - Skip.. ", decodeMessage);
 			}else{
-				logger.info("[DECRYPTED_MESSAGE] - {}", decodeMessage);
+				logger.debug("[DECRYPTED_MESSAGE] - {}", decodeMessage);
 			}
 
 			byte[] decryptMessageBytes = decodeMessage.getBytes(StandardCharsets.UTF_8);

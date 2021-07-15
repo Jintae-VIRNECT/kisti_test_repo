@@ -4,6 +4,8 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import javax.annotation.PostConstruct;
+
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
 import org.springframework.cloud.gateway.filter.GlobalFilter;
 import org.springframework.http.HttpHeaders;
@@ -17,6 +19,11 @@ import reactor.core.publisher.Mono;
 @Slf4j
 public class CorsPassResponseHeaderRewriteFilter implements GlobalFilter {
 	private final List<String> ALL = Collections.singletonList("*");
+
+	@PostConstruct
+	public void init() {
+		log.info("[CorsPassResponseHeaderRewriteFilter] => Active");
+	}
 
 	@Override
 	public Mono<Void> filter(

@@ -50,14 +50,12 @@ public class JwtAuthenticationFilter implements GlobalFilter {
 
 	@PostConstruct
 	protected void init() {
-		log.info("[JWT Authentication Filter] - Active.");
+		log.info("[JWT Authentication Filter] => Active");
 		this.secretKey = Base64.getEncoder().encodeToString(secretKey.getBytes());
 	}
 
 	@Override
 	public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
-		log.info("JwtAuthenticationFilter - doFilter");
-
 		if (RequestValidationProcessor.isRequestAuthenticationProcessSkip(exchange.getRequest())) {
 			return chain.filter(exchange);
 		}
@@ -94,7 +92,7 @@ public class JwtAuthenticationFilter implements GlobalFilter {
 		Jws<Claims> claims = Jwts.parser().setSigningKey(secretKey).parseClaimsJws(jwt);
 		Claims body = claims.getBody();
 
-		logger.info("JwtAuthenticationFilter - [AUTHENTICATION TOKEN]: {}", body.toString());
+		logger.debug("JwtAuthenticationFilter - [AUTHENTICATION TOKEN]: {}", body.toString());
 
 		ServerHttpRequest authenticateRequest = exchange.getRequest().mutate()
 			.header("X-jwt-uuid", body.get("uuid", String.class))
