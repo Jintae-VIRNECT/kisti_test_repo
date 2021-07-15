@@ -1,10 +1,12 @@
 RELEASE
 
 New Features
-- 서버 ssl 적용
+- 이벤트 메세지 발송 기능 추가
+
 Bug Fixes
+- ROI 첨부파일 메일 전송 에러 수정
 
 Limitation
-- 구축형 대응에 따라 메일 유틸 사용 분리
+- 없음
 
 Copyright (C) 2020, VIRNECT CO., LTD. - All Rights Reserved

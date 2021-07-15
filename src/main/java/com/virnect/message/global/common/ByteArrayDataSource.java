@@ -1,4 +1,4 @@
-package com.virnect.message.application;
+package com.virnect.message.global.common;
 
 import javax.activation.DataSource;
 import java.io.*;
@@ -15,7 +15,7 @@ public class ByteArrayDataSource  implements DataSource {
     String contentType;
     String name;
 
-    ByteArrayDataSource(byte[] bytes, String contentType, String name) {
+    public ByteArrayDataSource(byte[] bytes, String contentType, String name) {
         this.bytes = bytes;
         if(contentType == null)
             this.contentType = "application/octet-stream";
