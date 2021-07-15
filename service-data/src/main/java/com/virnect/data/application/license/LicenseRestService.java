@@ -17,5 +17,7 @@ public interface LicenseRestService {
 		@PathVariable(name = "userId") String userId);
 
 	@GetMapping("/licenses/{workspaceId}/plan")
-	ApiResponse<WorkspaceLicensePlanInfoResponse> getWorkspacePlan(@PathVariable(name = "workspaceId") String workspaceId);
+	ApiResponse<WorkspaceLicensePlanInfoResponse> getWorkspacePlan(
+		@PathVariable(name = "workspaceId") String workspaceId
+	);
 }

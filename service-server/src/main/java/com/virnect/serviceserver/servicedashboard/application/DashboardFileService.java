@@ -8,7 +8,6 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -16,14 +15,6 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import com.virnect.serviceserver.servicedashboard.dto.request.FileDataRequest;
-import com.virnect.serviceserver.servicedashboard.dto.response.FileDeleteResponse;
-import com.virnect.serviceserver.servicedashboard.dto.response.FileDetailInfoListResponse;
-import com.virnect.serviceserver.servicedashboard.dto.response.FileDetailInfoResponse;
-import com.virnect.serviceserver.servicedashboard.dto.response.FileInfoListResponse;
-import com.virnect.serviceserver.servicedashboard.dto.response.FileInfoResponse;
-import com.virnect.serviceserver.servicedashboard.dto.response.FilePreSignedResponse;
-import com.virnect.serviceserver.servicedashboard.dto.response.FileUserInfoResponse;
 import com.virnect.data.application.record.RecordRestService;
 import com.virnect.data.application.user.UserRestService;
 import com.virnect.data.application.workspace.WorkspaceRestService;
@@ -39,6 +30,19 @@ import com.virnect.data.error.ErrorCode;
 import com.virnect.data.error.exception.RestServiceException;
 import com.virnect.data.global.common.ApiResponse;
 import com.virnect.data.infra.file.IFileManagementService;
+import com.virnect.serviceserver.servicedashboard.dto.mapper.file.DashboardFileInfoMapper;
+import com.virnect.serviceserver.servicedashboard.dto.mapper.file.DashboardFilePreSignedMapper;
+import com.virnect.serviceserver.servicedashboard.dto.mapper.file.DashboardFileUserInfoMapper;
+import com.virnect.serviceserver.servicedashboard.dto.mapper.record.DashboardRecordFileDetailMapper;
+import com.virnect.serviceserver.servicedashboard.dto.mapper.record.DashboardRecordFilePreSignedMapper;
+import com.virnect.serviceserver.servicedashboard.dto.request.FileDataRequest;
+import com.virnect.serviceserver.servicedashboard.dto.response.FileDeleteResponse;
+import com.virnect.serviceserver.servicedashboard.dto.response.FileDetailInfoListResponse;
+import com.virnect.serviceserver.servicedashboard.dto.response.FileDetailInfoResponse;
+import com.virnect.serviceserver.servicedashboard.dto.response.FileInfoListResponse;
+import com.virnect.serviceserver.servicedashboard.dto.response.FileInfoResponse;
+import com.virnect.serviceserver.servicedashboard.dto.response.FilePreSignedResponse;
+import com.virnect.serviceserver.servicedashboard.dto.response.FileUserInfoResponse;
 
 @Slf4j
 @Service
@@ -46,14 +50,18 @@ import com.virnect.data.infra.file.IFileManagementService;
 @Transactional
 public class DashboardFileService {
 
-	private final ModelMapper modelMapper;
-
 	private final WorkspaceRestService workspaceRestService;
 	private final UserRestService userRestService;
 	private final IFileManagementService fileManagementService;
 	private final RecordRestService recordRestService;
 	private final FileRepository fileRepository;
+	private final DashboardFileUserInfoMapper dashboardFileUserInfoMapper;
 	private final RecordFileRepository recordFileRepository;
+
+	private final DashboardFileInfoMapper dashboardFileInfoMapper;
+	private final DashboardRecordFileDetailMapper dashboardRecordFileDetailMapper;
+	private final DashboardFilePreSignedMapper dashboardFilePreSignedMapper;
+	private final DashboardRecordFilePreSignedMapper dashboardRecordFilePreSignedMapper;
 
 	String generateDirPath(String... args) {
 		StringBuilder stringBuilder;
@@ -98,7 +106,9 @@ public class DashboardFileService {
 
 			fileInfoList = files
 				.stream()
-				.map(file -> modelMapper.map(file, FileInfoResponse.class))
+				.map(
+					file -> dashboardFileInfoMapper.toDto(file)
+				)
 				.sorted((Comparator.comparing(FileInfoResponse::getCreatedDate)))
 				.collect(Collectors.toList());
 
@@ -146,10 +156,10 @@ public class DashboardFileService {
 		try {
 			for (RecordFile recordFile : recordFiles) {
 				ApiResponse<UserInfoResponse> feignResponse = userRestService.getUserInfoByUserId(recordFile.getUuid());
-				FileUserInfoResponse fileUserInfoResponse = modelMapper.map(
-					feignResponse.getData(), FileUserInfoResponse.class);
-				FileDetailInfoResponse fileDetailInfoResponse = modelMapper.map(
-					recordFile, FileDetailInfoResponse.class);
+
+				FileUserInfoResponse fileUserInfoResponse = dashboardFileUserInfoMapper.toDto(feignResponse.getData());
+				FileDetailInfoResponse fileDetailInfoResponse = dashboardRecordFileDetailMapper.toDto(recordFile);
+
 				fileDetailInfoResponse.setFileUserInfo(fileUserInfoResponse);
 				fileDetailInfoList.add(fileDetailInfoResponse);
 			}
@@ -218,7 +228,7 @@ public class DashboardFileService {
 					file.getName(),
 					FileType.FILE
 				);
-				filePreSignedResponse = modelMapper.map(file, FilePreSignedResponse.class);
+				filePreSignedResponse = dashboardFilePreSignedMapper.toDto(file);
 				filePreSignedResponse.setExpiry(expiry);
 				filePreSignedResponse.setUrl(url);
 
@@ -268,7 +278,7 @@ public class DashboardFileService {
 					FileType.RECORD
 				);
 
-				filePreSignedResponse = modelMapper.map(recordFile, FilePreSignedResponse.class);
+				filePreSignedResponse = dashboardRecordFilePreSignedMapper.toDto(recordFile);
 				filePreSignedResponse.setExpiry(expiry);
 				filePreSignedResponse.setUrl(url);
 			} catch (IOException | NoSuchAlgorithmException | InvalidKeyException exception) {

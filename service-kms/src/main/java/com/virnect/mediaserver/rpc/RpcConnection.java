@@ -86,4 +86,14 @@ public class RpcConnection {
 	public Collection<Transaction> getTransactions() {
 		return transactions.values();
 	}
+
+	@Override
+	public String toString() {
+		return "RpcConnection{" +
+			"session=" + session +
+			", transactions=" + transactions +
+			", sessionId='" + sessionId + '\'' +
+			", participantPrivateId='" + participantPrivateId + '\'' +
+			'}';
+	}
 }

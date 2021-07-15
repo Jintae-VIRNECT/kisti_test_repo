@@ -41,7 +41,7 @@ public class WorkspaceLicensePlanInfoResponse {
     @ApiModelProperty(value = "라이선스 플랜 종료일자", position = 10, example = "2020-05-15T13:00:00")
     private LocalDateTime endDate = LocalDateTime.now();
     @ApiModelProperty(value = "라이선스 플랜 상태", position = 11, example = "ACTIVE")
-    private int planStatus = 1;
+    private String planStatus;
     @ApiModelProperty(value = "플랜 제품별 정보 라이선스 정보", position = 12)
     private List<LicenseProductInfoResponse> licenseProductInfoList = new ArrayList<>();
 }

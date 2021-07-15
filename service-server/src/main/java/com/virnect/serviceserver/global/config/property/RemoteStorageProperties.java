@@ -1,20 +1,23 @@
 package com.virnect.serviceserver.global.config.property;
 
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.PositiveOrZero;
+
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.validation.annotation.Validated;
 
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-//@Component
 @Getter
 @Setter
+@Validated
 @ConfigurationProperties(prefix = "storage", ignoreInvalidFields = true)
-//public class RemoteStorageProperties extends PropertyService {
-public class RemoteStorageProperties {
+public class RemoteStorageProperties extends PropertyService {
 
-	//Local File Config properties
+	@NotNull
 	private boolean enabled;
 	private String serverUrl;
 	private String accessKey;
@@ -23,84 +26,43 @@ public class RemoteStorageProperties {
 	private String bucketProfileName;
 	private String bucketFileName;
 	private String bucketRecordName;
+
+	@NotNull
 	private boolean policyEnabled;
 	private String policyLocation;
+
+	@PositiveOrZero
 	private int policyLifeCycle;
 
-	/*public String getBucketName() {
-		return this.bucketName;
+	public void setStorageProperties() {
+		this.enabled = (boolean)getValue("storage.enabled", enabled);
+		this.serverUrl = getValue("storage.serverUrl", serverUrl).toString();
+		this.accessKey = getValue("storage.access-key", accessKey).toString();
+		this.secretKey = getValue("storage.secret-key", secretKey).toString();
+		this.bucketName = getValue("storage.bucket-name", bucketName).toString();
+		this.bucketProfileName = getValue("storage.bucket-profile-name", bucketProfileName).toString();
+		this.bucketFileName = getValue("storage.bucket-file-name", bucketFileName).toString();
+		this.bucketRecordName = getValue("storage.bucket-record-name", bucketRecordName).toString();
+		this.policyEnabled = (boolean)getValue("storage.policy-enabled", policyEnabled);
+		this.policyLocation = getValue("storage.policy-location", policyLocation).toString();
+		this.policyLifeCycle = (int)getValue("storage.policy-lifecycle", policyLifeCycle);
 	}
 
-	public String getBucketFileName() {
-		return this.bucketFileName;
+	@Override
+	public String toString() {
+		return
+			'\t'+
+			"* STORAGE_ENABLED=" + this.enabled + "\n\t" +
+			"* STORAGE_SERVERURL=" + this.serverUrl + "\n\t" +
+			"* STORAGE_ACCESS_KEY=" + this.accessKey + "\n\t" +
+			"* STORAGE_SECRET_KEY=" + this.secretKey + "\n\t" +
+			"* STORAGE_BUCKET_NAME=" + this.bucketName + "\n\t" +
+			"* STORAGE_BUCKET_PROFILE=" + this.bucketProfileName + "\n\t" +
+			"* STORAGE_BUCKET_FILE=" + this.bucketFileName + "\n\t" +
+			"* STORAGE_BUCKET_RECORD=" + this.bucketRecordName + "\n\t" +
+			"* STORAGE_POLICY_ENABLED=" + this.policyEnabled + "\n\t" +
+			"* STORAGE_POLICY_LOCATION=" + this.policyLocation + "\n\t" +
+			"* STORAGE_POLICY_LIFECYCLE=" + this.policyLifeCycle + '\n' +
+			"\n\t" + "------------------------" + "\n";
 	}
-
-	public String getBucketRecordName() {
-		return this.bucketRecordName;
-	}
-
-	public String getBucketProfileName() {
-		return bucketProfileName;
-	}
-
-	public String getAccessKey() {
-		return accessKey;
-	}
-
-	public String getSecretKey() {
-		return secretKey;
-	}
-
-	public String getServerUrl() {
-		return serverUrl;
-	}
-
-	public boolean isEnabled() {
-		return enabled;
-	}
-
-	public void setEnabled(boolean enabled) {
-		this.enabled = enabled;
-	}
-
-	public boolean isPolicyEnabled() {
-		return policyEnabled;
-	}
-
-	public int getPolicyLifeCycle() {
-		return policyLifeCycle;
-	}
-
-	public String getPolicyLocation() {
-		return policyLocation;
-	}
-
-	public void checkStorageProperties() {
-		this.policyEnabled = asBoolean("storage.policy.enabled");
-		this.policyLifeCycle = asNonNegativeInteger("storage.policy.lifecycle");
-		this.policyLocation = getValue("storage.policy.location");
-
-		this.enabled = asBoolean("storage.enabled");
-		this.bucketName = getValue("storage.bucket.name");
-		this.bucketFileName = getValue("storage.bucket.file");
-		this.bucketProfileName = getValue("storage.bucket.profile");
-		this.bucketRecordName = getValue("storage.bucket.record");
-		this.accessKey = getValue("storage.access-key");
-		this.secretKey = getValue("storage.secret-key");
-		this.serverUrl = getValue("storage.serverUrl");
-
-        *//*log.info("checkFileServiceProperties {}", bucketName);
-        log.info("checkFileServiceProperties {}", fileBucketName);
-        log.info("checkFileServiceProperties {}", profileBucketName);
-        log.info("checkFileServiceProperties {}", recordBucketName);
-        log.info("checkFileServiceProperties {}", accessKey);
-        log.info("checkFileServiceProperties {}", secretKey);
-        log.info("checkFileServiceProperties {}", serverUrl);
-        log.info("checkFileServiceProperties {}", serviceEnabled);
-
-        log.info("checkFileServiceProperties {}", policyEnabled);
-        log.info("checkFileServiceProperties {}", policyLocation);*//*
-
-		ServiceServerApplication.storageUrl = serverUrl;
-	}*/
 }

@@ -17,9 +17,10 @@
 
 package com.virnect.serviceserver.infra.resources;
 
+import javax.validation.constraints.NotNull;
+
 import com.virnect.serviceserver.global.config.RemoteServiceConfig;
 
-import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Configuration;

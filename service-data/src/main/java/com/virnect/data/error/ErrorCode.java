@@ -85,6 +85,8 @@ public enum ErrorCode {
 	ERR_STORAGE_NOT_SUPPORTED(7012, "Storage service is not supported. Please check storage server url."),
 	ERR_FILE_NOT_FOUND(7013, "This file can not found."),
 	ERR_PROFILE_UPLOAD_FAILED(7015, "Profile upload has failed"),
+	ERR_STORAGE_LIMIT_REACHED(7016, "The storage limit is about to be reached"),
+	ERR_STORAGE_CAPACITY_FULL(7017, "The storage capacity is full"),
 
 	ERR_ROOM_HISTORY_FOUND(3101, "Room History can not found"),
 	ERR_ROOM_HISTORY_HANDLE(3102, "Room History handling fail"),
@@ -93,7 +95,7 @@ public enum ErrorCode {
 	ERR_ROOM_MAPPER(4104, "Room mapper fail"),
 	ERR_ROOM_HISTORY_MAPPER(4103, "Room history mapper fail"),
 	// error code for file upload and download
-	ERR_ATTACHED_FILE_FOUND(7101, "Attached file can can not found"),
+	ERR_ATTACHED_FILE_FOUND(7101, "Attached file can not found"),
 	ERR_LOCAL_RECORD_FILE_FOUND(7102, "Local record file can not found"),
 	ERR_SERVER_RECORD_FILE_FOUND(7103, "Server record file can not found"),
 	ERR_SERVER_RECORD_URL_FOUND(7104, "Server record file can not found"),
@@ -112,7 +114,11 @@ public enum ErrorCode {
 	ERR_AUTHORIZATION_EXPIRED(8005, "Authorization token is expired"),
 	ERR_UNSUPPORTED_DATA_TYPE_EXCEPTION(8006, "Unsupported DataType Exception occured"),
 	ERR_IO_EXCEPTION(8007, "IOException occured"),
+	ERR_MEMBER_LOGOUT_OR_JOIN(8008, "Members are already logout or join"),
+	ERR_SESSION_CLIENT_METADATA_NULL(8010, "Client metadata error"),
+	ERR_SESSION_CLIENT_METADATA_EXCEPTION(8009, "Client metadata error"),
 	ERR_UNEXPECTED_SERVER_ERROR(9999, "Unexpected Server Error, Please contact Administrator");
+
 
 	@ApiModelProperty(value = "에러 코드")
 	private int code;
