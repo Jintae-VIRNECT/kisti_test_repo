@@ -170,6 +170,11 @@ export default {
             uuid: this.account.uuid,
             workspaceId: this.workspace.uuid,
           })
+
+          if (profile.usedStoragePer >= 90) {
+            this.toastError(this.$t('alarm.file_storage_about_to_limit'))
+          }
+
           delete params['image']
           this.$emit('updatedInfo', profile)
         } else if (
@@ -191,6 +196,8 @@ export default {
         if (err.code === 4002) {
           this.toastError(this.$t('workspace.remote_already_removed'))
           this.$emit('update:visible', false)
+        } else if (err.code === 7017) {
+          this.toastError(this.$t('alarm.file_storage_capacity_full'))
         }
       }
     },
@@ -234,7 +241,12 @@ export default {
   },
 
   /* Lifecycles */
-  mounted() {},
+  mounted() {
+    this.$eventBus.$on('close:roominfo', this.beforeClose)
+  },
+  beforeDestroy() {
+    this.$eventBus.$off('close:roominfo', this.beforeClose)
+  },
 }
 </script>
 

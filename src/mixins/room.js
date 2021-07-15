@@ -5,6 +5,8 @@ import { ROOM_STATUS } from 'configs/status.config'
 import toastMixin from 'mixins/toast'
 import { mapActions } from 'vuex'
 import callMixin from 'mixins/call'
+import { isRegisted } from 'utils/auth'
+
 export default {
   mixins: [toastMixin, callMixin],
   data() {
@@ -17,6 +19,12 @@ export default {
     async join(room) {
       this.logger('>>> JOIN ROOM')
       try {
+        //멤버 상태 등록 안된 경우 협업방 입장 불가
+        if (!isRegisted) {
+          this.toastDefault(this.$t('workspace.auth_status_failed'))
+          return
+        }
+
         if (this.clicked === true) return
         this.clicked = true
 
@@ -30,7 +38,11 @@ export default {
         } else {
           role = room.leaderId === this.account.uuid ? ROLE.LEADER : ROLE.EXPERT
         }
+
+        this.$eventBus.$emit('roomloading:show', true)
+
         const options = await this.getDeviceId()
+        const mediaStream = await this.$call.getStream(options)
 
         const res = await joinRoom({
           uuid: this.account.uuid,
@@ -39,13 +51,19 @@ export default {
           sessionId: room.sessionId,
           workspaceId: this.workspace.uuid,
         })
+
         this.setRoomInfo({
           ...room,
           audioRestrictedMode: res.audioRestrictedMode,
           videoRestrictedMode: res.videoRestrictedMode,
         })
 
-        const joinRtn = await this.$call.connect(res, role, options)
+        const joinRtn = await this.$call.connect(
+          res,
+          role,
+          options,
+          mediaStream,
+        )
         if (joinRtn) {
           this.$nextTick(() => {
             this.$router.push({ name: 'service' })
@@ -58,6 +76,7 @@ export default {
         }
       } catch (err) {
         this.clicked = false
+        this.$eventBus.$emit('roomloading:show', false)
         this.roomClear()
         if (this['init'] && typeof this['init'] === 'function') {
           this.init()

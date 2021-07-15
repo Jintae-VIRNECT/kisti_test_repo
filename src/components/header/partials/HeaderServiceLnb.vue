@@ -17,8 +17,8 @@
 <script>
 import { mapGetters, mapActions, mapMutations } from 'vuex'
 import {
-  SIGNAL,
   DRAWING,
+  SIGNAL,
   AR_FEATURE,
   CAPTURE_PERMISSION,
   ROLE,
@@ -27,6 +27,8 @@ import { VIEW } from 'configs/view.config'
 import LnbButton from '../tools/LnbButton'
 import toastMixin from 'mixins/toast'
 import configmMixin from 'mixins/confirm'
+import { getResolutionScale } from 'utils/settingOptions'
+
 // import web_test from 'utils/testing'
 export default {
   name: 'HeaderServiceLnb',
@@ -69,6 +71,7 @@ export default {
       'viewForce',
       'settingInfo',
       'myInfo',
+      'video',
     ]),
     hasLeader() {
       const idx = this.participants.findIndex(
@@ -98,9 +101,19 @@ export default {
       if (!val && val !== bVal && this.participants.length > 0) {
         this.toastDefault(this.$t('service.toast_leave_leader'))
         this.showImage({})
-        this.setView(VIEW.STREAM)
+        // this.setView(VIEW.STREAM)
       }
     },
+    viewForce() {
+      this.controlScale()
+    },
+    participants: {
+      handler() {
+        this.controlScale()
+      },
+      deep: true,
+    },
+
     mainView: {
       deep: true,
       handler(val, oldVal) {
@@ -173,13 +186,13 @@ export default {
         }
 
         if (type === 'drawing') {
-          if (this.shareFile && this.shareFile.id) {
-            // this.drawingNotice = false
-            this.menus[this.drawingNotice].notice = false
-            this.setView(VIEW.DRAWING)
-          } else {
-            this.toastDefault(this.$t('service.toast_cannot_invite_drawing'))
-          }
+          // if (this.shareFile && this.shareFile.id) {
+          // this.drawingNotice = false
+          // this.menus[this.drawingNotice].notice = false
+          // this.setView(VIEW.DRAWING)
+          // } else {
+          //   this.toastDefault(this.$t('service.toast_cannot_invite_drawing'))
+          // }
           this.goDrawing()
         }
         if (type === VIEW.AR) {
@@ -210,11 +223,11 @@ export default {
         this.setView(VIEW.DRAWING)
         return
       }
-      if (this.shareFile && this.shareFile.id) {
-        this.setView(VIEW.DRAWING)
-      } else {
-        this.toastDefault(this.$t('service.toast_cannot_invite_drawing'))
-      }
+      // if (this.shareFile && this.shareFile.id) {
+      this.setView(VIEW.DRAWING)
+      // } else {
+      //   this.toastDefault(this.$t('service.toast_cannot_invite_drawing'))
+      // }
     },
     permissionSetting(permission) {
       //AR 기능 요청 승낙 받은 경우 - AR 기능 시작 시그날 전송 & AR VIEW로 전환한다
@@ -326,16 +339,55 @@ export default {
         }
       }
     },
+
+    /**
+     * 자신의 영상 스트림 스케일 제어
+     */
+    controlScale() {
+      if (this.participants.length === 1) return
+
+      const ptIndex = this.participants.findIndex(pt => {
+        const isWatchingMe = pt.currentWatching === this.account.uuid
+
+        //다른사람이 날 보고 있음.
+        const watchingMeByElse = isWatchingMe && !pt.me
+
+        //전체 공유로 인해 내가 내화면을 보고 있음.
+        const watchingMeByForce =
+          isWatchingMe && pt.me && this.viewForce === true
+        return watchingMeByElse || watchingMeByForce
+      })
+
+      if (ptIndex > -1) {
+        this.$call.setScaleResolution(1)
+      } else {
+        const quality = Number.parseInt(this.video.quality, 10)
+        const scale = getResolutionScale(quality)
+        this.$call.setScaleResolution(scale)
+      }
+    },
+
+    //협업보드 공유 종료 메시지 수신 시
+    receiveEndDrawing({ data }) {
+      if (data.type === DRAWING.END_DRAWING) {
+        this.toastDefault(this.$t('service.toast_drawing_end'))
+        this.showImage({}) //공유중 파일 초기화
+        this.goTabConfirm(VIEW.STREAM) //탭 실시간 공유로 이동
+      }
+    },
   },
 
   /* Lifecycles */
   created() {
     this.$eventBus.$on(SIGNAL.CAPTURE_PERMISSION, this.getPermissionCheck)
     this.$eventBus.$on(SIGNAL.AR_FEATURE, this.checkArFeature)
+    this.$eventBus.$on(SIGNAL.DRAWING, this.receiveEndDrawing)
   },
+
   beforeDestroy() {
     this.$eventBus.$off(SIGNAL.CAPTURE_PERMISSION, this.getPermissionCheck)
     this.$eventBus.$off(SIGNAL.AR_FEATURE, this.checkArFeature)
+    this.$eventBus.$off(SIGNAL.DRAWING, this.receiveEndDrawing)
   },
 }
 </script>

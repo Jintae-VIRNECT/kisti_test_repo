@@ -1,5 +1,6 @@
 import axios from 'axios'
 import { URLS } from 'configs/env.config'
+import loadImage from 'blueimp-load-image'
 
 /**
  * convert base64 to blob
@@ -56,7 +57,12 @@ export const getFile = url => {
   })
 }
 
-export const downloadByURL = async file => {
+/**
+ * 파일을 url로부터 다운로드 받는 함수
+ * @param {Object} file 다운로드 받을 파일 정보
+ * @param {Boolean} usingNewTab 새 탭을 열어서 파일을 다운로드
+ */
+export const downloadByURL = async (file, usingNewTab = false) => {
   // let a = document.createElement('a')
   // document.body.appendChild(a)
   // a.style = 'display: none'
@@ -65,21 +71,25 @@ export const downloadByURL = async file => {
   // a.target = '_blank'
   // a.click()
   // window.URL.revokeObjectURL(file.url)
-  let filename = file.name
-  let xhr = new XMLHttpRequest()
-  xhr.responseType = 'blob'
-  xhr.onload = () => {
-    // console.log(xhr.response)
-    let a = document.createElement('a')
-    a.href = window.URL.createObjectURL(xhr.response)
-    a.download = filename
-    a.style.display = 'none'
-    document.body.appendChild(a)
-    a.click()
-    window.URL.revokeObjectURL(xhr.response)
+  if (usingNewTab) {
+    window.open(proxyUrl(file.url))
+  } else {
+    let filename = file.name
+    let xhr = new XMLHttpRequest()
+    xhr.responseType = 'blob'
+    xhr.onload = () => {
+      // console.log(xhr.response)
+      let a = document.createElement('a')
+      a.href = window.URL.createObjectURL(xhr.response)
+      a.download = filename
+      a.style.display = 'none'
+      document.body.appendChild(a)
+      a.click()
+      window.URL.revokeObjectURL(xhr.response)
+    }
+    xhr.open('GET', proxyUrl(file.url))
+    xhr.send()
   }
-  xhr.open('GET', proxyUrl(file.url))
-  xhr.send()
 }
 
 export const proxyUrl = url => {
@@ -88,4 +98,36 @@ export const proxyUrl = url => {
   } else {
     return url
   }
+}
+
+// 모바일 촬영 이미지의 exif 회전 값을 리셋하여 회전되있는 사진 원위치하는 함수
+export const resetOrientation = async file => {
+  return new Promise(res => {
+    loadImage(
+      file,
+      (img, data) => {
+        if (data && data.imageHead && data.exif) {
+          //loadImage.writeExifData(data.imageHead, data, 'Orientation', 1)
+          img.toBlob(blob => {
+            if (!blob) res()
+            const newFile = new File([blob], file.name, {
+              lastModified: new Date(),
+            })
+            res(newFile)
+            // loadImage.replaceHead(blob, data.imageHead, newBlob => {
+            //   const newFile = new File([newBlob], file.name, {
+            //     lastModified: new Date(),
+            //   })
+            //   res(newFile)
+            // })
+          }, file.type)
+        } else res()
+      },
+      {
+        canvas: true,
+        orientation: true,
+        meta: true,
+      },
+    )
+  })
 }

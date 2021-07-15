@@ -44,7 +44,6 @@ export default {
       'localRecordStatus',
       'roomInfo',
       'initing',
-      'mainPanoCanvas',
     ]),
     /**
      * get resolution of main view
@@ -60,9 +59,6 @@ export default {
         }
       }
       return this.resolutions[idx]
-    },
-    isFITT360() {
-      return this.mainView.deviceType === DEVICE.FITT360
     },
   },
   watch: {
@@ -82,14 +78,7 @@ export default {
         if (this.recorder !== null) {
           const orientation = this.resolution.orientation
           if (this.localRecordTarget === RECORD_TARGET.WORKER) {
-            if (this.isFITT360) {
-              this.changeCanvasOrientation(
-                orientation,
-                this.mainPanoCanvas.captureStream(24),
-              )
-            } else {
-              this.changeCanvasOrientation(orientation, this.mainView.stream)
-            }
+            this.changeCanvasOrientation(orientation, this.mainView.stream)
           } else {
             this.changeCanvasOrientation(null, this.screenStream)
           }
@@ -103,54 +92,19 @@ export default {
           const orientation = this.resolution.orientation
 
           if (this.localRecordTarget === RECORD_TARGET.WORKER) {
-            if (this.isFITT360) {
-              if (current.connectionId === before.connectionId) return
-              const panoStream = this.mainPanoCanvas.captureStream(24)
-              this.changeVideoStream(
-                panoStream,
-                getWH(
-                  this.localRecord.resolution,
-                  this.resolution.width,
-                  this.resolution.height,
-                ),
-              )
-              this.changeCanvasOrientation(orientation, current.stream)
-            } else {
-              this.changeVideoStream(
-                current.stream,
-                getWH(
-                  this.localRecord.resolution,
-                  this.resolution.width,
-                  this.resolution.height,
-                ),
-              )
-              this.changeCanvasOrientation(orientation, current.stream)
-            }
+            this.changeVideoStream(
+              current.stream,
+              getWH(
+                this.localRecord.resolution,
+                this.resolution.width,
+                this.resolution.height,
+              ),
+            )
+            this.changeCanvasOrientation(orientation, current.stream)
           }
         }
       },
       deep: true,
-    },
-    mainPanoCanvas: {
-      handler() {
-        if (
-          this.mainPanoCanvas &&
-          this.localRecordTarget === RECORD_TARGET.WORKER &&
-          this.recorder !== null
-        ) {
-          const canvasStream = this.mainPanoCanvas.captureStream(24)
-
-          this.changeVideoStream(
-            canvasStream,
-            getWH(
-              this.localRecord.resolution,
-              this.resolution.width,
-              this.resolution.height,
-            ),
-          )
-          this.changeCanvasOrientation(null, canvasStream)
-        }
-      },
     },
     allowLocalRecord(allow) {
       if (allow === false && this.localRecordStatus === 'START') {
@@ -308,20 +262,11 @@ export default {
 
       if (this.localRecordTarget === RECORD_TARGET.WORKER) {
         const mainStream = this.mainView.stream
-        const is360Stream = this.isFITT360
 
         if (mainStream && mainStream.getVideoTracks().length > 0) {
-          if (is360Stream && this.mainPanoCanvas) {
-            const canvasStream = this.mainPanoCanvas.captureStream(30)
-
-            const videoStream = new MediaStream()
-            videoStream.addTrack(canvasStream.getVideoTracks()[0])
-            streams.push(videoStream)
-          } else {
-            const videoStream = new MediaStream()
-            videoStream.addTrack(mainStream.getVideoTracks()[0])
-            streams.push(videoStream)
-          }
+          const videoStream = new MediaStream()
+          videoStream.addTrack(mainStream.getVideoTracks()[0])
+          streams.push(videoStream)
         }
       } else {
         await this.setScreenCapture()

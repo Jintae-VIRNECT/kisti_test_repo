@@ -356,6 +356,7 @@ export default {
           )
           return
         }
+        this.$call.sendVideo(this.participant.id, false)
         this.setMainView({ id: this.participant.id })
       }
     },

@@ -15,7 +15,6 @@
         ></chat-item>
       </ol>
     </vue2-scrollbar>
-    <chat-tts ref="chatTts"></chat-tts>
     <div>
       <transition name="hide-back">
         <chat-input v-if="!usingStt" :speech="usingStt"></chat-input>
@@ -42,7 +41,9 @@ import ChatItem from './ChatItem'
 import ChatInput from './ChatInput'
 import ChatSpeech from './ChatSpeech'
 import ChatSpeechStreaming from './ChatSpeechStreaming'
-import ChatTts from './ChatTts'
+import { tts } from 'plugins/remote/translate'
+import { audio, clearAudio } from 'plugins/remote/tts/audio'
+
 export default {
   name: 'ChatMsgList',
   components: {
@@ -50,10 +51,9 @@ export default {
     ChatItem,
     ChatSpeech,
     ChatSpeechStreaming,
-    ChatTts,
   },
   computed: {
-    ...mapGetters(['chatList', 'view', 'translate', 'usingStt']),
+    ...mapGetters(['chatList', 'view', 'translate', 'usingStt', 'speaker']),
   },
   props: {
     show: Boolean,
@@ -93,12 +93,44 @@ export default {
   },
   methods: {
     ...mapActions(['useStt']),
-    doTts(info) {
-      this.$refs['chatTts'].doTts(info)
+
+    async doTts(message) {
+      if (!this.speaker.isOn) return
+      if (!this.translate.flag) return
+      if (!this.translate.ttsAllow) return
+      if (!message || message.length === 0) return
+      let ttsText = message
+      if (message.length > 200) {
+        ttsText = message.substr(0, 200)
+      }
+      await this.sendTts(ttsText)
+      this.doTts(message.substr(200))
+    },
+    sendTts(text) {
+      return new Promise(async resolve => {
+        const startTime = Date.now()
+        const res = await tts(text, this.translate.code)
+        const ttsTime = Date.now() - startTime
+        this.logger('TTS', 'DURING TIME: ', ttsTime)
+        audio.src = 'data:audio/wav;base64,' + res
+        audio.muted = false
+
+        audio.onended = () => {
+          resolve(true)
+        }
+        //oncanplay - User agent가 미디어를 재생 가능한 시점
+        audio.oncanplay = async () => {
+          audio.play()
+        }
+        audio.load()
+      })
     },
   },
   mounted() {
     this.$refs['chatListScrollbar'].scrollToY(99999)
+  },
+  beforeDestroy() {
+    clearAudio()
   },
 }
 </script>

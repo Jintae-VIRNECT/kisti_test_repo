@@ -41,13 +41,17 @@ import confirmMixin from 'mixins/confirm'
 import FileSaver from 'file-saver'
 import { VIEW } from 'configs/view.config'
 import { base64ToBlob } from 'utils/file'
+import { drawingUpload } from 'api/http/drawing'
+import { DRAWING } from 'configs/remote.config'
+import toastMixin from 'mixins/toast'
 export default {
   name: 'CaptureModal',
-  mixins: [shutterMixin, confirmMixin],
+  mixins: [shutterMixin, confirmMixin, toastMixin],
   data() {
     return {
       status: false,
       imageData: '',
+      doubleCheckFlag: false,
     }
   },
   props: {
@@ -59,7 +63,7 @@ export default {
     },
   },
   computed: {
-    ...mapGetters(['view']),
+    ...mapGetters(['view', 'roomInfo']),
   },
   watch: {
     file: {
@@ -111,18 +115,94 @@ export default {
         }
       }
     },
-    shareCapture() {
-      const history = {
-        id: this.file.id,
-        fileName: this.file.fileName,
-        // fileData: this.file.fileData,
-        img: this.imageData,
+
+    //한번만 false를 반환하고, 이후에는 true만 반환. 이미지 등록 후 모달창은 닫히기 때문에 초기화됨
+    doubleCheck() {
+      if (this.doubleCheckFlag) return this.doubleCheckFlag
+      else {
+        this.doubleCheckFlag = true
+        return false
       }
-      this.addHistory(history)
+    },
+
+    async shareCapture() {
+      // const history = {
+      //   id: this.file.id,
+      //   fileName: this.file.fileName,
+      //   // fileData: this.file.fileData,
+      //   img: this.imageData,
+      // }
+      // this.addHistory(history)
+
+      if (this.doubleCheck()) return
+
+      const result = await this.uploadImage()
+
+      if (!result) return
+
       this.setView('drawing')
       this.$nextTick(() => {
         this.close()
       })
+    },
+    async uploadImage() {
+      const dataType = 'image/jpg'
+      const file = await base64ToBlob(
+        this.imageData,
+        dataType,
+        this.file.fileName,
+      )
+
+      let res = null
+      try {
+        res = await drawingUpload({
+          file: file,
+          sessionId: this.roomInfo.sessionId,
+          userId: this.account.uuid,
+          workspaceId: this.workspace.uuid,
+        })
+        if (res.usedStoragePer >= 90) {
+          this.toastError(this.$t('alarm.file_storage_about_to_limit'))
+        } else {
+          this.toastDefault(this.$t('alarm.file_uploaded'))
+        }
+      } catch (err) {
+        if (err.code === 7017) {
+          this.toastError(this.$t('alarm.file_storage_capacity_full'))
+        } else if (err.code === 7003) {
+          this.toastError(this.$t('service.file_extension_unsupport'))
+        } else {
+          this.toastError(this.$t('confirm.network_error'))
+        }
+        return false
+      }
+
+      //파일 업로드
+      this.$call.sendDrawing(DRAWING.ADDED, {
+        deleted: false, //false
+        expired: false, //false
+        sessionId: res.sesssionId,
+        name: res.name,
+        objectName: res.objectName,
+        contentType: res.contentType, // "image/jpeg", "image/bmp", "image/gif", "application/pdf",
+        size: res.size,
+        createdDate: res.createdDate,
+        expirationDate: res.expirationDate,
+        width: res.width, //pdf 는 0
+        height: res.height,
+      })
+
+      //파일 공유
+      this.$call.sendDrawing(DRAWING.FILE_SHARE, {
+        name: res.name,
+        objectName: res.objectName,
+        contentType: res.contentType,
+        width: res.width,
+        height: res.height,
+        index: 0,
+      })
+
+      return true
     },
     close() {
       this.clearCapture()

@@ -12,7 +12,7 @@
       name="file"
       accept="image/gif,image/jpeg,image/png"
       style="display: none;"
-      @change="uploadImage($event)"
+      @change="uploadImage($event, (isProfile = true))"
     />
     <button
       class="btn normal createroom-info_regist-image"
@@ -67,10 +67,11 @@ import ProfileList from 'ProfileList'
 
 import imageMixin from 'mixins/uploadImage'
 import confirmMixin from 'mixins/confirm'
+import toastMixin from 'mixins/toast'
 
 export default {
   name: 'ModalCreateRoomInfo',
-  mixins: [imageMixin, confirmMixin],
+  mixins: [imageMixin, confirmMixin, toastMixin],
   components: {
     ProfileImage,
     InputRow,

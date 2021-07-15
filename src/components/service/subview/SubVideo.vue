@@ -19,27 +19,18 @@
         key="sub-video"
       ></video>
       <div v-else class="sub-video--no-stream" key="sub-video-no-stream"></div>
-      <pano-video
-        v-if="activePanoVideo"
-        targetRef="subVideo"
-        :connectionId="mainView.connectionId"
-        key="sub-video-pano"
-        type="sub"
-      ></pano-video>
     </transition-group>
   </div>
 </template>
 
 <script>
 import { mapGetters } from 'vuex'
-import { CAMERA, DEVICE } from 'configs/device.config'
+import { CAMERA } from 'configs/device.config'
 import { VIEW, ACTION } from 'configs/view.config'
 
 export default {
   name: 'SubVideo',
-  components: {
-    PanoVideo: () => import('PanoVideo'),
-  },
+  components: {},
   data() {
     return {
       inited: false,
@@ -65,12 +56,6 @@ export default {
       } else {
         return null
       }
-    },
-    activePanoVideo() {
-      return this.inited && this.stream !== null && this.isFITT360
-    },
-    isFITT360() {
-      return this.mainView.deviceType === DEVICE.FITT360
     },
   },
   mounted() {

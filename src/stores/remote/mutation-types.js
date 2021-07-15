@@ -7,6 +7,7 @@ export const CHANGE_WORKSPACE = 'CHANGE_WORKSPACE'
 export const CLEAR_WORKSPACE = 'CLEAR_WORKSPACE'
 export const SET_COMPANY_INFO = 'SET_COMPANY_INFO'
 export const CLEAR_COMPANY_INFO = 'CLEAR_COMPANY_INFO'
+export const STATUS_SESSION_ID_SET = 'STATUS_SESSION_ID_SET'
 
 // oncall
 export const CALL_RESET = 'CALL_RESET'
@@ -70,5 +71,7 @@ export const ADD_ALARM = 'ADD_ALARM'
 export const REMOVE_ALARM = 'REMOVE_ALARM'
 export const UPDATE_ALARM = 'UPDATE_ALARM'
 
-// 360 Stream
-export const MAIN_PANO_CANVAS = 'MAIN_PANO_CANVAS'
+//spot fullscreen mode
+export const SET_SPOT_FULLSCREEN = 'SET_SPOT_FULLSCREEN'
+
+export const SET_IS_SPOT_STAND = 'SET_IS_SPOT_STAND'

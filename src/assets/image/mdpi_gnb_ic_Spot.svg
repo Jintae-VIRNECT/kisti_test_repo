@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="40px" height="40px" viewBox="0 0 40 40" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>E532F71B-7C83-4676-9AD4-63D09911CF59@1x</title>
+    <g id="Remote_Spot" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="RSS_0000_원격협업_Spot실행" transform="translate(-1490.000000, -8.000000)">
+            <g id="gnb_ic_Spot" transform="translate(1490.000000, 8.000000)">
+                <polygon id="tr40" points="0 0 40 0 40 40 0 40"></polygon>
+                <path d="M22.7,15.95 L22.7,11 L17.3,11 L17.3,15.95 L20,18.65 L22.7,15.95 Z M15.95,17.3 L11,17.3 L11,22.7 L15.95,22.7 L18.65,20 L15.95,17.3 Z M17.3,24.05 L17.3,29 L22.7,29 L22.7,24.05 L20,21.35 L17.3,24.05 Z M24.05,17.3 L21.35,20 L24.05,22.7 L29,22.7 L29,17.3 L24.05,17.3 Z" id="Shape" fill="#FFFFFF" fill-rule="nonzero"></path>
+            </g>
+        </g>
+    </g>
+</svg>

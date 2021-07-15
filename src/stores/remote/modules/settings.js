@@ -3,7 +3,7 @@ import {
   SETTINGS,
   TOGGLE_CHAT,
   ALLOW_RESET,
-  MAIN_PANO_CANVAS,
+  SET_SPOT_FULLSCREEN,
 } from '../mutation-types'
 import { RECORD_TARGET } from 'utils/recordOptions'
 import { resolution } from 'utils/settingOptions'
@@ -21,6 +21,7 @@ const state = {
     deviceId: null,
     isOn: true,
     quality: '720',
+    fps: 30,
   },
   localRecordInfo: {
     time: '60',
@@ -51,7 +52,7 @@ const state = {
 
   chatBox: false,
 
-  mainPanoCanvas: null,
+  isSpotFullscreen: false,
 }
 
 const mutations = {
@@ -116,8 +117,8 @@ const mutations = {
     state.chatBox = flag
   },
 
-  [MAIN_PANO_CANVAS](state, canvas) {
-    state.mainPanoCanvas = canvas
+  [SET_SPOT_FULLSCREEN](state, isFullscreen) {
+    state.isSpotFullscreen = isFullscreen
   },
 }
 const getters = {
@@ -142,12 +143,13 @@ const getters = {
       video: state.video.deviceId,
       videoOn: state.video.isOn,
       quality: resolution[idx].resolution,
+      fps: state.video.fps,
     }
   },
 
   chatBox: state => state.chatBox,
 
-  mainPanoCanvas: state => state.mainPanoCanvas,
+  isSpotFullscreen: state => state.isSpotFullscreen,
 }
 
 const actions = {

@@ -12,7 +12,7 @@
       name="file"
       accept="image/gif,image/jpeg,image/png"
       style="display: none;"
-      @change="uploadImage($event)"
+      @change="uploadImage($event, (isProfile = true))"
     />
     <button class="btn normal openroom-info_regist-image" @click="imageUpload">
       {{ $t('workspace.create_remote_profile_regist') }}
@@ -54,10 +54,11 @@ import InputRow from 'InputRow'
 
 import imageMixin from 'mixins/uploadImage'
 import confirmMixin from 'mixins/confirm'
+import toastMixin from 'mixins/toast'
 
 export default {
   name: 'ModalCreateRoomInfo',
-  mixins: [imageMixin, confirmMixin],
+  mixins: [imageMixin, confirmMixin, toastMixin],
   components: {
     ProfileImage,
     InputRow,

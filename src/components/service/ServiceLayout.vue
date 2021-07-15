@@ -7,12 +7,12 @@
       </transition>
 
       <transition name="share">
-        <share v-show="isLeader && currentView === 'drawing'"></share>
+        <share v-show="currentView === 'drawing'"></share>
       </transition>
 
       <main
         class="main-wrapper"
-        :class="{ shareview: isLeader && currentView === 'drawing' }"
+        :class="{ shareview: currentView === 'drawing' }"
       >
         <transition name="main">
           <stream-view
@@ -55,6 +55,7 @@
     <reconnect-modal :visible.sync="connectVisible"></reconnect-modal>
     <setting-modal></setting-modal>
     <record-list v-if="useLocalRecording"></record-list>
+    <map-modal :visible.sync="positionMapVisible"></map-modal>
   </section>
 </template>
 
@@ -72,7 +73,7 @@ import confirmMixin from 'mixins/confirm'
 import { checkInput } from 'utils/deviceCheck'
 import ReconnectModal from './modal/ReconnectModal'
 
-import { mapGetters } from 'vuex'
+import { mapGetters, mapActions } from 'vuex'
 export default {
   name: 'ServiceLayout',
   beforeRouteEnter(to, from, next) {
@@ -99,6 +100,7 @@ export default {
     CaptureModal: () => import('./modal/CaptureModal'),
     RecordList: () => import('LocalRecordList'),
     SettingModal: () => import('./modal/SettingModal'),
+    MapModal: () => import('./modal/PositionMapModal'),
   },
   data() {
     return {
@@ -107,6 +109,7 @@ export default {
       isFullScreen: false,
       connectVisible: false,
       isVideoLoaded: false,
+      positionMapVisible: false,
     }
   },
   computed: {
@@ -118,6 +121,7 @@ export default {
       'video',
       'restrictedRoom',
       'useLocalRecording',
+      'coworkTimeout',
     ]),
     isLeader() {
       return this.account.roleType === ROLE.LEADER
@@ -134,7 +138,7 @@ export default {
     },
     userListClass() {
       return {
-        shareview: this.isLeader && this.currentView === 'drawing',
+        shareview: this.currentView === 'drawing',
         fullscreen:
           this.isVideoLoaded &&
           this.isFullScreen &&
@@ -144,6 +148,7 @@ export default {
   },
 
   methods: {
+    ...mapActions(['useStt']),
     changeOrientation(event) {
       if (!this.myInfo || !this.myInfo.stream) return
       const tracks = this.myInfo.stream.getVideoTracks()
@@ -167,11 +172,13 @@ export default {
         clearTimeout(this.callTimeout)
         this.callTimeout = null
       }
+      //30초후 자동 로그아웃
       this.callTimeout = setTimeout(() => {
         this.logout()
       }, 30 * 1000)
+
       this.confirmCancel(
-        this.$t('confirm.call_timeout'),
+        this.$t('confirm.call_timeout', { time: this.coworkTimeout }),
         {
           text: this.$t('button.progress'),
           action: this.initTimeout,
@@ -182,15 +189,23 @@ export default {
         },
       )
     },
+    //협업 시간 카운트 & 협업 연장 질의 팝업 생성
     initTimeout() {
+      this.debug(`cowork timeout(min) : ${this.coworkTimeout}`)
+
+      //timeout 0 무제한으로 설정시 협업 연장 질의 하지 않음
+      if (this.coworkTimeout === 0) return
+
       if (this.callTimeout) {
         clearTimeout(this.callTimeout)
         this.callTimeout = null
       }
+
       this.confirmClose()
       this.callTimeout = setTimeout(() => {
         this.showTimeoutConfirm()
-      }, 60 * 60 * 1000)
+      }, this.coworkTimeout * 60 * 1000) //min * sec * ms
+      //companyInfo의 설정 값에 따라 협업 연장 팝업 생성 사이클이 정해진다.
     },
     logout() {
       if (this.callTimeout) {
@@ -224,6 +239,9 @@ export default {
     setVideoLoaded(flag) {
       this.isVideoLoaded = flag
     },
+    togglePositionMap(flag) {
+      this.positionMapVisible = flag
+    },
   },
 
   /* Lifecycles */
@@ -242,6 +260,7 @@ export default {
     this.$call.addListener('sessionDisconnected', this.reconnect)
     this.$eventBus.$on('video:fullscreen', this.setFullScreen)
     this.$eventBus.$on('video:loaded', this.setVideoLoaded)
+    this.$eventBus.$on('map:show', this.togglePositionMap)
   },
   beforeDestroy() {
     if (this.callTimeout) {
@@ -262,6 +281,10 @@ export default {
 
     this.$eventBus.$off('video:fullscreen', this.setFullScreen)
     this.$eventBus.$off('video:loaded', this.setVideoLoaded)
+    this.$eventBus.$off('map:show', this.togglePositionMap)
+
+    //협업 종료시 stt 종료
+    this.useStt(false)
   },
 
   mounted() {

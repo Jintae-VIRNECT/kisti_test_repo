@@ -25,6 +25,8 @@ export const SIGNAL = {
   CAPTURE_PERMISSION: 'signal:screenCapturePermission',
   FILE: 'signal:file',
   LINKFLOW: 'signal:linkflow',
+  LOCATION: 'signal:location',
+  DRAWING_FROM_VUEX: 'signal:drawingFromVuex',
 }
 
 /**
@@ -82,12 +84,17 @@ export const DRAWING = {
   TEXT_UPDATE: 'updateText',
   UNDO: 'drawUndo',
   REDO: 'drawRedo',
-  CLEAR_ALL: 'drawClearAll',
+  CLEAR: 'clear',
+  CLEAR_ALL: 'clearAll',
 
-  FIRST_FRAME: 'firstFrame',
-  FRAME: 'frame',
-  LAST_FRAME: 'lastFrame',
+  // FIRST_FRAME: 'firstFrame',
+  // FRAME: 'frame',
+  // LAST_FRAME: 'lastFrame',
   END_DRAWING: 'endDrawing',
+
+  FILE_SHARE: 'fileShare',
+  ADDED: 'added',
+  DELETED: 'deleted',
 }
 
 /**
@@ -172,11 +179,13 @@ export const ROLE = {
 }
 
 /**
- * 시그널 - 링크플로우(fitt360) 제어
+ * 시그널 - 위치정보 제어
  */
-export const LINKFLOW = {
-  STITCHING: 'stitching', //연결된 스트림(기본값)
-  SIDE_BY_SIDE: 'sidebyside', //분리된 스트림
-  SINGLE: 'single', //단일 스트림
-  ROTATION: 'rotation', //회전 정보
+export const LOCATION = {
+  REQUEST: 'requestLocation', //참가자에게 위치 정보 요청
+  RESPONSE: 'responseLocation', //위치 요청 동의/거절 여부
+  INFO: 'locationInfo', //위지 정보
+  STOP_SEND: 'stopSendLocationInfo', //위치 요청을 멈출 단일 참가자
+
+  STOPPED: 'stopped', //GPS 기능 off or 전체 화면 공유로 인한 위치 정보 공유 중단
 }

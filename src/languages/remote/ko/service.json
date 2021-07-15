@@ -33,6 +33,7 @@
     "toast_ar_exit": "리더가 AR 공유를 종료했습니다.",
     "toast_no_sharing": "전체 공유 중인 영상이 없습니다.",
     "toast_video_restrict_mode": "영상 제한 모드입니다.<br> 참가자 모두 카메라가 꺼진 상태로 접속합니다.",
+    "toast_drawing_end" : "협업 보드 공유가 종료되었습니다.",
 
     "participant_mute": "음소거",
     "participant_mute_cancel": "음소거 해제",
@@ -95,10 +96,10 @@
     "tool_width": "선 두께",
     "tool_drawing_width": "드로잉 선 굵기",
     "tool_pointing": "포인팅",
-    "tool_pointing_block": "리더가 포인팅을 막았습니다.",
+    "tool_pointing_block": "참가자 포인팅 사용이 허용되지 않았습니다.",
     "tool_enlarge_reduce": "확대 / 축소",
     "tool_screen_share": "화면 공유",
-    "tool_screen_moving": "화면 이동",
+    
 
     "setting": "설정",
     "setting_service": "환경 설정",
@@ -201,7 +202,7 @@
     "record_local": "로컬 녹화",
     "record_local_setting": "로컬 녹화 설정",
     "record_local_list": "로컬 녹화 목록",
-    "record_blocked": "리더가 로컬 녹화를 막았습니다.",
+    "record_blocked": "참가자 로컬 녹화 사용이 허용되지 않았습니다.",
     "record_server": "서버 녹화",
     "record_start_message": "로컬 화면 녹화를 시작합니다. 녹화를 종료하시려면 버튼을 한번 더 클릭하거나 [ESC]키를 누르세요.",
     "record_fail_memory": "PC의 용량이 부족하여 녹화를 중지합니다.​ 진행 중이던 녹화파일은 저장되지 않습니다.​",
@@ -226,6 +227,20 @@
     "camera_control": "카메라 제어",
     "camera_control_allow": "카메라 제어 허용",
     "camera_control_every_on": "카메라 전체 켜기",
-    "camera_control_every_off": "카메라 전체 끄기"
+    "camera_control_every_off": "카메라 전체 끄기",
+
+    "map_information":"위치 정보",
+    "map_request_position": "위치 정보를 요청 중 입니다.",
+    "map_refresh":"위치 새로고침",
+    "map_cannot_check_gps":"GPS 정보를 확인할 수 없습니다.",
+    "map_check_use_gps_description":"요청한 참가자에게 GPS 기능 사용여부를 확인해 주세요.",
+    "map_request_rejected" :"위치정보 요청이 거절되었습니다.",
+    "map_cannot_use_gps":"위치 정보 기능을 사용할 수 없는 장치입니다.",
+    "map_timeout":"GPS 정보를 확인할 수 없습니다. 요청한 참가자에게 GPS 기능 사용여부를 확인해 주세요.",
+
+    "spot_networ_error" : "네트워크/서버 문제로 Spot 연결이 종료되었습니다.​\n재연결을 하시겠습니까?​",
+    "spot_connecting" : "Spot 연결 중…",
+    "spot_reconnecting" : "Spot 재연결 중…",
+    "spot_battery_warning" : "Spot 배터리 잔량이 {battery}% 남았습니다."
   }
 }

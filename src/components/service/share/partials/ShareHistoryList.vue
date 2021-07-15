@@ -1,8 +1,8 @@
 <template>
   <div class="share-body">
     <div class="share-body__history">
-      <vue2-scrollbar>
-        <ol class="upload-list">
+      <vue2-scrollbar ref="upload-list-scroll">
+        <ol class="upload-list" ref="upload-list">
           <history-image
             v-for="img of historyList"
             :id="'history_' + img.id"
@@ -35,6 +35,7 @@ import FileSaver from 'file-saver'
 import { base64ToBlob } from 'utils/file'
 import confirmMixin from 'mixins/confirm'
 import mimeTypes from 'mime-types'
+import { isOverflowY } from 'utils/element.js'
 
 export default {
   name: 'ShareHistoryList',
@@ -54,7 +55,18 @@ export default {
       return this.selected.length === 0
     },
   },
-  watch: {},
+  watch: {
+    historyList() {
+      this.$nextTick(() => {
+        const isNotOverflow = !isOverflowY(
+          this.$refs['upload-list'],
+          this.$refs['upload-list-scroll'].$el,
+        )
+        //overflow 해제 시 scroll을 최상위로 원위치
+        if (isNotOverflow) this.$refs['upload-list-scroll'].scrollToY(0)
+      })
+    },
+  },
   methods: {
     download() {
       if (!this.disabled) {

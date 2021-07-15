@@ -34,7 +34,10 @@
     "exit_room": "協業終了",
     "progress": "スタート",
     "reconnect": "再接続",
-    "manual": "マニュアルダウンロード"
+    "manual": "マニュアルダウンロード",
+    "force_logout": "遠隔終了",
+    "retry":"リトライ",
+    "leave_exit": "終了"
   },
   "date": {
     "lastday": "[昨日] A",
@@ -59,11 +62,12 @@
     "local_record_file": "ローカル録画ファイル",
     "no_sharing_file": "共有されたファイルがございません。",
     "workstation": "ワークステーション",
-    "dashboard": "ダッシュボード"
+    "dashboard": "ダッシュボード",
+    "spot_control": "Spot control"
   },
   "confirm": {
     "network_error": "サーバーとの接続が不安定です。 後でもう一度やり直してください。",
-    "call_timeout": "協業に接続してから1時間になりました。<br>協業を継続しますか？",
+    "call_timeout": "協業に接続してから{time}分になりました。<br>協業を継続しますか？",
     "unsupport_feature": "この機能は後日の予定です。",
     "access_remove": "選択したメンバーの参加権限を削除します。",
     "access_removed": "参加権限を削除します。"
@@ -85,6 +89,9 @@
     "invite_refuse_name": "<em>[{name}] </em>様が<br>協業要請を断りました。",
     "invite_accept_name": "<em>[{name}] </em>様が<br>協業要請を受諾しました。",
     "invite_accept": "協業要請を受諾しました。",
-    "file_link": "ファイルリンクを送ります。"
+    "file_link": "ファイルリンクを送ります。",
+    "file_uploaded":"Tファイルがアップロードされました。",
+    "file_storage_about_to_limit":"ファイルがアップロードされました。\nストレージ制限容量に到達する予定です。​",
+    "file_storage_capacity_full":"ストレージ容量が不足しています。\nストレージ容量の追加購入をマスターに依頼してください。​"
   }
 }

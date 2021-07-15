@@ -11,23 +11,41 @@ export default {
         this.isInit = false
         if (value && value.id) {
           this.$emit('loadingStart')
-          setTimeout(() => {
-            this.initCanvas()
-          }, 500)
+          setTimeout(() => this.initCanvas(), 500)
         }
       },
     },
     view(val, oldVal) {
+      //협업보드 탭에 진입 시 실행 (첫진입 포함)
       if (val !== oldVal && val === VIEW.DRAWING) {
-        this.optimizeCanvasSize()
+        this.toolAble()
         this.$nextTick(() => {
-          this.receiveRender()
+          if (!this.isInit) return
+          /*
+          캔버스 사이즈를 먼저 맞춘 후,
+          수신해왔던 드로잉 객체들을 추가해주어야 한다
+      
+          이 타이밍을 nextTick만으로 맞춰지지 않아 아래와 같은 이슈가 발생하여, timeout을 통한 조정하였음
+          - 협업보드 첫 진입 시 이전 드로잉 추가되지 않는 이슈 발생
+          */
+          setTimeout(() => {
+            this.optimizeCanvasSize()
+            this.receiveRender()
+          }, 400)
         })
+      }
+      // 협업보드 탭에서 이탈 시 기존 줌 상태 초기화
+      else if (oldVal === VIEW.DRAWING) {
+        if (this.canvas)
+          setTimeout(
+            () => this.canvas.setViewportTransform([1, 0, 0, 1, 0, 0]),
+            500,
+          )
       }
     },
     viewAction(value) {
       if (this.view !== VIEW.DRAWING) return
-      if (this.canvas && this.account.roleType === ROLE.LEADER) {
+      if (this.canvas) {
         this.canvas.isDrawingMode = value === ACTION.DRAWING_LINE
         this.canvas.freeDrawingCursor =
           value === ACTION.DRAWING_TEXT ? 'text' : 'default'
@@ -75,18 +93,9 @@ export default {
         )
       }
     },
-    'tools.lineWidth'(width) {
-      if (this.canvas) {
-        this.canvas.freeDrawingBrush.width = width / this.origin.scale
-      }
-      if (this.cursor) {
-        this.cursor.setRadius(width / this.origin.scale / 2)
-      }
-    },
-    'tools.fontSize'(size) {
-      if (this.textObj) {
-        this.textObj.set('fontSize', size / this.origin.scale)
-      }
+    //사용자가 드로잉 굴기를 변경할때마다 드로잉 브러쉬 크기, 커서 크기를 캔버스 크기를 기준으로 계산해서 업데이트
+    'tools.lineWidth'(lineWidth, oldLineWidth) {
+      if (lineWidth !== oldLineWidth) this.updateCanvasBrushWidth(lineWidth)
     },
     undoList() {
       this.toolAble()
@@ -96,7 +105,7 @@ export default {
     },
   },
   computed: {
-    drawingView() {
+    isDrawingView() {
       return this.view === VIEW.DRAWING
     },
   },
@@ -104,6 +113,7 @@ export default {
     toolAble() {
       if (this.undoList.length > 0 || this.redoList.length > 0) {
         this.$eventBus.$emit('tool:clear', true)
+        this.$eventBus.$emit('tool:clearall', true)
         if (this.undoList.length === 0) {
           this.$eventBus.$emit('tool:undo', false)
           this.$eventBus.$emit('tool:redo', true)
@@ -115,6 +125,14 @@ export default {
           this.$eventBus.$emit('tool:redo', true)
         }
       } else {
+        if (
+          Object.keys(this.receiveUndoList).length > 0 ||
+          Object.keys(this.receiveRedoList).length > 0
+        ) {
+          this.$eventBus.$emit('tool:clearall', true)
+        } else {
+          this.$eventBus.$emit('tool:clearall', false)
+        }
         this.$eventBus.$emit('tool:undo', false)
         this.$eventBus.$emit('tool:redo', false)
         this.$eventBus.$emit('tool:clear', false)

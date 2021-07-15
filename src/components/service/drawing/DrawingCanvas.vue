@@ -59,10 +59,13 @@ export default {
         height: 0,
       },
       zoom: false,
+
+      resizeObserveIntervalId: null,
+      parentOffsetWidth: 0,
     }
   },
   computed: {
-    ...mapGetters(['tools', 'view', 'viewAction']),
+    ...mapGetters(['tools', 'view', 'viewAction', 'myInfo']),
     uuid() {
       return this.account.uuid
     },
@@ -76,21 +79,22 @@ export default {
      */
     setBG() {
       return new Promise((resolve, reject) => {
-        const bgImage = new Image()
-        bgImage.onload = () => {
-          this.img.width = bgImage.width
-          this.img.height = bgImage.height
-          const fabricImage = new fabric.Image(bgImage)
+        this.img.width = this.file.width
+        this.img.height = this.file.height
+        fabric.Image.fromURL(this.file.img, fabricImage => {
           const canvas = this.canvas
           const parent = this.$el.parentNode
 
           const canvasSize = getCanvasSize(
             parent.offsetWidth,
             parent.offsetHeight,
-            bgImage.width,
-            bgImage.height,
+            // bgImage.width,
+            // bgImage.height,
+            this.img.width,
+            this.img.height,
           )
           fabricImage.set({
+            crossOrigin: 'anonymous',
             originX: 'left',
             originY: 'top',
             scaleX:
@@ -122,17 +126,14 @@ export default {
                   scaleY: canvasSize.scale,
                 })
                 this.backCanvas.renderAll()
+
+                this.updateHistory()
               })
             })
 
             resolve(canvas)
           })
-        }
-        bgImage.onerror = error => {
-          console.error(error)
-          reject()
-        }
-        bgImage.src = this.file.img
+        })
       })
     },
 
@@ -142,8 +143,12 @@ export default {
      */
     createCursor(canvas) {
       if (canvas) {
+        //커서를 생성하지만 실제 캔버스 사이즈에 비례한 커서와 브러쉬 사이즈는 캔버스 사이즈가 업데이트 된 후 재 설정된다
+        //optimizeCanvasSize함수에서 실제 드로잉 브러쉬와 커서 사이즈가 캔버스 사이즈에 비례하게 계산되어 정해진다.
+        const width = this.tools.lineWidth
+
         // Set custom cursor
-        canvas.freeDrawingBrush.width = this.tools.lineWidth
+        canvas.freeDrawingBrush.width = width
         canvas.freeDrawingBrush.color = hexToRGBA(
           this.tools.color,
           this.tools.opacity,
@@ -177,25 +182,17 @@ export default {
       if (this.canvas) {
         this.canvas.dispose()
         this.canvas = null
-        this.receivedList = []
+        this.receivedList = {}
       }
       this.editingMode = false
 
       const canvas = new fabric.Canvas('drawingCanvas', {
         backgroundColor: '#000000',
-        isDrawingMode:
-          this.viewAction === ACTION.DRAWING_LINE &&
-          this.account.roleType === ROLE.LEADER,
+        isDrawingMode: this.viewAction === ACTION.DRAWING_LINE,
         freeDrawingCursor:
-          this.account.roleType === ROLE.LEADER &&
-          this.viewAction === ACTION.DRAWING_TEXT
-            ? 'text'
-            : 'default',
+          this.viewAction === ACTION.DRAWING_TEXT ? 'text' : 'default',
         defaultCursor:
-          this.account.roleType === ROLE.LEADER &&
-          this.viewAction === ACTION.DRAWING_TEXT
-            ? 'text'
-            : 'default',
+          this.viewAction === ACTION.DRAWING_TEXT ? 'text' : 'default',
       })
 
       const backCanvas = new fabric.StaticCanvas('backCanvas', {
@@ -212,29 +209,21 @@ export default {
 
       // 배경이미지 설정
       await this.setBG()
-      // 히스토리 초기화
-      this.stackClear()
 
-      if (this.account.roleType === ROLE.LEADER) {
-        const params = {
-          imgId: this.file.id,
-          // imgName: this.file.oriName
-          //   ? this.file.oriName
-          //   : this.file.fileName,
-          imgName: this.file.fileName,
-          image: this.file.img,
-        }
-        this.sendImage(params)
-      }
+      //히스토리 초기화
+      this.stackClear() //자신의 히스토리 초기화
+      this.receivedStackClear() // 타참가자에게 받은 히스토리 초기화 및 tool설정 초기화
 
       this.isInit = true
       this.$emit('loadingSuccess')
+      this.receiveRender()
+      this.optimizeCanvasSize() //캔버스 사이즈, scale, 브러시, 커서 크기를 명시적으로 초기화/업데이트 한다.
 
       return this.canvas
     },
 
     optimizeCanvasSize() {
-      if (!this.file || !this.file.id || !this.canvas) return
+      if (!this.file || !this.file.objectName || !this.canvas) return
       const canvas = this.canvas
       const cursor = this.cursor.canvas
       const image = canvas.backgroundImage
@@ -255,8 +244,6 @@ export default {
 
       const scale = canvasSize.width / this.origin.width
 
-      // let zoom = canvas.getZoom()
-
       this.origin.scale = scale
 
       canvas.setZoom(scale)
@@ -266,38 +253,72 @@ export default {
       canvas.setHeight(canvasSize.height)
       cursor.setWidth(canvas.getWidth())
       cursor.setHeight(canvas.getHeight())
-      canvas.freeDrawingBrush.width = this.tools.lineWidth / this.origin.scale
-      if (this.cursor) {
-        this.cursor.setRadius(this.tools.lineWidth / this.origin.scale / 2)
-      }
+
+      //드로잉 굵기를 현재 창 크기에서 캔버스 사이즈 기준으로 계산
+      this.updateCanvasBrushWidth(this.tools.lineWidth)
+
       canvas.backgroundImage.set({
         scaleX: canvasSize.scale / scale,
         scaleY: canvasSize.scale / scale,
       })
     },
     receiveRender() {
-      if (this.receivedList.length === 0) return
+      if (Object.keys(this.receivedList).length === 0) return
 
-      for (let received of this.receivedList) {
-        this.addReceiveObject(received)
+      for (let key in this.receivedList) {
+        for (let received of this.receivedList[key]) {
+          this.addReceiveObject({ data: received.data, owner: received.owner })
+        }
+        delete this.receivedList[key]
       }
-      this.receivedList = []
     },
     windowResize() {
-      setTimeout(() => {
-        this.optimizeCanvasSize()
-      }, 1000)
+      this.optimizeCanvasSize()
+      this.keepPositionInBounds(this.canvas)
+    },
+
+    //드로잉 브러시 lineWidth가 변경될 때마다 실제 브러쉬 크기를 캔버스 사이즈에 비례하여 업데이트하는 함수
+    updateCanvasBrushWidth(lineWidth) {
+      if (this.canvas) {
+        //드로잉 굵기를 현재 창 크기에서 캔버스 사이즈 기준으로 계산
+        const width = lineWidth * (this.origin.width / this.img.width)
+        this.canvas.freeDrawingBrush.width = width
+        //커서크기 업데이트
+        if (this.cursor) this.cursor.setRadius(width / 2)
+      }
+    },
+
+    drawingResizeObserve() {
+      //parentNode의 크기의 변동이 감지되지 않아, polling방식으로 크기 변동을 체크하여 canvas 크기를 optimize한다
+
+      if (this.resizeObserveIntervalId) this.stopResizeObserveInterval()
+      //변경 된 경우
+      if (this.$el.parentNode.offsetWidth !== this.parentOffsetWidth)
+        this.windowResize()
+      this.parentOffsetWidth = this.$el.parentNode.offsetWidth
+      this.resizeObserveIntervalId = requestAnimationFrame(
+        this.drawingResizeObserve,
+      )
+    },
+
+    stopResizeObserveInterval() {
+      if (this.resizeObserveIntervalId) {
+        cancelAnimationFrame(this.resizeObserveIntervalId)
+        this.resizeObserveIntervalId = null
+      }
     },
   },
   /* Lifecycles */
   beforeDestroy() {
-    window.removeEventListener('resize', this.windowResize)
+    //window.removeEventListener('resize', this.windowResize)
+    this.stopResizeObserveInterval()
   },
   beforeCreate() {
     this.$emit('loadingStart')
   },
   created() {
-    window.addEventListener('resize', this.windowResize)
+    this.$nextTick(() => this.drawingResizeObserve())
+    //window.addEventListener('resize', this.windowResize)
     if (this.file && this.file.id) {
       setTimeout(() => {
         this.initCanvas()

@@ -26,6 +26,9 @@
     "confirm_already_invite_remove": "The same account is being used for Collabo. Cannot remove this Collabo.",
     "confirm_already_invite_leave": "The same account is being used for Collabo. Cannot leave this Collabo.",
     "confirm_remote_leader_leave": "Leader cannot leave the Collabo.",
+    "confirm_force_logout_complete": "is logged out.",
+    "confirm_force_logout_received": "You have been forced to log out by the master.",
+    "confirm_force_logout_unavailable": "has accessed the collaboration and cannot log out.",
 
     "history": "Recent history",
     "remote": "Remote Collabo",
@@ -165,6 +168,18 @@
     "plan_exceeded_desctiption": "The service is restricted because there were more users assigned to the plans than the number of plans you possess. Please request for plan management to the Master user.",
     "go_workspace_member": "Move to Workspace member list",
 
-    "cookie": "We use cookies and usage statistics to improve our service and customer experience. To learn more, <br>please check out our <a href='https://virnect.com/policy#10' target='_blank'>policy</a>. By clicking \"OK\" or continuing the use of site, you consent to the collection of cookies and usage statistics."
+    "loading_prepare_remote":"Preparing to create a Collabo room",
+    "loading_checking_device":"Checking device connection status...",
+
+    "cookie": "We use cookies and usage statistics to improve our service and customer experience. To learn more, <br>please check out our <a href='https://virnect.com/policy#10' target='_blank'>policy</a>. By clicking \"OK\" or continuing the use of site, you consent to the collection of cookies and usage statistics.",
+
+    "confirm_duplicated_session_logout": "Another device is already logged in.\nPlease close the other party's connection to continue.",
+    "confirm_duplicated_session_joined":"Another device is already collaborating.\nPlease try again after the other person ends the Collabo.",
+    "confirm_duplicated_session_logout_received":"You are logged in from another device with the same account.",
+
+    "workspace_update_failed": "Failed to change workspace.\nplease try it again.",
+    "auth_status_failed": "Failed to authenticate, \nplease try it again.",
+
+    "profile_size_limit_exceed":"Upload limit(20MB) capacity exceeded.​​"
   }
 }

@@ -246,11 +246,16 @@ export default {
           workspaceId: this.workspace.uuid,
           userId: this.account.uuid,
         })
-        downloadByURL(res)
+        //타블렛 사파리가 파일을 현재 페이지에서 열어버리는 동작을 막기 위함.
+        if (this.isTablet && this.isSafari) {
+          const usingNewTab = true
+          downloadByURL(res, usingNewTab)
+        } else {
+          downloadByURL(res)
+        }
       } catch (err) {
         this.toastError(this.$t('confirm.network_error'))
       }
-      // FileSaver.saveAs(res)
     },
     async doTranslateText() {
       try {

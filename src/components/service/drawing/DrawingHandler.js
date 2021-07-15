@@ -30,6 +30,8 @@ export default {
 
         // object.set('id',getID('object'));
         // object.set('id',canvas.getObjects().length-1);
+
+        //자신이 그린 드로잉이 아닌 경우
         if (object.owner && object.owner !== this.uuid) {
           if (!(object.owner in this.receiveUndoList)) {
             this.receiveUndoList[object.owner] = []
@@ -40,7 +42,9 @@ export default {
             owner: object.owner,
           })
           this.receiveStackAdd('add', object.id, object.owner)
-        } else {
+        }
+        //자신이 그린 드로잉인 경우
+        else {
           object.set({
             id: objID,
             tId: this.undoList.length,
@@ -50,7 +54,8 @@ export default {
             // this._sendAction('drawText', object);
             return
           }
-          this.backCanvas.add(fabric.util.object.clone(object))
+          this.backCanvas &&
+            this.backCanvas.add(fabric.util.object.clone(object))
           this.stackAdd('add', object.id)
         }
       })
@@ -63,7 +68,9 @@ export default {
       /* CANVAS */
       canvas.on('after:render', () => {
         if (this.isInit === true && this.account.roleType === ROLE.LEADER) {
-          this.updateHistory()
+          setTimeout(() => {
+            this.updateHistory()
+          }, 100)
         }
       })
 
@@ -180,7 +187,9 @@ export default {
           // this.addTextObject(mouse.x, mouse.y)
           this.addTextObject(
             mouse.x,
-            mouse.y - this.tools.fontSize / this.origin.scale / 2 - 1,
+            mouse.y -
+              (this.tools.fontSize * (this.origin.width / this.img.width)) / 2 -
+              1,
           )
         }
       })
@@ -209,8 +218,12 @@ export default {
         const delta = opt.e.deltaY
         let zoom = canvas.getZoom() // / this.origin.scale
         zoom *= 0.999 ** delta
+
+        //zoom in 제한
         if (zoom > 5 * this.origin.scale) zoom = 5 * this.origin.scale
+        //zoom out 제한
         if (zoom < 1 * this.origin.scale) zoom = 1 * this.origin.scale
+
         canvas.zoomToPoint({ x: opt.e.offsetX, y: opt.e.offsetY }, zoom)
         this.cursor.canvas.zoomToPoint(
           { x: opt.e.offsetX, y: opt.e.offsetY },
@@ -245,10 +258,13 @@ export default {
       })
     },
     keepPositionInBounds(canvas) {
+      if (!canvas) return
+
+      //줌인/아웃 시 이미지 범위 벗어나 여백 생기지 않도록 제한
       const zoom = canvas.getZoom()
-      const xMin = ((2 - zoom) * canvas.getWidth()) / 2
+      const xMin = ((2 * this.origin.scale - zoom) * canvas.getWidth()) / 2
       const xMax = (zoom * canvas.getWidth()) / 2
-      const yMin = ((2 - zoom) * canvas.getHeight()) / 2
+      const yMin = ((2 * this.origin.scale - zoom) * canvas.getHeight()) / 2
       const yMax = (zoom * canvas.getHeight()) / 2
 
       const point = new fabric.Point(
@@ -278,7 +294,7 @@ export default {
      * @param {Event} event ::입력 이벤트 객체
      */
     keyEventHandler(event) {
-      if (!this.drawingView) return
+      if (!this.isDrawingView) return
       if (!this.canvas || this.canvas.onDrag === true) return
       // For window event
       if (this.canvas) {
@@ -298,7 +314,7 @@ export default {
      * @param {Event} event ::입력 이벤트 객체
      */
     keyUpEventHandler(event) {
-      if (!this.drawingView) return
+      if (!this.isDrawingView) return
       if (!this.canvas || this.canvas.onDrag === true) return
       if (this.canvas) {
         const keycode = parseInt(event.keyCode)
@@ -306,15 +322,10 @@ export default {
 
         if (keycode === 32) {
           this.canvas.defaultCursor =
-            (this.viewAction === this.account.roleType) === ROLE.LEADER &&
-            ACTION.DRAWING_TEXT
-              ? 'text'
-              : 'default'
+            this.viewAction === ACTION.DRAWING_TEXT ? 'text' : 'default'
           this.cursor.canvas.renderAll()
           this.zoom = false
-          this.canvas.isDrawingMode =
-            this.account.roleType === ROLE.LEADER &&
-            this.viewAction === ACTION.DRAWING_LINE
+          this.canvas.isDrawingMode = this.viewAction === ACTION.DRAWING_LINE
         }
       }
     },

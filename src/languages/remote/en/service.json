@@ -33,6 +33,7 @@
     "toast_ar_exit": "The leader has ended the AR sharing.",
     "toast_no_sharing": "No videos are being shared.",
     "toast_video_restrict_mode": "This is the video restriction mode.<br>Participants all connect with the camera turned off.​",
+    "toast_drawing_end" : "Collaboard sharing has ended.",
 
     "participant_mute": "Mute",
     "participant_mute_cancel": "Unmute",
@@ -95,10 +96,10 @@
     "tool_width": "Line thickness",
     "tool_drawing_width": "Drawing thickness",
     "tool_pointing": "Pointing",
-    "tool_pointing_block": "Leader has disabled pointing feature",
+    "tool_pointing_block": "The pointing feature is not allowed for the participants.",
     "tool_enlarge_reduce": "Enlarge / reduce",
     "tool_screen_share": "Screen sharing",
-    "tool_screen_moving": "Move Screen",
+    
 
     "setting": "Settings",
     "setting_service": "Settings",
@@ -201,7 +202,7 @@
     "record_local": "Local recording",
     "record_local_setting": "Local recording settings",
     "record_local_list": "Local recording list",
-    "record_blocked": "Leader has disabled local recording.",
+    "record_blocked": "The local recording feature is not allowed for the participants.",
     "record_server": "Server recording",
     "record_start_message": "Starting the local screen recording. If you wish to end it, click the button again or press [ESC] key.",
     "record_fail_memory": "Stopping the recording due to lack of PC storage. The file being recorded is not saved.",
@@ -226,6 +227,20 @@
     "camera_control": "Camera Control",
     "camera_control_allow": "Allow camera control",
     "camera_control_every_on": "Turn on all cameras",
-    "camera_control_every_off": "Turn off all cameras"
+    "camera_control_every_off": "Turn off all cameras",
+
+    "map_information":"Location information",
+    "map_request_position": "Requesting location information.",
+    "map_refresh":"Refresh Location",
+    "map_cannot_check_gps":"Unable to verify GPS information.",
+    "map_check_use_gps_description":"Please check whether the GPS function is used by the requested participant.",
+    "map_request_rejected" :"The location information request has been rejected. ",
+    "map_cannot_use_gps":"This device does not support the location information function.",
+    "map_timeout":"Unable to verify GPS information. Please check whether the GPS function is used by the requested participant.",
+
+    "spot_networ_error" : "The Spot connection was terminated due to a network/server problem.​\nWould you like to reconnect?​",
+    "spot_connecting" : "Connecting to Spot…",
+    "spot_reconnecting" : "Spot reconnecting…",
+    "spot_battery_warning" : "Spot battery is {battery}% remaining."
   }
 }

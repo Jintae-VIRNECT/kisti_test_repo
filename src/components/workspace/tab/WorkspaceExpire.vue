@@ -5,7 +5,7 @@
       <p
         class="workspace-license__description--title"
         v-html="
-          onpremise
+          isOnpremise
             ? $t('workspace.license_expire_title_onpremise')
             : $t('workspace.license_expire_title')
         "
@@ -15,7 +15,7 @@
         v-html="$t('workspace.license_expire_description')"
       ></p>
       <button
-        v-if="!onpremise"
+        v-if="!isOnpremise"
         class="workspace-license__description--purchase btn"
         @click="purchase"
       >
@@ -27,13 +27,7 @@
 
 <script>
 import { URLS } from 'configs/env.config'
-import { RUNTIME, RUNTIME_ENV } from 'configs/env.config'
 export default {
-  computed: {
-    onpremise() {
-      return RUNTIME.ONPREMISE === RUNTIME_ENV
-    },
-  },
   methods: {
     purchase() {
       location.href = URLS['pay']

@@ -24,6 +24,7 @@ import FileSaver from 'file-saver'
 import { getFile } from 'utils/file'
 import toastMixin from 'mixins/toast'
 
+import { downloadByURL } from 'utils/file'
 export default {
   name: 'ChatFileDownload',
   mixins: [toastMixin],
@@ -47,23 +48,45 @@ export default {
   methods: {
     async download() {
       if (this.fileList.length === 0) return
-      this.zip = new JSZip()
-      for (let file of this.fileList) {
+
+      if (this.fileList.length === 1) {
         try {
           const res = await downloadFile({
-            objectName: file.objectName,
+            objectName: this.fileList[0].objectName,
             sessionId: this.roomInfo.sessionId,
             workspaceId: this.workspace.uuid,
             userId: this.account.uuid,
           })
-          await this.get(res.name, res.url)
+
+          //타블렛 사파리가 파일을 현재 페이지에서 열어버리는 동작을 막기 위함.
+          if (this.isTablet && this.isSafari) {
+            const usingNewTab = true
+            downloadByURL(res, usingNewTab)
+          } else {
+            downloadByURL(res)
+          }
         } catch (err) {
           this.toastError(this.$t('confirm.network_error'))
         }
+      } else {
+        this.zip = new JSZip()
+        for (let file of this.fileList) {
+          try {
+            const res = await downloadFile({
+              objectName: file.objectName,
+              sessionId: this.roomInfo.sessionId,
+              workspaceId: this.workspace.uuid,
+              userId: this.account.uuid,
+            })
+            await this.get(res.name, res.url)
+          } catch (err) {
+            this.toastError(this.$t('confirm.network_error'))
+          }
+        }
+        this.zip.generateAsync({ type: 'blob' }).then(content => {
+          FileSaver.saveAs(content, 'vremote_files.zip')
+        })
       }
-      this.zip.generateAsync({ type: 'blob' }).then(content => {
-        FileSaver.saveAs(content, 'vremote_files.zip')
-      })
 
       this.$emit('clear')
     },

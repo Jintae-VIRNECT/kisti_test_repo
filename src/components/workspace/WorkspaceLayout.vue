@@ -21,7 +21,7 @@
         ></workspace-tab>
       </div>
       <cookie-policy
-        v-if="!onpremise && showCookie"
+        v-if="!isOnpremise && showCookie"
         :visible.sync="showCookie"
       ></cookie-policy>
       <record-list
@@ -31,6 +31,7 @@
       <device-denied :visible.sync="showDenied"></device-denied>
     </vue2-scrollbar>
     <plan-overflow :visible.sync="showPlanOverflow"></plan-overflow>
+    <room-loading :visible.sync="showLoading"></room-loading>
   </section>
 </template>
 
@@ -44,12 +45,14 @@ import RecordList from 'LocalRecordList'
 import confirmMixin from 'mixins/confirm'
 import langMixin from 'mixins/language'
 import toastMixin from 'mixins/toast'
+import authStatusCallbackMixin from 'mixins/authStatusCallback'
 import DeviceDenied from './modal/WorkspaceDeviceDenied'
 import PlanOverflow from './modal/WorkspacePlanOverflow'
+import RoomLoading from './modal/WorkspaceRoomLoading'
 import { mapActions, mapGetters } from 'vuex'
 import { PLAN_STATUS } from 'configs/status.config'
-import { RUNTIME, RUNTIME_ENV } from 'configs/env.config'
 import { MyStorage } from 'utils/storage'
+import { initAudio } from 'plugins/remote/tts/audio'
 
 export default {
   name: 'WorkspaceLayout',
@@ -64,7 +67,7 @@ export default {
       })
     }
   },
-  mixins: [confirmMixin, langMixin, toastMixin],
+  mixins: [confirmMixin, langMixin, toastMixin, authStatusCallbackMixin],
   components: {
     HeaderSection,
     WorkspaceWelcome,
@@ -72,6 +75,7 @@ export default {
     RecordList,
     DeviceDenied,
     PlanOverflow,
+    RoomLoading,
     CookiePolicy: () => import('CookiePolicy'),
   },
   data() {
@@ -84,6 +88,7 @@ export default {
       license: true,
       showDenied: false,
       showPlanOverflow: false,
+      showLoading: false,
       inited: false,
     }
   },
@@ -93,6 +98,16 @@ export default {
         this.checkPlan(val)
         this.checkCompany(val.uuid)
         this.checkLicense(val.uuid)
+
+        //멤버 상태 유저 정보 등록/워크스페이스 업데이트
+        auth.initAuthConnection(
+          val.uuid,
+          this.onDuplicatedRegistration,
+          this.onRemoteExitReceived,
+          this.onForceLogoutReceived,
+          this.onWorkspaceDuplicated,
+          this.onRegistrationFail,
+        )
       } else if (!val.uuid) {
         const res = await getLicense({ userId: this.account.uuid })
         const myPlans = res.myPlanInfoList.filter(
@@ -110,10 +125,10 @@ export default {
     },
   },
   computed: {
-    ...mapGetters(['useLocalRecording']),
-    onpremise() {
-      return RUNTIME.ONPREMISE === RUNTIME_ENV
-    },
+    ...mapGetters([
+      'useLocalRecording',
+      'statusSessionId', //멤버 상태 소켓에서 발급받은 session id
+    ]),
   },
   methods: {
     ...mapActions([
@@ -129,6 +144,7 @@ export default {
       'setScreenStrict',
       'clearWorkspace',
     ]),
+
     async init() {
       this.inited = false
       const authInfo = await auth.init()
@@ -191,6 +207,12 @@ export default {
       this.$eventBus.$emit('scroll:end', event)
     },
     onScroll(scrollX, scrollY) {
+      this.$eventBus.$emit('scroll:memberlist')
+
+      if (scrollY === 0 && this.tabFix) {
+        this.scrollTop()
+        return
+      }
       if (scrollY > this.tabTop) {
         this.tabFix = true
       } else {
@@ -271,7 +293,11 @@ export default {
         languageCodes,
         audioRestrictedMode: false, //res.audioRestrictedMode,
         videoRestrictedMode: res.videoRestrictedMode,
+        timeout: res.timeout !== undefined ? res.timeout : 60, //협업 연장 질의 팝업 싸이클을 정하는 값. 분 단위
       })
+    },
+    showRoomLoading(toggle) {
+      this.showLoading = toggle
     },
   },
 
@@ -283,16 +309,19 @@ export default {
     }
   },
   mounted() {
+    initAudio()
     this.mx_changeLang()
     this.tabTop = this.$refs['tabSection'].$el.offsetTop
     this.$eventBus.$on('scroll:reset:workspace', this.scrollTop)
     this.$eventBus.$on('filelist:open', this.toggleList)
     this.$eventBus.$on('devicedenied:show', this.showDeviceDenied)
+    this.$eventBus.$on('roomloading:show', this.showRoomLoading)
   },
   beforeDestroy() {
     this.$eventBus.$off('scroll:reset:workspace', this.scrollTop)
     this.$eventBus.$off('filelist:open')
     this.$eventBus.$off('devicedenied:show')
+    this.$eventBus.$off('roomloading:show', this.showRoomLoading)
   },
 }
 </script>
