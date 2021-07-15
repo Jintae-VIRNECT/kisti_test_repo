@@ -5,29 +5,29 @@
     "refresh": "リフレッシュ",
     "logout": "ログアウト",
     "progress": "進行",
-    "select_download":"選択ダウンロード",
-    "select_delete":"選択削除"
+    "select_download": "選択ダウンロード",
+    "select_delete": "選択削除"
   },
   "common": {
-    "dashboard":"ダッシュボード",
+    "dashboard": "ダッシュボード",
     "workstation": "ワークステーション",
-    "collabo_list":"協業内訳"
+    "collabo_list": "協業内訳"
   },
   "confirm": {
     "network_error": "サーバー通信が円滑でありません。もう一度試してください。",
-    "file_not_found":"削除済みまたは存在しないファイルです。",
-    "server_no_response":"サーバー応答が正しくありません。\nもう一度試してください。"
+    "file_not_found": "削除済みまたは存在しないファイルです。",
+    "server_no_response": "サーバー応答が正しくありません。\nもう一度試してください。"
   },
-  "excel":{
-    "room_title":"協業名",
-    "room_description":"協業内容",
-    "room_leader":"リーダー",
-    "room_member_list":"参加者",
-    "room_active_date":"スタート時間",
-    "room_unactive_date":"終了時間",
-    "room_duration_sec":"進行時間",
-    "file_server_record":"サーバー録画",
-    "file_local_record":"ローカル録画",
-    "file_attach_file":"添付ファイル"
+  "excel": {
+    "room_title": "協業名",
+    "room_description": "協業内容",
+    "room_leader": "リーダー",
+    "room_member_list": "参加者",
+    "room_active_date": "スタート時間",
+    "room_unactive_date": "終了時間",
+    "room_duration_sec": "進行時間",
+    "file_server_record": "サーバー録画",
+    "file_local_record": "ローカル録画",
+    "file_attach_file": "添付ファイル"
   }
 }

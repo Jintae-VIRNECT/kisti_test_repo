@@ -1,29 +1,25 @@
 {
   "chart": {
-    "my_collabo_list":"개인 협업 내역",
-    "total_collabo_list":"전체 협업 내역",
-
-    "daily_collabo_title":"일일 협업",
-    "daily_collabo_description":"설정한 날짜의 일일 협업 내용을 보여줍니다.",
-    "daily_total_collabo_count":"전체 일별 협업 수",
-    "daily_total_collabo_time":"전체 일별 협업 시간",
-    "daily_my_collabo_count":"나의 일별 협업 수",
-    "daily_my_collabo_time":"나의 일별 협업 시간",
-    "collabo_count_by_time":"시간별 완료 협업",   
-
-    "monthly_collabo_title":"월별 협업",
-    "monthly_collabo_description":"설정한 기간의 협업 내용을 보여줍니다.",
-    "collabo_count_by_day":"일별 완료 협업",
-
-    "monthly_total_collabo_count":"전체 월별 협업 수",
-    "monthly_total_collabo_time":"전체 월별 협업 시간",
-    "monthly_my_collabo_count":"나의 월별 협업 수",
-    "monthly_my_collabo_time":"나의 월별 협업 시간",
-
-    "collabo_day":"일",
-    "collabo_hour":"시간",
-    "collabo_minute":"분",
-    "collabo_count":"회",
-    "count":"{count} 건"
+    "my_collabo_list": "개인 협업 내역",
+    "total_collabo_list": "전체 협업 내역",
+    "daily_collabo_title": "일일 협업",
+    "daily_collabo_description": "설정한 날짜의 일일 협업 내용을 보여줍니다.",
+    "daily_total_collabo_count": "전체 일별 협업 수",
+    "daily_total_collabo_time": "전체 일별 협업 시간",
+    "daily_my_collabo_count": "나의 일별 협업 수",
+    "daily_my_collabo_time": "나의 일별 협업 시간",
+    "collabo_count_by_time": "시간별 완료 협업",
+    "monthly_collabo_title": "월별 협업",
+    "monthly_collabo_description": "설정한 기간의 협업 내용을 보여줍니다.",
+    "collabo_count_by_day": "일별 완료 협업",
+    "monthly_total_collabo_count": "전체 월별 협업 수",
+    "monthly_total_collabo_time": "전체 월별 협업 시간",
+    "monthly_my_collabo_count": "나의 월별 협업 수",
+    "monthly_my_collabo_time": "나의 월별 협업 시간",
+    "collabo_day": "일",
+    "collabo_hour": "시간",
+    "collabo_minute": "분",
+    "collabo_count": "회",
+    "count": "{count} 건"
   }
 }

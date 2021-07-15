@@ -3,7 +3,7 @@ horizontal-scrollbar.vue
 vue-scrollbar.vue
 theme.js
 CalendarNav.vue
-src/plugins/remote/vdatepicker/**
+# src/plugins/remote/vdatepicker/**
 src/plugins/remote/vdatepicker/lib.js
 lib.js
 src/mixins/alarm.js

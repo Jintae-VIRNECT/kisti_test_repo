@@ -1,6 +1,9 @@
-RELEASE v2.3.1.0
+RELEASE v2.4.8.0
 
-### Chore
-helmet 적용(보안성 향상)
+### Update
+- 로컬 녹화 파일 목록 구축형에서만 출력하게 변경
+
+
+
 
 Copyright (C) 2021, VIRNECT CO., LTD. - All Rights Reserved

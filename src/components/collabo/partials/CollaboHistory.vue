@@ -53,7 +53,7 @@
         >
       </div>
       <div
-        v-if="useLocalRecord && allowFileInfo"
+        v-if="useLocalRecord && allowFileInfo && isOnpremise"
         class="history__header--text count"
       >
         <span
@@ -125,7 +125,7 @@
             ></count-button>
           </div>
           <div
-            v-if="useLocalRecord && allowFileInfo"
+            v-if="useLocalRecord && allowFileInfo && isOnpremise"
             class="history__text count"
           >
             <count-button

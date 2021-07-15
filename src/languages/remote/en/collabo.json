@@ -9,14 +9,12 @@
     "unactive_date": "End time",
     "duration_sec": "Duration"
   },
-
   "status": {
     "all": "All",
     "progress": "Progress",
     "finished": "End Collabo",
     "unknown": "Unknown"
   },
-
   "search": {
     "collabo_status": "Collabo status",
     "text": "Keyword",
@@ -26,10 +24,9 @@
     "over_period": "You cannot search for more than 3 months.",
     "invalid_period": "This is an invalid period.",
     "invalid_date": "Please specify a valid date.",
-    "select_period":"Select period",
-    "enable_search":"Enable search"
+    "select_period": "Select period",
+    "enable_search": "Enable search"
   },
-
   "list": {
     "title": "Collabo history list",
     "title_description": "Shows the recent Collabo history.",
@@ -54,8 +51,8 @@
     "expired": "Session expired",
     "download_period": "Download period",
     "upload_member": "Upload member",
-    "play":"Play",
-    "server_record_description" : "If the server specification is low, recording may not work properly."
+    "play": "Play",
+    "server_record_description": "If the server specification is low, recording may not work properly."
   },
   "date": {
     "lastday": "[Yesterday] A",

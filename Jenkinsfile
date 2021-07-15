@@ -33,6 +33,9 @@ pipeline {
     }
 
     stage('Test') {
+      when {
+        branch 'develop'
+      }
       steps {
         echo 'Test Stage'
         sh 'npm cache verify'

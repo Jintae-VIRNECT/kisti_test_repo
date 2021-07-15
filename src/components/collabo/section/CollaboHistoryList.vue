@@ -188,7 +188,8 @@ export default {
 
         exportExcel(historys, this, {
           useServerRecord: this.useServerRecord && this.allowFileInfo,
-          useLocalRecord: this.useLocalRecord && this.allowFileInfo,
+          useLocalRecord:
+            this.useLocalRecord && this.allowFileInfo && this.isOnpremise,
           useStorage: this.useStorage && this.allowFileInfo,
         })
 

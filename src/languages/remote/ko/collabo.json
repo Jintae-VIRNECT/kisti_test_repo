@@ -1,61 +1,58 @@
 {
-  "room":{
-    "room_info":"협업 상세 내용",
-    "title":"협업명",
-    "leader":"리더",
-    "description":"협업 설명",
-    "member_list":"참가 멤버",
-    "active_date":"시작 시간",
-    "unactive_date":"종료 시간",
-    "duration_sec":"진행 시간"
+  "room": {
+    "room_info": "협업 상세 내용",
+    "title": "협업명",
+    "leader": "리더",
+    "description": "협업 설명",
+    "member_list": "참가 멤버",
+    "active_date": "시작 시간",
+    "unactive_date": "종료 시간",
+    "duration_sec": "진행 시간"
   },
-
-  "status":{
-    "all":"전체",
-    "progress":"진행중",
-    "finished":"종료",
-    "unknown":"알수없음"
+  "status": {
+    "all": "전체",
+    "progress": "진행중",
+    "finished": "종료",
+    "unknown": "알수없음"
   },
-
-  "search":{
-    "collabo_status":"협업 상태",
-    "text":"검색어",
-    "placeholder":"협업명 / 멤버를 입력해주세요",
-    "use_date_search":"기간 검색 사용",
-    "execute":"검색하기",
-    "over_period":"3개월이상 조회할 수 없습니다.",
-    "invalid_period":"유효하지 않은 기간입니다.",
-    "invalid_date":"올바른 날짜를 지정해주세요.",
-    "select_period":"기간 선택",
-    "enable_search":"검색 사용"
+  "search": {
+    "collabo_status": "협업 상태",
+    "text": "검색어",
+    "placeholder": "협업명 / 멤버를 입력해주세요",
+    "use_date_search": "기간 검색 사용",
+    "execute": "검색하기",
+    "over_period": "3개월이상 조회할 수 없습니다.",
+    "invalid_period": "유효하지 않은 기간입니다.",
+    "invalid_date": "올바른 날짜를 지정해주세요.",
+    "select_period": "기간 선택",
+    "enable_search": "검색 사용"
   },
-
-  "list":{
-    "title":"협업 내역 목록",
-    "title_description":"최근 협업 기록을 보여줍니다.",
-    "no_data":"검색된 결과가 없습니다.",
-    "room_title":"협업명",
-    "room_leader":"리더",
-    "room_active_date":"협업 시작일",
-    "room_status":"상태",
-    "room_server_record":"서버 녹화",
-    "room_local_record":"로컬 녹화",
-    "room_attach_file":"첨부 파일",
-    "count":"{count}건"
+  "list": {
+    "title": "협업 내역 목록",
+    "title_description": "최근 협업 기록을 보여줍니다.",
+    "no_data": "검색된 결과가 없습니다.",
+    "room_title": "협업명",
+    "room_leader": "리더",
+    "room_active_date": "협업 시작일",
+    "room_status": "상태",
+    "room_server_record": "서버 녹화",
+    "room_local_record": "로컬 녹화",
+    "room_attach_file": "첨부 파일",
+    "count": "{count}건"
   },
-  "file":{
-    "name":"파일명",
-    "record_time":"녹화 시간",
+  "file": {
+    "name": "파일명",
+    "record_time": "녹화 시간",
     "size": "파일 용량",
-    "server_record":"서버 녹화 파일",
-    "local_record":"로컬 녹화 파일",
-    "record_member":"녹화 멤버",
-    "attach_file":"첨부 파일",
-    "expired":"기간만료",
-    "download_period":"다운로드 기간",
-    "upload_member":"업로드 멤버",
-    "play":"녹화 재생",
-    "server_record_description" : "서버의 스펙이 낮을 경우, 녹화가 정상적으로 동작하지 않을 수 있습니다."
+    "server_record": "서버 녹화 파일",
+    "local_record": "로컬 녹화 파일",
+    "record_member": "녹화 멤버",
+    "attach_file": "첨부 파일",
+    "expired": "기간만료",
+    "download_period": "다운로드 기간",
+    "upload_member": "업로드 멤버",
+    "play": "녹화 재생",
+    "server_record_description": "서버의 스펙이 낮을 경우, 녹화가 정상적으로 동작하지 않을 수 있습니다."
   },
   "date": {
     "lastday": "[어제] A",
