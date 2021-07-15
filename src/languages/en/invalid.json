@@ -1,0 +1,8 @@
+{
+  "invalid": {
+    "format": "Is not a valid {0}",
+    "string": {
+      "range": "It must be between {0} and {1} characters"
+    }
+  }
+}

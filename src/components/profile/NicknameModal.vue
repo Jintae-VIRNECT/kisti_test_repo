@@ -31,7 +31,7 @@
     </div>
 
     <div slot="footer" class="dialog-footer">
-      <el-button type="primary" @click="submit">
+      <el-button type="primary" @click="submit" :disabled="!confirmNickname">
         {{ $t('profile.nicknameChangeModal.submit') }}
       </el-button>
     </div>
@@ -51,9 +51,33 @@ export default {
     return {
       form: {
         nickname: '',
+        confirmNickname: false,
       },
       rules: {
-        nickname: [{ max: 20 }],
+        nickname: [
+          {
+            validator: (rule, value, callback) => {
+              if (value.length < 1 || value.length > 20) {
+                this.confirmNickname = false
+                callback(
+                  new Error(
+                    this.$t('profile.nicknameChangeModal.message.caution'),
+                  ),
+                )
+              } else if (/[<>]/.test(value)) {
+                this.confirmNickname = false
+                callback(
+                  new Error(
+                    this.$t('profile.nicknameChangeModal.message.caution'),
+                  ),
+                )
+              } else {
+                this.confirmNickname = true
+                callback()
+              }
+            },
+          },
+        ],
       },
     }
   },

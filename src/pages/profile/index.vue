@@ -35,7 +35,12 @@
           <div class="profile__info">
             <h4>{{ $t('profile.info.name') }}</h4>
             <div class="content">
-              <span class="value">{{ me.lastName }} {{ me.firstName }}</span>
+              <span class="value" v-if="/^(ko|ja|zh)/.test(this.$i18n.locale)">
+                {{ me.lastName }} {{ me.firstName }}
+              </span>
+              <span class="value" v-else>
+                {{ me.firstName }} {{ me.lastName }}
+              </span>
               <span class="desc">
                 {{ $t('profile.info.nameDesc') }}
               </span>
@@ -249,7 +254,7 @@ export default {
   },
   computed: {
     profileImg() {
-      if (this.me.image) return this.me.image
+      if (this.me.profile) return this.me.profile
       else return require('assets/images/icon/ic-user-profile.png')
     },
     myBirth() {
@@ -259,9 +264,9 @@ export default {
   },
   methods: {
     changedImage(image) {
-      this.me.image = image
+      this.me.profile = image
       this.visible.imageChangeModal = false
-      this.$store.dispatch('auth/getAuth', this.$config.VIRNECT_ENV)
+      this.$store.dispatch('auth/getAuth')
     },
     changedName({ lastName, firstName }) {
       this.me.lastName = lastName
@@ -271,7 +276,7 @@ export default {
     changedNickname(nickname) {
       this.me.nickname = nickname
       this.visible.nicknameChangeModal = false
-      this.$store.dispatch('auth/getAuth', this.$config.VIRNECT_ENV)
+      this.$store.dispatch('auth/getAuth')
     },
     changedPassword() {
       this.visible.passwordChangeModal = false
@@ -289,7 +294,6 @@ export default {
       this.visible.recoveryEmailChangeModal = false
     },
     changedMarketInfoReceive(marketInfoReceive) {
-      console.log(marketInfoReceive)
       this.me.marketInfoReceive = marketInfoReceive
       this.visible.MarketInfoReceiveModal = false
     },

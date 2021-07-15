@@ -14,7 +14,9 @@ export default {
 </script>
 
 <style lang="scss">
-.virnect-error-page {
-  padding-top: 35px;
+@include responsive-to(max, 'small') {
+  #__nuxt .virnect-error-page {
+    padding: 24px;
+  }
 }
 </style>

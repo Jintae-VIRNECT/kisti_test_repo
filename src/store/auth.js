@@ -49,14 +49,13 @@ export default {
   },
   actions: {
     async getAuth({ commit }) {
-      commit(
-        'SET_AUTH',
-        await auth.init({
-          env: context.$config.VIRNECT_ENV,
-          urls: context.$url,
-          timeout: context.$config.API_TIMEOUT,
-        }),
-      )
+      const a = await auth.init({
+        env: context.$config.VIRNECT_ENV,
+        urls: context.$url,
+        timeout: context.$config.API_TIMEOUT,
+      })
+      commit('SET_AUTH', a)
+      commit('SET_MY_PROFILE', new Profile(a.myInfo, a.accessToken))
     },
     async getAuthInfo({ commit }, params) {
       const data = await api('GET_AUTH_INFO', params)

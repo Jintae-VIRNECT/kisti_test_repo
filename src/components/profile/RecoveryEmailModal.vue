@@ -48,9 +48,22 @@ export default {
       rules: {
         recoveryEmail: [
           {
-            type: 'email',
-            max: 50,
-            message: this.$t('profile.recoveryEmailChangeModal.message.wrong'),
+            validator: (rule, value, callback) => {
+              if (
+                value.length &&
+                !/^[^\s@]+@([^\s@.,]+\.)+[^\s@.,]{2,}$/.test(value)
+              ) {
+                callback(
+                  new Error(
+                    this.$t('invalid.format', [
+                      this.$t('profile.recoveryEmailChangeModal.email'),
+                    ]),
+                  ),
+                )
+              } else {
+                callback()
+              }
+            },
           },
         ],
       },

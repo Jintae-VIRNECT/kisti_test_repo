@@ -38,7 +38,7 @@
       "contactChange": "Edit",
       "recoveryEmail": "Recovery email address",
       "recoveryEmailEmpty": "Recovery email address is not updated",
-      "recoveryEmailChange": "Edit recovery email addresss"
+      "recoveryEmailChange": "Edit recovery email address"
     },
     "imageChangeModal": {
       "title": "Profile Image Settings",
@@ -58,11 +58,11 @@
       "title": "Name Settings",
       "desc": "If you change the name the changed name is applied to VIRNECT products and services.",
       "caution": "* For the purpose of account security frequent name changes may be restricted to the use of products and services. Also updating of changed name may take some time.",
-      "lastName": "First name",
-      "firstName": "Last name",
+      "lastName": "Last name",
+      "firstName": "First name",
       "submit": "Edit",
       "message": {
-        "success": "Succesfully updated your name",
+        "success": "Successfully updated your name",
         "fail": "Failed to update your name please try again later"
       }
     },
@@ -72,8 +72,9 @@
       "nickname": "Nickname",
       "submit": "Edit",
       "message": {
-        "success": "Succesfully updated your nickname",
-        "fail": "Failed to edit your nickname please try again later"
+        "success": "Successfully updated your nickname",
+        "fail": "Failed to edit your nickname please try again later",
+        "caution": "Please enter 20 characters or less. You can use Korean English special characters (excluding (>), (<)) and spaces."
       }
     },
     "passwordChangeModal": {
@@ -85,7 +86,7 @@
       "caution": "Your password must be between 8 and 20 characters long. Your password needs to be included with at least 3 of following character types. <br>- Uppercase letter <br>- Lowercase letter<br>- Number <br>- Special character ( .  ! @ # $ % ). <br>Also your password must not contain consecutive numbers and more than four of same characters.",
       "submit": "Edit",
       "message": {
-        "success": "Succesfully updated your password",
+        "success": "Successfully updated your password",
         "fail": "Failed to edit your nickname please try again later",
         "wrong": "Wrong password",
         "duplicate": "You cannot use the previously used password for your new password",
@@ -100,7 +101,7 @@
       "day": "Day",
       "submit": "Edit",
       "message": {
-        "success": "Succesfully updated your date of birth",
+        "success": "Successfully updated your date of birth",
         "fail": "Failed to update your date of birth please try again later"
       }
     },
@@ -108,7 +109,7 @@
       "title": "Agree to receive promotional offers",
       "contents": "Receive emails about VIRNECT's new products services and promotional offers.",
       "message": {
-        "success": "Succesfully updated your promotional marketing agreement",
+        "success": "Successfully updated your promotional marketing agreement",
         "fail": "Failed to update please try again later"
       }
     },
@@ -129,8 +130,8 @@
       "secessionReasonEtc": "State the reason for your withdrawal from the membership",
       "done": "I agree to all the terms of membership withdrawal and proceed with membership withdrawal.",
       "message": {
-        "success": "Succesfully completed membership withdrawal",
-        "fail": "Wrong passwrod"
+        "success": "Successfully completed membership withdrawal",
+        "fail": "Wrong password"
       }
     },
     "contactChangeModal": {
@@ -139,18 +140,17 @@
       "contactPlaceholder": "Enter your phone number",
       "submit": "Edit",
       "message": {
-        "wrong": "Wrong phone number format",
-        "success": "Succesfully updated your contact details",
+        "success": "Successfully updated your contact details",
         "fail": "Failed to update contact details please try again later."
       }
     },
     "recoveryEmailChangeModal": {
       "title": "Recovery Email Settings",
+      "email": "Email",
       "recoveryEmail": "Recovery Email Address",
       "submit": "Edit",
       "message": {
-        "wrong": "Wrong email address format",
-        "success": "Succesfully updated your recovery email address.",
+        "success": "Successfully updated your recovery email address.",
         "fail": "Failed to update your recovery email address please try again later."
       }
     }

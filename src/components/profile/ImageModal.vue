@@ -20,6 +20,7 @@
         :auto-upload="false"
         :on-change="imageSelected"
         :show-file-list="false"
+        accept=".jpg,.png"
         drag
       >
         <VirnectThumbnail :size="160" :image="file" />
@@ -60,20 +61,57 @@ export default {
   },
   computed: {
     disabled() {
-      return this.file === this.cdn(this.$props.me.image)
+      return this.file === this.cdn(this.$props.me.profile)
     },
   },
   watch: {
     visible() {
-      this.file = this.cdn(this.$props.me.image)
+      this.file = this.cdn(this.$props.me.profile)
     },
   },
   methods: {
+    /**
+     * @author YongHo Kim <yhkim@virnect.com>
+     * @description 선택한 파일의 조건을 확인하고 조건에 부합하는 파일이라면 true를 반환, 아니라면 false를 반환
+     * @param {object} file
+     * @returns {boolean} 조건에 부합하는 파일인지 확인하고 결과를 리턴
+     */
+    checkSelectdFile(file) {
+      const isImage =
+        file.raw.type === 'image/jpeg' || file.raw.type === 'image/png'
+      let message = ''
+      if (!isImage) {
+        message = this.$t(
+          'profile.imageChangeModal.message.notAllowFileExtension',
+        )
+        this.$notify.error({
+          message,
+          position: 'bottom-left',
+          duration: 2000,
+        })
+        return false
+      }
+
+      const isLimitSize = file.raw.size / 1024 / 1024 < 5 // 서버에서 제한한 파일의 크기 5MB
+      if (!isLimitSize) {
+        message = this.$t('profile.imageChangeModal.message.notAllowFileSize')
+        this.$notify.error({
+          message,
+          position: 'bottom-left',
+          duration: 2000,
+        })
+        return false
+      }
+
+      return isImage && isLimitSize
+    },
     imageSelected(file) {
-      const reader = new FileReader()
-      reader.readAsDataURL(file.raw)
-      reader.onload = () => {
-        this.file = reader.result
+      if (this.checkSelectdFile(file)) {
+        const reader = new FileReader()
+        reader.readAsDataURL(file.raw)
+        reader.onload = () => {
+          this.file = reader.result
+        }
       }
     },
     uploadImage() {

@@ -1,6 +1,6 @@
 {
   "name": "account",
-  "version": "1.3.1.0",
+  "version": "1.3.8.2",
   "description": "Virnect Account",
   "author": "SangBaek-VIRNECT <lsb@virnect.com>",
   "private": true,
@@ -10,15 +10,16 @@
     "build:develop": "cross-env NODE_ENV=develop VIRNECT_ENV=local nuxt build --modern=server",
     "build:production": "cross-env NODE_ENV=production VIRNECT_ENV=local nuxt build --modern=server",
     "deploy": "cross-env NODE_ENV=$VIRNECT_ENV VIRNECT_ENV=$VIRNECT_ENV CONFIG_SERVER=$CONFIG_SERVER nuxt start --modern=server",
-    "generate": "nuxt generate"
+    "generate": "nuxt generate",
+    "i18n": "i18n --sheetId PF-WebAccount"
   },
   "dependencies": {
     "@nuxtjs/axios": "^5.11.0",
     "@nuxtjs/style-resources": "^1.0.0",
-    "@virnect/components": "1.1.0",
+    "@virnect/components": "^1.8.3",
     "@virnect/logger": "^1.0.2",
     "@virnect/platform-auth": "^1.0.2",
-    "@virnect/ui-assets": "^1.1.9",
+    "@virnect/ui-assets": "^1.8.0",
     "axios": "^0.19.2",
     "cross-env": "^7.0.2",
     "dayjs": "^1.8.23",
@@ -34,6 +35,7 @@
   },
   "devDependencies": {
     "@virnect/eslint-config": "^1.0.0",
+    "@virnect/i18n": "^1.1.1",
     "@virnect/stylelint-config": "^1.0.1",
     "@vue/component-compiler-utils": "^3.1.0",
     "@vue/eslint-config-airbnb": "^4.0.0",
@@ -44,6 +46,7 @@
     "sass-loader": "^8.0.0",
     "style-loader": "^1.0.2",
     "vue-loader": "^15.8.3",
-    "vue-style-loader": "^4.1.2"
+    "vue-style-loader": "^4.1.2",
+    "vee-validate": "2.2.15"
   }
 }
