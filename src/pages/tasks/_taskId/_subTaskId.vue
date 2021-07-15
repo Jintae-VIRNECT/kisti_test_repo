@@ -202,10 +202,14 @@ import taskService from '@/services/task'
 export default {
   mixins: [searchMixin, columnMixin],
   async asyncData({ params, from, route }) {
-    const backUrl =
-      from.name === 'tasks-results'
-        ? from.path
-        : `/tasks/${route.params.taskId}`
+    let backUrl = '/tasks/results'
+    if (from) {
+      backUrl =
+        from.name === 'tasks-results'
+          ? from.path
+          : `/tasks/${route.params.taskId}`
+    }
+
     const promise = {
       taskDetail: taskService.getTaskDetail(params.taskId),
       subTaskDetail: taskService.getSubTaskDetail(params.subTaskId),
