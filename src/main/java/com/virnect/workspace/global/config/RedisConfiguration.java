@@ -31,8 +31,8 @@ public class RedisConfiguration {
     private final RedisConnectionFactory redisConnectionFactory;
     private final ObjectMapper objectMapper;
 
-    public Jackson2JsonRedisSerializer jackson2JsonRedisSerializer() {
-        Jackson2JsonRedisSerializer jackson2JsonRedisSerializer = new Jackson2JsonRedisSerializer(WorkspaceInfoListResponse.class);
+    public Jackson2JsonRedisSerializer<WorkspaceInfoListResponse> jackson2JsonRedisSerializer() {
+        Jackson2JsonRedisSerializer<WorkspaceInfoListResponse> jackson2JsonRedisSerializer = new Jackson2JsonRedisSerializer<>(WorkspaceInfoListResponse.class);
         jackson2JsonRedisSerializer.setObjectMapper(objectMapper);
         return jackson2JsonRedisSerializer;
     }
@@ -40,8 +40,6 @@ public class RedisConfiguration {
     @Bean
     public RedisCacheManager redisCacheManager() {
         RedisCacheManager.RedisCacheManagerBuilder builder = RedisCacheManager.RedisCacheManagerBuilder.fromConnectionFactory(redisConnectionFactory);
-        Jackson2JsonRedisSerializer jackson2JsonRedisSerializer = new Jackson2JsonRedisSerializer(WorkspaceInfoListResponse.class);
-        jackson2JsonRedisSerializer.setObjectMapper(objectMapper);
 
         RedisCacheConfiguration configuration = RedisCacheConfiguration.defaultCacheConfig()
                 .disableCachingNullValues()

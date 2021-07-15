@@ -3,16 +3,16 @@ spring:
     name: workspace-server
   datasource:
     url: jdbc:mysql://192.168.6.3:4336/workspace?serverTimezone=UTC
-    username: virnect-read
+    username: virnect-workspace
     password: virnect1234
   jpa:
     hibernate:
       ddl-auto: update
-    show-sql: true
+    show-sql: false
     database-platform: org.hibernate.dialect.MySQL5InnoDBDialect
     properties:
       hibnerate:
-        format_sql: true
+        format_sql: false
       org:
         hibernate:
           envers:
@@ -37,7 +37,7 @@ spring:
 
 logging:
   level:
-    org.hibernate.type.descriptor.sql: trace
+#    org.hibernate.type.descriptor.sql: debug
     com.virnect.workspace.application.*: DEBUG
 ## Server Configuration
 server:
@@ -59,13 +59,14 @@ eureka:
 
 ## Mail send redirect Url
 redirect:
-  workspace-server: "https://localhost:8082"
+  workspace-server: "http://192.168.6.3:8082"
   workstation-web: "https://192.168.6.3:8878"
   contact-web: "https://192.168.6.3:3000/contact/inquiry"
   account-web: "https://192.168.6.3:8822"
   support-web: "https://192.168.6.3:3000/support"
-  signup-web: "https://192.168.6.3:8878/signup"
+  terms-web: "https://192.168.6.3:8883/terms"
   members-web: "https://192.168.6.3:8878/members"
+  console-web: "https://192.168.6.3:8883"
 
 ## Feign
 feign:
@@ -76,6 +77,8 @@ feign:
       default:
         connectTimeout: 1000
         readTimeout: 1000
+        loggerLevel: NONE
+
 hystrix:
   command:
     "LicenseRestService":
@@ -119,3 +122,6 @@ user-server:
 license-server:
   ribbon:
     listOfServers: http://192.168.6.3:8632
+message-server:
+  ribbon:
+    listOfServers: http://192.168.6.3:8084

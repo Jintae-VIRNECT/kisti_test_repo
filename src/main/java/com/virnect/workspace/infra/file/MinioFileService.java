@@ -69,8 +69,9 @@ public class MinioFileService implements FileService {
         try {
             bucketExistCheck(bucket);
             ObjectWriteResponse response = minioClient.putObject(putObjectArgs);
-            log.info("[FILE UPLOAD] Minio file upload response : [{}]", response.etag());
-            return minioClient.getObjectUrl(bucket, objectName);
+            String uploadPath = minioClient.getObjectUrl(bucket, objectName);
+            log.info("[FILE UPLOAD] Upload Result path : [{}],", uploadPath);
+            return uploadPath;
         } catch (ErrorResponseException | InsufficientDataException | InternalException | InvalidBucketNameException | InvalidKeyException | InvalidResponseException | NoSuchAlgorithmException |
                 ServerException | XmlParserException exception) {
             log.error(exception.getClass().toString());

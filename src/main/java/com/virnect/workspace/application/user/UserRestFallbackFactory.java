@@ -38,8 +38,8 @@ public class UserRestFallbackFactory implements FallbackFactory<UserRestService>
 			}
 
             @Override
-            public ApiResponse<InviteUserInfoResponse> getUserInfoByEmail(String email) {
-                return new ApiResponse<>(new InviteUserInfoResponse());
+            public ApiResponse<InviteUserInfoResponse> getInviteUserInfoByEmail(String email) {
+                return new ApiResponse<>(null);
             }
             @Override
 			public ApiResponse<UserInfoListRestResponse> getUserInfoList(String search, List<String> workspaceUserIdList) {
