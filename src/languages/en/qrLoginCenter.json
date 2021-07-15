@@ -10,7 +10,7 @@
     "howToLogin": "How to use?",
     "LoginInfo": "You can only use QR Login with the compatible devices.",
     "centerHowTo": [
-      "Please launch the VIRNECT app on your mobile device or smart glass.",
+      "Please launch the VIRNECT app on your smart glass.",
       "Select [QR Login] on the login screen to run it.",
       "Please hold over the QR code displayed on the QR Login Center screen.",
       "You will be logged in when the QR code is scanned."
