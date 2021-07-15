@@ -13,8 +13,8 @@ import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import com.virnect.process.dao.DailyTotalRepository;
-import com.virnect.process.dao.DailyTotalWorkspaceRepository;
+import com.virnect.process.dao.dailytotal.DailyTotalRepository;
+import com.virnect.process.dao.dailytotalworkspace.DailyTotalWorkspaceRepository;
 import com.virnect.process.dao.process.ProcessRepository;
 import com.virnect.process.domain.DailyTotal;
 import com.virnect.process.domain.DailyTotalWorkspace;

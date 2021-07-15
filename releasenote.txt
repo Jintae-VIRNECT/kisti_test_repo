@@ -4,10 +4,9 @@ New Features
 - 없음
 
 Bug Fixes
-- 작업 목록 조회 API에서 워크스페이스 식별자 검증 추가
+- 컨텐츠 다운로드 시 파일이름 파싱 에러 수정
 
 Limitation
-- 컨텐츠 다운로드 코드 분리
-- 컨텐츠 다운로드 에러 응답코드 추가
+- jvm max heap size 변경 400mb -> 700mb
 
 Copyright (C) 2020, VIRNECT CO., LTD. - All Rights Reserved

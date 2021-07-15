@@ -1,8 +1,12 @@
 package com.virnect.process.dao;
 
-import com.virnect.process.domain.Job;
+import java.util.List;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+
+import com.virnect.process.domain.Job;
+import com.virnect.process.domain.SubProcess;
 
 /**
  * @author jiyong.heo
@@ -13,5 +17,7 @@ import org.springframework.data.domain.Pageable;
  */
 public interface JobCustomRepository {
 
-    Page<Job> getJobPage(String myUUID, Long subProcessId, String search, Pageable pageable);
+	Page<Job> getJobPage(String myUUID, Long subProcessId, String search, Pageable pageable);
+
+	long deleteAllJobBySubProcessList(List<SubProcess> subProcessList);
 }

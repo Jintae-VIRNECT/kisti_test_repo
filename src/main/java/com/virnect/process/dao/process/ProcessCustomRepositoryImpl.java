@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -36,6 +37,7 @@ public class ProcessCustomRepositoryImpl extends QuerydslRepositorySupport imple
 	QJob qJob = QJob.job;
 	QIssue qIssue = QIssue.issue;
 
+	@Autowired
 	public ProcessCustomRepositoryImpl(JPAQueryFactory queryFactory) {
 		super(Process.class);
 		this.queryFactory = queryFactory;
@@ -65,6 +67,16 @@ public class ProcessCustomRepositoryImpl extends QuerydslRepositorySupport imple
 	}
 
 	@Override
+	public List<Process> findByState(State state) {
+		return
+			queryFactory
+				.select(qProcess)
+				.from(qProcess)
+				.where(qProcess.state.eq(state))
+				.fetch();
+	}
+
+	@Override
 	public Page<Process> getProcessPageSearchUser(
 		List<Conditions> filterList,
 		String workspaceUUID, String search, List<String> userUUIDList, Pageable pageable, String targetType
@@ -88,7 +100,7 @@ public class ProcessCustomRepositoryImpl extends QuerydslRepositorySupport imple
 			});
 			query = query.where(qProcess.in(filterdProcessList));
 		}
-		
+
 		final List<Process> result = getQuerydsl().applyPagination(pageable, query).fetch();
 		return new PageImpl<>(result, pageable, query.fetchCount());
 	}

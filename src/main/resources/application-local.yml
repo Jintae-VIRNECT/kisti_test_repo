@@ -7,13 +7,13 @@ spring:
     password: virnect1234
   jpa:
     hibernate:
-      ddl-auto: update
-    show-sql: true
+      ddl-auto: none
+    show-sql: false
     database-platform: org.hibernate.dialect.MySQL5InnoDBDialect
     properties:
       hibernate:
         format_sql: true
-        show_sql: true
+        show_sql: false
   servlet:
     multipart:
       max-file-size: 300MB
@@ -26,11 +26,13 @@ spring:
     enabled: false
 content-server:
   ribbon:
-    listOfServers: http://localhost:8078
+    listOfServers: http://192.168.6.3:8078
 license-server:
   ribbon:
     listOfServers: http://192.168.6.3:8632
-
+user-server:
+  ribbon:
+    listOfServers: http://192.168.6.3:8081
 workspace-server:
   ribbon:
     listOfServers: http://192.168.6.3:8082

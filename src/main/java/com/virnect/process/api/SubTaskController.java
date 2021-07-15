@@ -96,7 +96,8 @@ public class SubTaskController {
 		@ApiImplicitParam(name = "page", value = "조회할 페이지 번호(1부터)", dataType = "number", paramType = "query", defaultValue = "1"),
 		@ApiImplicitParam(name = "size", value = "페이지당 목록 개수", dataType = "number", paramType = "query", defaultValue = "10"),
 		@ApiImplicitParam(name = "sort", value = "정렬 옵션 데이터(요청파라미터 명, 정렬조건)", dataType = "string", paramType = "query", defaultValue = "updatedDate,desc"),
-		@ApiImplicitParam(name = "filter", value = "작업상태 필터(WAIT,UNPROGRESSING,PROGRESSING,COMPLETED,INCOMPLETED,FAILED,SUCCESS,FAULT,NONE,ALL)", dataType = "object", paramType = "query", defaultValue = "PROGRESSING")
+		@ApiImplicitParam(name = "filter", value = "작업상태 필터(WAIT,UNPROGRESSING,PROGRESSING,COMPLETED,INCOMPLETED,FAILED,SUCCESS,FAULT,NONE,ALL)", dataType = "object", paramType = "query", defaultValue = "PROGRESSING"),
+		@ApiImplicitParam(name = "myUUID", value = "사용자 식별자 (내 작업)", dataType = "string", paramType = "query"),
 	})
 	@GetMapping("/subTasks")
 	public ResponseEntity<ApiResponse<SubProcessesResponse>> getSubProcesses(
@@ -104,10 +105,11 @@ public class SubTaskController {
 		, @RequestParam(required = false, value = "taskId") Long taskId
 		, @RequestParam(value = "search", required = false) String search
 		, @RequestParam(value = "filter", required = false) List<Conditions> filter
+		, @RequestParam(value = "myUUID", required = false) String myUUID
 		, @ApiIgnore PageRequest pageable
 	) {
 		ApiResponse<SubProcessesResponse> subProcessesResponseApiResponse = this.subTaskService.getSubProcesses(
-			workspaceUUID, taskId, search, pageable.of(), filter);
+			workspaceUUID, taskId, search, pageable.of(), filter, myUUID);
 		return ResponseEntity.ok(subProcessesResponseApiResponse);
 	}
 

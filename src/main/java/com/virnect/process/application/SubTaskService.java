@@ -103,7 +103,7 @@ public class SubTaskService {
 
 		// 하위 작업 조회
 		subProcessPage = this.subProcessRepository.getSubProcessPage(
-			workspaceUUID, processId, search, userUUIDList, pageable);
+			workspaceUUID, processId, search, userUUIDList, userUUID, pageable);
 
 		if (filter != null && filter.size() > 0 && !filter.contains(Conditions.ALL)) {
 			subProcessPage = filterConditionsSubProcessPage(subProcessPage, filter, pageable);
@@ -185,7 +185,7 @@ public class SubTaskService {
 	 * @return
 	 */
 	public ApiResponse<SubProcessesResponse> getSubProcesses(
-		String workspaceUUID, Long processId, String search, Pageable pageable, List<Conditions> filter
+		String workspaceUUID, Long processId, String search, Pageable pageable, List<Conditions> filter, String myUUID
 	) {
 		// 워크스페이스 전체의 세부공정목록조회
 		// 검색어로 사용자 목록 조회
@@ -198,7 +198,7 @@ public class SubTaskService {
 		}
 
 		Page<SubProcess> subProcessPage = this.subProcessRepository.getFilteredSubProcessPage(
-			workspaceUUID, processId, search, userUUIDList, pageable, filter);
+			workspaceUUID, processId, search, userUUIDList, pageable, filter, myUUID);
 /*
 		if (filter != null && !filter.isEmpty() && !filter.contains(Conditions.ALL)) {
 			List<SubProcessReportedResponse> editSubProcessResponseList = subProcessPage.stream()
@@ -394,7 +394,7 @@ public class SubTaskService {
 			.orElseThrow(() -> new ProcessServiceException(ErrorCode.ERR_NOT_FOUND_PROCESS_OF_TARGET));
 		//        Page<SubProcess> subProcessPage = this.subProcessRepository.selectSubProcesses(null, process.getId(), null, null, pageable);
 		Page<SubProcess> subProcessPage = this.subProcessRepository.getSubProcessPage(
-			null, process.getId(), null, null, pageable);
+			null, process.getId(), null, null, null, pageable);
 		SubProcessesOfTargetResponse subProcessesOfTargetResponse = SubProcessesOfTargetResponse.builder()
 			.taskId(process.getId())
 			.taskName(process.getName())
