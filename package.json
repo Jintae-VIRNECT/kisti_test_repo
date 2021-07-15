@@ -1,6 +1,6 @@
 {
   "name": "download",
-  "version": "1.3.8.0",
+  "version": "1.3.8.1",
   "description": "Download Center",
   "author": "SangBaek-VIRNECT <lsb@virnect.com>",
   "private": true,
@@ -18,10 +18,10 @@
   "dependencies": {
     "@nuxtjs/axios": "^5.10.3",
     "@nuxtjs/style-resources": "^1.0.0",
-    "@virnect/components": "^1.7.0",
+    "@virnect/components": "^1.8.3",
     "@virnect/logger": "^1.0.2",
     "@virnect/platform-auth": "^1.0.2",
-    "@virnect/ui-assets": "^1.6.0",
+    "@virnect/ui-assets": "^1.8.0",
     "axios": "^0.19.2",
     "cross-env": "^7.0.2",
     "dayjs": "^1.8.28",
