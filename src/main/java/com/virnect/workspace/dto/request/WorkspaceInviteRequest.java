@@ -47,5 +47,9 @@ public class WorkspaceInviteRequest {
         @NotNull(message = "초대할 유저의 뷰 플랜 부여 여부는 필수값입니다.")
         private boolean planView;
     }
+
+    public boolean existMasterUserInvite() {
+        return userInfoList.stream().anyMatch(userInfo -> userInfo.getRole().equals("MASTER"));
+    }
 }
 

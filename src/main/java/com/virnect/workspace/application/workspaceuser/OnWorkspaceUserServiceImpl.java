@@ -20,6 +20,8 @@ import com.virnect.workspace.dto.response.WorkspaceMemberPasswordChangeResponse;
 import com.virnect.workspace.dto.rest.*;
 import com.virnect.workspace.event.cache.UserWorkspacesDeleteEvent;
 import com.virnect.workspace.event.history.HistoryAddEvent;
+import com.virnect.workspace.event.mail.MailContextHandler;
+import com.virnect.workspace.event.mail.MailSendEvent;
 import com.virnect.workspace.exception.WorkspaceException;
 import com.virnect.workspace.global.common.ApiResponse;
 import com.virnect.workspace.global.common.RedirectProperty;
@@ -37,13 +39,9 @@ import org.springframework.web.servlet.view.RedirectView;
 import org.thymeleaf.context.Context;
 import org.thymeleaf.spring5.SpringTemplateEngine;
 
-import java.io.IOException;
 import java.time.Duration;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -72,7 +70,6 @@ public class OnWorkspaceUserServiceImpl extends WorkspaceUserService {
     private final ApplicationEventPublisher applicationEventPublisher;
     private final WorkspaceCustomSettingRepository workspaceCustomSettingRepository;
     private static final int MAX_JOIN_WORKSPACE_AMOUNT = 49;//최대 참여 가능한 워크스페이스 수
-    private static final int MAX_INVITE_USER_AMOUNT = 49;//최대 초대 가능한 워크스페이스 멤버 수
     private static final int MAX_WORKSPACE_USER_AMOUNT = 50;//워크스페이스 최대 멤버 수(마스터 본인 포함)
 
     public OnWorkspaceUserServiceImpl(WorkspaceRepository workspaceRepository, WorkspaceUserRepository workspaceUserRepository, WorkspaceRoleRepository workspaceRoleRepository, WorkspaceUserPermissionRepository workspaceUserPermissionRepository, UserRestService userRestService, MessageRestService messageRestService, SpringTemplateEngine springTemplateEngine, MessageSource messageSource, LicenseRestService licenseRestService, RedirectProperty redirectProperty, RestMapStruct restMapStruct, ApplicationEventPublisher applicationEventPublisher, WorkspacePermissionRepository workspacePermissionRepository, UserInviteRepository userInviteRepository, WorkspaceCustomSettingRepository workspaceCustomSettingRepository) {
@@ -98,127 +95,52 @@ public class OnWorkspaceUserServiceImpl extends WorkspaceUserService {
     public ApiResponse<Boolean> inviteWorkspace(
             String workspaceId, WorkspaceInviteRequest workspaceInviteRequest, Locale locale
     ) {
-        /*
-         * 권한체크
-         * 초대하는 사람 권한 - 마스터, 매니저만 가능
-         * 초대받는 사람 권한 - 매니저, 멤버만 가능
-         * 초대하는 사람이 매니저일때 - 멤버만 초대할 수 있음.*/
-        Optional<WorkspaceCustomSetting> workspaceCustomSettingOptional = workspaceCustomSettingRepository.findByWorkspace_UuidAndSetting_Name(workspaceId, SettingName.PUBLIC_USER_MANAGEMENT_ROLE_SETTING);
-        Optional<WorkspaceUserPermission> requestUserPermission = workspaceUserPermissionRepository.findWorkspaceUser(workspaceId, workspaceInviteRequest.getUserId());
-        if (!requestUserPermission.isPresent()) {
-            throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_INVALID_PERMISSION);
-        }
-        workspaceInviteRequest.getUserInfoList().forEach(userInfo -> {
-            if (workspaceCustomSettingOptional.isPresent()) {
-                if (workspaceCustomSettingOptional.get().getValue() == SettingValue.UNUSED || workspaceCustomSettingOptional.get().getValue() == SettingValue.MASTER_OR_MANAGER) {
-                    if (!checkWorkspaceRole(SettingValue.MASTER_OR_MANAGER, requestUserPermission.get().getWorkspaceRole().getRole(), userInfo.getRole())) {
-                        throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_INVALID_PERMISSION);
-                    }
-                }
-                if (workspaceCustomSettingOptional.get().getValue() == SettingValue.MASTER) {
-                    if (!checkWorkspaceRole(SettingValue.MASTER, requestUserPermission.get().getWorkspaceRole().getRole(), userInfo.getRole())) {
-                        throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_INVALID_PERMISSION);
-                    }
-                }
-                if (workspaceCustomSettingOptional.get().getValue() == SettingValue.MASTER_OR_MANAGER_OR_MEMBER) {
-                    if (!checkWorkspaceRole(SettingValue.MASTER_OR_MANAGER_OR_MEMBER, requestUserPermission.get().getWorkspaceRole().getRole(), userInfo.getRole())) {
-                        throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_INVALID_PERMISSION);
-                    }
-                }
-            } else {
-                if (!checkWorkspaceRole(SettingValue.MASTER_OR_MANAGER, requestUserPermission.get().getWorkspaceRole().getRole(), userInfo.getRole())) {
-                    throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_INVALID_PERMISSION);
-                }
-            }
-        });
-
-        //1-1. 초대하는 유저 권한 체크
-/*
-      Optional<WorkspaceUserPermission> requestUserPermission = workspaceUserPermissionRepository.findWorkspaceUser(workspaceId, workspaceInviteRequest.getUserId());
-        if (!requestUserPermission.isPresent() || requestUserPermission.get().getWorkspaceRole().getRole().equals("MEMBER")) {
-            throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_INVALID_PERMISSION);
-        }
-        workspaceInviteRequest.getUserInfoList().forEach(userInfo -> {
-            log.debug("[WORKSPACE INVITE USER] Invite request user role >> [{}], response user role >> [{}]", requestUserPermission.get().getWorkspaceRole().getRole(), userInfo.getRole());
-            if (userInfo.getRole().equalsIgnoreCase("MASTER")) {
-                throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_INVALID_PERMISSION);
-            }
-            if (requestUserPermission.get().getWorkspaceRole().getRole().equals("MANAGER") && userInfo.getRole().equalsIgnoreCase("MANAGER")) {
-                throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_INVALID_PERMISSION);
-            }
-        });
-        */
-
-        //1-2. 워크스페이스 최대 초대가능 멤버 수 체크
-        if (workspaceInviteRequest.getUserInfoList().size() > MAX_INVITE_USER_AMOUNT) {
-            log.error("[WORKSPACE INVITE USER] maximum workspace user amount : [{}], request user amount [{}]", MAX_INVITE_USER_AMOUNT,
-                    workspaceInviteRequest.getUserInfoList().size());
+        //1-1. 초대 받은 유저 역할 체크 : 마스터 권한을 부여하여 초대할 수 없다.
+        if (workspaceInviteRequest.existMasterUserInvite()) {
             throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_INVITE);
         }
-        //1-3. 워크스페이스에 최대 참여 가능한 멤버 수 체크
-        long workspaceUserAmount = workspaceUserRepository.countByWorkspace_Uuid(workspaceId);
+
+        //1-2. 초대 요청 유저 역할 체크
+        checkWorkspaceInvitePermission(workspaceId, workspaceInviteRequest.getUserId(), workspaceInviteRequest.getUserInfoList());
+
+        //1-3. 워크스페이스에 최대 참여 가능한 유저 수 체크
         WorkspaceLicensePlanInfoResponse workspaceLicensePlanInfoResponse = getWorkspaceLicenses(workspaceId);
-        if (workspaceLicensePlanInfoResponse != null && workspaceLicensePlanInfoResponse.getLicenseProductInfoList() != null && !workspaceLicensePlanInfoResponse.getLicenseProductInfoList().isEmpty()) {
-            //1-3-1. 라이선스를 구매한 워크스페이스는 라이선스에 종속된 값으로 체크
-            if (workspaceInviteRequest.getUserInfoList().size() + workspaceUserAmount > workspaceLicensePlanInfoResponse.getMaxUserAmount()) {
-                log.error("[WORKSPACE INVITE USER] maximum workspace user amount(by license) : [{}], request user amount [{}], current workspace user amount : [{}]", workspaceLicensePlanInfoResponse.getMaxUserAmount(),
-                        workspaceInviteRequest.getUserInfoList().size(), workspaceUserAmount);
-                throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_INVITE_MAX_USER);
-            }
-        } else {
-            //1-3-2. 라이선스를 구매하지 않은 워크스페이스는 기본값으로 체크
-            if (workspaceInviteRequest.getUserInfoList().size() + workspaceUserAmount > MAX_WORKSPACE_USER_AMOUNT) {
-                log.error("[WORKSPACE INVITE USER] maximum workspace user amount : [{}], request user amount [{}], current workspace user amount : [{}]", MAX_WORKSPACE_USER_AMOUNT,
-                        workspaceInviteRequest.getUserInfoList().size(), workspaceUserAmount);
-                throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_INVITE_MAX_USER);
-            }
-        }
+        checkWorkspaceInviteMaxUserAmount(workspaceId, workspaceInviteRequest.getUserInfoList().size(), workspaceLicensePlanInfoResponse);
+
+        //1-4. 제품 라이선스를 부여할 수 있는 지 체크
+        checkWorkspaceInviteLicenseProduct(workspaceInviteRequest.getUserInfoList(), workspaceLicensePlanInfoResponse);
+
+        //1-5. 탈퇴한 유저인지 체크
+        List<String> invitedUserEmailList = workspaceInviteRequest.getUserInfoList().stream().map(WorkspaceInviteRequest.UserInfo::getEmail).collect(Collectors.toList());
+        Map<String, InviteUserInfoResponse> inviteUserInfoResponseMap = checkWorkspaceInvitedUserSecession(invitedUserEmailList);
+
+        //1-6. 이미 초대된 유저인지 체크
+        checkWorkspaceInvitedUserAlreadyJoin(workspaceId, inviteUserInfoResponseMap);
+
+        //1-7. 이미 최대 참여 가능한 워크스페이스를 넘긴 유저인지 체크
+        checkWorkspaceInvitedUserMaxJoin(inviteUserInfoResponseMap);
+
+        // 마스터 유저 정보
+        Workspace workspace = workspaceRepository.findByUuid(workspaceId).orElseThrow(() -> new WorkspaceException(ErrorCode.ERR_WORKSPACE_NOT_FOUND));
+        UserInfoRestResponse materUser = getUserInfoByUserId(workspace.getUserId());
 
         //2. 초대 정보 저장
         workspaceInviteRequest.getUserInfoList().forEach(userInfo -> {
-            //2-1. 유효한 초대 이메일인지 체크(탈퇴한 유저가 아닌지)
-            ApiResponse<InviteUserInfoResponse> inviteUserInfoResponseApiResponse = userRestService.getInviteUserInfoByEmail(userInfo.getEmail());
-            if (inviteUserInfoResponseApiResponse.getCode() != 200) {
-                log.error("[GET INVITE USER INFO BY EMAIL] response code : {}, response message : {}", inviteUserInfoResponseApiResponse.getCode(), inviteUserInfoResponseApiResponse.getMessage());
-                log.error("[WORKSPACE INVITE USER] Invalid Invited User Info.");
-                if (inviteUserInfoResponseApiResponse.getCode() == 5002) {
-                    throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_INVITE_SECESSION_USER);
-                }
-                throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_INVITE);
-            }
-            InviteUserInfoResponse inviteUserResponse = inviteUserInfoResponseApiResponse.getData();
-            //2-2. 유저가 이미 워크스페이스에 소속되어 있는지
-            Optional<WorkspaceUser> optionalWorkspaceUser = workspaceUserRepository.findByUserIdAndWorkspace_Uuid(inviteUserResponse.getInviteUserDetailInfo().getUserUUID(), workspaceId);
-            if (inviteUserResponse.isMemberUser() && optionalWorkspaceUser.isPresent()) {
-                //비회원이 아니면서 이미 워크스페이스에 소속되어 있을 때
-                log.error("[WORKSPACE INVITE USER] Invite User is already Workspace user. Invite user is Member >>> [{}], Invite user is Workspace User >>> [{}]", inviteUserResponse.isMemberUser(), true);
-                throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_USER_ALREADY_EXIST);
-            }
-
-            //2-3. 유저가 이미 최대 워크스페이스에 참여 가능한 수를 넘겼는지 체크
-            long userIncludedWorkspaceAmount = workspaceUserRepository.countByUserId(inviteUserResponse.getInviteUserDetailInfo().getUserUUID());
-            if (inviteUserResponse.isMemberUser() && userIncludedWorkspaceAmount + 1 > MAX_JOIN_WORKSPACE_AMOUNT) {
-                log.error("[WORKSPACE INVITE USER] maximum join workspace amount : [{}], current user join workspace amount(include request) : [{}]", MAX_JOIN_WORKSPACE_AMOUNT, userIncludedWorkspaceAmount + 1);
-                throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_INVITE_MAX_JOIN_USER);
-            }
-
-            boolean inviteSessionExist = false;
+            InviteUserInfoResponse inviteUserResponse = inviteUserInfoResponseMap.get(userInfo.getEmail());
             String sessionCode = RandomStringTokenUtil.generate(UUIDType.INVITE_CODE, 20);
-            for (UserInvite userInvite : userInviteRepository.findAll()) {
-                if (userInvite != null && userInvite.getWorkspaceId().equals(workspaceId) && userInvite.getInvitedUserEmail().equals(userInfo.getEmail())) {
-                    inviteSessionExist = true;
-                    userInvite.setRole(userInfo.getRole());
-                    userInvite.setPlanRemote(userInfo.isPlanRemote());
-                    userInvite.setPlanMake(userInfo.isPlanMake());
-                    userInvite.setPlanView(userInfo.isPlanView());
-                    userInvite.setUpdatedDate(LocalDateTime.now());
-                    userInvite.setExpireTime(Duration.ofDays(7).getSeconds());
-                    userInviteRepository.save(userInvite);
-                    sessionCode = userInvite.getSessionCode();
-                    log.info("[WORKSPACE INVITE USER] Workspace Invite Info Redis Update >> {}", userInvite.toString());
-                }
-            }
-            if (!inviteSessionExist) {
+            Optional<UserInvite> userInviteOptional = userInviteRepository.findByWorkspaceIdAndInvitedUserEmail(workspaceId, userInfo.getEmail());
+            if (userInviteOptional.isPresent()) {
+                UserInvite userInvite = userInviteOptional.get();
+                userInvite.setRole(userInfo.getRole());
+                userInvite.setPlanRemote(userInfo.isPlanRemote());
+                userInvite.setPlanMake(userInfo.isPlanMake());
+                userInvite.setPlanView(userInfo.isPlanView());
+                userInvite.setUpdatedDate(LocalDateTime.now());
+                userInvite.setExpireTime(Duration.ofDays(7).getSeconds());
+                userInviteRepository.save(userInvite);
+                sessionCode = userInvite.getSessionCode();
+                log.info("[WORKSPACE INVITE USER] Workspace Invite Info Redis Update >> {}", userInvite.toString());
+            } else {
                 UserInvite newUserInvite = UserInvite.builder()
                         .sessionCode(sessionCode)
                         .invitedUserEmail(userInfo.getEmail())
@@ -229,9 +151,6 @@ public class OnWorkspaceUserServiceImpl extends WorkspaceUserService {
                         .planRemote(userInfo.isPlanRemote())
                         .planMake(userInfo.isPlanMake())
                         .planView(userInfo.isPlanView())
-                        //               .planRemoteType(licensePlanType)
-//                        .planMakeType(licensePlanType)
-//                        .planViewType(licensePlanType)
                         .invitedDate(LocalDateTime.now())
                         .updatedDate(null)
                         .expireTime(Duration.ofDays(7).getSeconds())
@@ -240,137 +159,191 @@ public class OnWorkspaceUserServiceImpl extends WorkspaceUserService {
                 log.info("[WORKSPACE INVITE USER] Workspace Invite Info Redis Set >> {}", newUserInvite.toString());
             }
 
-            //메일 전송
-            String rejectUrl = redirectProperty.getWorkspaceServer() + "/workspaces/invite/" + sessionCode + "/reject?lang=" + locale.getLanguage();
-            String acceptUrl = redirectProperty.getWorkspaceServer() + "/workspaces/invite/" + sessionCode + "/accept?lang=" + locale.getLanguage();
-            Workspace workspace = workspaceRepository.findByUuid(workspaceId).orElseThrow(() -> new WorkspaceException(ErrorCode.ERR_WORKSPACE_NOT_FOUND));
-            UserInfoRestResponse materUser = getUserInfoByUserId(workspace.getUserId());
+            //3. 초대 메일 전송
+            List<String> emailReceiverList = new ArrayList<>();
+            emailReceiverList.add(userInfo.getEmail());
             if (inviteUserResponse.isMemberUser()) {
-                Context context = new Context();
-                context.setVariable("rejectUrl", rejectUrl);
-                context.setVariable("acceptUrl", acceptUrl);
-                context.setVariable("workspaceMasterNickName", materUser.getNickname());
-                context.setVariable("workspaceMasterEmail", materUser.getEmail());
-                context.setVariable("workspaceName", workspace.getName());
-                context.setVariable("responseUserName", inviteUserResponse.getInviteUserDetailInfo().getName());
-                context.setVariable("responseUserEmail", inviteUserResponse.getInviteUserDetailInfo().getEmail());
-                context.setVariable("responseUserNickName", inviteUserResponse.getInviteUserDetailInfo().getNickname());
-                context.setVariable("role", userInfo.getRole());
-                context.setVariable("plan", generatePlanString(userInfo.isPlanRemote(), userInfo.isPlanMake(), userInfo.isPlanView()));
-                context.setVariable("workstationHomeUrl", redirectProperty.getWorkstationWeb());
-                context.setVariable("supportUrl", redirectProperty.getSupportWeb());
-                String subject = messageSource.getMessage(Mail.WORKSPACE_INVITE.getSubject(), null, locale);
-                String template = messageSource.getMessage(Mail.WORKSPACE_INVITE.getTemplate(), null, locale);
-                String html = springTemplateEngine.process(template, context);
-                List<String> emailReceiverList = new ArrayList<>();
-                emailReceiverList.add(userInfo.getEmail());
-                sendMailRequest(html, emailReceiverList, MailSender.MASTER.getValue(), subject);
+                Context context = new MailContextHandler().getWorkspaceInviteContext(redirectProperty, sessionCode, locale, workspace.getName(), userInfo, inviteUserResponse.getInviteUserDetailInfo(), materUser);
+                applicationEventPublisher.publishEvent(new MailSendEvent(context, Mail.WORKSPACE_INVITE, locale, emailReceiverList));
             } else {
-                Context context = new Context();
-                context.setVariable("rejectUrl", rejectUrl);
-                context.setVariable("acceptUrl", acceptUrl);
-                context.setVariable("masterUserName", materUser.getName());
-                context.setVariable("masterUserNickname", materUser.getNickname());
-                context.setVariable("masterUserEmail", materUser.getEmail());
-                context.setVariable("workspaceName", workspace.getName());
-                context.setVariable("inviteUserEmail", userInfo.getEmail());
-                context.setVariable("role", userInfo.getRole());
-                context.setVariable("plan", generatePlanString(userInfo.isPlanRemote(), userInfo.isPlanMake(), userInfo.isPlanView()));
-                context.setVariable("workstationHomeUrl", redirectProperty.getWorkstationWeb());
-                context.setVariable("supportUrl", redirectProperty.getSupportWeb());
-                String subject = messageSource.getMessage(Mail.WORKSPACE_INVITE_NON_USER.getSubject(), null, locale);
-                String template = messageSource.getMessage(Mail.WORKSPACE_INVITE_NON_USER.getTemplate(), null, locale);
-                String html = springTemplateEngine.process(template, context);
-                List<String> emailReceiverList = new ArrayList<>();
-                emailReceiverList.add(userInfo.getEmail());
-                sendMailRequest(html, emailReceiverList, MailSender.MASTER.getValue(), subject);
+                Context context = new MailContextHandler().getWorkspaceInviteNonUserContext(redirectProperty, sessionCode, locale, workspace.getName(), userInfo, materUser);
+                applicationEventPublisher.publishEvent(new MailSendEvent(context, Mail.WORKSPACE_INVITE_NON_USER, locale, emailReceiverList));
             }
         });
         return new ApiResponse<>(true);
     }
 
-    /*
-    하위유저는 상위유저 또는 동급유저에 대한 권한이 없으므로 이에 대해 체크한다.
-    단 멤버유저의 경우 동급유저(멤버)에 대한 권한을 허용한다.
+    /**
+     * 워크스페이스 초대 시 부여한 라이선스 검증
+     *
+     * @param userInfoList                     - 초대받은 유저 목록
+     * @param workspaceLicensePlanInfoResponse - 워크스페이스 라이선스 정보
      */
-    private boolean checkWorkspaceRole(SettingValue settingValue, String requestUserRole, String responseUserRole) {
-        log.info("[WORKSPACE ROLE CHECK] setting value : [{}], request user role : [{}] , response user role : [{}]", settingValue, requestUserRole, responseUserRole);
-        //요청자가 마스터 -> 대상자는 매니저, 멤버
-        if (settingValue == SettingValue.MASTER) {
-            if (!requestUserRole.equals("MASTER") || !responseUserRole.matches("MANAGER|MEMBER")) {
-                return false;
-            }
+    private void checkWorkspaceInviteLicenseProduct(List<WorkspaceInviteRequest.UserInfo> userInfoList, WorkspaceLicensePlanInfoResponse workspaceLicensePlanInfoResponse) {
+        long requestRemoteAmount = userInfoList.stream().filter(WorkspaceInviteRequest.UserInfo::isPlanRemote).count();
+        long requestMakeAmount = userInfoList.stream().filter(WorkspaceInviteRequest.UserInfo::isPlanMake).count();
+        long requestViewAmount = userInfoList.stream().filter(WorkspaceInviteRequest.UserInfo::isPlanView).count();
 
-        }
-        //요청자가 마스터 -> 대상자는 매니저, 멤버
-        //요청자가 매니저 -> 대상자는 멤버
-        if (settingValue == SettingValue.MASTER_OR_MANAGER) {
-            if (requestUserRole.equals("MASTER") && !responseUserRole.matches("MANAGER|MEMBER")) {
-                return false;
+        if (requestRemoteAmount > 0 || requestMakeAmount > 0 || requestViewAmount > 0) {
+            Integer unUsedRemoteAmount = workspaceLicensePlanInfoResponse.getLicenseProductInfoList().stream().filter(licenseProductInfoResponse -> licenseProductInfoResponse.getProductName().equals("REMOTE")).map(WorkspaceLicensePlanInfoResponse.LicenseProductInfoResponse::getUnUseLicenseAmount).findFirst()
+                    .orElseThrow(() -> new WorkspaceException(ErrorCode.ERR_WORKSPACE_INVITE_NON_LICENSE));
+            if (requestRemoteAmount > unUsedRemoteAmount) {
+                throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_INVITE_NON_LICENSE);
             }
-            if (requestUserRole.equals("MANAGER") && !responseUserRole.equals("MEMBER")) {
-                return false;
+            Integer unUsedMakeAmount = workspaceLicensePlanInfoResponse.getLicenseProductInfoList().stream().filter(licenseProductInfoResponse -> licenseProductInfoResponse.getProductName().equals("MAKE")).map(WorkspaceLicensePlanInfoResponse.LicenseProductInfoResponse::getUnUseLicenseAmount).findFirst().orElseThrow(() -> new WorkspaceException(ErrorCode.ERR_WORKSPACE_INVITE_NON_LICENSE));
+            if (requestMakeAmount > unUsedMakeAmount) {
+                throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_INVITE_NON_LICENSE);
             }
-            if (requestUserRole.equals("MEMBER")) {
-                return false;
-            }
-        }
-        //요청자가 마스터  -> 대상자는 매니저, 멤버
-        //요청자가 매니저 -> 대상자는 멤버
-        //요청자가 멤버 -> 대상자는 멤버
-        if (settingValue == SettingValue.MASTER_OR_MANAGER_OR_MEMBER) {
-            if (requestUserRole.equals("MASTER") && !responseUserRole.matches("MANAGER|MEMBER")) {
-                return false;
-            }
-            if (requestUserRole.equals("MANAGER") && !responseUserRole.equals("MEMBER")) {
-                return false;
-            }
-            if (requestUserRole.equals("MEMBER") && !responseUserRole.equals("MEMBER")) {
-                return false;
+            Integer unUsedViewAmount = workspaceLicensePlanInfoResponse.getLicenseProductInfoList().stream().filter(licenseProductInfoResponse -> licenseProductInfoResponse.getProductName().equals("VIEW")).map(WorkspaceLicensePlanInfoResponse.LicenseProductInfoResponse::getUnUseLicenseAmount).findFirst().orElseThrow(() -> new WorkspaceException(ErrorCode.ERR_WORKSPACE_INVITE_NON_LICENSE));
+            if (requestViewAmount > unUsedViewAmount) {
+                throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_INVITE_NON_LICENSE);
             }
         }
-        return true;
-    }
-
-    private WorkspaceLicensePlanInfoResponse getWorkspaceLicenses(String workspaceId) {
-        //todo 로깅
-        ApiResponse<WorkspaceLicensePlanInfoResponse> apiResponse = licenseRestService.getWorkspaceLicenses(workspaceId);
-        if (apiResponse.getCode() != 200) {
-            log.error("[GET WORKSPACE LICENSE PLAN INFO BY WORKSPACE UUID] response message : {}", apiResponse.getMessage());
-            return null;
-        }
-        return apiResponse.getData();
     }
 
     /**
-     * 유저 정보 조회(User Service)
+     * 워크스페이스 초대 시 초대받은 유저가 최대 소속 워크스페이스 수를 넘겼는지 체크
      *
-     * @param userId - 유저 uuid
-     * @return - 유저 정보
+     * @param inviteUserInfoResponseMap - 초대받은 유저 정보 목록
      */
-    private UserInfoRestResponse getUserInfoByUserId(String userId) {
-        //todo : logging
-        return userRestService.getUserInfoByUserId(userId).getData();
+    private void checkWorkspaceInvitedUserMaxJoin(Map<String, InviteUserInfoResponse> inviteUserInfoResponseMap) {
+        inviteUserInfoResponseMap.values().forEach(inviteUserInfoResponse -> {
+            long userIncludedWorkspaceAmount = workspaceUserRepository.countByUserId(inviteUserInfoResponse.getInviteUserDetailInfo().getUserUUID());
+            if (inviteUserInfoResponse.isMemberUser() && userIncludedWorkspaceAmount + 1 > MAX_JOIN_WORKSPACE_AMOUNT) {
+                log.error("[WORKSPACE INVITE USER] maximum join workspace amount : [{}], current user join workspace amount(include request) : [{}]", MAX_JOIN_WORKSPACE_AMOUNT, userIncludedWorkspaceAmount + 1);
+                throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_INVITE_MAX_JOIN_USER);
+            }
+        });
     }
-/*
-    private InviteUserInfoResponse getInviteUserInfoByEmail(String email) {
-        //todo : logging
-        ApiResponse<InviteUserInfoResponse> apiResponse = userRestService.getInviteUserInfoByEmail(email);
-        //탈퇴한 유저 등의 경우 200 ok가 아님.
+
+    /**
+     * 워크스페이스 초대 시 초대받은 유저가 이미 해당 워크스페이스의 소속되어 있는지 체크
+     * 단, 비회원이 아닌 경우에만 체크한다.
+     *
+     * @param workspaceId               - 초대한 워크스페이스 식별자
+     * @param inviteUserInfoResponseMap - 초대받은 유저 정보 목록
+     */
+    private void checkWorkspaceInvitedUserAlreadyJoin(String workspaceId, Map<String, InviteUserInfoResponse> inviteUserInfoResponseMap) {
+        inviteUserInfoResponseMap.values().forEach(inviteUserInfoResponse -> {
+            Optional<WorkspaceUser> invitedWorkspaceUser = workspaceUserRepository.findByUserIdAndWorkspace_Uuid(inviteUserInfoResponse.getInviteUserDetailInfo().getUserUUID(), workspaceId);
+            if (inviteUserInfoResponse.isMemberUser() && invitedWorkspaceUser.isPresent()) {
+                log.error("[WORKSPACE INVITE USER] Invite User is already Workspace user. Invite user is Member >>> [{}], Invite user is Workspace User >>> [{}]", inviteUserInfoResponse.isMemberUser(), true);
+                throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_USER_ALREADY_EXIST);
+            }
+        });
+
+    }
+
+    /**
+     * 워크스페이스 초대 시 탈퇴한 유저가 있는지 체크
+     *
+     * @param invitedUserEmailList - 워크스페이스 초대 유저 이메일 목록
+     * @return - 탈퇴한 유저가 없는 유저 정보 모록
+     */
+    private Map<String, InviteUserInfoResponse> checkWorkspaceInvitedUserSecession(List<String> invitedUserEmailList) {
+        Map<String, InviteUserInfoResponse> inviteUserInfoResponseMap = new HashMap<>();
+        invitedUserEmailList.forEach(invitedUserEmail -> {
+            ApiResponse<InviteUserInfoResponse> inviteUserInfoResponseApiResponse = getInviteUserInfoByEmail(invitedUserEmail);
+            if (inviteUserInfoResponseApiResponse.getCode() != 200) {
+                log.error("[WORKSPACE INVITE USER] Invalid Invited User Info.");
+                if (inviteUserInfoResponseApiResponse.getCode() == 5002) {
+                    throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_INVITE_SECESSION_USER);
+                }
+                throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_INVITE);
+            }
+            InviteUserInfoResponse inviteUserResponse = inviteUserInfoResponseApiResponse.getData();
+            inviteUserInfoResponseMap.put(invitedUserEmail, inviteUserResponse);
+        });
+        return inviteUserInfoResponseMap;
+    }
+
+    /**
+     * 워크스페이스 초대 시 워크스페이스 최대 참여 가능한 유저 수를 체크.
+     *
+     * @param workspaceId       - 워크스페이스 식별자
+     * @param invitedUserAmount - 초대 요청 유저 수
+     */
+    private void checkWorkspaceInviteMaxUserAmount(String workspaceId, int invitedUserAmount, WorkspaceLicensePlanInfoResponse workspaceLicensePlanInfoResponse) {
+        //마스터포함 워크스페이스 전체 유저 수 조회
+        long workspaceUserAmount = workspaceUserRepository.countByWorkspace_Uuid(workspaceId);
+
+        if (workspaceLicensePlanInfoResponse.getLicenseProductInfoList().isEmpty()) {
+            // 라이선스를 구매하지 않은 워크스페이스는 기본값으로 체크
+            if (invitedUserAmount + workspaceUserAmount > MAX_WORKSPACE_USER_AMOUNT) {
+                log.error("[WORKSPACE INVITE USER] maximum workspace user amount : [{}], request user amount [{}], current workspace user amount : [{}]", MAX_WORKSPACE_USER_AMOUNT, invitedUserAmount, workspaceUserAmount);
+                throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_INVITE_MAX_USER);
+            }
+
+        } else {
+            // 라이선스를 구매한 워크스페이스는 라이선스에 종속된 값으로 체크
+            if (invitedUserAmount + workspaceUserAmount > workspaceLicensePlanInfoResponse.getMaxUserAmount()) {
+                log.error("[WORKSPACE INVITE USER] maximum workspace user amount(by license) : [{}], request user amount [{}], current workspace user amount : [{}]", workspaceLicensePlanInfoResponse.getMaxUserAmount(), invitedUserAmount, workspaceUserAmount);
+                throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_INVITE_MAX_USER);
+            }
+        }
+    }
+
+    /**
+     * 워크스페이스 초대 요청 유저의 권한 유효성 체크
+     *
+     * @param workspaceId   - 워크스페이스 식별자
+     * @param requestUserId - 초대 요청 유저 식별자
+     * @param userInfoList  - 초대 대상 유저 역할 리스트
+     */
+    private void checkWorkspaceInvitePermission(String workspaceId, String requestUserId, List<WorkspaceInviteRequest.UserInfo> userInfoList) {
+        List<String> invitedUserRoleList = userInfoList.stream().map(WorkspaceInviteRequest.UserInfo::getRole).collect(Collectors.toList());
+        WorkspaceUserPermission requestUserPermission = workspaceUserPermissionRepository.findWorkspaceUser(workspaceId, requestUserId).orElseThrow(() -> new WorkspaceException(ErrorCode.ERR_WORKSPACE_INVALID_PERMISSION));
+
+        //초대 권한이 설정 정보에 따라 변경됨.
+        Optional<WorkspaceCustomSetting> workspaceCustomSettingOptional = workspaceCustomSettingRepository.findByWorkspace_UuidAndSetting_Name(workspaceId, SettingName.PUBLIC_USER_MANAGEMENT_ROLE_SETTING);
+        if (!workspaceCustomSettingOptional.isPresent() || workspaceCustomSettingOptional.get().getValue() == SettingValue.UNUSED || workspaceCustomSettingOptional.get().getValue() == SettingValue.MASTER_OR_MANAGER) {
+            // 초대한 사람이 마스터 또는 매니저여야 한다.
+            if (!requestUserPermission.getWorkspaceRole().getRole().matches("MASTER|MANAGER")) {
+                throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_INVALID_PERMISSION);
+            }
+            // 매니저 유저는 매니저 유저를 초대할 수 없다.
+            if (requestUserPermission.getWorkspaceRole().getRole().equals("MANAGER") && invitedUserRoleList.stream().anyMatch(s -> s.equals("MANAGER"))) {
+                throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_INVALID_PERMISSION);
+            }
+        }
+        if (workspaceCustomSettingOptional.isPresent()) {
+            WorkspaceCustomSetting workspaceCustomSetting = workspaceCustomSettingOptional.get();
+            // 마스터 유저만 초대 할 수 있다.
+            if (workspaceCustomSetting.getValue() == SettingValue.MASTER && !requestUserPermission.getWorkspaceRole().getRole().equals("MASTER")) {
+                throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_INVALID_PERMISSION);
+            }
+            //멤버유저도 초대할 수 있다. 단 상위 유저는 초대할 수 없다.
+            if (workspaceCustomSetting.getValue() == SettingValue.MASTER_OR_MANAGER_OR_MEMBER
+                    && requestUserPermission.getWorkspaceRole().getRole().matches("MANAGER|MEMBER") && invitedUserRoleList.stream().anyMatch(s -> s.equals("MANAGER"))) {
+                throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_INVALID_PERMISSION);
+            }
+        }
+    }
+
+    private WorkspaceLicensePlanInfoResponse getWorkspaceLicenses(String workspaceId) {
+        ApiResponse<WorkspaceLicensePlanInfoResponse> apiResponse = licenseRestService.getWorkspaceLicenses(workspaceId);
         if (apiResponse.getCode() != 200) {
-            log.error("[GET INVITE USER INFO BY EMAIL] response message : {}", apiResponse.getMessage());
-            return null;
-            //throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_INVITE);
+            log.error("[GET WORKSPACE LICENSE PLAN INFO BY WORKSPACE UUID] response message : {}", apiResponse.getMessage());
+            return new WorkspaceLicensePlanInfoResponse();
         }
         return apiResponse.getData();
-    }*/
+    }
 
-    public RedirectView inviteWorkspaceAccept(String sessionCode, String lang) throws IOException {
+
+    private ApiResponse<InviteUserInfoResponse> getInviteUserInfoByEmail(String email) {
+        ApiResponse<InviteUserInfoResponse> inviteUserInfoResponseApiResponse = userRestService.getInviteUserInfoByEmail(email);
+        if (inviteUserInfoResponseApiResponse.getCode() != 200) {
+            log.error("[GET INVITE USER INFO BY EMAIL] response code : {}, response message : {}", inviteUserInfoResponseApiResponse.getCode(), inviteUserInfoResponseApiResponse.getMessage());
+        }
+        return inviteUserInfoResponseApiResponse;
+    }
+
+    public RedirectView inviteWorkspaceAccept(String sessionCode, String lang) {
         Locale locale = new Locale(lang, "");
         //1-1. 초대 세션 유효성 체크
         Optional<UserInvite> optionalUserInvite = userInviteRepository.findById(sessionCode);
         if (!optionalUserInvite.isPresent()) {
-            log.info("[WORKSPACE INVITE ACCEPT] Workspace invite session Info Not found. session code >> [{}]", sessionCode);
+            log.error("[WORKSPACE INVITE ACCEPT] Workspace invite session Info Not found. session code >> [{}]", sessionCode);
             RedirectView redirectView = new RedirectView();
             redirectView.setUrl(redirectProperty.getConsoleWeb() + RedirectPath.WORKSPACE_INVITE_FAIL.getValue());
             redirectView.setContentType("application/json");
@@ -380,10 +353,9 @@ public class OnWorkspaceUserServiceImpl extends WorkspaceUserService {
         log.info("[WORKSPACE INVITE ACCEPT] Workspace invite session Info >> [{}]", userInvite.toString());
 
         //1-2. 초대받은 유저가 유효한지 체크
-        ApiResponse<InviteUserInfoResponse> inviteUserInfoResponseApiResponse = userRestService.getInviteUserInfoByEmail(userInvite.getInvitedUserEmail());
+        ApiResponse<InviteUserInfoResponse> inviteUserInfoResponseApiResponse = getInviteUserInfoByEmail(userInvite.getInvitedUserEmail());
         if (inviteUserInfoResponseApiResponse.getCode() != 200) {
-            log.error("[GET INVITE USER INFO BY EMAIL] response code : {}, response message : {}", inviteUserInfoResponseApiResponse.getCode(), inviteUserInfoResponseApiResponse.getMessage());
-            log.info("[WORKSPACE INVITE ACCEPT] Invalid Invited User Info.");
+            log.error("[WORKSPACE INVITE ACCEPT] Invalid Invited User Info.");
             //탈퇴한 유저의 캐싱은 삭제, 이외의 유저는 보류.
             if (inviteUserInfoResponseApiResponse.getCode() == 5002) {
                 userInviteRepository.delete(userInvite);
@@ -461,7 +433,7 @@ public class OnWorkspaceUserServiceImpl extends WorkspaceUserService {
             RedirectView redirectView = workspaceOverPlanFailHandler(workspace, userInvite, successPlan, failPlan, locale);
             successPlan.forEach(s -> {
                 Boolean revokeResult = licenseRestService.revokeWorkspaceLicenseToUser(workspace.getUuid(), userInvite.getInvitedUserId(), s).getData();
-                log.info("[WORKSPACE INVITE ACCEPT] [{}] License Grant Fail. Revoke user License Result >> [{}]", s, revokeResult);
+                log.error("[WORKSPACE INVITE ACCEPT] [{}] License Grant Fail. Revoke user License Result >> [{}]", s, revokeResult);
             });
             return redirectView;
         }
@@ -695,9 +667,8 @@ public class OnWorkspaceUserServiceImpl extends WorkspaceUserService {
         log.info("[WORKSPACE INVITE REJECT] Workspace Invite Session Info >> [{}] ", userInvite);
 
         //비회원 거절은 메일 전송 안함.
-        ApiResponse<InviteUserInfoResponse> inviteUserInfoResponseApiResponse = userRestService.getInviteUserInfoByEmail(userInvite.getInvitedUserEmail());
+        ApiResponse<InviteUserInfoResponse> inviteUserInfoResponseApiResponse = getInviteUserInfoByEmail(userInvite.getInvitedUserEmail());
         if (inviteUserInfoResponseApiResponse.getCode() != 200) {
-            log.error("[GET INVITE USER INFO BY EMAIL] response code : {}, response message : {}", inviteUserInfoResponseApiResponse.getCode(), inviteUserInfoResponseApiResponse.getMessage());
             log.error("[WORKSPACE INVITE REJECT] Invalid Invited User Info.");
             //탈퇴한 유저의 캐싱은 삭제, 이외의 유저는 보류.
             if (inviteUserInfoResponseApiResponse.getCode() == 5002) {

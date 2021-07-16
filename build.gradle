@@ -106,6 +106,7 @@ dependencies {
 
 test {
     useJUnitPlatform()
+    systemProperty("spring.active.profiles", "local")
 }
 
 // querydsl 적용

@@ -9,9 +9,13 @@ package com.virnect.workspace.domain.setting;
  */
 public enum SettingName {
     //멤버
+    //개인 계정 초대, 내보내기
     PUBLIC_USER_MANAGEMENT_ROLE_SETTING(Product.WORKSTATION, SettingValue.MASTER_OR_MANAGER, new SettingValue[]{SettingValue.MASTER_OR_MANAGER, SettingValue.MASTER, SettingValue.MASTER_OR_MANAGER_OR_MEMBER}),
+    //전용 계정 생성, 삭제, 정보 편집
     PRIVATE_USER_MANAGEMENT_ROLE_SETTING(Product.WORKSTATION, SettingValue.MASTER_OR_MANAGER, new SettingValue[]{SettingValue.MASTER_OR_MANAGER, SettingValue.MASTER, SettingValue.MASTER_OR_MANAGER_OR_MEMBER}),
+    //시트 추가, 삭제, 정보 편집
     SHEET_MANAGEMENT_ROLE_SETTING(Product.WORKSTATION, SettingValue.MASTER_OR_MANAGER, new SettingValue[]{SettingValue.MASTER_OR_MANAGER, SettingValue.MASTER, SettingValue.MASTER_OR_MANAGER_OR_MEMBER}),
+    //플랜 할당, 편집
     USER_PLAN_MANAGEMENT_ROLE_SETTING(Product.WORKSTATION, SettingValue.MASTER_OR_MANAGER, new SettingValue[]{SettingValue.MASTER_OR_MANAGER, SettingValue.MASTER, SettingValue.MASTER_OR_MANAGER_OR_MEMBER}),
     USER_ROLE_MANAGEMENT_ROLE_SETTING(Product.WORKSTATION, SettingValue.MASTER, new SettingValue[]{SettingValue.MASTER, SettingValue.MASTER_OR_MANAGER, SettingValue.MASTER_OR_MANAGER_OR_MEMBER}),
     //콘텐츠

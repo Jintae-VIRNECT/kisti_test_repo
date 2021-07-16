@@ -20,6 +20,7 @@ public enum ErrorCode {
     ERR_WORKSPACE_INVITE_MAX_USER(1016, "Workspace invite fail. Because over maximum number of user participation."),
     ERR_WORKSPACE_INVITE_MAX_JOIN_USER(1017, "Workspace invite fail. Because over maximum number of workspace join."),
     ERR_WORKSPACE_INVITE_SECESSION_USER(1018, "Workspace invite fail. Because invited user is secession user."),
+    ERR_WORKSPACE_INVITE_NON_LICENSE(1019, "Workspace invite fail. Because non grantable license."),
 
     //
     ERR_INCORRECT_USER_LICENSE_INFO(1007, "Users must have at least 1 plan."),

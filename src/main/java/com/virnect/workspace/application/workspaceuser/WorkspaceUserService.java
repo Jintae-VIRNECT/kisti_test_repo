@@ -272,8 +272,7 @@ public abstract class WorkspaceUserService {
      * @param userId - 유저 uuid
      * @return - 유저 정보
      */
-    private UserInfoRestResponse getUserInfoByUserId(String userId) {
-        //todo : logging
+    public UserInfoRestResponse getUserInfoByUserId(String userId) {
         return userRestService.getUserInfoByUserId(userId).getData();
     }
 
