@@ -82,7 +82,7 @@ export default {
         this.img.width = this.file.width
         this.img.height = this.file.height
         fabric.Image.fromURL(
-          this.file.img,
+          `${this.file.img}?t=${new Date().getTime()}`,
           fabricImage => {
             const canvas = this.canvas
             const parent = this.$el.parentNode
@@ -119,25 +119,20 @@ export default {
               canvas.renderAll.bind(canvas)()
               canvas.renderAll()
 
-              fabricImage.clone(
-                cbImg => {
-                  this.backCanvas.setBackgroundImage(cbImg, () => {
-                    this.backCanvas.setWidth(canvasSize.width)
-                    this.backCanvas.setHeight(canvasSize.height)
-                    this.backCanvas.backgroundImage.set({
-                      crossOrigin: 'anonymous',
-                      scaleX: canvasSize.scale,
-                      scaleY: canvasSize.scale,
-                    })
-                    this.backCanvas.renderAll()
-
-                    this.updateHistory()
+              fabricImage.clone(cbImg => {
+                this.backCanvas.setBackgroundImage(cbImg, () => {
+                  this.backCanvas.setWidth(canvasSize.width)
+                  this.backCanvas.setHeight(canvasSize.height)
+                  this.backCanvas.backgroundImage.set({
+                    crossOrigin: 'anonymous',
+                    scaleX: canvasSize.scale,
+                    scaleY: canvasSize.scale,
                   })
-                },
-                {
-                  crossOrigin: 'anonymous',
-                },
-              )
+                  this.backCanvas.renderAll()
+
+                  this.updateHistory()
+                })
+              })
 
               resolve(canvas)
             })
