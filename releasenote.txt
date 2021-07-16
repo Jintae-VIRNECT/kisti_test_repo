@@ -1,4 +1,4 @@
-RELEASE v2.4.8.6
+RELEASE v2.4.8.7
 
 ### New Features
 ### Bug Fixes
