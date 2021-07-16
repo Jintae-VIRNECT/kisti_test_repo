@@ -249,6 +249,7 @@ export default {
             1002: this.$t('members.add.message.memberAlready'),
             1007: this.$t('members.add.message.notHaveAnyPlan'),
             1008: this.$t('members.add.message.memberOverflow'),
+            1018: this.$t('members.add.message.memberWithdrawal'),
           }[errCode]
           this.$message.error({
             message: errMsg
