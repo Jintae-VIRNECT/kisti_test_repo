@@ -119,20 +119,25 @@ export default {
               canvas.renderAll.bind(canvas)()
               canvas.renderAll()
 
-              fabricImage.clone(cbImg => {
-                this.backCanvas.setBackgroundImage(cbImg, () => {
-                  this.backCanvas.setWidth(canvasSize.width)
-                  this.backCanvas.setHeight(canvasSize.height)
-                  this.backCanvas.backgroundImage.set({
-                    crossOrigin: 'anonymous',
-                    scaleX: canvasSize.scale,
-                    scaleY: canvasSize.scale,
-                  })
-                  this.backCanvas.renderAll()
+              fabricImage.clone(
+                cbImg => {
+                  this.backCanvas.setBackgroundImage(cbImg, () => {
+                    this.backCanvas.setWidth(canvasSize.width)
+                    this.backCanvas.setHeight(canvasSize.height)
+                    this.backCanvas.backgroundImage.set({
+                      crossOrigin: 'anonymous',
+                      scaleX: canvasSize.scale,
+                      scaleY: canvasSize.scale,
+                    })
+                    this.backCanvas.renderAll()
 
-                  this.updateHistory()
-                })
-              })
+                    this.updateHistory()
+                  })
+                },
+                {
+                  crossOrigin: 'anonymous',
+                },
+              )
 
               resolve(canvas)
             })
