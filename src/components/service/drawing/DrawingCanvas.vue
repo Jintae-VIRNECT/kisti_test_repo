@@ -81,8 +81,12 @@ export default {
       return new Promise((resolve, reject) => {
         this.img.width = this.file.width
         this.img.height = this.file.height
+        const imgUrl = this.file.contentType.indexOf('pdf')
+          ? this.file.img
+          : `${this.file.img}?t=${new Date().getTime()}` //이미지의 경우 캐시를 통해 cors 발생을 막기 위해 타임스탬프를 추가한다
+
         fabric.Image.fromURL(
-          `${this.file.img}?t=${new Date().getTime()}`,
+          imgUrl,
           fabricImage => {
             const canvas = this.canvas
             const parent = this.$el.parentNode
