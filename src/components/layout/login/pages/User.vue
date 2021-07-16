@@ -200,13 +200,15 @@ export default {
         )}`
     },
     checkConfirm() {
+      if (this.user.nickname !== '') return true
+      if (this.user.mobile !== '') return true
+      if (this.user.profile !== '') return true
       if (
-        this.user.nickname !== '' ||
-        this.user.mobile !== '' ||
-        this.user.recoveryEmail !== '' ||
-        this.user.profile !== ''
+        this.user.recoveryEmail !== '' &&
+        !this.$validator.errors.has('recoveryEmail')
       )
         return true
+
       return false
     },
   },
