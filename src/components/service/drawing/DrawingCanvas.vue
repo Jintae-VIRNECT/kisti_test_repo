@@ -124,6 +124,7 @@ export default {
                   this.backCanvas.setWidth(canvasSize.width)
                   this.backCanvas.setHeight(canvasSize.height)
                   this.backCanvas.backgroundImage.set({
+                    crossOrigin: 'anonymous',
                     scaleX: canvasSize.scale,
                     scaleY: canvasSize.scale,
                   })
