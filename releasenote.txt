@@ -1,8 +1,8 @@
-RELEASE v2.4.8.9
+RELEASE v2.4.8.10
 
 ### New Features
 ### Bug Fixes
-- 협업보드 캐시파일 cors 이슈 수정, pdf/이미지 구분 찰;
+- 협업보드 캐시파일 cors 이슈 수정, pdf/이미지 구분 처리
 ### Improvement
 ### UI
 ### Limitation
