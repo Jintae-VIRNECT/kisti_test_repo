@@ -55,7 +55,10 @@
     <reconnect-modal :visible.sync="connectVisible"></reconnect-modal>
     <setting-modal></setting-modal>
     <record-list v-if="useLocalRecording"></record-list>
-    <map-modal :visible.sync="positionMapVisible"></map-modal>
+    <map-modal
+      v-if="isOnpremise"
+      :visible.sync="positionMapVisible"
+    ></map-modal>
   </section>
 </template>
 

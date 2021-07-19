@@ -118,7 +118,11 @@ export default {
       deep: true,
       handler(val, oldVal) {
         // AR 기능 도중 메인뷰 참가자가 나갔을 경우
-        if (this.view === VIEW.AR && val.id !== oldVal.id) {
+        const isArView = this.view === VIEW.AR
+        const isDiffMainView = val.id !== oldVal.id
+        const isNotEmptyPt = oldVal.id !== undefined
+
+        if (isArView && isDiffMainView && isNotEmptyPt) {
           if (this.account.roleType === ROLE.LEADER) {
             this.$call.sendArFeatureStop()
           }
