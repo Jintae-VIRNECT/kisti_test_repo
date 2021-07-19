@@ -81,59 +81,71 @@ export default {
       return new Promise((resolve, reject) => {
         this.img.width = this.file.width
         this.img.height = this.file.height
-        fabric.Image.fromURL(this.file.img, fabricImage => {
-          const canvas = this.canvas
-          const parent = this.$el.parentNode
+        const imgUrl =
+          this.file.contentType.indexOf('pdf') > -1
+            ? this.file.img
+            : `${this.file.img}?t=${new Date().getTime()}` //이미지의 경우 캐시를 통해 cors 발생을 막기 위해 타임스탬프를 추가한다
 
-          const canvasSize = getCanvasSize(
-            parent.offsetWidth,
-            parent.offsetHeight,
-            // bgImage.width,
-            // bgImage.height,
-            this.img.width,
-            this.img.height,
-          )
-          fabricImage.set({
-            crossOrigin: 'anonymous',
-            originX: 'left',
-            originY: 'top',
-            scaleX:
-              canvasSize.width < 10 ? 1 : canvasSize.width / this.img.width,
-            scaleY:
-              canvasSize.width < 10 ? 1 : canvasSize.width / this.img.width,
-          })
-          canvas.setBackgroundImage(fabricImage, () => {
-            canvas.setWidth(canvasSize.width)
-            canvas.setHeight(canvasSize.height)
-            this.origin = {
-              scale: 1,
-              width: canvasSize.width,
-              height: canvasSize.height,
-            }
+        fabric.Image.fromURL(
+          imgUrl,
+          fabricImage => {
+            const canvas = this.canvas
+            const parent = this.$el.parentNode
 
-            this.cursor.canvas.setWidth(canvasSize.width)
-            this.cursor.canvas.setHeight(canvasSize.height)
-
-            canvas.renderAll.bind(canvas)()
-            canvas.renderAll()
-
-            fabricImage.clone(cbImg => {
-              this.backCanvas.setBackgroundImage(cbImg, () => {
-                this.backCanvas.setWidth(canvasSize.width)
-                this.backCanvas.setHeight(canvasSize.height)
-                this.backCanvas.backgroundImage.set({
-                  scaleX: canvasSize.scale,
-                  scaleY: canvasSize.scale,
-                })
-                this.backCanvas.renderAll()
-
-                this.updateHistory()
-              })
+            const canvasSize = getCanvasSize(
+              parent.offsetWidth,
+              parent.offsetHeight,
+              // bgImage.width,
+              // bgImage.height,
+              this.img.width,
+              this.img.height,
+            )
+            fabricImage.set({
+              crossOrigin: 'anonymous',
+              originX: 'left',
+              originY: 'top',
+              scaleX:
+                canvasSize.width < 10 ? 1 : canvasSize.width / this.img.width,
+              scaleY:
+                canvasSize.width < 10 ? 1 : canvasSize.width / this.img.width,
             })
+            canvas.setBackgroundImage(fabricImage, () => {
+              canvas.setWidth(canvasSize.width)
+              canvas.setHeight(canvasSize.height)
+              this.origin = {
+                scale: 1,
+                width: canvasSize.width,
+                height: canvasSize.height,
+              }
 
-            resolve(canvas)
-          })
-        })
+              this.cursor.canvas.setWidth(canvasSize.width)
+              this.cursor.canvas.setHeight(canvasSize.height)
+
+              canvas.renderAll.bind(canvas)()
+              canvas.renderAll()
+
+              fabricImage.clone(cbImg => {
+                this.backCanvas.setBackgroundImage(cbImg, () => {
+                  this.backCanvas.setWidth(canvasSize.width)
+                  this.backCanvas.setHeight(canvasSize.height)
+                  this.backCanvas.backgroundImage.set({
+                    crossOrigin: 'anonymous',
+                    scaleX: canvasSize.scale,
+                    scaleY: canvasSize.scale,
+                  })
+                  this.backCanvas.renderAll()
+
+                  this.updateHistory()
+                })
+              })
+
+              resolve(canvas)
+            })
+          },
+          {
+            crossOrigin: 'anonymous',
+          },
+        )
       })
     },
 
