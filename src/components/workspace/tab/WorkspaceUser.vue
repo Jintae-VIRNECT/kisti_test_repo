@@ -97,6 +97,13 @@ export default {
       }
     },
     // 'list.length': 'scrollReset',
+    //멤버목록이 갱신되면, 검색 결과 목록도 업데이트 (검색 결과 목록 상태인 경우)
+    memberList: {
+      deep: true,
+      handler() {
+        if (this.searchMemberList.length) this.doSearch(this.searchText)
+      },
+    },
   },
   methods: {
     doSearch(text) {
