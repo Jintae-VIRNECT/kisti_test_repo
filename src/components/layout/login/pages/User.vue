@@ -73,17 +73,16 @@
         </el-dialog>
 
         <p class="input-title">{{ $t('user.nickName.title') }}</p>
-
-        <el-input
-          v-model="user.nickname"
-          :placeholder="nicknameSet"
-          type="text"
-          name="nickname"
-          v-validate="'min:2|max:20'"
-          :class="{ 'input-danger': errors.has('nickname') }"
-          clearable
-        >
-        </el-input>
+        <ValidationProvider rules="nickname" v-slot="{ errors }">
+          <el-input
+            v-model="user.nickname"
+            :placeholder="nicknameSet"
+            type="text"
+            :class="{ 'input-danger': errors[0] }"
+            clearable
+          >
+          </el-input>
+        </ValidationProvider>
         <p class="restriction-text" v-html="$t('user.nickName.contents')"></p>
 
         <dl class="recover-info">
@@ -133,7 +132,9 @@
           class="next-btn block-btn"
           type="info"
           @click="checkNickName()"
-          :disabled="!checkConfirm"
+          :disabled="
+            errors.has('recoveryEmail') || !nicknameCheck || !checkConfirm
+          "
           >{{ $t('user.confirm') }}</el-button
         >
         <el-button class="block-btn" @click="later">{{
@@ -149,6 +150,7 @@ import Cookies from 'js-cookie'
 import CountryCode from 'model/countryCode'
 import AuthService from 'service/auth-service'
 import mixin from 'mixins/mixin'
+import { ValidationProvider, Validator } from 'vee-validate'
 
 export default {
   name: 'user',
@@ -182,6 +184,7 @@ export default {
       file: null,
       thumbnail: null,
       inputImg: null,
+      nicknameCheck: true,
     }
   },
   computed: {
@@ -203,12 +206,7 @@ export default {
       if (this.user.nickname !== '') return true
       if (this.user.mobile !== '') return true
       if (this.user.profile !== '') return true
-      if (
-        this.user.recoveryEmail !== '' &&
-        !this.$validator.errors.has('recoveryEmail')
-      )
-        return true
-
+      if (this.user.recoveryEmail !== '') return true
       return false
     },
   },
@@ -216,6 +214,24 @@ export default {
     if (this.loggedIn || !this.$props.signup) {
       this.$router.push('/')
     }
+  },
+  created() {
+    Validator.extend('nickname', {
+      validate: nickname => {
+        this.nicknameCheck = this.nickNameValidate(nickname)
+        return this.nicknameCheck
+      },
+    })
+  },
+  watch: {
+    'user.nickname'(newVal) {
+      if (newVal.trim().length >= 0) {
+        this.nicknameCheck = true
+      }
+    },
+  },
+  components: {
+    ValidationProvider,
   },
   methods: {
     async handleRegisterDetail() {
@@ -290,7 +306,6 @@ export default {
         this.formData.append('inviteSession', this.$props.signup.inviteSession)
 
         let res = await AuthService.signUp({ params: this.formData })
-        // console.log(res)
         if (res.code === 200) {
           this.$router.push({
             name: 'complete',
@@ -399,7 +414,7 @@ export default {
     },
     nickNameValidate(nickName) {
       if (/\s/.test(nickName)) return false
-      if (/[`~!@#$%^&*|\\\'\";:\/?]/gi.test(nickName)) return false
+      if (/[<>]/.test(nickName)) return false
       if (nickName.length > 20) return false
       return true
     },
