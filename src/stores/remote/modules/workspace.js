@@ -6,6 +6,8 @@ import {
   CLEAR_COMPANY_INFO,
 } from '../mutation-types'
 import { PLAN_STATUS } from 'configs/status.config'
+import Store from 'stores/remote/store'
+import { validJsonString } from 'utils/regexp'
 
 const setWorkspaceObj = info => {
   return {
@@ -62,24 +64,38 @@ const state = {
 
 const mutations = {
   [INIT_WORKSPACE](state, infoList) {
+    //fetch해온 사용자 보유 워크스페이스 목록 초기화
     state.workspaceList = []
     for (let workspace of infoList) {
       state.workspaceList.push(setWorkspaceObj(workspace))
     }
+
+    //사용자가 보유한 워크스페이스가 있는 경우
     if (state.workspaceList.length > 0) {
-      const workspaceId = window.localStorage.getItem('workspace')
+      const workspaceInfo =
+        validJsonString(window.localStorage.getItem('workspace')) || {}
+      const workspaceId = workspaceInfo?.[Store.getters.account.uuid] //해당 유저의 워크스페이스 정보 확인
+
+      //localstorage에 저장된 workspace 정보가 있는 경우
       if (workspaceId) {
+        //현재 보유 워크스페이스 목록에서 저장되있던 워크스페이스를 검색
         let idx = state.workspaceList.findIndex(
           work => work.uuid === workspaceId,
         )
+        //있는 경우 현재 워크스페이스를 해당 워크스페이스로 설정 및 localstorage 재저장
         if (idx > -1) {
           state.current = state.workspaceList[idx]
+          workspaceInfo[Store.getters.account.uuid] =
+            state.workspaceList[idx].uuid //해당 유저 워크스페이스 업데이트
           window.localStorage.setItem(
             'workspace',
-            state.workspaceList[idx].uuid,
+            JSON.stringify(workspaceInfo),
           )
         }
-      } else {
+      }
+      //없는 경우 : 보유한 워크스페이스가 하나뿐인 경우 현재 워크스페이스로 설정하고,
+      //하나 이상인 경우에는 유저가 직접 선택하게된다.
+      else {
         if (state.workspaceList.length === 1) {
           state.current = state.workspaceList[0]
         }
@@ -88,7 +104,10 @@ const mutations = {
   },
   [CHANGE_WORKSPACE](state, workspace) {
     state.current = workspace
-    window.localStorage.setItem('workspace', workspace.uuid)
+    const workspaceInfo =
+      validJsonString(window.localStorage.getItem('workspace')) || {}
+    workspaceInfo[Store.getters.account.uuid] = workspace.uuid //해당 유저 워크스페이스 업데이트
+    window.localStorage.setItem('workspace', JSON.stringify(workspaceInfo))
   },
   [CLEAR_WORKSPACE](state, uuid) {
     if (uuid) {
@@ -97,7 +116,10 @@ const mutations = {
       )
       if (idx > -1) {
         state.workspaceList.splice(idx, 1)
-        window.localStorage.setItem('workspace', null)
+        const workspaceInfo =
+          validJsonString(window.localStorage.getItem('workspace')) || {}
+        delete workspaceInfo[Store.getters.account.uuid] //해당 유저 워크스페이스 정보 제거
+        window.localStorage.setItem('workspace', JSON.stringify(workspaceInfo))
       }
     }
     state.current = {}
