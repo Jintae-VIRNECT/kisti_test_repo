@@ -6,6 +6,8 @@ import { SIGNAL, DRAWING } from 'configs/remote.config'
 export default {
   data() {
     return {
+      pathAId: null, //현재 그려지는 드로잉 고유 id, 같은 참가자가 그린 드로잉내에서도 구분하기 위함
+
       // 현재 그려지는 드로잉 경로
       receivePath: {
         // connectionId: [
@@ -65,6 +67,7 @@ export default {
           data,
           owner: receive.from.connectionId,
         })
+        console.error(this.receivedList)
       }
     },
     addReceiveObject({ data, owner }) {
@@ -103,10 +106,15 @@ export default {
       // if (data.type === DRAWING.LINE_DOWN) {
       //   this.receivePath[owner] = []
       // }
+
       //수신 드로잉 경로에 해당 유저 Array 없는 경우 배열 생성 초기화
       if (!(owner in this.receivePath)) {
-        this.receivePath[owner] = []
+        if (this.pathAId !== data.aId || this.owner !== owner)
+          this.receivePath[owner] = []
       }
+
+      this.pathAId = data.aId
+      this.owner = owner
 
       //드로잉의 경우 position 배열, text의 경우 object를 필요한 부분 가공해서 반환
       let receiveParams = getReceiveParams(data.type, params, this.origin.scale)
@@ -119,6 +127,7 @@ export default {
         const width =
           parseFloat(data.width) * (this.origin.width / this.img.width)
         // const width = parseInt(data.width)
+        console.error('path', this.receivePath[owner])
         const pos = calcPosition(this.receivePath[owner], width)
         const path = new fabric.Path(this.receivePath[owner], {
           left: pos.left,
@@ -142,6 +151,8 @@ export default {
         this.$nextTick(() => {
           delete this.receivePath[owner]
         })
+
+        this.receivePath[owner] = []
       }
     },
     drawingText(data, owner) {
