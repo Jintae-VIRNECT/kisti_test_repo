@@ -70,7 +70,8 @@
     "call_timeout": "Your Collabo has been lasted for {time}min, <br>would you like to continue?",
     "unsupport_feature": "This feature is scheduled to be functional later.",
     "access_remove": "Allow access disabled for the selected member.",
-    "access_removed": "Allow access disabled."
+    "access_removed": "Allow access disabled.",
+    "please_allow_popup":"Please allow pop-up blockers."
   },
   "alarm": {
     "no_alarm": "You have not received any notification.",
