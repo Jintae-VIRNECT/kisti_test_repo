@@ -44,7 +44,7 @@ import com.virnect.uaa.global.common.ApiResponse;
 @RequiredArgsConstructor
 @RequestMapping("/users")
 public class UserInfoUpdateController {
-	private UserInformationUpdateService userInformationUpdateService;
+	private final UserInformationUpdateService userInformationUpdateService;
 
 	@InitBinder(value = {"userProfileUpdateRequest"})
 	public void initBinder(WebDataBinder binder) {
