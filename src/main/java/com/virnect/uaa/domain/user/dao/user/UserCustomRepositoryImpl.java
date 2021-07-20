@@ -8,7 +8,11 @@ import java.util.List;
 import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 
+import com.querydsl.core.QueryResults;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 
@@ -48,6 +52,24 @@ public class UserCustomRepositoryImpl implements UserCustomRepository {
 				equalMobile(mobile)
 			)
 			.fetch();
+	}
+
+	@Override
+	public Page<User> findAllUserInfoWithSearchAndPagingCondition(
+		String search, Pageable pageable
+	) {
+		QueryResults<User> pagingResult = query.selectFrom(user)
+			.where(searchQuery(search))
+			.offset(pageable.getOffset())
+			.limit(pageable.getPageSize())
+			.fetchResults();
+		return new PageImpl<>(pagingResult.getResults(), pageable, pagingResult.getTotal());
+	}
+
+	@Override
+	public List<User> findAllUserInfoWithSearchCondition(String search) {
+		return query.selectFrom(user)
+			.where(searchQuery(search)).fetch();
 	}
 
 	@Override

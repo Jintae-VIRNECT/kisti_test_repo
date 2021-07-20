@@ -41,7 +41,7 @@ import com.virnect.uaa.domain.user.dao.user.UserRepository;
 import com.virnect.uaa.domain.user.domain.User;
 import com.virnect.uaa.global.common.TotpQRCodeGenerator;
 import com.virnect.uaa.global.security.token.JwtPayload;
-import com.virnect.uaa.global.security.token.JwtTokenProvider;
+import com.virnect.uaa.global.security.token.JwtProvider;
 
 @Slf4j
 @Service
@@ -50,7 +50,7 @@ public class AccountSignInServiceImpl implements AccountSignInService {
 	private static final String REMEMBER_ME_COOKIE = "remember-me";
 	private final UserRepository userRepository;
 	private final LoginAttemptRepository loginAttemptRepository;
-	private final JwtTokenProvider jwtTokenProvider;
+	private final JwtProvider jwtProvider;
 	private final PasswordEncoder passwordEncoder;
 	private final ApplicationEventPublisher applicationEventPublisher;
 	private final BlockTokenRepository blockTokenRepository;
@@ -68,7 +68,7 @@ public class AccountSignInServiceImpl implements AccountSignInService {
 		User user;
 
 		// login authentication processing
-		if (loginRequest.isRememberMe()) {
+		if (loginRequest.isRememberMe() && request.getCookies() != null) {
 			user = rememberMeLoginAuthentication(request);
 		} else {
 			user = userIdAndPasswordLoginAuthentication(loginRequest);
@@ -150,15 +150,15 @@ public class AccountSignInServiceImpl implements AccountSignInService {
 	public OAuthTokenResponse getOauthLoginResponse(
 		User user, ClientGeoIPInfo clientGeoIPInfo
 	) {
-		String accessTokenJwtId = UUID.randomUUID().toString();
-		String refreshTokenJwtId = UUID.randomUUID().toString();
-		String accessToken = jwtTokenProvider.createAccessToken(user, accessTokenJwtId, clientGeoIPInfo);
-		String refreshToken = jwtTokenProvider.createRefreshToken(
+		String accessTokenJwtId = getUUIDString();
+		String refreshTokenJwtId = getUUIDString();
+		String accessToken = jwtProvider.createAccessToken(user, accessTokenJwtId, clientGeoIPInfo);
+		String refreshToken = jwtProvider.createRefreshToken(
 			user, refreshTokenJwtId, accessTokenJwtId, clientGeoIPInfo);
 		OAuthTokenResponse oAuthTokenResponse = new OAuthTokenResponse();
 		oAuthTokenResponse.setAccessToken(accessToken);
 		oAuthTokenResponse.setRefreshToken(refreshToken);
-		oAuthTokenResponse.setExpireIn(jwtTokenProvider.getAccessTokenExpire());
+		oAuthTokenResponse.setExpireIn(jwtProvider.getAccessTokenExpire());
 		oAuthTokenResponse.setPasswordInitialized(true);
 		return oAuthTokenResponse;
 	}
@@ -193,8 +193,8 @@ public class AccountSignInServiceImpl implements AccountSignInService {
 	}
 
 	public BlockToken getBlockTokenByAccessToken(String authorizationToken, User user, BlockReason reason) {
-		JwtPayload jwtPayload = jwtTokenProvider.getJwtPayload(authorizationToken);
-		Claims claims = jwtTokenProvider.getClaims(authorizationToken);
+		JwtPayload jwtPayload = jwtProvider.getJwtPayload(authorizationToken);
+		Claims claims = jwtProvider.getClaims(authorizationToken);
 		BlockToken blockToken = new BlockToken();
 		blockToken.setTokenId(jwtPayload.getJwtId());
 		blockToken.setBlockReason(reason);
@@ -234,10 +234,10 @@ public class AccountSignInServiceImpl implements AccountSignInService {
 
 	public User rememberMeLoginAuthentication(HttpServletRequest request) {
 		Cookie rememberMeCookie = getRememberMeCookie(request);
-		if (!jwtTokenProvider.isValidToken(rememberMeCookie.getValue())) {
+		if (!jwtProvider.isValidToken(rememberMeCookie.getValue())) {
 			throw new UserAuthenticationServiceException(AuthenticationErrorCode.ERR_API_AUTHENTICATION);
 		}
-		JwtPayload userInfo = jwtTokenProvider.getJwtPayload(rememberMeCookie.getValue());
+		JwtPayload userInfo = jwtProvider.getJwtPayload(rememberMeCookie.getValue());
 		log.info("RememberMeLoginAuthentication - JwtPayload: [{}]", userInfo);
 		User user = findUserByUserUUID(userInfo.getUuid(), AuthenticationErrorCode.ERR_LOGIN);
 		// account status check
@@ -324,5 +324,9 @@ public class AccountSignInServiceImpl implements AccountSignInService {
 		if (!user.isEnabled()) {
 			throw new UserAuthenticationServiceException(AuthenticationErrorCode.ERR_ACCOUNT_NOT_ENABLE);
 		}
+	}
+
+	public String getUUIDString() {
+		return UUID.randomUUID().toString();
 	}
 }

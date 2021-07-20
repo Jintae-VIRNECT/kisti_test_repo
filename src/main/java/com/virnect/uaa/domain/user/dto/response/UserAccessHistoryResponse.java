@@ -17,7 +17,6 @@ import lombok.Setter;
  */
 
 @Getter
-@Setter
 @ApiModel
 @RequiredArgsConstructor
 public class UserAccessHistoryResponse {

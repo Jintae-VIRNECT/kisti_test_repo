@@ -16,11 +16,11 @@ public interface UserInformationRetrieveService {
 
 	UserInfoListResponse searchUserInformation(String searchQuery, Pageable pageable, boolean isPaging);
 
-	UserDetailsInfoResponse getUserDetailsInformationByAuthentication(
+	UserDetailsInfoResponse getUserDetailsInformationByUserAuthenticatedRequest(
 		HttpServletRequest request, Authentication authentication
 	);
 
-	UserInfoResponse getUserInformationByUserUUID(String userUUID);
+	UserInfoResponse findUserInformationByUserUUID(String userUUID);
 
 	UserAccessHistoryResponse getUserAccessHistoryByUserUUID(String userUUID, Pageable pageable);
 

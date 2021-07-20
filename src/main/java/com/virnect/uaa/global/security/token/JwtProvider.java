@@ -37,7 +37,7 @@ import com.virnect.uaa.global.config.token.TokenProperty;
 @Component
 @Slf4j
 @RequiredArgsConstructor
-public class JwtTokenProvider {
+public class JwtProvider {
 	private final ModelMapper modelMapper;
 	private final TokenProperty tokenProperty;
 

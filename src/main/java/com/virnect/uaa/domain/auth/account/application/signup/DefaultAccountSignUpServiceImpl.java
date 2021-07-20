@@ -36,7 +36,7 @@ import com.virnect.uaa.domain.auth.account.error.exception.UserAuthenticationSer
 import com.virnect.uaa.domain.user.dao.secession.SecessionUserRepository;
 import com.virnect.uaa.domain.user.dao.user.UserRepository;
 import com.virnect.uaa.domain.user.domain.User;
-import com.virnect.uaa.global.security.token.JwtTokenProvider;
+import com.virnect.uaa.global.security.token.JwtProvider;
 import com.virnect.uaa.infra.email.EmailMessage;
 import com.virnect.uaa.infra.email.EmailService;
 import com.virnect.uaa.infra.file.Default;
@@ -53,7 +53,7 @@ public class DefaultAccountSignUpServiceImpl implements AccountSignUpService {
 	private final EmailAuthorizationRepository emailAuthorizationRepository;
 	private final SignUpSuccessHandler signUpSuccessHandler;
 	private final UserAccessLogService userAccessLogService;
-	private final JwtTokenProvider jwtTokenProvider;
+	private final JwtProvider jwtProvider;
 	private final MessageSource messageSource;
 	private final SpringTemplateEngine templateEngine;
 	private final EmailService emailService;
@@ -255,13 +255,13 @@ public class DefaultAccountSignUpServiceImpl implements AccountSignUpService {
 	public OAuthTokenResponse getOauthTokenFromSignup(User user, ClientGeoIPInfo clientGeoIPInfo) {
 		String accessTokenJwtId = UUID.randomUUID().toString();
 		String refreshTokenJwtId = UUID.randomUUID().toString();
-		String accessToken = jwtTokenProvider.createAccessToken(user, accessTokenJwtId, clientGeoIPInfo);
-		String refreshToken = jwtTokenProvider.createRefreshToken(
+		String accessToken = jwtProvider.createAccessToken(user, accessTokenJwtId, clientGeoIPInfo);
+		String refreshToken = jwtProvider.createRefreshToken(
 			user, refreshTokenJwtId, accessTokenJwtId, clientGeoIPInfo);
 		OAuthTokenResponse oAuthTokenResponse = new OAuthTokenResponse();
 		oAuthTokenResponse.setAccessToken(accessToken);
 		oAuthTokenResponse.setRefreshToken(refreshToken);
-		oAuthTokenResponse.setExpireIn(jwtTokenProvider.getAccessTokenExpire());
+		oAuthTokenResponse.setExpireIn(jwtProvider.getAccessTokenExpire());
 		oAuthTokenResponse.setPasswordInitialized(true);
 		return oAuthTokenResponse;
 	}

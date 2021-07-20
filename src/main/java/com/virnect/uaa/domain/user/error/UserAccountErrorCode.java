@@ -38,6 +38,8 @@ public enum UserAccountErrorCode {
 	// 사용자 탈퇴 관련 에러
 	ERR_USER_SECESSION(5000, "User secession process fail."),
 	ERR_USER_SECESSION_PASSWORD(5001, "User secession process fail. password is mismatch."),
+	// 사용자 초대 시, 탈퇴회원인 경우 에러
+	ERR_USER_SECESSION_INVITE(5002, "This user is secession user. Can't invite to workspace."),
 
 	// 공통 에러
 	ERR_INVALID_REQUEST_PARAMETER(8001, "Invalid request parameter cause api errors"),

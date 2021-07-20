@@ -90,4 +90,27 @@ public class UserAccessLog extends BaseTimeEntity {
 		userAccessLog.countryCode = clientGeoIPInfo.getCountryCode();
 		return userAccessLog;
 	}
+
+	public String getDevice() {
+		String deviceMajorInfo = deviceDetails.split(" ")[0];
+		if (deviceMajorInfo.equalsIgnoreCase("okhttp")) {
+			return "Mobile";
+		}
+		return deviceMajorInfo;
+	}
+
+	@Override
+	public String toString() {
+		return "UserAccessLog{" +
+			"id=" + id +
+			", user=" + user +
+			", deviceDetails='" + deviceDetails + '\'' +
+			", userAgent='" + userAgent + '\'' +
+			", location='" + location + '\'' +
+			", country='" + country + '\'' +
+			", countryCode='" + countryCode + '\'' +
+			", ip='" + ip + '\'' +
+			", lastLoggedIn=" + lastLoggedIn +
+			'}';
+	}
 }

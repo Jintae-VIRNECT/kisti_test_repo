@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -24,6 +25,7 @@ import com.virnect.uaa.global.common.ApiResponse;
 @RestController
 @RequestMapping("/auth")
 @RequiredArgsConstructor
+@Api(value="기기 인증 컨트롤러")
 public class DeviceAuthenticationController {
 	private static final String PARAMETER_LOG_MESSAGE = "[PARAMETER ERROR]:: {}";
 	private final DeviceAuthenticationService deviceAuthenticationService;

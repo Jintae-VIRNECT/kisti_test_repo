@@ -60,7 +60,7 @@ public class SwaggerConfiguration {
 			.globalResponseMessage(RequestMethod.PUT, responseMessages)
 			.globalResponseMessage(RequestMethod.DELETE, responseMessages)
 			.select()
-			.apis(RequestHandlerSelectors.basePackage("com.virnect.auth.api"))
+			.apis(RequestHandlerSelectors.basePackage("com.virnect.uaa.domain"))
 			.paths(PathSelectors.any())
 			.build()
 			.apiInfo(apiInfo);

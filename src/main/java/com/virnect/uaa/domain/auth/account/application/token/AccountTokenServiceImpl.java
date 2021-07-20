@@ -26,14 +26,14 @@ import com.virnect.uaa.domain.user.dao.user.UserRepository;
 import com.virnect.uaa.domain.user.domain.User;
 import com.virnect.uaa.global.common.ClientUserAgentInformationParser;
 import com.virnect.uaa.global.security.token.JwtPayload;
-import com.virnect.uaa.global.security.token.JwtTokenProvider;
+import com.virnect.uaa.global.security.token.JwtProvider;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class AccountTokenServiceImpl implements AccountTokenService {
 	private final ObjectMapper objectMapper;
-	private final JwtTokenProvider jwtTokenProvider;
+	private final JwtProvider jwtProvider;
 	private final UserRepository userRepository;
 	private final ClientUserAgentInformationParser clientUserAgentInformationParser;
 
@@ -48,7 +48,7 @@ public class AccountTokenServiceImpl implements AccountTokenService {
 			String encodedPayload = tokenRefreshRequest.getAccessToken().split("\\.")[1];
 			log.info("ACCESS TOKEN PAYLOAD BASE64 DECODE: {}", BASE64URL.decodeToString(encodedPayload));
 			JwtPayload accessToken = objectMapper.readValue(BASE64URL.decodeToString(encodedPayload), JwtPayload.class);
-			JwtPayload refreshToken = jwtTokenProvider.getJwtPayload(tokenRefreshRequest.getRefreshToken());
+			JwtPayload refreshToken = jwtProvider.getJwtPayload(tokenRefreshRequest.getRefreshToken());
 
 			RefreshTokenResponse refreshTokenResponse = new RefreshTokenResponse();
 			long currentTimeMillis = new Date().getTime() / 1000;
@@ -60,7 +60,7 @@ public class AccountTokenServiceImpl implements AccountTokenService {
 				return refreshTokenResponse;
 			}
 
-			if (!jwtTokenProvider.isValidToken(tokenRefreshRequest.getRefreshToken()) || !accessToken.getJwtId()
+			if (!jwtProvider.isValidToken(tokenRefreshRequest.getRefreshToken()) || !accessToken.getJwtId()
 				.equals(refreshToken.getAccessTokenJwtId())) {
 				throw new UserAuthenticationServiceException(AuthenticationErrorCode.ERR_API_AUTHENTICATION);
 			}
@@ -72,9 +72,9 @@ public class AccountTokenServiceImpl implements AccountTokenService {
 			ClientGeoIPInfo clientGeoIPInfo = clientUserAgentInformationParser.getClientGeoIPInformation(request);
 
 			refreshTokenResponse.setAccessToken(
-				jwtTokenProvider.createAccessToken(user, accessToken.getJwtId(), clientGeoIPInfo));
+				jwtProvider.createAccessToken(user, accessToken.getJwtId(), clientGeoIPInfo));
 			refreshTokenResponse.setRefreshToken(tokenRefreshRequest.getRefreshToken());
-			refreshTokenResponse.setExpireIn(jwtTokenProvider.getAccessTokenExpire());
+			refreshTokenResponse.setExpireIn(jwtProvider.getAccessTokenExpire());
 			refreshTokenResponse.setRefreshed(true);
 
 			return refreshTokenResponse;

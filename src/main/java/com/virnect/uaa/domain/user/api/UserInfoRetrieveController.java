@@ -75,7 +75,7 @@ public class UserInfoRetrieveController {
 	public ResponseEntity<ApiResponse<UserDetailsInfoResponse>> getUserDetailsInfoRequestHandler(
 		HttpServletRequest request, Authentication authentication
 	) {
-		UserDetailsInfoResponse responseMessage = userInformationRetrieveService.getUserDetailsInformationByAuthentication(
+		UserDetailsInfoResponse responseMessage = userInformationRetrieveService.getUserDetailsInformationByUserAuthenticatedRequest(
 			request, authentication);
 		return ResponseEntity.ok(new ApiResponse<>(responseMessage));
 	}
@@ -93,7 +93,7 @@ public class UserInfoRetrieveController {
 		if (userId.isEmpty()) {
 			throw new UserServiceException(UserAccountErrorCode.ERR_INVALID_REQUEST_PARAMETER);
 		}
-		UserInfoResponse responseMessage = userInformationRetrieveService.getUserInformationByUserUUID(userId);
+		UserInfoResponse responseMessage = userInformationRetrieveService.findUserInformationByUserUUID(userId);
 		return ResponseEntity.ok(new ApiResponse<>(responseMessage));
 	}
 

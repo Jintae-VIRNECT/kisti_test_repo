@@ -5,12 +5,12 @@ import java.util.List;
 
 import javax.annotation.PostConstruct;
 
-import org.springframework.beans.factory.BeanClassLoaderAware;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.RedisSerializer;
+import org.springframework.security.jackson2.CoreJackson2Module;
 import org.springframework.security.jackson2.SecurityJackson2Modules;
 import org.springframework.security.web.authentication.session.CompositeSessionAuthenticationStrategy;
 import org.springframework.security.web.authentication.session.RegisterSessionAuthenticationStrategy;
@@ -25,20 +25,22 @@ import org.springframework.session.web.http.CookieSerializer;
 import org.springframework.session.web.http.DefaultCookieSerializer;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.module.SimpleModule;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import com.virnect.security.UserAuthenticationDetails;
+import com.virnect.security.UserAuthenticationDetailsMixin;
 import com.virnect.uaa.global.security.session.CustomSessionControlAuthenticationStrategy;
 
 @Slf4j
 @Configuration
 @EnableRedisHttpSession
 @RequiredArgsConstructor
-public class SessionConfiguration<S extends Session> implements BeanClassLoaderAware {
+public class SessionConfiguration<S extends Session> {
 	private final SessionCookieProperty sessionCookieProperty;
 	private final ApplicationEventPublisher applicationEventPublisher;
-	private ClassLoader classLoader;
 
 	@PostConstruct
 	public void init() {
@@ -72,7 +74,11 @@ public class SessionConfiguration<S extends Session> implements BeanClassLoaderA
 	@Bean
 	public RedisSerializer<Object> springSessionDefaultRedisSerializer() {
 		ObjectMapper objectMapper = new ObjectMapper();
-		objectMapper.registerModules(SecurityJackson2Modules.getModules(this.classLoader));
+		objectMapper.registerModule(new CoreJackson2Module());
+		objectMapper.registerModules(SecurityJackson2Modules.getModules(this.getClass().getClassLoader()));
+		SimpleModule simpleModule = new SimpleModule();
+		simpleModule.setMixInAnnotation(UserAuthenticationDetails.class, UserAuthenticationDetailsMixin.class);
+		objectMapper.registerModule(simpleModule);
 		return new GenericJackson2JsonRedisSerializer(objectMapper);
 	}
 
@@ -112,8 +118,4 @@ public class SessionConfiguration<S extends Session> implements BeanClassLoaderA
 		return new HttpSessionEventPublisher();
 	}
 
-	@Override
-	public void setBeanClassLoader(ClassLoader classLoader) {
-		this.classLoader = classLoader;
-	}
 }

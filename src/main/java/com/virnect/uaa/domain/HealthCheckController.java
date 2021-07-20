@@ -1,4 +1,4 @@
-package com.virnect.uaa.domain.auth.account.api;
+package com.virnect.uaa.domain;
 
 import java.time.ZonedDateTime;
 
