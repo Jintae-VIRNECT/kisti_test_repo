@@ -6,8 +6,6 @@ import { SIGNAL, DRAWING } from 'configs/remote.config'
 export default {
   data() {
     return {
-      pathAId: null, //현재 그려지는 드로잉 고유 id, 같은 참가자가 그린 드로잉내에서도 구분하기 위함
-
       // 현재 그려지는 드로잉 경로
       receivePath: {
         // connectionId: [
@@ -108,13 +106,7 @@ export default {
       // }
 
       //수신 드로잉 경로에 해당 유저 Array 없는 경우 배열 생성 초기화
-      if (!(owner in this.receivePath)) {
-        if (this.pathAId !== data.aId || this.owner !== owner)
-          this.receivePath[owner] = []
-      }
-
-      this.pathAId = data.aId
-      this.owner = owner
+      if (!(owner in this.receivePath)) this.receivePath[owner] = []
 
       //드로잉의 경우 position 배열, text의 경우 object를 필요한 부분 가공해서 반환
       let receiveParams = getReceiveParams(data.type, params, this.origin.scale)
@@ -127,7 +119,6 @@ export default {
         const width =
           parseFloat(data.width) * (this.origin.width / this.img.width)
         // const width = parseInt(data.width)
-        console.error('path', this.receivePath[owner])
         const pos = calcPosition(this.receivePath[owner], width)
         const path = new fabric.Path(this.receivePath[owner], {
           left: pos.left,
@@ -148,9 +139,9 @@ export default {
         //this.canvas.renderAll() //해당 함수로 호출로 인해 기존 창 크기 변화 시 드로잉 객체 크기 변화 이슈가 발생됨. 해당 함수 호출 이유 불분명
         this.backCanvas.add(fabric.util.object.clone(path))
         this.backCanvas.renderAll()
-        this.$nextTick(() => {
-          delete this.receivePath[owner]
-        })
+        // this.$nextTick(() => {
+        //   delete this.receivePath[owner]
+        // }) // 바로 초기화 해주지 않아 이전 데이터가 누적되는 이슈가 발생됨 아래와 같이 초기화는 바로 해주도록 한다
 
         this.receivePath[owner] = []
       }
