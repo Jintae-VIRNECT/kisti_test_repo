@@ -174,10 +174,8 @@ export default {
       }
 
       if (type === VIEW.AR) {
-        if (!this.arNotice) {
-          this.toastDefault(this.$t('service.toast_cannot_invite_ar'))
-          return
-        }
+        this.toastDefault(this.$t('service.toast_cannot_invite_ar'))
+        return
       }
 
       this.setView(type)
