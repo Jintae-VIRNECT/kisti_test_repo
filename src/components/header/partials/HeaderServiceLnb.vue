@@ -139,11 +139,8 @@ export default {
         return
       }
 
-      if (this.account.roleType === ROLE.LEADER) {
-        this.goTabAsLeader(type)
-      } else {
-        this.goTabAsNotLeader(type)
-      }
+      const isLeader = this.account.roleType === ROLE.LEADER
+      isLeader ? this.goTabAsLeader(type) : this.goTabAsNotLeader(type)
     },
     /**
      * 리더일때
@@ -185,28 +182,19 @@ export default {
 
       this.setView(type)
     },
-    permissionSetting(permission) {
-      //AR 기능 요청 승낙 받은 경우 - AR 기능 시작 시그날 전송 & AR VIEW로 전환한다
-      if (permission === true) {
-        this.toastDefault(
-          this.$t('service.toast_ar_start', { name: this.mainView.nickname }),
-        )
-        this.addChat({
-          status: 'ar-start',
-          name: this.mainView.nickname,
-          type: 'system',
-        })
-        this.$call.sendArFeatureStart(this.mainView.id)
-        this.setView(VIEW.AR)
-      }
-      //AR 기능 요청 거부 당한 경우
-      else if (permission === false) {
-        this.toastDefault(this.$t('service.toast_refused_ar'))
-        this.addChat({
-          status: 'ar-deny',
-          type: 'system',
-        })
-      }
+
+    showArExitConfirm(type) {
+      this.serviceConfirmTitle(
+        this.$t('service.ar_exit'),
+        this.$t('service.ar_exit_description'),
+        {
+          text: this.$t('button.exit'),
+          action: () => {
+            this.$call.sendArFeatureStop()
+            this.setView(type)
+          },
+        },
+      )
     },
 
     /**
@@ -252,7 +240,7 @@ export default {
       return true
     },
 
-    getPermissionCheck(receive) {
+    handlePermissionRes(receive) {
       const data = JSON.parse(receive.data)
 
       if (data.from === this.account.uuid) return
@@ -266,9 +254,34 @@ export default {
           permission: data.isAllowed,
         })
         if (this.view !== VIEW.AR) {
-          this.permissionSetting(data.isAllowed)
+          const sendSignal = true
+          data.isAllowed ? this.startAr(sendSignal) : this.showRejected()
         }
       }
+    },
+    startAr(sendSignal = false) {
+      this.toastDefault(
+        this.$t('service.toast_ar_start', { name: this.mainView.nickname }),
+      )
+
+      this.addChat({
+        status: 'ar-start',
+        name: this.mainView.nickname,
+        type: 'system',
+      })
+
+      if (sendSignal) {
+        this.$call.sendArFeatureStart(this.mainView.id)
+      }
+
+      this.setView(VIEW.AR)
+    },
+    showRejected() {
+      this.toastDefault(this.$t('service.toast_refused_ar'))
+      this.addChat({
+        status: 'ar-deny',
+        type: 'system',
+      })
     },
 
     checkArFeature(receive) {
@@ -292,15 +305,7 @@ export default {
         }
       } else {
         if (data.type === AR_FEATURE.START_AR_FEATURE) {
-          this.toastDefault(
-            this.$t('service.toast_ar_start', { name: this.mainView.nickname }),
-          )
-          this.addChat({
-            status: 'ar-start',
-            name: this.mainView.nickname,
-            type: 'system',
-          })
-          this.setView(VIEW.AR)
+          this.startAr()
         } else if (data.type === AR_FEATURE.STOP_AR_FEATURE) {
           this.toastDefault(this.$t('service.toast_ar_exit'))
           this.setView(VIEW.STREAM)
@@ -356,31 +361,17 @@ export default {
         return false
       }
     },
-
-    showArExitConfirm(type) {
-      this.serviceConfirmTitle(
-        this.$t('service.ar_exit'),
-        this.$t('service.ar_exit_description'),
-        {
-          text: this.$t('button.exit'),
-          action: () => {
-            this.$call.sendArFeatureStop()
-            this.setView(type)
-          },
-        },
-      )
-    },
   },
 
   /* Lifecycles */
   created() {
-    this.$eventBus.$on(SIGNAL.CAPTURE_PERMISSION, this.getPermissionCheck)
+    this.$eventBus.$on(SIGNAL.CAPTURE_PERMISSION, this.handlePermissionRes)
     this.$eventBus.$on(SIGNAL.AR_FEATURE, this.checkArFeature)
     this.$eventBus.$on(SIGNAL.DRAWING, this.receiveEndDrawing)
   },
 
   beforeDestroy() {
-    this.$eventBus.$off(SIGNAL.CAPTURE_PERMISSION, this.getPermissionCheck)
+    this.$eventBus.$off(SIGNAL.CAPTURE_PERMISSION, this.handlePermissionRes)
     this.$eventBus.$off(SIGNAL.AR_FEATURE, this.checkArFeature)
     this.$eventBus.$off(SIGNAL.DRAWING, this.receiveEndDrawing)
   },
