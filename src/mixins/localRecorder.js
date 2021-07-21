@@ -7,8 +7,6 @@ import { getWH, RECORD_TARGET } from 'utils/recordOptions'
 import IDBHelper from 'utils/idbHelper'
 import { v4 as uuidv4 } from 'uuid'
 
-import { DEVICE } from 'configs/device.config'
-
 const logType = 'LocalRecorder'
 
 export default {

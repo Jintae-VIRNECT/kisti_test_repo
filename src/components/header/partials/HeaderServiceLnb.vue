@@ -90,7 +90,6 @@ export default {
           type: 'system',
         })
         if (this.view !== VIEW.DRAWING) {
-          // this.drawingNotice = true
           this.menus[this.drawingNotice].notice = true
         }
       } else if (!file || !file.id) {
@@ -101,7 +100,6 @@ export default {
       if (!val && val !== bVal && this.participants.length > 0) {
         this.toastDefault(this.$t('service.toast_leave_leader'))
         this.showImage({})
-        // this.setView(VIEW.STREAM)
       }
     },
     viewForce() {
@@ -161,30 +159,9 @@ export default {
               },
             },
           )
-          // this.confirmCancel(this.$t('service.toast_exit_ar'), {
-          //   text: this.$t('button.exit'),
-          //   action: () => {
-          //     this.$call.sendArFeatureStop()
-          //     this.goTabConfirm(type)
-          //   },
-          // })
+
           return
         }
-        //현재 view가 협업보드인 경우 다른 view를 선택하면, 협업보드를 종료할 건지 확인 메시지
-        //=> 협업보드는 종료되지 않도록 수정됨 (210504)
-        // if (this.view === VIEW.DRAWING) {
-        //   if (this.shareFile && this.shareFile.id) {
-        //     // TODO: MESSAGE
-        //     this.confirmCancel(this.$t('service.toast_exit_drawing'), {
-        //       text: this.$t('button.exit'),
-        //       action: () => {
-        //         this.$call.sendDrawing(DRAWING.END_DRAWING)
-        //         this.goTabConfirm(type)
-        //       },
-        //     })
-        //     return
-        //   }
-        // }
 
         this.goTabConfirm(type)
       } // other user
@@ -199,15 +176,9 @@ export default {
         }
 
         if (type === 'drawing') {
-          // if (this.shareFile && this.shareFile.id) {
-          // this.drawingNotice = false
-          // this.menus[this.drawingNotice].notice = false
-          // this.setView(VIEW.DRAWING)
-          // } else {
-          //   this.toastDefault(this.$t('service.toast_cannot_invite_drawing'))
-          // }
-          this.goDrawing()
+          this.setView(VIEW.DRAWING)
         }
+
         if (type === VIEW.AR) {
           if (!this.arNotice) {
             this.toastDefault(this.$t('service.toast_cannot_invite_ar'))
@@ -231,17 +202,7 @@ export default {
         this.permissionCheck()
       }
     },
-    goDrawing() {
-      if (this.account.roleType === ROLE.LEADER) {
-        this.setView(VIEW.DRAWING)
-        return
-      }
-      // if (this.shareFile && this.shareFile.id) {
-      this.setView(VIEW.DRAWING)
-      // } else {
-      //   this.toastDefault(this.$t('service.toast_cannot_invite_drawing'))
-      // }
-    },
+
     permissionSetting(permission) {
       //AR 기능 요청 승낙 받은 경우 - AR 기능 시작 시그날 전송 & AR VIEW로 전환한다
       if (permission === true) {
@@ -295,7 +256,6 @@ export default {
     getPermissionCheck(receive) {
       const data = JSON.parse(receive.data)
 
-      // if (data.to !== this.account.uuid) return
       if (data.from === this.account.uuid) return
 
       if (
@@ -335,7 +295,6 @@ export default {
         }
       } else {
         if (data.type === AR_FEATURE.START_AR_FEATURE) {
-          // TODO: MESSAGE
           this.toastDefault(
             this.$t('service.toast_ar_start', { name: this.mainView.nickname }),
           )
@@ -346,7 +305,6 @@ export default {
           })
           this.setView(VIEW.AR)
         } else if (data.type === AR_FEATURE.STOP_AR_FEATURE) {
-          // TODO: MESSAGE
           this.toastDefault(this.$t('service.toast_ar_exit'))
           this.setView(VIEW.STREAM)
         }
