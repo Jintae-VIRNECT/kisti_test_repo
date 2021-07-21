@@ -18,15 +18,18 @@ import com.virnect.workspace.dto.request.WorkspaceMemberPasswordChangeRequest;
 import com.virnect.workspace.dto.response.WorkspaceMemberInfoListResponse;
 import com.virnect.workspace.dto.response.WorkspaceMemberPasswordChangeResponse;
 import com.virnect.workspace.dto.rest.*;
-import com.virnect.workspace.event.cache.UserWorkspacesDeleteEvent;
 import com.virnect.workspace.event.history.HistoryAddEvent;
+import com.virnect.workspace.event.invite.InviteSessionDeleteEvent;
 import com.virnect.workspace.event.mail.MailContextHandler;
 import com.virnect.workspace.event.mail.MailSendEvent;
 import com.virnect.workspace.exception.WorkspaceException;
 import com.virnect.workspace.global.common.ApiResponse;
 import com.virnect.workspace.global.common.RedirectProperty;
 import com.virnect.workspace.global.common.mapper.rest.RestMapStruct;
-import com.virnect.workspace.global.constant.*;
+import com.virnect.workspace.global.constant.Mail;
+import com.virnect.workspace.global.constant.Permission;
+import com.virnect.workspace.global.constant.RedirectPath;
+import com.virnect.workspace.global.constant.UUIDType;
 import com.virnect.workspace.global.error.ErrorCode;
 import com.virnect.workspace.global.util.RandomStringTokenUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -61,18 +64,17 @@ public class OnWorkspaceUserServiceImpl extends WorkspaceUserService {
     private final WorkspacePermissionRepository workspacePermissionRepository;
     private final WorkspaceUserPermissionRepository workspaceUserPermissionRepository;
     private final UserRestService userRestService;
-    private final MessageRestService messageRestService;
     private final UserInviteRepository userInviteRepository;
-    private final SpringTemplateEngine springTemplateEngine;
     private final MessageSource messageSource;
     private final LicenseRestService licenseRestService;
     private final RedirectProperty redirectProperty;
     private final ApplicationEventPublisher applicationEventPublisher;
     private final WorkspaceCustomSettingRepository workspaceCustomSettingRepository;
+    private final MailContextHandler mailContextHandler;
     private static final int MAX_JOIN_WORKSPACE_AMOUNT = 49;//최대 참여 가능한 워크스페이스 수
     private static final int MAX_WORKSPACE_USER_AMOUNT = 50;//워크스페이스 최대 멤버 수(마스터 본인 포함)
 
-    public OnWorkspaceUserServiceImpl(WorkspaceRepository workspaceRepository, WorkspaceUserRepository workspaceUserRepository, WorkspaceRoleRepository workspaceRoleRepository, WorkspaceUserPermissionRepository workspaceUserPermissionRepository, UserRestService userRestService, MessageRestService messageRestService, SpringTemplateEngine springTemplateEngine, MessageSource messageSource, LicenseRestService licenseRestService, RedirectProperty redirectProperty, RestMapStruct restMapStruct, ApplicationEventPublisher applicationEventPublisher, WorkspacePermissionRepository workspacePermissionRepository, UserInviteRepository userInviteRepository, WorkspaceCustomSettingRepository workspaceCustomSettingRepository) {
+    public OnWorkspaceUserServiceImpl(WorkspaceRepository workspaceRepository, WorkspaceUserRepository workspaceUserRepository, WorkspaceRoleRepository workspaceRoleRepository, WorkspaceUserPermissionRepository workspaceUserPermissionRepository, UserRestService userRestService, MessageRestService messageRestService, SpringTemplateEngine springTemplateEngine, MessageSource messageSource, LicenseRestService licenseRestService, RedirectProperty redirectProperty, RestMapStruct restMapStruct, ApplicationEventPublisher applicationEventPublisher, WorkspacePermissionRepository workspacePermissionRepository, UserInviteRepository userInviteRepository, WorkspaceCustomSettingRepository workspaceCustomSettingRepository, MailContextHandler mailContextHandler) {
         super(workspaceRepository, workspaceUserRepository, workspaceRoleRepository, workspaceUserPermissionRepository, userRestService, messageRestService, springTemplateEngine, messageSource, licenseRestService, redirectProperty, restMapStruct, applicationEventPublisher, workspaceCustomSettingRepository);
         this.workspaceRepository = workspaceRepository;
         this.workspaceUserRepository = workspaceUserRepository;
@@ -80,14 +82,13 @@ public class OnWorkspaceUserServiceImpl extends WorkspaceUserService {
         this.workspacePermissionRepository = workspacePermissionRepository;
         this.workspaceUserPermissionRepository = workspaceUserPermissionRepository;
         this.userRestService = userRestService;
-        this.messageRestService = messageRestService;
         this.userInviteRepository = userInviteRepository;
-        this.springTemplateEngine = springTemplateEngine;
         this.messageSource = messageSource;
         this.licenseRestService = licenseRestService;
         this.redirectProperty = redirectProperty;
         this.applicationEventPublisher = applicationEventPublisher;
         this.workspaceCustomSettingRepository = workspaceCustomSettingRepository;
+        this.mailContextHandler = mailContextHandler;
     }
 
 
@@ -151,6 +152,9 @@ public class OnWorkspaceUserServiceImpl extends WorkspaceUserService {
                         .planRemote(userInfo.isPlanRemote())
                         .planMake(userInfo.isPlanMake())
                         .planView(userInfo.isPlanView())
+                        .planRemoteType(null)
+                        .planMakeType(null)
+                        .planViewType(null)
                         .invitedDate(LocalDateTime.now())
                         .updatedDate(null)
                         .expireTime(Duration.ofDays(7).getSeconds())
@@ -163,10 +167,10 @@ public class OnWorkspaceUserServiceImpl extends WorkspaceUserService {
             List<String> emailReceiverList = new ArrayList<>();
             emailReceiverList.add(userInfo.getEmail());
             if (inviteUserResponse.isMemberUser()) {
-                Context context = new MailContextHandler().getWorkspaceInviteContext(redirectProperty, sessionCode, locale, workspace.getName(), userInfo, inviteUserResponse.getInviteUserDetailInfo(), materUser);
+                Context context = mailContextHandler.getWorkspaceInviteContext(sessionCode, locale, workspace.getName(), userInfo, inviteUserResponse.getInviteUserDetailInfo(), materUser);
                 applicationEventPublisher.publishEvent(new MailSendEvent(context, Mail.WORKSPACE_INVITE, locale, emailReceiverList));
             } else {
-                Context context = new MailContextHandler().getWorkspaceInviteNonUserContext(redirectProperty, sessionCode, locale, workspace.getName(), userInfo, materUser);
+                Context context = mailContextHandler.getWorkspaceInviteNonUserContext(sessionCode, locale, workspace.getName(), userInfo, materUser);
                 applicationEventPublisher.publishEvent(new MailSendEvent(context, Mail.WORKSPACE_INVITE_NON_USER, locale, emailReceiverList));
             }
         });
@@ -329,7 +333,6 @@ public class OnWorkspaceUserServiceImpl extends WorkspaceUserService {
         return apiResponse.getData();
     }
 
-
     private ApiResponse<InviteUserInfoResponse> getInviteUserInfoByEmail(String email) {
         ApiResponse<InviteUserInfoResponse> inviteUserInfoResponseApiResponse = userRestService.getInviteUserInfoByEmail(email);
         if (inviteUserInfoResponseApiResponse.getCode() != 200) {
@@ -338,16 +341,24 @@ public class OnWorkspaceUserServiceImpl extends WorkspaceUserService {
         return inviteUserInfoResponseApiResponse;
     }
 
+    /**
+     * 워크스페이스 초대 수락
+     *
+     * @param sessionCode - 초대 세션 식별자
+     * @param lang        - 사용자 언어
+     * @return - 리다이렉트 url
+     */
     public RedirectView inviteWorkspaceAccept(String sessionCode, String lang) {
-        Locale locale = new Locale(lang, "");
+        Locale locale = Locale.KOREAN;
+        if (StringUtils.hasText(lang)) {
+            locale = new Locale(lang, "");
+        }
+
         //1-1. 초대 세션 유효성 체크
         Optional<UserInvite> optionalUserInvite = userInviteRepository.findById(sessionCode);
         if (!optionalUserInvite.isPresent()) {
             log.error("[WORKSPACE INVITE ACCEPT] Workspace invite session Info Not found. session code >> [{}]", sessionCode);
-            RedirectView redirectView = new RedirectView();
-            redirectView.setUrl(redirectProperty.getConsoleWeb() + RedirectPath.WORKSPACE_INVITE_FAIL.getValue());
-            redirectView.setContentType("application/json");
-            return redirectView;
+            return redirectView(redirectProperty.getConsoleWeb() + RedirectPath.WORKSPACE_INVITE_FAIL.getValue());
         }
         UserInvite userInvite = optionalUserInvite.get();
         log.info("[WORKSPACE INVITE ACCEPT] Workspace invite session Info >> [{}]", userInvite.toString());
@@ -358,84 +369,82 @@ public class OnWorkspaceUserServiceImpl extends WorkspaceUserService {
             log.error("[WORKSPACE INVITE ACCEPT] Invalid Invited User Info.");
             //탈퇴한 유저의 캐싱은 삭제, 이외의 유저는 보류.
             if (inviteUserInfoResponseApiResponse.getCode() == 5002) {
-                userInviteRepository.delete(userInvite);
+                applicationEventPublisher.publishEvent(new InviteSessionDeleteEvent(userInvite.getSessionCode()));
             }
-            RedirectView redirectView = new RedirectView();
-            redirectView.setUrl(redirectProperty.getConsoleWeb() + RedirectPath.WORKSPACE_INVITE_FAIL.getValue());
-            redirectView.setContentType("application/json");
-            return redirectView;
+            return redirectView(redirectProperty.getConsoleWeb() + RedirectPath.WORKSPACE_INVITE_FAIL.getValue());
         }
+
         InviteUserInfoResponse inviteUserResponse = inviteUserInfoResponseApiResponse.getData();
         //1-3. 초대받은 유저가 비회원인지 체크
         if (!inviteUserResponse.isMemberUser()) {
             log.info("[WORKSPACE INVITE ACCEPT] Invited User is Member >> [{}]", inviteUserResponse.isMemberUser());
-            RedirectView redirectView = new RedirectView();
-            redirectView.setUrl(redirectProperty.getTermsWeb() + "?inviteSession=" + sessionCode + "&lang=" + lang + "&email=" + userInvite.getInvitedUserEmail());
-            redirectView.setContentType("application/json");
-            return redirectView;
+            return redirectView(redirectProperty.getTermsWeb() + "?inviteSession=" + sessionCode + "&lang=" + lang + "&email=" + userInvite.getInvitedUserEmail());
         }
-        //1-4. 비회원인경우 초대 session정보에 uuid가 null값이므로 회원가입 후에 수락하게 하고 user서버에서 회원정보를 가져온다.
-        InviteUserDetailInfoResponse inviteUserDetailInfoResponse = inviteUserResponse.getInviteUserDetailInfo();
-        userInvite.setInvitedUserEmail(inviteUserDetailInfoResponse.getEmail());
-        userInvite.setInvitedUserId(inviteUserDetailInfoResponse.getUserUUID());
+
+        //1-4. 비회원인경우 초대 session정보에 uuid가 null값이므로 회원가입 후에 수락하게 하고 user서버에서 회원정보를 가져온다.(회원가입후에 수락으로 리다이렉트한 경우 이 과정이 필요하다.)
+        InviteUserDetailInfoResponse inviteUserInfo = inviteUserResponse.getInviteUserDetailInfo();
+        userInvite.setInvitedUserEmail(inviteUserInfo.getEmail());
+        userInvite.setInvitedUserId(inviteUserInfo.getUserUUID());
         userInviteRepository.save(userInvite);
 
-        applicationEventPublisher.publishEvent(new UserWorkspacesDeleteEvent(inviteUserDetailInfoResponse.getUserUUID()));
-
         Workspace workspace = workspaceRepository.findByUuid(userInvite.getWorkspaceId()).orElseThrow(() -> new WorkspaceException(ErrorCode.ERR_WORKSPACE_NOT_FOUND));
+        UserInfoRestResponse masterUserInfo = getUserInfoByUserId(workspace.getUserId());
 
         //1-5. 유저가 최대 참여 가능한 워크스페이스 수 체크
         long maxJoinWorkspaceAmount = workspaceUserRepository.countByWorkspace_Uuid(workspace.getUuid());
         if (maxJoinWorkspaceAmount + 1 > MAX_JOIN_WORKSPACE_AMOUNT) {
             log.error("[WORKSPACE INVITE ACCEPT] Over Max Workspace join amount. max join workspace Amount >> [{}], current workspace joined amount(include master user) >> [{}]"
                     , MAX_JOIN_WORKSPACE_AMOUNT, maxJoinWorkspaceAmount);
-            return workspaceOverJoinFailHandler(workspace, userInvite, locale);
+
+            WorkspaceInviteProcess workspaceInviteProcess = WorkspaceInviteProcess.builder().applicationEventPublisher(applicationEventPublisher)
+                    .inviteSessionDeleteEvent(new InviteSessionDeleteEvent(userInvite.getSessionCode()))
+                    .mailSendEvent(new MailSendEvent(
+                            mailContextHandler.getWorkspaceOverJoinContext(workspace.getName(), masterUserInfo, inviteUserInfo, userInvite.isPlanRemote(), userInvite.isPlanMake(), userInvite.isPlanView()),
+                            Mail.WORKSPACE_OVER_JOIN_FAIL,
+                            locale,
+                            getMasterAndManagerEmail(workspace, masterUserInfo)
+                    ))
+                    .redirectUrl(redirectProperty.getWorkstationWeb() + RedirectPath.WORKSPACE_OVER_JOIN_FAIL.getValue())
+                    .build();
+            return workspaceInviteProcess.process();
         }
 
         //1-6. 워크스페이스에서 최대 참여 가능한 멤버 수 체크
-        long workspaceUserAmount = workspaceUserRepository.countByWorkspace_Uuid(workspace.getUuid());
         WorkspaceLicensePlanInfoResponse workspaceLicensePlanInfoResponse = getWorkspaceLicenses(workspace.getUuid());
-        if (workspaceLicensePlanInfoResponse != null && workspaceLicensePlanInfoResponse.getLicenseProductInfoList() != null && !workspaceLicensePlanInfoResponse.getLicenseProductInfoList().isEmpty()) {
-            //1-6-1. 라이선스를 구매한 워크스페이스는 라이선스에 종속된 값으로 체크
-            if (workspaceUserAmount + 1 > workspaceLicensePlanInfoResponse.getMaxUserAmount()) {
-                log.error("[WORKSPACE INVITE ACCEPT] Over Max Workspace Member amount. max user Amount(by license) >> [{}], current user amount >> [{}]",
-                        workspaceLicensePlanInfoResponse.getMaxUserAmount(),
-                        workspaceUserAmount);
-                return workspaceOverMaxUserFailHandler(workspace, userInvite, locale);
-
-            }
-        } else {
-            //1-6-2. 라이선스를 구매하지 않은 워크스페이스는 기본값으로 체크
-            if (workspaceUserAmount + 1 > MAX_WORKSPACE_USER_AMOUNT) {
-                log.error("[WORKSPACE INVITE ACCEPT] Over Max Workspace Member amount. max user Amount(by workspace) >> [{}], current user amount >> [{}]",
-                        MAX_WORKSPACE_USER_AMOUNT,
-                        workspaceUserAmount);
-                return workspaceOverMaxUserFailHandler(workspace, userInvite, locale);
-            }
+        try {
+            checkWorkspaceInviteMaxUserAmount(workspace.getUuid(), 1, workspaceLicensePlanInfoResponse);
+        } catch (WorkspaceException e) {
+            WorkspaceInviteProcess workspaceInviteProcess = WorkspaceInviteProcess.builder().applicationEventPublisher(applicationEventPublisher)
+                    .inviteSessionDeleteEvent(new InviteSessionDeleteEvent(userInvite.getSessionCode()))
+                    .mailSendEvent(new MailSendEvent(
+                            mailContextHandler.getWorkspaceOverMaxUserContext(workspace.getName(), masterUserInfo, inviteUserInfo, userInvite.isPlanRemote(), userInvite.isPlanMake(), userInvite.isPlanView()),
+                            Mail.WORKSPACE_OVER_MAX_USER_FAIL,
+                            locale,
+                            getMasterAndManagerEmail(workspace, masterUserInfo)
+                    ))
+                    .redirectUrl(redirectProperty.getWorkstationWeb() + RedirectPath.WORKSPACE_OVER_MAX_USER_FAIL.getValue())
+                    .build();
+            return workspaceInviteProcess.process();
         }
-
-        //2. 초대 수락 수행 - 플랜 할당
-        boolean licenseGrantResult = true;
-        List<String> successPlan = new ArrayList<>();
-        List<String> failPlan = new ArrayList<>();
-
-        List<LicenseProduct> licenseProductList = generatePlanList(userInvite.isPlanRemote(), userInvite.isPlanMake(), userInvite.isPlanView());
-        for (LicenseProduct licenseProduct : licenseProductList) {
-            MyLicenseInfoResponse grantResult = licenseRestService.grantWorkspaceLicenseToUser(workspace.getUuid(), inviteUserDetailInfoResponse.getUserUUID(), licenseProduct.toString()).getData();
-            if (grantResult == null || !StringUtils.hasText(grantResult.getProductName())) {
-                failPlan.add(licenseProduct.toString());
-                licenseGrantResult = false;
-            } else {
-                successPlan.add(licenseProduct.toString());
+        //2. 초대 수락 수행 - 플랜 할당. 할당에 실패하면 초대 로직 원복.
+        List<String> requestPlanList = getRequestWorkspaceLicense(userInvite.isPlanRemote(), userInvite.isPlanMake(), userInvite.isPlanView());
+        if (!requestPlanList.isEmpty()) {
+            List<String> failPlanList = executeGrantWorkspaceLicenseToUser(workspace.getUuid(), inviteUserInfo.getUserUUID(), requestPlanList);
+            if (!failPlanList.isEmpty()) {
+                requestPlanList.removeAll(failPlanList);
+                requestPlanList.forEach(productName -> revokeWorkspaceLicenseToUser(workspace.getUuid(), inviteUserInfo.getUserUUID(), productName));
+                WorkspaceInviteProcess workspaceInviteAcceptProcess = WorkspaceInviteProcess.builder().applicationEventPublisher(applicationEventPublisher)
+                        .inviteSessionDeleteEvent(new InviteSessionDeleteEvent(userInvite.getSessionCode()))
+                        .mailSendEvent(new MailSendEvent(
+                                mailContextHandler.getWorkspaceOverPlanContext(workspace.getName(), masterUserInfo, inviteUserInfo, requestPlanList, failPlanList),
+                                Mail.WORKSPACE_OVER_PLAN_FAIL,
+                                locale,
+                                new ArrayList<>()
+                        ))
+                        .redirectUrl(redirectProperty.getWorkstationWeb() + RedirectPath.WORKSPACE_OVER_PLAN_FAIL.getValue())
+                        .build();
+                return workspaceInviteAcceptProcess.process();
             }
-        }
-        if (!licenseGrantResult) {
-            RedirectView redirectView = workspaceOverPlanFailHandler(workspace, userInvite, successPlan, failPlan, locale);
-            successPlan.forEach(s -> {
-                Boolean revokeResult = licenseRestService.revokeWorkspaceLicenseToUser(workspace.getUuid(), userInvite.getInvitedUserId(), s).getData();
-                log.error("[WORKSPACE INVITE ACCEPT] [{}] License Grant Fail. Revoke user License Result >> [{}]", s, revokeResult);
-            });
-            return redirectView;
         }
         //워크스페이스 소속 넣기 (workspace_user)
         WorkspaceUser workspaceUser = WorkspaceUser.builder().workspace(workspace).userId(userInvite.getInvitedUserId()).build();
@@ -451,25 +460,62 @@ public class OnWorkspaceUserServiceImpl extends WorkspaceUserService {
                 .build();
         workspaceUserPermissionRepository.save(newWorkspaceUserPermission);
 
-        //MAIL 발송
-        UserInfoRestResponse inviteUserInfo = getUserInfoByUserId(userInvite.getInvitedUserId());
-        UserInfoRestResponse masterUserInfo = getUserInfoByUserId(workspace.getUserId());
-        Context context = new Context();
-        context.setVariable("workspaceName", workspace.getName());
-        context.setVariable("workspaceMasterNickName", masterUserInfo.getNickname());
-        context.setVariable("workspaceMasterEmail", masterUserInfo.getEmail());
-        context.setVariable("acceptUserNickName", inviteUserInfo.getNickname());
-        context.setVariable("acceptUserEmail", userInvite.getInvitedUserEmail());
-        context.setVariable("role", userInvite.getRole());
-        context.setVariable("workstationHomeUrl", redirectProperty.getWorkstationWeb());
-        context.setVariable("plan", generatePlanString(userInvite.isPlanRemote(), userInvite.isPlanMake(), userInvite.isPlanView()));
-        context.setVariable("supportUrl", redirectProperty.getSupportWeb());
+        String message;
+        if (userInvite.getRole().equals("MANAGER")) {
+            message = messageSource.getMessage("WORKSPACE_INVITE_MANAGER", new String[]{inviteUserInfo.getNickname(), String.join(",", requestPlanList)}, locale);
+        } else {
+            message = messageSource.getMessage("WORKSPACE_INVITE_MEMBER", new String[]{inviteUserInfo.getNickname(), String.join(",", requestPlanList)}, locale);
+        }
+        // 수락 성공 프로세스
+        WorkspaceInviteProcess workspaceInviteAcceptProcess = WorkspaceInviteProcess.builder()
+                .applicationEventPublisher(applicationEventPublisher)
+                .historyAddEvent(new HistoryAddEvent(message, userInvite.getInvitedUserId(), workspace))
+                .mailSendEvent(new MailSendEvent(mailContextHandler.getWorkspaceInviteAcceptContext(workspace.getName(), masterUserInfo, inviteUserInfo, userInvite.getRole(), userInvite.isPlanRemote(), userInvite.isPlanMake(), userInvite.isPlanView()),
+                        Mail.WORKSPACE_INVITE_ACCEPT,
+                        locale,
+                        getMasterAndManagerEmail(workspace, masterUserInfo)
+                ))
+                .redirectUrl(redirectProperty.getWorkstationWeb())
+                .inviteSessionDeleteEvent(new InviteSessionDeleteEvent(userInvite.getSessionCode()))
+                .build();
+        return workspaceInviteAcceptProcess.process();
+    }
 
-        String subject = messageSource.getMessage(Mail.WORKSPACE_INVITE_ACCEPT.getSubject(), null, locale);
-        String template = messageSource.getMessage(Mail.WORKSPACE_INVITE_ACCEPT.getTemplate(), null, locale);
-        String html = springTemplateEngine.process(template, context);
+    private RedirectView redirectView(String url) {
+        RedirectView redirectView = new RedirectView();
+        redirectView.setUrl(url);
+        redirectView.setContentType("application/json");
+        return redirectView;
+    }
+
+    private List<String> executeGrantWorkspaceLicenseToUser(String workspaceId, String inviteUserId, List<String> requestPlanList) {
+        List<String> failPlanList = new ArrayList<>();
+        requestPlanList.forEach(requestPlan -> {
+            try {
+                grantWorkspaceLicenseToUser(workspaceId, inviteUserId, requestPlan);
+            } catch (WorkspaceException e) {
+                failPlanList.add(requestPlan);
+            }
+        });
+        return failPlanList;
+    }
+
+    private List<String> getRequestWorkspaceLicense(boolean planRemote, boolean planMake, boolean planView) {
+        List<String> result = new ArrayList<>();
+        if (planRemote) {
+            result.add("REMOTE");
+        }
+        if (planMake) {
+            result.add("MAKE");
+        }
+        if (planView) {
+            result.add("VIEW");
+        }
+        return result;
+    }
+
+    private List<String> getMasterAndManagerEmail(Workspace workspace, UserInfoRestResponse masterUserInfo) {
         List<String> emailReceiverList = new ArrayList<>();
-        emailReceiverList.add(masterUserInfo.getEmail());
         List<WorkspaceUserPermission> managerUserPermissionList = workspaceUserPermissionRepository.findByWorkspaceUser_WorkspaceAndWorkspaceRole_Role(workspace, "MANAGER");
         if (managerUserPermissionList != null && !managerUserPermissionList.isEmpty()) {
             managerUserPermissionList.forEach(workspaceUserPermission -> {
@@ -477,44 +523,25 @@ public class OnWorkspaceUserServiceImpl extends WorkspaceUserService {
                 emailReceiverList.add(managerUserInfo.getEmail());
             });
         }
+        emailReceiverList.add(masterUserInfo.getEmail());
+        return emailReceiverList;
+    }
 
-        sendMailRequest(html, emailReceiverList, MailSender.MASTER.getValue(), subject);
+    private void revokeWorkspaceLicenseToUser(String workspaceId, String invitedUserId, String productName) {
+        ApiResponse<Boolean> revokeWorkspaceLicenseApiResponse = licenseRestService.revokeWorkspaceLicenseToUser(workspaceId, invitedUserId, productName);
+        log.error("[WORKSPACE INVITE ACCEPT] [{}] License Grant Fail. Revoke user License Result >> [{}], Code >> [{}]", productName, revokeWorkspaceLicenseApiResponse.getData(), revokeWorkspaceLicenseApiResponse.getCode());
+    }
 
-        //redis 에서 삭제
-        userInviteRepository.delete(userInvite);
-
-        //history 저장
-        if (workspaceRole.getRole().equalsIgnoreCase("MANAGER")) {
-            String message = messageSource.getMessage("WORKSPACE_INVITE_MANAGER", new String[]{inviteUserInfo.getNickname(), generatePlanString(userInvite.isPlanRemote(), userInvite.isPlanMake(), userInvite.isPlanView())}, locale);
-            applicationEventPublisher.publishEvent(new HistoryAddEvent(message, userInvite.getInvitedUserId(), workspace));
+    private void grantWorkspaceLicenseToUser(String workspaceId, String invitedUserId, String productName) {
+        ApiResponse<MyLicenseInfoResponse> myLicenseInfoResponseApiResponse = licenseRestService.grantWorkspaceLicenseToUser(workspaceId, invitedUserId, productName);
+        if (myLicenseInfoResponseApiResponse.getCode() != 200) {
+            log.error("[WORKSPACE INVITE ACCEPT] [{}] License Grant Fail. request workspace id >> [{}], request user id >> [{}], response code >> [{}]", productName, workspaceId, invitedUserId, myLicenseInfoResponseApiResponse.getCode());
+            throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_INVITE_NON_LICENSE);
         } else {
-            String message = messageSource.getMessage("WORKSPACE_INVITE_MEMBER", new String[]{inviteUserInfo.getNickname(), generatePlanString(userInvite.isPlanRemote(), userInvite.isPlanMake(), userInvite.isPlanView())}, locale);
-            applicationEventPublisher.publishEvent(new HistoryAddEvent(message, userInvite.getInvitedUserId(), workspace));
+            log.info("[WORKSPACE INVITE ACCEPT] [{}] License Grant SUCCESS! request workspace id >> [{}], request user id >> [{}]", productName, workspaceId, invitedUserId);
         }
-
-        RedirectView redirectView = new RedirectView();
-        redirectView.setUrl(redirectProperty.getWorkstationWeb());
-        redirectView.setContentType("application/json");
-        return redirectView;
     }
 
-    private List<LicenseProduct> generatePlanList(boolean remote, boolean make, boolean view) {
-        List<LicenseProduct> productList = new ArrayList<>();
-        if (remote) {
-            productList.add(LicenseProduct.REMOTE);
-        }
-        if (make) {
-            productList.add(LicenseProduct.MAKE);
-        }
-        if (view) {
-            productList.add(LicenseProduct.VIEW);
-        }
-        return productList;
-    }
-
-    private String generatePlanString(boolean remote, boolean make, boolean view) {
-        return generatePlanList(remote, make, view).stream().map(Enum::toString).collect(Collectors.joining(","));
-    }
 
     @Override
     public WorkspaceMemberInfoListResponse createWorkspaceMemberAccount(String workspaceId, MemberAccountCreateRequest memberAccountCreateRequest) {
@@ -531,137 +558,16 @@ public class OnWorkspaceUserServiceImpl extends WorkspaceUserService {
         return null;
     }
 
-    public RedirectView workspaceOverJoinFailHandler(Workspace workspace, UserInvite userInvite, Locale locale) {
-        UserInfoRestResponse inviteUserInfo = getUserInfoByUserId(userInvite.getInvitedUserId());
-        UserInfoRestResponse masterUserInfo = getUserInfoByUserId(workspace.getUserId());
-        Context context = new Context();
-        context.setVariable("workspaceName", workspace.getName());
-        context.setVariable("workspaceMasterNickName", masterUserInfo.getNickname());
-        context.setVariable("workspaceMasterEmail", masterUserInfo.getEmail());
-        context.setVariable("userNickName", inviteUserInfo.getNickname());
-        context.setVariable("userEmail", inviteUserInfo.getEmail());
-        context.setVariable("plan", generatePlanString(userInvite.isPlanRemote(), userInvite.isPlanMake(), userInvite.isPlanView()));
-        context.setVariable("planRemoteType", userInvite.getPlanRemoteType());
-        context.setVariable("planMakeType", userInvite.getPlanMakeType());
-        context.setVariable("planViewType", userInvite.getPlanViewType());
-        context.setVariable("workstationHomeUrl", redirectProperty.getWorkstationWeb());
-        context.setVariable("workstationMembersUrl", redirectProperty.getMembersWeb());
-        context.setVariable("supportUrl", redirectProperty.getSupportWeb());
-
-        String subject = messageSource.getMessage(Mail.WORKSPACE_OVER_JOIN_FAIL.getSubject(), null, locale);
-        String template = messageSource.getMessage(Mail.WORKSPACE_OVER_JOIN_FAIL.getTemplate(), null, locale);
-        String html = springTemplateEngine.process(template, context);
-
-        List<String> emailReceiverList = new ArrayList<>();
-        emailReceiverList.add(masterUserInfo.getEmail());
-        List<WorkspaceUserPermission> managerUserPermissionList = workspaceUserPermissionRepository.findByWorkspaceUser_WorkspaceAndWorkspaceRole_Role(workspace, "MANAGER");
-        if (managerUserPermissionList != null && !managerUserPermissionList.isEmpty()) {
-            managerUserPermissionList.forEach(workspaceUserPermission -> {
-                UserInfoRestResponse managerUserInfo = getUserInfoByUserId(workspaceUserPermission.getWorkspaceUser().getUserId());
-                emailReceiverList.add(managerUserInfo.getEmail());
-            });
-        }
-
-        sendMailRequest(html, emailReceiverList, MailSender.MASTER.getValue(), subject);
-
-        userInviteRepository.delete(userInvite);
-
-        RedirectView redirectView = new RedirectView();
-        redirectView.setUrl(redirectProperty.getWorkstationWeb() + RedirectPath.WORKSPACE_OVER_JOIN_FAIL.getValue());
-        redirectView.setContentType("application/json");
-        return redirectView;
-    }
-
-    public RedirectView workspaceOverMaxUserFailHandler(Workspace workspace, UserInvite userInvite, Locale locale) {
-        UserInfoRestResponse inviteUserInfo = getUserInfoByUserId(userInvite.getInvitedUserId());
-        UserInfoRestResponse masterUserInfo = getUserInfoByUserId(workspace.getUserId());
-
-        Context context = new Context();
-        context.setVariable("workspaceName", workspace.getName());
-        context.setVariable("workspaceMasterNickName", masterUserInfo.getNickname());
-        context.setVariable("workspaceMasterEmail", masterUserInfo.getEmail());
-        context.setVariable("userNickName", inviteUserInfo.getNickname());
-        context.setVariable("userEmail", inviteUserInfo.getEmail());
-        context.setVariable("plan", generatePlanString(userInvite.isPlanRemote(), userInvite.isPlanMake(), userInvite.isPlanView()));
-        context.setVariable("planRemoteType", userInvite.getPlanRemoteType());
-        context.setVariable("planMakeType", userInvite.getPlanMakeType());
-        context.setVariable("planViewType", userInvite.getPlanViewType());
-        context.setVariable("contactUrl", redirectProperty.getContactWeb());
-        context.setVariable("workstationHomeUrl", redirectProperty.getWorkstationWeb());
-        context.setVariable("supportUrl", redirectProperty.getSupportWeb());
-        String subject = messageSource.getMessage(Mail.WORKSPACE_OVER_MAX_USER_FAIL.getSubject(), null, locale);
-        String template = messageSource.getMessage(Mail.WORKSPACE_OVER_MAX_USER_FAIL.getTemplate(), null, locale);
-        String html = springTemplateEngine.process(template, context);
-        List<String> emailReceiverList = new ArrayList<>();
-        emailReceiverList.add(masterUserInfo.getEmail());
-        List<WorkspaceUserPermission> managerUserPermissionList = workspaceUserPermissionRepository.findByWorkspaceUser_WorkspaceAndWorkspaceRole_Role(workspace, "MANAGER");
-        if (managerUserPermissionList != null && !managerUserPermissionList.isEmpty()) {
-            managerUserPermissionList.forEach(workspaceUserPermission -> {
-                UserInfoRestResponse managerUserInfo = getUserInfoByUserId(workspaceUserPermission.getWorkspaceUser().getUserId());
-                emailReceiverList.add(managerUserInfo.getEmail());
-            });
-        }
-        sendMailRequest(html, emailReceiverList, MailSender.MASTER.getValue(), subject);
-
-        userInviteRepository.delete(userInvite);
-        RedirectView redirectView = new RedirectView();
-        redirectView.setUrl(redirectProperty.getWorkstationWeb() + RedirectPath.WORKSPACE_OVER_MAX_USER_FAIL.getValue());
-        redirectView.setContentType("application/json");
-        return redirectView;
-    }
-
-
-    public RedirectView workspaceOverPlanFailHandler(Workspace workspace, UserInvite
-            userInvite, List<String> successPlan, List<String> failPlan, Locale locale) {
-        UserInfoRestResponse inviteUserInfo = getUserInfoByUserId(userInvite.getInvitedUserId());
-        UserInfoRestResponse masterUserInfo = getUserInfoByUserId(workspace.getUserId());
-
-        Context context = new Context();
-        context.setVariable("workspaceName", workspace.getName());
-        context.setVariable("workspaceMasterNickName", masterUserInfo.getNickname());
-        context.setVariable("workspaceMasterEmail", masterUserInfo.getEmail());
-        context.setVariable("userNickName", inviteUserInfo.getNickname());
-        context.setVariable("userEmail", inviteUserInfo.getEmail());
-        context.setVariable("successPlan", org.apache.commons.lang.StringUtils.join(successPlan, ","));
-        context.setVariable("failPlan", org.apache.commons.lang.StringUtils.join(failPlan, ","));
-        context.setVariable("planRemoteType", userInvite.getPlanRemoteType());
-        context.setVariable("planMakeType", userInvite.getPlanMakeType());
-        context.setVariable("planViewType", userInvite.getPlanViewType());
-        context.setVariable("workstationHomeUrl", redirectProperty.getWorkstationWeb());
-        context.setVariable("workstationMembersUrl", redirectProperty.getMembersWeb());
-        context.setVariable("supportUrl", redirectProperty.getSupportWeb());
-
-        String subject = messageSource.getMessage(Mail.WORKSPACE_OVER_PLAN_FAIL.getSubject(), null, locale);
-        String template = messageSource.getMessage(Mail.WORKSPACE_OVER_PLAN_FAIL.getTemplate(), null, locale);
-        String html = springTemplateEngine.process(template, context);
-        List<String> emailReceiverList = new ArrayList<>();
-        emailReceiverList.add(masterUserInfo.getEmail());
-        List<WorkspaceUserPermission> managerUserPermissionList = workspaceUserPermissionRepository.findByWorkspaceUser_WorkspaceAndWorkspaceRole_Role(workspace, "MANAGER");
-        if (managerUserPermissionList != null && !managerUserPermissionList.isEmpty()) {
-            managerUserPermissionList.forEach(workspaceUserPermission -> {
-                UserInfoRestResponse managerUserInfo = getUserInfoByUserId(workspaceUserPermission.getWorkspaceUser().getUserId());
-                emailReceiverList.add(managerUserInfo.getEmail());
-            });
-        }
-        sendMailRequest(html, emailReceiverList, MailSender.MASTER.getValue(), subject);
-
-        userInviteRepository.delete(userInvite);
-
-        RedirectView redirectView = new RedirectView();
-        redirectView.setUrl(redirectProperty.getWorkstationWeb() + RedirectPath.WORKSPACE_OVER_PLAN_FAIL.getValue());
-        redirectView.setContentType("application/json");
-        return redirectView;
-    }
-
     public RedirectView inviteWorkspaceReject(String sessionCode, String lang) {
-        Locale locale = new Locale(lang, "");
+        Locale locale = Locale.KOREAN;
+        if (StringUtils.hasText(lang)) {
+            locale = new Locale(lang, "");
+        }
+
         Optional<UserInvite> optionalUserInvite = userInviteRepository.findById(sessionCode);
         if (!optionalUserInvite.isPresent()) {
             log.info("[WORKSPACE INVITE REJECT] Workspace invite session Info Not found. session code >> [{}]", sessionCode);
-            RedirectView redirectView = new RedirectView();
-            redirectView.setUrl(redirectProperty.getWorkstationWeb());
-            redirectView.setContentType("application/json");
-            return redirectView;
+            return redirectView(redirectProperty.getWorkstationWeb());
         }
         UserInvite userInvite = optionalUserInvite.get();
         log.info("[WORKSPACE INVITE REJECT] Workspace Invite Session Info >> [{}] ", userInvite);
@@ -672,81 +578,36 @@ public class OnWorkspaceUserServiceImpl extends WorkspaceUserService {
             log.error("[WORKSPACE INVITE REJECT] Invalid Invited User Info.");
             //탈퇴한 유저의 캐싱은 삭제, 이외의 유저는 보류.
             if (inviteUserInfoResponseApiResponse.getCode() == 5002) {
-                userInviteRepository.delete(userInvite);
+                applicationEventPublisher.publishEvent(new InviteSessionDeleteEvent(userInvite.getSessionCode()));
             }
-            RedirectView redirectView = new RedirectView();
-            redirectView.setUrl(redirectProperty.getWorkstationWeb());
-            redirectView.setContentType("application/json");
-            return redirectView;
+            return redirectView(redirectProperty.getWorkstationWeb());
         }
         InviteUserInfoResponse inviteUserResponse = inviteUserInfoResponseApiResponse.getData();
 
         //비회원
         if (!inviteUserResponse.isMemberUser()) {
             log.info("[WORKSPACE INVITE REJECT] Invited User is Member >> [{}]", inviteUserResponse.isMemberUser());
-            userInviteRepository.delete(userInvite);
-            RedirectView redirectView = new RedirectView();
-            redirectView.setUrl(redirectProperty.getWorkstationWeb());
-            redirectView.setContentType("application/json");
-            return redirectView;
+            applicationEventPublisher.publishEvent(new InviteSessionDeleteEvent(userInvite.getSessionCode()));
+            return redirectView(redirectProperty.getWorkstationWeb());
         }
         //비회원일경우 초대 session정보에 uuid가 안들어가므로 user서버에서 조회해서 가져온다.
-        InviteUserDetailInfoResponse inviteUserDetailInfoResponse = inviteUserResponse.getInviteUserDetailInfo();
-        userInvite.setInvitedUserEmail(inviteUserDetailInfoResponse.getEmail());
-        userInvite.setInvitedUserId(inviteUserDetailInfoResponse.getUserUUID());
+        InviteUserDetailInfoResponse inviteUserInfo = inviteUserResponse.getInviteUserDetailInfo();
+        userInvite.setInvitedUserEmail(inviteUserInfo.getEmail());
+        userInvite.setInvitedUserId(inviteUserInfo.getUserUUID());
         userInviteRepository.save(userInvite);
-
-        userInviteRepository.delete(userInvite);
 
         //MAIL 발송
         Workspace workspace = workspaceRepository.findByUuid(userInvite.getWorkspaceId()).orElseThrow(() -> new WorkspaceException(ErrorCode.ERR_WORKSPACE_NOT_FOUND));
-        UserInfoRestResponse inviterUserInfo = getUserInfoByUserId(userInvite.getInvitedUserId());
         UserInfoRestResponse masterUserInfo = getUserInfoByUserId(workspace.getUserId());
-        Context context = new Context();
-        context.setVariable("rejectUserNickname", inviterUserInfo.getNickname());
-        context.setVariable("rejectUserEmail", userInvite.getInvitedUserEmail());
-        context.setVariable("workspaceName", workspace.getName());
-        context.setVariable("accountUrl", redirectProperty.getAccountWeb());
-        context.setVariable("supportUrl", redirectProperty.getSupportWeb());
 
-        String subject = messageSource.getMessage(Mail.WORKSPACE_INVITE_REJECT.getSubject(), null, locale);
-        String template = messageSource.getMessage(Mail.WORKSPACE_INVITE_REJECT.getTemplate(), null, locale);
-        String html = springTemplateEngine.process(template, context);
+        List<String> emailReceiverList = getMasterAndManagerEmail(workspace, masterUserInfo);
 
-        List<String> emailReceiverList = new ArrayList<>();
-        emailReceiverList.add(masterUserInfo.getEmail());
-
-        List<WorkspaceUserPermission> managerUserPermissionList = workspaceUserPermissionRepository.findByWorkspaceUser_WorkspaceAndWorkspaceRole_Role(workspace, "MANAGER");
-        if (managerUserPermissionList != null && !managerUserPermissionList.isEmpty()) {
-            managerUserPermissionList.forEach(workspaceUserPermission -> {
-                UserInfoRestResponse managerUserInfo = getUserInfoByUserId(workspaceUserPermission.getWorkspaceUser().getUserId());
-                emailReceiverList.add(managerUserInfo.getEmail());
-            });
-        }
-        sendMailRequest(html, emailReceiverList, MailSender.MASTER.getValue(), subject);
-
-        RedirectView redirectView = new RedirectView();
-        redirectView.setUrl(redirectProperty.getWorkstationWeb());
-        redirectView.setContentType("application/json");
-        return redirectView;
+        WorkspaceInviteProcess workspaceInviteProcess = WorkspaceInviteProcess.builder()
+                .applicationEventPublisher(applicationEventPublisher)
+                .mailSendEvent(new MailSendEvent(mailContextHandler.getWorkspaceInviteRejectContext(workspace.getName(), inviteUserInfo), Mail.WORKSPACE_INVITE_REJECT, locale, emailReceiverList))
+                .redirectUrl(redirectProperty.getWorkstationWeb())
+                .inviteSessionDeleteEvent(new InviteSessionDeleteEvent(userInvite.getSessionCode()))
+                .build();
+        return workspaceInviteProcess.process();
     }
-
-    /**
-     * pf-message 서버로 보낼 메일 전송 api body
-     *
-     * @param html      - 본문
-     * @param receivers - 수신정보
-     * @param sender    - 발신정보
-     * @param subject   - 제목
-     */
-    private void sendMailRequest(String html, List<String> receivers, String sender, String subject) {
-        MailRequest mailRequest = new MailRequest();
-        mailRequest.setHtml(html);
-        mailRequest.setReceivers(receivers);
-        mailRequest.setSender(sender);
-        mailRequest.setSubject(subject);
-        messageRestService.sendMail(mailRequest);
-    }
-
-
 }

@@ -27,7 +27,7 @@ public class MailSendEvent {
     public String toString() {
         return "MailSendEvent{" +
                 //"context=" + context +
-                ", mailType=" + mailType +
+                "mailType=" + mailType +
                 ", locale=" + locale +
                 ", receiverList=" + receiverList +
                 '}';

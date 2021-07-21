@@ -6,6 +6,7 @@ import com.virnect.workspace.dto.rest.UserInfoRestResponse;
 import com.virnect.workspace.global.common.RedirectProperty;
 import com.virnect.workspace.global.constant.LicenseProduct;
 import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Component;
 import org.thymeleaf.context.Context;
 
 import java.util.ArrayList;
@@ -21,8 +22,11 @@ import java.util.stream.Collectors;
  * DESCRIPTION:
  */
 @RequiredArgsConstructor
-public  class MailContextHandler {
-    public Context getWorkspaceInviteContext(RedirectProperty redirectProperty, String sessionCode, Locale locale, String workspaceName, WorkspaceInviteRequest.UserInfo userInfo,
+@Component
+public class MailContextHandler {
+    private final RedirectProperty redirectProperty;
+
+    public Context getWorkspaceInviteContext(String sessionCode, Locale locale, String workspaceName, WorkspaceInviteRequest.UserInfo userInfo,
                                              InviteUserDetailInfoResponse inviteUserInfo, UserInfoRestResponse masterUserInfo
     ) {
         Context context = new Context();
@@ -59,7 +63,7 @@ public  class MailContextHandler {
         return productList;
     }
 
-    public Context getWorkspaceInviteNonUserContext(RedirectProperty redirectProperty, String sessionCode, Locale locale, String
+    public Context getWorkspaceInviteNonUserContext(String sessionCode, Locale locale, String
             workspaceName, WorkspaceInviteRequest.UserInfo userInfo, UserInfoRestResponse masterUserInfo
     ) {
         Context context = new Context();
@@ -76,4 +80,83 @@ public  class MailContextHandler {
         return context;
     }
 
+    public Context getWorkspaceInviteAcceptContext(String workspaceName, UserInfoRestResponse masterUserInfo, InviteUserDetailInfoResponse invitedUserinfo,
+                                                   String role, boolean isRemote, boolean isMake, boolean isView
+    ) {
+        Context context = new Context();
+        context.setVariable("workspaceName", workspaceName);
+        context.setVariable("workspaceMasterNickName", masterUserInfo.getNickname());
+        context.setVariable("workspaceMasterEmail", masterUserInfo.getEmail());
+        context.setVariable("acceptUserNickName", invitedUserinfo.getNickname());
+        context.setVariable("acceptUserEmail", invitedUserinfo.getEmail());
+        context.setVariable("role", role);
+        context.setVariable("workstationHomeUrl", redirectProperty.getWorkstationWeb());
+        context.setVariable("plan", generatePlanString(isRemote, isMake, isView));
+        context.setVariable("supportUrl", redirectProperty.getSupportWeb());
+        return context;
+
+    }
+
+    public Context getWorkspaceOverJoinContext(String workspaceName, UserInfoRestResponse masterUserInfo, InviteUserDetailInfoResponse invitedUserInfo,
+                                               boolean isRemote, boolean isMake, boolean isView) {
+        Context context = new Context();
+        context.setVariable("workspaceName", workspaceName);
+        context.setVariable("workspaceMasterNickName", masterUserInfo.getNickname());
+        context.setVariable("workspaceMasterEmail", masterUserInfo.getEmail());
+        context.setVariable("userNickName", invitedUserInfo.getNickname());
+        context.setVariable("userEmail", invitedUserInfo.getEmail());
+        context.setVariable("plan", generatePlanString(isRemote, isMake, isView));
+        //context.setVariable("planRemoteType", userInvite.getPlanRemoteType());
+        //context.setVariable("planMakeType", userInvite.getPlanMakeType());
+        //context.setVariable("planViewType", userInvite.getPlanViewType());
+        context.setVariable("workstationHomeUrl", redirectProperty.getWorkstationWeb());
+        context.setVariable("workstationMembersUrl", redirectProperty.getMembersWeb());
+        context.setVariable("supportUrl", redirectProperty.getSupportWeb());
+        return context;
+    }
+
+    public Context getWorkspaceOverMaxUserContext(String workspaceName, UserInfoRestResponse masterUserInfo, InviteUserDetailInfoResponse inviteUserInfo, boolean isRemote, boolean isMake, boolean isView) {
+        Context context = new Context();
+        context.setVariable("workspaceName", workspaceName);
+        context.setVariable("workspaceMasterNickName", masterUserInfo.getNickname());
+        context.setVariable("workspaceMasterEmail", masterUserInfo.getEmail());
+        context.setVariable("userNickName", inviteUserInfo.getNickname());
+        context.setVariable("userEmail", inviteUserInfo.getEmail());
+        context.setVariable("plan", generatePlanString(isRemote, isMake, isView));
+        //context.setVariable("planRemoteType", userInvite.getPlanRemoteType());
+        //context.setVariable("planMakeType", userInvite.getPlanMakeType());
+        //context.setVariable("planViewType", userInvite.getPlanViewType());
+        context.setVariable("contactUrl", redirectProperty.getContactWeb());
+        context.setVariable("workstationHomeUrl", redirectProperty.getWorkstationWeb());
+        context.setVariable("supportUrl", redirectProperty.getSupportWeb());
+        return context;
+    }
+
+    public Context getWorkspaceOverPlanContext(String workspaceName, UserInfoRestResponse masterUserInfo, InviteUserDetailInfoResponse inviteUserInfo, List<String> successPlan, List<String> failPlan) {
+        Context context = new Context();
+        context.setVariable("workspaceName", workspaceName);
+        context.setVariable("workspaceMasterNickName", masterUserInfo.getNickname());
+        context.setVariable("workspaceMasterEmail", masterUserInfo.getEmail());
+        context.setVariable("userNickName", inviteUserInfo.getNickname());
+        context.setVariable("userEmail", inviteUserInfo.getEmail());
+        context.setVariable("successPlan", org.apache.commons.lang.StringUtils.join(successPlan, ","));
+        context.setVariable("failPlan", org.apache.commons.lang.StringUtils.join(failPlan, ","));
+        //context.setVariable("planRemoteType", userInvite.getPlanRemoteType());
+        //context.setVariable("planMakeType", userInvite.getPlanMakeType());
+        //context.setVariable("planViewType", userInvite.getPlanViewType());
+        context.setVariable("workstationHomeUrl", redirectProperty.getWorkstationWeb());
+        context.setVariable("workstationMembersUrl", redirectProperty.getMembersWeb());
+        context.setVariable("supportUrl", redirectProperty.getSupportWeb());
+        return context;
+    }
+
+    public Context getWorkspaceInviteRejectContext(String workspaceName, InviteUserDetailInfoResponse inviteUserInfo) {
+        Context context = new Context();
+        context.setVariable("rejectUserNickname", inviteUserInfo.getNickname());
+        context.setVariable("rejectUserEmail", inviteUserInfo.getEmail());
+        context.setVariable("workspaceName", workspaceName);
+        context.setVariable("accountUrl", redirectProperty.getAccountWeb());
+        context.setVariable("supportUrl", redirectProperty.getSupportWeb());
+        return context;
+    }
 }
