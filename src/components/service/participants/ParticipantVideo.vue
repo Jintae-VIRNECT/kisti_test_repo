@@ -433,19 +433,6 @@ export default {
       }
       this.$call.sendVideo(this.participant.id, true)
     },
-    showArExitConfirm(type) {
-      this.serviceConfirmTitle(
-        this.$t('service.ar_exit'),
-        this.$t('service.ar_exit_description'),
-        {
-          text: this.$t('button.exit'),
-          action: () => {
-            this.$call.sendArFeatureStop()
-            this.goTabConfirm(type)
-          },
-        },
-      )
-    },
   },
   beforeDestroy() {
     if (this.backInterval) clearInterval(this.backInterval)
