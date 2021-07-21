@@ -39,7 +39,6 @@ export default {
   data() {
     return {
       drawingNotice: 1,
-      arNotice: 2,
       menus: [
         {
           text: this.$t('service.stream'),
