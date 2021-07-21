@@ -139,45 +139,52 @@ export default {
         return
       }
 
-      // leader
       if (this.account.roleType === ROLE.LEADER) {
-        if (this.view === VIEW.AR) {
-          this.showArExitConfirm(type)
-        } else {
-          this.goTabConfirm(type)
-        }
-      } // other user
-      else {
-        if (this.view === VIEW.AR) {
-          this.toastDefault(this.$t('service.toast_cannot_leave_ar'))
-          return
-        }
-
+        this.goTabAsLeader(type)
+      } else {
+        this.goTabAsNotLeader(type)
+      }
+    },
+    /**
+     * 리더일때
+     * 1. AR 종료 or AR 요청 처리
+     * 2. 다른 탭으로 이동
+     */
+    goTabAsLeader(type) {
+      if (this.view === VIEW.AR) {
+        this.showArExitConfirm(type)
+      } else {
         if (type === VIEW.AR) {
-          if (!this.arNotice) {
-            this.toastDefault(this.$t('service.toast_cannot_invite_ar'))
-            return
+          if (this.checkArRequestPermission()) {
+            this.$call.sendCapturePermission([this.mainView.connectionId])
+            this.toastDefault(this.$t('service.toast_request_permission'))
           }
-        }
-
-        if (type === VIEW.DRAWING || type === VIEW.STREAM) {
+        } else {
           this.setView(type)
         }
       }
     },
-    goTabConfirm(type) {
-      if (type === VIEW.DRAWING || type === VIEW.STREAM) {
-        this.setView(type)
+    /**
+     * 일반 참가자일때
+     * 1. AR 기능을 벗어날 수 있는지 확인
+     * 2. AR 탭으로 이동 할 수 있는지 확인
+     * 3. 다른 탭으로 이동
+     */
+    goTabAsNotLeader(type) {
+      if (this.view === VIEW.AR) {
+        this.toastDefault(this.$t('service.toast_cannot_leave_ar'))
+        return
       }
 
       if (type === VIEW.AR) {
-        if (this.checkPermissionArRequest()) {
-          this.$call.sendCapturePermission([this.mainView.connectionId])
-          this.toastDefault(this.$t('service.toast_request_permission'))
+        if (!this.arNotice) {
+          this.toastDefault(this.$t('service.toast_cannot_invite_ar'))
+          return
         }
       }
-    },
 
+      this.setView(type)
+    },
     permissionSetting(permission) {
       //AR 기능 요청 승낙 받은 경우 - AR 기능 시작 시그날 전송 & AR VIEW로 전환한다
       if (permission === true) {
@@ -203,9 +210,9 @@ export default {
     },
 
     /**
-     * AR
+     * AR 요청이 가능한지 확인
      */
-    checkPermissionArRequest() {
+    checkArRequestPermission() {
       // 웹-웹 테스트용
       // if (web_test) {
       //   this.setView('ar')
