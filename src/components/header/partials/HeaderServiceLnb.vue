@@ -267,8 +267,6 @@ export default {
         })
         if (this.view !== VIEW.AR) {
           this.permissionSetting(data.isAllowed)
-        } else {
-          this.$eventBus.$emit('startAr', data.isAllowed)
         }
       }
     },
@@ -353,10 +351,24 @@ export default {
       )
       if (idx >= 0) {
         this.toastError(this.$t('confirm.network_error'))
-        return false
-      } else {
         return true
+      } else {
+        return false
       }
+    },
+
+    showArExitConfirm(type) {
+      this.serviceConfirmTitle(
+        this.$t('service.ar_exit'),
+        this.$t('service.ar_exit_description'),
+        {
+          text: this.$t('button.exit'),
+          action: () => {
+            this.$call.sendArFeatureStop()
+            this.setView(type)
+          },
+        },
+      )
     },
   },
 
