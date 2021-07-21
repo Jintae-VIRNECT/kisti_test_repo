@@ -7,6 +7,8 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
 import lombok.Setter;
 
+import com.virnect.uaa.global.validator.ProfileImageValidate;
+
 /**
  * @author jeonghyeon.chang (johnmark)
  * @project PF-User
@@ -20,5 +22,10 @@ import lombok.Setter;
 @ApiModel
 public class ProfileImageUpdateRequest {
 	@ApiModelProperty(value = "변경할 프로필 이미지", notes = "null인 경우 기본 이미지로 설정합니다.")
+	@ProfileImageValidate
 	private MultipartFile profile;
+
+	public boolean isUpdateAsDefaultImage() {
+		return profile == null;
+	}
 }

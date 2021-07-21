@@ -181,6 +181,10 @@ public class User extends BaseTimeEntity {
 		this.userType = UserType.USER;
 	}
 
+	public void profileImageSetAsDefaultImage() {
+		this.profile = "default";
+	}
+
 	@Override
 	public String toString() {
 		return "User{" +
