@@ -159,4 +159,48 @@ public class MailContextHandler {
         context.setVariable("supportUrl", redirectProperty.getSupportWeb());
         return context;
     }
+
+    public Context getWorkspaceUserPlanUpdateContext(String workspaceName, UserInfoRestResponse masterUserInfo, UserInfoRestResponse responseUserInfo, List<String> updatedProductList) {
+        Context context = new Context();
+        context.setVariable("workspaceName", workspaceName);
+        context.setVariable("workstationHomeUrl", redirectProperty.getWorkstationWeb());
+        context.setVariable("workspaceMasterNickName", masterUserInfo.getNickname());
+        context.setVariable("workspaceMasterEmail", masterUserInfo.getEmail());
+        context.setVariable("responseUserNickName", responseUserInfo.getNickname());
+        context.setVariable("responseUserEmail", responseUserInfo.getEmail());
+        context.setVariable("supportUrl", redirectProperty.getSupportWeb());
+        context.setVariable("plan", org.apache.commons.lang.StringUtils.join(updatedProductList, ","));
+        return context;
+    }
+
+    public Context getWorkspaceUserPermissionUpdateContext(String workspaceName, UserInfoRestResponse masterUserInfo, UserInfoRestResponse responseUserInfo, String role) {
+        Context context = new Context();
+        context.setVariable("workspaceName", workspaceName);
+        context.setVariable("workspaceMasterNickName", masterUserInfo.getNickname());
+        context.setVariable("workspaceMasterEmail", masterUserInfo.getEmail());
+        context.setVariable("responseUserNickName", responseUserInfo.getNickname());
+        context.setVariable("responseUserEmail", responseUserInfo.getEmail());
+        context.setVariable("role", role);
+        context.setVariable("workstationHomeUrl", redirectProperty.getWorkstationWeb());
+        context.setVariable("supportUrl", redirectProperty.getSupportWeb());
+        return context;
+    }
+
+    public Context getWorkspaceKickoutContext(String workspaceName, UserInfoRestResponse masterUserInfo) {
+        Context context = new Context();
+        context.setVariable("workspaceName", workspaceName);
+        context.setVariable("workspaceMasterNickName", masterUserInfo.getNickname());
+        context.setVariable("workspaceMasterEmail", masterUserInfo.getEmail());
+        context.setVariable("supportUrl", redirectProperty.getSupportWeb());
+        return context;
+    }
+
+    public Context getWorkspaceInfoUpdateContext(String oldWorkspaceName, String newWorkspaceName, UserInfoRestResponse masterUserInfo) {
+        Context context = new Context();
+        context.setVariable("beforeWorkspaceName", oldWorkspaceName);
+        context.setVariable("afterWorkspaceName", newWorkspaceName);
+        context.setVariable("supportUrl", redirectProperty.getSupportWeb());
+        context.setVariable("workspaceMasterNickName", masterUserInfo.getNickname());
+        return context;
+    }
 }

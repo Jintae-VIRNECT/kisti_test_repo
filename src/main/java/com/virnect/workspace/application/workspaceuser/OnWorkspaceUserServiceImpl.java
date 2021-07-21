@@ -1,7 +1,6 @@
 package com.virnect.workspace.application.workspaceuser;
 
 import com.virnect.workspace.application.license.LicenseRestService;
-import com.virnect.workspace.application.message.MessageRestService;
 import com.virnect.workspace.application.user.UserRestService;
 import com.virnect.workspace.dao.cache.UserInviteRepository;
 import com.virnect.workspace.dao.setting.WorkspaceCustomSettingRepository;
@@ -25,13 +24,14 @@ import com.virnect.workspace.event.mail.MailSendEvent;
 import com.virnect.workspace.exception.WorkspaceException;
 import com.virnect.workspace.global.common.ApiResponse;
 import com.virnect.workspace.global.common.RedirectProperty;
-import com.virnect.workspace.global.common.mapper.rest.RestMapStruct;
 import com.virnect.workspace.global.constant.Mail;
 import com.virnect.workspace.global.constant.Permission;
 import com.virnect.workspace.global.constant.RedirectPath;
 import com.virnect.workspace.global.constant.UUIDType;
 import com.virnect.workspace.global.error.ErrorCode;
 import com.virnect.workspace.global.util.RandomStringTokenUtil;
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.MessageSource;
@@ -40,7 +40,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.servlet.view.RedirectView;
 import org.thymeleaf.context.Context;
-import org.thymeleaf.spring5.SpringTemplateEngine;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
@@ -57,6 +56,7 @@ import java.util.stream.Collectors;
 @Slf4j
 @Service
 @Profile("!onpremise")
+@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public class OnWorkspaceUserServiceImpl extends WorkspaceUserService {
     private final WorkspaceRepository workspaceRepository;
     private final WorkspaceUserRepository workspaceUserRepository;
@@ -73,24 +73,6 @@ public class OnWorkspaceUserServiceImpl extends WorkspaceUserService {
     private final MailContextHandler mailContextHandler;
     private static final int MAX_JOIN_WORKSPACE_AMOUNT = 49;//최대 참여 가능한 워크스페이스 수
     private static final int MAX_WORKSPACE_USER_AMOUNT = 50;//워크스페이스 최대 멤버 수(마스터 본인 포함)
-
-    public OnWorkspaceUserServiceImpl(WorkspaceRepository workspaceRepository, WorkspaceUserRepository workspaceUserRepository, WorkspaceRoleRepository workspaceRoleRepository, WorkspaceUserPermissionRepository workspaceUserPermissionRepository, UserRestService userRestService, MessageRestService messageRestService, SpringTemplateEngine springTemplateEngine, MessageSource messageSource, LicenseRestService licenseRestService, RedirectProperty redirectProperty, RestMapStruct restMapStruct, ApplicationEventPublisher applicationEventPublisher, WorkspacePermissionRepository workspacePermissionRepository, UserInviteRepository userInviteRepository, WorkspaceCustomSettingRepository workspaceCustomSettingRepository, MailContextHandler mailContextHandler) {
-        super(workspaceRepository, workspaceUserRepository, workspaceRoleRepository, workspaceUserPermissionRepository, userRestService, messageRestService, springTemplateEngine, messageSource, licenseRestService, redirectProperty, restMapStruct, applicationEventPublisher, workspaceCustomSettingRepository);
-        this.workspaceRepository = workspaceRepository;
-        this.workspaceUserRepository = workspaceUserRepository;
-        this.workspaceRoleRepository = workspaceRoleRepository;
-        this.workspacePermissionRepository = workspacePermissionRepository;
-        this.workspaceUserPermissionRepository = workspaceUserPermissionRepository;
-        this.userRestService = userRestService;
-        this.userInviteRepository = userInviteRepository;
-        this.messageSource = messageSource;
-        this.licenseRestService = licenseRestService;
-        this.redirectProperty = redirectProperty;
-        this.applicationEventPublisher = applicationEventPublisher;
-        this.workspaceCustomSettingRepository = workspaceCustomSettingRepository;
-        this.mailContextHandler = mailContextHandler;
-    }
-
 
     @Override
     public ApiResponse<Boolean> inviteWorkspace(

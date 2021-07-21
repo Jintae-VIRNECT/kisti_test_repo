@@ -1,7 +1,6 @@
 package com.virnect.workspace.application.workspaceuser;
 
 import com.virnect.workspace.application.license.LicenseRestService;
-import com.virnect.workspace.application.message.MessageRestService;
 import com.virnect.workspace.application.user.UserRestService;
 import com.virnect.workspace.dao.setting.WorkspaceCustomSettingRepository;
 import com.virnect.workspace.dao.workspace.WorkspaceRepository;
@@ -21,18 +20,18 @@ import com.virnect.workspace.dto.response.*;
 import com.virnect.workspace.dto.rest.*;
 import com.virnect.workspace.event.cache.UserWorkspacesDeleteEvent;
 import com.virnect.workspace.event.history.HistoryAddEvent;
+import com.virnect.workspace.event.mail.MailContextHandler;
+import com.virnect.workspace.event.mail.MailSendEvent;
 import com.virnect.workspace.exception.WorkspaceException;
 import com.virnect.workspace.global.common.ApiResponse;
 import com.virnect.workspace.global.common.CustomPageHandler;
 import com.virnect.workspace.global.common.CustomPageResponse;
-import com.virnect.workspace.global.common.RedirectProperty;
 import com.virnect.workspace.global.common.mapper.rest.RestMapStruct;
 import com.virnect.workspace.global.constant.LicenseProduct;
 import com.virnect.workspace.global.constant.Mail;
-import com.virnect.workspace.global.constant.MailSender;
 import com.virnect.workspace.global.error.ErrorCode;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Profile;
@@ -44,7 +43,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 import org.springframework.web.servlet.view.RedirectView;
 import org.thymeleaf.context.Context;
-import org.thymeleaf.spring5.SpringTemplateEngine;
 
 import java.io.IOException;
 import java.util.*;
@@ -61,22 +59,39 @@ import java.util.stream.Stream;
  */
 @Slf4j
 @Service
-@RequiredArgsConstructor
 public abstract class WorkspaceUserService {
-    private final WorkspaceRepository workspaceRepository;
-    private final WorkspaceUserRepository workspaceUserRepository;
-    private final WorkspaceRoleRepository workspaceRoleRepository;
-    private final WorkspaceUserPermissionRepository workspaceUserPermissionRepository;
-    private final UserRestService userRestService;
-    private final MessageRestService messageRestService;
-    private final SpringTemplateEngine springTemplateEngine;
-    private final MessageSource messageSource;
-    private final LicenseRestService licenseRestService;
-    private final RedirectProperty redirectProperty;
+    private WorkspaceRepository workspaceRepository;
+    private WorkspaceUserRepository workspaceUserRepository;
+    private WorkspaceRoleRepository workspaceRoleRepository;
+    private WorkspaceUserPermissionRepository workspaceUserPermissionRepository;
+    private UserRestService userRestService;
+    private MessageSource messageSource;
+    private LicenseRestService licenseRestService;
+    private RestMapStruct restMapStruct;
+    private ApplicationEventPublisher applicationEventPublisher;
+    private  WorkspaceCustomSettingRepository workspaceCustomSettingRepository;
+    private  MailContextHandler mailContextHandler;
+
     private static final String ALL_LICENSE_PRODUCT = ".*(?i)REMOTE.*|.*(?i)MAKE.*|.*(?i)VIEW.*";
-    private final RestMapStruct restMapStruct;
-    private final ApplicationEventPublisher applicationEventPublisher;
-    private final WorkspaceCustomSettingRepository workspaceCustomSettingRepository;
+
+    @Autowired
+    WorkspaceUserService(WorkspaceRepository workspaceRepository, WorkspaceUserRepository workspaceUserRepository, WorkspaceRoleRepository workspaceRoleRepository, WorkspaceUserPermissionRepository workspaceUserPermissionRepository, UserRestService userRestService, MessageSource messageSource, LicenseRestService licenseRestService, RestMapStruct restMapStruct, ApplicationEventPublisher applicationEventPublisher, WorkspaceCustomSettingRepository workspaceCustomSettingRepository, MailContextHandler mailContextHandler) {
+        this.workspaceRepository = workspaceRepository;
+        this.workspaceUserRepository = workspaceUserRepository;
+        this.workspaceRoleRepository = workspaceRoleRepository;
+        this.workspaceUserPermissionRepository = workspaceUserPermissionRepository;
+        this.userRestService = userRestService;
+        this.messageSource = messageSource;
+        this.licenseRestService = licenseRestService;
+        this.restMapStruct = restMapStruct;
+        this.applicationEventPublisher = applicationEventPublisher;
+        this.workspaceCustomSettingRepository = workspaceCustomSettingRepository;
+        this.mailContextHandler = mailContextHandler;
+    }
+
+
+    WorkspaceUserService() {
+    }
 
     /**
      * 멤버 조회
@@ -357,10 +372,10 @@ public abstract class WorkspaceUserService {
                 if (!role.matches("MASTER|MANAGER")) {
                     throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_INVALID_PERMISSION);
                 }
-                if(role.matches("MASTER") || !userRole.matches("MANAGER|MEMBER")){
+                if (role.matches("MASTER") || !userRole.matches("MANAGER|MEMBER")) {
                     throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_INVALID_PERMISSION);
                 }
-                if(role.matches("MANAGER") || !userRole.matches("MEMBER")) {
+                if (role.matches("MANAGER") || !userRole.matches("MEMBER")) {
                     throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_INVALID_PERMISSION);
                 }
             }
@@ -381,25 +396,10 @@ public abstract class WorkspaceUserService {
         workspaceUserPermissionRepository.save(userPermission);
 
         // 메일 발송
-        Context context = new Context();
-        context.setVariable("workspaceName", workspace.getName());
-        context.setVariable("workspaceMasterNickName", masterUser.getNickname());
-        context.setVariable("workspaceMasterEmail", masterUser.getEmail());
-        context.setVariable("responseUserNickName", user.getNickname());
-        context.setVariable("responseUserEmail", user.getEmail());
-        context.setVariable("role", workspaceRole.getRole());
-        context.setVariable("workstationHomeUrl", redirectProperty.getWorkstationWeb());
-        context.setVariable("supportUrl", redirectProperty.getSupportWeb());
-
+        Context context = mailContextHandler.getWorkspaceUserPermissionUpdateContext(workspace.getName(), masterUser, user, workspaceRole.getRole());
         List<String> receiverEmailList = new ArrayList<>();
         receiverEmailList.add(user.getEmail());
-        String subject = messageSource.getMessage(
-                Mail.WORKSPACE_USER_PERMISSION_UPDATE.getSubject(), null, locale);
-        String template = messageSource.getMessage(
-                Mail.WORKSPACE_USER_PERMISSION_UPDATE.getTemplate(), null, locale);
-        String html = springTemplateEngine.process(template, context);
-
-        sendMailRequest(html, receiverEmailList, MailSender.MASTER.getValue(), subject);
+        applicationEventPublisher.publishEvent(new MailSendEvent(context, Mail.WORKSPACE_USER_PERMISSION_UPDATE, locale, receiverEmailList));
 
         // 히스토리 적재
         String message;
@@ -436,37 +436,37 @@ public abstract class WorkspaceUserService {
         if (workspaceCustomSettingOptional.isPresent()) {
             log.info("[REVISE MEMBER INFO] workspace custom setting value : [{}]", workspaceCustomSettingOptional.get().getValue());
             if (workspaceCustomSettingOptional.get().getValue() == SettingValue.UNUSED || workspaceCustomSettingOptional.get().getValue() == SettingValue.MASTER_OR_MANAGER) {
-                if(!requestUserPermission.getWorkspaceRole().getRole().matches("MASTER|MANAGER")){
+                if (!requestUserPermission.getWorkspaceRole().getRole().matches("MASTER|MANAGER")) {
                     throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_INVALID_PERMISSION);
                 }
-                if(requestUserPermission.getWorkspaceRole().getRole().equals("MANAGER") && responseUserPermission.getWorkspaceRole().getRole().equals("MASTER")){
+                if (requestUserPermission.getWorkspaceRole().getRole().equals("MANAGER") && responseUserPermission.getWorkspaceRole().getRole().equals("MASTER")) {
                     throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_USER_INFO_UPDATE_MASTER_PLAN);
                 }
             }
             if (workspaceCustomSettingOptional.get().getValue() == SettingValue.MASTER) {
-                if(!requestUserPermission.getWorkspaceRole().getRole().matches("MASTER")){
+                if (!requestUserPermission.getWorkspaceRole().getRole().matches("MASTER")) {
                     throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_INVALID_PERMISSION);
                 }
             }
             if (workspaceCustomSettingOptional.get().getValue() == SettingValue.MASTER_OR_MANAGER_OR_MEMBER) {
-                if(!requestUserPermission.getWorkspaceRole().getRole().matches("MASTER|MANAGER|MEMBER")){
+                if (!requestUserPermission.getWorkspaceRole().getRole().matches("MASTER|MANAGER|MEMBER")) {
                     throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_INVALID_PERMISSION);
                 }
-                if(requestUserPermission.getWorkspaceRole().getRole().equals("MANAGER") && responseUserPermission.getWorkspaceRole().getRole().equals("MASTER")){
+                if (requestUserPermission.getWorkspaceRole().getRole().equals("MANAGER") && responseUserPermission.getWorkspaceRole().getRole().equals("MASTER")) {
                     throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_INVALID_PERMISSION);
                 }
-                if(requestUserPermission.getWorkspaceRole().getRole().equals("MEMBER") && responseUserPermission.getWorkspaceRole().getRole().equals("MASTER")){
+                if (requestUserPermission.getWorkspaceRole().getRole().equals("MEMBER") && responseUserPermission.getWorkspaceRole().getRole().equals("MASTER")) {
                     throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_INVALID_PERMISSION);
                 }
-                if(requestUserPermission.getWorkspaceRole().getRole().equals("MEMBER") && responseUserPermission.getWorkspaceRole().getRole().equals("MANAGER")){
+                if (requestUserPermission.getWorkspaceRole().getRole().equals("MEMBER") && responseUserPermission.getWorkspaceRole().getRole().equals("MANAGER")) {
                     throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_INVALID_PERMISSION);
                 }
             }
         } else {
-            if(!requestUserPermission.getWorkspaceRole().getRole().matches("MASTER|MANAGER")){
+            if (!requestUserPermission.getWorkspaceRole().getRole().matches("MASTER|MANAGER")) {
                 throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_INVALID_PERMISSION);
             }
-            if(requestUserPermission.getWorkspaceRole().getRole().equals("MANAGER") && responseUserPermission.getWorkspaceRole().getRole().equals("MASTER")){
+            if (requestUserPermission.getWorkspaceRole().getRole().equals("MANAGER") && responseUserPermission.getWorkspaceRole().getRole().equals("MASTER")) {
                 throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_USER_INFO_UPDATE_MASTER_PLAN);
             }
         }
@@ -523,42 +523,13 @@ public abstract class WorkspaceUserService {
 
         if (!addedProductList.isEmpty() || !removedProductList.isEmpty()) {
             //메일 발송
-            Context context = new Context();
-            context.setVariable("workspaceName", workspace.getName());
-            context.setVariable("workstationHomeUrl", redirectProperty.getWorkstationWeb());
-            context.setVariable("workspaceMasterNickName", masterUser.getNickname());
-            context.setVariable("workspaceMasterEmail", masterUser.getEmail());
-            context.setVariable("responseUserNickName", user.getNickname());
-            context.setVariable("responseUserEmail", user.getEmail());
-            context.setVariable("supportUrl", redirectProperty.getSupportWeb());
-            context.setVariable("plan", org.apache.commons.lang.StringUtils.join(updatedProductList, ","));
-
+            Context context = mailContextHandler.getWorkspaceUserPlanUpdateContext(workspace.getName(), masterUser, user, updatedProductList);
             List<String> receiverEmailList = new ArrayList<>();
             receiverEmailList.add(user.getEmail());
-            String subject = messageSource.getMessage(Mail.WORKSPACE_USER_PLAN_UPDATE.getSubject(), null, locale);
-            String template = messageSource.getMessage(
-                    Mail.WORKSPACE_USER_PLAN_UPDATE.getTemplate(), null, locale);
-            String html = springTemplateEngine.process(template, context);
-            sendMailRequest(html, receiverEmailList, MailSender.MASTER.getValue(), subject);
+            applicationEventPublisher.publishEvent(new MailSendEvent(context, Mail.WORKSPACE_USER_PLAN_UPDATE, locale, receiverEmailList));
         }
     }
 
-    /**
-     * pf-message 서버로 보낼 메일 전송 api body
-     *
-     * @param html      - 본문
-     * @param receivers - 수신정보
-     * @param sender    - 발신정보
-     * @param subject   - 제목
-     */
-    private void sendMailRequest(String html, List<String> receivers, String sender, String subject) {
-        MailRequest mailRequest = new MailRequest();
-        mailRequest.setHtml(html);
-        mailRequest.setReceivers(receivers);
-        mailRequest.setSender(sender);
-        mailRequest.setSubject(subject);
-        messageRestService.sendMail(mailRequest);
-    }
 
     private List<String> userLicenseValidCheck(boolean planRemote, boolean planMake, boolean planView) {
         if (!planRemote && !planMake && !planView) {
@@ -698,21 +669,10 @@ public abstract class WorkspaceUserService {
         //메일 발송
         UserInfoRestResponse masterUser = userRestService.getUserInfoByUserId(workspace.getUserId()).getData();
         UserInfoRestResponse kickedUser = getUserInfoByUserId(memberKickOutRequest.getKickedUserId());
-        Context context = new Context();
-        context.setVariable("workspaceName", workspace.getName());
-        context.setVariable("workspaceMasterNickName", masterUser.getNickname());
-        context.setVariable("workspaceMasterEmail", masterUser.getEmail());
-        context.setVariable("supportUrl", redirectProperty.getSupportWeb());
-
+        Context context = mailContextHandler.getWorkspaceKickoutContext(workspace.getName(), masterUser);
         List<String> receiverEmailList = new ArrayList<>();
         receiverEmailList.add(kickedUser.getEmail());
-
-        String subject = messageSource.getMessage(Mail.WORKSPACE_KICKOUT.getSubject(), null, locale);
-        String template = messageSource.getMessage(Mail.WORKSPACE_KICKOUT.getTemplate(), null, locale);
-        String html = springTemplateEngine.process(template, context);
-
-        sendMailRequest(html, receiverEmailList, MailSender.MASTER.getValue(), subject);
-        log.debug("[WORKSPACE KICK OUT USER] Send Workspace kick out mail.");
+        applicationEventPublisher.publishEvent(new MailSendEvent(context, Mail.WORKSPACE_KICKOUT, locale, receiverEmailList));
 
         //history 저장
         String message = messageSource.getMessage(
