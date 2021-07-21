@@ -1,5 +1,10 @@
 package com.virnect.workspace.application.workspace;
 
+import com.virnect.workspace.application.license.LicenseRestService;
+import com.virnect.workspace.application.user.UserRestService;
+import com.virnect.workspace.dao.history.HistoryRepository;
+import com.virnect.workspace.dao.setting.SettingRepository;
+import com.virnect.workspace.dao.setting.WorkspaceCustomSettingRepository;
 import com.virnect.workspace.dao.workspace.*;
 import com.virnect.workspace.domain.workspace.*;
 import com.virnect.workspace.dto.WorkspaceInfoDTO;
@@ -7,7 +12,9 @@ import com.virnect.workspace.dto.onpremise.*;
 import com.virnect.workspace.dto.request.WorkspaceCreateRequest;
 import com.virnect.workspace.dto.rest.UserInfoRestResponse;
 import com.virnect.workspace.event.cache.UserWorkspacesDeleteEvent;
+import com.virnect.workspace.event.mail.MailContextHandler;
 import com.virnect.workspace.exception.WorkspaceException;
+import com.virnect.workspace.global.common.mapper.rest.RestMapStruct;
 import com.virnect.workspace.global.common.mapper.workspace.WorkspaceMapStruct;
 import com.virnect.workspace.global.constant.Permission;
 import com.virnect.workspace.global.constant.Role;
@@ -15,8 +22,6 @@ import com.virnect.workspace.global.constant.UUIDType;
 import com.virnect.workspace.global.error.ErrorCode;
 import com.virnect.workspace.global.util.RandomStringTokenUtil;
 import com.virnect.workspace.infra.file.FileService;
-import lombok.AccessLevel;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Profile;
@@ -29,7 +34,6 @@ import java.io.IOException;
 @Slf4j
 @Service
 @Profile("!onpremise")
-@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public class OnWorkspaceServiceImpl extends WorkspaceService {
     private final WorkspaceRepository workspaceRepository;
     private final FileService fileUploadService;
@@ -41,6 +45,18 @@ public class OnWorkspaceServiceImpl extends WorkspaceService {
     private final ApplicationEventPublisher applicationEventPublisher;
 
     private static final int MAX_HAVE_WORKSPACE_AMOUNT = 49; //최대 생성 가능한 워크스페이스 수
+
+    public OnWorkspaceServiceImpl(WorkspaceRepository workspaceRepository, WorkspaceUserRepository workspaceUserRepository, WorkspaceUserPermissionRepository workspaceUserPermissionRepository, UserRestService userRestService, FileService fileUploadService, HistoryRepository historyRepository, LicenseRestService licenseRestService, WorkspaceMapStruct workspaceMapStruct, RestMapStruct restMapStruct, ApplicationEventPublisher applicationEventPublisher, SettingRepository settingRepository, WorkspaceCustomSettingRepository workspaceCustomSettingRepository, MailContextHandler mailContextHandler, WorkspaceRoleRepository workspaceRoleRepository, WorkspacePermissionRepository workspacePermissionRepository) {
+        super(workspaceRepository, workspaceUserRepository, workspaceUserPermissionRepository, userRestService, fileUploadService, historyRepository, licenseRestService, workspaceMapStruct, restMapStruct, applicationEventPublisher, settingRepository, workspaceCustomSettingRepository, mailContextHandler);
+        this.workspaceRepository = workspaceRepository;
+        this.fileUploadService = fileUploadService;
+        this.workspaceUserRepository = workspaceUserRepository;
+        this.workspaceRoleRepository = workspaceRoleRepository;
+        this.workspaceUserPermissionRepository = workspaceUserPermissionRepository;
+        this.workspacePermissionRepository = workspacePermissionRepository;
+        this.workspaceMapStruct = workspaceMapStruct;
+        this.applicationEventPublisher = applicationEventPublisher;
+    }
 
 
     /**

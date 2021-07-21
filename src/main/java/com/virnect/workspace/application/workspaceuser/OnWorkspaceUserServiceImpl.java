@@ -24,14 +24,13 @@ import com.virnect.workspace.event.mail.MailSendEvent;
 import com.virnect.workspace.exception.WorkspaceException;
 import com.virnect.workspace.global.common.ApiResponse;
 import com.virnect.workspace.global.common.RedirectProperty;
+import com.virnect.workspace.global.common.mapper.rest.RestMapStruct;
 import com.virnect.workspace.global.constant.Mail;
 import com.virnect.workspace.global.constant.Permission;
 import com.virnect.workspace.global.constant.RedirectPath;
 import com.virnect.workspace.global.constant.UUIDType;
 import com.virnect.workspace.global.error.ErrorCode;
 import com.virnect.workspace.global.util.RandomStringTokenUtil;
-import lombok.AccessLevel;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.MessageSource;
@@ -56,7 +55,6 @@ import java.util.stream.Collectors;
 @Slf4j
 @Service
 @Profile("!onpremise")
-@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public class OnWorkspaceUserServiceImpl extends WorkspaceUserService {
     private final WorkspaceRepository workspaceRepository;
     private final WorkspaceUserRepository workspaceUserRepository;
@@ -73,6 +71,23 @@ public class OnWorkspaceUserServiceImpl extends WorkspaceUserService {
     private final MailContextHandler mailContextHandler;
     private static final int MAX_JOIN_WORKSPACE_AMOUNT = 49;//최대 참여 가능한 워크스페이스 수
     private static final int MAX_WORKSPACE_USER_AMOUNT = 50;//워크스페이스 최대 멤버 수(마스터 본인 포함)
+
+    public OnWorkspaceUserServiceImpl(WorkspaceRepository workspaceRepository, WorkspaceUserRepository workspaceUserRepository, WorkspaceRoleRepository workspaceRoleRepository, WorkspaceUserPermissionRepository workspaceUserPermissionRepository, UserRestService userRestService, MessageSource messageSource, LicenseRestService licenseRestService, RestMapStruct restMapStruct, ApplicationEventPublisher applicationEventPublisher, WorkspaceCustomSettingRepository workspaceCustomSettingRepository, MailContextHandler mailContextHandler, WorkspacePermissionRepository workspacePermissionRepository, UserInviteRepository userInviteRepository, RedirectProperty redirectProperty) {
+        super(workspaceRepository, workspaceUserRepository, workspaceRoleRepository, workspaceUserPermissionRepository, userRestService, messageSource, licenseRestService, restMapStruct, applicationEventPublisher, workspaceCustomSettingRepository, mailContextHandler);
+        this.workspaceRepository = workspaceRepository;
+        this.workspaceUserRepository = workspaceUserRepository;
+        this.workspaceRoleRepository = workspaceRoleRepository;
+        this.workspacePermissionRepository = workspacePermissionRepository;
+        this.workspaceUserPermissionRepository = workspaceUserPermissionRepository;
+        this.userRestService = userRestService;
+        this.userInviteRepository = userInviteRepository;
+        this.messageSource = messageSource;
+        this.licenseRestService = licenseRestService;
+        this.redirectProperty = redirectProperty;
+        this.applicationEventPublisher = applicationEventPublisher;
+        this.workspaceCustomSettingRepository = workspaceCustomSettingRepository;
+        this.mailContextHandler = mailContextHandler;
+    }
 
     @Override
     public ApiResponse<Boolean> inviteWorkspace(

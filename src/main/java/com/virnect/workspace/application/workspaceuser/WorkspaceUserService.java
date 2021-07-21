@@ -30,8 +30,8 @@ import com.virnect.workspace.global.common.mapper.rest.RestMapStruct;
 import com.virnect.workspace.global.constant.LicenseProduct;
 import com.virnect.workspace.global.constant.Mail;
 import com.virnect.workspace.global.error.ErrorCode;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Profile;
@@ -59,39 +59,22 @@ import java.util.stream.Stream;
  */
 @Slf4j
 @Service
+@RequiredArgsConstructor
 public abstract class WorkspaceUserService {
-    private WorkspaceRepository workspaceRepository;
-    private WorkspaceUserRepository workspaceUserRepository;
-    private WorkspaceRoleRepository workspaceRoleRepository;
-    private WorkspaceUserPermissionRepository workspaceUserPermissionRepository;
-    private UserRestService userRestService;
-    private MessageSource messageSource;
-    private LicenseRestService licenseRestService;
-    private RestMapStruct restMapStruct;
-    private ApplicationEventPublisher applicationEventPublisher;
-    private  WorkspaceCustomSettingRepository workspaceCustomSettingRepository;
-    private  MailContextHandler mailContextHandler;
+    private final WorkspaceRepository workspaceRepository;
+    private final WorkspaceUserRepository workspaceUserRepository;
+    private final WorkspaceRoleRepository workspaceRoleRepository;
+    private final WorkspaceUserPermissionRepository workspaceUserPermissionRepository;
+    private final UserRestService userRestService;
+    private final MessageSource messageSource;
+    private final LicenseRestService licenseRestService;
+    private final RestMapStruct restMapStruct;
+    private final ApplicationEventPublisher applicationEventPublisher;
+    private final WorkspaceCustomSettingRepository workspaceCustomSettingRepository;
+    private final MailContextHandler mailContextHandler;
 
     private static final String ALL_LICENSE_PRODUCT = ".*(?i)REMOTE.*|.*(?i)MAKE.*|.*(?i)VIEW.*";
 
-    @Autowired
-    WorkspaceUserService(WorkspaceRepository workspaceRepository, WorkspaceUserRepository workspaceUserRepository, WorkspaceRoleRepository workspaceRoleRepository, WorkspaceUserPermissionRepository workspaceUserPermissionRepository, UserRestService userRestService, MessageSource messageSource, LicenseRestService licenseRestService, RestMapStruct restMapStruct, ApplicationEventPublisher applicationEventPublisher, WorkspaceCustomSettingRepository workspaceCustomSettingRepository, MailContextHandler mailContextHandler) {
-        this.workspaceRepository = workspaceRepository;
-        this.workspaceUserRepository = workspaceUserRepository;
-        this.workspaceRoleRepository = workspaceRoleRepository;
-        this.workspaceUserPermissionRepository = workspaceUserPermissionRepository;
-        this.userRestService = userRestService;
-        this.messageSource = messageSource;
-        this.licenseRestService = licenseRestService;
-        this.restMapStruct = restMapStruct;
-        this.applicationEventPublisher = applicationEventPublisher;
-        this.workspaceCustomSettingRepository = workspaceCustomSettingRepository;
-        this.mailContextHandler = mailContextHandler;
-    }
-
-
-    WorkspaceUserService() {
-    }
 
     /**
      * 멤버 조회

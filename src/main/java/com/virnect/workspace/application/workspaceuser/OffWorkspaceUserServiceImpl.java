@@ -17,15 +17,16 @@ import com.virnect.workspace.dto.response.WorkspaceMemberInfoListResponse;
 import com.virnect.workspace.dto.response.WorkspaceMemberPasswordChangeResponse;
 import com.virnect.workspace.dto.response.WorkspaceUserInfoResponse;
 import com.virnect.workspace.dto.rest.*;
+import com.virnect.workspace.event.mail.MailContextHandler;
 import com.virnect.workspace.exception.WorkspaceException;
 import com.virnect.workspace.global.common.ApiResponse;
 import com.virnect.workspace.global.common.mapper.rest.RestMapStruct;
 import com.virnect.workspace.global.constant.LicenseProduct;
 import com.virnect.workspace.global.constant.Permission;
 import com.virnect.workspace.global.error.ErrorCode;
-import lombok.AccessLevel;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -46,7 +47,6 @@ import java.util.*;
 @Slf4j
 @Service
 @Profile("onpremise")
-@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public class OffWorkspaceUserServiceImpl extends WorkspaceUserService {
     private static final String serviceID = "workspace-server";
     private final WorkspaceRepository workspaceRepository;
@@ -58,6 +58,19 @@ public class OffWorkspaceUserServiceImpl extends WorkspaceUserService {
     private final LicenseRestService licenseRestService;
     private final RestMapStruct restMapStruct;
     private final WorkspaceCustomSettingRepository workspaceCustomSettingRepository;
+
+    public OffWorkspaceUserServiceImpl(WorkspaceRepository workspaceRepository, WorkspaceUserRepository workspaceUserRepository, WorkspaceRoleRepository workspaceRoleRepository, WorkspaceUserPermissionRepository workspaceUserPermissionRepository, UserRestService userRestService, MessageSource messageSource, LicenseRestService licenseRestService, RestMapStruct restMapStruct, ApplicationEventPublisher applicationEventPublisher, WorkspaceCustomSettingRepository workspaceCustomSettingRepository, MailContextHandler mailContextHandler, WorkspacePermissionRepository workspacePermissionRepository) {
+        super(workspaceRepository, workspaceUserRepository, workspaceRoleRepository, workspaceUserPermissionRepository, userRestService, messageSource, licenseRestService, restMapStruct, applicationEventPublisher, workspaceCustomSettingRepository, mailContextHandler);
+        this.workspaceRepository = workspaceRepository;
+        this.workspaceUserRepository = workspaceUserRepository;
+        this.workspaceRoleRepository = workspaceRoleRepository;
+        this.workspacePermissionRepository = workspacePermissionRepository;
+        this.workspaceUserPermissionRepository = workspaceUserPermissionRepository;
+        this.userRestService = userRestService;
+        this.licenseRestService = licenseRestService;
+        this.restMapStruct = restMapStruct;
+        this.workspaceCustomSettingRepository = workspaceCustomSettingRepository;
+    }
 
     @Override
     @Transactional

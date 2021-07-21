@@ -33,8 +33,8 @@ import com.virnect.workspace.global.constant.Mail;
 import com.virnect.workspace.global.constant.Role;
 import com.virnect.workspace.global.error.ErrorCode;
 import com.virnect.workspace.infra.file.FileService;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Profile;
 import org.springframework.data.domain.Page;
@@ -57,40 +57,21 @@ import java.util.stream.Collectors;
  */
 @Slf4j
 @Service
+@RequiredArgsConstructor
 public abstract class WorkspaceService {
-    private WorkspaceRepository workspaceRepository;
-    private WorkspaceUserRepository workspaceUserRepository;
-    private WorkspaceUserPermissionRepository workspaceUserPermissionRepository;
-    private UserRestService userRestService;
-    private FileService fileUploadService;
-    private HistoryRepository historyRepository;
-    private LicenseRestService licenseRestService;
-    private WorkspaceMapStruct workspaceMapStruct;
-    private RestMapStruct restMapStruct;
-    private ApplicationEventPublisher applicationEventPublisher;
-    private SettingRepository settingRepository;
-    private WorkspaceCustomSettingRepository workspaceCustomSettingRepository;
-    private MailContextHandler mailContextHandler;
-
-    @Autowired
-    WorkspaceService(WorkspaceRepository workspaceRepository, WorkspaceUserRepository workspaceUserRepository, WorkspaceUserPermissionRepository workspaceUserPermissionRepository, UserRestService userRestService, FileService fileUploadService, HistoryRepository historyRepository, LicenseRestService licenseRestService, WorkspaceMapStruct workspaceMapStruct, RestMapStruct restMapStruct, ApplicationEventPublisher applicationEventPublisher, SettingRepository settingRepository, WorkspaceCustomSettingRepository workspaceCustomSettingRepository, MailContextHandler mailContextHandler) {
-        this.workspaceRepository = workspaceRepository;
-        this.workspaceUserRepository = workspaceUserRepository;
-        this.workspaceUserPermissionRepository = workspaceUserPermissionRepository;
-        this.userRestService = userRestService;
-        this.fileUploadService = fileUploadService;
-        this.historyRepository = historyRepository;
-        this.licenseRestService = licenseRestService;
-        this.workspaceMapStruct = workspaceMapStruct;
-        this.restMapStruct = restMapStruct;
-        this.applicationEventPublisher = applicationEventPublisher;
-        this.settingRepository = settingRepository;
-        this.workspaceCustomSettingRepository = workspaceCustomSettingRepository;
-        this.mailContextHandler = mailContextHandler;
-    }
-
-    WorkspaceService() {
-    }
+    private final WorkspaceRepository workspaceRepository;
+    private final WorkspaceUserRepository workspaceUserRepository;
+    private final WorkspaceUserPermissionRepository workspaceUserPermissionRepository;
+    private final UserRestService userRestService;
+    private final FileService fileUploadService;
+    private final HistoryRepository historyRepository;
+    private final LicenseRestService licenseRestService;
+    private final WorkspaceMapStruct workspaceMapStruct;
+    private final RestMapStruct restMapStruct;
+    private final ApplicationEventPublisher applicationEventPublisher;
+    private final SettingRepository settingRepository;
+    private final WorkspaceCustomSettingRepository workspaceCustomSettingRepository;
+    private final MailContextHandler mailContextHandler;
 
     /**
      * 워크스페이스 생성
