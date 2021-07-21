@@ -253,7 +253,7 @@ export default {
         })
         if (this.view !== VIEW.AR) {
           const sendSignal = true
-          data.isAllowed ? this.startAr(sendSignal) : this.showRejected()
+          data.isAllowed ? this.startAr(sendSignal) : this.showArRejected()
         }
       }
     },
@@ -274,7 +274,7 @@ export default {
 
       this.setView(VIEW.AR)
     },
-    showRejected() {
+    showArRejected() {
       this.toastDefault(this.$t('service.toast_refused_ar'))
       this.addChat({
         status: 'ar-deny',
