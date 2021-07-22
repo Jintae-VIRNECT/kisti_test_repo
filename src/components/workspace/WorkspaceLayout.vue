@@ -42,15 +42,21 @@ import WorkspaceTab from './section/WorkspaceTab'
 import auth, { getSettings } from 'utils/auth'
 import { getLicense, workspaceLicense, getCompanyInfo } from 'api/http/account'
 import RecordList from 'LocalRecordList'
+
 import confirmMixin from 'mixins/confirm'
 import langMixin from 'mixins/language'
 import toastMixin from 'mixins/toast'
 import authStatusCallbackMixin from 'mixins/authStatusCallback'
+import errorMsgMixin from 'mixins/errorMsg'
+
 import DeviceDenied from './modal/WorkspaceDeviceDenied'
 import PlanOverflow from './modal/WorkspacePlanOverflow'
 import RoomLoading from './modal/WorkspaceRoomLoading'
 import { mapActions, mapGetters } from 'vuex'
+
 import { PLAN_STATUS } from 'configs/status.config'
+import { ERROR } from 'configs/error.config'
+
 import { MyStorage } from 'utils/storage'
 import { initAudio } from 'plugins/remote/tts/audio'
 
@@ -67,7 +73,13 @@ export default {
       })
     }
   },
-  mixins: [confirmMixin, langMixin, toastMixin, authStatusCallbackMixin],
+  mixins: [
+    confirmMixin,
+    langMixin,
+    toastMixin,
+    authStatusCallbackMixin,
+    errorMsgMixin,
+  ],
   components: {
     HeaderSection,
     WorkspaceWelcome,
@@ -197,9 +209,9 @@ export default {
           userId: this.account.uuid,
         })
       } catch (err) {
-        if (err.code === 5003) {
+        if (err.code === ERROR.NO_LICENSE) {
           this.clearWorkspace(this.workspace.uuid)
-          this.toastError(this.$t('workspace.no_license'))
+          this.showErrorToast(err.code)
         }
       }
     },

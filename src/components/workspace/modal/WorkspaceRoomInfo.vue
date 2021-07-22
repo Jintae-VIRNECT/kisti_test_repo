@@ -81,13 +81,18 @@ import RoomInfo from '../partials/ModalRoomInfo'
 import ParticipantsInfo from '../partials/ModalParticipantsInfo'
 import RoomDownload from '../partials/ModalRoomDownload'
 import Profile from 'Profile'
+
 import toastMixin from 'mixins/toast'
 import confirmMixin from 'mixins/confirm'
+import errorMsgMixin from 'mixins/errorMsg'
+
+import { ERROR } from 'configs/error.config'
+
 import { mapGetters } from 'vuex'
 
 export default {
   name: 'WorkspaceRoomInfo',
-  mixins: [toastMixin, confirmMixin],
+  mixins: [toastMixin, confirmMixin, errorMsgMixin],
   components: {
     Modal,
     Profile,
@@ -145,8 +150,8 @@ export default {
         this.image = this.room.profile
         this.tabview = 'group'
       } catch (err) {
-        if (err.code === 4002) {
-          this.toastError(this.$t('workspace.remote_already_removed'))
+        if (err.code === ERROR.REMOTE_ALREADY_REMOVED) {
+          this.showErrorToast(err.code)
           this.$emit('update:visible', false)
         }
       }
@@ -193,11 +198,11 @@ export default {
           this.$emit('update:visible', false)
         }
       } catch (err) {
-        if (err.code === 4002) {
-          this.toastError(this.$t('workspace.remote_already_removed'))
+        if (err.code === ERROR.REMOTE_ALREADY_REMOVED) {
+          this.showErrorToast(err.code)
           this.$emit('update:visible', false)
-        } else if (err.code === 7017) {
-          this.toastError(this.$t('alarm.file_storage_capacity_full'))
+        } else if (err.code === ERROR.FILE_STORAGE_CAPACITY_FULL) {
+          this.showErrorToast(err.code)
         }
       }
     },
@@ -232,8 +237,8 @@ export default {
           this.$emit('updatedInfo', {})
         }
       } catch (err) {
-        if (err.code === 4002) {
-          this.toastError(this.$t('workspace.remote_already_removed'))
+        if (err.code === ERROR.REMOTE_ALREADY_REMOVED) {
+          this.showErrorToast(err.code)
           this.$emit('update:visible', false)
         }
       }

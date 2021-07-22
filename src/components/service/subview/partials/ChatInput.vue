@@ -85,10 +85,13 @@
 <script>
 import { mapGetters, mapActions } from 'vuex'
 import { uploadFile } from 'api/http/file'
+
+import errorMsgMixin from 'mixins/errorMsg'
 import toastMixin from 'mixins/toast'
+
 export default {
   name: 'ChatInput',
-  mixins: [toastMixin],
+  mixins: [toastMixin, errorMsgMixin],
   data() {
     return {
       viewTrans: false,
@@ -196,16 +199,7 @@ export default {
           this.fileList = []
         } catch (err) {
           if (err && err.code) {
-            if (err.code === 7002) {
-              this.toastError(this.$t('service.file_dummy_assumed'))
-            } else if (err.code === 7003) {
-              this.toastError(this.$t('service.file_extension_unsupport'))
-            } else if (err.code === 7004) {
-              this.toastError(this.$t('service.file_size_exceeded'))
-            } else if (err.code === 7017) {
-              this.toastError(this.$t('alarm.file_storage_capacity_full'))
-            }
-
+            this.showErrorToast(err.code)
             this.clearUploadFile()
             this.fileList = []
           } else {
