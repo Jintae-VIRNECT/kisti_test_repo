@@ -90,7 +90,8 @@
         "memberOverflow": "더 많은 워크스페이스 멤버를 추가하시려면 문의해 주세요. <a href='https://virnect.com/contact/inquiry' target='_blank'>문의하기</a>",
         "workspaceOverflow": "Public 서비스에서는 사용자 1명이 최대 9개의 워크스페이스에 참여할 수 있습니다. 해당 워크스페이스에 참여하시려면 다른 워크스페이스 나가기 후, 해당 워크스페이스 마스터에게 초대 메일 발송을 요청해 주세요.",
         "memberAlready": "이미 참여 중인 워크스페이스 멤버를 초대할 수 없습니다.",
-        "noHavePlans": "멤버에게 할당가능한 잔여 플랜이 없습니다. 결제 센터로 이동해 이용권을 구매해 주세요."
+        "noHavePlans": "멤버에게 할당가능한 잔여 플랜이 없습니다. 결제 센터로 이동해 이용권을 구매해 주세요.",
+        "memberWithdrawal": "탈퇴 이력이 있는 이메일 계정은 초대할 수 없습니다."
       }
     },
     "create": {
