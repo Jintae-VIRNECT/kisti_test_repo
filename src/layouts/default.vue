@@ -12,7 +12,7 @@
         <VirnectWorkspaceSelect
           :activeWorkspace="activeWorkspace"
           :workspaceList="myWorkspaces"
-          :newWorkspace="true"
+          :newWorkspace="false"
           @onChange="changeActiveWorkspace"
           @click.native.prevent
           @addNewWorkspaceButton="$router.push({ path: '/start' })"

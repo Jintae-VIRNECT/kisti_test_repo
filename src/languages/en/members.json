@@ -90,7 +90,8 @@
         "memberOverflow": "Please contact us if you would like add more members to the Workspace. <a href='https://virnect.com/contact/inquiry' target='_blank'>Contact</a>",
         "workspaceOverflow": "In Public Service one user can participate in up to 9 Workspaces. To join the selected Workspace please make yourself available first by leaving one of the Workspace you are in and request an invitation email to the Workspace master member.",
         "memberAlready": "Cannot invite a member who has already participated in the Workspace.",
-        "noHavePlans": "There are no remaining plans available. Please go to the payment center and purchase the plans."
+        "noHavePlans": "There are no remaining plans available. Please go to the payment center and purchase the plans.",
+        "memberWithdrawal": "Email accounts with a history of withdrawal cannot be invited."
       }
     },
     "create": {
