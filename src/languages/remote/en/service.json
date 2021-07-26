@@ -69,7 +69,6 @@
     "share_save": "Would you like to save the created image?",
     "share_notready": "The image is being shared.",
     "share_delete_real": "Are you sure you want to delete it?",
-    "share_locked": "The encrypted file is not supported.",
 
     "drawing_dblclick": "The sharing begins <br />if you double click the file.",
     "drawing_drag": "Drag and drop PDF or image files here, <br />or use 'Import' button.",
@@ -241,6 +240,7 @@
     "spot_networ_error" : "The Spot connection was terminated due to a network/server problem.​\nWould you like to reconnect?​",
     "spot_connecting" : "Connecting to Spot…",
     "spot_reconnecting" : "Spot reconnecting…",
-    "spot_battery_warning" : "Spot battery is {battery}% remaining."
+    "spot_battery_warning" : "Spot battery is {battery}% remaining.",
+    "encrypted_file_unsupport" : "Does not support encrypted files."
   }
 }

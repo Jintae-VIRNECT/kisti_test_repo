@@ -164,12 +164,19 @@ export default {
               this.toastDefault(this.$t('alarm.file_uploaded'))
             }
           } catch (err) {
-            if (err.code === 7017) {
-              this.toastError(this.$t('alarm.file_storage_capacity_full'))
-            } else if (err.code === 7003) {
-              this.toastError(this.$t('service.file_extension_unsupport'))
-            } else {
-              this.toastError(this.$t('confirm.network_error'))
+            const { code } = err
+            switch (code) {
+              case 7003: //미지원 파일 확장자
+                this.toastError(this.$t('service.file_extension_unsupport'))
+                break
+              case 7017: //파일 스토리지 용량 초과
+                this.toastError(this.$t('alarm.file_storage_capacity_full'))
+                break
+              case 7018: //암호화 파일
+                this.toastError(this.$t('service.encrypted_file_unsupport'))
+                break
+              default:
+                this.toastError(this.$t('confirm.network_error'))
             }
             return false
           }
