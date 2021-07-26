@@ -45,18 +45,10 @@
       </div>
       <div class="participant-video__mute" v-if="participant.mute"></div>
       <div class="participant-video__status">
-        <div class="participant-video__network" :class="participant.status">
-          <!-- <div
-            class="participant-video__network-hover"
-            :class="{ hover: hover }"
-            :style="statusHover"
-          >
-            <span :class="participant.status"
-              >{{ $t('service.participant_network') }} :
-              {{ participant.status | networkStatus }}</span
-            >
-          </div> -->
-        </div>
+        <div
+          class="participant-video__network"
+          :class="participant.status"
+        ></div>
         <span class="participant-video__leader" v-if="isLeader">
           Leader
         </span>
@@ -289,7 +281,6 @@ export default {
         '.participant-video__network-hover',
       )
       if (statusTooltip) {
-        //this.$root.$el.append(this.$refs['popover'])
         document.body.append(statusTooltip)
       }
       const top = window.pageYOffset + status.getBoundingClientRect().top

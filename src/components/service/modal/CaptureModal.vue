@@ -131,14 +131,6 @@ export default {
     },
 
     async shareCapture() {
-      // const history = {
-      //   id: this.file.id,
-      //   fileName: this.file.fileName,
-      //   // fileData: this.file.fileData,
-      //   img: this.imageData,
-      // }
-      // this.addHistory(history)
-
       if (this.doubleCheck()) return
 
       const result = await this.uploadImage()
