@@ -1,6 +1,8 @@
 <template>
   <div class="header-tools">
-    <spot-control v-if="isLeader && isOnpremise"></spot-control>
+    <spot-control
+      v-if="isLeader && isOnpremise && isSpotControlActive"
+    ></spot-control>
 
     <chat v-if="!isScreenDesktop"></chat>
 
@@ -31,6 +33,7 @@ import CallTime from '../tools/CallTime'
 import Chat from '../tools/Chat'
 import SpotControl from '../tools/SpotControl'
 import { ROLE } from 'configs/remote.config'
+import { SPOT_CONTROL_ACTIVE } from 'configs/env.config'
 
 export default {
   name: 'HeaderTools',
@@ -64,6 +67,10 @@ export default {
     },
     isLeader() {
       return this.account.roleType === ROLE.LEADER
+    },
+    isSpotControlActive() {
+      //spot control 활성화 여부 (from config서버)
+      return SPOT_CONTROL_ACTIVE
     },
   },
   methods: {

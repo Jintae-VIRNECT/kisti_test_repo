@@ -27,6 +27,12 @@ export let ALLOW_NO_AUDIO = false
 export let ALLOW_NO_DEVICE = false
 
 /**
+ * spot control 기능 버튼 표시 여부
+ * @default false
+ */
+export let SPOT_CONTROL_ACTIVE = false
+
+/**
  * 회사 구분 코드
  * @default 0
  */
