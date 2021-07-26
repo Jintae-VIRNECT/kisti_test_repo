@@ -25,11 +25,12 @@ export default {
       'serverRecordStatus',
       'useRecording',
       'participants',
+      'autoServerRecord',
     ]),
   },
   methods: {
     ...mapActions(['setServerRecordStatus']),
-    async startServerRecord() {
+    async startServerRecord(reason) {
       try {
         this.logger('SERVER RECORD', 'start')
 
@@ -78,7 +79,12 @@ export default {
           this.stopServerRecord()
         }, timeout)
 
-        this.toastDefault(this.$t('service.record_server_start_message'))
+        //자동 시작시
+        if (reason === 'autoStart') {
+          this.toastDefault(this.$t('서버 녹화를 자동으로 시작합니다.​'))
+        } else {
+          this.toastDefault(this.$t('service.record_server_start_message'))
+        }
       } catch (e) {
         console.error('SERVER RECORD::', 'start failed')
         if (e.code === 1001) {
@@ -109,12 +115,12 @@ export default {
         this.toastDefault(this.$t('service.record_server_end_message'))
       }
     },
-    toggleServerRecord(status) {
+    toggleServerRecord(status, reason) {
       if (status === 'STOP') {
         this.stopServerRecord()
       } else if (status === 'WAIT') {
         this.setServerRecordStatus('WAIT')
-        this.startServerRecord()
+        this.startServerRecord(reason)
       }
     },
     async checkServerRecordings() {
@@ -184,6 +190,11 @@ export default {
 
     this.$eventBus.$on('serverRecord', this.toggleServerRecord)
     this.checkServerRecordings()
+
+    if (this.autoServerRecord && this.serverRecordStatus === 'STOP') {
+      //서버 레코딩 시작
+      this.toggleServerRecord('WAIT', 'autoStart')
+    }
   },
   beforeDestroy() {
     if (!this.useRecording) return

@@ -36,15 +36,27 @@
     <p class="setting__label dot">
       {{ $t('workspace.setting_record_setting_description') }}
     </p>
+    <figure class="setting__figure">
+      <p class="setting__label">
+        {{ $t('자동 서버 녹화') }}
+      </p>
+      <check
+        :text="$t('자동 녹화 사용')"
+        :value.sync="useAutoServerRecord"
+      ></check>
+    </figure>
   </section>
 </template>
 <script>
 import RSelect from 'RemoteSelect'
+import Check from 'Check'
+
 import { mapGetters, mapActions } from 'vuex'
 import { serverRecTime, serverRecResOpt } from 'utils/recordOptions'
 export default {
   components: {
     RSelect,
+    Check,
   },
   data() {
     return {
@@ -52,10 +64,11 @@ export default {
       recordInterval: '',
       serverRecResOpt: serverRecResOpt,
       recordResolution: '',
+      useAutoServerRecord: false,
     }
   },
   computed: {
-    ...mapGetters(['serverRecord']),
+    ...mapGetters(['serverRecord', 'autoServerRecord']),
     serverRecTime() {
       const options = serverRecTime.map(time => {
         return {
@@ -73,9 +86,13 @@ export default {
     recordResolution(resolution) {
       this.setRecResolution(resolution)
     },
+    useAutoServerRecord(flag) {
+      this.setAutoServerRecord(flag)
+      window.myStorage.setItem('autoServerRecord', flag)
+    },
   },
   methods: {
-    ...mapActions(['setServerRecord']),
+    ...mapActions(['setServerRecord', 'setAutoServerRecord']),
     setServerRecLength(time) {
       this.setServerRecord({
         time: time,
@@ -99,6 +116,9 @@ export default {
     }
     if (this.serverRecord.resolution) {
       this.recordResolution = this.serverRecord.resolution
+    }
+    if (this.autoServerRecord) {
+      this.useAutoServerRecord = this.autoServerRecord
     }
   },
 }
