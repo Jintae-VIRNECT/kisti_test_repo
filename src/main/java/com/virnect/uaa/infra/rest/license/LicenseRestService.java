@@ -11,11 +11,10 @@ import com.virnect.uaa.infra.rest.license.dto.LicenseSecessionResponse;
 
 @FeignClient(name = "license-server", fallbackFactory = LicenseRestServiceFallbackFactory.class)
 public interface LicenseRestService {
-	@DeleteMapping("/licenses/secession/{workspaceUUID}")
+	@DeleteMapping("/licenses/secession/{userUUID}")
 	ApiResponse<LicenseSecessionResponse> licenseSecession(
 		@RequestHeader("serviceID") String serviceId,
-		@PathVariable("workspaceUUID") String workspaceUUID,
-		@RequestParam("userUUID") String userUUID,
+		@PathVariable("userUUID") String userUUID,
 		@RequestParam("userNumber") long userNumber
 	);
 }

@@ -1,6 +1,7 @@
 package com.virnect.uaa.domain.user.domain;
 
 import java.time.LocalDateTime;
+import java.time.Period;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -73,6 +74,24 @@ public class SecessionUser extends BaseTimeEntity {
 		this.serviceInfo = serviceInfo;
 		this.serviceDay = serviceDay;
 		this.secessionDate = secessionDate;
+	}
+
+	public static SecessionUser of(User user, String reason) {
+		LocalDateTime secessionDate = LocalDateTime.now();
+		long serviceDays = Period.between(user.getCreatedDate().toLocalDate(), secessionDate.toLocalDate()).getDays();
+
+		return new SecessionUser(
+			user.getUuid(),
+			user.getEmail(),
+			reason,
+			user.getNickname(),
+			user.getCreatedDate(),
+			user.getJoinInfo(),
+			user.getServiceInfo(),
+			serviceDays,
+			secessionDate,
+			user.getId()
+		);
 	}
 
 	@Override

@@ -1,5 +1,7 @@
 package com.virnect.uaa.domain.user.application;
 
+import org.springframework.transaction.annotation.Transactional;
+
 import com.virnect.uaa.domain.user.dto.request.AccessPermissionCheckRequest;
 import com.virnect.uaa.domain.user.dto.request.ProfileImageUpdateRequest;
 import com.virnect.uaa.domain.user.dto.request.UserInfoModifyRequest;
@@ -9,6 +11,7 @@ import com.virnect.uaa.domain.user.dto.response.UserInfoResponse;
 import com.virnect.uaa.domain.user.dto.response.UserProfileUpdateResponse;
 import com.virnect.uaa.domain.user.dto.response.UserSecessionResponse;
 
+@Transactional
 public interface UserInformationUpdateService {
 	/**
 	 * 개인 정보 접근 권한 확인

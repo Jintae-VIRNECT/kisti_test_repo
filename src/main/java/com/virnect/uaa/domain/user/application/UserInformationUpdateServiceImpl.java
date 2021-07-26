@@ -9,8 +9,13 @@ import org.springframework.stereotype.Service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import com.virnect.uaa.domain.auth.account.dao.UserOTPRepository;
+import com.virnect.uaa.domain.user.application.process.SecessionProcessService;
 import com.virnect.uaa.domain.user.dao.secession.SecessionUserRepository;
 import com.virnect.uaa.domain.user.dao.user.UserRepository;
+import com.virnect.uaa.domain.user.dao.useraccesslog.UserAccessLogRepository;
+import com.virnect.uaa.domain.user.dao.userpermission.UserPermissionRepository;
+import com.virnect.uaa.domain.user.domain.SecessionUser;
 import com.virnect.uaa.domain.user.domain.User;
 import com.virnect.uaa.domain.user.dto.request.AccessPermissionCheckRequest;
 import com.virnect.uaa.domain.user.dto.request.ProfileImageUpdateRequest;
@@ -29,9 +34,15 @@ import com.virnect.uaa.infra.file.FileService;
 @Service
 @RequiredArgsConstructor
 public class UserInformationUpdateServiceImpl implements UserInformationUpdateService {
-	private final SecessionUserRepository secessionUserRepository;
-	private final PasswordEncoder passwordEncoder;
 	private final UserRepository userRepository;
+	private final SecessionUserRepository secessionUserRepository;
+	private final UserPermissionRepository userPermissionRepository;
+	private final UserOTPRepository userOTPRepository;
+	private final UserAccessLogRepository userAccessLogRepository;
+
+	private final SecessionProcessService secessionProcessService;
+
+	private final PasswordEncoder passwordEncoder;
 	private final UserInfoMapper userInfoMapper;
 	private final FileService fileService;
 
@@ -95,7 +106,26 @@ public class UserInformationUpdateServiceImpl implements UserInformationUpdateSe
 	public UserSecessionResponse accountSecession(
 		UserSecessionRequest userSecessionRequest
 	) {
-		return null;
+		// 1. find target user
+		User user = userRepository.findByUuid(userSecessionRequest.getUuid())
+			.orElseThrow(() -> new UserServiceException(UserAccountErrorCode.ERR_USER_NOT_FOUND));
+
+		// 2. user password compare for access grant validation
+		if (!passwordEncoder.matches(userSecessionRequest.getPassword(), user.getPassword())) {
+			throw new UserServiceException(UserAccountErrorCode.ERR_USER_SECESSION_PASSWORD);
+		}
+
+		// 3. Register current user as secession user
+		registerUserToSecessionUser(user, userSecessionRequest.getReason());
+
+		// 4. Delete current user information
+		deleteUserInformation(user);
+
+		// 5. Delete user account
+		userRepository.delete(user);
+
+		// 6. secession process to related service
+		return secessionProcessService.sendSecessionRequestToAllExternalService(userSecessionRequest, user);
 	}
 
 	private boolean accessPermissionValidator(
@@ -103,5 +133,25 @@ public class UserInformationUpdateServiceImpl implements UserInformationUpdateSe
 	) {
 		return !user.getUuid().equals(userId) ||
 			!passwordEncoder.matches(accessPermissionCheckRequest.getPassword(), user.getPassword());
+	}
+
+	/**
+	 * 탈퇴 계정 정보에 탈퇴 대상 계정 정보 등록
+	 * @param user - 탈퇴 대상 계정 정보
+	 * @param secessionReason - 탈퇴 사유
+	 */
+	private void registerUserToSecessionUser(final User user, final String secessionReason) {
+		SecessionUser secessionUser = SecessionUser.of(user, secessionReason);
+		secessionUserRepository.save(secessionUser);
+		log.info("[USER_SECESSION] - {}", secessionUser);
+	}
+
+	private void deleteUserInformation(User user) {
+		// Delete user account permission
+		userPermissionRepository.deleteAllUserPermissionByUser(user);
+		// Delete user otp code information
+		userOTPRepository.deleteAllByEmail(user.getEmail());
+		// Delete user access log history
+		userAccessLogRepository.deleteAllUserAccessLogByUser(user);
 	}
 }
