@@ -407,6 +407,9 @@ export const getConfigs = async () => {
   const ALLOW_NO_DEVICE = res.data.ALLOW_NO_DEVICE || false
   delete res.data.ALLOW_NO_DEVICE
 
+  const SPOT_CONTROL_ACTIVE = res.data.SPOT_CONTROL_ACTIVE || false
+  delete res.data.SPOT_CONTROL_ACTIVE
+
   debug('URLS::', res.data)
 
   setHttpOptions(res.data['api'], TIMEOUT)
@@ -416,6 +419,7 @@ export const getConfigs = async () => {
     TIMEOUT,
     ALLOW_NO_AUDIO,
     ALLOW_NO_DEVICE,
+    SPOT_CONTROL_ACTIVE,
   })
   setUrls(res.data)
 }
