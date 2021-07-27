@@ -109,22 +109,31 @@ export default {
     }
   },
   methods: {
-    changedSearchParams(searchParams) {
-      this.searchMembersActivity(searchParams)
+    changedSearchParams() {
+      this.searchMembersActivity()
     },
-    async searchMembersActivity(searchParams) {
+    async searchMembersActivity() {
       const { list, total } = await workspaceService.searchMembersActivity(
-        searchParams,
+        this.searchParams,
       )
-      this.activityPage = searchParams === undefined ? 1 : searchParams.page
       this.activityList = list
       this.activityTotal = total
     },
+    /**
+     * 데이터 조회 조건 초기화
+     */
+    refreshParams() {
+      this.activityPage = 1
+    },
   },
+
   beforeMount() {
-    workspaceService.watchActiveWorkspace(this, () =>
-      this.searchMembersActivity({ page: 1 }),
-    )
+    // searchMixin.js: emitChangedSearchParams 실행 > index.vue:changedSearchParams 실행
+    this.emitChangedSearchParams()
+    workspaceService.watchActiveWorkspace(this, () => {
+      this.refreshParams()
+      this.emitChangedSearchParams()
+    })
   },
 }
 </script>

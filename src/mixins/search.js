@@ -27,6 +27,7 @@ export default {
           Object.keys(this.searchParams).forEach(key => {
             if (!this.searchParams[key]) delete this.searchParams[key]
           })
+          // 각 페이지에서 선언되어 있는 changedSearchParams 실행
           this.changedSearchParams(this.searchParams)
         })
       }
@@ -34,6 +35,7 @@ export default {
   },
   async mounted() {
     await new Promise(_ => setTimeout(_, 100)) // ssr bug
+    // 공통 동작
     const { filter, sort, keyword, page, table, mine } = this.$refs
 
     if (keyword)
