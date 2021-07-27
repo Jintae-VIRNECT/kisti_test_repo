@@ -39,14 +39,19 @@ import { mapActions, mapGetters } from 'vuex'
 import shutterMixin from 'mixins/shutter'
 import confirmMixin from 'mixins/confirm'
 import FileSaver from 'file-saver'
+
 import { VIEW } from 'configs/view.config'
+import { ERROR } from 'configs/error.config'
+
 import { base64ToBlob } from 'utils/file'
 import { drawingUpload } from 'api/http/drawing'
 import { DRAWING } from 'configs/remote.config'
 import toastMixin from 'mixins/toast'
+import errorMsgMixin from 'mixins/errorMsg'
+
 export default {
   name: 'CaptureModal',
-  mixins: [shutterMixin, confirmMixin, toastMixin],
+  mixins: [shutterMixin, confirmMixin, toastMixin, errorMsgMixin],
   data() {
     return {
       status: false,
@@ -126,14 +131,6 @@ export default {
     },
 
     async shareCapture() {
-      // const history = {
-      //   id: this.file.id,
-      //   fileName: this.file.fileName,
-      //   // fileData: this.file.fileData,
-      //   img: this.imageData,
-      // }
-      // this.addHistory(history)
-
       if (this.doubleCheck()) return
 
       const result = await this.uploadImage()
@@ -167,10 +164,11 @@ export default {
           this.toastDefault(this.$t('alarm.file_uploaded'))
         }
       } catch (err) {
-        if (err.code === 7017) {
-          this.toastError(this.$t('alarm.file_storage_capacity_full'))
-        } else if (err.code === 7003) {
-          this.toastError(this.$t('service.file_extension_unsupport'))
+        if (
+          err.code === ERROR.FILE_STORAGE_CAPACITY_FULL ||
+          err.code === ERROR.FILE_EXTENSION_UNSUPPORT
+        ) {
+          this.showErrorToast(err.code)
         } else {
           this.toastError(this.$t('confirm.network_error'))
         }

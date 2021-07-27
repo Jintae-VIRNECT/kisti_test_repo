@@ -114,6 +114,7 @@
 import { mapActions, mapGetters } from 'vuex'
 import { EVENT } from 'configs/push.config'
 import { ROLE } from 'configs/remote.config'
+import { ERROR } from 'configs/error.config'
 import { sendPush } from 'api/http/message'
 import { getRoomInfo } from 'api/http/room'
 
@@ -127,11 +128,12 @@ import alarmMixin from 'mixins/alarm'
 import roomMixin from 'mixins/room'
 import toastMixin from 'mixins/toast'
 import confirmMixin from 'mixins/confirm'
+import errorMsgMixin from 'mixins/errorMsg'
 import { isRegisted } from 'utils/auth'
 
 export default {
   name: 'Notice',
-  mixins: [roomMixin, alarmMixin, toastMixin, confirmMixin],
+  mixins: [roomMixin, alarmMixin, toastMixin, confirmMixin, errorMsgMixin],
   components: {
     Switcher,
     Popover,
@@ -332,8 +334,8 @@ export default {
         })
         this.clearAlarm()
       } catch (err) {
-        if (err.code === 4002) {
-          this.toastError(this.$t('workspace.remote_already_removed'))
+        if (err.code === ERROR.REMOTE_ALREADY_REMOVED) {
+          this.showErrorToast(err.code)
           return
         } else {
           this.toastError(this.$t('workspace.remote_invite_impossible'))

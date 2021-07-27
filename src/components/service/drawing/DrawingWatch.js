@@ -1,7 +1,6 @@
 // import { getCanvasSize } from 'utils/drawing'
 import { hexToRGBA } from 'utils/color'
 import { VIEW, ACTION } from 'configs/view.config'
-import { ROLE } from 'configs/remote.config'
 
 export default {
   watch: {

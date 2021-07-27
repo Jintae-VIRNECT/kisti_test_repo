@@ -36,12 +36,16 @@ import {
   deleteRoom,
   leaveRoom,
 } from 'api/http/room'
+
+import { ERROR } from 'configs/error.config'
+
 import confirmMixin from 'mixins/confirm'
 import roomMixin from 'mixins/room'
+import errorMsgMixin from 'mixins/errorMsg'
 
 export default {
   name: 'WorkspaceRemote',
-  mixins: [confirmMixin, roomMixin],
+  mixins: [confirmMixin, roomMixin, errorMsgMixin],
   components: { TabView, RemoteCard },
   data() {
     return {
@@ -179,8 +183,8 @@ export default {
           })
         }
       } catch (err) {
-        if (err.code === 4015) {
-          this.toastError(this.$t('workspace.confirm_remote_leader_leave'))
+        if (err.code === ERROR.CONFIRM_REMOTE_LEADER_LEAVE) {
+          this.showErrorToast(err.code)
         } else if (err.code === 4017) {
           this.toastError(this.$t('workspace.confirm_already_invite_leave'))
         }

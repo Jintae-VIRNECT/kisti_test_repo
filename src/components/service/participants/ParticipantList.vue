@@ -85,12 +85,6 @@ export default {
             }
           })
         } else if (newVal < oldVal) {
-          // let idx = this.participants.findIndex(
-          //   session => session.uuid === this.mainView.uuid,
-          // )
-          // if (idx < 0) {
-          //   this.setMainSession(this.sessions[0])
-          // }
           this.$nextTick(() => {
             if (this.$refs['sessionListScrollbar']) {
               this.$refs['sessionListScrollbar'].scrollToX(

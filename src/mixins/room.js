@@ -2,13 +2,17 @@ import { joinRoom } from 'api/http/room'
 import { ROLE } from 'configs/remote.config'
 import { DEVICE } from 'configs/device.config'
 import { ROOM_STATUS } from 'configs/status.config'
+import { ERROR } from 'configs/error.config'
+
 import toastMixin from 'mixins/toast'
-import { mapActions } from 'vuex'
 import callMixin from 'mixins/call'
+import errorMsgMixin from 'mixins/errorMsg'
+
 import { isRegisted } from 'utils/auth'
+import { mapActions } from 'vuex'
 
 export default {
-  mixins: [toastMixin, callMixin],
+  mixins: [toastMixin, callMixin, errorMsgMixin],
   data() {
     return {
       clicked: false,
@@ -95,11 +99,11 @@ export default {
           }
         } else {
           console.error(`${err.message} (${err.code})`)
-          if (err.code === 4002) {
-            this.toastError(this.$t('workspace.remote_already_removed'))
+          if (err.code === ERROR.REMOTE_ALREADY_REMOVED) {
+            this.showErrorToast(err.code)
             return false
-          } else if (err.code === 4016) {
-            this.toastError(this.$t('workspace.remote_already_invite'))
+          } else if (err.code === ERROR.REMOTE_ALREADY_INVITE) {
+            this.showErrorToast(err.code)
             return false
           } else if (err.code === 4021) {
             this.toastError(

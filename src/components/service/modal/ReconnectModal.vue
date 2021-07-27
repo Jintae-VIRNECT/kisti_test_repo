@@ -37,18 +37,23 @@ import Lottie from 'lottie-web'
 import * as animationData from 'assets/json/reconnect.lottie.json'
 import Modal from 'Modal'
 import { mapGetters } from 'vuex'
+
 import { getRoomInfo } from 'api/http/room'
-import roomMixin from 'mixins/room'
 import { checkOnline } from 'utils/network'
+
 import { ROLE } from 'configs/remote.config'
+import { ERROR } from 'configs/error.config'
+
+import roomMixin from 'mixins/room'
 import toastMixin from 'mixins/toast'
+import errorMsgMixin from 'mixins/errorMsg'
 
 export default {
   name: 'ReconnectModal',
   components: {
     Modal,
   },
-  mixins: [roomMixin, toastMixin],
+  mixins: [roomMixin, toastMixin, errorMsgMixin],
   data() {
     return {
       visibleFlag: false,
@@ -170,12 +175,12 @@ export default {
           this.logout()
         }
       } catch (err) {
-        if (err.code === 4002) {
-          this.toastError(this.$t('workspace.remote_already_removed'))
-        } else if (err.code === 4016) {
+        if (err.code === ERROR.REMOTE_ALREADY_REMOVED) {
+          this.showErrorToast(err.code)
+        } else if (err.code === ERROR.REMOTE_ALREADY_INVITE) {
           if (this.retry > 1) {
             this.retry = 0
-            this.toastError(this.$t('workspace.remote_already_invite'))
+            this.showErrorToast(err.code)
           } else {
             this.retry++
             setTimeout(() => {

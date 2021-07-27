@@ -10,7 +10,7 @@
 
 <script>
 import toolMixin from './toolMixin'
-import { VIEW, ACTION } from 'configs/view.config'
+import { VIEW } from 'configs/view.config'
 
 export default {
   name: 'ToolClear',

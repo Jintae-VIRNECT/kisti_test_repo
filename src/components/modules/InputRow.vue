@@ -1,11 +1,7 @@
 <template>
   <figure class="inputrow">
-    <!-- <p class="inputrow-title valid" v-if="valid" :class="{ required }">
-      {{ validMessage }}
-    </p> -->
     <p class="inputrow-title" :class="{ required, valid }">
       <span v-if="valid"> {{ validMessage }} </span>
-      <!-- <span v-else> {{ validMessage }} </span> -->
       {{ title ? title : $t('workspace.remote_name') }}
     </p>
     <input

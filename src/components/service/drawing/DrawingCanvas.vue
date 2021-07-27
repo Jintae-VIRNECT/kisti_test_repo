@@ -12,7 +12,7 @@
 <script>
 import { mapGetters } from 'vuex'
 import { fabric } from 'plugins/remote/fabric.custom'
-import { ROLE } from 'configs/remote.config'
+
 import { ACTION } from 'configs/view.config'
 
 import { getCanvasSize } from 'utils/drawing'
