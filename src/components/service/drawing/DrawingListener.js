@@ -103,10 +103,9 @@ export default {
       // if (data.type === DRAWING.LINE_DOWN) {
       //   this.receivePath[owner] = []
       // }
+
       //수신 드로잉 경로에 해당 유저 Array 없는 경우 배열 생성 초기화
-      if (!(owner in this.receivePath)) {
-        this.receivePath[owner] = []
-      }
+      if (!(owner in this.receivePath)) this.receivePath[owner] = []
 
       //드로잉의 경우 position 배열, text의 경우 object를 필요한 부분 가공해서 반환
       let receiveParams = getReceiveParams(data.type, params, this.origin.scale)
@@ -139,9 +138,11 @@ export default {
         //this.canvas.renderAll() //해당 함수로 호출로 인해 기존 창 크기 변화 시 드로잉 객체 크기 변화 이슈가 발생됨. 해당 함수 호출 이유 불분명
         this.backCanvas.add(fabric.util.object.clone(path))
         this.backCanvas.renderAll()
-        this.$nextTick(() => {
-          delete this.receivePath[owner]
-        })
+        // this.$nextTick(() => {
+        //   delete this.receivePath[owner]
+        // }) // 바로 초기화 해주지 않아 이전 데이터가 누적되는 이슈가 발생됨 아래와 같이 초기화는 바로 해주도록 한다
+
+        this.receivePath[owner] = []
       }
     },
     drawingText(data, owner) {
