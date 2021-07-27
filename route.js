@@ -17,6 +17,9 @@ const acceptLang = req => {
 
 const extraHtml = fs.readFileSync('./dist/extra/index.html', 'utf8')
 const remoteHtml = fs.readFileSync('./dist/remote/index.html', 'utf8')
+const ieHtmlEn = fs.readFileSync('./static/ie/en.html', 'utf8')
+const ieHtmlKr = fs.readFileSync('./static/ie/kr.html', 'utf8')
+
 let extra = {
   en: extraHtml,
   ko: extraHtml,
@@ -61,6 +64,25 @@ function IsMobileBrowser(req) {
   return isChromeMobile
 }
 
+function IsIE(req) {
+  const userAgent = req.headers['user-agent'] || ''
+  return userAgent.includes('Trident')
+}
+
+function RouteSupportOrIE(req, res) {
+  const isIE = IsIE(req)
+  if (isIE) {
+    const lang = acceptLang(req)
+    if (lang === 'ko') {
+      res.send(ieHtmlKr)
+    } else {
+      res.send(ieHtmlEn)
+    }
+  } else {
+    res.redirect('/support')
+  }
+}
+
 router.get('/healthcheck', function(req, res) {
   res.send('200')
 })
@@ -69,13 +91,11 @@ router.get('/healthcheck', function(req, res) {
 if (config.getEnv() === 'onpremise') {
   router.get('/spot-control', function(req, res) {
     const lang = acceptLang(req)
-    // res.send(extra[lang])
     res.send(remote[lang])
   })
 
   router.get('/spot-error', function(req, res) {
     const lang = acceptLang(req)
-    // res.send(extra[lang])
     res.send(remote[lang])
   })
 }
@@ -83,14 +103,13 @@ if (config.getEnv() === 'onpremise') {
 router.get('/home', function(req, res) {
   if (IsAllowBrowser(req)) {
     if (IsMobileBrowser(req)) {
-      res.redirect('/support')
+      RouteSupportOrIE(req, res)
     } else {
       const lang = acceptLang(req)
       res.send(remote[lang])
-      // res.sendFile(path.join(__dirname, '/dist/remote/index.html'))
     }
   } else {
-    res.redirect('/support')
+    RouteSupportOrIE(req, res)
     return
   }
 })
@@ -98,14 +117,13 @@ router.get('/home', function(req, res) {
 router.get('/service', function(req, res) {
   if (IsAllowBrowser(req)) {
     if (IsMobileBrowser(req)) {
-      res.redirect('/support')
+      RouteSupportOrIE(req, res)
     } else {
-      // res.sendFile(path.join(__dirname, '/dist/remote/index.html'))
       const lang = acceptLang(req)
       res.send(remote[lang])
     }
   } else {
-    res.redirect('/support')
+    RouteSupportOrIE(req, res)
     return
   }
 })
