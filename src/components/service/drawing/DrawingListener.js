@@ -65,7 +65,6 @@ export default {
           data,
           owner: receive.from.connectionId,
         })
-        console.error(this.receivedList)
       }
     },
     addReceiveObject({ data, owner }) {
