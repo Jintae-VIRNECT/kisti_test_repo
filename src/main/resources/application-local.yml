@@ -77,7 +77,7 @@ feign:
       default:
         connectTimeout: 1000
         readTimeout: 1000
-        loggerLevel: NONE
+        loggerLevel: FULL
 
 hystrix:
   command:

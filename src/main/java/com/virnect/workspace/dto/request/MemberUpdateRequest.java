@@ -34,4 +34,12 @@ public class MemberUpdateRequest {
     @ApiModelProperty(value = "유저의 뷰 플랜 사용 여부", required = true)
     @NotNull
     private Boolean licenseView;
+
+    public boolean isEssentialLicenseToUser() {
+        return licenseRemote || licenseMake || licenseView;
+    }
+
+    public boolean isUpdateToMaster() {
+        return role.equals("MASTER");
+    }
 }
