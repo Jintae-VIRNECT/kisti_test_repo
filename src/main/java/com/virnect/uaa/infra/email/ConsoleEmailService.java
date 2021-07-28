@@ -17,7 +17,7 @@ import com.virnect.uaa.infra.email.context.MailTemplateProcessor;
  * @since 2020.03.25
  */
 @Slf4j
-@Profile({"test"})
+@Profile({"test","local"})
 @Component
 @RequiredArgsConstructor
 public class ConsoleEmailService implements EmailService {

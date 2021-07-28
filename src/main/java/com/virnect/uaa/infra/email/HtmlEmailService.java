@@ -23,7 +23,7 @@ import com.virnect.uaa.infra.email.context.MailTemplateProcessor;
  */
 
 @Slf4j
-@Profile(value = "!test")
+@Profile(value = "!local")
 @Component
 @RequiredArgsConstructor
 public class HtmlEmailService implements EmailService {

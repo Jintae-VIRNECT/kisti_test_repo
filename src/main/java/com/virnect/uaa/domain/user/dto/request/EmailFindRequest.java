@@ -35,6 +35,10 @@ public class EmailFindRequest {
 	@ApiModelProperty(value = "복구 이메일", position = 3, example = "test@test.com")
 	private String recoveryEmail;
 
+	public String getFullName() {
+		return lastName + firstName;
+	}
+
 	public boolean hasValidFindInformation() {
 		if (StringUtils.isEmpty(mobile) && StringUtils.isEmpty(recoveryEmail)) {
 			return false;
@@ -48,4 +52,13 @@ public class EmailFindRequest {
 			recoveryEmail.matches("^[a-zA-Z0-9_!#$%&’*+/=?`{|}~^.-]+@[a-zA-Z0-9.-]+$");
 	}
 
+	@Override
+	public String toString() {
+		return "EmailFindRequest{" +
+			"firstName='" + firstName + '\'' +
+			", lastName='" + lastName + '\'' +
+			", mobile='" + mobile + '\'' +
+			", recoveryEmail='" + recoveryEmail + '\'' +
+			'}';
+	}
 }

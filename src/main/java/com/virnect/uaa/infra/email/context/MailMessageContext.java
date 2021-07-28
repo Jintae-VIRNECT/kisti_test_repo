@@ -4,6 +4,7 @@ import java.util.Locale;
 
 import org.thymeleaf.context.Context;
 
+import lombok.Builder;
 import lombok.Getter;
 
 @Getter
@@ -14,6 +15,7 @@ public class MailMessageContext {
 	private final String to;
 	private Locale locale;
 
+	@Builder
 	public MailMessageContext(
 		Context templateContext, String templateName, String titleMessageSourceName, String to, Locale locale
 	) {

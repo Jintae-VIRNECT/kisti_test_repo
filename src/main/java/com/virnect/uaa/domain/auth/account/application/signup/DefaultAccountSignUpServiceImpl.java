@@ -37,7 +37,6 @@ import com.virnect.uaa.domain.user.dao.secession.SecessionUserRepository;
 import com.virnect.uaa.domain.user.dao.user.UserRepository;
 import com.virnect.uaa.domain.user.domain.User;
 import com.virnect.uaa.global.security.token.JwtProvider;
-import com.virnect.uaa.infra.email.EmailMessage;
 import com.virnect.uaa.infra.email.EmailService;
 import com.virnect.uaa.infra.file.Default;
 import com.virnect.uaa.infra.file.FileService;
@@ -202,7 +201,7 @@ public class DefaultAccountSignUpServiceImpl implements AccountSignUpService {
 			registerEmailAuthenticationMail.getTo()
 		);
 
-		emailService.sendEmail(registerEmailAuthenticationMail);
+		emailService.send(registerEmailAuthenticationMail);
 	}
 
 	public void signupSessionCodeValidate(String email, String sessionCode) {

@@ -16,7 +16,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import com.virnect.uaa.domain.user.domain.User;
-import com.virnect.uaa.infra.email.EmailMessage;
 import com.virnect.uaa.infra.email.EmailService;
 import com.virnect.uaa.infra.rest.billing.PayService;
 
@@ -69,6 +68,6 @@ public class DefaultSuccessHandler implements SignUpSuccessHandler {
 			registrationSuccessMail.getTo()
 		);
 
-		emailService.sendEmail(registrationSuccessMail);
+		emailService.send(registrationSuccessMail);
 	}
 }
