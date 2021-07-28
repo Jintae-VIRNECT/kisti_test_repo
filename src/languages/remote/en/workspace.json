@@ -29,6 +29,7 @@
     "confirm_force_logout_complete": "is logged out.",
     "confirm_force_logout_received": "You have been forced to log out by the master.",
     "confirm_force_logout_unavailable": "has accessed the collaboration and cannot log out.",
+    "confirm_video_restrict_join": "[Video Restriction Mode] Connect to the collabo room.\nThe camera can be remotely controlled by the leader.\nIf you select [Connect], you agree to camera control.",
 
     "history": "Recent history",
     "remote": "Remote Collabo",

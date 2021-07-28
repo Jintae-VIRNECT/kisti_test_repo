@@ -29,6 +29,7 @@
     "confirm_force_logout_complete": "님이 로그아웃 되었습니다.",
     "confirm_force_logout_received": "마스터에 의해 강제 로그아웃 되었습니다.",
     "confirm_force_logout_unavailable": "님이 협업에 접속하여 로그아웃이 불가능합니다.",
+    "confirm_video_restrict_join": "[영상 제한 모드] 협업 룸으로 접속합니다.\n리더에 의해 원격으로 카메라가 제어될 수 있습니다.\n[접속] 선택 시, 카메라 제어의 동의로 간주됩니다.",
 
     "history": "최근 기록",
     "remote": "원격 협업",

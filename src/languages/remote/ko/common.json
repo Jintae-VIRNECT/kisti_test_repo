@@ -37,7 +37,8 @@
     "manual": "매뉴얼 다운로드",
     "force_logout": "원격종료",
     "retry":"재시도",
-    "leave_exit":"종료"
+    "leave_exit":"종료",
+    "connect":"접속"
   },
   "date": {
     "lastday": "[어제] A",

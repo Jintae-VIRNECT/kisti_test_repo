@@ -7,12 +7,15 @@ import { ERROR } from 'configs/error.config'
 import toastMixin from 'mixins/toast'
 import callMixin from 'mixins/call'
 import errorMsgMixin from 'mixins/errorMsg'
+import confirmMixin from 'mixins/confirm'
 
 import { isRegisted } from 'utils/auth'
 import { mapActions } from 'vuex'
 
+import { getRoomInfo } from 'api/http/room'
+
 export default {
-  mixins: [toastMixin, callMixin, errorMsgMixin],
+  mixins: [toastMixin, callMixin, errorMsgMixin, confirmMixin],
   data() {
     return {
       clicked: false,
@@ -20,7 +23,7 @@ export default {
   },
   methods: {
     ...mapActions(['roomClear', 'setRoomInfo']),
-    async join(room) {
+    async join(room, showRestrictAgreeModal = true) {
       this.logger('>>> JOIN ROOM')
       try {
         //멤버 상태 등록 안된 경우 협업방 입장 불가
@@ -43,40 +46,31 @@ export default {
           role = room.leaderId === this.account.uuid ? ROLE.LEADER : ROLE.EXPERT
         }
 
-        this.$eventBus.$emit('roomloading:show', true)
+        room.videoRestrictedMode = this.checkVideoStrictMode(room)
 
-        const options = await this.getDeviceId()
-        const mediaStream = await this.$call.getStream(options)
+        const showVideoRestrictModal =
+          role !== ROLE.LEADER &&
+          showRestrictAgreeModal &&
+          room.videoRestrictedMode
 
-        const res = await joinRoom({
-          uuid: this.account.uuid,
-          memberType: role,
-          deviceType: DEVICE.WEB,
-          sessionId: room.sessionId,
-          workspaceId: this.workspace.uuid,
-        })
-
-        this.setRoomInfo({
-          ...room,
-          audioRestrictedMode: res.audioRestrictedMode,
-          videoRestrictedMode: res.videoRestrictedMode,
-        })
-
-        const joinRtn = await this.$call.connect(
-          res,
-          role,
-          options,
-          mediaStream,
-        )
-        if (joinRtn) {
-          this.$nextTick(() => {
-            this.$router.push({ name: 'service' })
-          })
-          return true
+        if (showVideoRestrictModal) {
+          this.connectCancel(
+            this.$t('workspace.confirm_video_restrict_join'),
+            {
+              text: this.$t('button.connect'),
+              action: () => {
+                this.doJoin(room, role)
+              },
+            },
+            {
+              text: this.$t('button.cancel'),
+              action: () => {
+                this.clicked = false
+              },
+            },
+          )
         } else {
-          this.roomClear()
-          console.error('>>>join room fail')
-          this.clicked = false
+          this.doJoin(room, role)
         }
       } catch (err) {
         this.clicked = false
@@ -115,6 +109,51 @@ export default {
           }
         }
         this.toastError(this.$t('workspace.remote_invite_impossible'))
+      }
+    },
+    async doJoin(room, role) {
+      this.$eventBus.$emit('roomloading:show', true)
+
+      const options = await this.getDeviceId()
+      const mediaStream = await this.$call.getStream(options)
+
+      const res = await joinRoom({
+        uuid: this.account.uuid,
+        memberType: role,
+        deviceType: DEVICE.WEB,
+        sessionId: room.sessionId,
+        workspaceId: this.workspace.uuid,
+      })
+
+      this.setRoomInfo({
+        ...room,
+        audioRestrictedMode: res.audioRestrictedMode,
+        videoRestrictedMode: res.videoRestrictedMode,
+      })
+
+      const joinRtn = await this.$call.connect(res, role, options, mediaStream)
+      if (joinRtn) {
+        this.$nextTick(() => {
+          this.$router.push({ name: 'service' })
+        })
+        return true
+      } else {
+        this.roomClear()
+        console.error('>>>join room fail')
+        this.clicked = false
+      }
+    },
+
+    async checkVideoStrictMode(room) {
+      if (!('videoRestrictedMode' in room)) {
+        const params = {
+          workspaceId: this.workspace.uuid,
+          sessionId: room.sessionId,
+        }
+        const roomInfo = await getRoomInfo(params)
+        return roomInfo.videoRestrictedMode
+      } else {
+        return false
       }
     },
   },

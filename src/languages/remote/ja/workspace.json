@@ -29,6 +29,8 @@
     "confirm_force_logout_complete": "がログアウトしました。",
     "confirm_force_logout_received": "マスターによって強制的にログアウトされます。",
     "confirm_force_logout_unavailable": "はコラボレーションにアクセスしたため、ログアウトできません。",
+    "confirm_video_restrict_join":"[映像制限モード]コラボレーションルームに接続します。\nリーダーによって、リモートでカメラが制御されることがあります。\n[接続]を選択すると、カメラ制御の合意されます。",
+
 
     "history": "最近履歴",
     "remote": "リモート協業",
