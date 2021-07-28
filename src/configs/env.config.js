@@ -60,6 +60,7 @@ export const setConfigs = configs => {
   TARGET_COMPANY = configs.targetCompany || TARGET_COMPANY
   WHITE_LOGO = configs.whiteLogo || WHITE_LOGO
   DEFAULT_LOGO = configs.defaultLogo || DEFAULT_LOGO
+  SPOT_CONTROL_ACTIVE = configs.SPOT_CONTROL_ACTIVE || SPOT_CONTROL_ACTIVE
 }
 
 /**

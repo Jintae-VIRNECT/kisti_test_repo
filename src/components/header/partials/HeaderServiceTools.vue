@@ -49,6 +49,7 @@ export default {
   data() {
     return {
       hideStream: false,
+      isSpotControlActive: SPOT_CONTROL_ACTIVE, //spot control 활성화 여부 (from config서버)
     }
   },
   computed: {
@@ -67,10 +68,6 @@ export default {
     },
     isLeader() {
       return this.account.roleType === ROLE.LEADER
-    },
-    isSpotControlActive() {
-      //spot control 활성화 여부 (from config서버)
-      return SPOT_CONTROL_ACTIVE
     },
   },
   methods: {
