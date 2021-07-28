@@ -1,6 +1,7 @@
 package com.virnect.uaa.domain.user.application;
 
 import java.time.Duration;
+import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.List;
@@ -8,6 +9,7 @@ import java.util.Locale;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.RandomStringUtils;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.thymeleaf.context.Context;
 
@@ -39,8 +41,8 @@ import com.virnect.uaa.infra.email.context.MailMessageContext;
 public class UserInformationFindServiceImpl implements UserInformationFindService {
 	private final UserRepository userRepository;
 	private final UserPasswordAuthCodeRepository userPasswordAuthCodeRepository;
-
 	private final EmailService emailService;
+	private final PasswordEncoder passwordEncoder;
 
 	@Override
 	public UserEmailFindResponse findUserEmail(
@@ -89,7 +91,9 @@ public class UserInformationFindServiceImpl implements UserInformationFindServic
 		return new UserPasswordFindAuthCodeResponse(true, user.getEmail());
 	}
 
-	private void sendPasswordResetAuthorizationCodeMail(Locale locale, User user, String authCode, Duration expireDuration) {
+	private void sendPasswordResetAuthorizationCodeMail(
+		Locale locale, User user, String authCode, Duration expireDuration
+	) {
 		ZoneOffset seoulZoneOffset = ZoneOffset.of("+09:00");
 		ZonedDateTime zonedDateTime = ZonedDateTime.now(seoulZoneOffset).plusSeconds(expireDuration.getSeconds());
 
@@ -119,14 +123,53 @@ public class UserInformationFindServiceImpl implements UserInformationFindServic
 	public UserPasswordFindCodeCheckResponse verifyPasswordResetCode(
 		UserPasswordFindAuthCodeCheckRequest authCodeCheckRequest
 	) {
-		return null;
+		PasswordInitAuthCode passwordInitAuthCode = userPasswordAuthCodeRepository.findById(
+			authCodeCheckRequest.getEmail())
+			.orElseThrow(() -> new UserServiceException(UserAccountErrorCode.ERR_PASSWORD_INIT_CODE_NOT_FOUND));
+
+		if (passwordInitAuthCode.getCode().equals(authCodeCheckRequest.getCode())) {
+			throw new UserServiceException(UserAccountErrorCode.ERR_PASSWORD_INIT_CODE_NOT_FOUND);
+		}
+		log.info("Password Initialize Info Check : [{}]", passwordInitAuthCode);
+
+		userPasswordAuthCodeRepository.deleteById(authCodeCheckRequest.getEmail());
+
+		return new UserPasswordFindCodeCheckResponse(
+			passwordInitAuthCode.getUuid(), passwordInitAuthCode.getEmail(), true);
 	}
 
 	@Override
 	public UserPasswordChangeResponse renewalPreviousPassword(
 		UserPasswordChangeRequest passwordChangeRequest
 	) {
-		return null;
+		User user = userRepository.findByEmail(passwordChangeRequest.getEmail())
+			.orElseThrow(() -> new UserServiceException(UserAccountErrorCode.ERR_USER_NOT_FOUND));
+
+		// Check for duplicated password with previous password
+		if (passwordEncoder.matches(passwordChangeRequest.getPassword(), user.getPassword())) {
+			throw new UserServiceException(UserAccountErrorCode.ERR_USER_PASSWORD_CHANGE_DUPLICATE);
+		}
+
+		// Check Password Format
+		if (!passwordChangeRequest.getPassword().matches("[a-zA-Z0-9\\.!@#$%가-힣ㄱ-ㅎ]+")) {
+			log.info("password format not matched REGEXP of '[a-zA-Z0-9\\.!@#$%]+'");
+			throw new UserServiceException(UserAccountErrorCode.ERR_USER_PASSWORD_CHANGE);
+		}
+
+		String encodedNewPassword = passwordEncoder.encode(passwordChangeRequest.getPassword());
+		user.setPassword(encodedNewPassword);
+		user.setPasswordUpdateDate(LocalDateTime.now());
+
+		// password invalid account lock free
+		if (!user.isAccountNonLocked()) {
+			log.info(
+				"[USER][INACTIVE_ACCOUNT_LOCK] - Email:[{}] Name:[{}]", user.getEmail(),
+				user.getName()
+			);
+			user.setAccountNonLocked(true);
+		}
+		userRepository.save(user);
+		return new UserPasswordChangeResponse(true, user.getEmail(), user.getPasswordUpdateDate());
 	}
 
 }
