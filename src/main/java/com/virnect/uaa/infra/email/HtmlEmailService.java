@@ -11,6 +11,9 @@ import org.springframework.stereotype.Component;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import com.virnect.uaa.infra.email.context.MailMessageContext;
+import com.virnect.uaa.infra.email.context.MailTemplateProcessor;
+
 /**
  * @author jeonghyeon.chang (johnmark)
  * @project PF-Auth
@@ -24,18 +27,22 @@ import lombok.extern.slf4j.Slf4j;
 @Component
 @RequiredArgsConstructor
 public class HtmlEmailService implements EmailService {
+	private final MailTemplateProcessor templateProcessor;
 	private final JavaMailSender javaMailSender;
 
 	@Override
 	@Async("threadPoolTaskExecutor")
-	public void sendEmail(EmailMessage emailMessage) {
+	public void send(MailMessageContext messageContext) {
 		MimeMessage mimeMessage = javaMailSender.createMimeMessage();
 		try {
+			String title = templateProcessor.resolveMailTitleMessageSource(messageContext);
+			String messageBody = templateProcessor.compileMailTemplate(messageContext);
+
 			MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage, false, "UTF-8");
-			mimeMessageHelper.setFrom("no-reply@virnect.com");
-			mimeMessageHelper.setTo(emailMessage.getTo());
-			mimeMessageHelper.setSubject(emailMessage.getSubject());
-			mimeMessageHelper.setText(emailMessage.getMessage(), true);
+			mimeMessageHelper.setFrom(getSystemEmail());
+			mimeMessageHelper.setTo(messageContext.getTo());
+			mimeMessageHelper.setSubject(title);
+			mimeMessageHelper.setText(messageBody, true);
 			javaMailSender.send(mimeMessage);
 		} catch (Exception e) {
 			log.error("failed to send email", e);
