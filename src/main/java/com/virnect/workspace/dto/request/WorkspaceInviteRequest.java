@@ -48,6 +48,7 @@ public class WorkspaceInviteRequest {
         private boolean planView;
     }
 
+    @ApiModelProperty(hidden = true)
     public boolean existMasterUserInvite() {
         return userInfoList.stream().anyMatch(userInfo -> userInfo.getRole().equals("MASTER"));
     }

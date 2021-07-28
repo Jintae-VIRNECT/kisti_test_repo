@@ -378,27 +378,28 @@ public abstract class WorkspaceUserService {
 
     private List<String> getAddedProductList(boolean requestRemote, boolean requestMake, boolean requestView, List<String> userHaveProductList) {
         List<String> addedProductList = new ArrayList<>();
-        if (!requestRemote && userHaveProductList.contains("REMOTE")) {
+        if (requestRemote && !userHaveProductList.contains("REMOTE")) {
             addedProductList.add("REMOTE");
         }
-        if (!requestMake && userHaveProductList.contains("MAKE")) {
+        if (requestMake && !userHaveProductList.contains("MAKE")) {
             addedProductList.add("MAKE");
         }
-        if (!requestView && userHaveProductList.contains("VIEW")) {
+        if (requestView && !userHaveProductList.contains("VIEW")) {
             addedProductList.add("VIEW");
         }
+
         return addedProductList;
     }
 
     private List<String> getRemovedProductList(boolean requestRemote, boolean requestMake, boolean requestView, List<String> userHaveProductList) {
         List<String> removedProductList = new ArrayList<>();
-        if (requestRemote && !userHaveProductList.contains("REMOTE")) {
+        if (!requestRemote && userHaveProductList.contains("REMOTE")) {
             removedProductList.add("REMOTE");
         }
-        if (requestMake && !userHaveProductList.contains("MAKE")) {
+        if (!requestMake && userHaveProductList.contains("MAKE")) {
             removedProductList.add("MAKE");
         }
-        if (requestView && !userHaveProductList.contains("VIEW")) {
+        if (!requestView && userHaveProductList.contains("VIEW")) {
             removedProductList.add("VIEW");
         }
         return removedProductList;
@@ -505,7 +506,7 @@ public abstract class WorkspaceUserService {
         ApiResponse<MyLicenseInfoResponse> myLicenseInfoResponseApiResponse = licenseRestService.grantWorkspaceLicenseToUser(workspaceId, userId, productName);
         if (myLicenseInfoResponseApiResponse.getCode() != 200 || !myLicenseInfoResponseApiResponse.getData().getProductName().equals(productName)) {
             log.error("[GRANT LICENSE TO USER] request workspaceId : {}, request userId : {}, request productName : {}, response code : {}", workspaceId, userId, productName, myLicenseInfoResponseApiResponse.getCode());
-            throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_USER_LICENSE_REVOKE_FAIL);
+            throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_USER_LICENSE_GRANT_FAIL);
         }
     }
 
