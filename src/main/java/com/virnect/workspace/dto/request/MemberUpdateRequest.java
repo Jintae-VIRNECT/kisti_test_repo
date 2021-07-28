@@ -39,8 +39,4 @@ public class MemberUpdateRequest {
     public boolean isEssentialLicenseToUser() {
         return licenseRemote || licenseMake || licenseView;
     }
-    @ApiModelProperty(hidden = true)
-    public boolean isUpdateToMaster() {
-        return role.equals("MASTER");
-    }
 }
