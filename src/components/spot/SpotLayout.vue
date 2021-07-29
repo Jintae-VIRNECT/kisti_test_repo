@@ -42,6 +42,8 @@ import SpotConnectModal from './modal/SpotConnectModal'
 import confirmMixin from 'mixins/confirm'
 import spotMixin from 'mixins/spot'
 
+import { spotControlRouterGuard } from 'utils/validator'
+
 export default {
   components: {
     SpotCameraLayer,
@@ -49,8 +51,11 @@ export default {
     StandSitControl,
     MainControl,
     BatteryStatus,
-
     SpotConnectModal,
+  },
+  //spot 페이지 진입 라우터 가드
+  beforeRouteEnter(to, from, next) {
+    spotControlRouterGuard(next)
   },
   mixins: [confirmMixin, spotMixin],
   data() {

@@ -101,3 +101,7 @@ export default {
   RUNTIME_ENV,
   TARGET_COMPANY,
 }
+
+//configuration server 응답 데이터 키값 스트링
+export const CONF_SPOT_CONTROL_ACTIVE = 'SPOT_CONTROL_ACTIVE'
+export const CONF_RUNTIME = 'RUNTIME'
