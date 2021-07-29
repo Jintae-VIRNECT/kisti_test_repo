@@ -134,7 +134,7 @@ export default {
             err.name === 'PasswordException' ||
             err.message === 'No password given'
           ) {
-            this.toastError(this.$t('service.share_locked'))
+            this.toastError(this.$t('service.encrypted_file_unsupport'))
           } else {
             this.toastError(this.$t('service.file_type'))
           }

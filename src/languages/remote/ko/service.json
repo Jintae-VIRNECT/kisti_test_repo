@@ -69,7 +69,6 @@
     "share_save": "해당 저작된 이미지를 저장하시겠습니까?​",
     "share_notready": "이미지를 공유하고 있습니다.",
     "share_delete_real": "정말로 삭제하시겠습니까?",
-    "share_locked": "암호화된 파일은 지원하지 않습니다.",
 
     "drawing_dblclick": "파일을 더블클릭하면 <br />상대방에게 공유를 시작합니다.",
     "drawing_drag": "이미지 또는 PDF 파일을 여기 끌어다 놓거나 <br /> '불러오기'버튼을 사용하세요.",
@@ -241,6 +240,7 @@
     "spot_networ_error" : "네트워크/서버 문제로 Spot 연결이 종료되었습니다.​\n재연결을 하시겠습니까?​",
     "spot_connecting" : "Spot 연결 중…",
     "spot_reconnecting" : "Spot 재연결 중…",
-    "spot_battery_warning" : "Spot 배터리 잔량이 {battery}% 남았습니다."
+    "spot_battery_warning" : "Spot 배터리 잔량이 {battery}% 남았습니다.",
+    "encrypted_file_unsupport" : "암호화된 파일은 지원하지 않습니다."
   }
 }

@@ -69,7 +69,6 @@
     "share_save": "イメージを保存しますか？​",
     "share_notready": "イメージを共有しています。",
     "share_delete_real": "本当に削除しますか？",
-    "share_locked": "暗号化されたファイルは支援されません。",
 
     "drawing_dblclick": "ファイルをダブルクリックすると、相手に共有を開始します。",
     "drawing_drag": "画像やPDFファイルをここにドラッグ、もしくは「開く」ボタンを押してください。",
@@ -241,6 +240,7 @@
     "spot_networ_error" : "ネットワーク/サーバの問題でSpotの接続が終了しました。\n再接続をしますか？",
     "spot_connecting" : "Spot接続中...",
     "spot_reconnecting" : "Spot再接続中...",
-    "spot_battery_warning" : "Spotバッテリー残量が{battery}%残りました。"
+    "spot_battery_warning" : "Spotバッテリー残量が{battery}%残りました。",
+    "encrypted_file_unsupport" : "暗号化されたファイルはサポートできません。"
   }
 }

@@ -170,12 +170,14 @@ export default {
               this.toastDefault(this.$t('alarm.file_uploaded'))
             }
           } catch (err) {
-            if (err.code === ERROR.FILE_STORAGE_CAPACITY_FULL) {
-              this.showErrorToast(err.code)
-            } else if (err.code === ERROR.FILE_EXTENSION_UNSUPPORT) {
-              this.showErrorToast(err.code)
-            } else {
-              this.toastError(this.$t('confirm.network_error'))
+            switch (err.code) {
+              case ERROR.FILE_EXTENSION_UNSUPPORT: //미지원 파일 확장자
+              case ERROR.FILE_STORAGE_CAPACITY_FULL: //파일 스토리지 용량 초과
+              case ERROR.FILE_ENCRYPTED: //암호화 파일
+                this.showErrorToast(err.code)
+                break
+              default:
+                this.toastError(this.$t('confirm.network_error'))
             }
             return false
           }
