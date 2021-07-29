@@ -22,11 +22,15 @@
 
 <script>
 import ErrorComponent from '../error/ErrorComponent'
+import { spotControlRouterGuard } from 'utils/validator'
 
 export default {
   name: 'SpotErrorComponent',
   components: {
     ErrorComponent,
+  },
+  beforeRouteEnter(to, from, next) {
+    spotControlRouterGuard(next)
   },
   methods: {
     closeBrowser() {
