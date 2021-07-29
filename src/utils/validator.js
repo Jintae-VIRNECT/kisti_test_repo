@@ -5,6 +5,11 @@ import {
   CONF_RUNTIME,
 } from 'configs/env.config'
 
+/**
+ * 컨피그 서버의 설정값들을 가져와, 파라미터로 넘겨받은 키값에 해당 하는 값들만 모아 리턴하는 함수
+ * @param {*} keys
+ * @returns { key : value, key2 : value}
+ */
 export const checkConfigurationValue = async keys => {
   const res = await axios.get(
     `${location.origin}/configs?origin=${location.hostname}`,
@@ -22,6 +27,10 @@ export const checkConfigurationValue = async keys => {
   return null
 }
 
+/**
+ * spot 관련 기능 페이지의 진입 가능 여부 체크 하는 함수
+ * @param {Function} next router 함수 next를 파라미터로 넘겨 받음
+ */
 export const spotControlRouterGuard = async next => {
   const res = await checkConfigurationValue([
     CONF_SPOT_CONTROL_ACTIVE,

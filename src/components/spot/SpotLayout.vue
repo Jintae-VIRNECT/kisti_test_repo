@@ -53,6 +53,7 @@ export default {
     BatteryStatus,
     SpotConnectModal,
   },
+  //spot 페이지 진입 라우터 가드
   beforeRouteEnter(to, from, next) {
     spotControlRouterGuard(next)
   },
