@@ -1,7 +1,7 @@
 {
-  "name": "remote v2.0",
+  "name": "remote v2.4",
   "short_name": "remote",
-  "version": "2.0",
+  "version": "2.4",
   "manifest_version": 3,
   "icons": [
     {
@@ -23,5 +23,17 @@
   "start_url": "/",
   "display": "standalone",
   "background_color": "#111012",
-  "theme_color": "#0f75f5"
+  "theme_color": "#0f75f5",
+  "related_applications": [{
+    "platform": "play",
+    "id": "com.virnect.remote.mobile2.dev"
+  },{
+    "platform": "play",
+    "id": "com.virnect.remote.mobile2"
+  },
+  {
+    "platform": "play",
+    "id": "com.virnect.remote.mobile2.staging"
+  }],
+  "orientation": "landscape"
 }
