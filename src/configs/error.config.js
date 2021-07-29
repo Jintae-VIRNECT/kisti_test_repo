@@ -26,4 +26,7 @@ export const ERROR = {
 
   //스토리지 용량이 가득 찼음.
   FILE_STORAGE_CAPACITY_FULL: 7017,
+
+  //비밀번호 설정된 PDF 파일
+  FILE_ENCRYPTED: 7018,
 }

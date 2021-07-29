@@ -35,6 +35,9 @@ export default {
         case ERROR.FILE_SIZE_EXCEEDED:
           this.toastError(this.$t('service.file_size_exceeded'))
           break
+        case ERROR.FILE_ENCRYPTED:
+          this.toastError(this.$t('service.encrypted_file_unsupport'))
+          break
       }
     },
   },
