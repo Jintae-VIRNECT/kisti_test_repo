@@ -1,5 +1,7 @@
 package com.virnect.uaa.domain.user.application;
 
+import static com.virnect.uaa.domain.user.domain.UserType.*;
+
 import java.time.LocalDateTime;
 import java.util.Optional;
 
@@ -126,7 +128,14 @@ public class OffUserInformationService {
 	 * @return - 비밀번호 재설정 처리 결과
 	 */
 	public MemberPasswordUpdateResponse updateMemberPassword(MemberPasswordUpdateRequest memberPasswordUpdateRequest) {
-		return null;
+		User memberUser = userRepository.findByUuidAndUserType(memberPasswordUpdateRequest.getUuid(), MEMBER_USER)
+			.orElseThrow(() -> new UserServiceException(UserAccountErrorCode.ERR_USER_NOT_FOUND));
+
+		String encodedPassword = passwordEncoder.encode(memberPasswordUpdateRequest.getPassword());
+		userInfoMapper.updateFromMemberUserPasswordRequest(encodedPassword, memberUser);
+		userRepository.save(memberUser);
+
+		return MemberPasswordUpdateResponse.ofMemberUserInfo(memberUser);
 	}
 
 	private void deleteUserInformation(User user) {

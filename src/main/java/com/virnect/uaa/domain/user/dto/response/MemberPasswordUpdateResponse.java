@@ -7,6 +7,8 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
+import com.virnect.uaa.domain.user.domain.User;
+
 @Getter
 @RequiredArgsConstructor
 @ApiModel
@@ -19,6 +21,10 @@ public class MemberPasswordUpdateResponse {
 	private final String uuid;
 	@ApiModelProperty(value = "비밀번호가 새로 설정된 날짜입니다.", position = 3, notes = "비밀번호가 변경된 날짜 정보입니다.", example = "2020-01-20T14:05:30")
 	private final LocalDateTime passwordChangedDate;
+
+	public static MemberPasswordUpdateResponse ofMemberUserInfo(User memberUser) {
+		return new MemberPasswordUpdateResponse(true, memberUser.getEmail(), memberUser.getUuid(), LocalDateTime.now());
+	}
 
 	@Override
 	public String toString() {
