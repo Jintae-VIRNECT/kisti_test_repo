@@ -95,6 +95,11 @@ import workspaceService from '@/services/workspace'
 export default {
   mixins: [columnMixin, searchMixin],
   async asyncData() {
+    /**
+     * 최근활동의 경우 별도의 검색 조건이 없어서 asyncData 조회,
+      전체 멤버 목록 처럼 정렬,필터, 검색 등이 있다면 data 값이 필요하기 때문에
+      asyncData 사용불가 ( asyncData 는 컴포넌트가 생성되기 전에 동작)
+     */
     const { list, total } = await workspaceService.searchMembersActivity()
     return {
       activityList: list,
@@ -109,6 +114,9 @@ export default {
     }
   },
   methods: {
+    /**
+     * searchMixin에서 emitChangedSearchParams 실행시 changedSearchParams 사용
+     */
     changedSearchParams() {
       this.searchMembersActivity()
     },
@@ -120,7 +128,8 @@ export default {
       this.activityTotal = total
     },
     /**
-     * 데이터 조회 조건 초기화
+     * @description 데이터 조회 조건 초기화
+     * @author YongHo Kim <yhkim@virnect.com>
      */
     refreshParams() {
       this.activityPage = 1
@@ -128,10 +137,9 @@ export default {
   },
 
   beforeMount() {
-    // searchMixin.js: emitChangedSearchParams 실행 > index.vue:changedSearchParams 실행
-    this.emitChangedSearchParams()
     workspaceService.watchActiveWorkspace(this, () => {
       this.refreshParams()
+      // searchMixin.js: emitChangedSearchParams 실행 > 현재 페이지의 changedSearchParams 실행
       this.emitChangedSearchParams()
     })
   },
