@@ -190,18 +190,18 @@ public class DefaultAccountSignUpServiceImpl implements AccountSignUpService {
 		log.info("mailTemplatePath: {}", mailTemplatePath);
 		String message = templateEngine.process(mailTemplatePath, context);
 
-		EmailMessage registerEmailAuthenticationMail = new EmailMessage();
-		registerEmailAuthenticationMail.setSubject(mailTitle);
-		registerEmailAuthenticationMail.setTo(emailAuthRequest.getEmail());
-		registerEmailAuthenticationMail.setMessage(message);
-
-		log.info(
-			"[SEND_EMAIL_CHECK_EMAIL] - title: {} , to: {}",
-			registerEmailAuthenticationMail.getSubject(),
-			registerEmailAuthenticationMail.getTo()
-		);
-
-		emailService.send(registerEmailAuthenticationMail);
+		// EmailMessage registerEmailAuthenticationMail = new EmailMessage();
+		// registerEmailAuthenticationMail.setSubject(mailTitle);
+		// registerEmailAuthenticationMail.setTo(emailAuthRequest.getEmail());
+		// registerEmailAuthenticationMail.setMessage(message);
+		//
+		// log.info(
+		// 	"[SEND_EMAIL_CHECK_EMAIL] - title: {} , to: {}",
+		// 	registerEmailAuthenticationMail.getSubject(),
+		// 	registerEmailAuthenticationMail.getTo()
+		// );
+		//
+		// emailService.send(registerEmailAuthenticationMail);
 	}
 
 	public void signupSessionCodeValidate(String email, String sessionCode) {

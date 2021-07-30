@@ -54,6 +54,7 @@ dependencies {
         exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
     }
     testImplementation 'org.springframework.security:spring-security-test'
+    testImplementation 'com.google.code.gson:gson:2.8.7'
 
 
     // Netflix Feign Client

@@ -5,6 +5,8 @@ import org.mapstruct.BeanMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
+import org.mapstruct.NullValueCheckStrategy;
+import org.mapstruct.NullValueMappingStrategy;
 import org.mapstruct.NullValuePropertyMappingStrategy;
 
 import com.virnect.uaa.domain.user.domain.SecessionUser;
@@ -12,10 +14,21 @@ import com.virnect.uaa.domain.user.domain.User;
 import com.virnect.uaa.domain.user.dto.request.UserInfoModifyRequest;
 import com.virnect.uaa.domain.user.dto.response.UserInfoResponse;
 
-@Mapper(componentModel = "spring")
+@Mapper(
+	componentModel = "spring",
+	nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.SET_TO_DEFAULT,
+	nullValueMappingStrategy = NullValueMappingStrategy.RETURN_DEFAULT,
+	nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS
+)
 public abstract class UserInfoMapper {
 
-	@BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.SET_TO_DEFAULT)
+	@Mapping(source = "user.profile", target = "profile", defaultValue = "dedfault")
+	@Mapping(source = "user.nickname", target = "nickname", defaultValue = "")
+	@Mapping(source = "user.answer", target = "answer", defaultValue = "")
+	@Mapping(source = "user.question", target = "question", defaultValue = "")
+	@Mapping(source = "user.recoveryEmail", target = "recoveryEmail", defaultValue = "")
+	@Mapping(source = "user.mobile", target = "mobile", defaultValue = "")
+	@Mapping(source = "user.description", target = "description", defaultValue = "")
 	public abstract UserInfoResponse toUserInfoResponse(User user);
 
 	@Mapping(source = "secessionUser.nickName", target = "nickname")
@@ -43,7 +56,6 @@ public abstract class UserInfoMapper {
 	@Mapping(target = "user.enabled", ignore = true)
 	@Mapping(target = "user.password", ignore = true)
 	@Mapping(source = "updateRequest.phoneNumber", target = "user.mobile")
-	@BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
 	public abstract void updateFromDetailUpdateRequest(UserInfoModifyRequest updateRequest, @MappingTarget User user);
 
 	@AfterMapping

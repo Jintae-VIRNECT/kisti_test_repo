@@ -25,37 +25,37 @@ import com.virnect.uaa.domain.user.domain.UserType;
 @Setter
 public class UserInfoResponse {
 	@ApiModelProperty(value = "사용자 식별자", example = "498b1839dc29ed7bb2ee90ad6985c608")
-	private String uuid = "";
+	private String uuid;
 
 	@ApiModelProperty(value = "사용자 이메일", position = 1, example = "smic1")
-	private String email = "";
+	private String email;
 
 	@ApiModelProperty(value = "사용자 이름", notes = "사라질 필드 정보입니다", position = 2, example = "SMIC Master")
-	private String name = "";
+	private String name;
 
 	@ApiModelProperty(value = "사용자 이름", position = 3, example = "길동")
-	private String firstName = "";
+	private String firstName;
 
 	@ApiModelProperty(value = "사용자 이름 성", position = 4, example = "홍")
-	private String lastName = "";
+	private String lastName;
 
 	@ApiModelProperty(value = "사용자 닉네임", position = 5, example = "마스터는 나다.")
-	private String nickname = "";
+	private String nickname;
 
 	@ApiModelProperty(value = "사용자 소개", position = 6, example = "smic 워크스페이스 유저")
-	private String description = "";
+	private String description;
 
 	@ApiModelProperty(value = "사용자 프로필 이미지 URL", position = 7, example = "smic 워크스페이스 유저")
-	private String profile = "";
+	private String profile;
 
 	@ApiModelProperty(value = "생년월일", position = 8, example = "2020-01-02")
 	private LocalDate birth;
 
 	@ApiModelProperty(value = "휴대폰 번호", position = 9, example = "+82-01012341234")
-	private String mobile = "";
+	private String mobile;
 
 	@ApiModelProperty(value = "복구 이메일", position = 10, example = "test@test.com")
-	private String recoveryEmail = "";
+	private String recoveryEmail;
 
 	// @ApiModelProperty(value = "계정 잠금 여부 ( ACTIVE(잠금), INACTIVE(해제) )", position = 11, example = "smic 워크스페이스 유저")
 	@JsonIgnore

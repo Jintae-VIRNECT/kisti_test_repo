@@ -185,6 +185,10 @@ public class User extends BaseTimeEntity {
 		this.profile = "default";
 	}
 
+	public boolean passwordResetQuestionAndAnswerValidation(final String question, final String answer) {
+		return this.question.equals(question) && this.answer.equals(answer);
+	}
+
 	@Override
 	public String toString() {
 		return "User{" +

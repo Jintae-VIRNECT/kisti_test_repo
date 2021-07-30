@@ -57,17 +57,17 @@ public class DefaultSuccessHandler implements SignUpSuccessHandler {
 		log.info("mailTemplatePath: {}", mailTemplatePath);
 		String message = templateEngine.process(mailTemplatePath, context);
 
-		EmailMessage registrationSuccessMail = new EmailMessage();
-		registrationSuccessMail.setSubject(mailTitle);
-		registrationSuccessMail.setTo(user.getEmail());
-		registrationSuccessMail.setMessage(message);
-
-		log.info(
-			"[SEND_REGISTRATION_SUCCESS_MAIL] - title: {} , to: {}",
-			registrationSuccessMail.getSubject(),
-			registrationSuccessMail.getTo()
-		);
-
-		emailService.send(registrationSuccessMail);
+		// EmailMessage registrationSuccessMail = new EmailMessage();
+		// registrationSuccessMail.setSubject(mailTitle);
+		// registrationSuccessMail.setTo(user.getEmail());
+		// registrationSuccessMail.setMessage(message);
+		//
+		// log.info(
+		// 	"[SEND_REGISTRATION_SUCCESS_MAIL] - title: {} , to: {}",
+		// 	registrationSuccessMail.getSubject(),
+		// 	registrationSuccessMail.getTo()
+		// );
+		//
+		// emailService.send(registrationSuccessMail);
 	}
 }
