@@ -45,6 +45,7 @@ export default {
       let str = this.$t('home.download')
       if (app.os === 'Android') str = 'Google Play'
       if (app.os === 'iOS') str = 'App Store'
+      if (app.os === 'Windows(UWP)') str = 'Microsoft Store'
       return str
     },
     async download(type, app) {
@@ -82,6 +83,8 @@ export default {
         popup.location = `https://play.google.com/store/apps/details?id=${app.storeId}`
       if (app.os === 'iOS')
         popup.location = `https://apps.apple.com/kr/app/${app.storeId}`
+      if (app.os === 'Windows(UWP)')
+        popup.location = `https://www.microsoft.com/ko-kr/p/virnect-view-hololens/${app.storeId}`
     },
   },
 }

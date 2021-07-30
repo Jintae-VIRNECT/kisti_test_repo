@@ -9,6 +9,9 @@ export default {
   },
   view: {
     Android: { Mobile: 'com.VIRNECT.VIRNECTView' },
+    'Windows(UWP)': {
+      Hololens: '9mtrb3rqz1s5',
+    },
     iOS: {},
   },
 }
