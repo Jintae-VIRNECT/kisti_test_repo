@@ -180,7 +180,7 @@
     "workspace_update_failed": "ワークスペースの変更を失敗しました。\nもう一度試してください。",
     "auth_status_failed": "認証に失敗しました。\nもう一度試してください。",
 
-
-    "profile_size_limit_exceed":"アップロード制限容量(20MB)を超えました。​"
+    "profile_size_limit_exceed":"アップロード制限容量(20MB)を超えました。​",
+    "workspace_select":""
   }
 }

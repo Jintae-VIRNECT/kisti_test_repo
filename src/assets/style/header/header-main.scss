@@ -22,3 +22,10 @@
     margin: 0.929rem 1.214rem;
   }
 }
+
+@include responsive-mobile {
+  .header {
+    height: $header_m_height;
+    background-color: $new_color_bg_sub;
+  }
+}

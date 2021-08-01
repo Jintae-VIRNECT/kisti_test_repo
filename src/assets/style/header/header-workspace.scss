@@ -23,8 +23,8 @@
     font-weight: 500;
     font-size: 1.143rem;
     white-space: nowrap;
-    background: transparent;
     white-space: nowrap;
+    background: transparent;
     &::after {
       position: absolute;
       top: 50%;
@@ -141,6 +141,7 @@
   position: absolute;
   right: 0;
   display: flex;
+  align-items: center;
   height: 100%;
   padding: 0.786rem 1.214rem;
   > .tooltip,
@@ -166,5 +167,14 @@
       border-radius: 50%;
       content: "";
     }
+  }
+}
+
+@include responsive-mobile {
+  .header-workspace .header-logo {
+    display: none;
+  }
+
+  .header-workspace-tools {
   }
 }

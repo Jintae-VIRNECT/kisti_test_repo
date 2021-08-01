@@ -261,3 +261,10 @@ root div에 theme 설정
     border-color: rgb(31, 31, 31);
 }
 */
+
+//반응형 모바일 (360px) ~ 767px
+@mixin responsive-mobile {
+  @media screen and (max-width: $responsive_m_max) {
+    @content;
+  }
+}

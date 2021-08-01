@@ -36,3 +36,10 @@
   // text-align: center;
   background-color: $color_bg;
 }
+
+@include responsive-mobile {
+  .remote-wrapper {
+    height: calc(100% - #{$header_m_height});
+    margin-top: $header_m_height;
+  }
+}

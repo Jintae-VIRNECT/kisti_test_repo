@@ -1,5 +1,6 @@
 /* Layout */
 $header_height: 4rem;
+$header_m_height: 5.4rem;
 
 /* Layout - Workspace */
 $welcome_height: 17.143rem; //156px + 64px + 64px
@@ -34,7 +35,7 @@ $color_state_bad: #ffdc00;
 //$color_online: #7ed321;
 //$color_offline: #cccccc;
 //$color_busy: #ef3e33;
-$color_login: #3BE038;
+$color_login: #3be038;
 $color_collabo: #26a8ff;
 $color_logout: #474750;
 $color_text_login: #34ff83;
@@ -51,6 +52,8 @@ $color_text_red: #f55560;
 $color_bg: #181819;
 $color_bg_sub: #242427;
 $color_bg_item: #4c5259;
+
+$new_color_bg_sub: var(--color-gray-30);
 
 /* Other Color */
 $color_white: #ffffff;
@@ -87,6 +90,14 @@ $size_tab_min: 700px;
 $size_m_max: 767px;
 $size_m_min: 320px;
 $size_m_pad: 20px;
+
+/* Responsive Screen Size */
+$responsive_pc_max: 1920px;
+$responsive_pc_min: 1024px;
+$responsive_tab_max: 1023px;
+$responsive_tab_min: 768px;
+$responsive_m_max: 767px;
+$responsive_m_min: 360px;
 
 /* Font */
 $font_family: "Noto Sans KR";

@@ -13,6 +13,10 @@
         <header-nav></header-nav>
       </template>
 
+      <p class="header-workspace-select">
+        {{ $t('workspace.workspace_select') }}
+      </p>
+
       <header-tools></header-tools>
     </div>
   </header>
