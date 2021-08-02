@@ -168,6 +168,8 @@ export default {
       this.activeTab = 'allTasks' // 탭
       this.taskFilter.value = ['ALL'] // 필터
       this.isGraph = false // 일자별 작업 진행률 그래프
+
+      this.searchParams.mine = false
     },
   },
   beforeMount() {
