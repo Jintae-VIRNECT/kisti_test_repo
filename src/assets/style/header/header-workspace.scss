@@ -1,6 +1,11 @@
 .header-workspace {
   display: flex;
   height: 100%;
+
+  //워크스페이스 선택
+  .header-workspace-select-title {
+    display: none;
+  }
 }
 
 .header-divider {
@@ -171,10 +176,23 @@
 }
 
 @include responsive-mobile {
-  .header-workspace .header-logo {
-    display: none;
+  .header-workspace {
+    //배너부분 제거
+    .header-logo {
+      display: none;
+    }
+
+    //워크스페이스 선택 타이틀 표시
+    .header-workspace-select-title {
+      display: flex;
+      align-items: center;
+      margin-left: 1em;
+      @include fontLevel(200);
+    }
   }
 
-  .header-workspace-tools {
+  //워크스페이스 선택하는 화면의 경우 우측 tools 아이콘 표시 X
+  .header-workspace-tools .tools-mobile {
+    display: none;
   }
 }

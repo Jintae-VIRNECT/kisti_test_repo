@@ -15,6 +15,8 @@
         {{ $t('button.select') }}
       </button>
     </div>
+    <!--워크스페이스 선택 이벤트 적용되는 element 모바일 사이즈에서만 활성화됨-->
+    <div class="workcard-select" @click="join"></div>
   </card>
 </template>
 

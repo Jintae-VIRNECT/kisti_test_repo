@@ -3,7 +3,6 @@
 
 .card.workcard {
   // max-width: 25rem;
-  height: 27.143rem;
   padding: 2.286rem;
   background-color: $color_darkgray_600;
   &:hover {
@@ -43,4 +42,32 @@
   // margin-top: 1.429rem;
   padding: 0.714rem 2.857rem;
   font-weight: normal;
+}
+.workcard-select {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  display: none;
+}
+
+//워크스페이스 카드항목 모바일
+@include responsive-mobile {
+  .card.workcard {
+    position: relative;
+    height: 18.1rem !important;
+    padding: 2.4rem 1.2rem;
+    border-radius: 0.6rem;
+    .workcard-profile {
+      padding-top: 0;
+    }
+    .workcard-button {
+      display: none;
+    }
+  }
+  //워크스페이스 클릭 이벤트 적용되는 element
+  .workcard-select {
+    display: block;
+  }
 }

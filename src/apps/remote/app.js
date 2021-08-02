@@ -25,10 +25,6 @@ import { version } from '@/package.json'
 
 import { logger, debug } from 'utils/logger'
 
-//import vds ui assets style
-import '@virnect/ui-assets/stylesheets/abstracts/_vars.scss'
-import '@virnect/ui-assets/stylesheets/abstracts/_mixins.scss'
-
 Vue.use(DayJS)
 Vue.use(PUSH)
 Vue.use(VueToasted)

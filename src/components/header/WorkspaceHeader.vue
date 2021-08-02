@@ -13,9 +13,9 @@
         <header-nav></header-nav>
       </template>
 
-      <p class="header-workspace-select">
+      <h1 class="header-workspace-select-title">
         {{ $t('workspace.workspace_select') }}
-      </p>
+      </h1>
 
       <header-tools></header-tools>
     </div>
