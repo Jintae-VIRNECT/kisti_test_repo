@@ -40,12 +40,11 @@
           v-for="member in membersList"
           :key="member.uuid"
         >
-          <MemberProfileCard :data="member" @refresh="searchMembers()" />
+          <MemberProfileCard
+            :data="member"
+            @refresh="searchMembers(searchParams)"
+          />
         </el-col>
-        <template slot="empty">
-          <img src="~assets/images/empty/img-member-empty.jpg" />
-          <p>{{ $t('home.memberList.empty') }}</p>
-        </template>
       </el-row>
       <SearchbarPage
         ref="page"
@@ -97,27 +96,17 @@ export default {
     closeMemberAddModal() {
       this.showAddModal = false
     },
-    /**
-     * searchMixin에서 emitChangedSearchParams 실행시 changedSearchParams 사용
-     */
-    changedSearchParams() {
-      // 워크스테이션 정보 갱신
-      this.getWorkspacePlansInfo()
-
-      this.searchMembers()
+    changedSearchParams(searchParams) {
+      this.searchMembers(searchParams)
     },
-    async searchMembers() {
+    async searchMembers(searchParams) {
       this.loading = true
-      const { list, total } = await workspaceService.searchMembers(
-        this.searchParams,
-      )
+      const { list, total } = await workspaceService.searchMembers(searchParams)
+      this.membersPage = searchParams === undefined ? 1 : searchParams.page
       this.membersList = list
       this.membersTotal = total
       this.loading = false
     },
-    /**
-     * 워크스페이스 플랜 정보 업데이트
-     */
     async getWorkspacePlansInfo() {
       await this.$store.dispatch('plan/getPlansInfo')
     },
@@ -128,34 +117,27 @@ export default {
         this.showAddModal = true
       }
     },
-    /**
-     * @description 데이터 조회 조건 초기화
-     * @author YongHo Kim <yhkim@virnect.com>
-     */
-    refreshParams() {
-      this.memberSort.value = 'role,asc'
-      this.memberFilter.value = ['ALL']
-      this.memberSearch = ''
-      this.membersPage = 1
-    },
   },
   beforeMount() {
-    // searchMixin.js: emitChangedSearchParams 실행 > index.vue:changedSearchParams 실행
-    this.emitChangedSearchParams()
+    this.searchMembers({ page: 1 })
+    this.getWorkspacePlansInfo()
+
     workspaceService.watchActiveWorkspace(this, () => {
-      this.refreshParams()
-      this.emitChangedSearchParams()
+      this.searchMembers({ page: 1 })
+      this.getWorkspacePlansInfo()
+
+      // 검색 필터 초기화
+      this.memberSort.value = 'role,asc'
+      this.memberFilter.value = ['ALL']
     })
   },
   mounted() {
     // modal query
     const { path, query } = this.$router.currentRoute
-
     if (query.modal && query.modal === 'memberAdd') {
       this.showAddModal = true
       this.$router.replace(path)
     }
-    // searchMixin.js에서도 mounted 실행
   },
 }
 </script>

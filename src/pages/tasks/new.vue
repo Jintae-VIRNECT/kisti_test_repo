@@ -148,13 +148,13 @@ export default {
     }
   },
   methods: {
-    changedSearchParams() {
-      this.searchContents()
+    // 검색
+    changedSearchParams(searchParams) {
+      this.searchContents(searchParams)
     },
-    async searchContents() {
-      const { list, total } = await contentService.searchContents(
-        this.searchParams,
-      )
+    async searchContents(searchParams) {
+      const { list, total } = await contentService.searchContents(searchParams)
+      this.contentsPage = searchParams === undefined ? 1 : searchParams.page
       this.contentsList = list
       this.contentsTotal = total
     },
@@ -177,26 +177,12 @@ export default {
       this.showNewTaskManage = true
       setTimeout(() => (this.showNewTaskTarget = false), 100)
     },
-    /**
-     * @description 데이터 조회 조건 초기화
-     * @author YongHo Kim <yhkim@virnect.com>
-     */
-    refreshParams() {
-      this.contentsSort.value = 'createdDate,desc'
-      this.contentsFilter.value = ['ALL']
-      this.contentsSearch = ''
-      this.contentsPage = 1
-
-      this.searchParams.mine = false
-    },
   },
   beforeMount() {
-    // searchMixin.js: emitChangedSearchParams 실행 > 현재 페이지의 changedSearchParams 실행
-    this.emitChangedSearchParams()
-    workspaceService.watchActiveWorkspace(this, () => {
-      this.refreshParams()
-      this.emitChangedSearchParams()
-    })
+    this.searchContents({ page: 1 })
+    workspaceService.watchActiveWorkspace(this, () =>
+      this.searchContents({ page: 1 }),
+    )
   },
   mounted() {
     // modal query

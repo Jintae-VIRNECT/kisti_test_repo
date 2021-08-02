@@ -179,11 +179,8 @@ export default {
       this.taskInfo = await taskService.getTaskDetail(this.taskInfo.id)
       this.searchSubTasks()
     },
-    /**
-     * searchMixin에서 emitChangedSearchParams 실행시 changedSearchParams 사용
-     */
-    changedSearchParams() {
-      this.searchSubTasks()
+    changedSearchParams(searchParams) {
+      this.searchSubTasks(searchParams)
     },
     async searchSubTasks() {
       const { list, total } = await taskService.searchSubTasks(
@@ -198,22 +195,9 @@ export default {
     },
     showAll() {},
     showMine() {},
-    /**
-     * @description 데이터 조회 조건 초기화
-     * @author YongHo Kim <yhkim@virnect.com>
-     */
-    refreshParams() {
-      this.taskFilter.value = ['ALL']
-      this.subTaskSearch = ''
-      this.subTaskPage = 1
-
-      this.activeTab = 'allSubTasks'
-      this.searchParams.mine = false
-    },
   },
   beforeMount() {
     workspaceService.watchActiveWorkspace(this, () => {
-      this.refreshParams()
       this.$router.replace('/tasks')
     })
   },

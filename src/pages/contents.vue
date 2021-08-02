@@ -134,17 +134,12 @@ export default {
     }
   },
   methods: {
-    /**
-     * searchMixin에서 emitChangedSearchParams 실행시 changedSearchParams 사용
-     */
-    changedSearchParams() {
-      this.searchContents()
+    changedSearchParams(searchParams) {
+      this.searchContents(searchParams)
     },
-    async searchContents() {
-      // this.searchParams 는 searchMixin에서 가져와 사용
-      const { list, total } = await contentService.searchContents(
-        this.searchParams,
-      )
+    async searchContents(searchParams) {
+      const { list, total } = await contentService.searchContents(searchParams)
+      this.contentsPage = searchParams === undefined ? 1 : searchParams.page
       this.contentsList = list
       this.contentsTotal = total
     },
@@ -190,25 +185,10 @@ export default {
       }
       this.emitChangedSearchParams()
     },
-    /**
-     * @description 데이터 조회 조건 초기화
-     * @author YongHo Kim <yhkim@virnect.com>
-     */
-    refreshParams() {
-      this.contentsSort.value = 'createdDate,desc'
-      this.contentsFilter.value = ['ALL']
-      this.contentsSearch = ''
-      this.contentsPage = 1
-
-      this.searchParams.mine = false
-    },
   },
   beforeMount() {
-    // searchMixin.js: emitChangedSearchParams 실행 > 현재 페이지의 changedSearchParams 실행
-    this.emitChangedSearchParams()
     workspaceService.watchActiveWorkspace(this, () => {
-      this.refreshParams()
-      this.emitChangedSearchParams()
+      this.searchContents({ page: 1 })
     })
   },
 }
