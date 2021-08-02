@@ -23,19 +23,23 @@ export default {
             page: page && page.value,
             ...customParams,
           }
-          // null 삭제
+          // null 값 삭제
           Object.keys(this.searchParams).forEach(key => {
             if (!this.searchParams[key]) delete this.searchParams[key]
           })
-          this.changedSearchParams(this.searchParams)
+
+          // 각 페이지에서 선언되어 있는 changedSearchParams 실행
+          this.changedSearchParams()
         })
       }
     },
   },
   async mounted() {
     await new Promise(_ => setTimeout(_, 100)) // ssr bug
+    // 공통 동작
     const { filter, sort, keyword, page, table, mine } = this.$refs
 
+    // 각 컴포넌트에 이벤트 리스너 적용
     if (keyword)
       keyword.$on('change', val =>
         this.emitChangedSearchParams({ search: val }),
@@ -69,6 +73,7 @@ export default {
       mine.$on('change', label => {
         if (label === this.$t('common.all')) this.searchParams.mine = false
         else this.searchParams.mine = true
+        page.myPage = 1
         this.emitChangedSearchParams()
       })
     }
