@@ -23,7 +23,7 @@ export default {
             page: page && page.value,
             ...customParams,
           }
-          // ㅜㅕㅣㅣ값 삭제
+          // null 값 삭제
           Object.keys(this.searchParams).forEach(key => {
             if (!this.searchParams[key]) delete this.searchParams[key]
           })
