@@ -252,11 +252,8 @@ export default {
         this.subTaskInfo.subTaskId,
       )
     },
-    /**
-     * searchMixin에서 emitChangedSearchParams 실행시 changedSearchParams 사용
-     */
-    changedSearchParams() {
-      this.searchSteps()
+    changedSearchParams(searchParams) {
+      this.searchSteps(searchParams)
     },
     async searchSteps() {
       const { list, total } = await taskService.searchSteps(
@@ -280,7 +277,6 @@ export default {
   },
   beforeMount() {
     workspaceService.watchActiveWorkspace(this, () => {
-      // 선택 하위 작업 정보에서 워크스페이스를 변경하면 전체 작업 목록으로 이동
       this.$router.replace('/tasks')
     })
   },
