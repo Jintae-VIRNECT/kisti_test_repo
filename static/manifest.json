@@ -26,14 +26,18 @@
   "theme_color": "#0f75f5",
   "related_applications": [{
     "platform": "play",
-    "id": "com.virnect.remote.mobile2.dev"
+    "id": "com.virnect.remote.mobile2.dev",
+    "url":"https://192.168.6.3:8886/"
+    
   },{
     "platform": "play",
-    "id": "com.virnect.remote.mobile2"
+    "id": "com.virnect.remote.mobile2",
+    "url":"https://https://remote.virnect.com/"
   },
   {
     "platform": "play",
-    "id": "com.virnect.remote.mobile2.staging"
+    "id": "com.virnect.remote.mobile2.staging",
+    "url":"https://stgremote.virnect.com/"
   }],
-  "orientation": "landscape"
+  "orientation": "portrait"
 }
