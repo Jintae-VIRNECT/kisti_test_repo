@@ -81,8 +81,8 @@
             ref="table"
             :data="taskList"
             :clickable="true"
-            @updated="refresh"
-            @deleted="refresh"
+            @updated="refreshTable"
+            @deleted="refreshTable"
           />
           <!-- 차트 -->
           <TaskDailyGraph v-show="isGraph" />
@@ -148,23 +148,32 @@ export default {
     },
   },
   methods: {
-    changedSearchParams(searchParams) {
-      this.searchTasks(searchParams)
+    /**
+     * searchMixin에서 emitChangedSearchParams 실행시 changedSearchParams 사용
+     */
+    async changedSearchParams() {
+      this.searchTasks()
+      this.taskStatistics = await taskService.getTaskStatistics()
     },
-    async searchTasks(searchParams) {
-      const { list, total } = await taskService.searchTasks(searchParams)
-      this.taskPage = searchParams === undefined ? 1 : searchParams.page
+    async searchTasks() {
+      const { list, total } = await taskService.searchTasks(this.searchParams)
       this.taskList = list
       this.taskTotal = total
     },
     filterChanged(filter) {
       if (!filter.length) this.activeTab = 'allTasks'
     },
-    async refresh() {
-      this.searchTasks({ page: 1 })
+    async refreshTable() {
+      this.searchTasks()
       this.taskStatistics = await taskService.getTaskStatistics()
-
+    },
+    /**
+     * @description 데이터 조회 조건 초기화
+     * @author YongHo Kim <yhkim@virnect.com>
+     */
+    refreshParams() {
       // 검색 조건 초기화
+      this.taskPage = 1 // 페이지
       this.activeTab = 'allTasks' // 탭
       this.taskFilter.value = ['ALL'] // 필터
       this.isGraph = false // 일자별 작업 진행률 그래프
@@ -173,7 +182,12 @@ export default {
     },
   },
   beforeMount() {
-    workspaceService.watchActiveWorkspace(this, this.refresh)
+    // searchMixin.js: emitChangedSearchParams 실행 > 현재 페이지의 changedSearchParams 실행
+    this.emitChangedSearchParams()
+    workspaceService.watchActiveWorkspace(this, () => {
+      this.refreshParams()
+      this.emitChangedSearchParams()
+    })
   },
 }
 </script>
