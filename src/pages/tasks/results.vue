@@ -102,34 +102,32 @@ export default {
     },
   },
   methods: {
-    /**
-     * searchMixin에서 emitChangedSearchParams 실행시 changedSearchParams 사용
-     */
-    changedSearchParams() {
-      this.setActiveTab()
-
-      if (this.activeTab === 'task') this.searchSubTasks()
-      else if (this.activeTab === 'issue') this.searchIssues()
-      else if (this.activeTab === 'paper') this.searchPapers()
+    changedSearchParams(searchParams) {
+      if (this.activeTab === 'task') this.searchSubTasks(searchParams)
+      else if (this.activeTab === 'issue') this.searchIssues(searchParams)
+      else if (this.activeTab === 'paper') this.searchPapers(searchParams)
     },
-    async searchSubTasks() {
+    async searchSubTasks(searchParams) {
       const { list, total } = await resultService.searchCurrentSubTasks(
-        this.searchParams,
+        searchParams,
       )
+      this.page = searchParams === undefined ? 1 : searchParams.page
       this.list.splice(0, this.list.length, ...list)
       this.total = total
     },
-    async searchIssues() {
+    async searchIssues(searchParams) {
       const { list, total } = await resultService.searchIssues(
         this.searchParams,
       )
+      this.page = searchParams === undefined ? 1 : searchParams.page
       this.list.splice(0, this.list.length, ...list)
       this.total = total
     },
-    async searchPapers() {
+    async searchPapers(searchParams) {
       const { list, total } = await resultService.searchPapers(
         this.searchParams,
       )
+      this.page = searchParams === undefined ? 1 : searchParams.page
       this.list.splice(0, this.list.length, ...list)
       this.total = total
     },
@@ -146,29 +144,25 @@ export default {
      */
     setActiveTab() {
       const { name } = this.$route
+      console.log(name)
       if (name === 'tasks-results') this.activeTab = 'task'
       else if (name === 'tasks-results-issues') this.activeTab = 'issue'
       else if (name === 'tasks-results-papers') this.activeTab = 'paper'
     },
-    /**
-     * @description 데이터 조회 조건 초기화
-     * @author YongHo Kim <yhkim@virnect.com>
-     */
-    refreshParams() {
-      this.taskFilter.value = ['ALL']
-      this.resultsSearch = this.$route.query.search // 특정 작업을 검색하기 위한 용도 인듯
-      this.page = 1
-
-      this.activeTab = 'task'
-      this.searchParams.mine = false
-    },
   },
   beforeMount() {
-    // searchMixin.js: emitChangedSearchParams 실행 > 현재 페이지의 changedSearchParams 실행
-    this.emitChangedSearchParams()
+    this.resultsSearch = this.$route.query.search
+    this.searchParams.search = this.$route.query.search
+
+    this.setActiveTab()
+
     workspaceService.watchActiveWorkspace(this, () => {
-      this.refreshParams()
-      this.emitChangedSearchParams()
+      // 워크스페이션 변경시 초기화
+      this.taskFilter.value = ['ALL']
+      this.activeTab = 'task'
+      this.resultsSearch = ''
+
+      this.searchSubTasks({ page: 1 })
     })
   },
 }
