@@ -102,6 +102,15 @@ const setTranslate = (i, v) => {
   localStorage.setItem('translate', allow)
 }
 
+const setDrawingInfo = (i, v) => {
+  let drawingInfo = parsingItem(originLocalStorage.getItem('drawingInfo'))
+  if (!drawingInfo) {
+    drawingInfo = {}
+  }
+  drawingInfo[i] = v
+  localStorage.setItem('drawingInfo', drawingInfo)
+}
+
 //로컬 스토리지
 export const localStorage = {
   ...window.localStorage,
@@ -112,6 +121,7 @@ export const localStorage = {
   setServerRecord: (i, v) => setServerRecord(i, v),
   setAllow: (i, v) => setAllow(i, v),
   setTranslate: (i, v) => setTranslate(i, v),
+  setDrawingInfo: (i, v) => setDrawingInfo(i, v),
   removeItem: k => originLocalStorage.removeItem(k),
   clear: () => originLocalStorage.clear(),
   key: () => originLocalStorage.key(),
