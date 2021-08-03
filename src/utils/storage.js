@@ -64,52 +64,52 @@ const setDevice = (d, i, v) => {
   localStorage.setItem('deviceInfo', deviceInfo)
 }
 
-const setRecord = (i, v) => {
-  let recordInfo = parsingItem(originLocalStorage.getItem('recordInfo'))
-  if (!recordInfo) {
-    recordInfo = {}
-  }
-  recordInfo[i] = v
-  localStorage.setItem('recordInfo', recordInfo)
-}
+// const setRecord = (i, v) => {
+//   let recordInfo = parsingItem(originLocalStorage.getItem('recordInfo'))
+//   if (!recordInfo) {
+//     recordInfo = {}
+//   }
+//   recordInfo[i] = v
+//   localStorage.setItem('recordInfo', recordInfo)
+// }
 
-const setServerRecord = (i, v) => {
-  let serverRecordInfo = parsingItem(
-    originLocalStorage.getItem('serverRecordInfo'),
-  )
-  if (!serverRecordInfo) {
-    serverRecordInfo = {}
-  }
-  serverRecordInfo[i] = v
-  localStorage.setItem('serverRecordInfo', serverRecordInfo)
-}
+// const setServerRecord = (i, v) => {
+//   let serverRecordInfo = parsingItem(
+//     originLocalStorage.getItem('serverRecordInfo'),
+//   )
+//   if (!serverRecordInfo) {
+//     serverRecordInfo = {}
+//   }
+//   serverRecordInfo[i] = v
+//   localStorage.setItem('serverRecordInfo', serverRecordInfo)
+// }
 
-const setAllow = (i, v) => {
-  let allow = parsingItem(originLocalStorage.getItem('allow'))
-  if (!allow) {
-    allow = {}
-  }
-  allow[i] = v
-  localStorage.setItem('allow', allow)
-}
+// const setAllow = (i, v) => {
+//   let allow = parsingItem(originLocalStorage.getItem('allow'))
+//   if (!allow) {
+//     allow = {}
+//   }
+//   allow[i] = v
+//   localStorage.setItem('allow', allow)
+// }
 
-const setTranslate = (i, v) => {
-  let allow = parsingItem(originLocalStorage.getItem('translate'))
-  if (!allow) {
-    allow = {}
-  }
-  allow[i] = v
-  localStorage.setItem('translate', allow)
-}
+// const setTranslate = (i, v) => {
+//   let allow = parsingItem(originLocalStorage.getItem('translate'))
+//   if (!allow) {
+//     allow = {}
+//   }
+//   allow[i] = v
+//   localStorage.setItem('translate', allow)
+// }
 
-const setDrawingInfo = (i, v) => {
-  let drawingInfo = parsingItem(originLocalStorage.getItem('drawingInfo'))
-  if (!drawingInfo) {
-    drawingInfo = {}
-  }
-  drawingInfo[i] = v
-  localStorage.setItem('drawingInfo', drawingInfo)
-}
+// const setDrawingInfo = (i, v) => {
+//   let drawingInfo = parsingItem(originLocalStorage.getItem('drawingInfo'))
+//   if (!drawingInfo) {
+//     drawingInfo = {}
+//   }
+//   drawingInfo[i] = v
+//   localStorage.setItem('drawingInfo', drawingInfo)
+// }
 
 //로컬 스토리지
 export const localStorage = {
@@ -117,11 +117,11 @@ export const localStorage = {
   getItem: k => parsingItem(originLocalStorage.getItem(k)),
   setItem: (k, v) => originLocalStorage.setItem(k, stringifyItem(v)),
   setDevice: (d, i, v) => setDevice(d, i, v),
-  setRecord: (i, v) => setRecord(i, v),
-  setServerRecord: (i, v) => setServerRecord(i, v),
-  setAllow: (i, v) => setAllow(i, v),
-  setTranslate: (i, v) => setTranslate(i, v),
-  setDrawingInfo: (i, v) => setDrawingInfo(i, v),
+  // setRecord: (i, v) => setRecord(i, v),
+  // setServerRecord: (i, v) => setServerRecord(i, v),
+  // setAllow: (i, v) => setAllow(i, v),
+  // setTranslate: (i, v) => setTranslate(i, v),
+  // setDrawingInfo: (i, v) => setDrawingInfo(i, v),
   removeItem: k => originLocalStorage.removeItem(k),
   clear: () => originLocalStorage.clear(),
   key: () => originLocalStorage.key(),
