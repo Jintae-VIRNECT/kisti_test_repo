@@ -6,7 +6,7 @@
           <profile
             :group="true"
             :image="workspaceInfo.profile"
-            :thumbStyle="{ width: '5.143rem', height: '5.143rem' }"
+            :thumbStyle="thumbStyle"
           ></profile>
         </div>
         <p class="profile__name">{{ workspaceInfo.title }}</p>
@@ -33,6 +33,12 @@ export default {
     Profile,
   },
   props: {
+    thumbStyle: {
+      type: Object,
+      default: () => {
+        return {}
+      },
+    },
     workspaceInfo: {
       type: Object,
       default: () => {
@@ -45,7 +51,6 @@ export default {
       this.$emit('join')
     },
   },
-
   /* Lifecycles */
   mounted() {},
 }

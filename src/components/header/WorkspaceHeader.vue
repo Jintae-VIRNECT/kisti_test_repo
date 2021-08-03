@@ -13,7 +13,8 @@
         <header-nav></header-nav>
       </template>
 
-      <h1 class="header-workspace-select-title">
+      <!-- 워크스페이스 선택 문구 : 모바일에서만 표시-->
+      <h1 v-if="!workspace.uuid" class="header-workspace-select-title">
         {{ $t('workspace.workspace_select') }}
       </h1>
 

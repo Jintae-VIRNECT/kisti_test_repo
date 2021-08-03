@@ -168,13 +168,11 @@
     "plan_exceeded_desctiption": "보유하신 플랜 수 보다 플랜 할당 사용자가 많아<br /> 서비스 이용이 제한되었습니다.​<br /> 마스터 사용자에게 플랜 관리를 요청해 주세요.",
     "go_workspace_member": "워크스페이스 멤버 목록 이동",
     
-
-
     "loading_prepare_remote":"협업 룸 생성 준비",
     "loading_checking_device":"장치 연결 상태 확인 중...",
 
-
     "cookie": "버넥트의 서비스를 운영하고 고객 경험을 개선하기 위해 쿠키 및 이용통계를 사용합니다. 자세한 내용을 알아보려면 ​<br> 당사의 <a href='https://virnect.com/policy#10' target='_blank'>취급 방침</a>을 확인하세요. ‘확인’을 클릭하거나 사이트 사용을 계속하는 것은 쿠키 및 이용통계 수집에 동의하는 것입니다.​",
+    "cookie_mobile" : "버넥트의 서비스를 운영하고 고객 경험을 개선하기 위해 쿠키 및 이용통계를 사용합니다.​<br>자세한 내용을 알아보려면 당사의 <a href='https://virnect.com/policy#10' target='_blank'>취급 방침</a>을 확인하세요. ‘확인’을 클릭하거나 사이트 사용을 계속하는 것은 쿠키 및 이용통계 수집에 동의하는 것입니다.​",
 
     "confirm_duplicated_session_logout": "다른 장치에서 이미 로그인 중입니다.\n계속 하시려면 상대방의 접속을 종료시켜주세요.",
     "confirm_duplicated_session_joined":"다른 장치에서 이미 협업 중입니다.\n상대방이 협업을 종료한 이후에 다시 시도해 주세요.",

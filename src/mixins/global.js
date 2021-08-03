@@ -83,5 +83,24 @@ export default {
       // event.target.src = require('assets/image/img_default_group.svg')
       event.target.style.display = 'none'
     },
+
+    //모바일 반응형 사이즈 이벤트 함수 : js로 반응형 처리를 해야하는 경우에 사용
+    callAndGetMobileResponsiveFunction(fn, resetFn) {
+      //call
+      if (matchMedia('screen and (max-width: 767px)').matches) fn()
+      else resetFn()
+
+      //return event function
+      return () => {
+        if (matchMedia('screen and (max-width: 767px)').matches) fn()
+        else resetFn()
+      }
+    },
+    addEventListenerScreenResize(fn) {
+      window.addEventListener('resize', fn)
+    },
+    removeEventListenerScreenResize(fn) {
+      window.addEventListener('resize', fn)
+    },
   },
 }

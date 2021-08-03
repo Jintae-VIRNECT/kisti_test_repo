@@ -172,6 +172,8 @@
     "loading_checking_device":"Checking device connection status...",
 
     "cookie": "We use cookies and usage statistics to improve our service and customer experience. To learn more, <br>please check out our <a href='https://virnect.com/policy#10' target='_blank'>policy</a>. By clicking \"OK\" or continuing the use of site, you consent to the collection of cookies and usage statistics.",
+    "cookie_mobile": "We use cookies and usage statistics to improve our service and customer experience.<br>To learn more, please check out our <a href='https://virnect.com/policy#10' target='_blank'>policy</a>. By clicking \"OK\" or continuing the use of site, you consent to the collection of cookies and usage statistics.",
+
 
     "confirm_duplicated_session_logout": "Another device is already logged in.\nPlease close the other party's connection to continue.",
     "confirm_duplicated_session_joined":"Another device is already collaborating.\nPlease try again after the other person ends the Collabo.",

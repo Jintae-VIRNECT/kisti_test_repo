@@ -23,9 +23,10 @@
   }
 }
 
+//모바일 반응형 v2.5
 @include responsive-mobile {
   .header {
     height: $header_m_height;
-    background-color: $new_color_bg_sub;
+    //background-color: $new_color_bg_sub;  //@color 수정 필요
   }
 }

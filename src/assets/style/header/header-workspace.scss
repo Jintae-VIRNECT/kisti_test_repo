@@ -175,6 +175,7 @@
   }
 }
 
+//모바일 반응형 v2.5
 @include responsive-mobile {
   .header-workspace {
     //배너부분 제거
@@ -189,6 +190,10 @@
       margin-left: 1em;
       @include fontLevel(200);
     }
+  }
+
+  .header-divider {
+    display: none;
   }
 
   //워크스페이스 선택하는 화면의 경우 우측 tools 아이콘 표시 X
