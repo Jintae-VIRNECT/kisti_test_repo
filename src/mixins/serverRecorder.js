@@ -125,6 +125,13 @@ export default {
         this.startServerRecord(reason)
       }
     },
+    /**
+     * 이전에 진행중인 서버 녹화가 있는지 체크
+     * 진행중인 서버녹화가 있는 경우 서버녹화중임을 표시
+     *
+     *
+     * @returns {Boolean} 진행중인 서버 녹화 여부
+     */
     async checkServerRecordings() {
       const result = await getServerRecordList({
         workspaceId: this.workspace.uuid,
@@ -138,7 +145,7 @@ export default {
       if (failedInPreparing) {
         this.logger('SERVER RECORD', 'failed in preparing')
         this.processPreparingFailed()
-        return
+        return false
       }
 
       if (this.isLeader && result.infos.length > 0) {
@@ -147,7 +154,7 @@ export default {
 
         if (this.serverRecordRetryCount >= 11) {
           this.processPreparingFailed()
-          return
+          return false
         }
 
         if (status === 'preparing') {
@@ -159,7 +166,7 @@ export default {
             this.logger('SERVER RECORD', 'check preparing')
             this.checkServerRecordings()
           }, retryInterval)
-          return
+          return false
         }
 
         this.recordingId = recordInfo.recordingId
@@ -172,6 +179,8 @@ export default {
 
         this.$eventBus.$emit('showServerTimer', elapsedTime)
         this.setServerRecordStatus('START')
+
+        return true
       }
     },
     clearServerRecordTimer() {
