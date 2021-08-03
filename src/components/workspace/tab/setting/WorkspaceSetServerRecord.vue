@@ -32,19 +32,22 @@
         >
         </r-select>
       </figure>
-    </div>
-    <p class="setting__label dot">
-      {{ $t('workspace.setting_record_setting_description') }}
-    </p>
-    <figure class="setting__figure">
-      <p class="setting__label">
-        {{ $t('workspace.setting_auto_server_record') }}
+      <p class="setting__label dot">
+        {{ $t('workspace.setting_record_setting_description') }}
       </p>
-      <check
-        :text="$t('workspace.setting_use_auto_server_record')"
-        :value.sync="useAutoServerRecord"
-      ></check>
-    </figure>
+    </div>
+
+    <div class="setting-section__body">
+      <figure class="setting__figure">
+        <p class="setting__label">
+          {{ $t('workspace.setting_auto_server_record') }}
+        </p>
+        <check
+          :text="$t('workspace.setting_use_auto_server_record')"
+          :value.sync="useAutoServerRecord"
+        ></check>
+      </figure>
+    </div>
   </section>
 </template>
 <script>
