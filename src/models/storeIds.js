@@ -5,6 +5,9 @@ export default {
       Mobile: 'com.virnect.remote.mobile2',
       Linkflow: 'com.virnect.remote.linkflow',
     },
+    'Windows(UWP)': {
+      // Hololens: 'f35a-db45b7bd5f23',
+    },
     iOS: {},
   },
   view: {

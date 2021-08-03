@@ -84,6 +84,7 @@ export default {
       if (app.os === 'iOS')
         popup.location = `https://apps.apple.com/kr/app/${app.storeId}`
       if (app.os === 'Windows(UWP)')
+        // TODO: virnect remote도 고려하여 페이지 이동.
         popup.location = `https://www.microsoft.com/ko-kr/p/virnect-view-hololens/${app.storeId}`
     },
   },
