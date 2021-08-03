@@ -49,7 +49,7 @@ public class OffUserInformationService {
 	 * @param registerMemberRequest - 멤버 사용자 데이터
 	 * @return - 등록된 새 멤버 사용자 정보
 	 */
-	public UserInfoResponse registerNewMember(RegisterMemberRequest registerMemberRequest) {
+	public UserInfoResponse 	registerNewMember(RegisterMemberRequest registerMemberRequest) {
 		User user = User.ByRegisterMemberUserBuilder()
 			.registerMemberRequest(registerMemberRequest)
 			.encodedPassword(passwordEncoder.encode(registerMemberRequest.getPassword()))
