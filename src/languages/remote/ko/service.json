@@ -218,6 +218,7 @@
     "record_server_end_message":"서버 녹화를 종료합니다.",
     "record_server_over_max_count":"현재 실행 가능한 서버 녹화 개수가 초과 되었습니다. \n잠시후에 다시 시도해 주세요.",
     "record_server_no_storage":"서버에 녹화 파일을 저장할 수 있는 공간이 부족합니다. \n관리자에게 문의 해주세요.",
+    "record_server_start_auto_record_message":"서버 녹화를 자동으로 시작합니다.​",
 
     "reconnect_network_connecting": "네트워크 연결 중…",
     "reconnect_room_connecting": "협업 재연결 중…",

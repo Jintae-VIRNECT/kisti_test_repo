@@ -75,6 +75,8 @@
     "setting_record_resolution_tooltip": "When setting the resolution of 720p (HD) or higher, <br>please be aware that the service depends on the PC's performance.",
     "setting_record_setting_description":"The changes are applied at the start of recording.",
     "setting_server_record":"Server recording settings",
+    "setting_auto_server_record":"Automatic Server Recording",
+    "setting_use_auto_server_record":"Enable automatic recording",
     "setting_video": "Video settings",
     "setting_video_choice": "Camera",
     "setting_video_resolution": "Input resolution",

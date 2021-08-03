@@ -75,6 +75,8 @@
     "setting_record_resolution_tooltip": "720p(HD)級以上の解像度設定時、PCの性能によってサービスが<br>円滑でない恐れがあります。",
     "setting_record_setting_description": "修正された設定値は、録画開始時点に適用されます。",
     "setting_server_record": "サーバー録画設定",
+    "setting_auto_server_record":"自動サーバー録画",
+    "setting_use_auto_server_record":"自動録画使用",
     "setting_video": "Video設定",
     "setting_video_choice": "カメラ",
     "setting_video_resolution": "入力解像度",

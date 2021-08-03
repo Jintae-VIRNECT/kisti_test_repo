@@ -81,7 +81,9 @@ export default {
 
         //자동 시작시
         if (reason === 'autoStart') {
-          this.toastDefault(this.$t('서버 녹화를 자동으로 시작합니다.​'))
+          this.toastDefault(
+            this.$t('service.record_server_start_auto_record_message'),
+          )
         } else {
           this.toastDefault(this.$t('service.record_server_start_message'))
         }

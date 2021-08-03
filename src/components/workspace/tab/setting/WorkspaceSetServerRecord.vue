@@ -38,10 +38,10 @@
     </p>
     <figure class="setting__figure">
       <p class="setting__label">
-        {{ $t('자동 서버 녹화') }}
+        {{ $t('workspace.setting_auto_server_record') }}
       </p>
       <check
-        :text="$t('자동 녹화 사용')"
+        :text="$t('workspace.setting_use_auto_server_record')"
         :value.sync="useAutoServerRecord"
       ></check>
     </figure>
