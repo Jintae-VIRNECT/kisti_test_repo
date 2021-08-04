@@ -8,7 +8,10 @@ import { RECORD_INFO } from 'configs/env.config'
 import { ROLE } from 'configs/remote.config'
 import { DEVICE } from 'configs/device.config'
 
+import confirmMixin from 'mixins/confirm'
+
 export default {
+  mixins: [confirmMixin],
   data() {
     return {
       recordingId: null,
@@ -90,9 +93,9 @@ export default {
       } catch (e) {
         console.error('SERVER RECORD::', 'start failed')
         if (e.code === 1001) {
-          this.toastError(this.$t('service.record_server_over_max_count'))
+          this.confirmDefault(this.$t('service.record_server_over_max_count'))
         } else if (e.code === 1002) {
-          this.toastError(this.$t('service.record_server_no_storage'))
+          this.confirmDefault(this.$t('service.record_server_no_storage'))
         }
 
         this.stopServerRecord()
