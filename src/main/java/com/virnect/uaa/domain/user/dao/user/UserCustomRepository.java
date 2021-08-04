@@ -27,4 +27,6 @@ public interface UserCustomRepository {
 	List<User> findAllUserInfoWithSearchCondition(String search);
 
 	Optional<User> findLoginUserInformationByUserEmail(String email);
+
+	Page<User> findAllUserBySearchAndPaging(String search, Pageable pageable);
 }

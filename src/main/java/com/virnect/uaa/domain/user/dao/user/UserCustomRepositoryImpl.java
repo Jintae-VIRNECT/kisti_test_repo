@@ -11,9 +11,12 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.support.QuerydslRepositorySupport;
 
 import com.querydsl.core.QueryResults;
 import com.querydsl.core.types.dsl.BooleanExpression;
+import com.querydsl.jpa.JPQLQuery;
+import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 
 import com.virnect.uaa.domain.user.domain.User;
@@ -25,10 +28,11 @@ import com.virnect.uaa.domain.user.domain.User;
  * @description
  * @since 2020.04.10
  */
-public class UserCustomRepositoryImpl implements UserCustomRepository {
+public class UserCustomRepositoryImpl extends QuerydslRepositorySupport implements UserCustomRepository {
 	private final JPAQueryFactory query;
 
 	public UserCustomRepositoryImpl(JPAQueryFactory Query) {
+		super(User.class);
 		this.query = Query;
 	}
 
@@ -80,6 +84,33 @@ public class UserCustomRepositoryImpl implements UserCustomRepository {
 				.innerJoin(userPermission.permission, permission1).fetchJoin()
 				.where(user.email.eq(email))
 				.distinct().fetchOne());
+	}
+
+	@Override
+	public Page<User> findAllUserBySearchAndPaging(String search, Pageable pageable) {
+		JPAQuery<User> baseQuery = query.selectFrom(user)
+			.where(containsSearchKeywordInEmailOrNameOrNickname(search))
+			.offset(pageable.getOffset())
+			.limit(pageable.getPageSize());
+
+		// 정렬 조건을 위해 querydsl 메서드 사용.. 추후 리팩토링
+		JPQLQuery<User> pageableAndSortingQuery = getQuerydsl().applySorting(pageable.getSort(), baseQuery);
+		QueryResults<User> userQueryResults = pageableAndSortingQuery.fetchResults();
+
+		return new PageImpl<>(userQueryResults.getResults(), pageable, userQueryResults.getTotal());
+	}
+
+	/**
+	 *
+	 *  다이나믹쿼리를 위한 조건 메서드
+	 *
+	 */
+
+	private BooleanExpression containsSearchKeywordInEmailOrNameOrNickname(String search) {
+		if (StringUtils.isEmpty(search)) {
+			return null;
+		}
+		return user.email.contains(search).or(user.name.contains(search)).or(user.nickname.contains(search));
 	}
 
 	private BooleanExpression equalName(String name) {

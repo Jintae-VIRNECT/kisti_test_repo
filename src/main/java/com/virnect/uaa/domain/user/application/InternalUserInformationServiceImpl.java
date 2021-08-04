@@ -32,9 +32,9 @@ public class InternalUserInformationServiceImpl implements InternalUserInformati
 
 	@Override
 	public UserInfoListResponse findAllUserInfo(
-		Pageable pageable
+		String search, Pageable pageable
 	) {
-		Page<User> userPagingResult = userRepository.findAll(pageable);
+		Page<User> userPagingResult = userRepository.findAllUserBySearchAndPaging(search, pageable);
 		List<UserInfoResponse> userInfoResponseList = userPagingResult.stream()
 			.map(userInfoMapper::toUserInfoResponse)
 			.collect(Collectors.toList());

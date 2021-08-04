@@ -38,15 +38,17 @@ public class InternalUserInfoController {
 
 	@ApiOperation(value = "전체 사용자 현황 조회", notes = "어드민 서비스에서 관리자가 전체 사용자 현황을 조회하는 데에 사용하는 api 입니다.", tags = "admin server only")
 	@ApiImplicitParams({
+		@ApiImplicitParam(name = "search", value = "검색어(email, name, nickname 대상 검색 진행)", dataType = "string", paramType = "query"),
 		@ApiImplicitParam(name = "size", value = "페이징 사이즈", dataType = "number", paramType = "query", defaultValue = "2"),
 		@ApiImplicitParam(name = "page", value = "size 대로 나눠진 페이지를 조회할 번호(0부터 시작)", paramType = "query", defaultValue = "0"),
 		@ApiImplicitParam(name = "sort", value = "정렬 옵션 데이터", paramType = "query", defaultValue = "createdDate,desc"),
 	})
 	@GetMapping("/all")
 	public ResponseEntity<ApiResponse<UserInfoListResponse>> findAllUserInfoRequestHandler(
+		@RequestParam(value = "search", required = false) String search,
 		@ApiIgnore Pageable pageable
 	) {
-		UserInfoListResponse responseMessage = internalUserInformationService.findAllUserInfo(pageable);
+		UserInfoListResponse responseMessage = internalUserInformationService.findAllUserInfo(search, pageable);
 		return ResponseEntity.ok(new ApiResponse<>(responseMessage));
 	}
 
