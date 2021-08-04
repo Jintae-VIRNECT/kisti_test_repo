@@ -1,27 +1,35 @@
 # Build Stage
-FROM openjdk:8 AS builder
+FROM gradle:6.8-jdk8 AS builder
+ENV APP_HOME=/usr/app/
+WORKDIR $APP_HOME
 
-COPY gradlew .
-COPY gradle gradle
-COPY build.gradle .
-COPY settings.gradle .
-COPY src src
+# Only copy dependency-related files
+COPY build.gradle settings.gradle ./
+
+# Donwload dependencies. docker layer caching
+RUN gradle clean build --no-daemon > /dev/null 2>&1 || true
+
+# Copy Sourcefile
 COPY virnect.pfx .
 
-RUN chmod +x ./gradlew
-RUN ./gradlew cleanQuerydslSourcesDir
-RUN ./gradlew build -x test
+COPY src src
+
+# build soruce file with dependnecies
+RUN gradle clean build -x test --console=plain
+
+RUN java -Djarmode=layertools -jar build/libs/*.jar extract
 
 # Runtime Stage
 FROM openjdk:8-jre-alpine
 
 ENV APP_HOME=/usr/app/
 WORKDIR $APP_HOME
-ARG buildDir=build/unpack
 
-COPY --from=builder virnect.pfx .
-COPY --from=builder ${buildDir}/lib BOOT-INF/lib
-COPY --from=builder ${buildDir}/app .
+COPY --from=builder ${APP_HOME}/virnect.pfx ./
+COPY --from=builder ${APP_HOME}/dependencies/ ./
+COPY --from=builder ${APP_HOME}/spring-boot-loader/ ./
+COPY --from=builder ${APP_HOME}/snapshot-dependencies/ ./
+COPY --from=builder ${APP_HOME}/application/ ./
 
-EXPOSE 28321
+EXPOSE 8321
 CMD ["java", "-Xms400M", "-Xmx400M", "org.springframework.boot.loader.JarLauncher"]
