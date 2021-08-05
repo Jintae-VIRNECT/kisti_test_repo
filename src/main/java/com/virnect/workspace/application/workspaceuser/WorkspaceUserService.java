@@ -3,18 +3,12 @@ package com.virnect.workspace.application.workspaceuser;
 import com.virnect.workspace.application.license.LicenseRestService;
 import com.virnect.workspace.application.user.UserRestService;
 import com.virnect.workspace.dao.setting.WorkspaceCustomSettingRepository;
-import com.virnect.workspace.dao.workspace.WorkspaceRepository;
-import com.virnect.workspace.dao.workspace.WorkspaceRoleRepository;
-import com.virnect.workspace.dao.workspace.WorkspaceUserPermissionRepository;
-import com.virnect.workspace.dao.workspace.WorkspaceUserRepository;
+import com.virnect.workspace.dao.workspace.*;
 import com.virnect.workspace.domain.rest.LicenseStatus;
 import com.virnect.workspace.domain.setting.SettingName;
 import com.virnect.workspace.domain.setting.SettingValue;
 import com.virnect.workspace.domain.setting.WorkspaceCustomSetting;
-import com.virnect.workspace.domain.workspace.Workspace;
-import com.virnect.workspace.domain.workspace.WorkspaceRole;
-import com.virnect.workspace.domain.workspace.WorkspaceUserPermission;
-import com.virnect.workspace.dto.onpremise.MemberAccountCreateRequest;
+import com.virnect.workspace.domain.workspace.*;
 import com.virnect.workspace.dto.request.*;
 import com.virnect.workspace.dto.response.*;
 import com.virnect.workspace.dto.rest.*;
@@ -28,6 +22,7 @@ import com.virnect.workspace.global.common.CustomPageHandler;
 import com.virnect.workspace.global.common.CustomPageResponse;
 import com.virnect.workspace.global.common.mapper.rest.RestMapStruct;
 import com.virnect.workspace.global.constant.Mail;
+import com.virnect.workspace.global.constant.Permission;
 import com.virnect.workspace.global.error.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -71,9 +66,10 @@ public abstract class WorkspaceUserService {
     private final ApplicationEventPublisher applicationEventPublisher;
     private final WorkspaceCustomSettingRepository workspaceCustomSettingRepository;
     private final MailContextHandler mailContextHandler;
+    private final WorkspacePermissionRepository workspacePermissionRepository;
 
     private static final String ALL_LICENSE_PRODUCT = ".*(?i)REMOTE.*|.*(?i)MAKE.*|.*(?i)VIEW.*";
-
+    private static final int MAX_WORKSPACE_USER_AMOUNT = 50;//워크스페이스 최대 멤버 수(마스터 본인 포함)
 
     /**
      * 멤버 조회
@@ -429,6 +425,9 @@ public abstract class WorkspaceUserService {
 
         //상위 유저에 대해서는 플랜을 변경할 수 없음.
         if (requestUserPermission.getId() > updateUserPermission.getId()) {
+            if (updateUserPermission.getWorkspaceRole().getRole().equals("MASTER")) {
+                throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_USER_INFO_UPDATE_MASTER_PLAN);
+            }
             throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_INVALID_PERMISSION);
         }
 
@@ -817,4 +816,174 @@ public abstract class WorkspaceUserService {
     @Profile("onpremise")
     @Transactional
     public abstract WorkspaceMemberPasswordChangeResponse memberPasswordChange(WorkspaceMemberPasswordChangeRequest passwordChangeRequest, String workspaceId);
+
+    /**
+     * 워크스페이스 시트 계정 생성
+     *
+     * @param workspaceId             - 요청 워크스페이스 식별자
+     * @param memberSeatCreateRequest - 시트 계정 생성 요청 정보
+     * @return - 생성된 시트 계정 목록
+     */
+    @Transactional
+    public WorkspaceMemberInfoListResponse createWorkspaceMemberSeat(String workspaceId, MemberSeatCreateRequest memberSeatCreateRequest) {
+        //1-1. 요청한 사람의 권한 체크
+        Workspace workspace = workspaceRepository.findByUuid(workspaceId).orElseThrow(() -> new WorkspaceException(ErrorCode.ERR_WORKSPACE_NOT_FOUND));
+        checkSeatMemberCreatePermission(workspace, memberSeatCreateRequest.getUserId());
+
+        //1-2. 라이선스 갯수 유효성 체크
+        WorkspaceLicensePlanInfoResponse workspaceLicensePlanInfoResponse = getWorkspaceLicensesByWorkspaceId(workspaceId);
+        checkSeatMemberCreateLicense(memberSeatCreateRequest, workspaceLicensePlanInfoResponse);
+
+        //1-3. 워크스페이스 멤버 제한 수 체크
+        int requestSeatUserAmount = memberSeatCreateRequest.getPlanRemoteAndView() + memberSeatCreateRequest.getPlanRemote() + memberSeatCreateRequest.getPlanView();
+        checkWorkspaceMaxUserAmount(workspaceId, requestSeatUserAmount, workspaceLicensePlanInfoResponse);
+
+        //3. 시트 계정 생성
+        List<WorkspaceUserInfoResponse> workspaceMemberInfoList = new ArrayList<>();
+        for (int i = 0; i < memberSeatCreateRequest.getPlanRemoteAndView(); i++) {
+            //게정 생성
+            UserInfoRestResponse userInfoRestResponse = userRestService.registerMemberRequest(new RegisterMemberRequest(), "workspace-server").getData();//TODO API 생기면 교체
+            //라이선스 할당
+            grantWorkspaceLicenseToUser(workspaceId, userInfoRestResponse.getUuid(), "REMOTE");
+            grantWorkspaceLicenseToUser(workspaceId, userInfoRestResponse.getUuid(), "VIEW");
+            //시트 멤버 저장
+            setWorkspaceMember(userInfoRestResponse.getUuid(), workspace, "SEAT");
+            //응답
+            WorkspaceUserInfoResponse workspaceUserInfoResponse = restMapStruct.userInfoRestResponseToWorkspaceUserInfoResponse(userInfoRestResponse);
+            workspaceMemberInfoList.add(workspaceUserInfoResponse);
+        }
+        for (int i = 0; i < memberSeatCreateRequest.getPlanRemote(); i++) {
+            //게정 생성
+            UserInfoRestResponse userInfoRestResponse = userRestService.registerMemberRequest(new RegisterMemberRequest(), "workspace-server").getData();//TODO API 생기면 교체
+            //라이선스 할당
+            grantWorkspaceLicenseToUser(workspaceId, userInfoRestResponse.getUuid(), "REMOTE");
+            //시트 멤버 저장
+            setWorkspaceMember(userInfoRestResponse.getUuid(), workspace, "SEAT");
+            //응답
+            WorkspaceUserInfoResponse workspaceUserInfoResponse = restMapStruct.userInfoRestResponseToWorkspaceUserInfoResponse(userInfoRestResponse);
+            workspaceMemberInfoList.add(workspaceUserInfoResponse);
+        }
+        for (int i = 0; i < memberSeatCreateRequest.getPlanView(); i++) {
+            //게정 생성
+            UserInfoRestResponse userInfoRestResponse = userRestService.registerMemberRequest(new RegisterMemberRequest(), "workspace-server").getData();//TODO API 생기면 교체
+            //라이선스 할당
+            grantWorkspaceLicenseToUser(workspaceId, userInfoRestResponse.getUuid(), "VIEW");
+            //시트 멤버 저장
+            setWorkspaceMember(userInfoRestResponse.getUuid(), workspace, "SEAT");
+            //응답
+            WorkspaceUserInfoResponse workspaceUserInfoResponse = restMapStruct.userInfoRestResponseToWorkspaceUserInfoResponse(userInfoRestResponse);
+            workspaceMemberInfoList.add(workspaceUserInfoResponse);
+        }
+        return new WorkspaceMemberInfoListResponse(workspaceMemberInfoList);
+    }
+
+    /**
+     * 유저에게 워크스페이스 할당
+     *
+     * @param userId    - 요청 유저 식별자
+     * @param workspace - 할당할 워크스페이스 정보
+     * @param roleName  - 할당할 역할 이름
+     */
+    @Transactional
+    public void setWorkspaceMember(String userId, Workspace workspace, String roleName) {
+        WorkspaceUser workspaceUser = WorkspaceUser.builder().userId(userId).workspace(workspace).build();
+        WorkspaceRole workspaceRole = workspaceRoleRepository.findByRole(roleName).orElseThrow(() -> new WorkspaceException(ErrorCode.ERR_WORKSPACE_ROLE_NOT_FOUND));
+        WorkspacePermission workspacePermission = workspacePermissionRepository.findById(Permission.ALL.getValue()).orElseThrow(() -> new WorkspaceException(ErrorCode.ERR_WORKSPACE_PERMISSION_NOT_FOUND));
+        WorkspaceUserPermission workspaceUserPermission = WorkspaceUserPermission.builder().workspaceUser(workspaceUser).workspaceRole(workspaceRole).workspacePermission(workspacePermission).build();
+        workspaceUserRepository.save(workspaceUser);
+        workspaceUserPermissionRepository.save(workspaceUserPermission);
+    }
+
+    /**
+     * 시트 계정 생성 시 라이선스 갯수 검증
+     *
+     * @param memberSeatCreateRequest          - 시트 계정 생성 요청 정보
+     * @param workspaceLicensePlanInfoResponse - 워크스페이스 라이선스 정보
+     */
+    private void checkSeatMemberCreateLicense(MemberSeatCreateRequest memberSeatCreateRequest, WorkspaceLicensePlanInfoResponse workspaceLicensePlanInfoResponse) {
+        Optional<Integer> optionalRemote = workspaceLicensePlanInfoResponse.getLicenseProductInfoList().stream().filter(licenseProductInfoResponse -> licenseProductInfoResponse.getProductName().equals("REMOTE")).map(WorkspaceLicensePlanInfoResponse.LicenseProductInfoResponse::getUnUseLicenseAmount).findFirst();
+        Optional<Integer> optionalView = workspaceLicensePlanInfoResponse.getLicenseProductInfoList().stream().filter(licenseProductInfoResponse -> licenseProductInfoResponse.getProductName().equals("VIEW")).map(WorkspaceLicensePlanInfoResponse.LicenseProductInfoResponse::getUnUseLicenseAmount).findFirst();
+        if (memberSeatCreateRequest.getPlanRemoteAndView() > 0) {
+            if (!optionalRemote.isPresent() || !optionalView.isPresent() || memberSeatCreateRequest.getPlanRemoteAndView() > optionalRemote.get() || memberSeatCreateRequest.getPlanRemoteAndView() > optionalView.get()) {
+                throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_SEAT_USER_CREATE_LACK_LICENSE);
+            }
+        }
+        if (memberSeatCreateRequest.getPlanRemote() > 0) {
+            if (!optionalRemote.isPresent() || memberSeatCreateRequest.getPlanRemote() > optionalRemote.get()) {
+                throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_SEAT_USER_CREATE_LACK_LICENSE);
+            }
+        }
+        if (memberSeatCreateRequest.getPlanView() > 0) {
+            if (!optionalView.isPresent() || memberSeatCreateRequest.getPlanView() > optionalView.get()) {
+                throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_SEAT_USER_CREATE_LACK_LICENSE);
+            }
+        }
+    }
+
+    /**
+     * 시트 계정 생성 권한 정보 검증
+     *
+     * @param workspace     - 검증 대상 워크스페이스 정보
+     * @param requestUserId - 계정 생성 요청 유저 식별자
+     */
+    private void checkSeatMemberCreatePermission(Workspace workspace, String requestUserId) {
+        WorkspaceUserPermission requestUserPermission = workspaceUserPermissionRepository.findByWorkspaceUser_WorkspaceAndWorkspaceUser_UserId(workspace, requestUserId).orElseThrow(() -> new WorkspaceException(ErrorCode.ERR_WORKSPACE_USER_NOT_FOUND));
+        Optional<WorkspaceCustomSetting> workspaceCustomSettingOptional = workspaceCustomSettingRepository.findByWorkspace_UuidAndSetting_Name(workspace.getUuid(), SettingName.SEAT_MANAGEMENT_ROLE_SETTING);
+        if (!workspaceCustomSettingOptional.isPresent() || workspaceCustomSettingOptional.get().getValue() == SettingValue.UNUSED || workspaceCustomSettingOptional.get().getValue() == SettingValue.MASTER_OR_MANAGER) {
+            if (!requestUserPermission.getWorkspaceRole().getRole().matches("MASTER|MANAGER")) {
+                throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_INVALID_PERMISSION);
+            }
+        }
+        if (workspaceCustomSettingOptional.isPresent() && workspaceCustomSettingOptional.get().getValue() == SettingValue.MASTER) {
+            if (!requestUserPermission.getWorkspaceRole().getRole().equals("MASTER")) {
+                throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_INVALID_PERMISSION);
+            }
+        }
+        if (workspaceCustomSettingOptional.isPresent() && workspaceCustomSettingOptional.get().getValue() == SettingValue.MASTER_OR_MANAGER_OR_MEMBER) {
+            if (!requestUserPermission.getWorkspaceRole().getRole().matches("MASTER|MANAGER|MEMBER")) {
+                throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_INVALID_PERMISSION);
+            }
+        }
+    }
+
+    /**
+     * 라이선스서버 - 워크스페이스 서버 라이선스 조회
+     *
+     * @param workspaceId - 요청 워크스페이스 식별자
+     * @return - 워크스페이스 라이선스 정보
+     */
+    WorkspaceLicensePlanInfoResponse getWorkspaceLicensesByWorkspaceId(String workspaceId) {
+        ApiResponse<WorkspaceLicensePlanInfoResponse> apiResponse = licenseRestService.getWorkspaceLicenses(workspaceId);
+        if (apiResponse.getCode() != 200) {
+            log.error("[GET WORKSPACE LICENSE PLAN INFO BY WORKSPACE UUID] response message : {}", apiResponse.getMessage());
+            return new WorkspaceLicensePlanInfoResponse();
+        }
+        return apiResponse.getData();
+    }
+
+    /**
+     * 워크스페이스 최대 멤버 제한 수 검증
+     *
+     * @param workspaceId                      - 검증 대상 워크스페이스 식별자
+     * @param requestUserAmount                - 참여 요청 유저 수
+     * @param workspaceLicensePlanInfoResponse - 워크스페이스 라이선스 정보
+     */
+    void checkWorkspaceMaxUserAmount(String workspaceId, int requestUserAmount, WorkspaceLicensePlanInfoResponse workspaceLicensePlanInfoResponse) {
+        //마스터포함 워크스페이스 전체 유저 수 조회
+        long workspaceUserAmount = workspaceUserRepository.countByWorkspace_Uuid(workspaceId);
+
+        if (workspaceLicensePlanInfoResponse.getMaxUserAmount() > 0) {
+            // 라이선스를 구매한 워크스페이스는 라이선스에 종속된 값으로 체크
+            if (requestUserAmount + workspaceUserAmount > workspaceLicensePlanInfoResponse.getMaxUserAmount()) {
+                log.error("[CHECK WORKSPACE MAX USER AMOUNT] maximum workspace user amount(by license) : [{}], request user amount [{}], current workspace user amount : [{}]", workspaceLicensePlanInfoResponse.getMaxUserAmount(), requestUserAmount, workspaceUserAmount);
+                throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_MAX_USER_AMOUNT_OVER);
+            }
+        } else {
+            // 라이선스를 구매하지 않은 워크스페이스는 기본값으로 체크
+            if (requestUserAmount + workspaceUserAmount > MAX_WORKSPACE_USER_AMOUNT) {
+                log.error("[CHECK WORKSPACE MAX USER AMOUNT] maximum workspace user amount(by workspace) : [{}], request user amount [{}], current workspace user amount : [{}]", MAX_WORKSPACE_USER_AMOUNT, requestUserAmount, workspaceUserAmount);
+                throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_MAX_USER_AMOUNT_OVER);
+            }
+        }
+    }
 }

@@ -1,4 +1,4 @@
-package com.virnect.workspace.dto.onpremise;
+package com.virnect.workspace.dto.request;
 
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;

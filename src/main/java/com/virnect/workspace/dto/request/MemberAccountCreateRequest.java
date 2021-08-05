@@ -1,13 +1,12 @@
-package com.virnect.workspace.dto.onpremise;
-
-import java.util.List;
-
-import javax.validation.Valid;
-import javax.validation.constraints.NotBlank;
+package com.virnect.workspace.dto.request;
 
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
 import lombok.Setter;
+
+import javax.validation.Valid;
+import javax.validation.constraints.NotBlank;
+import java.util.List;
 
 /**
  * Project: PF-Workspace

@@ -1,7 +1,6 @@
 package com.virnect.workspace.api;
 
 import com.virnect.workspace.application.workspaceuser.WorkspaceUserService;
-import com.virnect.workspace.dto.onpremise.MemberAccountCreateRequest;
 import com.virnect.workspace.dto.request.*;
 import com.virnect.workspace.dto.response.*;
 import com.virnect.workspace.exception.WorkspaceException;
@@ -342,6 +341,26 @@ public class WorkspaceUserController {
             throw new WorkspaceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
         WorkspaceMemberPasswordChangeResponse response = workspaceUserService.memberPasswordChange(passwordChangeRequest, workspaceId);
+        return ResponseEntity.ok(new ApiResponse<>(response));
+    }
+
+    @ApiOperation(value = "워크스페이스 시트 계정 생성")
+    @ApiImplicitParam(name = "workspaceId", value = "워크스페이스 식별자", dataType = "string", defaultValue = "4d6eab0860969a50acbfa4599fbb5ae8", paramType = "path", required = true)
+    @PostMapping("/{workspaceId}/members/seat")
+    public ResponseEntity<ApiResponse<WorkspaceMemberInfoListResponse>> createWorkspaceMemberAccount(
+            @PathVariable("workspaceId") String workspaceId,
+            @RequestBody @Valid MemberSeatCreateRequest memberSeatCreateRequest, BindingResult bindingResult
+    ) {
+        if (bindingResult.hasErrors()) {
+            bindingResult.getAllErrors()
+                    .forEach(
+                            objectError -> log.error("[CREATE WORKSPACE SEAT MEMBER] Error message : [{}]", objectError));
+            throw new WorkspaceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
+        }
+        WorkspaceMemberInfoListResponse response = workspaceUserService.createWorkspaceMemberSeat(
+                workspaceId,
+                memberSeatCreateRequest
+        );
         return ResponseEntity.ok(new ApiResponse<>(response));
     }
 }

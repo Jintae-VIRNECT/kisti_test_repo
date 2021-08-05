@@ -10,7 +10,7 @@ import com.virnect.workspace.domain.setting.SettingName;
 import com.virnect.workspace.domain.setting.SettingValue;
 import com.virnect.workspace.domain.setting.WorkspaceCustomSetting;
 import com.virnect.workspace.domain.workspace.*;
-import com.virnect.workspace.dto.onpremise.MemberAccountCreateRequest;
+import com.virnect.workspace.dto.request.MemberAccountCreateRequest;
 import com.virnect.workspace.dto.request.MemberAccountDeleteRequest;
 import com.virnect.workspace.dto.request.WorkspaceInviteRequest;
 import com.virnect.workspace.dto.request.WorkspaceMemberPasswordChangeRequest;
@@ -70,10 +70,9 @@ public class OnWorkspaceUserServiceImpl extends WorkspaceUserService {
     private final WorkspaceCustomSettingRepository workspaceCustomSettingRepository;
     private final MailContextHandler mailContextHandler;
     private static final int MAX_JOIN_WORKSPACE_AMOUNT = 49;//최대 참여 가능한 워크스페이스 수
-    private static final int MAX_WORKSPACE_USER_AMOUNT = 50;//워크스페이스 최대 멤버 수(마스터 본인 포함)
 
     public OnWorkspaceUserServiceImpl(WorkspaceRepository workspaceRepository, WorkspaceUserRepository workspaceUserRepository, WorkspaceRoleRepository workspaceRoleRepository, WorkspaceUserPermissionRepository workspaceUserPermissionRepository, UserRestService userRestService, MessageSource messageSource, LicenseRestService licenseRestService, RestMapStruct restMapStruct, ApplicationEventPublisher applicationEventPublisher, WorkspaceCustomSettingRepository workspaceCustomSettingRepository, MailContextHandler mailContextHandler, WorkspacePermissionRepository workspacePermissionRepository, UserInviteRepository userInviteRepository, RedirectProperty redirectProperty) {
-        super(workspaceRepository, workspaceUserRepository, workspaceRoleRepository, workspaceUserPermissionRepository, userRestService, messageSource, licenseRestService, restMapStruct, applicationEventPublisher, workspaceCustomSettingRepository, mailContextHandler);
+        super(workspaceRepository, workspaceUserRepository, workspaceRoleRepository, workspaceUserPermissionRepository, userRestService, messageSource, licenseRestService, restMapStruct, applicationEventPublisher, workspaceCustomSettingRepository, mailContextHandler, workspacePermissionRepository);
         this.workspaceRepository = workspaceRepository;
         this.workspaceUserRepository = workspaceUserRepository;
         this.workspaceRoleRepository = workspaceRoleRepository;
@@ -102,8 +101,8 @@ public class OnWorkspaceUserServiceImpl extends WorkspaceUserService {
         checkWorkspaceInvitePermission(workspaceId, workspaceInviteRequest.getUserId(), workspaceInviteRequest.getUserInfoList());
 
         //1-3. 워크스페이스에 최대 참여 가능한 유저 수 체크
-        WorkspaceLicensePlanInfoResponse workspaceLicensePlanInfoResponse = getWorkspaceLicenses(workspaceId);
-        checkWorkspaceInviteMaxUserAmount(workspaceId, workspaceInviteRequest.getUserInfoList().size(), workspaceLicensePlanInfoResponse);
+        WorkspaceLicensePlanInfoResponse workspaceLicensePlanInfoResponse = getWorkspaceLicensesByWorkspaceId(workspaceId);
+        checkWorkspaceMaxUserAmount(workspaceId, workspaceInviteRequest.getUserInfoList().size(), workspaceLicensePlanInfoResponse);
 
         //1-4. 제품 라이선스를 부여할 수 있는 지 체크
         checkWorkspaceInviteLicenseProduct(workspaceInviteRequest.getUserInfoList(), workspaceLicensePlanInfoResponse);
@@ -258,31 +257,6 @@ public class OnWorkspaceUserServiceImpl extends WorkspaceUserService {
         return inviteUserInfoResponseMap;
     }
 
-    /**
-     * 워크스페이스 초대 시 워크스페이스 최대 참여 가능한 유저 수를 체크.
-     *
-     * @param workspaceId       - 워크스페이스 식별자
-     * @param invitedUserAmount - 초대 요청 유저 수
-     */
-    private void checkWorkspaceInviteMaxUserAmount(String workspaceId, int invitedUserAmount, WorkspaceLicensePlanInfoResponse workspaceLicensePlanInfoResponse) {
-        //마스터포함 워크스페이스 전체 유저 수 조회
-        long workspaceUserAmount = workspaceUserRepository.countByWorkspace_Uuid(workspaceId);
-
-        if (workspaceLicensePlanInfoResponse.getLicenseProductInfoList().isEmpty()) {
-            // 라이선스를 구매하지 않은 워크스페이스는 기본값으로 체크
-            if (invitedUserAmount + workspaceUserAmount > MAX_WORKSPACE_USER_AMOUNT) {
-                log.error("[WORKSPACE INVITE USER] maximum workspace user amount : [{}], request user amount [{}], current workspace user amount : [{}]", MAX_WORKSPACE_USER_AMOUNT, invitedUserAmount, workspaceUserAmount);
-                throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_INVITE_MAX_USER);
-            }
-
-        } else {
-            // 라이선스를 구매한 워크스페이스는 라이선스에 종속된 값으로 체크
-            if (invitedUserAmount + workspaceUserAmount > workspaceLicensePlanInfoResponse.getMaxUserAmount()) {
-                log.error("[WORKSPACE INVITE USER] maximum workspace user amount(by license) : [{}], request user amount [{}], current workspace user amount : [{}]", workspaceLicensePlanInfoResponse.getMaxUserAmount(), invitedUserAmount, workspaceUserAmount);
-                throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_INVITE_MAX_USER);
-            }
-        }
-    }
 
     /**
      * 워크스페이스 초대 요청 유저의 권한 유효성 체크
@@ -319,15 +293,6 @@ public class OnWorkspaceUserServiceImpl extends WorkspaceUserService {
                 throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_INVALID_PERMISSION);
             }
         }
-    }
-
-    private WorkspaceLicensePlanInfoResponse getWorkspaceLicenses(String workspaceId) {
-        ApiResponse<WorkspaceLicensePlanInfoResponse> apiResponse = licenseRestService.getWorkspaceLicenses(workspaceId);
-        if (apiResponse.getCode() != 200) {
-            log.error("[GET WORKSPACE LICENSE PLAN INFO BY WORKSPACE UUID] response message : {}", apiResponse.getMessage());
-            return new WorkspaceLicensePlanInfoResponse();
-        }
-        return apiResponse.getData();
     }
 
     private ApiResponse<InviteUserInfoResponse> getInviteUserInfoByEmail(String email) {
@@ -407,9 +372,9 @@ public class OnWorkspaceUserServiceImpl extends WorkspaceUserService {
         }
 
         //1-6. 워크스페이스에서 최대 참여 가능한 멤버 수 체크
-        WorkspaceLicensePlanInfoResponse workspaceLicensePlanInfoResponse = getWorkspaceLicenses(workspace.getUuid());
+        WorkspaceLicensePlanInfoResponse workspaceLicensePlanInfoResponse = getWorkspaceLicensesByWorkspaceId(workspace.getUuid());
         try {
-            checkWorkspaceInviteMaxUserAmount(workspace.getUuid(), 1, workspaceLicensePlanInfoResponse);
+            checkWorkspaceMaxUserAmount(workspace.getUuid(), 1, workspaceLicensePlanInfoResponse);
         } catch (WorkspaceException e) {
             WorkspaceInviteProcess workspaceInviteProcess = WorkspaceInviteProcess.builder().applicationEventPublisher(applicationEventPublisher)
                     .inviteSessionDeleteEvent(new InviteSessionDeleteEvent(userInvite.getSessionCode()))
