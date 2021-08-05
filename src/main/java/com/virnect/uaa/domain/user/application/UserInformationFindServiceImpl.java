@@ -78,7 +78,7 @@ public class UserInformationFindServiceImpl implements UserInformationFindServic
 		previousDuplicatedAuthenticationRequestCancelProcess(user);
 
 		// Generate authentication information
-		String authCode = RandomStringUtils.random(6);
+		String authCode = RandomStringUtils.randomNumeric(6);
 		Duration expireDuration = Duration.ofMinutes(30);
 
 		// Create password initialized authorization code
