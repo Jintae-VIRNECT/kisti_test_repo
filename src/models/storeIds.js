@@ -6,7 +6,7 @@ export default {
       Linkflow: 'com.virnect.remote.linkflow',
     },
     'Windows(UWP)': {
-      // Hololens: 'f35a-db45b7bd5f23',
+      Hololens: '9nf0zqm9b95x',
     },
     iOS: {},
   },
