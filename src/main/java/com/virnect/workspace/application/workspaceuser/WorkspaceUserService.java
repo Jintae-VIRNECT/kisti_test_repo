@@ -40,6 +40,7 @@ import org.springframework.web.servlet.view.RedirectView;
 import org.thymeleaf.context.Context;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -828,7 +829,7 @@ public abstract class WorkspaceUserService {
     public WorkspaceMemberInfoListResponse createWorkspaceMemberSeat(String workspaceId, MemberSeatCreateRequest memberSeatCreateRequest) {
         //1-1. 요청한 사람의 권한 체크
         Workspace workspace = workspaceRepository.findByUuid(workspaceId).orElseThrow(() -> new WorkspaceException(ErrorCode.ERR_WORKSPACE_NOT_FOUND));
-        checkSeatMemberCreatePermission(workspace, memberSeatCreateRequest.getUserId());
+        checkSeatMemberManagementPermission(workspace, memberSeatCreateRequest.getUserId());
 
         //1-2. 라이선스 갯수 유효성 체크
         WorkspaceLicensePlanInfoResponse workspaceLicensePlanInfoResponse = getWorkspaceLicensesByWorkspaceId(workspaceId);
@@ -921,12 +922,12 @@ public abstract class WorkspaceUserService {
     }
 
     /**
-     * 시트 계정 생성 권한 정보 검증
+     * 시트 계정 생성, 삭제, 정보편집에 대한 권한 검증
      *
      * @param workspace     - 검증 대상 워크스페이스 정보
      * @param requestUserId - 계정 생성 요청 유저 식별자
      */
-    private void checkSeatMemberCreatePermission(Workspace workspace, String requestUserId) {
+    private void checkSeatMemberManagementPermission(Workspace workspace, String requestUserId) {
         WorkspaceUserPermission requestUserPermission = workspaceUserPermissionRepository.findByWorkspaceUser_WorkspaceAndWorkspaceUser_UserId(workspace, requestUserId).orElseThrow(() -> new WorkspaceException(ErrorCode.ERR_WORKSPACE_USER_NOT_FOUND));
         Optional<WorkspaceCustomSetting> workspaceCustomSettingOptional = workspaceCustomSettingRepository.findByWorkspace_UuidAndSetting_Name(workspace.getUuid(), SettingName.SEAT_MANAGEMENT_ROLE_SETTING);
         if (!workspaceCustomSettingOptional.isPresent() || workspaceCustomSettingOptional.get().getValue() == SettingValue.UNUSED || workspaceCustomSettingOptional.get().getValue() == SettingValue.MASTER_OR_MANAGER) {
@@ -984,6 +985,54 @@ public abstract class WorkspaceUserService {
                 log.error("[CHECK WORKSPACE MAX USER AMOUNT] maximum workspace user amount(by workspace) : [{}], request user amount [{}], current workspace user amount : [{}]", MAX_WORKSPACE_USER_AMOUNT, requestUserAmount, workspaceUserAmount);
                 throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_MAX_USER_AMOUNT_OVER);
             }
+        }
+    }
+
+    /**
+     * 워크스페이스 시트 계정 삭제 및 워크스페이스에서 내보내기
+     *
+     * @param workspaceId             - 삭제 대상 워크스페이스 식별자
+     * @param memberSeatDeleteRequest - 삭제 대상 유저 및 삭제 요청 유저 정보
+     * @return - 삭제 결과
+     */
+    public MemberSeatDeleteResponse deleteWorkspaceMemberSeat(String workspaceId, MemberSeatDeleteRequest memberSeatDeleteRequest) {
+        //1-1. 요청한 사람의 권한 체크
+        Workspace workspace = workspaceRepository.findByUuid(workspaceId).orElseThrow(() -> new WorkspaceException(ErrorCode.ERR_WORKSPACE_NOT_FOUND));
+        checkSeatMemberManagementPermission(workspace, memberSeatDeleteRequest.getUserId());
+
+        //1-2. 요청받은 유저가 시트유저인지 체크
+        WorkspaceUserPermission deleteUserPermission = workspaceUserPermissionRepository.findByWorkspaceUser_WorkspaceAndWorkspaceUser_UserId(workspace, memberSeatDeleteRequest.getDeleteUserId()).orElseThrow(() -> new WorkspaceException(ErrorCode.ERR_WORKSPACE_USER_NOT_FOUND));
+        if (!deleteUserPermission.getWorkspaceRole().getRole().equals("SEAT")) {
+            throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_SEAT_USER_DELETE);
+        }
+
+        //2. 라이선스 해제 요청
+        List<WorkspaceLicensePlanInfoResponse.LicenseProductInfoResponse> licenseProductInfoList = getWorkspaceLicensesByWorkspaceId(workspaceId).getLicenseProductInfoList();
+        if (!licenseProductInfoList.isEmpty()) {
+            List<String> productList = licenseProductInfoList.stream().map(WorkspaceLicensePlanInfoResponse.LicenseProductInfoResponse::getProductName).collect(Collectors.toList());
+            productList.forEach(productName -> revokeWorkspaceLicenseToUser(workspaceId, memberSeatDeleteRequest.getUserId(), productName));
+        }
+
+        //3. 유저서버 삭제 요청
+        deleteUserByUserId(memberSeatDeleteRequest.getDeleteUserId());
+
+        //4. 웤스 서버에서 삭제
+        WorkspaceUser workspaceUser = deleteUserPermission.getWorkspaceUser();
+        workspaceUserPermissionRepository.delete(deleteUserPermission);
+        workspaceUserRepository.delete(workspaceUser);
+
+        return new MemberSeatDeleteResponse(true, LocalDateTime.now());
+    }
+
+    /**
+     * 유저서버 - 유저 삭제
+     *
+     * @param userId - 삭제 대상 유저 식별자
+     */
+    private void deleteUserByUserId(String userId) {
+        ApiResponse<UserDeleteRestResponse> apiResponse = userRestService.userDeleteRequest(userId, "workspace-server");
+        if (apiResponse.getCode() != 200) {
+            log.error("[DELETE USER BY USER UUID] request userId : {}, response code : {}", userId, apiResponse.getCode());
         }
     }
 }

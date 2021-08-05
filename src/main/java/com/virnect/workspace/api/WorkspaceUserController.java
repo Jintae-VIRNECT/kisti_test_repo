@@ -284,8 +284,9 @@ public class WorkspaceUserController {
         return ResponseEntity.ok(new ApiResponse<>(response));
     }
 
-    @Profile("onpremise")
-    @ApiOperation(value = "워크스페이스 멤버 계정 생성", tags = "on-premise only")
+    //@Profile("onpremise")
+    //@ApiOperation(value = "워크스페이스 멤버 계정 생성", tags = "on-premise only")
+    @ApiOperation(value = "워크스페이스 전용 계정 멤버 계정 생성")
     @ApiImplicitParam(name = "workspaceId", value = "워크스페이스 식별자", dataType = "string", defaultValue = "4d6eab0860969a50acbfa4599fbb5ae8", paramType = "path", required = true)
     @PostMapping("/{workspaceId}/members/account")
     public ResponseEntity<ApiResponse<WorkspaceMemberInfoListResponse>> createWorkspaceMemberAccount(
@@ -305,8 +306,9 @@ public class WorkspaceUserController {
         return ResponseEntity.ok(new ApiResponse<>(response));
     }
 
-    @Profile("onpremise")
-    @ApiOperation(value = "워크스페이스 멤버 계정 삭제 및 내보내기", tags = "on-premise only")
+    //@Profile("onpremise")
+    //@ApiOperation(value = "마스터 비밀번호로 워크스페이스 멤버 계정 삭제 및 내보내기", tags = "on-premise only")
+    @ApiOperation(value = "워크스페이스 전용 계정 멤버 삭제 및 내보내기")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "workspaceId", value = "워크스페이스 식별자", dataType = "string", defaultValue = "4d6eab0860969a50acbfa4599fbb5ae8", paramType = "path", required = true)
     })
@@ -344,7 +346,7 @@ public class WorkspaceUserController {
         return ResponseEntity.ok(new ApiResponse<>(response));
     }
 
-    @ApiOperation(value = "워크스페이스 시트 계정 생성")
+    @ApiOperation(value = "워크스페이스 시트 계정 생성", hidden = true)
     @ApiImplicitParam(name = "workspaceId", value = "워크스페이스 식별자", dataType = "string", defaultValue = "4d6eab0860969a50acbfa4599fbb5ae8", paramType = "path", required = true)
     @PostMapping("/{workspaceId}/members/seat")
     public ResponseEntity<ApiResponse<WorkspaceMemberInfoListResponse>> createWorkspaceMemberAccount(
@@ -360,6 +362,26 @@ public class WorkspaceUserController {
         WorkspaceMemberInfoListResponse response = workspaceUserService.createWorkspaceMemberSeat(
                 workspaceId,
                 memberSeatCreateRequest
+        );
+        return ResponseEntity.ok(new ApiResponse<>(response));
+    }
+
+    @ApiOperation(value = "워크스페이스 시트 계정 삭제 및 내보내기", hidden = true)
+    @ApiImplicitParam(name = "workspaceId", value = "워크스페이스 식별자", dataType = "string", defaultValue = "4d6eab0860969a50acbfa4599fbb5ae8", paramType = "path", required = true)
+    @DeleteMapping("/{workspaceId}/members/seat")
+    public ResponseEntity<ApiResponse<MemberSeatDeleteResponse>> deleteWorkspaceMemberAccount(
+            @PathVariable("workspaceId") String workspaceId,
+            @RequestBody @Valid MemberSeatDeleteRequest memberSeatDeleteRequest, BindingResult bindingResult
+    ) {
+        if (bindingResult.hasErrors()) {
+            bindingResult.getAllErrors()
+                    .forEach(
+                            objectError -> log.error("[DELETE WORKSPACE SEAT MEMBER] Error message : [{}]", objectError));
+            throw new WorkspaceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
+        }
+        MemberSeatDeleteResponse response = workspaceUserService.deleteWorkspaceMemberSeat(
+                workspaceId,
+                memberSeatDeleteRequest
         );
         return ResponseEntity.ok(new ApiResponse<>(response));
     }
