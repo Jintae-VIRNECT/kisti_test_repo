@@ -15,12 +15,17 @@ import lombok.RequiredArgsConstructor;
 import springfox.documentation.builders.ApiInfoBuilder;
 import springfox.documentation.builders.PathSelectors;
 import springfox.documentation.builders.RequestHandlerSelectors;
+import springfox.documentation.builders.ResponseMessageBuilder;
 import springfox.documentation.service.ApiInfo;
 import springfox.documentation.service.Contact;
 import springfox.documentation.service.ResponseMessage;
 import springfox.documentation.spi.DocumentationType;
 import springfox.documentation.spring.web.plugins.Docket;
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
+
+import com.virnect.uaa.domain.auth.account.error.AuthenticationErrorCode;
+import com.virnect.uaa.domain.user.error.UserAccountErrorCode;
+import com.virnect.uaa.global.common.ErrorResponseMessage;
 
 /**
  * @project: PF-Auth
@@ -37,30 +42,63 @@ public class SwaggerConfiguration {
 	private final ObjectMapper objectMapper;
 
 	@Bean
-	public Docket authApiDocument() throws JsonProcessingException {
+	public Docket userApiDocument() throws JsonProcessingException {
 		List<ResponseMessage> responseMessages = new ArrayList<>();
-		// for (ErrorCode errorCode : ErrorCode.values()) {
-		// 	responseMessages.add(new ResponseMessageBuilder().code(errorCode.getCode())
-		// 		.message(objectMapper.writeValueAsString(new ErrorResponseMessage(errorCode)))
-		// 		.build());
-		// }
-		// responseMessages.add(new ResponseMessageBuilder().code(200).message("success").build());
+		for (UserAccountErrorCode errorCode : UserAccountErrorCode.values()) {
+			responseMessages.add(new ResponseMessageBuilder().code(errorCode.getCode())
+				.message(objectMapper.writeValueAsString(ErrorResponseMessage.parseError(errorCode)))
+				.build());
+		}
 
 		ApiInfo apiInfo = new ApiInfoBuilder()
 			.contact(new Contact("장정현", "https://virnect.com", "sky456139@vinrect.com"))
-			.description("인증 서버 API 정보 입니다.")
-			.version("v0.0.1")
-			.title("VIRNECT Authentication Service API Document.")
+			.description("계정 서버 API 정보 입니다.")
+			.version("v1.0")
+			.title("VIRNECT User Service API Document.")
 			.license("VIRNECT INC All rights reserved.")
 			.build();
+
 		return new Docket(DocumentationType.SWAGGER_2)
 			.useDefaultResponseMessages(false)
 			.globalResponseMessage(RequestMethod.GET, responseMessages)
 			.globalResponseMessage(RequestMethod.POST, responseMessages)
 			.globalResponseMessage(RequestMethod.PUT, responseMessages)
 			.globalResponseMessage(RequestMethod.DELETE, responseMessages)
+			// .groupName("user service api")
 			.select()
-			.apis(RequestHandlerSelectors.basePackage("com.virnect.uaa.domain"))
+			.apis(RequestHandlerSelectors.basePackage("com.virnect.uaa.domain.user"))
+			.paths(PathSelectors.any())
+			.build()
+			.apiInfo(apiInfo);
+	}
+
+	@Bean
+	public Docket authApiDocument() throws JsonProcessingException {
+		List<ResponseMessage> responseMessages = new ArrayList<>();
+
+		for (AuthenticationErrorCode errorCode : AuthenticationErrorCode.values()) {
+			responseMessages.add(new ResponseMessageBuilder().code(errorCode.getCode())
+				.message(objectMapper.writeValueAsString(ErrorResponseMessage.parseError(errorCode)))
+				.build());
+		}
+
+		ApiInfo apiInfo = new ApiInfoBuilder()
+			.contact(new Contact("장정현", "https://virnect.com", "sky456139@vinrect.com"))
+			.description("인증 서버 API 정보 입니다.")
+			.version("1.0")
+			.title("VIRNECT Authentication Service API Document.")
+			.license("VIRNECT INC All rights reserved.")
+			.build();
+
+		return new Docket(DocumentationType.SWAGGER_2)
+			.useDefaultResponseMessages(false)
+			.globalResponseMessage(RequestMethod.GET, responseMessages)
+			.globalResponseMessage(RequestMethod.POST, responseMessages)
+			.globalResponseMessage(RequestMethod.PUT, responseMessages)
+			.globalResponseMessage(RequestMethod.DELETE, responseMessages)
+			.groupName("auth-service-api")
+			.select()
+			.apis(RequestHandlerSelectors.basePackage("com.virnect.uaa.domain.auth"))
 			.paths(PathSelectors.any())
 			.build()
 			.apiInfo(apiInfo);
