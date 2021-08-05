@@ -36,7 +36,7 @@ import com.virnect.uaa.global.common.ApiResponse;
 public class InternalUserInfoController {
 	private final InternalUserInformationService internalUserInformationService;
 
-	@ApiOperation(value = "전체 사용자 현황 조회", notes = "어드민 서비스에서 관리자가 전체 사용자 현황을 조회하는 데에 사용하는 api 입니다.", tags = "admin server only")
+	@ApiOperation(value = "전체 사용자 현황 조회", notes = "어드민 서비스에서 관리자가 전체 사용자 현황을 조회하는 데에 사용하는 api 입니다.")
 	@ApiImplicitParams({
 		@ApiImplicitParam(name = "search", value = "검색어(email, name, nickname 대상 검색 진행)", dataType = "string", paramType = "query"),
 		@ApiImplicitParam(name = "size", value = "페이징 사이즈", dataType = "number", paramType = "query", defaultValue = "2"),
@@ -52,7 +52,7 @@ public class InternalUserInfoController {
 		return ResponseEntity.ok(new ApiResponse<>(responseMessage));
 	}
 
-	@ApiOperation(value = "사용자 정보 목록 조회(Workspace 서버에서 사용)", notes = "타 서버에서 사용하는 api 입니다.", tags = "workspace server only")
+	@ApiOperation(value = "사용자 정보 목록 조회(Workspace 서버에서 사용)", notes = "타 서버에서 사용하는 api 입니다.")
 	@ApiImplicitParams({
 		@ApiImplicitParam(name = "search", value = "닉네임,이메일", dataType = "string", paramType = "query"),
 		@ApiImplicitParam(name = "workspaceUserIdList", value = "사용자 식별번호", dataType = "array", paramType = "body", required = true, defaultValue = "[\"498b1839dc29ed7bb2ee90ad6985c608\"]"),
@@ -70,7 +70,7 @@ public class InternalUserInfoController {
 		return ResponseEntity.ok(new ApiResponse<>(responseMessage));
 	}
 
-	@ApiOperation(value = "사용자 정보 조회", notes = "특정 사용자의 정보를 조회하는 api 입니다.", tags = "billing server only")
+	@ApiOperation(value = "사용자 정보 조회", notes = "특정 사용자의 정보를 조회하는 api 입니다.")
 	@ApiImplicitParam(name = "userId", value = "사용자 대표 식별자", dataType = "string", type = "path", required = true, defaultValue = "1")
 	@GetMapping("/billing/{userId}")
 	public ResponseEntity<ApiResponse<UserInfoResponse>> getUserInfoByUserIdFromBillingSystem(
