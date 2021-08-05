@@ -36,6 +36,15 @@ import { filters } from '@/plugins/dayjs'
 export default {
   props: {
     app: Object,
+    redirectPath: String,
+  },
+  data() {
+    return {
+      msHololensShortUrl: {
+        remote: 'virnect-remote-2',
+        view: 'virnect-view-hololens',
+      },
+    }
   },
   filters: {
     ...filters,
@@ -84,8 +93,9 @@ export default {
       if (app.os === 'iOS')
         popup.location = `https://apps.apple.com/kr/app/${app.storeId}`
       if (app.os === 'Windows(UWP)')
-        // TODO: virnect remote도 고려하여 페이지 이동.
-        popup.location = `https://www.microsoft.com/ko-kr/p/virnect-view-hololens/${app.storeId}`
+        popup.location = `https://www.microsoft.com/ko-kr/p/${
+          this.msHololensShortUrl[this.redirectPath]
+        }/${app.storeId}`
     },
   },
 }
