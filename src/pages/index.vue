@@ -23,7 +23,6 @@
               )"
               :key="app.id"
               :app="app"
-              :redirectPath="redirectPath"
             />
           </el-col>
         </el-row>
