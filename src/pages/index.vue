@@ -23,6 +23,7 @@
               )"
               :key="app.id"
               :app="app"
+              :activeTab="activeTab"
             />
           </el-col>
         </el-row>
