@@ -18,25 +18,34 @@ public class MailTemplateProcessor {
 
 	public String resolveMailTitleMessageSource(MailMessageContext messageContext) {
 		if (!messageContext.isSupportLanguageLocale()) {
-			log.info(
+			log.warn(
 				"Request locale is not support : [{}] , is change to default locale(EN)", messageContext.getLocale());
 			messageContext.setLocale(Locale.ENGLISH);
 		}
-		return messageSource.getMessage(messageContext.getTitleMessageSourceName(), null, messageContext.getLocale());
+		String message = messageSource.getMessage(
+			messageContext.getTitleMessageSourceName(), null, messageContext.getLocale());
+		log.debug("[MessageSource] key:[{}] value:[{}]", messageContext.getTitleMessageSourceName(), message);
+		return message;
 	}
 
 	public String compileMailTemplate(MailMessageContext mailMessageContext) {
 		String mailTemplateFilePath = resolveTemplateMailPath(mailMessageContext);
-		return templateEngine.process(mailTemplateFilePath, mailMessageContext.getTemplateContext());
+		log.debug("[TemplateCompileResult][TemplatePath] - [{}]", mailTemplateFilePath);
+		String result = templateEngine.process(mailTemplateFilePath, mailMessageContext.getTemplateContext());
+		log.debug("[TemplateCompileResult] - [{}]", result);
+		return result;
 	}
 
 	private String resolveTemplateMailPath(MailMessageContext messageContext) {
 		if (!messageContext.isSupportLanguageLocale()) {
-			log.info(
+			log.warn(
 				"Request locale is not support : [{}] , is change to default locale(EN)", messageContext.getLocale());
 			messageContext.setLocale(Locale.ENGLISH);
 		}
-		return String.format("%s/%s", messageContext.getLocale().getLanguage(), messageContext.getTemplateName());
+		String templatePath = String.format(
+			"%s/%s", messageContext.getLocale().getLanguage(), messageContext.getTemplateName());
+		log.debug("[TemplatePath] - [{}]", templatePath);
+		return templatePath;
 	}
 
 }

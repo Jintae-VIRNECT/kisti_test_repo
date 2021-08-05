@@ -6,17 +6,16 @@ import java.util.Locale;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 import org.thymeleaf.context.Context;
-import org.thymeleaf.spring5.SpringTemplateEngine;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import com.virnect.uaa.domain.user.domain.User;
 import com.virnect.uaa.infra.email.EmailService;
+import com.virnect.uaa.infra.email.context.MailMessageContext;
 import com.virnect.uaa.infra.rest.billing.PayService;
 
 @Slf4j
@@ -25,8 +24,6 @@ import com.virnect.uaa.infra.rest.billing.PayService;
 @RequiredArgsConstructor
 public class DefaultSuccessHandler implements SignUpSuccessHandler {
 	private final PayService payService;
-	private final MessageSource messageSource;
-	private final SpringTemplateEngine templateEngine;
 	private final EmailService emailService;
 
 	@Override
@@ -48,14 +45,24 @@ public class DefaultSuccessHandler implements SignUpSuccessHandler {
 		LocalDateTime userRegisterDate = user.getCreatedDate();
 		String registerDate = String.format(
 			"%s GMT+9:00",
-			userRegisterDate.plusHours(9).format(DateTimeFormatter.ofPattern("YYYY.MM.dd HH:mm"))
+			userRegisterDate.plusHours(9).format(DateTimeFormatter.ofPattern("yyyy.MM.dd HH:mm"))
 		);
 		context.setVariable("registerDate", registerDate);
 
-		String mailTitle = messageSource.getMessage("MAIL_TITLE_OF_REGISTER_SUCCESS", null, locale);
-		String mailTemplatePath = String.format("%s/register/welcome", locale.getLanguage());
-		log.info("mailTemplatePath: {}", mailTemplatePath);
-		String message = templateEngine.process(mailTemplatePath, context);
+		MailMessageContext mailMessageContext = MailMessageContext.builder()
+			.templateContext(context)
+			.templateName("welcome")
+			.titleMessageSourceName("MAIL_TITLE_OF_REGISTER_SUCCESS")
+			.locale(locale)
+			.to(user.getEmail())
+			.build();
+
+		emailService.send(mailMessageContext);
+		//
+		// String mailTitle = messageSource.getMessage("MAIL_TITLE_OF_REGISTER_SUCCESS", null, locale);
+		// String mailTemplatePath = String.format("%s/register/welcome", locale.getLanguage());
+		// log.info("mailTemplatePath: {}", mailTemplatePath);
+		// String message = templateEngine.process(mailTemplatePath, context);
 
 		// EmailMessage registrationSuccessMail = new EmailMessage();
 		// registrationSuccessMail.setSubject(mailTitle);

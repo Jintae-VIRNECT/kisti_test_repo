@@ -23,7 +23,7 @@ import com.virnect.uaa.infra.email.context.MailTemplateProcessor;
  */
 
 @Slf4j
-@Profile(value = "!local")
+@Profile("!test")
 @Component
 @RequiredArgsConstructor
 public class HtmlEmailService implements EmailService {
@@ -32,18 +32,19 @@ public class HtmlEmailService implements EmailService {
 
 	@Override
 	@Async("threadPoolTaskExecutor")
-	public void send(MailMessageContext messageContext) {
+	public void send(MailMessageContext context) {
 		MimeMessage mimeMessage = javaMailSender.createMimeMessage();
 		try {
-			String title = templateProcessor.resolveMailTitleMessageSource(messageContext);
-			String messageBody = templateProcessor.compileMailTemplate(messageContext);
+			String title = templateProcessor.resolveMailTitleMessageSource(context);
+			String messageBody = templateProcessor.compileMailTemplate(context);
 
 			MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage, false, "UTF-8");
 			mimeMessageHelper.setFrom(getSystemEmail());
-			mimeMessageHelper.setTo(messageContext.getTo());
+			mimeMessageHelper.setTo(context.getTo());
 			mimeMessageHelper.setSubject(title);
 			mimeMessageHelper.setText(messageBody, true);
 			javaMailSender.send(mimeMessage);
+			log.info("[CONSOLE_MAIL] FROM: [{}] , TO: [{}] , TITLE: [{}]", getSystemEmail(), context.getTo(), title);
 		} catch (Exception e) {
 			log.error("failed to send email", e);
 			throw new RuntimeException(e);

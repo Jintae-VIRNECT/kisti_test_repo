@@ -10,13 +10,11 @@ import java.util.UUID;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang.RandomStringUtils;
-import org.springframework.context.MessageSource;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import org.thymeleaf.context.Context;
-import org.thymeleaf.spring5.SpringTemplateEngine;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -38,6 +36,7 @@ import com.virnect.uaa.domain.user.dao.user.UserRepository;
 import com.virnect.uaa.domain.user.domain.User;
 import com.virnect.uaa.global.security.token.JwtProvider;
 import com.virnect.uaa.infra.email.EmailService;
+import com.virnect.uaa.infra.email.context.MailMessageContext;
 import com.virnect.uaa.infra.file.Default;
 import com.virnect.uaa.infra.file.FileService;
 
@@ -53,8 +52,6 @@ public class DefaultAccountSignUpServiceImpl implements AccountSignUpService {
 	private final SignUpSuccessHandler signUpSuccessHandler;
 	private final UserAccessLogService userAccessLogService;
 	private final JwtProvider jwtProvider;
-	private final MessageSource messageSource;
-	private final SpringTemplateEngine templateEngine;
 	private final EmailService emailService;
 
 	@Transactional
@@ -185,23 +182,14 @@ public class DefaultAccountSignUpServiceImpl implements AccountSignUpService {
 		context.setVariable("code", code);
 		context.setVariable("expiredDate", zonedDateTime);
 
-		String mailTitle = messageSource.getMessage("MAIL_TITLE_OF_REGISTER_EMAIL_CHECK", null, locale);
-		String mailTemplatePath = String.format("%s/register/email_check", locale.getLanguage());
-		log.info("mailTemplatePath: {}", mailTemplatePath);
-		String message = templateEngine.process(mailTemplatePath, context);
-
-		// EmailMessage registerEmailAuthenticationMail = new EmailMessage();
-		// registerEmailAuthenticationMail.setSubject(mailTitle);
-		// registerEmailAuthenticationMail.setTo(emailAuthRequest.getEmail());
-		// registerEmailAuthenticationMail.setMessage(message);
-		//
-		// log.info(
-		// 	"[SEND_EMAIL_CHECK_EMAIL] - title: {} , to: {}",
-		// 	registerEmailAuthenticationMail.getSubject(),
-		// 	registerEmailAuthenticationMail.getTo()
-		// );
-		//
-		// emailService.send(registerEmailAuthenticationMail);
+		MailMessageContext mailMessageContext = MailMessageContext.builder()
+			.templateContext(context)
+			.templateName("email_check")
+			.titleMessageSourceName("MAIL_TITLE_OF_REGISTER_EMAIL_CHECK")
+			.to(emailAuthRequest.getEmail())
+			.locale(locale)
+			.build();
+		emailService.send(mailMessageContext);
 	}
 
 	public void signupSessionCodeValidate(String email, String sessionCode) {
