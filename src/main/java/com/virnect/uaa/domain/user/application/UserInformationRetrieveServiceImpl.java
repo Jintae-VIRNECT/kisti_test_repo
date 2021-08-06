@@ -7,6 +7,7 @@ import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
@@ -98,6 +99,7 @@ public class UserInformationRetrieveServiceImpl implements UserInformationRetrie
 		return new UserDetailsInfoResponse(userInfoResponse, myWorkspaceInfoList.getData().getWorkspaceList());
 	}
 
+	@Cacheable(value = "userInfo", key = "#uuid")
 	@Override
 	public UserInfoResponse findUserInformationByUserUUID(String uuid) {
 		Optional<SecessionUser> secessionUserInformation = secessionUserRepository.findByUserUUID(uuid);

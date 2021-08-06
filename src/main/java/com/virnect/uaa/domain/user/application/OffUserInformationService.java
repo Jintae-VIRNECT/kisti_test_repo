@@ -5,6 +5,7 @@ import static com.virnect.uaa.domain.user.domain.UserType.*;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -51,7 +52,7 @@ public class OffUserInformationService {
 	 * @param registerMemberRequest - 멤버 사용자 데이터
 	 * @return - 등록된 새 멤버 사용자 정보
 	 */
-	public UserInfoResponse 	registerNewMember(RegisterMemberRequest registerMemberRequest) {
+	public UserInfoResponse registerNewMember(RegisterMemberRequest registerMemberRequest) {
 		User user = User.ByRegisterMemberUserBuilder()
 			.registerMemberRequest(registerMemberRequest)
 			.encodedPassword(passwordEncoder.encode(registerMemberRequest.getPassword()))
@@ -69,6 +70,7 @@ public class OffUserInformationService {
 	 * @param userUUID - 사용자 정보 식별자
 	 * @return - 사용자 삭제 처리 결과
 	 */
+	@CacheEvict(value = "userInfo", key = "#userUUID")
 	public UserDeleteResponse deleteMemberUser(String userUUID) {
 		User deleteTargetUser = userRepository.findByUuid(userUUID)
 			.orElseThrow(() -> new UserServiceException(UserAccountErrorCode.ERR_USER_NOT_FOUND));

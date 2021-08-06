@@ -3,6 +3,7 @@ package com.virnect.uaa.domain.user.application;
 import java.io.IOException;
 import java.time.LocalDateTime;
 
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -51,12 +52,12 @@ public class UserInformationUpdateServiceImpl implements UserInformationUpdateSe
 	@Transactional(readOnly = true)
 	@Override
 	public UserInfoAccessCheckResponse accessPermissionCheck(
-		String userId,
+		String userUUID,
 		AccessPermissionCheckRequest accessPermissionCheckRequest
 	) {
 		User user = userRepository.findByEmail(accessPermissionCheckRequest.getEmail())
 			.orElseThrow(() -> new UserServiceException(UserAccountErrorCode.ERR_USER_INFO_ACCESS));
-		if (accessPermissionValidator(userId, accessPermissionCheckRequest, user)) {
+		if (accessPermissionValidator(userUUID, accessPermissionCheckRequest, user)) {
 			log.error("UserInfoAccessCheckFail - Email:[{}]", accessPermissionCheckRequest.getEmail());
 			throw new UserServiceException(UserAccountErrorCode.ERR_USER_INFO_ACCESS);
 		}
@@ -64,10 +65,11 @@ public class UserInformationUpdateServiceImpl implements UserInformationUpdateSe
 	}
 
 	@Override
+	@CacheEvict(value = "userInfo", key = "#userUUID")
 	public UserProfileUpdateResponse profileImageUpdate(
-		String userId, ProfileImageUpdateRequest profileImageUpdateRequest
+		String userUUID, ProfileImageUpdateRequest profileImageUpdateRequest
 	) {
-		User user = userRepository.findByUuid(userId)
+		User user = userRepository.findByUuid(userUUID)
 			.orElseThrow(() -> new UserServiceException(UserAccountErrorCode.ERR_USER_NOT_FOUND));
 
 		if (profileImageUpdateRequest.isUpdateAsDefaultImage()) {
@@ -83,10 +85,11 @@ public class UserInformationUpdateServiceImpl implements UserInformationUpdateSe
 			}
 		}
 		userRepository.save(user);
-		return new UserProfileUpdateResponse(userId, user.getProfile());
+		return new UserProfileUpdateResponse(userUUID, user.getProfile());
 	}
 
 	@Override
+	@CacheEvict(value = "userInfo", key = "#userUUID")
 	public UserInfoResponse updateDetailInformation(
 		String userUUID, UserInfoModifyRequest userInfoModifyRequest
 	) {
@@ -106,6 +109,7 @@ public class UserInformationUpdateServiceImpl implements UserInformationUpdateSe
 	}
 
 	@Override
+	@CacheEvict(value = "userInfo", key = "#userSecessionRequest.uuid")
 	public UserSecessionResponse accountSecession(
 		UserSecessionRequest userSecessionRequest
 	) {
@@ -132,9 +136,9 @@ public class UserInformationUpdateServiceImpl implements UserInformationUpdateSe
 	}
 
 	private boolean accessPermissionValidator(
-		String userId, AccessPermissionCheckRequest accessPermissionCheckRequest, User user
+		String userUUID, AccessPermissionCheckRequest accessPermissionCheckRequest, User user
 	) {
-		return !user.getUuid().equals(userId) ||
+		return !user.getUuid().equals(userUUID) ||
 			!passwordEncoder.matches(accessPermissionCheckRequest.getPassword(), user.getPassword());
 	}
 

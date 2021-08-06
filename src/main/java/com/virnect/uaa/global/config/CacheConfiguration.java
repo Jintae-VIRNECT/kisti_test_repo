@@ -27,7 +27,6 @@ public class CacheConfiguration {
 
 	@Bean
 	public CacheManager cacheManager() {
-		// todo: cache all dto types
 		Jackson2JsonRedisSerializer jackson2JsonRedisSerializer = new Jackson2JsonRedisSerializer<>(
 			UserInfoResponse.class);
 		jackson2JsonRedisSerializer.setObjectMapper(objectMapper);
