@@ -9,7 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Service
-@Profile(value = {"onpremise", "develop"})
+@Profile(value = {"develop", "onpremise"})
 public class OnPremisePayService implements PayService {
 
 	@PostConstruct
@@ -22,5 +22,6 @@ public class OnPremisePayService implements PayService {
 	@Override
 	public void eventCouponRegisterToNewUser(String email, String name, long userId) {
 		// nothing to do after sign up process. in onpremise or develop environment.
+		log.info("PayService, CouponRegister Event ! email: [{}] name: [{}] userId: [{}]", email, name, userId);
 	}
 }

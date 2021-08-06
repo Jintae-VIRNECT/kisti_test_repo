@@ -17,8 +17,8 @@ import com.virnect.uaa.infra.rest.billing.dto.BillingRestResponse;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-@Profile(value = {"!onpremise", "!develop"})
-public class DefaultPayService implements PayService {
+@Profile(value = {"staging", "production"})
+public class OnPayService implements PayService {
 	private static final String COUPON_REGISTER_API_URL = "/billing/coupon/registerbyid";
 	private final RestTemplate restTemplate;
 
