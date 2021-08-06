@@ -37,7 +37,8 @@
     "manual": "Manual Download",
     "force_logout": "Log out",
     "retry":"Retry",
-    "leave_exit": "Leave"
+    "leave_exit": "Leave",
+    "connect":"Connect"
   },
   "date": {
     "lastday": "[Yesterday]",
