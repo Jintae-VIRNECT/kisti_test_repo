@@ -11,6 +11,7 @@ import java.util.stream.Collectors;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.thymeleaf.context.Context;
 
 import lombok.RequiredArgsConstructor;
@@ -37,6 +38,7 @@ import com.virnect.uaa.infra.email.context.MailMessageContext;
 
 @Slf4j
 @Service
+@Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class UserInformationFindServiceImpl implements UserInformationFindService {
 	private final UserRepository userRepository;
@@ -66,6 +68,7 @@ public class UserInformationFindServiceImpl implements UserInformationFindServic
 		return new UserEmailFindResponse(findEmailMaskingResult);
 	}
 
+	@Transactional
 	@Override
 	public UserPasswordFindAuthCodeResponse sendPasswordResetEmail(
 		UserPasswordFindAuthCodeRequest passwordAuthCodeRequest,
@@ -119,6 +122,7 @@ public class UserInformationFindServiceImpl implements UserInformationFindServic
 		}
 	}
 
+	@Transactional
 	@Override
 	public UserPasswordFindCodeCheckResponse verifyPasswordResetCode(
 		UserPasswordFindAuthCodeCheckRequest authCodeCheckRequest
@@ -138,6 +142,7 @@ public class UserInformationFindServiceImpl implements UserInformationFindServic
 			passwordInitAuthCode.getUuid(), passwordInitAuthCode.getEmail(), true);
 	}
 
+	@Transactional
 	@Override
 	public UserPasswordChangeResponse renewalPreviousPassword(
 		UserPasswordChangeRequest passwordChangeRequest

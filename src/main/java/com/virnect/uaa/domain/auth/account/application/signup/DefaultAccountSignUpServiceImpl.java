@@ -42,6 +42,7 @@ import com.virnect.uaa.infra.file.FileService;
 
 @Slf4j
 @Service
+@Transactional
 @RequiredArgsConstructor
 public class DefaultAccountSignUpServiceImpl implements AccountSignUpService {
 	private final FileService fileService;
@@ -54,7 +55,6 @@ public class DefaultAccountSignUpServiceImpl implements AccountSignUpService {
 	private final JwtProvider jwtProvider;
 	private final EmailService emailService;
 
-	@Transactional
 	@Override
 	public OAuthTokenResponse signUp(
 		RegisterRequest registerRequest,
@@ -105,6 +105,7 @@ public class DefaultAccountSignUpServiceImpl implements AccountSignUpService {
 		return new EmailAuthResponse(true);
 	}
 
+	@Transactional(readOnly = true)
 	@Override
 	public EmailVerificationResponse emailAuthCodeVerification(
 		String email,

@@ -5,6 +5,7 @@ import java.time.LocalDateTime;
 
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -32,6 +33,7 @@ import com.virnect.uaa.infra.file.FileService;
 
 @Slf4j
 @Service
+@Transactional
 @RequiredArgsConstructor
 public class UserInformationUpdateServiceImpl implements UserInformationUpdateService {
 	private final UserRepository userRepository;
@@ -46,6 +48,7 @@ public class UserInformationUpdateServiceImpl implements UserInformationUpdateSe
 	private final UserInfoMapper userInfoMapper;
 	private final FileService fileService;
 
+	@Transactional(readOnly = true)
 	@Override
 	public UserInfoAccessCheckResponse accessPermissionCheck(
 		String userId,

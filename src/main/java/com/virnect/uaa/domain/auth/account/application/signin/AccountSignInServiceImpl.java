@@ -45,6 +45,7 @@ import com.virnect.uaa.global.security.token.JwtProvider;
 
 @Slf4j
 @Service
+@Transactional
 @RequiredArgsConstructor
 public class AccountSignInServiceImpl implements AccountSignInService {
 	private static final String REMEMBER_ME_COOKIE = "remember-me";
@@ -58,7 +59,6 @@ public class AccountSignInServiceImpl implements AccountSignInService {
 	private final TotpQRCodeGenerator totpQRCodeGenerator;
 	private final UserAccessLogService userAccessLogService;
 
-	@Transactional
 	@Override
 	public OAuthTokenResponse login(
 		LoginRequest loginRequest,
@@ -83,7 +83,6 @@ public class AccountSignInServiceImpl implements AccountSignInService {
 		return getOauthLoginResponse(user, clientGeoIPInfo);
 	}
 
-	@Transactional
 	@Override
 	public LogoutResponse logout(
 		LogoutRequest logoutRequest,
@@ -99,7 +98,6 @@ public class AccountSignInServiceImpl implements AccountSignInService {
 		return new LogoutResponse(true, user.getEmail());
 	}
 
-	@Transactional
 	@Override
 	public OAuthTokenResponse qrCodeLogin(
 		OTPLoginRequest otpLoginRequest,
@@ -116,7 +114,6 @@ public class AccountSignInServiceImpl implements AccountSignInService {
 		return getOauthLoginResponse(loginUser, clientGeoIPInfo);
 	}
 
-	@Transactional
 	@Override
 	public OTPQRGenerateResponse loginQrCodeGenerate(
 		OTPQRGenerateRequest otpQrCodeGenerateRequest

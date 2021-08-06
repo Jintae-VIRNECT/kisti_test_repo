@@ -7,6 +7,7 @@ import java.util.Date;
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -30,6 +31,7 @@ import com.virnect.uaa.global.security.token.JwtProvider;
 
 @Slf4j
 @Service
+@Transactional
 @RequiredArgsConstructor
 public class AccountTokenServiceImpl implements AccountTokenService {
 	private final ObjectMapper objectMapper;

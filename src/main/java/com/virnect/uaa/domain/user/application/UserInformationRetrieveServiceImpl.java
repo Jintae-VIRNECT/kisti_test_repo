@@ -11,6 +11,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import lombok.RequiredArgsConstructor;
@@ -44,6 +45,7 @@ import com.virnect.uaa.infra.rest.workspace.dto.WorkspaceInfoListResponse;
 
 @Slf4j
 @Service
+@Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class UserInformationRetrieveServiceImpl implements UserInformationRetrieveService {
 	private final SecessionUserRepository secessionUserRepository;

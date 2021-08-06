@@ -7,6 +7,7 @@ import java.util.Optional;
 
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import lombok.RequiredArgsConstructor;
@@ -34,6 +35,7 @@ import com.virnect.uaa.infra.rest.remote.dto.RemoteSecessionResponse;
 
 @Slf4j
 @Service
+@Transactional
 @RequiredArgsConstructor
 public class OffUserInformationService {
 	private final UserInfoMapper userInfoMapper;
@@ -90,6 +92,7 @@ public class OffUserInformationService {
 	 * @param email - 신규 멤버 사용자 이메일 정보
 	 * @return - 중복 유무 결과
 	 */
+	@Transactional(readOnly = true)
 	public UserEmailExistCheckResponse userEmailDuplicateCheck(String email) {
 		Optional<User> user = userRepository.findByEmail(email);
 
@@ -110,6 +113,7 @@ public class OffUserInformationService {
 	 * @param userIdentityCheckRequest - 비밀번호 재설정 질답 데이터
 	 * @return - 비밀번호 재설정 질답 검증 결과
 	 */
+	@Transactional(readOnly = true)
 	public UserIdentityCheckResponse verifyPasswordResetQuestion(UserIdentityCheckRequest userIdentityCheckRequest) {
 		User user = userRepository.findByEmail(userIdentityCheckRequest.getEmail())
 			.orElseThrow(() -> new UserServiceException(UserAccountErrorCode.ERR_USER_NOT_FOUND));
