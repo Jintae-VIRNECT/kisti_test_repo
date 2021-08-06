@@ -14,7 +14,7 @@ pipeline {
                         branch 'develop'
                     }
                     steps {
-                        sh 'docker build -t pf-user -f docker/Dockerfile .'
+                        sh 'docker build -t pf-account -f docker/Dockerfile .'
                     }
                 }
 
@@ -24,7 +24,7 @@ pipeline {
                     }
                     steps {
                         sh 'git checkout ${GIT_TAG}'
-                        sh 'docker build -t pf-user:${GIT_TAG} -f docker/Dockerfile .'
+                        sh 'docker build -t pf-account:${GIT_TAG} -f docker/Dockerfile .'
                     }
                 }
             }
@@ -43,12 +43,12 @@ pipeline {
                         branch 'develop'
                     }
                     steps {
-                        sh 'count=`docker ps -a | grep pf-user | wc -l`; if [ ${count} -gt 0 ]; then echo "Running STOP&DELETE"; docker stop pf-user && docker rm pf-user; else echo "Not Running STOP&DELETE"; fi;'
-                        sh 'docker run -p 8081:8081 --restart=always  -e "CONFIG_SERVER=http://192.168.6.3:6383" -e "VIRNECT_ENV=develop" -d --name=pf-user pf-user'
-                        sh 'count=`docker ps -a | grep pf-user-onpremise | wc -l`; if [ ${count} -gt 0 ]; then echo "Running STOP&DELETE"; docker stop pf-user-onpremise && docker rm pf-user-onpremise; else echo "Not Running STOP&DELETE"; fi;'
-                        sh 'docker run -p 18081:8081 --restart=always  -e "CONFIG_SERVER=http://192.168.6.3:6383" -e "VIRNECT_ENV=onpremise" -d --name=pf-user-onpremise pf-user'
+                        sh 'count=`docker ps -a | grep pf-account | wc -l`; if [ ${count} -gt 0 ]; then echo "Running STOP&DELETE"; docker stop pf-account && docker rm pf-account; else echo "Not Running STOP&DELETE"; fi;'
+                        sh 'docker run -p 8322:8322 --restart=always  -e "CONFIG_SERVER=http://192.168.6.3:6383" -e "VIRNECT_ENV=develop" -d --name=pf-account pf-account'
+                        sh 'count=`docker ps -a | grep pf-account-onpremise | wc -l`; if [ ${count} -gt 0 ]; then echo "Running STOP&DELETE"; docker stop pf-account-onpremise && docker rm pf-account-onpremise; else echo "Not Running STOP&DELETE"; fi;'
+                        sh 'docker run -p 18322:8322 --restart=always  -e "CONFIG_SERVER=http://192.168.6.3:6383" -e "VIRNECT_ENV=onpremise" -d --name=pf-account-onpremise pf-account'
                         catchError {
-                             sh "if [ `docker images | grep pf-user | grep -v 103505534696 | wc -l` -gt 2 ]; then docker rmi  -f \$(docker images | grep \"pf-user\" | grep -v \\${GIT_TAG} | grep -v \"latest\" | awk \'{print \$3}\'); else echo \"Just One Images...\"; fi;"
+                             sh "if [ `docker images | grep pf-account | grep -v 103505534696 | wc -l` -gt 2 ]; then docker rmi  -f \$(docker images | grep \"pf-account\" | grep -v \\${GIT_TAG} | grep -v \"latest\" | awk \'{print \$3}\'); else echo \"Just One Images...\"; fi;"
                         }
                     }
                 }
@@ -60,8 +60,8 @@ pipeline {
                     steps {
                         script {
                             docker.withRegistry("https://$aws_ecr_address", 'ecr:ap-northeast-2:aws-ecr-credentials') {
-                                docker.image("pf-user:${GIT_TAG}").push("${GIT_TAG}")
-                                docker.image("pf-user:${GIT_TAG}").push("latest")
+                                docker.image("pf-account:${GIT_TAG}").push("${GIT_TAG}")
+                                docker.image("pf-account:${GIT_TAG}").push("latest")
                             }
                         }
 
@@ -77,16 +77,16 @@ pipeline {
                                                 execCommand: 'aws ecr get-login --region ap-northeast-2 --no-include-email | bash'
                                             ),
                                             sshTransfer(
-                                                execCommand: "docker pull $aws_ecr_address/pf-user:\\${GIT_TAG}"
+                                                execCommand: "docker pull $aws_ecr_address/pf-account:\\${GIT_TAG}"
                                             ),
                                             sshTransfer(
-                                                execCommand: 'count=`docker ps -a | grep pf-user | wc -l`; if [ ${count} -gt 0 ]; then echo "Running STOP&DELETE"; docker stop pf-user && docker rm pf-user; else echo "Not Running STOP&DELETE"; fi;'
+                                                execCommand: 'count=`docker ps -a | grep pf-account | wc -l`; if [ ${count} -gt 0 ]; then echo "Running STOP&DELETE"; docker stop pf-account && docker rm pf-account; else echo "Not Running STOP&DELETE"; fi;'
                                             ),
                                             sshTransfer(
-                                                execCommand: "docker run -p 8081:8081 --restart=always -e 'CONFIG_SERVER=https://stgconfig.virnect.com' -e 'VIRNECT_ENV=staging' -e eureka.instance.ip-address=`hostname -I | awk  \'{print \$1}\'` -d --name=pf-user $aws_ecr_address/pf-user:\\${GIT_TAG}"
+                                                execCommand: "docker run -p 8322:8322 --restart=always -e 'CONFIG_SERVER=https://stgconfig.virnect.com' -e 'VIRNECT_ENV=staging' -e eureka.instance.ip-address=`hostname -I | awk  \'{print \$1}\'` -d --name=pf-account $aws_ecr_address/pf-account:\\${GIT_TAG}"
                                             ),
                                             sshTransfer(
-                                                execCommand: "if [ `docker images | grep pf-user | wc -l` -ne 1 ]; then docker rmi  -f \$(docker images | grep \"pf-user\" | grep -v \\${GIT_TAG} | awk \'{print \$3}\'); else echo \"Just One Images...\"; fi;"
+                                                execCommand: "if [ `docker images | grep pf-account | wc -l` -ne 1 ]; then docker rmi  -f \$(docker images | grep \"pf-account\" | grep -v \\${GIT_TAG} | awk \'{print \$3}\'); else echo \"Just One Images...\"; fi;"
                                             )
                                         ]
                                     )
@@ -105,16 +105,16 @@ pipeline {
                                                 execCommand: 'aws ecr get-login --region ap-northeast-2 --no-include-email | bash'
                                             ),
                                             sshTransfer(
-                                                execCommand: "docker pull $aws_ecr_address/pf-user:\\${GIT_TAG}"
+                                                execCommand: "docker pull $aws_ecr_address/pf-account:\\${GIT_TAG}"
                                             ),
                                             sshTransfer(
-                                                execCommand: 'count=`docker ps -a | grep pf-user | wc -l`; if [ ${count} -gt 0 ]; then echo "Running STOP&DELETE"; docker stop pf-user && docker rm pf-user; else echo "Not Running STOP&DELETE"; fi;'
+                                                execCommand: 'count=`docker ps -a | grep pf-account | wc -l`; if [ ${count} -gt 0 ]; then echo "Running STOP&DELETE"; docker stop pf-account && docker rm pf-account; else echo "Not Running STOP&DELETE"; fi;'
                                             ),
                                             sshTransfer(
-                                                execCommand: "docker run -p 8081:8081 --restart=always -e 'CONFIG_SERVER=http://3.35.50.181:6383' -e 'VIRNECT_ENV=onpremise' -e eureka.instance.ip-address=`hostname -I | awk  \'{print \$1}\'` -d --name=pf-user $aws_ecr_address/pf-user:\\${GIT_TAG}"
+                                                execCommand: "docker run -p 8322:8322 --restart=always -e 'CONFIG_SERVER=http://3.35.50.181:6383' -e 'VIRNECT_ENV=onpremise' -e eureka.instance.ip-address=`hostname -I | awk  \'{print \$1}\'` -d --name=pf-account $aws_ecr_address/pf-account:\\${GIT_TAG}"
                                             ),
                                             sshTransfer(
-                                                execCommand: "if [ `docker images | grep pf-user | wc -l` -ne 1 ]; then docker rmi  -f \$(docker images | grep \"pf-user\" | grep -v \\${GIT_TAG} | awk \'{print \$3}\'); else echo \"Just One Images...\"; fi;"
+                                                execCommand: "if [ `docker images | grep pf-account | wc -l` -ne 1 ]; then docker rmi  -f \$(docker images | grep \"pf-account\" | grep -v \\${GIT_TAG} | awk \'{print \$3}\'); else echo \"Just One Images...\"; fi;"
                                             )
                                         ]
                                     )
@@ -152,16 +152,16 @@ pipeline {
                                                 execCommand: 'aws ecr get-login --region ap-northeast-2 --no-include-email | bash'
                                             ),
                                             sshTransfer(
-                                                execCommand: "docker pull $aws_ecr_address/pf-user:\\${GIT_TAG}"
+                                                execCommand: "docker pull $aws_ecr_address/pf-account:\\${GIT_TAG}"
                                             ),
                                             sshTransfer(
-                                                execCommand: 'count=`docker ps -a | grep pf-user | wc -l`; if [ ${count} -gt 0 ]; then echo "Running STOP&DELETE"; docker stop pf-user && docker rm pf-user; else echo "Not Running STOP&DELETE"; fi;'
+                                                execCommand: 'count=`docker ps -a | grep pf-account | wc -l`; if [ ${count} -gt 0 ]; then echo "Running STOP&DELETE"; docker stop pf-account && docker rm pf-account; else echo "Not Running STOP&DELETE"; fi;'
                                             ),
                                             sshTransfer(
-                                                execCommand: "docker run -p 8081:8081 --restart=always -e 'CONFIG_SERVER=https://config.virnect.com' -e 'VIRNECT_ENV=production' -e eureka.instance.ip-address=`hostname -I | awk  \'{print \$1}\'` -d --name=pf-user $aws_ecr_address/pf-user:\\${GIT_TAG}"
+                                                execCommand: "docker run -p 8322:8322 --restart=always -e 'CONFIG_SERVER=https://config.virnect.com' -e 'VIRNECT_ENV=production' -e eureka.instance.ip-address=`hostname -I | awk  \'{print \$1}\'` -d --name=pf-account $aws_ecr_address/pf-account:\\${GIT_TAG}"
                                             ),
                                             sshTransfer(
-                                                execCommand: "if [ `docker images | grep pf-user | wc -l` -ne 1 ]; then docker rmi  -f \$(docker images | grep \"pf-user\" | grep -v \\${GIT_TAG} | awk \'{print \$3}\'); else echo \"Just One Images...\"; fi;"
+                                                execCommand: "if [ `docker images | grep pf-account | wc -l` -ne 1 ]; then docker rmi  -f \$(docker images | grep \"pf-account\" | grep -v \\${GIT_TAG} | awk \'{print \$3}\'); else echo \"Just One Images...\"; fi;"
                                             )
                                         ]
                                     )
