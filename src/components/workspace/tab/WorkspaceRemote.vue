@@ -3,7 +3,7 @@
     :title="$t('workspace.remote_title')"
     :description="$t('workspace.remote_list_description')"
     :placeholder="$t('workspace.search_room')"
-    :emptyImage="require('assets/image/img_remote_empty.svg')"
+    :emptyImage="emptyImage"
     :emptyTitle="emptyTitle"
     :emptyDescription="emptyDescription"
     :listCount="roomList.length"
@@ -53,6 +53,8 @@ export default {
       loading: false,
       searchRooms: [],
       searchText: '',
+      emptyImage: require('assets/image/img_remote_empty.svg'),
+      responsiveEmptyImage: null,
     }
   },
   computed: {
@@ -191,12 +193,28 @@ export default {
         this.refresh()
       }
     },
+    setEmptyImageDefault() {
+      this.emptyImage = require('assets/image/img_remote_empty.svg')
+    },
+    setEmptyImageMobile() {
+      this.emptyImage = require('assets/image/img_remote_empty_mobile.svg')
+    },
   },
 
   /* Lifecycles */
   created() {
     this.init()
   },
-  mounted() {},
+  mounted() {
+    this.responsiveEmptyImage = this.callAndGetMobileResponsiveFunction(
+      this.setEmptyImageMobile,
+      this.setEmptyImageDefault,
+    )
+    this.addEventListenerScreenResize(this.responsiveEmptyImage)
+  },
+  beforeDestroy() {
+    if (this.responsiveEmptyImage)
+      this.removeEventListenerScreenResize(this.responsiveEmptyImage)
+  },
 }
 </script>

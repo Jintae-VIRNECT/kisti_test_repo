@@ -2,7 +2,7 @@
   <tooltip :content="`${$t('common.mic')} on/off`">
     <toggle-button
       slot="body"
-      customClass="toggle-header"
+      customClass="toggle-header mic"
       :description="`${$t('common.mic')} on/off`"
       size="2.429rem"
       :disabled="disable"

@@ -2,7 +2,7 @@
   <tooltip :content="`${$t('common.speaker')} on/off`">
     <toggle-button
       slot="body"
-      customClass="toggle-header"
+      customClass="toggle-header speaker"
       :description="`${$t('common.speaker')} on/off`"
       size="2.429rem"
       :active="speaker.isOn"

@@ -9,7 +9,7 @@
       slot="reference"
       :image="account.profile"
       :size="30"
-      :thumbStyle="{ width: '2.143rem', height: '2.143rem' }"
+      :thumbStyle="thumbStyle"
     ></profile>
     <div>
       <div class="popover-profile__myinfo">
@@ -46,11 +46,25 @@ import Popover from 'Popover'
 import Profile from 'Profile'
 import auth from 'utils/auth'
 import { URLS } from 'configs/env.config'
+import thumbStyle from 'mixins/thumbStyle'
+
+const DEFAULT_THUMBSTYLE_SIZE = '2.143rem'
+const MOBILE_THUMBSTYLE_SIZE = '3.0rem'
+
 export default {
   name: 'HeaderProfile',
   components: {
     Popover,
     Profile,
+  },
+  mixins: [thumbStyle],
+  data() {
+    return {
+      thumbStyle: {
+        width: DEFAULT_THUMBSTYLE_SIZE,
+        height: DEFAULT_THUMBSTYLE_SIZE,
+      },
+    }
   },
   computed: {
     ...mapGetters(['account', 'useStorage', 'useLocalRecording']),
@@ -95,7 +109,15 @@ export default {
   },
 
   /* Lifecycles */
-  mounted() {},
+  mounted() {
+    this.setSizeVariable(
+      DEFAULT_THUMBSTYLE_SIZE,
+      DEFAULT_THUMBSTYLE_SIZE,
+      MOBILE_THUMBSTYLE_SIZE,
+      MOBILE_THUMBSTYLE_SIZE,
+    )
+    this.activateThumbStyleHandlerOnMobileSize()
+  },
 }
 </script>
 <style lang="scss">

@@ -311,6 +311,9 @@ export default {
     showRoomLoading(toggle) {
       this.showLoading = toggle
     },
+    setTabTop() {
+      this.tabTop = this.$refs['tabSection'].$el.offsetTop
+    },
   },
 
   /* Lifecycles */
@@ -323,13 +326,18 @@ export default {
   mounted() {
     initAudio()
     this.mx_changeLang()
-    this.tabTop = this.$refs['tabSection'].$el.offsetTop
+    this.setTabTop()
+
+    //반응형 대응 : 모바일 레이아웃으로 접근 후 PC화면으로 스크린 크기 변화 시 tabTop값이 업데이트 되어야 sticky header가 정상 동작하므로
+    window.addEventListener('resize', this.setTabTop)
+
     this.$eventBus.$on('scroll:reset:workspace', this.scrollTop)
     this.$eventBus.$on('filelist:open', this.toggleList)
     this.$eventBus.$on('devicedenied:show', this.showDeviceDenied)
     this.$eventBus.$on('roomloading:show', this.showRoomLoading)
   },
   beforeDestroy() {
+    window.removeEventListener('resize', this.setTabTop)
     this.$eventBus.$off('scroll:reset:workspace', this.scrollTop)
     this.$eventBus.$off('filelist:open')
     this.$eventBus.$off('devicedenied:show')

@@ -7,12 +7,12 @@
     </template>
     <notice
       :class="{
-        'tools-mobile': !hasWorkspace,
+        'workspace-select-tools': !hasWorkspace,
       }"
     ></notice>
     <profile
       :class="{
-        'tools-mobile': !hasWorkspace,
+        'workspace-select-tools': !hasWorkspace,
       }"
     >
       ></profile

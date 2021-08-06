@@ -1,7 +1,7 @@
 <template>
   <button class="icon-button" @click="clickListener" :class="customClass">
     <img :src="imgSrc" :class="animateClass" />
-    {{ text }}
+    <span>{{ text }}</span>
   </button>
 </template>
 

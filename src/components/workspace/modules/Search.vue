@@ -6,7 +6,7 @@
       :placeholder="placeholder"
       v-model="text"
     />
-    <button class="search__input-icon" disabled>
+    <button class="search__input-icon disabled">
       Search
     </button>
   </div>
@@ -93,8 +93,47 @@ export default {
   padding-right: 0.714rem;
   background: url(~assets/image/ic_search.svg) 50%/1.571rem no-repeat;
   @include ir;
-  &:disabled {
+  &.disabled {
     cursor: default;
+    pointer-events: none;
+  }
+}
+
+@include responsive-mobile {
+  .search {
+    width: 3.2rem;
+    height: 3.2rem;
+    margin-right: 0.8rem;
+    background-color: red; //@color 적용 필요
+    border: none;
+    border-radius: 0.6rem;
+    &:focus-within {
+      width: calc(100% - 4rem);
+      border: none;
+      .search__input {
+        flex: 1;
+        width: 100%;
+        margin-left: 1rem;
+      }
+      .search__input-icon {
+        margin: 0.8rem;
+      }
+    }
+  }
+  .search__input {
+    flex: 0;
+    width: 0px;
+    margin-left: 0;
+    padding: 0;
+    @include fontLevel(75);
+  }
+  .search__input-icon {
+    height: 1.6rem;
+    background: url(~assets/image/ic_search_16.svg) 50%/1.571rem no-repeat;
+    &.disabled {
+      cursor: default;
+      pointer-events: initial;
+    }
   }
 }
 </style>

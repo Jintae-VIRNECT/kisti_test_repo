@@ -4,6 +4,7 @@
     placement="bottom-start"
     :width="0"
     popperClass="header-lnb-selector"
+    @visible="toggleActive"
   >
     <vue2-scrollbar>
       <ul class="header-lnb-selector__layer">
@@ -29,7 +30,11 @@
       </ul>
     </vue2-scrollbar>
 
-    <button slot="reference" class="header-workspace-selector">
+    <button
+      slot="reference"
+      class="header-workspace-selector"
+      :class="{ selected: workspaceSelectorFocused }"
+    >
       {{ workspace.title }}
     </button>
   </popover>
@@ -46,6 +51,7 @@ export default {
   data() {
     return {
       popoverWidth: '14rem',
+      workspaceSelectorFocused: false,
     }
   },
   computed: {
@@ -71,6 +77,10 @@ export default {
       )
       console.log(workspaceId, workspace)
       this.changeSelect(workspace)
+    },
+
+    toggleActive(visible) {
+      this.workspaceSelectorFocused = visible
     },
   },
 

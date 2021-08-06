@@ -16,6 +16,7 @@
 import TabView from '../partials/WorkspaceTabView'
 import WorkspaceCard from 'WorkspaceCard'
 import { mapGetters, mapActions } from 'vuex'
+import thumbStyle from 'mixins/thumbStyle'
 
 const DEFAULT_THUMBSTYLE_SIZE = '5.143rem'
 const MOBILE_THUMBSTYLE_SIZE = '4.8rem'
@@ -25,6 +26,7 @@ export default {
     TabView,
     WorkspaceCard,
   },
+  mixins: [thumbStyle],
   computed: {
     ...mapGetters(['workspaceList']),
   },
@@ -43,31 +45,15 @@ export default {
       this.$eventBus.$emit('scroll:reset:workspace')
       this.changeWorkspace(workspace)
     },
-    setThumbStyle(width, height) {
-      this.thumbStyle = { width, height }
-    },
-    //모바일 스크린 사이즈에서 실행
-    mobileSizeEventFunction() {
-      this.setThumbStyle(MOBILE_THUMBSTYLE_SIZE, MOBILE_THUMBSTYLE_SIZE)
-    },
-    //모바일 이외 스크린 사이즈에서 실행
-    resetSizeEventFunction() {
-      this.setThumbStyle(DEFAULT_THUMBSTYLE_SIZE, DEFAULT_THUMBSTYLE_SIZE)
-    },
   },
   mounted() {
-    //mobile screen size event 함수 생성
-    this.mobileSizeEventFn = this.callAndGetMobileResponsiveFunction(
-      this.mobileSizeEventFunction,
-      this.resetSizeEventFunction,
+    this.setSizeVariable(
+      DEFAULT_THUMBSTYLE_SIZE,
+      DEFAULT_THUMBSTYLE_SIZE,
+      MOBILE_THUMBSTYLE_SIZE,
+      MOBILE_THUMBSTYLE_SIZE,
     )
-
-    //이벤트 리스너 활성화
-    this.addEventListenerScreenResize(this.mobileSizeEventFn)
-  },
-  beforeDestroy() {
-    //이벤트 함수 제거
-    this.removeEventListenerScreenResize(this.mobileSizeEventFn)
+    this.activateThumbStyleHandlerOnMobileSize()
   },
 }
 </script>

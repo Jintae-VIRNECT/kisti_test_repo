@@ -1,5 +1,8 @@
 <template>
-  <header class="header">
+  <header
+    class="header"
+    :class="{ 'workspace-selected': workspace && workspace.uuid }"
+  >
     <div class="header-workspace">
       <img
         v-if="logo !== false"

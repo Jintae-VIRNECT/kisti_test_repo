@@ -2,7 +2,7 @@
   <tooltip :content="`${$t('common.video')} on/off`">
     <toggle-button
       slot="body"
-      customClass="toggle-header"
+      customClass="toggle-header stream"
       :description="`${$t('common.video')} on/off`"
       size="2.429rem"
       :disabled="disable"

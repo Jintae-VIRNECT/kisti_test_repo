@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="16px" height="16px" viewBox="0 0 16 16" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>6D950167-ACE2-428D-9223-DCC9472FE043@2x</title>
+    <defs>
+        <path d="M6.5,1 C9.53756612,1 12,3.46243388 12,6.5 C12,7.74832096 11.5841223,8.89950848 10.8833584,9.82257113 L14.6620581,13.6013979 C14.8573202,13.79666 14.8573202,14.1132425 14.6620581,14.3085047 L14.3085047,14.6620581 C14.1132425,14.8573202 13.79666,14.8573202 13.6013979,14.6620581 L9.82257113,10.8833584 C8.89950848,11.5841223 7.74832096,12 6.5,12 C3.46243388,12 1,9.53756612 1,6.5 C1,3.46243388 3.46243388,1 6.5,1 Z M6.5,2.5 C4.290861,2.5 2.5,4.290861 2.5,6.5 C2.5,8.709139 4.290861,10.5 6.5,10.5 C8.709139,10.5 10.5,8.709139 10.5,6.5 C10.5,4.290861 8.709139,2.5 6.5,2.5 Z" id="path-1"></path>
+    </defs>
+    <g id="Remote_Main_Mobile" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Icon" transform="translate(-858.000000, -121.000000)">
+            <g id="ic_main_search" transform="translate(836.000000, 99.000000)">
+                <g id="Group-16" transform="translate(22.000000, 22.000000)">
+                    <rect id="Rectangle" x="0" y="0" width="16" height="16"></rect>
+                    <g id="icon-/-16px-/-ic_search_16">
+                        <mask id="mask-2" fill="white">
+                            <use xlink:href="#path-1"></use>
+                        </mask>
+                        <g id="shape" fill-rule="nonzero"></g>
+                        <rect id="🎨-Color" fill="#B6BCC2" mask="url(#mask-2)" x="-16" y="-16" width="48" height="48"></rect>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

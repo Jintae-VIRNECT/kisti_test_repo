@@ -35,7 +35,7 @@ export default {
     thumbStyle: {
       type: Object,
       default: () => {
-        return {}
+        return { width: '5.143rem', height: '5.143rem' }
       },
     },
     image: String,
@@ -160,19 +160,19 @@ export default {
 
 .profile--badge {
   position: absolute;
-  left: 66%;
   top: 64%;
+  left: 66%;
   width: 1.333em;
   height: 1.333em;
-  border-radius: 50%;
   background-color: inherit;
+  border-radius: 50%;
 }
 
 .profile--badge__core {
   width: 0.833em;
   height: 0.833em;
-  border-radius: 50%;
   margin: 0.25em;
+  border-radius: 50%;
 
   &.me {
     background: url('~assets/image/mdpi_icon_me.svg') center;
