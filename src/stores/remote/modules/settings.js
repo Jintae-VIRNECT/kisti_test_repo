@@ -53,6 +53,7 @@ const state = {
   chatBox: false,
 
   isSpotFullscreen: false,
+  autoServerRecord: false,
 }
 
 const mutations = {
@@ -120,6 +121,10 @@ const mutations = {
   [SET_SPOT_FULLSCREEN](state, isFullscreen) {
     state.isSpotFullscreen = isFullscreen
   },
+
+  [SETTINGS.SET_AUTO_SERVER_RECORD](state, flag) {
+    state.autoServerRecord = flag
+  },
 }
 const getters = {
   mic: state => state.mic,
@@ -150,6 +155,8 @@ const getters = {
   chatBox: state => state.chatBox,
 
   isSpotFullscreen: state => state.isSpotFullscreen,
+
+  autoServerRecord: state => state.autoServerRecord,
 }
 
 const actions = {

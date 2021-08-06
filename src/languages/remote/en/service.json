@@ -217,6 +217,7 @@
     "record_server_end_message":"Ending the server recording.",
     "record_server_over_max_count":"The server has reached the maximum number of videos to record simultaneously. Please try again later.",
     "record_server_no_storage":"There is not enough space on the server to store the recorded file. Please contact the administrator.",
+    "record_server_start_auto_record_message":"Starting the server automatically recording.​​",
     
     "reconnect_network_connecting": "Connecting to the network...",
     "reconnect_room_connecting": "Reconnecting collaboration...",
