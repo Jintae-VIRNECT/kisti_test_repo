@@ -65,6 +65,11 @@ export default {
           type = types.TOOL_LINE_WIDTH
       }
 
+      window.myStorage.setItemPiece(
+        'drawingInfo',
+        payload.target,
+        payload.value,
+      )
       commit(type, payload.value)
     }
   },
