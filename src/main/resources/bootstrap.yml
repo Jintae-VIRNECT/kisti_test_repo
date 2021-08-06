@@ -6,7 +6,7 @@ spring:
   profiles:
     active: ${VIRNECT_ENV}
   application:
-`    name: user-server
+    name: user-server
   cloud:
     config:
       uri: ${CONFIG_SERVER}
