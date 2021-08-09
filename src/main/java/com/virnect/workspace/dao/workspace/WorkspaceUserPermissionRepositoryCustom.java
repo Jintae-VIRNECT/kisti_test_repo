@@ -28,5 +28,7 @@ public interface WorkspaceUserPermissionRepositoryCustom {
 
     Optional<WorkspaceUserPermission> findWorkspaceUser(String workspaceId, String userId);
 
-    Page<WorkspaceUserPermission> getWorkspaceUserPermissionByInUserListAndEqRole(List<String> userIdList, String filter, Pageable newPageable, String workspaceId);
+    List<String> getUserIdsByInUserListAndEqRole(List<String> userIdList, String filter, String workspaceId);
+
+    Page<WorkspaceUserPermission> getWorkspaceUserListByInUserList(List<String> userIdList, Pageable newPageable, String workspaceId);
 }

@@ -69,8 +69,9 @@ public abstract class WorkspaceUserService {
     private final MailContextHandler mailContextHandler;
     private final WorkspacePermissionRepository workspacePermissionRepository;
 
-    private static final String ALL_LICENSE_PRODUCT = ".*(?i)REMOTE.*|.*(?i)MAKE.*|.*(?i)VIEW.*";
+    private static final String ANY_LICENSE_PRODUCT = ".*(?i)REMOTE.*|.*(?i)MAKE.*|.*(?i)VIEW.*";
     private static final int MAX_WORKSPACE_USER_AMOUNT = 50;//워크스페이스 최대 멤버 수(마스터 본인 포함)
+    private static final String ANY_WORKSPACE_ROLE = ".*(?i)MASTER.*|.*(?i)MANAGER.*|.*(?i)MEMBER.*|.*(?i)SEAT.*";
 
     /**
      * 멤버 조회
@@ -83,65 +84,66 @@ public abstract class WorkspaceUserService {
      */
 
     public WorkspaceUserInfoListResponse getMembers(
-            String workspaceId, String search, String filter, com.virnect.workspace.global.common.PageRequest pageRequest
+            String workspaceId, String search, String filter, String roleFilter, String userTypeFilter, String planFilter, com.virnect.workspace.global.common.PageRequest pageRequest
     ) {
-        //1. 정렬 체크 : workspace 서버에서 정렬처리를 할 수 있는 항목인지 체크한다.
-        Pageable newPageable = PageRequest.of(pageRequest.of().getPageNumber(), pageRequest.of().getPageSize());
-        //정렬요청이 없는 경우에는 worksapceUser.updateDate,desc을 기본값으로 정렬한다.
-        if (pageRequest.getSortName().equals("updatedDate")) {
-            pageRequest.setSort("workspaceUser.updatedDate,desc");
-            newPageable = pageRequest.of();
-        }
-        //워크스페이스에서 정렬이 가능한 경우 -> 권한 정렬, 참여 일자 정렬
-        if (pageRequest.getSortName().equalsIgnoreCase("role") || pageRequest.getSortName().equalsIgnoreCase(("joinDate"))) {
-            newPageable = pageRequest.of();
+        //1. 정렬 검증으로 Pageable 재정의
+        Pageable newPageable = getPageable(pageRequest);
+
+        //2. search 필터링
+        List<String> resultUserIdList = workspaceUserRepository.getWorkspaceUserIdList(workspaceId);//워크스페이스 소속 전체 유저
+        if (StringUtils.hasText(search)) {
+            UserInfoListRestResponse userInfoListRestResponse = getUserInfoList(search, resultUserIdList);
+            resultUserIdList = userInfoListRestResponse.getUserInfoList().stream().map(UserInfoRestResponse::getUuid).collect(Collectors.toList());
         }
 
-        //2. search 필터링 : user서버에서 search 필터링된 유저 목록을 불러온다.
-        List<String> workspaceUserIdList = workspaceUserRepository.getWorkspaceUserIdList(workspaceId);
-        UserInfoListRestResponse userInfoListRestResponse = getUserInfoList(search, workspaceUserIdList);
-        List<String> searchedUserIds = userInfoListRestResponse.getUserInfoList().stream().map(UserInfoRestResponse::getUuid).collect(Collectors.toList());
-
-        //3. 라이선스 필터링 : filter값이 라이선스값인 경우, search된 유저 목록중에서 filter 라이선스 정보만 가지고 오고, filter값이 라이선스가 아니라면 search된 유저 목록의 모든 라이선스 정보를 가지고 온다.
-        Map<String, List<MyLicenseInfoResponse>> licenseProducts = new HashMap<>();
-        searchedUserIds.forEach(userId -> {
-            MyLicenseInfoListResponse myLicenseInfoListResponse = getMyLicenseInfoRequestHandler(workspaceId, userId);
-            if (!CollectionUtils.isEmpty(myLicenseInfoListResponse.getLicenseInfoList())) {
-                if (StringUtils.hasText(filter) && filter.matches(ALL_LICENSE_PRODUCT)) {
-                    if (myLicenseInfoListResponse.getLicenseInfoList().stream().anyMatch(myLicenseInfoResponse -> filter.toUpperCase().contains(myLicenseInfoResponse.getProductName().toUpperCase()))) {
-                        licenseProducts.put(userId, myLicenseInfoListResponse.getLicenseInfoList());
-                    }
-                } else {
-                    licenseProducts.put(userId, myLicenseInfoListResponse.getLicenseInfoList());
-                }
-            } else {
-                licenseProducts.put(userId, null);
+        //3. 필터링
+        if (StringUtils.hasText(filter)) {
+            //3-1. 라이선스 플랜으로 필터링
+            if (filter.matches(ANY_LICENSE_PRODUCT) && !resultUserIdList.isEmpty()) {
+                resultUserIdList = filterUserIdListByPlan(workspaceId, resultUserIdList, filter);
             }
-        });
+            //3-2. 워크스페이스 역할로 필터링
+            else if (filter.matches(ANY_WORKSPACE_ROLE) && !resultUserIdList.isEmpty()) {
+                resultUserIdList = workspaceUserPermissionRepository.getUserIdsByInUserListAndEqRole(resultUserIdList, filter, workspaceId);
+            }
+        }
+        //3-3. 워크스페이스 역할로 필터링
+        if (StringUtils.hasText(roleFilter)) {
+            resultUserIdList = workspaceUserPermissionRepository.getUserIdsByInUserListAndEqRole(resultUserIdList, roleFilter, workspaceId);
+        }
 
-        //4. 권한 필터링, 정렬 : filter값이 권한값인 경우, search된 유저 목록 중에서 권한에 일치한 유저만 검색한다.
-        Page<WorkspaceUserPermission> workspaceUserPermissionPage = workspaceUserPermissionRepository.getWorkspaceUserPermissionByInUserListAndEqRole(searchedUserIds, filter, newPageable, workspaceId);
+        //3-4. 유저 타입으로 필터링
+        if (StringUtils.hasText(userTypeFilter)) {
 
-        //5. 결과가 없는 경우에는 빠른 리턴
-        if (workspaceUserPermissionPage.isEmpty()) {
+        }
+
+        //3-5. 라이선스 플랜으로 필터링
+        if (StringUtils.hasText(planFilter)) {
+            resultUserIdList = filterUserIdListByPlan(workspaceId, resultUserIdList, planFilter);
+        }
+
+        //4. 결과가 없는 경우에는 빠른 리턴
+        if (resultUserIdList.isEmpty()) {
             PageMetadataRestResponse pageMetadataResponse = new PageMetadataRestResponse();
             pageMetadataResponse.setCurrentPage(pageRequest.of().getPageNumber() + 1);
             pageMetadataResponse.setCurrentSize(pageRequest.of().getPageSize());
             return new WorkspaceUserInfoListResponse(new ArrayList<>(), pageMetadataResponse);
         }
 
-        //6. 응답 : user 서버, license 서버에서 유저 정보 긁어온다.
+        //5. 최종적으로 필터링된 유저들을 페이징한다.
+        Page<WorkspaceUserPermission> workspaceUserPermissionPage = workspaceUserPermissionRepository.getWorkspaceUserListByInUserList(resultUserIdList, newPageable, workspaceId);
+
+        //6. 응답
         List<WorkspaceUserInfoResponse> workspaceUserInfoResponseList = new ArrayList<>();
-        for (
-                WorkspaceUserPermission workspaceUserPermission : workspaceUserPermissionPage) {
-            UserInfoRestResponse userInfoResponse = userInfoListRestResponse.getUserInfoList().stream()
-                    .filter(userInfoRestResponse -> userInfoRestResponse.getUuid().equals(workspaceUserPermission.getWorkspaceUser().getUserId())).findFirst().orElse(new UserInfoRestResponse());
+        for (WorkspaceUserPermission workspaceUserPermission : workspaceUserPermissionPage) {
+            UserInfoRestResponse userInfoResponse = getUserInfoByUserId(workspaceUserPermission.getWorkspaceUser().getUserId());
             WorkspaceUserInfoResponse workspaceUserInfoResponse = restMapStruct.userInfoRestResponseToWorkspaceUserInfoResponse(userInfoResponse);
             workspaceUserInfoResponse.setRole(workspaceUserPermission.getWorkspaceRole().getRole());
             workspaceUserInfoResponse.setJoinDate(workspaceUserPermission.getWorkspaceUser().getCreatedDate());
             workspaceUserInfoResponse.setRoleId(workspaceUserPermission.getWorkspaceRole().getId());
-            String[] userLicenseProducts = licenseProducts.get(workspaceUserPermission.getWorkspaceUser().getUserId()) == null ? new String[0] :
-                    licenseProducts.get(workspaceUserPermission.getWorkspaceUser().getUserId()).stream().map(MyLicenseInfoResponse::getProductName).toArray(String[]::new);
+            MyLicenseInfoListResponse myLicenseInfoListResponse = getMyLicenseInfoRequestHandler(workspaceId, workspaceUserPermission.getWorkspaceUser().getUserId());
+            String[] userLicenseProducts = myLicenseInfoListResponse.getLicenseInfoList().isEmpty() ? new String[0]
+                    : myLicenseInfoListResponse.getLicenseInfoList().stream().map(MyLicenseInfoResponse::getProductName).toArray(String[]::new);
             workspaceUserInfoResponse.setLicenseProducts(userLicenseProducts);
             workspaceUserInfoResponseList.add(workspaceUserInfoResponse);
         }
@@ -157,6 +159,36 @@ public abstract class WorkspaceUserService {
             resultMemberListResponse = getSortedMemberList(pageRequest, workspaceUserInfoResponseList);
         }
         return new WorkspaceUserInfoListResponse(resultMemberListResponse, pageMetadataResponse);
+    }
+
+
+    private List<String> filterUserIdListByPlan(String workspaceId, List<String> userIdList, String planFilter) {
+        List<String> filterdUserIdList = new ArrayList<>();
+        for (String userId : userIdList) {
+            MyLicenseInfoListResponse myLicenseInfoListResponse = getMyLicenseInfoRequestHandler(workspaceId, userId);
+            List<MyLicenseInfoResponse> myLicenseInfoList = myLicenseInfoListResponse.getLicenseInfoList();
+            if (!CollectionUtils.isEmpty(myLicenseInfoList)) {
+                if (myLicenseInfoListResponse.getLicenseInfoList().stream().anyMatch(myLicenseInfoResponse -> planFilter.toUpperCase().contains(myLicenseInfoResponse.getProductName().toUpperCase()))) {
+                    filterdUserIdList.add(userId);
+                }
+            }
+        }
+        return filterdUserIdList;
+    }
+
+    private Pageable getPageable(com.virnect.workspace.global.common.PageRequest pageRequest) {
+        //정렬을 빼고 Pageable 객체를 만든다.
+        Pageable pageable = PageRequest.of(pageRequest.of().getPageNumber(), pageRequest.of().getPageSize());
+        //정렬요청이 없는 경우에는 worksapceUser.updateDate,desc을 기본값으로 정렬하는 것으로 Pageable 객체를 수정한다.
+        if (pageRequest.getSortName().equals("updatedDate")) {
+            pageRequest.setSort("workspaceUser.updatedDate,desc");
+            pageable = pageRequest.of();
+        }
+        //워크스페이스에서 정렬이 가능한 경우에는 Pageable 객체를 수정한다.
+        if (pageRequest.getSortName().equalsIgnoreCase("role") || pageRequest.getSortName().equalsIgnoreCase(("joinDate"))) {
+            pageable = pageRequest.of();
+        }
+        return pageable;
     }
 
     /**
@@ -369,7 +401,8 @@ public abstract class WorkspaceUserService {
         return new ApiResponse<>(true);
     }
 
-    private List<String> getAddedProductList(boolean requestRemote, boolean requestMake, boolean requestView, List<String> userHaveProductList) {
+    private List<String> getAddedProductList(boolean requestRemote, boolean requestMake, boolean requestView, List<
+            String> userHaveProductList) {
         List<String> addedProductList = new ArrayList<>();
         if (requestRemote && !userHaveProductList.contains("REMOTE")) {
             addedProductList.add("REMOTE");
@@ -384,7 +417,8 @@ public abstract class WorkspaceUserService {
         return addedProductList;
     }
 
-    private List<String> getRemovedProductList(boolean requestRemote, boolean requestMake, boolean requestView, List<String> userHaveProductList) {
+    private List<String> getRemovedProductList(boolean requestRemote, boolean requestMake,
+                                               boolean requestView, List<String> userHaveProductList) {
         List<String> removedProductList = new ArrayList<>();
         if (!requestRemote && userHaveProductList.contains("REMOTE")) {
             removedProductList.add("REMOTE");
@@ -405,7 +439,8 @@ public abstract class WorkspaceUserService {
      * @param updateUserPermission  - 변경 대상 유저 역할
      * @param workspaceId           - 워크스페이스 식별자
      */
-    private void checkUserLicenseUpdatePermission(WorkspaceUserPermission requestUserPermission, WorkspaceUserPermission updateUserPermission, String workspaceId) {
+    private void checkUserLicenseUpdatePermission(WorkspaceUserPermission
+                                                          requestUserPermission, WorkspaceUserPermission updateUserPermission, String workspaceId) {
         /**
          * 요청 : 마스터, 대상 : 마스터 (o)
          * 요청 : 마스터, 대상 : 매니저 (o)
@@ -460,7 +495,8 @@ public abstract class WorkspaceUserService {
      * @param updateUserPermission  - 역할 변경 대상 유저의 현재 역할
      * @param workspaceId           - 해당 워크스페이스 식별자
      */
-    private void checkUserRoleUpdatePermission(WorkspaceUserPermission requestUserPermission, WorkspaceUserPermission updateUserPermission, String workspaceId) {
+    private void checkUserRoleUpdatePermission(WorkspaceUserPermission
+                                                       requestUserPermission, WorkspaceUserPermission updateUserPermission, String workspaceId) {
         /**
          * 요청 : 마스터, 대상 : 마스터 (x)
          * 요청 : 마스터, 대상 : 매니저 (o)
@@ -681,7 +717,8 @@ public abstract class WorkspaceUserService {
     }
 
     @Profile("!onpremise")
-    public abstract ApiResponse<Boolean> inviteWorkspace(String workspaceId, WorkspaceInviteRequest workspaceInviteRequest, Locale locale);
+    public abstract ApiResponse<Boolean> inviteWorkspace(String workspaceId, WorkspaceInviteRequest
+            workspaceInviteRequest, Locale locale);
 
     @Profile("!onpremise")
     public abstract RedirectView inviteWorkspaceAccept(String sessionCode, String lang) throws IOException;
@@ -786,7 +823,8 @@ public abstract class WorkspaceUserService {
         return new WorkspaceUserLicenseListResponse(customPageResponse.getAfterPagingList(), customPageResponse.getPageMetadataResponse());
     }
 
-    private Function<WorkspaceUserLicenseInfoResponse, String> getWorkspaceUserLicenseInfoResponseSortKey(String sortName) {
+    private Function<WorkspaceUserLicenseInfoResponse, String> getWorkspaceUserLicenseInfoResponseSortKey(String
+                                                                                                                  sortName) {
         if (sortName.equalsIgnoreCase("plan")) {
             return WorkspaceUserLicenseInfoResponse::getProductName;
         }
@@ -808,15 +846,18 @@ public abstract class WorkspaceUserService {
 
     @Profile("onpremise")
     @Transactional
-    public abstract WorkspaceMemberInfoListResponse createWorkspaceMemberAccount(String workspaceId, MemberAccountCreateRequest memberAccountCreateRequest);
+    public abstract WorkspaceMemberInfoListResponse createWorkspaceMemberAccount(String
+                                                                                         workspaceId, MemberAccountCreateRequest memberAccountCreateRequest);
 
     @Profile("onpremise")
     @Transactional
-    public abstract boolean deleteWorkspaceMemberAccount(String workspaceId, MemberAccountDeleteRequest memberAccountDeleteRequest);
+    public abstract boolean deleteWorkspaceMemberAccount(String workspaceId, MemberAccountDeleteRequest
+            memberAccountDeleteRequest);
 
     @Profile("onpremise")
     @Transactional
-    public abstract WorkspaceMemberPasswordChangeResponse memberPasswordChange(WorkspaceMemberPasswordChangeRequest passwordChangeRequest, String workspaceId);
+    public abstract WorkspaceMemberPasswordChangeResponse memberPasswordChange(WorkspaceMemberPasswordChangeRequest
+                                                                                       passwordChangeRequest, String workspaceId);
 
     /**
      * 워크스페이스 시트 계정 생성
@@ -826,7 +867,8 @@ public abstract class WorkspaceUserService {
      * @return - 생성된 시트 계정 목록
      */
     @Transactional
-    public WorkspaceMemberInfoListResponse createWorkspaceMemberSeat(String workspaceId, MemberSeatCreateRequest memberSeatCreateRequest) {
+    public WorkspaceMemberInfoListResponse createWorkspaceMemberSeat(String workspaceId, MemberSeatCreateRequest
+            memberSeatCreateRequest) {
         //1-1. 요청한 사람의 권한 체크
         Workspace workspace = workspaceRepository.findByUuid(workspaceId).orElseThrow(() -> new WorkspaceException(ErrorCode.ERR_WORKSPACE_NOT_FOUND));
         checkSeatMemberManagementPermission(workspace, memberSeatCreateRequest.getUserId());
@@ -901,7 +943,8 @@ public abstract class WorkspaceUserService {
      * @param memberSeatCreateRequest          - 시트 계정 생성 요청 정보
      * @param workspaceLicensePlanInfoResponse - 워크스페이스 라이선스 정보
      */
-    private void checkSeatMemberCreateLicense(MemberSeatCreateRequest memberSeatCreateRequest, WorkspaceLicensePlanInfoResponse workspaceLicensePlanInfoResponse) {
+    private void checkSeatMemberCreateLicense(MemberSeatCreateRequest
+                                                      memberSeatCreateRequest, WorkspaceLicensePlanInfoResponse workspaceLicensePlanInfoResponse) {
         Optional<Integer> optionalRemote = workspaceLicensePlanInfoResponse.getLicenseProductInfoList().stream().filter(licenseProductInfoResponse -> licenseProductInfoResponse.getProductName().equals("REMOTE")).map(WorkspaceLicensePlanInfoResponse.LicenseProductInfoResponse::getUnUseLicenseAmount).findFirst();
         Optional<Integer> optionalView = workspaceLicensePlanInfoResponse.getLicenseProductInfoList().stream().filter(licenseProductInfoResponse -> licenseProductInfoResponse.getProductName().equals("VIEW")).map(WorkspaceLicensePlanInfoResponse.LicenseProductInfoResponse::getUnUseLicenseAmount).findFirst();
         if (memberSeatCreateRequest.getPlanRemoteAndView() > 0) {
@@ -969,7 +1012,8 @@ public abstract class WorkspaceUserService {
      * @param requestUserAmount                - 참여 요청 유저 수
      * @param workspaceLicensePlanInfoResponse - 워크스페이스 라이선스 정보
      */
-    void checkWorkspaceMaxUserAmount(String workspaceId, int requestUserAmount, WorkspaceLicensePlanInfoResponse workspaceLicensePlanInfoResponse) {
+    void checkWorkspaceMaxUserAmount(String workspaceId, int requestUserAmount, WorkspaceLicensePlanInfoResponse
+            workspaceLicensePlanInfoResponse) {
         //마스터포함 워크스페이스 전체 유저 수 조회
         long workspaceUserAmount = workspaceUserRepository.countByWorkspace_Uuid(workspaceId);
 
@@ -995,7 +1039,8 @@ public abstract class WorkspaceUserService {
      * @param memberSeatDeleteRequest - 삭제 대상 유저 및 삭제 요청 유저 정보
      * @return - 삭제 결과
      */
-    public MemberSeatDeleteResponse deleteWorkspaceMemberSeat(String workspaceId, MemberSeatDeleteRequest memberSeatDeleteRequest) {
+    public MemberSeatDeleteResponse deleteWorkspaceMemberSeat(String workspaceId, MemberSeatDeleteRequest
+            memberSeatDeleteRequest) {
         //1-1. 요청한 사람의 권한 체크
         Workspace workspace = workspaceRepository.findByUuid(workspaceId).orElseThrow(() -> new WorkspaceException(ErrorCode.ERR_WORKSPACE_NOT_FOUND));
         checkSeatMemberManagementPermission(workspace, memberSeatDeleteRequest.getUserId());
