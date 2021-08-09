@@ -109,7 +109,7 @@ public abstract class WorkspaceUserService {
             }
         }
         //3-3. 워크스페이스 역할로 필터링
-        if (!roleFilter.isEmpty()) {
+        if (!CollectionUtils.isEmpty(roleFilter)) {
             resultUserIdList = workspaceUserPermissionRepository.getUserIdsByInUserListAndEqRole(resultUserIdList, roleFilter, workspaceId);
         }
 
