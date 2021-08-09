@@ -47,6 +47,10 @@ public abstract class UserInfoMapper {
 	@Mapping(target = "enabled", constant = "true")
 	public abstract UserInfoResponse toUserInfoResponse(SecessionUser secessionUser);
 
+	@BeanMapping(
+		nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE,
+		nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS
+	)
 	@Mapping(target = "user.id", ignore = true)
 	@Mapping(target = "user.uuid", ignore = true)
 	@Mapping(target = "user.serviceInfo", ignore = true)
