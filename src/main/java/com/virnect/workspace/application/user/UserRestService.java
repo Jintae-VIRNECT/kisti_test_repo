@@ -16,7 +16,7 @@ import java.util.List;
  * EMAIL: practice1356@gmail.com
  * DESCRIPTION:
  */
-@FeignClient(name = "user-server", fallbackFactory = UserRestFallbackFactory.class, configuration = FeignConfiguration.class)
+@FeignClient(name = "account-server", fallbackFactory = UserRestFallbackFactory.class, configuration = FeignConfiguration.class)
 public interface UserRestService {
 	/**
 	 * 유저 정보 조회
