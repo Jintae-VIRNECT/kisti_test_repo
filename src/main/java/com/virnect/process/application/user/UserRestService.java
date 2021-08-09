@@ -22,7 +22,7 @@ import com.virnect.process.global.config.FeignConfiguration;
  * DESCRIPTION: User Server Rest Client Service
  */
 
-@FeignClient(name = "user-server", configuration = FeignConfiguration.class)
+@FeignClient(name = "account-server", configuration = FeignConfiguration.class)
 public interface UserRestService {
 
 	@GetMapping("/users/{userUUID}")
