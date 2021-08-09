@@ -1,5 +1,6 @@
 package com.virnect.workspace.dto.request;
 
+import com.virnect.workspace.domain.workspace.Role;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
 import lombok.Setter;
@@ -24,7 +25,7 @@ public class MemberUpdateRequest {
     private String userId;
     @ApiModelProperty(value = "권한 변경 대상 uuid", required = true, example = "MANAGER")
     @NotNull
-    private String role;
+    private Role role;
     @ApiModelProperty(value = "유저의 리모트 플랜 사용 여부", required = true)
     @NotNull
     private Boolean licenseRemote;

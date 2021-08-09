@@ -9,6 +9,7 @@ import com.virnect.workspace.dao.workspace.WorkspaceRepository;
 import com.virnect.workspace.dao.workspace.WorkspaceUserPermissionRepository;
 import com.virnect.workspace.dao.workspace.WorkspaceUserRepository;
 import com.virnect.workspace.domain.setting.*;
+import com.virnect.workspace.domain.workspace.Role;
 import com.virnect.workspace.domain.workspace.Workspace;
 import com.virnect.workspace.domain.workspace.WorkspaceUser;
 import com.virnect.workspace.domain.workspace.WorkspaceUserPermission;
@@ -30,7 +31,6 @@ import com.virnect.workspace.global.common.mapper.rest.RestMapStruct;
 import com.virnect.workspace.global.common.mapper.workspace.WorkspaceMapStruct;
 import com.virnect.workspace.global.constant.LicenseProduct;
 import com.virnect.workspace.global.constant.Mail;
-import com.virnect.workspace.global.constant.Role;
 import com.virnect.workspace.global.error.ErrorCode;
 import com.virnect.workspace.infra.file.FileService;
 import lombok.RequiredArgsConstructor;
@@ -148,9 +148,9 @@ public abstract class WorkspaceService {
 
 
         //role 정보 set
-        long masterUserCount = workspaceUserPermissionList.stream().filter(workspaceUserPermission -> workspaceUserPermission.getWorkspaceRole().getRole().equals(Role.MASTER.name())).count();
-        long managerUserCount = workspaceUserPermissionList.stream().filter(workspaceUserPermission -> workspaceUserPermission.getWorkspaceRole().getRole().equals(Role.MANAGER.name())).count();
-        long memberUserCount = workspaceUserPermissionList.stream().filter(workspaceUserPermission -> workspaceUserPermission.getWorkspaceRole().getRole().equals(Role.MEMBER.name())).count();
+        long masterUserCount = workspaceUserPermissionList.stream().filter(workspaceUserPermission -> workspaceUserPermission.getWorkspaceRole().getRole() == Role.MASTER).count();
+        long managerUserCount = workspaceUserPermissionList.stream().filter(workspaceUserPermission -> workspaceUserPermission.getWorkspaceRole().getRole() == (Role.MANAGER)).count();
+        long memberUserCount = workspaceUserPermissionList.stream().filter(workspaceUserPermission -> workspaceUserPermission.getWorkspaceRole().getRole() == (Role.MEMBER)).count();
 
         //plan 정보 set
         int remotePlanCount = 0, makePlanCount = 0, viewPlanCount = 0;

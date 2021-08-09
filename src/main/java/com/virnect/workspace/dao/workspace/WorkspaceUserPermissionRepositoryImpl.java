@@ -4,6 +4,7 @@ import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.JPQLQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.virnect.workspace.domain.workspace.QWorkspaceUserPermission;
+import com.virnect.workspace.domain.workspace.Role;
 import com.virnect.workspace.domain.workspace.WorkspaceUser;
 import com.virnect.workspace.domain.workspace.WorkspaceUserPermission;
 import org.springframework.data.domain.Page;
@@ -35,21 +36,6 @@ public class WorkspaceUserPermissionRepositoryImpl extends QuerydslRepositorySup
     public long deleteAllWorkspaceUserPermissionByWorkspaceUser(List<WorkspaceUser> workspaceUserList) {
         QWorkspaceUserPermission qWorkspaceUserPermission = QWorkspaceUserPermission.workspaceUserPermission;
         return jpaQueryFactory.delete(qWorkspaceUserPermission).where(qWorkspaceUserPermission.workspaceUser.in(workspaceUserList)).execute();
-    }
-
-    @Override
-    public Page<WorkspaceUserPermission> getRoleFilteredUserList(List<WorkspaceUserPermission> workspaceUserPermissionList, List<String> roleList, Pageable pageable, String workspaceId) {
-        QWorkspaceUserPermission qWorkspaceUserPermission = QWorkspaceUserPermission.workspaceUserPermission;
-        JPQLQuery<WorkspaceUserPermission> query = jpaQueryFactory
-                .select(qWorkspaceUserPermission)
-                .from(qWorkspaceUserPermission)
-                .where(qWorkspaceUserPermission.workspaceUser.workspace.uuid.eq(workspaceId).and(qWorkspaceUserPermission.workspaceRole.role.in(roleList))
-                        .and(qWorkspaceUserPermission.in(workspaceUserPermissionList)))
-                .fetchAll();
-
-        List<WorkspaceUserPermission> result = getQuerydsl().applyPagination(pageable, query).fetch();
-
-        return new PageImpl<>(result, pageable, query.fetchCount());
     }
 
     @Override
@@ -105,18 +91,14 @@ public class WorkspaceUserPermissionRepositoryImpl extends QuerydslRepositorySup
         return Optional.ofNullable(query.fetchOne());
     }
 
-    private BooleanExpression eqFilter(String filter) {
-        String[] roleList = filter.toUpperCase().split(",").length == 0 ? new String[]{filter.toUpperCase()} : filter.toUpperCase().split(",");
-        return QWorkspaceUserPermission.workspaceUserPermission.workspaceRole.role.in(roleList);
-    }
-
     @Override
-    public List<String> getUserIdsByInUserListAndEqRole(List<String> userIdList, String filter, String workspaceId) {
+    public List<String> getUserIdsByInUserListAndEqRole(List<String> userIdList, List<Role> roleList, String workspaceId) {
         QWorkspaceUserPermission qWorkspaceUserPermission = QWorkspaceUserPermission.workspaceUserPermission;
         JPQLQuery<String> query = jpaQueryFactory
                 .select(qWorkspaceUserPermission.workspaceUser.userId)
                 .from(qWorkspaceUserPermission)
-                .where(qWorkspaceUserPermission.workspaceUser.workspace.uuid.eq(workspaceId), inUserIdList(userIdList), eqFilter(filter))
+                .where(qWorkspaceUserPermission.workspaceUser.workspace.uuid.eq(workspaceId), inUserIdList(userIdList),
+                        qWorkspaceUserPermission.workspaceRole.role.in(roleList))
                 .fetchAll();
         return query.fetch();
     }

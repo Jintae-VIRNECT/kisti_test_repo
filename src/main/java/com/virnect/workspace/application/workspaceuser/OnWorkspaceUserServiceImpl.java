@@ -266,14 +266,14 @@ public class OnWorkspaceUserServiceImpl extends WorkspaceUserService {
      * @param userInfoList  - 초대 대상 유저 역할 리스트
      */
     private void checkWorkspaceInvitePermission(String workspaceId, String requestUserId, List<WorkspaceInviteRequest.UserInfo> userInfoList) {
-        List<String> invitedUserRoleList = userInfoList.stream().map(WorkspaceInviteRequest.UserInfo::getRole).collect(Collectors.toList());
+        List<Role> invitedUserRoleList = userInfoList.stream().map(WorkspaceInviteRequest.UserInfo::getRole).collect(Collectors.toList());
         WorkspaceUserPermission requestUserPermission = workspaceUserPermissionRepository.findWorkspaceUser(workspaceId, requestUserId).orElseThrow(() -> new WorkspaceException(ErrorCode.ERR_WORKSPACE_INVALID_PERMISSION));
 
         //초대 권한이 설정 정보에 따라 변경됨.
         Optional<WorkspaceCustomSetting> workspaceCustomSettingOptional = workspaceCustomSettingRepository.findByWorkspace_UuidAndSetting_Name(workspaceId, SettingName.PUBLIC_USER_MANAGEMENT_ROLE_SETTING);
         if (!workspaceCustomSettingOptional.isPresent() || workspaceCustomSettingOptional.get().getValue() == SettingValue.UNUSED || workspaceCustomSettingOptional.get().getValue() == SettingValue.MASTER_OR_MANAGER) {
             // 초대한 사람이 마스터 또는 매니저여야 한다.
-            if (!requestUserPermission.getWorkspaceRole().getRole().matches("MASTER|MANAGER")) {
+            if (requestUserPermission.getWorkspaceRole().getRole() != Role.MASTER && requestUserPermission.getWorkspaceRole().getRole() != Role.MANAGER) {
                 throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_INVALID_PERMISSION);
             }
             // 매니저 유저는 매니저 유저를 초대할 수 없다.
@@ -288,9 +288,11 @@ public class OnWorkspaceUserServiceImpl extends WorkspaceUserService {
                 throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_INVALID_PERMISSION);
             }
             //멤버유저도 초대할 수 있다. 단 상위 유저는 초대할 수 없다.
-            if (workspaceCustomSetting.getValue() == SettingValue.MASTER_OR_MANAGER_OR_MEMBER
-                    && requestUserPermission.getWorkspaceRole().getRole().matches("MANAGER|MEMBER") && invitedUserRoleList.stream().anyMatch(s -> s.equals("MANAGER"))) {
-                throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_INVALID_PERMISSION);
+            //TODO workspace setting 추가 될때 상위 유저 확인해서 block
+            if (workspaceCustomSetting.getValue() == SettingValue.MASTER_OR_MANAGER_OR_MEMBER) {
+                if (requestUserPermission.getWorkspaceRole().getRole() != Role.MASTER && requestUserPermission.getWorkspaceRole().getRole() != Role.MANAGER && requestUserPermission.getWorkspaceRole().getRole() != Role.MEMBER) {
+                    throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_INVALID_PERMISSION);
+                }
             }
         }
     }
@@ -413,7 +415,7 @@ public class OnWorkspaceUserServiceImpl extends WorkspaceUserService {
         workspaceUserRepository.save(workspaceUser);
 
         //워크스페이스 권한 부여하기 (workspace_user_permission)
-        WorkspaceRole workspaceRole = workspaceRoleRepository.findByRole(userInvite.getRole().toUpperCase()).orElseThrow(() -> new WorkspaceException(ErrorCode.ERR_UNEXPECTED_SERVER_ERROR));
+        WorkspaceRole workspaceRole = workspaceRoleRepository.findByRole(userInvite.getRole()).orElseThrow(() -> new WorkspaceException(ErrorCode.ERR_UNEXPECTED_SERVER_ERROR));
         WorkspacePermission workspacePermission = workspacePermissionRepository.findById(Permission.ALL.getValue()).orElseThrow(() -> new WorkspaceException(ErrorCode.ERR_UNEXPECTED_SERVER_ERROR));
         WorkspaceUserPermission newWorkspaceUserPermission = WorkspaceUserPermission.builder()
                 .workspaceUser(workspaceUser)
@@ -432,7 +434,7 @@ public class OnWorkspaceUserServiceImpl extends WorkspaceUserService {
         WorkspaceInviteProcess workspaceInviteAcceptProcess = WorkspaceInviteProcess.builder()
                 .applicationEventPublisher(applicationEventPublisher)
                 .historyAddEvent(new HistoryAddEvent(message, userInvite.getInvitedUserId(), workspace))
-                .mailSendEvent(new MailSendEvent(mailContextHandler.getWorkspaceInviteAcceptContext(workspace.getName(), masterUserInfo, inviteUserInfo, userInvite.getRole(), userInvite.isPlanRemote(), userInvite.isPlanMake(), userInvite.isPlanView()),
+                .mailSendEvent(new MailSendEvent(mailContextHandler.getWorkspaceInviteAcceptContext(workspace.getName(), masterUserInfo, inviteUserInfo, userInvite.getRole().toString(), userInvite.isPlanRemote(), userInvite.isPlanMake(), userInvite.isPlanView()),
                         Mail.WORKSPACE_INVITE_ACCEPT,
                         locale,
                         getMasterAndManagerEmail(workspace, masterUserInfo)
@@ -450,7 +452,8 @@ public class OnWorkspaceUserServiceImpl extends WorkspaceUserService {
         return redirectView;
     }
 
-    private List<String> executeGrantWorkspaceLicenseToUser(String workspaceId, String inviteUserId, List<String> requestPlanList) {
+    private List<String> executeGrantWorkspaceLicenseToUser(String workspaceId, String
+            inviteUserId, List<String> requestPlanList) {
         List<String> failPlanList = new ArrayList<>();
         requestPlanList.forEach(requestPlan -> {
             try {
@@ -506,17 +509,20 @@ public class OnWorkspaceUserServiceImpl extends WorkspaceUserService {
 
 
     @Override
-    public WorkspaceMemberInfoListResponse createWorkspaceMemberAccount(String workspaceId, MemberAccountCreateRequest memberAccountCreateRequest) {
+    public WorkspaceMemberInfoListResponse createWorkspaceMemberAccount(String
+                                                                                workspaceId, MemberAccountCreateRequest memberAccountCreateRequest) {
         return null;
     }
 
     @Override
-    public boolean deleteWorkspaceMemberAccount(String workspaceId, MemberAccountDeleteRequest memberAccountDeleteRequest) {
+    public boolean deleteWorkspaceMemberAccount(String workspaceId, MemberAccountDeleteRequest
+            memberAccountDeleteRequest) {
         return false;
     }
 
     @Override
-    public WorkspaceMemberPasswordChangeResponse memberPasswordChange(WorkspaceMemberPasswordChangeRequest passwordChangeRequest, String workspaceId) {
+    public WorkspaceMemberPasswordChangeResponse memberPasswordChange(WorkspaceMemberPasswordChangeRequest
+                                                                              passwordChangeRequest, String workspaceId) {
         return null;
     }
 

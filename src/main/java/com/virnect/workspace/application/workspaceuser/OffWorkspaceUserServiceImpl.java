@@ -82,25 +82,32 @@ public class OffWorkspaceUserServiceImpl extends WorkspaceUserService {
         WorkspaceUserPermission requestUserPermission = workspaceUserPermissionRepository.findByWorkspaceUser_WorkspaceAndWorkspaceUser_UserId(workspace, memberAccountCreateRequest.getUserId()).orElseThrow(() -> new WorkspaceException(ErrorCode.ERR_WORKSPACE_USER_NOT_FOUND));
         Optional<WorkspaceCustomSetting> workspaceCustomSettingOptional = workspaceCustomSettingRepository.findByWorkspace_UuidAndSetting_Name(workspaceId, SettingName.PRIVATE_USER_MANAGEMENT_ROLE_SETTING);
         memberAccountCreateRequest.getMemberAccountCreateRequest().forEach(memberAccountCreateInfo -> {
-            if (workspaceCustomSettingOptional.isPresent()) {
-                if (workspaceCustomSettingOptional.get().getValue() == SettingValue.UNUSED || workspaceCustomSettingOptional.get().getValue() == SettingValue.MASTER_OR_MANAGER) {
-                    if (!checkWorkspaceRole(SettingValue.MASTER_OR_MANAGER, requestUserPermission.getWorkspaceRole().getRole(), memberAccountCreateInfo.getRole())) {
-                        throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_INVALID_PERMISSION);
-                    }
-                }
-                if (workspaceCustomSettingOptional.get().getValue() == SettingValue.MASTER) {
-                    if (!checkWorkspaceRole(SettingValue.MASTER, requestUserPermission.getWorkspaceRole().getRole(), memberAccountCreateInfo.getRole())) {
-                        throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_INVALID_PERMISSION);
-                    }
-                }
-                if (workspaceCustomSettingOptional.get().getValue() == SettingValue.MASTER_OR_MANAGER_OR_MEMBER) {
-                    if (!checkWorkspaceRole(SettingValue.MASTER_OR_MANAGER_OR_MEMBER, requestUserPermission.getWorkspaceRole().getRole(), memberAccountCreateInfo.getRole())) {
-                        throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_INVALID_PERMISSION);
-                    }
-                }
-            } else {
-                if (!checkWorkspaceRole(SettingValue.MASTER_OR_MANAGER, requestUserPermission.getWorkspaceRole().getRole(), memberAccountCreateInfo.getRole())) {
+            WorkspaceRole requestUserRole = requestUserPermission.getWorkspaceRole();
+            WorkspaceRole createUserRole = workspaceRoleRepository.findByRole(memberAccountCreateInfo.getRole()).orElseThrow(() -> new WorkspaceException(ErrorCode.ERR_WORKSPACE_ROLE_NOT_FOUND));
+
+            if (!workspaceCustomSettingOptional.isPresent() || workspaceCustomSettingOptional.get().getValue() == SettingValue.UNUSED || workspaceCustomSettingOptional.get().getValue() == SettingValue.MASTER_OR_MANAGER) {
+                //상위 유저에 대해서는 계정을 생성 할 수 없음.
+                if (requestUserRole.getId() > createUserRole.getId()) {
                     throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_INVALID_PERMISSION);
+                }
+
+                //마스터 또는 매니저 유저만 계정을 생성할 수 있음.
+                if (requestUserRole.getRole() != Role.MASTER && requestUserRole.getRole() != Role.MANAGER) {
+                    throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_INVALID_PERMISSION);
+                }
+            }
+            if (workspaceCustomSettingOptional.isPresent()) {
+                //마스터 유저만 계정을 생성할 수 있음.
+                if (workspaceCustomSettingOptional.get().getValue() == SettingValue.MASTER) {
+                    if (requestUserRole.getRole() != Role.MASTER) {
+                        throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_INVALID_PERMISSION);
+                    }
+                }
+                //마스터 또는 매니저 또는 멤버 유저만 계정을 생성할 수 있음.
+                if (workspaceCustomSettingOptional.get().getValue() == SettingValue.MASTER_OR_MANAGER_OR_MEMBER) {
+                    if (requestUserRole.getRole() != Role.MASTER && requestUserRole.getRole() != Role.MANAGER && requestUserRole.getRole() != Role.MEMBER) {
+                        throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_INVALID_PERMISSION);
+                    }
                 }
             }
         });
@@ -207,7 +214,7 @@ public class OffWorkspaceUserServiceImpl extends WorkspaceUserService {
                     .userId(userInfoRestResponse.getUuid())
                     .workspace(workspace)
                     .build();
-            WorkspaceRole workspaceRole = workspaceRoleRepository.findByRole(memberAccountCreateInfo.getRole().toUpperCase()).orElseThrow(() -> new WorkspaceException(ErrorCode.ERR_WORKSPACE_ROLE_NOT_FOUND));
+            WorkspaceRole workspaceRole = workspaceRoleRepository.findByRole(memberAccountCreateInfo.getRole()).orElseThrow(() -> new WorkspaceException(ErrorCode.ERR_WORKSPACE_ROLE_NOT_FOUND));
             WorkspacePermission workspacePermission = workspacePermissionRepository.findById(Permission.ALL.getValue()).orElseThrow(() -> new WorkspaceException(ErrorCode.ERR_WORKSPACE_PERMISSION_NOT_FOUND));
             WorkspaceUserPermission newWorkspaceUserPermission = WorkspaceUserPermission.builder()
                     .workspaceUser(newWorkspaceUser)
@@ -238,7 +245,7 @@ public class OffWorkspaceUserServiceImpl extends WorkspaceUserService {
     /*
     하위유저는 상위유저 또는 동급유저에 대한 권한이 없으므로 이에 대해 체크한다.
     단 멤버유저의 경우 동급유저(멤버)에 대한 권한을 허용한다.
-     */
+     *//*
     private boolean checkWorkspaceRole(SettingValue settingValue, String requestUserRole, String responseUserRole) {
         log.info("[WORKSPACE ROLE CHECK] setting value : [{}], request user role : [{}] , response user role : [{}]", settingValue, requestUserRole, responseUserRole);
         //요청자가 마스터 -> 대상자는 매니저, 멤버
@@ -277,7 +284,7 @@ public class OffWorkspaceUserServiceImpl extends WorkspaceUserService {
         }
         return true;
     }
-
+*/
     @Override
     @Transactional
     public boolean deleteWorkspaceMemberAccount(

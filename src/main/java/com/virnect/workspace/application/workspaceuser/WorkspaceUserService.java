@@ -79,12 +79,13 @@ public abstract class WorkspaceUserService {
      * @param workspaceId - 조회 대상 워크스페이스 식별자
      * @param search      - 검색 필터링
      * @param filter      - 조건 필터링
+     * @param roleFilter
      * @param pageRequest - 페이징 정보
      * @return - 워크스페이스 소속 멤버 목록
      */
 
     public WorkspaceUserInfoListResponse getMembers(
-            String workspaceId, String search, String filter, String roleFilter, String userTypeFilter, String planFilter, com.virnect.workspace.global.common.PageRequest pageRequest
+            String workspaceId, String search, String filter, List<Role> roleFilter, String userTypeFilter, String planFilter, com.virnect.workspace.global.common.PageRequest pageRequest
     ) {
         //1. 정렬 검증으로 Pageable 재정의
         Pageable newPageable = getPageable(pageRequest);
@@ -104,11 +105,11 @@ public abstract class WorkspaceUserService {
             }
             //3-2. 워크스페이스 역할로 필터링
             else if (filter.matches(ANY_WORKSPACE_ROLE) && !resultUserIdList.isEmpty()) {
-                resultUserIdList = workspaceUserPermissionRepository.getUserIdsByInUserListAndEqRole(resultUserIdList, filter, workspaceId);
+                resultUserIdList = workspaceUserPermissionRepository.getUserIdsByInUserListAndEqRole(resultUserIdList, roleFilter, workspaceId);
             }
         }
         //3-3. 워크스페이스 역할로 필터링
-        if (StringUtils.hasText(roleFilter)) {
+        if (!roleFilter.isEmpty()) {
             resultUserIdList = workspaceUserPermissionRepository.getUserIdsByInUserListAndEqRole(resultUserIdList, roleFilter, workspaceId);
         }
 
@@ -137,6 +138,9 @@ public abstract class WorkspaceUserService {
         List<WorkspaceUserInfoResponse> workspaceUserInfoResponseList = new ArrayList<>();
         for (WorkspaceUserPermission workspaceUserPermission : workspaceUserPermissionPage) {
             UserInfoRestResponse userInfoResponse = getUserInfoByUserId(workspaceUserPermission.getWorkspaceUser().getUserId());
+            if (!StringUtils.hasText(userInfoResponse.getUuid())) {
+                continue;
+            }
             WorkspaceUserInfoResponse workspaceUserInfoResponse = restMapStruct.userInfoRestResponseToWorkspaceUserInfoResponse(userInfoResponse);
             workspaceUserInfoResponse.setRole(workspaceUserPermission.getWorkspaceRole().getRole());
             workspaceUserInfoResponse.setJoinDate(workspaceUserPermission.getWorkspaceUser().getCreatedDate());
@@ -348,7 +352,7 @@ public abstract class WorkspaceUserService {
             workspaceUserPermissionRepository.save(updateUserPermission);
 
             //2-3. 변경 성공 메일 발송
-            Context context = mailContextHandler.getWorkspaceUserPermissionUpdateContext(workspace.getName(), masterUser, updateUser, workspaceRole.getRole());
+            Context context = mailContextHandler.getWorkspaceUserPermissionUpdateContext(workspace.getName(), masterUser, updateUser, workspaceRole.getRole().toString());
             List<String> receiver = new ArrayList<>();
             receiver.add(updateUser.getEmail());
             applicationEventPublisher.publishEvent(new MailSendEvent(context, Mail.WORKSPACE_USER_PERMISSION_UPDATE, locale, receiver));
@@ -457,6 +461,7 @@ public abstract class WorkspaceUserService {
          * DEFAULT : 요청 유저는 마스터 또는 매니저만 허용한다.
          */
         //본인 라이선스 변경은 요청 유효성을 검증하지 않는다.
+        Role requestUserRole = requestUserPermission.getWorkspaceRole().getRole();
         if (requestUserPermission.getWorkspaceUser().getUserId().equals(updateUserPermission.getWorkspaceUser().getUserId())) {
             return;
         }
@@ -473,19 +478,21 @@ public abstract class WorkspaceUserService {
         Optional<WorkspaceCustomSetting> workspaceCustomSettingOptional = workspaceCustomSettingRepository.findByWorkspace_UuidAndSetting_Name(workspaceId, SettingName.USER_PLAN_MANAGEMENT_ROLE_SETTING);
         if (!workspaceCustomSettingOptional.isPresent() || workspaceCustomSettingOptional.get().getValue() == SettingValue.UNUSED || workspaceCustomSettingOptional.get().getValue() == SettingValue.MASTER_OR_MANAGER) {
             //요청 유저 권한 체크 -> 마스터 또는 매니저가 아니면 던짐
-            if (!requestUserPermission.getWorkspaceRole().getRole().matches("MASTER|MANAGER")) {
+            if (requestUserRole != Role.MASTER && requestUserRole != Role.MANAGER) {
                 throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_INVALID_PERMISSION);
             }
         }
         if (workspaceCustomSettingOptional.isPresent()) {
             log.info("[REVISE MEMBER INFO] workspace custom setting value : [{}]", workspaceCustomSettingOptional.get().getValue());
             //요청 유저 권한 체크 -> 마스터가 아니면 던짐
-            if (workspaceCustomSettingOptional.get().getValue() == SettingValue.MASTER && !requestUserPermission.getWorkspaceRole().getRole().equals("MASTER")) {
+            if (workspaceCustomSettingOptional.get().getValue() == SettingValue.MASTER && requestUserRole != Role.MASTER) {
                 throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_INVALID_PERMISSION);
             }
             //요청 유저 권한 체크 -> 마스터 또는 매니저 또는 멤버가 아니면 던짐
-            if (workspaceCustomSettingOptional.get().getValue() == SettingValue.MASTER_OR_MANAGER_OR_MEMBER && !requestUserPermission.getWorkspaceRole().getRole().matches("MASTER|MANAGER|MEMBER")) {
-                throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_INVALID_PERMISSION);
+            if (workspaceCustomSettingOptional.get().getValue() == SettingValue.MASTER_OR_MANAGER_OR_MEMBER) {
+                if (requestUserRole != Role.MASTER && requestUserRole != Role.MANAGER && requestUserRole != Role.MEMBER) {
+                    throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_INVALID_PERMISSION);
+                }
             }
         }
     }
@@ -520,21 +527,26 @@ public abstract class WorkspaceUserService {
 
         //워크스페이스 설정 정보에 따라 권한 체크가 달라짐.
         Optional<WorkspaceCustomSetting> workspaceCustomSettingOptional = workspaceCustomSettingRepository.findByWorkspace_UuidAndSetting_Name(workspaceId, SettingName.USER_ROLE_MANAGEMENT_ROLE_SETTING);
+        Role requestUserRole = requestUserPermission.getWorkspaceRole().getRole();
         if (!workspaceCustomSettingOptional.isPresent() || workspaceCustomSettingOptional.get().getValue() == SettingValue.UNUSED || workspaceCustomSettingOptional.get().getValue() == SettingValue.MASTER) {
             //요청 유저 권한 체크 -> 마스터가 아니면 던짐
-            if (!requestUserPermission.getWorkspaceRole().getRole().equals("MASTER")) {
+            if (!requestUserRole.equals("MASTER")) {
                 throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_INVALID_PERMISSION);
             }
         }
         if (workspaceCustomSettingOptional.isPresent()) {
             log.info("[REVISE MEMBER INFO] workspace custom setting value : [{}]", workspaceCustomSettingOptional.get().getValue());
             //요청 유저 권한 체크 -> 마스터 또는 매니저가 아니면 던짐
-            if (workspaceCustomSettingOptional.get().getValue() == SettingValue.MASTER_OR_MANAGER && !requestUserPermission.getWorkspaceRole().getRole().matches("MASTER|MANAGER")) {
-                throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_INVALID_PERMISSION);
+            if (workspaceCustomSettingOptional.get().getValue() == SettingValue.MASTER_OR_MANAGER) {
+                if (requestUserRole != Role.MASTER && requestUserRole != Role.MANAGER) {
+                    throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_INVALID_PERMISSION);
+                }
             }
             //요청 유저 권한 체크 -> 마스터 또는 매니저 또는 멤버가 아니면 던짐
-            if (workspaceCustomSettingOptional.get().getValue() == SettingValue.MASTER_OR_MANAGER_OR_MEMBER && !requestUserPermission.getWorkspaceRole().getRole().matches("MASTER|MANAGER|MEMBER")) {
-                throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_INVALID_PERMISSION);
+            if (workspaceCustomSettingOptional.get().getValue() == SettingValue.MASTER_OR_MANAGER_OR_MEMBER) {
+                if (requestUserRole != Role.MASTER && requestUserRole != Role.MANAGER && requestUserRole != Role.MEMBER) {
+                    throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_INVALID_PERMISSION);
+                }
             }
         }
     }
@@ -593,6 +605,23 @@ public abstract class WorkspaceUserService {
         );
         Workspace workspace = workspaceRepository.findByUuid(workspaceId).orElseThrow(() -> new WorkspaceException(ErrorCode.ERR_WORKSPACE_NOT_FOUND));
 
+
+        WorkspaceUserPermission workspaceUserPermission = workspaceUserPermissionRepository.findByWorkspaceUser_WorkspaceAndWorkspaceUser_UserId(
+                workspace, memberKickOutRequest.getUserId()).orElseThrow(() -> new WorkspaceException(ErrorCode.ERR_WORKSPACE_USER_NOT_FOUND));
+        WorkspaceUserPermission kickedUserPermission = workspaceUserPermissionRepository.findByWorkspaceUser_WorkspaceAndWorkspaceUser_UserId(
+                workspace, memberKickOutRequest.getKickedUserId()).orElseThrow(() -> new WorkspaceException(ErrorCode.ERR_WORKSPACE_USER_NOT_FOUND));
+        Role requestUserRole = workspaceUserPermission.getWorkspaceRole().getRole();
+        log.debug("[WORKSPACE KICK OUT USER] Request user Role >> [{}], Response user Role >> [{}]", requestUserRole, kickedUserPermission.getWorkspaceRole().getRole());
+        //마스터는 내보내기 할 수 없음
+        if (kickedUserPermission.getWorkspaceRole().getRole() == Role.MASTER) {
+            throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_INVALID_PERMISSION);
+        }
+
+        //상위 유저, 동급유저에 대해서는 역할을 변경할 수 없음.
+        if (workspaceUserPermission.getId() >= kickedUserPermission.getId()) {
+            throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_INVALID_PERMISSION);
+        }
+
         /**
          * 권한체크
          * setting이 있는 경우
@@ -601,36 +630,24 @@ public abstract class WorkspaceUserService {
          *  마스터인 경우 -> 요청자는 마스터, 대상자는 매니저 or 멤버
          *  멤버인 경우 -> 요청자는 마스터 or 매니저 or 멤버, 대상자는 멤버
          */
-        WorkspaceUserPermission workspaceUserPermission = workspaceUserPermissionRepository.findByWorkspaceUser_WorkspaceAndWorkspaceUser_UserId(
-                workspace, memberKickOutRequest.getUserId()).orElseThrow(() -> new WorkspaceException(ErrorCode.ERR_WORKSPACE_USER_NOT_FOUND));
-        WorkspaceUserPermission kickedUserPermission = workspaceUserPermissionRepository.findByWorkspaceUser_WorkspaceAndWorkspaceUser_UserId(
-                workspace, memberKickOutRequest.getKickedUserId()).orElseThrow(() -> new WorkspaceException(ErrorCode.ERR_WORKSPACE_USER_NOT_FOUND));
-        log.debug("[WORKSPACE KICK OUT USER] Request user Role >> [{}], Response user Role >> [{}]", workspaceUserPermission.getWorkspaceRole().getRole(),
-                kickedUserPermission.getWorkspaceRole().getRole());
         Optional<WorkspaceCustomSetting> workspaceCustomSettingOptional = workspaceCustomSettingRepository.findByWorkspace_UuidAndSetting_Name(workspaceId, SettingName.PUBLIC_USER_MANAGEMENT_ROLE_SETTING);
-        if (workspaceCustomSettingOptional.isPresent()) {
-            log.info("[WORKSPACE KICK OUT USER] workspace custom setting value : [{}]", workspaceCustomSettingOptional.get().getValue());
-            if (workspaceCustomSettingOptional.get().getValue() == SettingValue.UNUSED || workspaceCustomSettingOptional.get().getValue() == SettingValue.MASTER_OR_MANAGER) {
-                if (!checkWorkspaceRole(SettingValue.MASTER_OR_MANAGER, workspaceUserPermission.getWorkspaceRole().getRole(), kickedUserPermission.getWorkspaceRole().getRole())) {
-                    throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_INVALID_PERMISSION);
-                }
-            }
-            if (workspaceCustomSettingOptional.get().getValue() == SettingValue.MASTER) {
-                if (!checkWorkspaceRole(SettingValue.MASTER, workspaceUserPermission.getWorkspaceRole().getRole(), kickedUserPermission.getWorkspaceRole().getRole())) {
-                    throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_INVALID_PERMISSION);
-                }
-            }
-            if (workspaceCustomSettingOptional.get().getValue() == SettingValue.MASTER_OR_MANAGER_OR_MEMBER) {
-                if (!checkWorkspaceRole(SettingValue.MASTER_OR_MANAGER_OR_MEMBER, workspaceUserPermission.getWorkspaceRole().getRole(), kickedUserPermission.getWorkspaceRole().getRole())) {
-                    throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_INVALID_PERMISSION);
-                }
-            }
-        } else {
-            if (!checkWorkspaceRole(SettingValue.MASTER_OR_MANAGER, workspaceUserPermission.getWorkspaceRole().getRole(), kickedUserPermission.getWorkspaceRole().getRole())) {
+        if (!workspaceCustomSettingOptional.isPresent() || workspaceCustomSettingOptional.get().getValue() == SettingValue.UNUSED || workspaceCustomSettingOptional.get().getValue() == SettingValue.MASTER_OR_MANAGER) {
+            if (requestUserRole != Role.MASTER && requestUserRole != Role.MANAGER) {
                 throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_INVALID_PERMISSION);
             }
         }
-
+        if (workspaceCustomSettingOptional.isPresent()) {
+            log.info("[WORKSPACE KICK OUT USER] workspace custom setting value : [{}]", workspaceCustomSettingOptional.get().getValue());
+            if (workspaceCustomSettingOptional.get().getValue() == SettingValue.MASTER && requestUserRole != Role.MASTER) {
+                throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_INVALID_PERMISSION);
+            }
+            //TODO: workpsace setting이 들어갈때 멤버<-> 멤버 사이에 내보내기 기능 활성황 여부에 따라 달라질 수 있음.
+            if (workspaceCustomSettingOptional.get().getValue() == SettingValue.MASTER_OR_MANAGER_OR_MEMBER) {
+                if (requestUserRole != Role.MASTER && requestUserRole != Role.MANAGER && requestUserRole != Role.MEMBER) {
+                    throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_INVALID_PERMISSION);
+                }
+            }
+        }
 
         //라이선스 해제
         MyLicenseInfoListResponse myLicenseInfoListResponse = getMyLicenseInfoRequestHandler(workspaceId, memberKickOutRequest.getKickedUserId());
@@ -678,7 +695,7 @@ public abstract class WorkspaceUserService {
     /*
 하위유저는 상위유저 또는 동급유저에 대한 권한이 없으므로 이에 대해 체크한다.
 단 멤버유저의 경우 동급유저(멤버)에 대한 권한을 허용한다.
- */
+ *//*
     private boolean checkWorkspaceRole(SettingValue settingValue, String requestUserRole, String responseUserRole) {
         log.info("[WORKSPACE ROLE CHECK] setting value : [{}], request user role : [{}] , response user role : [{}]", settingValue, requestUserRole, responseUserRole);
         //요청자가 마스터 -> 대상자는 매니저, 멤버
@@ -716,7 +733,7 @@ public abstract class WorkspaceUserService {
             }
         }
         return true;
-    }
+    }*/
 
     @Profile("!onpremise")
     public abstract ApiResponse<Boolean> inviteWorkspace(String workspaceId, WorkspaceInviteRequest
@@ -825,8 +842,9 @@ public abstract class WorkspaceUserService {
         return new WorkspaceUserLicenseListResponse(customPageResponse.getAfterPagingList(), customPageResponse.getPageMetadataResponse());
     }
 
-    private Function<WorkspaceUserLicenseInfoResponse, String> getWorkspaceUserLicenseInfoResponseSortKey(String
-                                                                                                                  sortName) {
+    private Function<WorkspaceUserLicenseInfoResponse, String> getWorkspaceUserLicenseInfoResponseSortKey
+            (String
+                     sortName) {
         if (sortName.equalsIgnoreCase("plan")) {
             return WorkspaceUserLicenseInfoResponse::getProductName;
         }
@@ -858,8 +876,9 @@ public abstract class WorkspaceUserService {
 
     @Profile("onpremise")
     @Transactional
-    public abstract WorkspaceMemberPasswordChangeResponse memberPasswordChange(WorkspaceMemberPasswordChangeRequest
-                                                                                       passwordChangeRequest, String workspaceId);
+    public abstract WorkspaceMemberPasswordChangeResponse memberPasswordChange
+            (WorkspaceMemberPasswordChangeRequest
+                     passwordChangeRequest, String workspaceId);
 
     /**
      * 워크스페이스 시트 계정 생성
@@ -869,8 +888,9 @@ public abstract class WorkspaceUserService {
      * @return - 생성된 시트 계정 목록
      */
     @Transactional
-    public WorkspaceMemberInfoListResponse createWorkspaceMemberSeat(String workspaceId, MemberSeatCreateRequest
-            memberSeatCreateRequest) {
+    public WorkspaceMemberInfoListResponse createWorkspaceMemberSeat(String
+                                                                             workspaceId, MemberSeatCreateRequest
+                                                                             memberSeatCreateRequest) {
         //1-1. 요청한 사람의 권한 체크
         Workspace workspace = workspaceRepository.findByUuid(workspaceId).orElseThrow(() -> new WorkspaceException(ErrorCode.ERR_WORKSPACE_NOT_FOUND));
         checkSeatMemberManagementPermission(workspace, memberSeatCreateRequest.getUserId());
@@ -892,7 +912,7 @@ public abstract class WorkspaceUserService {
             grantWorkspaceLicenseToUser(workspaceId, userInfoRestResponse.getUuid(), "REMOTE");
             grantWorkspaceLicenseToUser(workspaceId, userInfoRestResponse.getUuid(), "VIEW");
             //시트 멤버 저장
-            setWorkspaceMember(userInfoRestResponse.getUuid(), workspace, "SEAT");
+            setWorkspaceMember(userInfoRestResponse.getUuid(), workspace, Role.SEAT);
             //응답
             WorkspaceUserInfoResponse workspaceUserInfoResponse = restMapStruct.userInfoRestResponseToWorkspaceUserInfoResponse(userInfoRestResponse);
             workspaceMemberInfoList.add(workspaceUserInfoResponse);
@@ -903,7 +923,7 @@ public abstract class WorkspaceUserService {
             //라이선스 할당
             grantWorkspaceLicenseToUser(workspaceId, userInfoRestResponse.getUuid(), "REMOTE");
             //시트 멤버 저장
-            setWorkspaceMember(userInfoRestResponse.getUuid(), workspace, "SEAT");
+            setWorkspaceMember(userInfoRestResponse.getUuid(), workspace, Role.SEAT);
             //응답
             WorkspaceUserInfoResponse workspaceUserInfoResponse = restMapStruct.userInfoRestResponseToWorkspaceUserInfoResponse(userInfoRestResponse);
             workspaceMemberInfoList.add(workspaceUserInfoResponse);
@@ -914,7 +934,7 @@ public abstract class WorkspaceUserService {
             //라이선스 할당
             grantWorkspaceLicenseToUser(workspaceId, userInfoRestResponse.getUuid(), "VIEW");
             //시트 멤버 저장
-            setWorkspaceMember(userInfoRestResponse.getUuid(), workspace, "SEAT");
+            setWorkspaceMember(userInfoRestResponse.getUuid(), workspace, Role.SEAT);
             //응답
             WorkspaceUserInfoResponse workspaceUserInfoResponse = restMapStruct.userInfoRestResponseToWorkspaceUserInfoResponse(userInfoRestResponse);
             workspaceMemberInfoList.add(workspaceUserInfoResponse);
@@ -930,7 +950,7 @@ public abstract class WorkspaceUserService {
      * @param roleName  - 할당할 역할 이름
      */
     @Transactional
-    public void setWorkspaceMember(String userId, Workspace workspace, String roleName) {
+    public void setWorkspaceMember(String userId, Workspace workspace, Role roleName) {
         WorkspaceUser workspaceUser = WorkspaceUser.builder().userId(userId).workspace(workspace).build();
         WorkspaceRole workspaceRole = workspaceRoleRepository.findByRole(roleName).orElseThrow(() -> new WorkspaceException(ErrorCode.ERR_WORKSPACE_ROLE_NOT_FOUND));
         WorkspacePermission workspacePermission = workspacePermissionRepository.findById(Permission.ALL.getValue()).orElseThrow(() -> new WorkspaceException(ErrorCode.ERR_WORKSPACE_PERMISSION_NOT_FOUND));
@@ -975,18 +995,19 @@ public abstract class WorkspaceUserService {
     private void checkSeatMemberManagementPermission(Workspace workspace, String requestUserId) {
         WorkspaceUserPermission requestUserPermission = workspaceUserPermissionRepository.findByWorkspaceUser_WorkspaceAndWorkspaceUser_UserId(workspace, requestUserId).orElseThrow(() -> new WorkspaceException(ErrorCode.ERR_WORKSPACE_USER_NOT_FOUND));
         Optional<WorkspaceCustomSetting> workspaceCustomSettingOptional = workspaceCustomSettingRepository.findByWorkspace_UuidAndSetting_Name(workspace.getUuid(), SettingName.SEAT_MANAGEMENT_ROLE_SETTING);
+        Role requestUserRole = requestUserPermission.getWorkspaceRole().getRole();
         if (!workspaceCustomSettingOptional.isPresent() || workspaceCustomSettingOptional.get().getValue() == SettingValue.UNUSED || workspaceCustomSettingOptional.get().getValue() == SettingValue.MASTER_OR_MANAGER) {
-            if (!requestUserPermission.getWorkspaceRole().getRole().matches("MASTER|MANAGER")) {
+            if (requestUserRole != Role.MASTER && requestUserRole != Role.MANAGER) {
                 throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_INVALID_PERMISSION);
             }
         }
         if (workspaceCustomSettingOptional.isPresent() && workspaceCustomSettingOptional.get().getValue() == SettingValue.MASTER) {
-            if (!requestUserPermission.getWorkspaceRole().getRole().equals("MASTER")) {
+            if (requestUserPermission.getWorkspaceRole().getRole() == Role.MASTER) {
                 throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_INVALID_PERMISSION);
             }
         }
         if (workspaceCustomSettingOptional.isPresent() && workspaceCustomSettingOptional.get().getValue() == SettingValue.MASTER_OR_MANAGER_OR_MEMBER) {
-            if (!requestUserPermission.getWorkspaceRole().getRole().matches("MASTER|MANAGER|MEMBER")) {
+            if (requestUserRole != Role.MASTER && requestUserRole != Role.MANAGER && requestUserRole != Role.MEMBER) {
                 throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_INVALID_PERMISSION);
             }
         }

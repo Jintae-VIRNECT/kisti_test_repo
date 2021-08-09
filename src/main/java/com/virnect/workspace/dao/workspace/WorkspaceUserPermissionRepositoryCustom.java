@@ -1,5 +1,6 @@
 package com.virnect.workspace.dao.workspace;
 
+import com.virnect.workspace.domain.workspace.Role;
 import com.virnect.workspace.domain.workspace.WorkspaceUser;
 import com.virnect.workspace.domain.workspace.WorkspaceUserPermission;
 import org.springframework.data.domain.Page;
@@ -18,8 +19,6 @@ import java.util.Optional;
 public interface WorkspaceUserPermissionRepositoryCustom {
     long deleteAllWorkspaceUserPermissionByWorkspaceUser(List<WorkspaceUser> workspaceUserList);
 
-    Page<WorkspaceUserPermission> getRoleFilteredUserList(List<WorkspaceUserPermission> workspaceUserPermissionList, List<String> roleList, Pageable pageable, String workspaceId);
-
     Page<WorkspaceUserPermission> getContainedUserIdList(List<String> userIdList, Pageable pageable, String workspaceId);
 
     Page<WorkspaceUserPermission> getWorkspaceUserList(Pageable pageable, String workspaceId);
@@ -28,7 +27,7 @@ public interface WorkspaceUserPermissionRepositoryCustom {
 
     Optional<WorkspaceUserPermission> findWorkspaceUser(String workspaceId, String userId);
 
-    List<String> getUserIdsByInUserListAndEqRole(List<String> userIdList, String filter, String workspaceId);
+    List<String> getUserIdsByInUserListAndEqRole(List<String> userIdList, List<Role> roleList, String workspaceId);
 
     Page<WorkspaceUserPermission> getWorkspaceUserListByInUserList(List<String> userIdList, Pageable newPageable, String workspaceId);
 }

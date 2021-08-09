@@ -1,6 +1,7 @@
 package com.virnect.workspace.api;
 
 import com.virnect.workspace.application.workspaceuser.WorkspaceUserService;
+import com.virnect.workspace.domain.workspace.Role;
 import com.virnect.workspace.dto.request.*;
 import com.virnect.workspace.dto.response.*;
 import com.virnect.workspace.exception.WorkspaceException;
@@ -48,9 +49,9 @@ public class WorkspaceUserController {
             @ApiImplicitParam(name = "workspaceId", value = "워크스페이스 식별자", defaultValue = "45ea004001c56a3380d48168b9db0492", required = true),
             @ApiImplicitParam(name = "search", value = "검색어(닉네임, 이메일)", dataType = "string", allowEmptyValue = true, defaultValue = ""),
             @ApiImplicitParam(name = "filter", value = "사용자 필터(MASTER, MANAGER, MEMBER) 또는 (REMOTE, MAKE, VIEW)", dataType = "string", allowEmptyValue = true, defaultValue = ""),
-            @ApiImplicitParam(name = "role", value = "사용자 필터(MASTER, MANAGER, MEMBER) 또는 (REMOTE, MAKE, VIEW)", dataType = "string", allowEmptyValue = true, defaultValue = ""),
-            @ApiImplicitParam(name = "userType", value = "사용자 필터(MASTER, MANAGER, MEMBER) 또는 (REMOTE, MAKE, VIEW)", dataType = "string", allowEmptyValue = true, defaultValue = ""),
-            @ApiImplicitParam(name = "plan", value = "사용자 필터(MASTER, MANAGER, MEMBER) 또는 (REMOTE, MAKE, VIEW)", dataType = "string", allowEmptyValue = true, defaultValue = ""),
+            @ApiImplicitParam(name = "role", value = "워크스페이스 역할 필터(MASTER, MANAGER, MEMBER, SEAT)", dataType = "string", allowEmptyValue = true, paramType = "query", allowMultiple = true),
+            @ApiImplicitParam(name = "userType", value = "사용자 계정 타입 필터(USER, WORKSPACE_ONLY_USER, SEAT_USER)", dataType = "string", allowEmptyValue = true, defaultValue = ""),
+            @ApiImplicitParam(name = "plan", value = "제품 라이선스 플랜 필터(REMOTE, MAKE, VIEW)", dataType = "string", allowEmptyValue = true, defaultValue = ""),
             @ApiImplicitParam(name = "page", value = "size 대로 나눠진 페이지를 조회할 번호", paramType = "query", defaultValue = "0"),
             @ApiImplicitParam(name = "size", value = "페이징 사이즈", dataType = "number", paramType = "query", defaultValue = "20"),
             @ApiImplicitParam(name = "sort", value = "정렬 옵션 데이터(role, joinDate, email, nickname)", paramType = "query", defaultValue = "role,desc"),
@@ -60,7 +61,7 @@ public class WorkspaceUserController {
             @PathVariable("workspaceId") String workspaceId,
             @RequestParam(value = "search", required = false) String search,
             @RequestParam(value = "filter", required = false) String filter,
-            @RequestParam(value = "role", required = false) String role,
+            @RequestParam(value = "role", required = false) List<Role> role,
             @RequestParam(value = "userType", required = false) String userType,
             @RequestParam(value = "plan", required = false) String plan,
             @ApiIgnore PageRequest pageable

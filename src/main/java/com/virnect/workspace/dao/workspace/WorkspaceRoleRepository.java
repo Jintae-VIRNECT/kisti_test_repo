@@ -1,5 +1,6 @@
 package com.virnect.workspace.dao.workspace;
 
+import com.virnect.workspace.domain.workspace.Role;
 import com.virnect.workspace.domain.workspace.WorkspaceRole;
 import org.springframework.data.jpa.repository.JpaRepository;
 
@@ -13,5 +14,5 @@ import java.util.Optional;
  * DESCRIPTION:
  */
 public interface WorkspaceRoleRepository extends JpaRepository<WorkspaceRole, Long> {
-    Optional<WorkspaceRole> findByRole(String roleName);
+    Optional<WorkspaceRole> findByRole(Role roleName);
 }

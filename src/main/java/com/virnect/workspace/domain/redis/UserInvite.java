@@ -1,5 +1,6 @@
 package com.virnect.workspace.domain.redis;
 
+import com.virnect.workspace.domain.workspace.Role;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
@@ -27,7 +28,7 @@ public class UserInvite implements Serializable {
     private String invitedUserId;   //초대받은 유저 식별자. 없으면 null
     private String requestUserId;   //초대한 유저 식별자
     private String workspaceId;
-    private String role;
+    private Role role;
     private boolean planRemote;
     private boolean planMake;
     private boolean planView;
@@ -40,7 +41,7 @@ public class UserInvite implements Serializable {
     private Long expireTime;
 
     @Builder
-    UserInvite(String sessionCode, String invitedUserEmail, String invitedUserId, String requestUserId, String workspaceId, String role,
+    UserInvite(String sessionCode, String invitedUserEmail, String invitedUserId, String requestUserId, String workspaceId, Role role,
                boolean planRemote, boolean planMake, boolean planView, String planRemoteType, String planMakeType, String planViewType,
                 LocalDateTime invitedDate, LocalDateTime updatedDate, Long expireTime) {
         this.sessionCode=sessionCode;

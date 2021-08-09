@@ -17,7 +17,6 @@ import com.virnect.workspace.exception.WorkspaceException;
 import com.virnect.workspace.global.common.mapper.rest.RestMapStruct;
 import com.virnect.workspace.global.common.mapper.workspace.WorkspaceMapStruct;
 import com.virnect.workspace.global.constant.Permission;
-import com.virnect.workspace.global.constant.Role;
 import com.virnect.workspace.global.constant.UUIDType;
 import com.virnect.workspace.global.error.ErrorCode;
 import com.virnect.workspace.global.util.RandomStringTokenUtil;
@@ -124,7 +123,7 @@ public class OnWorkspaceServiceImpl extends WorkspaceService {
         workspaceUserRepository.save(newWorkspaceUser);
 
         // 워크스페이스 권한 할당
-        WorkspaceRole workspaceRole = workspaceRoleRepository.findById(Role.MASTER.getValue()).orElseThrow(() -> new WorkspaceException(ErrorCode.ERR_WORKSPACE_ROLE_NOT_FOUND));
+        WorkspaceRole workspaceRole = workspaceRoleRepository.findByRole(Role.MASTER).orElseThrow(() -> new WorkspaceException(ErrorCode.ERR_WORKSPACE_ROLE_NOT_FOUND));
         WorkspacePermission workspacePermission = workspacePermissionRepository.findById(Permission.ALL.getValue()).orElseThrow(() -> new WorkspaceException(ErrorCode.ERR_WORKSPACE_PERMISSION_NOT_FOUND));
         WorkspaceUserPermission newWorkspaceUserPermission = WorkspaceUserPermission.builder()
                 .workspaceRole(workspaceRole)

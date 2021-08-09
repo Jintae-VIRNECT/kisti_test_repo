@@ -1,5 +1,6 @@
 package com.virnect.workspace.dto.request;
 
+import com.virnect.workspace.domain.workspace.Role;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
 import lombok.Setter;
@@ -36,7 +37,7 @@ public class WorkspaceInviteRequest {
         private String email;
         @ApiModelProperty(value = "role", example = "MEMBER", position = 1)
         @NotBlank(message = "초대할 유저의 워크스페이스 권한은 필수값입니다.")
-        private String role;
+        private Role role;
         @ApiModelProperty(value = "planRemote", position = 2)
         @NotNull(message = "초대할 유저의 리모트 플랜 부여 여부는 필수값입니다.")
         private boolean planRemote;

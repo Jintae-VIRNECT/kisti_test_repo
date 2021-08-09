@@ -1,5 +1,6 @@
 package com.virnect.workspace.dto.request;
 
+import com.virnect.workspace.domain.workspace.Role;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
 import lombok.Setter;
@@ -27,7 +28,7 @@ public class MemberAccountCreateInfo {
 	private String password;
 	@ApiModelProperty(value = "워크스페이스 내의 권한", required = true, example = "MEMBER", position = 2)
 	@NotBlank
-	private String role;
+	private Role role;
 	@ApiModelProperty(value = "리모트 제품 플랜 사용 여부", required = true, example = "true", position = 3)
 	@NotNull
 	private boolean planRemote;
