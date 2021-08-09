@@ -206,7 +206,9 @@ public abstract class WorkspaceUserService {
         ApiResponse<MyLicenseInfoListResponse> apiResponse = licenseRestService.getMyLicenseInfoRequestHandler(workspaceId, userId);
         if (apiResponse.getCode() != 200) {
             log.error("[GET MY LICENSE INFO BY WORKSPACE UUID & USER UUID] request workspaceId : {}, request userId : {}, response code : {}", workspaceId, userId, apiResponse.getCode());
-            return new MyLicenseInfoListResponse();
+            MyLicenseInfoListResponse myLicenseInfoListResponse = new MyLicenseInfoListResponse();
+            myLicenseInfoListResponse.setLicenseInfoList(new ArrayList<>());
+            return myLicenseInfoListResponse;
         }
         return apiResponse.getData();
     }
