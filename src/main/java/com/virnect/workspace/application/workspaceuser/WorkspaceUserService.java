@@ -351,22 +351,40 @@ public abstract class WorkspaceUserService {
         UserInfoRestResponse updateUser = getUserInfoByUserId(memberUpdateRequest.getUserId());
         UserInfoRestResponse requestUser = getUserInfoByUserId(memberUpdateRequest.getRequestUserId());
 
-        //2. 사용자 권한 변경
+
+        //2. 사용자 닉네임 변경
+        if (StringUtils.hasText(memberUpdateRequest.getNickname())) {
+            //2-1. 유저 타입 확인
+            if (!updateUser.getUserType().equals("USER")) {
+                throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_USER_INFO_UPDATE_USER_TYPE);
+            }
+            //2-2. 권한 확인
+            checkUserRoleUpdatePermission(requestUserPermission, updateUserPermission, workspaceId);
+            //2-3. 변경 요청
+            modifyUserInfoByUserId(memberUpdateRequest.getUserId(), new UserInfoModifyRequest(memberUpdateRequest.getNickname()));
+
+        }
+        //3. 사용자 권한 변경
         if (!updateUserPermission.getWorkspaceRole().getRole().equals(memberUpdateRequest.getRole())) {
             log.info("[REVISE MEMBER INFO] Revise User Role Info. Current User Role >> [{}], Updated User Role >> [{}].", updateUserPermission.getWorkspaceRole().getRole(), memberUpdateRequest.getRole());
-            //2-1. 요청 유저 권한 체크
+            //3-1. 유저 타입 확인
+            if (updateUser.getUserType().equals("SEAT_USER")) {
+                throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_USER_INFO_UPDATE_USER_TYPE);
+            }
+
+            //3-2. 요청 유저 권한 체크
             checkUserRoleUpdatePermission(requestUserPermission, updateUserPermission, workspaceId);
-            //2-2. 권한 정보 변경
+            //3-3. 권한 정보 변경
             updateUserPermission.setWorkspaceRole(workspaceRole);
             workspaceUserPermissionRepository.save(updateUserPermission);
 
-            //2-3. 변경 성공 메일 발송
+            //3-4. 변경 성공 메일 발송
             Context context = mailContextHandler.getWorkspaceUserPermissionUpdateContext(workspace.getName(), masterUser, updateUser, workspaceRole.getRole().toString());
             List<String> receiver = new ArrayList<>();
             receiver.add(updateUser.getEmail());
             applicationEventPublisher.publishEvent(new MailSendEvent(context, Mail.WORKSPACE_USER_PERMISSION_UPDATE, locale, receiver));
 
-            //2-4. 변경 성공 히스토리 저장
+            //3-5. 변경 성공 히스토리 저장
             String message;
             if (updateUserPermission.getWorkspaceRole().getRole() == Role.MANAGER) {
                 message = messageSource.getMessage("WORKSPACE_SET_MANAGER", new String[]{masterUser.getNickname(), updateUser.getNickname()}, locale);
@@ -375,11 +393,11 @@ public abstract class WorkspaceUserService {
             }
             applicationEventPublisher.publishEvent(new HistoryAddEvent(message, memberUpdateRequest.getRequestUserId(), workspace));
 
-            //2-5. 권한이 변경된 사용자 캐싱 데이터 삭제
+            //3-6. 권한이 변경된 사용자 캐싱 데이터 삭제
             //applicationEventPublisher.publishEvent(new UserWorkspacesDeleteEvent(memberUpdateRequest.getUserId()));
         }
 
-        //3. 사용자 제품 라이선스 유형 변경
+        //4. 사용자 제품 라이선스 유형 변경
         MyLicenseInfoListResponse myLicenseInfoListResponse = getMyLicenseInfoRequestHandler(workspaceId, memberUpdateRequest.getUserId());
         List<String> currentProductList = myLicenseInfoListResponse.getLicenseInfoList().stream().map(MyLicenseInfoResponse::getProductName).collect(Collectors.toList());
         List<String> removedProductList = getRemovedProductList(memberUpdateRequest.getLicenseRemote(), memberUpdateRequest.getLicenseMake(), memberUpdateRequest.getLicenseView(), currentProductList);
@@ -389,31 +407,45 @@ public abstract class WorkspaceUserService {
                     org.apache.commons.lang.StringUtils.join(currentProductList, ","),
                     org.apache.commons.lang.StringUtils.join(removedProductList, ","),
                     org.apache.commons.lang.StringUtils.join(addedProductList, ","));
-
-            //3-1. 요청 유저 권한 체크
+            //4-1. 유저 타입 체크
+            if (updateUser.getUserType().equals("SEAT_USER")) {
+                throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_USER_INFO_UPDATE_USER_TYPE);
+            }
+            //4-2. 요청 유저 권한 체크
             checkUserLicenseUpdatePermission(requestUserPermission, updateUserPermission, workspaceId);
 
-            //3-2. 제품 라이선스 해제 요청 및 히스토리 저장
+            //4-3. 제품 라이선스 해제 요청 및 히스토리 저장
             if (!removedProductList.isEmpty()) {
                 removedProductList.forEach(productName -> revokeWorkspaceLicenseToUser(workspace.getUuid(), updateUser.getUuid(), productName));
                 String message = messageSource.getMessage("WORKSPACE_REVOKE_LICENSE", new String[]{requestUser.getNickname(), updateUser.getNickname(), org.apache.commons.lang.StringUtils.join(removedProductList, ",")}, locale);
                 applicationEventPublisher.publishEvent(new HistoryAddEvent(message, updateUser.getUuid(), workspace));
             }
 
-            //3-3. 제품 라이선스 부여 요청 및 히스토리 저장
+            //4-4. 제품 라이선스 부여 요청 및 히스토리 저장
             if (!addedProductList.isEmpty()) {
                 addedProductList.forEach(productName -> grantWorkspaceLicenseToUser(workspace.getUuid(), updateUser.getUuid(), productName));
                 String message = messageSource.getMessage("WORKSPACE_GRANT_LICENSE", new String[]{requestUser.getNickname(), updateUser.getNickname(), org.apache.commons.lang.StringUtils.join(addedProductList, ",")}, locale);
                 applicationEventPublisher.publishEvent(new HistoryAddEvent(message, updateUser.getUuid(), workspace));
             }
 
-            //3-4. 라이선스 변경 성공 메일 전송
+            //4-5. 라이선스 변경 성공 메일 전송
             Context context = mailContextHandler.getWorkspaceUserPlanUpdateContext(workspace.getName(), masterUser, updateUser, currentProductList);
             List<String> receiver = new ArrayList<>();
             receiver.add(updateUser.getEmail());
             applicationEventPublisher.publishEvent(new MailSendEvent(context, Mail.WORKSPACE_USER_PLAN_UPDATE, locale, receiver));
         }
         return new ApiResponse<>(true);
+    }
+
+    private void chcekUserTypeUpdatePermission(String userId) {
+    }
+
+    private void modifyUserInfoByUserId(String userId, UserInfoModifyRequest userInfoModifyRequest) {
+        ApiResponse<UserInfoRestResponse> apiResponse = userRestService.modifyUserInfoRequest(userId, userInfoModifyRequest);
+        if (apiResponse.getCode() != 200) {
+            log.error("[MODIFY USER INFO BY USER UUID] request userId : {}, response code : {}, response message : {}", userId, apiResponse.getCode(), apiResponse.getMessage());
+            throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_USER_INFO_UPDATE);
+        }
     }
 
     private List<String> getAddedProductList(boolean requestRemote, boolean requestMake, boolean requestView, List<

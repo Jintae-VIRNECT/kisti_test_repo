@@ -24,7 +24,7 @@ public enum ErrorCode {
 
     //워크스페이스 관련
     ERR_INCORRECT_USER_LICENSE_INFO(1007, "Users must have at least 1 plan."),
-    ERR_WORKSPACE_MAX_USER_AMOUNT_OVER(1008,"Workspace max user mount is over."),
+    ERR_WORKSPACE_MAX_USER_AMOUNT_OVER(1008, "Workspace max user mount is over."),
     ERR_WORKSPACE_NOT_FOUND(1009, "Workspace not found"),
     ERR_WORKSPACE_USER_NOT_FOUND(1010, "Workspace User not found"),
     ERR_WORKSPACE_USER_ACCOUNT_CREATE_FAIL(1011, "Workspace user account create fail"),
@@ -36,11 +36,12 @@ public enum ErrorCode {
     //워크스페이스 유저 정보 수정 에러
     ERR_WORKSPACE_USER_INFO_UPDATE(1020, "Workspace user info update fail."),
     ERR_WORKSPACE_USER_INFO_UPDATE_MASTER_PLAN(1021, "Workspace user info update fail. Master user plan is only available for master user."),
+    ERR_WORKSPACE_USER_INFO_UPDATE_USER_TYPE(1022, "Workspace user info update fail. User type that can not be update information."),
 
     //워크스페이스 시트 계정 관련 에러
     ERR_WORKSPACE_SEAT_USER_CREATE(1030, "Workspace seat user create fail."),
     ERR_WORKSPACE_SEAT_USER_CREATE_LACK_LICENSE(1031, "Workspace seat user create fail. Workspace license plan is lack"),
-    ERR_WORKSPACE_SEAT_USER_DELETE(1032,"Workspace seat user delete fail."),
+    ERR_WORKSPACE_SEAT_USER_DELETE(1032, "Workspace seat user delete fail."),
 
     //워크스페이스 생성 에러
     ERR_WORKSPACE_CREATE(1100, "Workspace Create fail."),

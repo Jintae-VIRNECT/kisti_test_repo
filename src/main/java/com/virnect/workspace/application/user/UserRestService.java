@@ -77,5 +77,9 @@ public interface UserRestService {
 		@RequestHeader("serviceID") String serviceID,
 		@RequestBody MemberUserPasswordChangeRequest memberUserPasswordChangeRequest
 	);
+
+	//개인 정보 수정
+    @PostMapping("/users/{userId}")
+    ApiResponse<UserInfoRestResponse> modifyUserInfoRequest(@PathVariable("userId") String userId, @RequestBody UserInfoModifyRequest userInfoModifyRequest);
 }
 

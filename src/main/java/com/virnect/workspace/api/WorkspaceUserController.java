@@ -93,8 +93,8 @@ public class WorkspaceUserController {
     }
 
     @ApiOperation(
-            value = "워크스페이스 멤버 권한 설정",
-            notes = "워크스페이스 내의 권한은 마스터 유저만 설정 가능하고 워크스페이스 내의 플랜은 마스터, 매니저유저만 가능합니다."
+            value = "워크스페이스 소속 유저 정보 편집",
+            notes = "워크스페이스 소속 유저의 정보, 플랜, 역할 정보를 편집합니다. 편집의 권한은 워크스페이스 설정에 따라 달라질 수 있습니다."
     )
     @ApiImplicitParams({
             @ApiImplicitParam(name = "workspaceId", value = "워크스페이스 uuid", dataType = "string", defaultValue = "4d6eab0860969a50acbfa4599fbb5ae8", paramType = "path", required = true)
@@ -107,8 +107,7 @@ public class WorkspaceUserController {
         if (!StringUtils.hasText(workspaceId) || bindingResult.hasErrors()) {
             throw new WorkspaceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
-        ApiResponse<Boolean> apiResponse = workspaceUserService.reviseMemberInfo(
-                workspaceId, memberUpdateRequest, locale);
+        ApiResponse<Boolean> apiResponse = workspaceUserService.reviseMemberInfo(workspaceId, memberUpdateRequest, locale);
         return ResponseEntity.ok(apiResponse);
     }
 

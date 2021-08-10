@@ -79,6 +79,11 @@ public class UserRestFallbackFactory implements FallbackFactory<UserRestService>
 					new MemberUserPasswordChangeResponse(false, "", "", LocalDateTime.now())
 				);
 			}
-		};
+
+            @Override
+            public ApiResponse<UserInfoRestResponse> modifyUserInfoRequest(String userId, UserInfoModifyRequest userInfoModifyRequest) {
+                return new ApiResponse<>(new UserInfoRestResponse());
+            }
+        };
 	}
 }

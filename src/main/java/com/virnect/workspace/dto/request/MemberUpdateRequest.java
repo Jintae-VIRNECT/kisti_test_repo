@@ -36,6 +36,9 @@ public class MemberUpdateRequest {
     @NotNull
     private Boolean licenseView;
 
+    @ApiModelProperty(value = "유저의 닉네임", required = false, example = "닉네임")
+    private String nickname;
+
     @ApiModelProperty(hidden = true)
     public boolean isEssentialLicenseToUser() {
         return licenseRemote || licenseMake || licenseView;
