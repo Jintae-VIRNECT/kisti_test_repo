@@ -634,7 +634,97 @@ public class OnWorkspaceUserServiceImpl extends WorkspaceUserService {
     @Override
     public boolean deleteWorkspaceMemberAccount(String workspaceId, MemberAccountDeleteRequest
             memberAccountDeleteRequest) {
-        return false;
+        //전용 계정인지 체크
+        UserInfoRestResponse userInfoRestResponse = getUserInfoByUserId(memberAccountDeleteRequest.getDeleteUserId());
+        if (!userInfoRestResponse.getUserType().equals("WORKSPACE_ONLY_USER")) {
+            throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_USER_ACCOUNT_DELETE_FAIL);
+        }
+        Workspace workspace = workspaceRepository.findByUuid(workspaceId).orElseThrow(() -> new WorkspaceException(ErrorCode.ERR_WORKSPACE_NOT_FOUND));
+
+        //1. 요청한 사람의 권한 체크
+        WorkspaceUserPermission deleteUserPermission = workspaceUserPermissionRepository.findByWorkspaceUser_WorkspaceAndWorkspaceUser_UserId(workspace, memberAccountDeleteRequest.getDeleteUserId()).orElseThrow(() -> new WorkspaceException(ErrorCode.ERR_WORKSPACE_NOT_FOUND));
+        WorkspaceUserPermission requestUserPermission = workspaceUserPermissionRepository.findByWorkspaceUser_WorkspaceAndWorkspaceUser_UserId(workspace, memberAccountDeleteRequest.getUserId()).orElseThrow(() -> new WorkspaceException(ErrorCode.ERR_WORKSPACE_NOT_FOUND));
+        // 본인 정보 수정은 권한체크하지 않는다.
+        if (!memberAccountDeleteRequest.getUserId().equals(memberAccountDeleteRequest.getDeleteUserId())) {
+            Optional<WorkspaceCustomSetting> workspaceCustomSettingOptional = workspaceCustomSettingRepository.findByWorkspace_UuidAndSetting_Name(workspaceId, SettingName.PRIVATE_USER_MANAGEMENT_ROLE_SETTING);
+            if (!workspaceCustomSettingOptional.isPresent() || workspaceCustomSettingOptional.get().getValue() == SettingValue.UNUSED || workspaceCustomSettingOptional.get().getValue() == SettingValue.MASTER_OR_MANAGER) {
+                // 요청한 사람이 마스터 또는 매니저여야 한다.
+                if (requestUserPermission.getWorkspaceRole().getRole() != Role.MASTER && requestUserPermission.getWorkspaceRole().getRole() != Role.MANAGER) {
+                    throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_INVALID_PERMISSION);
+                }
+                // 매니저 유저는 매니저 유저를 수정 할 수 없다.
+                if (requestUserPermission.getWorkspaceRole().getRole() == Role.MANAGER && deleteUserPermission.getWorkspaceRole().getRole() == Role.MANAGER) {
+                    throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_INVALID_PERMISSION);
+                }
+            }
+            if (workspaceCustomSettingOptional.isPresent()) {
+                WorkspaceCustomSetting workspaceCustomSetting = workspaceCustomSettingOptional.get();
+                // 마스터 유저만 수정할 수 있다.
+                if (workspaceCustomSetting.getValue() == SettingValue.MASTER && requestUserPermission.getWorkspaceRole().getRole() != Role.MASTER) {
+                    throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_INVALID_PERMISSION);
+                }
+                //멤버 유저만 수정할 수 있다. //todo: 동급유저는 변경 가능한지 체크
+                if (workspaceCustomSetting.getValue() == SettingValue.MASTER_OR_MANAGER_OR_MEMBER) {
+                    if (requestUserPermission.getWorkspaceRole().getRole() != Role.MASTER && requestUserPermission.getWorkspaceRole().getRole() != Role.MANAGER && requestUserPermission.getWorkspaceRole().getRole() != Role.MEMBER) {
+                        throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_INVALID_PERMISSION);
+                    }
+                }
+            }
+        }
+
+        //2. license-sever revoke api 요청
+        MyLicenseInfoListResponse myLicenseInfoListResponse = licenseRestService.getMyLicenseInfoRequestHandler(
+                workspaceId, memberAccountDeleteRequest.getDeleteUserId()).getData();
+
+        if (myLicenseInfoListResponse.getLicenseInfoList() != null && !myLicenseInfoListResponse.getLicenseInfoList()
+                .isEmpty()) {
+            myLicenseInfoListResponse.getLicenseInfoList().forEach(myLicenseInfoResponse -> {
+                Boolean revokeResult = licenseRestService.revokeWorkspaceLicenseToUser(
+                        workspaceId,
+                        memberAccountDeleteRequest.getDeleteUserId(),
+                        myLicenseInfoResponse.getProductName()
+                ).getData();
+                if (!revokeResult) {
+                    log.error(
+                            "[DELETE WORKSPACE MEMBER ACCOUNT] LICENSE SERVER license revoke fail. Request user UUID : [{}], Product License [{}]",
+                            memberAccountDeleteRequest.getUserId(),
+                            myLicenseInfoResponse.getProductName()
+                    );
+                    throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_USER_LICENSE_REVOKE_FAIL);
+                }
+            });
+        }
+
+        //3. user-server에 멤버 삭제 api 요청 -> 실패시 grant api 요청
+        UserDeleteRestResponse userDeleteRestResponse = userRestService.userDeleteRequest(memberAccountDeleteRequest.getDeleteUserId(), "workspace-server").getData();
+        if (userDeleteRestResponse == null || !StringUtils.hasText(userDeleteRestResponse.getUserUUID())) {
+            log.error("[DELETE WORKSPACE MEMBER ACCOUNT] USER SERVER delete user fail.");
+            if (myLicenseInfoListResponse.getLicenseInfoList() != null && !myLicenseInfoListResponse.getLicenseInfoList().isEmpty()) {
+                myLicenseInfoListResponse.getLicenseInfoList().forEach(myLicenseInfoResponse -> {
+                    MyLicenseInfoResponse grantResult = licenseRestService.grantWorkspaceLicenseToUser(workspaceId, memberAccountDeleteRequest.getDeleteUserId(), myLicenseInfoResponse.getProductName()
+                    ).getData();
+                    log.error(
+                            "[DELETE WORKSPACE MEMBER ACCOUNT] USER SERVER delete user fail. >>>> LICENSE SERVER license revoke process. Request user UUID : [{}], Product License [{}]",
+                            memberAccountDeleteRequest.getDeleteUserId(), grantResult.getProductName()
+                    );
+                });
+            }
+            throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_USER_ACCOUNT_DELETE_FAIL);
+        }
+        log.info(
+                "[DELETE WORKSPACE MEMBER ACCOUNT] USER SERVER delete user success. Request user UUID : [{}],Delete Date [{}]",
+                userDeleteRestResponse.getUserUUID(), userDeleteRestResponse.getDeletedDate()
+        );
+
+        //4. workspace-sever 권한 및 소속 해제
+        workspaceUserPermissionRepository.deleteAllByWorkspaceUser(deleteUserPermission.getWorkspaceUser());
+        workspaceUserRepository.deleteById(deleteUserPermission.getWorkspaceUser().getId());
+
+        log.info(
+                "[DELETE WORKSPACE MEMBER ACCOUNT] Workspace delete user success. Request User UUID : [{}], Delete User UUID : [{}], DeleteDate : [{}]",
+                memberAccountDeleteRequest.getUserId(), memberAccountDeleteRequest.getDeleteUserId(), LocalDateTime.now()
+        );
+        return true;
     }
 
     @Override

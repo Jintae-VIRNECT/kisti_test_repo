@@ -291,13 +291,16 @@ public class OffWorkspaceUserServiceImpl extends WorkspaceUserService {
     public boolean deleteWorkspaceMemberAccount(
             String workspaceId, MemberAccountDeleteRequest memberAccountDeleteRequest
     ) {
+        if (!StringUtils.hasText(memberAccountDeleteRequest.getUserPassword())) {
+            throw new WorkspaceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
+        }
         //1. 요청한 사람의 권한 체크
         checkWorkspaceAndUserRole(workspaceId, memberAccountDeleteRequest.getUserId(), new Role[]{Role.MASTER});
 
         //1-1. user-server로 권한 체크
         UserInfoRestResponse userInfoRestResponse = userRestService.getUserInfoByUserId(
                 memberAccountDeleteRequest.getUserId()).getData();
-        if (userInfoRestResponse == null || !StringUtils.hasText(userInfoRestResponse.getUuid())) {
+        if (userInfoRestResponse == null || !StringUtils.hasText(userInfoRestResponse.getUuid()) || !userInfoRestResponse.getUserType().equals("WORKSPACE_ONLY_USER")) {
             log.error(
                     "[DELETE WORKSPACE MEMBER ACCOUNT] USER SERVER account not found. Request user UUID : [{}]",
                     memberAccountDeleteRequest.getUserId()
