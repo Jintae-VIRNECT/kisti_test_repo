@@ -18,8 +18,8 @@ import javax.validation.constraints.NotBlank;
 public class MemberSeatDeleteRequest {
     @ApiModelProperty(value = "요청 유저 식별자", required = true, example = "498b1839dc29ed7bb2ee90ad6985c608", position = 0)
     @NotBlank
-    private String userId;
+    private String requestUserId;
     @ApiModelProperty(value = "계정 삭제 대상 유저 식별자", required = true, example = "", position = 2)
     @NotBlank
-    private String deleteUserId;
+    private String userId;
 }

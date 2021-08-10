@@ -373,7 +373,7 @@ public class WorkspaceUserController {
         return ResponseEntity.ok(new ApiResponse<>(response));
     }
 
-    @ApiOperation(value = "워크스페이스 시트 계정 삭제 및 내보내기", hidden = true)
+    @ApiOperation(value = "워크스페이스 시트 계정 삭제 및 내보내기")
     @ApiImplicitParam(name = "workspaceId", value = "워크스페이스 식별자", dataType = "string", defaultValue = "4d6eab0860969a50acbfa4599fbb5ae8", paramType = "path", required = true)
     @DeleteMapping("/{workspaceId}/members/seat")
     public ResponseEntity<ApiResponse<MemberSeatDeleteResponse>> deleteWorkspaceMemberAccount(
@@ -392,4 +392,22 @@ public class WorkspaceUserController {
         );
         return ResponseEntity.ok(new ApiResponse<>(response));
     }
+
+    @ApiOperation(value = "워크스페이스 유저 프로필 이미지 변경")
+    @ApiImplicitParam(name = "workspaceId", value = "워크스페이스 식별자", dataType = "string", defaultValue = "4d6eab0860969a50acbfa4599fbb5ae8", paramType = "path", required = true)
+    @PostMapping("/{workspaceId}/members/profile")
+    public ResponseEntity<ApiResponse<MemberProfileUpdateResponse>> deleteWorkspaceMemberAccount(
+            @PathVariable("workspaceId") String workspaceId,
+            @ModelAttribute @Valid MemberProfileUpdateRequest memberProfileUpdateRequest, BindingResult bindingResult
+    ) {
+        if (bindingResult.hasErrors()) {
+            bindingResult.getAllErrors()
+                    .forEach(
+                            objectError -> log.error("[UPDATE WORKSPACE USER PROFILE] Error message : [{}]", objectError));
+            throw new WorkspaceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
+        }
+        MemberProfileUpdateResponse response = workspaceUserService.updateWorkspaceUserProfile(workspaceId, memberProfileUpdateRequest);
+        return ResponseEntity.ok(new ApiResponse<>(response));
+    }
+
 }

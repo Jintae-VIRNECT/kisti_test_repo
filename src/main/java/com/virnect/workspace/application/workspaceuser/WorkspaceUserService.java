@@ -630,9 +630,9 @@ public abstract class WorkspaceUserService {
     }
 
     private void revokeWorkspaceLicenseToUser(String workspaceId, String userId, String productName) {
-        ApiResponse<Boolean> revokeWorkspaceLicenseApiResponse = licenseRestService.revokeWorkspaceLicenseToUser(workspaceId, userId, productName);
-        if (revokeWorkspaceLicenseApiResponse.getCode() != 200 || !revokeWorkspaceLicenseApiResponse.getData()) {
-            log.error("[REVOKE LICENSE TO USER] request workspaceId : {}, request userId : {}, request productName : {}, response code : {}", workspaceId, userId, productName, revokeWorkspaceLicenseApiResponse.getCode());
+        ApiResponse<Boolean> apiResponse = licenseRestService.revokeWorkspaceLicenseToUser(workspaceId, userId, productName);
+        if (apiResponse.getCode() != 200 || apiResponse.getData() == null) {
+            log.error("[REVOKE LICENSE TO USER] request workspaceId : {}, request userId : {}, request productName : {}, response code : {}", workspaceId, userId, productName, apiResponse.getCode());
             throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_USER_LICENSE_REVOKE_FAIL);
         }
     }
@@ -1135,23 +1135,23 @@ public abstract class WorkspaceUserService {
             memberSeatDeleteRequest) {
         //1-1. 요청한 사람의 권한 체크
         Workspace workspace = workspaceRepository.findByUuid(workspaceId).orElseThrow(() -> new WorkspaceException(ErrorCode.ERR_WORKSPACE_NOT_FOUND));
-        checkSeatMemberManagementPermission(workspace, memberSeatDeleteRequest.getUserId());
+        checkSeatMemberManagementPermission(workspace, memberSeatDeleteRequest.getRequestUserId());
 
         //1-2. 요청받은 유저가 시트유저인지 체크
-        WorkspaceUserPermission deleteUserPermission = workspaceUserPermissionRepository.findByWorkspaceUser_WorkspaceAndWorkspaceUser_UserId(workspace, memberSeatDeleteRequest.getDeleteUserId()).orElseThrow(() -> new WorkspaceException(ErrorCode.ERR_WORKSPACE_USER_NOT_FOUND));
+        WorkspaceUserPermission deleteUserPermission = workspaceUserPermissionRepository.findByWorkspaceUser_WorkspaceAndWorkspaceUser_UserId(workspace, memberSeatDeleteRequest.getUserId()).orElseThrow(() -> new WorkspaceException(ErrorCode.ERR_WORKSPACE_USER_NOT_FOUND));
         if (deleteUserPermission.getWorkspaceRole().getRole() != Role.SEAT) {
             throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_SEAT_USER_DELETE);
         }
 
         //2. 라이선스 해제 요청
-        MyLicenseInfoListResponse myLicenseInfoListResponse = getMyLicenseInfoRequestHandler(workspaceId, memberSeatDeleteRequest.getDeleteUserId());
+        MyLicenseInfoListResponse myLicenseInfoListResponse = getMyLicenseInfoRequestHandler(workspaceId, memberSeatDeleteRequest.getUserId());
         if (!myLicenseInfoListResponse.getLicenseInfoList().isEmpty()) {
             List<String> productList = myLicenseInfoListResponse.getLicenseInfoList().stream().map(MyLicenseInfoResponse::getProductName).collect(Collectors.toList());
             productList.forEach(productName -> revokeWorkspaceLicenseToUser(workspaceId, memberSeatDeleteRequest.getUserId(), productName));
         }
 
         //3. 유저서버 삭제 요청
-        deleteUserByUserId(memberSeatDeleteRequest.getDeleteUserId());
+        deleteUserByUserId(memberSeatDeleteRequest.getUserId());
 
         //4. 웤스 서버에서 삭제
         WorkspaceUser workspaceUser = deleteUserPermission.getWorkspaceUser();
@@ -1171,5 +1171,89 @@ public abstract class WorkspaceUserService {
         if (apiResponse.getCode() != 200) {
             log.error("[DELETE USER BY USER UUID] request userId : {}, response code : {}", userId, apiResponse.getCode());
         }
+    }
+
+    public MemberProfileUpdateResponse updateWorkspaceUserProfile(String workspaceId, MemberProfileUpdateRequest memberProfileUpdateRequest) {
+        //1-2. 요청 워크스페이스 조회
+        Workspace workspace = workspaceRepository.findByUuid(workspaceId).orElseThrow(() -> new WorkspaceException(ErrorCode.ERR_WORKSPACE_NOT_FOUND));
+
+        UserInfoRestResponse userInfo = getUserInfoByUserId(memberProfileUpdateRequest.getUserId());
+        //1-2. 변경 대상 유저 타입 조회
+        if (userInfo.getUserType().equals("USER")) {
+            throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_USER_INFO_UPDATE_USER_TYPE);
+        }
+        //1-3. 요청 유저 권한 조회
+        WorkspaceUserPermission updateUserPermission = workspaceUserPermissionRepository.findByWorkspaceUser_WorkspaceAndWorkspaceUser_UserId(workspace, memberProfileUpdateRequest.getUserId()).orElseThrow(() -> new WorkspaceException(ErrorCode.ERR_WORKSPACE_NOT_FOUND));
+        WorkspaceUserPermission requestUserPermission = workspaceUserPermissionRepository.findByWorkspaceUser_WorkspaceAndWorkspaceUser_UserId(workspace, memberProfileUpdateRequest.getRequestUserId()).orElseThrow(() -> new WorkspaceException(ErrorCode.ERR_WORKSPACE_NOT_FOUND));
+        if (userInfo.getUserType().equals("WORKSPACE_ONLY_USER")) {
+            // 본인 정보 수정은 권한체크하지 않는다.
+            if (memberProfileUpdateRequest.getRequestUserId().equals(memberProfileUpdateRequest.getUserId())) {
+                return null;
+            }
+            Optional<WorkspaceCustomSetting> workspaceCustomSettingOptional = workspaceCustomSettingRepository.findByWorkspace_UuidAndSetting_Name(workspaceId, SettingName.PRIVATE_USER_MANAGEMENT_ROLE_SETTING);
+            if (!workspaceCustomSettingOptional.isPresent() || workspaceCustomSettingOptional.get().getValue() == SettingValue.UNUSED || workspaceCustomSettingOptional.get().getValue() == SettingValue.MASTER_OR_MANAGER) {
+                // 요청한 사람이 마스터 또는 매니저여야 한다.
+                if (requestUserPermission.getWorkspaceRole().getRole() != Role.MASTER && requestUserPermission.getWorkspaceRole().getRole() != Role.MANAGER) {
+                    throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_INVALID_PERMISSION);
+                }
+                // 매니저 유저는 매니저 유저를 수정 할 수 없다.
+                if (requestUserPermission.getWorkspaceRole().getRole() == Role.MANAGER && updateUserPermission.getWorkspaceRole().getRole() == Role.MANAGER) {
+                    throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_INVALID_PERMISSION);
+                }
+            }
+            if (workspaceCustomSettingOptional.isPresent()) {
+                WorkspaceCustomSetting workspaceCustomSetting = workspaceCustomSettingOptional.get();
+                // 마스터 유저만 수정할 수 있다.
+                if (workspaceCustomSetting.getValue() == SettingValue.MASTER && requestUserPermission.getWorkspaceRole().getRole() != Role.MASTER) {
+                    throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_INVALID_PERMISSION);
+                }
+                //멤버 유저만 수정할 수 있다. //todo: 동급유저는 변경 가능한지 체크
+                if (workspaceCustomSetting.getValue() == SettingValue.MASTER_OR_MANAGER_OR_MEMBER) {
+                    if (requestUserPermission.getWorkspaceRole().getRole() != Role.MASTER && requestUserPermission.getWorkspaceRole().getRole() != Role.MANAGER && requestUserPermission.getWorkspaceRole().getRole() != Role.MEMBER) {
+                        throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_INVALID_PERMISSION);
+                    }
+                }
+            }
+        }
+        if (userInfo.getUserType().equals("SEAT_USER")) {
+            // 본인 정보 수정은 권한체크하지 않는다.
+            if (memberProfileUpdateRequest.getRequestUserId().equals(memberProfileUpdateRequest.getUserId())) {
+                return null;
+            }
+            Optional<WorkspaceCustomSetting> workspaceCustomSettingOptional = workspaceCustomSettingRepository.findByWorkspace_UuidAndSetting_Name(workspaceId, SettingName.SEAT_MANAGEMENT_ROLE_SETTING);
+            if (!workspaceCustomSettingOptional.isPresent() || workspaceCustomSettingOptional.get().getValue() == SettingValue.UNUSED || workspaceCustomSettingOptional.get().getValue() == SettingValue.MASTER_OR_MANAGER) {
+                // 요청한 사람이 마스터 또는 매니저여야 한다.
+                if (requestUserPermission.getWorkspaceRole().getRole() != Role.MASTER && requestUserPermission.getWorkspaceRole().getRole() != Role.MANAGER) {
+                    throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_INVALID_PERMISSION);
+                }
+                // 매니저 유저는 매니저 유저를 수정 할 수 없다.
+                if (requestUserPermission.getWorkspaceRole().getRole() == Role.MANAGER && updateUserPermission.getWorkspaceRole().getRole() == Role.MANAGER) {
+                    throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_INVALID_PERMISSION);
+                }
+            }
+            if (workspaceCustomSettingOptional.isPresent()) {
+                WorkspaceCustomSetting workspaceCustomSetting = workspaceCustomSettingOptional.get();
+                // 마스터 유저만 수정할 수 있다.
+                if (workspaceCustomSetting.getValue() == SettingValue.MASTER && requestUserPermission.getWorkspaceRole().getRole() != Role.MASTER) {
+                    throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_INVALID_PERMISSION);
+                }
+                //멤버 유저만 수정할 수 있다. //todo: 동급유저는 변경 가능한지 체크
+                if (workspaceCustomSetting.getValue() == SettingValue.MASTER_OR_MANAGER_OR_MEMBER) {
+                    if (requestUserPermission.getWorkspaceRole().getRole() != Role.MASTER && requestUserPermission.getWorkspaceRole().getRole() != Role.MANAGER && requestUserPermission.getWorkspaceRole().getRole() != Role.MEMBER) {
+                        throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_INVALID_PERMISSION);
+                    }
+                }
+            }
+        }
+
+        //2. 프로필 이미지 변경 요청
+        ApiResponse<UserProfileUpdateResponse> apiResponse = userRestService.modifyUserProfileRequest(memberProfileUpdateRequest.getUserId(), memberProfileUpdateRequest.getProfile());
+        if (apiResponse.getCode() != 200) {
+            log.error("[UPDATE USER PROFILE BY USER UUID] response code : {}, response message : {}", apiResponse.getCode(), apiResponse.getMessage());
+            throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_USER_INFO_UPDATE);
+        }
+
+        //3. 응답
+        return new MemberProfileUpdateResponse(true, apiResponse.getData().getProfile());
     }
 }
