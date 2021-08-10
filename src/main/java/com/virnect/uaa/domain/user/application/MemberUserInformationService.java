@@ -1,7 +1,5 @@
 package com.virnect.uaa.domain.user.application;
 
-import static com.virnect.uaa.domain.user.domain.UserType.*;
-
 import java.time.LocalDateTime;
 import java.util.Optional;
 
@@ -107,7 +105,7 @@ public class MemberUserInformationService {
 
 		if (!user.isPresent()) {
 			log.info("[CREATE_WORKSPACE_ONLY_USER] - Email duplicate [{}]", email);
-			return new UserEmailExistCheckResponse(email, false, LocalDateTime.now());
+			throw new UserServiceException(UserAccountErrorCode.ERR_REGISTER_MEMBER_DUPLICATE_ID);
 		}
 
 		//  비밀번호 찾기 질의 정보가 설정되어있지 않은 경우
@@ -142,8 +140,7 @@ public class MemberUserInformationService {
 	 * @return - 비밀번호 재설정 처리 결과
 	 */
 	public MemberPasswordUpdateResponse updateMemberPassword(MemberPasswordUpdateRequest memberPasswordUpdateRequest) {
-		User memberUser = userRepository.findByUuidAndUserType(
-			memberPasswordUpdateRequest.getUuid(), WORKSPACE_ONLY_USER)
+		User memberUser = userRepository.findByUuid(memberPasswordUpdateRequest.getUuid())
 			.orElseThrow(() -> new UserServiceException(UserAccountErrorCode.ERR_USER_NOT_FOUND));
 
 		String encodedPassword = passwordEncoder.encode(memberPasswordUpdateRequest.getPassword());
