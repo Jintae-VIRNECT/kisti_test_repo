@@ -44,21 +44,27 @@ public class Language extends BaseTimeEntity {
     @Column(name = "trans_pl_pl", nullable = false)
     private boolean transPlPl;
 
+    @Column(name = "trans_th_th", nullable = false)
+    private boolean transThTh;
+
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "company_id")
     private Company company;
 
     @Builder
-    public Language(Company company,
-                    Boolean transKoKr,
-                    Boolean transEnUs,
-                    Boolean transJaJp,
-                    Boolean transZh,
-                    Boolean transFrFr,
-                    Boolean transEsEs,
-                    Boolean transRuRu,
-                    Boolean transUkUa,
-                    Boolean transPlPl) {
+    public Language(
+        Company company,
+        Boolean transKoKr,
+        Boolean transEnUs,
+        Boolean transJaJp,
+        Boolean transZh,
+        Boolean transFrFr,
+        Boolean transEsEs,
+        Boolean transRuRu,
+        Boolean transUkUa,
+        Boolean transPlPl,
+        Boolean transThTh
+    ) {
 
         this.company = company;
         this.transKoKr = transKoKr;
@@ -70,22 +76,24 @@ public class Language extends BaseTimeEntity {
         this.transRuRu = transRuRu;
         this.transUkUa = transUkUa;
         this.transPlPl = transPlPl;
+        this.transThTh = transThTh;
     }
 
     @Override
     public String toString() {
-        return "Company{" +
-                "companyCode=" + company.getCompanyCode() +
-                ", transKoKr='" + transKoKr + '\'' +
-                ", transEnUs='" + transEnUs + '\'' +
-                ", transJaJp='" + transJaJp + '\'' +
-                ", transZh='" + transZh + '\'' +
-                ", transFrFr='" + transFrFr + '\'' +
-                ", transEsEs='" + transEsEs + '\'' +
-                ", transRuRu='" + transRuRu + '\'' +
-                ", transUkUa='" + transUkUa + '\'' +
-                ", transPlPl='" + transPlPl + '\'' +
-                '}';
+        return "Language{" +
+            "id=" + id +
+            ", transKoKr=" + transKoKr +
+            ", transEnUs=" + transEnUs +
+            ", transJaJp=" + transJaJp +
+            ", transZh=" + transZh +
+            ", transFrFr=" + transFrFr +
+            ", transEsEs=" + transEsEs +
+            ", transRuRu=" + transRuRu +
+            ", transUkUa=" + transUkUa +
+            ", transPlPl=" + transPlPl +
+            ", transThTh=" + transThTh +
+            ", company=" + company +
+            '}';
     }
-
 }
