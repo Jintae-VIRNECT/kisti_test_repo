@@ -334,14 +334,10 @@ public abstract class WorkspaceUserService {
     public ApiResponse<Boolean> reviseMemberInfo(
             String workspaceId, MemberUpdateRequest memberUpdateRequest, Locale locale
     ) {
-        //1-1. 최소 하나 이상의 제품 라이선스를 부여했는지 체크
-        if (!memberUpdateRequest.isEssentialLicenseToUser()) {
-            throw new WorkspaceException(ErrorCode.ERR_INCORRECT_USER_LICENSE_INFO);
-        }
         //1-2. 요청 워크스페이스 조회
         Workspace workspace = workspaceRepository.findByUuid(workspaceId).orElseThrow(() -> new WorkspaceException(ErrorCode.ERR_WORKSPACE_NOT_FOUND));
         //1-3. 요청 권한 조회
-        WorkspaceRole workspaceRole = workspaceRoleRepository.findByRole(memberUpdateRequest.getRole()).orElseThrow(() -> new WorkspaceException(ErrorCode.ERR_WORKSPACE_ROLE_NOT_FOUND));
+        WorkspaceRole workspaceRole = workspaceRoleRepository.findByRole(Role.valueOf(memberUpdateRequest.getRole())).orElseThrow(() -> new WorkspaceException(ErrorCode.ERR_WORKSPACE_ROLE_NOT_FOUND));
 
         //1-4. 요청 유저 권한 조회
         WorkspaceUserPermission requestUserPermission = workspaceUserPermissionRepository.findByWorkspaceUser_WorkspaceAndWorkspaceUser_UserId(workspace, memberUpdateRequest.getRequestUserId()).orElseThrow(() -> new WorkspaceException(ErrorCode.ERR_WORKSPACE_USER_NOT_FOUND));
@@ -365,7 +361,8 @@ public abstract class WorkspaceUserService {
 
         }
         //3. 사용자 권한 변경
-        if (!updateUserPermission.getWorkspaceRole().getRole().equals(memberUpdateRequest.getRole())) {
+        //if (!updateUserPermission.getWorkspaceRole().getRole().equals(memberUpdateRequest.getRole())) {
+        if (StringUtils.hasText(memberUpdateRequest.getRole())) {
             log.info("[REVISE MEMBER INFO] Revise User Role Info. Current User Role >> [{}], Updated User Role >> [{}].", updateUserPermission.getWorkspaceRole().getRole(), memberUpdateRequest.getRole());
             //3-1. 유저 타입 확인
             if (updateUser.getUserType().equals("SEAT_USER")) {
@@ -400,13 +397,15 @@ public abstract class WorkspaceUserService {
         //4. 사용자 제품 라이선스 유형 변경
         MyLicenseInfoListResponse myLicenseInfoListResponse = getMyLicenseInfoRequestHandler(workspaceId, memberUpdateRequest.getUserId());
         List<String> currentProductList = myLicenseInfoListResponse.getLicenseInfoList().stream().map(MyLicenseInfoResponse::getProductName).collect(Collectors.toList());
+        /*
         List<String> removedProductList = getRemovedProductList(memberUpdateRequest.getLicenseRemote(), memberUpdateRequest.getLicenseMake(), memberUpdateRequest.getLicenseView(), currentProductList);
         List<String> addedProductList = getAddedProductList(memberUpdateRequest.getLicenseRemote(), memberUpdateRequest.getLicenseMake(), memberUpdateRequest.getLicenseView(), currentProductList);
-        if (!removedProductList.isEmpty() || !addedProductList.isEmpty()) {
-            log.info("[REVISE MEMBER INFO] Revise License Info. Current License Product Info >> [{}], Removed License Product Info >> [{}], Added License Product Info >> [{}].",
-                    org.apache.commons.lang.StringUtils.join(currentProductList, ","),
-                    org.apache.commons.lang.StringUtils.join(removedProductList, ","),
-                    org.apache.commons.lang.StringUtils.join(addedProductList, ","));
+        if (!removedProductList.isEmpty() || !addedProductList.isEmpty()) {*/
+        /*if (!memberUpdateRequest.isEssentialLicenseToUser()) {
+            throw new WorkspaceException(ErrorCode.ERR_INCORRECT_USER_LICENSE_INFO);
+        }*/
+        if (memberUpdateRequest.existLicenseUpdate()) {
+            log.info("[REVISE MEMBER INFO] Revise License Info. Current License Product Info >> [{}], ", org.apache.commons.lang.StringUtils.join(currentProductList, ","));
             //4-1. 유저 타입 체크
             if (updateUser.getUserType().equals("SEAT_USER")) {
                 throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_USER_INFO_UPDATE_USER_TYPE);
@@ -414,19 +413,51 @@ public abstract class WorkspaceUserService {
             //4-2. 요청 유저 권한 체크
             checkUserLicenseUpdatePermission(requestUserPermission, updateUserPermission, workspaceId);
 
-            //4-3. 제품 라이선스 해제 요청 및 히스토리 저장
-            if (!removedProductList.isEmpty()) {
-                removedProductList.forEach(productName -> revokeWorkspaceLicenseToUser(workspace.getUuid(), updateUser.getUuid(), productName));
-                String message = messageSource.getMessage("WORKSPACE_REVOKE_LICENSE", new String[]{requestUser.getNickname(), updateUser.getNickname(), org.apache.commons.lang.StringUtils.join(removedProductList, ",")}, locale);
-                applicationEventPublisher.publishEvent(new HistoryAddEvent(message, updateUser.getUuid(), workspace));
+            //4-3. 제품 라이선스 부여/해제 요청
+            List<String> addedProductList = new ArrayList<>();
+            List<String> removedProductList = new ArrayList<>();
+            if (memberUpdateRequest.getLicenseRemote() != null && memberUpdateRequest.getLicenseRemote()) {
+                grantWorkspaceLicenseToUser(workspace.getUuid(), updateUser.getUuid(), "REMOTE");
+                addedProductList.add("REMOTE");
             }
 
-            //4-4. 제품 라이선스 부여 요청 및 히스토리 저장
+            if (memberUpdateRequest.getLicenseRemote() != null && !memberUpdateRequest.getLicenseRemote()) {
+                revokeWorkspaceLicenseToUser(workspace.getUuid(), updateUser.getUuid(), "REMOTE");
+                removedProductList.add("REMOTE");
+            }
+
+            if (memberUpdateRequest.getLicenseMake() != null && memberUpdateRequest.getLicenseMake()) {
+                grantWorkspaceLicenseToUser(workspace.getUuid(), updateUser.getUuid(), "MAKE");
+                addedProductList.add("MAKE");
+            }
+
+            if (memberUpdateRequest.getLicenseMake() != null && !memberUpdateRequest.getLicenseMake()) {
+                revokeWorkspaceLicenseToUser(workspace.getUuid(), updateUser.getUuid(), "MAKE");
+                removedProductList.add("MAKE");
+            }
+            if (memberUpdateRequest.getLicenseView() != null && memberUpdateRequest.getLicenseView()) {
+                grantWorkspaceLicenseToUser(workspace.getUuid(), updateUser.getUuid(), "VIEW");
+                addedProductList.add("VIEW");
+            }
+
+            if (memberUpdateRequest.getLicenseView() != null && !memberUpdateRequest.getLicenseView()) {
+                revokeWorkspaceLicenseToUser(workspace.getUuid(), updateUser.getUuid(), "VIEW");
+                removedProductList.add("VIEW");
+            }
+
+            //4-4. 라이선스 변경 히스토리 저장
             if (!addedProductList.isEmpty()) {
-                addedProductList.forEach(productName -> grantWorkspaceLicenseToUser(workspace.getUuid(), updateUser.getUuid(), productName));
                 String message = messageSource.getMessage("WORKSPACE_GRANT_LICENSE", new String[]{requestUser.getNickname(), updateUser.getNickname(), org.apache.commons.lang.StringUtils.join(addedProductList, ",")}, locale);
                 applicationEventPublisher.publishEvent(new HistoryAddEvent(message, updateUser.getUuid(), workspace));
             }
+
+            if (!removedProductList.isEmpty()) {
+                String message = messageSource.getMessage("WORKSPACE_REVOKE_LICENSE", new String[]{requestUser.getNickname(), updateUser.getNickname(), org.apache.commons.lang.StringUtils.join(removedProductList, ",")}, locale);
+                applicationEventPublisher.publishEvent(new HistoryAddEvent(message, updateUser.getUuid(), workspace));
+            }
+            log.info("[REVISE MEMBER INFO] Revise License Result Info. Removed License Product Info >> [{}], Added License Product Info >> [{}].",
+                    org.apache.commons.lang.StringUtils.join(removedProductList, ","),
+                    org.apache.commons.lang.StringUtils.join(addedProductList, ","));
 
             //4-5. 라이선스 변경 성공 메일 전송
             Context context = mailContextHandler.getWorkspaceUserPlanUpdateContext(workspace.getName(), masterUser, updateUser, currentProductList);
@@ -435,9 +466,6 @@ public abstract class WorkspaceUserService {
             applicationEventPublisher.publishEvent(new MailSendEvent(context, Mail.WORKSPACE_USER_PLAN_UPDATE, locale, receiver));
         }
         return new ApiResponse<>(true);
-    }
-
-    private void chcekUserTypeUpdatePermission(String userId) {
     }
 
     private void modifyUserInfoByUserId(String userId, UserInfoModifyRequest userInfoModifyRequest) {

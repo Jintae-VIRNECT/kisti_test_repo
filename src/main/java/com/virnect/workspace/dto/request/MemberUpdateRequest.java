@@ -1,6 +1,5 @@
 package com.virnect.workspace.dto.request;
 
-import com.virnect.workspace.domain.workspace.Role;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
 import lombok.Setter;
@@ -24,18 +23,13 @@ public class MemberUpdateRequest {
     @NotNull
     private String userId;
     @ApiModelProperty(value = "권한 변경 대상 uuid", required = true, example = "MANAGER")
-    @NotNull
-    private Role role;
+    private String role;
     @ApiModelProperty(value = "유저의 리모트 플랜 사용 여부", required = true)
-    @NotNull
     private Boolean licenseRemote;
     @ApiModelProperty(value = "유저의 메이크 플랜 사용 여부", required = true)
-    @NotNull
     private Boolean licenseMake;
     @ApiModelProperty(value = "유저의 뷰 플랜 사용 여부", required = true)
-    @NotNull
     private Boolean licenseView;
-
     @ApiModelProperty(value = "유저의 닉네임", required = false, example = "닉네임")
     private String nickname;
 
@@ -43,4 +37,9 @@ public class MemberUpdateRequest {
     public boolean isEssentialLicenseToUser() {
         return licenseRemote || licenseMake || licenseView;
     }
+    @ApiModelProperty(hidden = true)
+    public boolean existLicenseUpdate() {
+        return licenseRemote != null || licenseMake != null || licenseView != null;
+    }
+
 }
