@@ -335,8 +335,9 @@ public class WorkspaceUserController {
         return ResponseEntity.ok(new ApiResponse<>(response));
     }
 
-    @Profile("onpremise")
-    @ApiOperation(value = "워크스페이스 멤버 비밀번호 재설정", tags = "on-premise only")
+    //@Profile("onpremise")
+    //@ApiOperation(value = "워크스페이스 멤버 비밀번호 재설정", tags = "on-premise only")
+    @ApiOperation(value = "워크스페이스 멤버 비밀번호 재설정")
     @PostMapping("/{workspaceId}/members/password")
     public ResponseEntity<ApiResponse<WorkspaceMemberPasswordChangeResponse>> memberPasswordChangeRequest(
             @PathVariable("workspaceId") String workspaceId,

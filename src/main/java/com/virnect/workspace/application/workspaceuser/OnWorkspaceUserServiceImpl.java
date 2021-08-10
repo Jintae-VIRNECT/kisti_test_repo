@@ -728,9 +728,61 @@ public class OnWorkspaceUserServiceImpl extends WorkspaceUserService {
     }
 
     @Override
-    public WorkspaceMemberPasswordChangeResponse memberPasswordChange(WorkspaceMemberPasswordChangeRequest
-                                                                              passwordChangeRequest, String workspaceId) {
-        return null;
+    public WorkspaceMemberPasswordChangeResponse memberPasswordChange(WorkspaceMemberPasswordChangeRequest passwordChangeRequest, String workspaceId) {
+        //전용 계정인지 체크
+        UserInfoRestResponse userInfoRestResponse = getUserInfoByUserId(passwordChangeRequest.getMemberUUID());
+        if (!userInfoRestResponse.getUserType().equals("WORKSPACE_ONLY_USER")) {
+            throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_USER_PASSWORD_CHANGE);
+        }
+
+        //요청 권한 체크
+        Workspace workspace = workspaceRepository.findByUuid(workspaceId).orElseThrow(() -> new WorkspaceException(ErrorCode.ERR_WORKSPACE_NOT_FOUND));
+        WorkspaceUserPermission requestUserPermission = workspaceUserPermissionRepository.findByWorkspaceUser_WorkspaceAndWorkspaceUser_UserId(workspace, passwordChangeRequest.getMasterUUID()).orElseThrow(() -> new WorkspaceException(ErrorCode.ERR_WORKSPACE_NOT_FOUND));
+        WorkspaceUserPermission updateUserPermission = workspaceUserPermissionRepository.findByWorkspaceUser_WorkspaceAndWorkspaceUser_UserId(workspace, passwordChangeRequest.getMemberUUID()).orElseThrow(() -> new WorkspaceException(ErrorCode.ERR_WORKSPACE_NOT_FOUND));
+        if (!passwordChangeRequest.getMasterUUID().equals(passwordChangeRequest.getMemberUUID())) {
+            Optional<WorkspaceCustomSetting> workspaceCustomSettingOptional = workspaceCustomSettingRepository.findByWorkspace_UuidAndSetting_Name(workspaceId, SettingName.PRIVATE_USER_MANAGEMENT_ROLE_SETTING);
+            if (!workspaceCustomSettingOptional.isPresent() || workspaceCustomSettingOptional.get().getValue() == SettingValue.UNUSED || workspaceCustomSettingOptional.get().getValue() == SettingValue.MASTER_OR_MANAGER) {
+                // 요청한 사람이 마스터 또는 매니저여야 한다.
+                if (requestUserPermission.getWorkspaceRole().getRole() != Role.MASTER && requestUserPermission.getWorkspaceRole().getRole() != Role.MANAGER) {
+                    throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_INVALID_PERMISSION);
+                }
+                // 매니저 유저는 매니저 유저를 수정 할 수 없다.
+                if (requestUserPermission.getWorkspaceRole().getRole() == Role.MANAGER && updateUserPermission.getWorkspaceRole().getRole() == Role.MANAGER) {
+                    throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_INVALID_PERMISSION);
+                }
+            }
+            if (workspaceCustomSettingOptional.isPresent()) {
+                WorkspaceCustomSetting workspaceCustomSetting = workspaceCustomSettingOptional.get();
+                // 마스터 유저만 수정할 수 있다.
+                if (workspaceCustomSetting.getValue() == SettingValue.MASTER && requestUserPermission.getWorkspaceRole().getRole() != Role.MASTER) {
+                    throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_INVALID_PERMISSION);
+                }
+                //멤버 유저만 수정할 수 있다. //todo: 동급유저는 변경 가능한지 체크
+                if (workspaceCustomSetting.getValue() == SettingValue.MASTER_OR_MANAGER_OR_MEMBER) {
+                    if (requestUserPermission.getWorkspaceRole().getRole() != Role.MASTER && requestUserPermission.getWorkspaceRole().getRole() != Role.MANAGER && requestUserPermission.getWorkspaceRole().getRole() != Role.MEMBER) {
+                        throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_INVALID_PERMISSION);
+                    }
+                }
+            }
+        }
+
+        MemberUserPasswordChangeRequest changeRequest = new MemberUserPasswordChangeRequest(passwordChangeRequest.getMemberUUID(), passwordChangeRequest.getPassword());
+
+        ApiResponse<MemberUserPasswordChangeResponse> responseMessage = userRestService.memberUserPasswordChangeRequest("workspace-server", changeRequest);
+
+        if (responseMessage.getCode() != 200 || !responseMessage.getData().isChanged()) {
+            log.error("[USER SERVER PASSWORD CHANGE REST RESULT] - [code: {}, data:{}, message: {}]",
+                    responseMessage.getCode(), responseMessage.getData() == null ? "" : responseMessage.getData(),
+                    responseMessage.getMessage()
+            );
+            throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_USER_PASSWORD_CHANGE);
+        }
+
+        return new WorkspaceMemberPasswordChangeResponse(
+                passwordChangeRequest.getMasterUUID(),
+                responseMessage.getData().getUuid(),
+                responseMessage.getData().getPasswordChangedDate()
+        );
     }
 
     public RedirectView inviteWorkspaceReject(String sessionCode, String lang) {
