@@ -65,10 +65,6 @@ public class Language extends BaseTimeEntity {
         Boolean transPlPl,
         Boolean transThTh
     ) {
-<<<<<<< HEAD
-
-=======
->>>>>>> feature/develop-backup
         this.company = company;
         this.transKoKr = transKoKr;
         this.transEnUs = transEnUs;
@@ -80,38 +76,5 @@ public class Language extends BaseTimeEntity {
         this.transUkUa = transUkUa;
         this.transPlPl = transPlPl;
         this.transThTh = transThTh;
-    }
-
-    @Override
-    public String toString() {
-<<<<<<< HEAD
-        return "Language{" +
-            "id=" + id +
-            ", transKoKr=" + transKoKr +
-            ", transEnUs=" + transEnUs +
-            ", transJaJp=" + transJaJp +
-            ", transZh=" + transZh +
-            ", transFrFr=" + transFrFr +
-            ", transEsEs=" + transEsEs +
-            ", transRuRu=" + transRuRu +
-            ", transUkUa=" + transUkUa +
-            ", transPlPl=" + transPlPl +
-            ", transThTh=" + transThTh +
-            ", company=" + company +
-=======
-        return "Company{" +
-            "companyCode=" + company.getCompanyCode() +
-            ", transKoKr='" + transKoKr + '\'' +
-            ", transEnUs='" + transEnUs + '\'' +
-            ", transJaJp='" + transJaJp + '\'' +
-            ", transZh='" + transZh + '\'' +
-            ", transFrFr='" + transFrFr + '\'' +
-            ", transEsEs='" + transEsEs + '\'' +
-            ", transRuRu='" + transRuRu + '\'' +
-            ", transUkUa='" + transUkUa + '\'' +
-            ", transPlPl='" + transPlPl + '\'' +
-            ", transThTh='" + transThTh + '\'' +
->>>>>>> feature/develop-backup
-            '}';
     }
 }

@@ -10,11 +10,7 @@ public enum TranslationItem {
 	LANGUAGE_RU("русский","ru-RU"),
 	LANGUAGE_UK("Український","uk-UA"),
 	LANGUAGE_PL("Polskie","pl-PL"),
-<<<<<<< HEAD
 	LANGUAGE_TH("Thaliand","th-TH");
-=======
-	LANGUAGE_TH("Thailand","th-TH");
->>>>>>> feature/develop-backup
 
 	private final String language;
 	private final String languageCode;
