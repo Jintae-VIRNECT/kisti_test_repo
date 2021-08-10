@@ -1,6 +1,7 @@
 package com.virnect.workspace.application.workspaceuser;
 
 import com.virnect.workspace.domain.setting.SettingValue;
+import com.virnect.workspace.domain.workspace.Role;
 import com.virnect.workspace.dto.request.WorkspaceInviteRequest;
 import com.virnect.workspace.exception.WorkspaceException;
 import com.virnect.workspace.global.error.ErrorCode;
@@ -36,7 +37,7 @@ class WorkspaceUserServiceTest {
         WorkspaceInviteRequest workspaceInviteRequest = new WorkspaceInviteRequest();
         WorkspaceInviteRequest.UserInfo userInfo = new WorkspaceInviteRequest.UserInfo();
         userInfo.setEmail("abc@abc.com");
-        userInfo.setRole("MASTER");
+        userInfo.setRole(Role.MASTER);
         userInfo.setPlanRemote(false);
         userInfo.setPlanMake(false);
         userInfo.setPlanView(false);

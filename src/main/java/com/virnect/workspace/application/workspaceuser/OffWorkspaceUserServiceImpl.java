@@ -291,7 +291,7 @@ public class OffWorkspaceUserServiceImpl extends WorkspaceUserService {
             String workspaceId, MemberAccountDeleteRequest memberAccountDeleteRequest
     ) {
         //1. 요청한 사람의 권한 체크
-        checkWorkspaceAndUserRole(workspaceId, memberAccountDeleteRequest.getUserId(), new String[]{"MASTER"});
+        checkWorkspaceAndUserRole(workspaceId, memberAccountDeleteRequest.getUserId(), new Role[]{Role.MASTER});
 
         //1-1. user-server로 권한 체크
         UserInfoRestResponse userInfoRestResponse = userRestService.getUserInfoByUserId(
@@ -398,7 +398,7 @@ public class OffWorkspaceUserServiceImpl extends WorkspaceUserService {
             String workspaceId
     ) {
         checkWorkspaceAndUserRole(
-                workspaceId, passwordChangeRequest.getMasterUUID(), new String[]{"MASTER"});
+                workspaceId, passwordChangeRequest.getMasterUUID(), new Role[]{Role.MASTER});
         MemberUserPasswordChangeRequest changeRequest = new MemberUserPasswordChangeRequest(
                 passwordChangeRequest.getMemberUUID(), passwordChangeRequest.getPassword()
         );
@@ -423,16 +423,16 @@ public class OffWorkspaceUserServiceImpl extends WorkspaceUserService {
 
     }
 
-    private Workspace checkWorkspaceAndUserRole(String workspaceId, String userId, String[] role) {
+    private Workspace checkWorkspaceAndUserRole(String workspaceId, String userId, Role[] roles) {
         Workspace workspace = workspaceRepository.findByUuid(workspaceId).orElseThrow(() -> new WorkspaceException(ErrorCode.ERR_WORKSPACE_NOT_FOUND));
         WorkspaceUserPermission workspaceUserPermission = workspaceUserPermissionRepository.findByWorkspaceUser_WorkspaceAndWorkspaceUser_UserId(workspace, userId).orElseThrow(() -> new WorkspaceException(ErrorCode.ERR_WORKSPACE_USER_NOT_FOUND));
 
         log.info(
                 "[CHECK WORKSPACE USER ROLE] Acceptable User Workspace Role : {}, Present User Role : [{}]",
-                Arrays.toString(role),
+                Arrays.toString(roles),
                 workspaceUserPermission.getWorkspaceRole().getRole()
         );
-        if (Arrays.stream(role).noneMatch(workspaceUserPermission.getWorkspaceRole().getRole()::equals)) {
+        if (Arrays.stream(roles).noneMatch(role -> workspaceUserPermission.getWorkspaceRole().getRole()==role)) {
             throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_INVALID_PERMISSION);
         }
         return workspace;

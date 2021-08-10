@@ -137,7 +137,7 @@ public class OffWorkspaceServiceImpl extends WorkspaceService {
             String workspaceId, WorkspaceFaviconUpdateRequest workspaceFaviconUpdateRequest
     ) {
         //1. 권한 체크
-        Workspace workspace = checkWorkspaceAndUserRole(workspaceId, workspaceFaviconUpdateRequest.getUserId(), new String[]{"MASTER"});
+        Workspace workspace = checkWorkspaceAndUserRole(workspaceId, workspaceFaviconUpdateRequest.getUserId(), new Role[]{Role.MASTER});
         List<WorkspaceSetting> workspaceSettingList = workspaceSettingRepository.findAll();
         WorkspaceSetting workspaceSetting = workspaceSettingList.stream().findFirst()
                 .orElseThrow(() -> new WorkspaceException(ErrorCode.ERR_UNEXPECTED_SERVER_ERROR));
@@ -200,7 +200,7 @@ public class OffWorkspaceServiceImpl extends WorkspaceService {
     ) {
         //1. 권한 체크
         Workspace workspace = checkWorkspaceAndUserRole(
-                workspaceId, workspaceLogoUpdateRequest.getUserId(), new String[]{"MASTER"});
+                workspaceId, workspaceLogoUpdateRequest.getUserId(), new Role[]{Role.MASTER});
         List<WorkspaceSetting> workspaceSettingList = workspaceSettingRepository.findAll();
         WorkspaceSetting workspaceSetting = workspaceSettingList.stream().findFirst()
                 .orElseThrow(() -> new WorkspaceException(ErrorCode.ERR_UNEXPECTED_SERVER_ERROR));
@@ -284,7 +284,7 @@ public class OffWorkspaceServiceImpl extends WorkspaceService {
     ) {
         //1. 권한 체크
         Workspace workspace = checkWorkspaceAndUserRole(
-                workspaceId, workspaceTitleUpdateRequest.getUserId(), new String[]{"MASTER"});
+                workspaceId, workspaceTitleUpdateRequest.getUserId(), new Role[]{Role.MASTER});
         List<WorkspaceSetting> workspaceSettingList = workspaceSettingRepository.findAll();
         WorkspaceSetting workspaceSetting = workspaceSettingList.stream().findFirst()
                 .orElseThrow(() -> new WorkspaceException(ErrorCode.ERR_UNEXPECTED_SERVER_ERROR));
@@ -315,16 +315,16 @@ public class OffWorkspaceServiceImpl extends WorkspaceService {
         return workspaceCustomSettingResponse;
     }
 
-    private Workspace checkWorkspaceAndUserRole(String workspaceId, String userId, String[] role) {
+    private Workspace checkWorkspaceAndUserRole(String workspaceId, String userId, Role[] roles) {
         Workspace workspace = workspaceRepository.findByUuid(workspaceId).orElseThrow(() -> new WorkspaceException(ErrorCode.ERR_WORKSPACE_NOT_FOUND));
         WorkspaceUserPermission workspaceUserPermission = workspaceUserPermissionRepository.findByWorkspaceUser_WorkspaceAndWorkspaceUser_UserId(workspace, userId).orElseThrow(() -> new WorkspaceException(ErrorCode.ERR_WORKSPACE_USER_NOT_FOUND));
 
         log.info(
                 "[CHECK WORKSPACE USER ROLE] Acceptable User Workspace Role : {}, Present User Role : [{}]",
-                Arrays.toString(role),
+                Arrays.toString(roles),
                 workspaceUserPermission.getWorkspaceRole().getRole()
         );
-        if (Arrays.stream(role).noneMatch(workspaceUserPermission.getWorkspaceRole().getRole()::equals)) {
+        if (Arrays.stream(roles).noneMatch(role -> role == workspaceUserPermission.getWorkspaceRole().getRole())) {
             throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_INVALID_PERMISSION);
         }
         return workspace;

@@ -277,14 +277,14 @@ public class OnWorkspaceUserServiceImpl extends WorkspaceUserService {
                 throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_INVALID_PERMISSION);
             }
             // 매니저 유저는 매니저 유저를 초대할 수 없다.
-            if (requestUserPermission.getWorkspaceRole().getRole().equals("MANAGER") && invitedUserRoleList.stream().anyMatch(s -> s.equals("MANAGER"))) {
+            if (requestUserPermission.getWorkspaceRole().getRole() == Role.MANAGER && invitedUserRoleList.stream().anyMatch(s -> s.equals(Role.MANAGER.name()))) {
                 throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_INVALID_PERMISSION);
             }
         }
         if (workspaceCustomSettingOptional.isPresent()) {
             WorkspaceCustomSetting workspaceCustomSetting = workspaceCustomSettingOptional.get();
             // 마스터 유저만 초대 할 수 있다.
-            if (workspaceCustomSetting.getValue() == SettingValue.MASTER && !requestUserPermission.getWorkspaceRole().getRole().equals("MASTER")) {
+            if (workspaceCustomSetting.getValue() == SettingValue.MASTER && requestUserPermission.getWorkspaceRole().getRole() != Role.MASTER) {
                 throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_INVALID_PERMISSION);
             }
             //멤버유저도 초대할 수 있다. 단 상위 유저는 초대할 수 없다.
@@ -425,7 +425,7 @@ public class OnWorkspaceUserServiceImpl extends WorkspaceUserService {
         workspaceUserPermissionRepository.save(newWorkspaceUserPermission);
 
         String message;
-        if (userInvite.getRole().equals("MANAGER")) {
+        if (userInvite.getRole()==Role.MANAGER) {
             message = messageSource.getMessage("WORKSPACE_INVITE_MANAGER", new String[]{inviteUserInfo.getNickname(), String.join(",", requestPlanList)}, locale);
         } else {
             message = messageSource.getMessage("WORKSPACE_INVITE_MEMBER", new String[]{inviteUserInfo.getNickname(), String.join(",", requestPlanList)}, locale);
@@ -481,7 +481,7 @@ public class OnWorkspaceUserServiceImpl extends WorkspaceUserService {
 
     private List<String> getMasterAndManagerEmail(Workspace workspace, UserInfoRestResponse masterUserInfo) {
         List<String> emailReceiverList = new ArrayList<>();
-        List<WorkspaceUserPermission> managerUserPermissionList = workspaceUserPermissionRepository.findByWorkspaceUser_WorkspaceAndWorkspaceRole_Role(workspace, "MANAGER");
+        List<WorkspaceUserPermission> managerUserPermissionList = workspaceUserPermissionRepository.findByWorkspaceUser_WorkspaceAndWorkspaceRole_Role(workspace, Role.MANAGER);
         if (managerUserPermissionList != null && !managerUserPermissionList.isEmpty()) {
             managerUserPermissionList.forEach(workspaceUserPermission -> {
                 UserInfoRestResponse managerUserInfo = getUserInfoByUserId(workspaceUserPermission.getWorkspaceUser().getUserId());

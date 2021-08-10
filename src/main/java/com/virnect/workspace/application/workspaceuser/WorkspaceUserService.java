@@ -105,7 +105,16 @@ public abstract class WorkspaceUserService {
             }
             //3-2. 워크스페이스 역할로 필터링
             else if (filter.matches(ANY_WORKSPACE_ROLE) && !resultUserIdList.isEmpty()) {
-                resultUserIdList = workspaceUserPermissionRepository.getUserIdsByInUserListAndEqRole(resultUserIdList, roleFilter, workspaceId);
+                String[] filters = filter.toUpperCase().split(",").length == 0 ? new String[]{filter.toUpperCase()} : filter.toUpperCase().split(",");
+                List<Role> roleList = new ArrayList<>();
+                Arrays.stream(Role.values()).forEach(role -> {
+                    for (String StringRole : filters) {
+                        if (role.name().equals(StringRole)) {
+                            roleList.add(role);
+                        }
+                    }
+                });
+                resultUserIdList = workspaceUserPermissionRepository.getUserIdsByInUserListAndEqRole(resultUserIdList, roleList, workspaceId);
             }
         }
         //3-3. 워크스페이스 역할로 필터링
@@ -359,7 +368,7 @@ public abstract class WorkspaceUserService {
 
             //2-4. 변경 성공 히스토리 저장
             String message;
-            if (updateUserPermission.getWorkspaceRole().getRole().equals("MANAGER")) {
+            if (updateUserPermission.getWorkspaceRole().getRole() == Role.MANAGER) {
                 message = messageSource.getMessage("WORKSPACE_SET_MANAGER", new String[]{masterUser.getNickname(), updateUser.getNickname()}, locale);
             } else {
                 message = messageSource.getMessage("WORKSPACE_SET_MEMBER", new String[]{masterUser.getNickname(), updateUser.getNickname()}, locale);
@@ -468,7 +477,7 @@ public abstract class WorkspaceUserService {
 
         //상위 유저에 대해서는 플랜을 변경할 수 없음.
         if (requestUserPermission.getId() > updateUserPermission.getId()) {
-            if (updateUserPermission.getWorkspaceRole().getRole().equals("MASTER")) {
+            if (updateUserPermission.getWorkspaceRole().getRole() == Role.MASTER) {
                 throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_USER_INFO_UPDATE_MASTER_PLAN);
             }
             throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_INVALID_PERMISSION);
@@ -530,7 +539,7 @@ public abstract class WorkspaceUserService {
         Role requestUserRole = requestUserPermission.getWorkspaceRole().getRole();
         if (!workspaceCustomSettingOptional.isPresent() || workspaceCustomSettingOptional.get().getValue() == SettingValue.UNUSED || workspaceCustomSettingOptional.get().getValue() == SettingValue.MASTER) {
             //요청 유저 권한 체크 -> 마스터가 아니면 던짐
-            if (!requestUserRole.equals("MASTER")) {
+            if (requestUserRole != Role.MASTER) {
                 throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_INVALID_PERMISSION);
             }
         }
@@ -1070,14 +1079,14 @@ public abstract class WorkspaceUserService {
 
         //1-2. 요청받은 유저가 시트유저인지 체크
         WorkspaceUserPermission deleteUserPermission = workspaceUserPermissionRepository.findByWorkspaceUser_WorkspaceAndWorkspaceUser_UserId(workspace, memberSeatDeleteRequest.getDeleteUserId()).orElseThrow(() -> new WorkspaceException(ErrorCode.ERR_WORKSPACE_USER_NOT_FOUND));
-        if (!deleteUserPermission.getWorkspaceRole().getRole().equals("SEAT")) {
+        if (deleteUserPermission.getWorkspaceRole().getRole() != Role.SEAT) {
             throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_SEAT_USER_DELETE);
         }
 
         //2. 라이선스 해제 요청
-        List<WorkspaceLicensePlanInfoResponse.LicenseProductInfoResponse> licenseProductInfoList = getWorkspaceLicensesByWorkspaceId(workspaceId).getLicenseProductInfoList();
-        if (!licenseProductInfoList.isEmpty()) {
-            List<String> productList = licenseProductInfoList.stream().map(WorkspaceLicensePlanInfoResponse.LicenseProductInfoResponse::getProductName).collect(Collectors.toList());
+        MyLicenseInfoListResponse myLicenseInfoListResponse = getMyLicenseInfoRequestHandler(workspaceId, memberSeatDeleteRequest.getDeleteUserId());
+        if (!myLicenseInfoListResponse.getLicenseInfoList().isEmpty()) {
+            List<String> productList = myLicenseInfoListResponse.getLicenseInfoList().stream().map(MyLicenseInfoResponse::getProductName).collect(Collectors.toList());
             productList.forEach(productName -> revokeWorkspaceLicenseToUser(workspaceId, memberSeatDeleteRequest.getUserId(), productName));
         }
 

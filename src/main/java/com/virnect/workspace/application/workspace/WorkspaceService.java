@@ -304,7 +304,7 @@ public abstract class WorkspaceService {
     public WorkspaceSecessionResponse deleteAllWorkspaceInfo(String userUUID) {
         List<WorkspaceUserPermission> workspaceUserPermissionList = workspaceUserPermissionRepository.findByWorkspaceUser_UserId(userUUID);
         workspaceUserPermissionList.forEach(workspaceUserPermission -> {
-            if (workspaceUserPermission.getWorkspaceRole().getRole().equals("MASTER")) {
+            if (workspaceUserPermission.getWorkspaceRole().getRole()==Role.MASTER) {
                 Workspace workspace = workspaceUserPermission.getWorkspaceUser().getWorkspace();
 
                 List<WorkspaceUser> workspaceUserList = workspace.getWorkspaceUserList();

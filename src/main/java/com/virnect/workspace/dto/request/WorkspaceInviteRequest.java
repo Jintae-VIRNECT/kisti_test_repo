@@ -51,7 +51,7 @@ public class WorkspaceInviteRequest {
 
     @ApiModelProperty(hidden = true)
     public boolean existMasterUserInvite() {
-        return userInfoList.stream().anyMatch(userInfo -> userInfo.getRole().equals("MASTER"));
+        return userInfoList.stream().anyMatch(userInfo -> userInfo.getRole()==(Role.MASTER));
     }
 }
 
