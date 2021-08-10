@@ -1,5 +1,6 @@
 package com.virnect.serviceserver.servicedashboard.api;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -20,7 +21,6 @@ import com.virnect.data.error.exception.RestServiceException;
 import com.virnect.data.global.common.ApiResponse;
 import com.virnect.data.infra.utils.LogMessage;
 import com.virnect.serviceserver.servicedashboard.application.DashboardFileService;
-import com.virnect.serviceserver.servicedashboard.dto.request.FileDataRequest;
 import com.virnect.serviceserver.servicedashboard.dto.response.FileDeleteResponse;
 import com.virnect.serviceserver.servicedashboard.dto.response.FileDetailInfoListResponse;
 import com.virnect.serviceserver.servicedashboard.dto.response.FileInfoListResponse;
@@ -69,27 +69,16 @@ public class DashboardFileRestController {
 			TAG,
 			"REST API: GET "
 				+ REST_PATH + "/"
-				+ (workspaceId != null ? workspaceId : "{}") + "::"
-				+ (sessionId != null ? sessionId : "{}"),
+				+ workspaceId + "/"
+				+ sessionId,
 			"getAttachedFileListRequestHandler"
 		);
-		if ((workspaceId != null && workspaceId.isEmpty())
-			|| (userId != null && userId.isEmpty())
-			|| (sessionId != null && sessionId.isEmpty())
-		) {
+		if (StringUtils.isBlank(workspaceId) || StringUtils.isBlank(sessionId) || StringUtils.isBlank(userId)) {
 			throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
 		}
-
-		FileDataRequest option = FileDataRequest.builder()
-				.workspaceId(workspaceId)
-				.sessionId(sessionId)
-				.userId(userId)
-				.deleted(deleted)
-				.build();
-
-		FileInfoListResponse responseData = fileService.getAttachedFileList(option);
-
-		return ResponseEntity.ok(new ApiResponse<>(responseData));
+		return ResponseEntity.ok(
+			new ApiResponse<>(fileService.getAttachedFileList(workspaceId, sessionId, deleted))
+		);
 	}
 
 	/**
@@ -113,27 +102,16 @@ public class DashboardFileRestController {
 			TAG,
 			"REST API: GET "
 				+ REST_PATH + "/"
-				+ (workspaceId != null ? workspaceId : "{}") + "::"
-				+ (sessionId != null ? sessionId : "{}"),
+				+ workspaceId + "/"
+				+ sessionId,
 			"getLocalRecordFileListRequestHandler"
 		);
-		if ((workspaceId != null && workspaceId.isEmpty())
-			|| (userId != null && userId.isEmpty())
-			|| (sessionId != null && sessionId.isEmpty())
-		) {
+		if (StringUtils.isBlank(workspaceId) || StringUtils.isBlank(sessionId) || StringUtils.isBlank(userId)) {
 			throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
 		}
-
-		FileDataRequest option = FileDataRequest.builder()
-				.workspaceId(workspaceId)
-				.sessionId(sessionId)
-				.userId(userId)
-				.deleted(deleted)
-				.build();
-
-		FileDetailInfoListResponse responseData = fileService.getLocalRecordFileList(option);
-
-		return ResponseEntity.ok(new ApiResponse<>(responseData));
+		return ResponseEntity.ok(
+			new ApiResponse<>(fileService.getLocalRecordFileList(workspaceId, sessionId, deleted))
+		);
 	}
 
 	/**
@@ -157,27 +135,16 @@ public class DashboardFileRestController {
 			TAG,
 			"REST API: GET "
 				+ REST_PATH + "/"
-				+ (workspaceId != null ? workspaceId : "{}") + "::"
-				+ (userId != null ? userId : "{}"),
+				+ workspaceId + "/"
+				+ userId,
 			"getServerRecordFileListRequestHandler"
 		);
-		if ((workspaceId != null && workspaceId.isEmpty())
-			|| (userId != null && userId.isEmpty())
-			|| (sessionId != null && sessionId.isEmpty())
-		) {
+		if (StringUtils.isBlank(workspaceId) || StringUtils.isBlank(sessionId) || StringUtils.isBlank(userId)) {
 			throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
 		}
-
-		FileDataRequest option = FileDataRequest.builder()
-				.workspaceId(workspaceId)
-				.sessionId(sessionId)
-				.userId(userId)
-				.order(order)
-				.build();
-
-		RecordServerFileInfoListResponse responseData = fileService.getServerRecordFileList(option);
-
-		return ResponseEntity.ok(new ApiResponse<>(responseData));
+		return ResponseEntity.ok(
+			new ApiResponse<>(fileService.getServerRecordFileList(workspaceId, sessionId, userId, order))
+		);
 	}
 
 	/**
@@ -199,24 +166,15 @@ public class DashboardFileRestController {
 			TAG,
 			"REST API: DELETE "
 				+ REST_PATH + "/"
-				+ (workspaceId != null ? workspaceId : "{}"),
+				+ workspaceId,
 			"deleteServerRecordFileRequestHandler"
 		);
-		if ((workspaceId != null && workspaceId.isEmpty())
-			|| (userId != null && userId.isEmpty())
-		) {
+		if (StringUtils.isBlank(workspaceId) || StringUtils.isBlank(userId)) {
 			throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
 		}
-
-		FileDataRequest option = FileDataRequest.builder()
-				.workspaceId(workspaceId)
-				.userId(userId)
-				.id(id)
-				.build();
-
-		Object responseData = fileService.deleteServerRecordFileUrl(option);
-
-		return ResponseEntity.ok(new ApiResponse<>(responseData));
+		return ResponseEntity.ok(
+			new ApiResponse<>(fileService.deleteServerRecordFileUrl(workspaceId, userId, id))
+		);
 	}
 
 	/**
@@ -240,28 +198,16 @@ public class DashboardFileRestController {
 			TAG,
 			"REST API: DELETE "
 				+ REST_PATH + "/"
-				+ (workspaceId != null ? workspaceId : "{}")
-				+ (sessionId != null ? sessionId : "{}"),
+				+ workspaceId + "/"
+				+ sessionId,
 			"deleteLocalRecordFileRequestHandler"
 		);
-		if ((workspaceId != null && workspaceId.isEmpty())
-			|| (sessionId != null && sessionId.isEmpty())
-			|| (userId != null && userId.isEmpty())
-			|| (objectName != null && objectName.isEmpty())
-		) {
+		if (StringUtils.isBlank(workspaceId) || StringUtils.isBlank(sessionId) || StringUtils.isBlank(userId) || StringUtils.isBlank(objectName)) {
 			throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
 		}
-
-		FileDataRequest option = FileDataRequest.builder()
-				.workspaceId(workspaceId)
-				.sessionId(sessionId)
-				.userId(userId)
-				.objectName(objectName)
-				.build();
-
-		FileDeleteResponse responseData = fileService.deleteLocalRecordFileUrl(option);
-
-		return ResponseEntity.ok(new ApiResponse<>(responseData));
+		return ResponseEntity.ok(
+			new ApiResponse<>(fileService.deleteLocalRecordFileUrl(workspaceId, sessionId, objectName))
+		);
 	}
 
 	/**
@@ -285,29 +231,16 @@ public class DashboardFileRestController {
 			TAG,
 			"REST API: DELETE "
 				+ REST_PATH + "/"
-				+ (workspaceId != null ? workspaceId : "{}")
-				+ (sessionId != null ? sessionId : "{}"),
+				+ workspaceId + "/"
+				+ sessionId,
 			"deleteAttachedFileRequestHandler"
 		);
-		if ((workspaceId != null && workspaceId.isEmpty())
-			|| (sessionId != null && sessionId.isEmpty())
-			|| (userId != null && userId.isEmpty())
-			|| (objectName != null && objectName.isEmpty())
-		) {
+		if (StringUtils.isBlank(workspaceId) || StringUtils.isBlank(sessionId) || StringUtils.isBlank(userId) || StringUtils.isBlank(objectName)) {
 			throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
 		}
-
-
-		FileDataRequest option = FileDataRequest.builder()
-				.workspaceId(workspaceId)
-				.sessionId(sessionId)
-				.userId(userId)
-				.objectName(objectName)
-				.build();
-
-		FileDeleteResponse responseData = fileService.deleteAttachedFile(option);
-
-		return ResponseEntity.ok(new ApiResponse<>(responseData));
+		return ResponseEntity.ok(
+			new ApiResponse<>(fileService.deleteAttachedFile(workspaceId, sessionId, objectName))
+		);
 	}
 
 	/**
@@ -331,28 +264,16 @@ public class DashboardFileRestController {
 			TAG,
 			"REST API: GET "
 				+ REST_PATH + "/"
-				+ (workspaceId != null ? workspaceId : "{}")
-				+ (sessionId != null ? sessionId : "{}"),
+				+ workspaceId + "/"
+				+ sessionId,
 			"getFileDownloadUrlRequestHandler"
 		);
-		if ((workspaceId != null && workspaceId.isEmpty())
-			|| (sessionId != null && sessionId.isEmpty())
-			|| (userId != null && userId.isEmpty())
-			|| (objectName != null && objectName.isEmpty())
-		) {
+		if (StringUtils.isBlank(workspaceId) || StringUtils.isBlank(sessionId) || StringUtils.isBlank(userId) || StringUtils.isBlank(objectName)) {
 			throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
 		}
-
-		FileDataRequest option = FileDataRequest.builder()
-				.workspaceId(workspaceId)
-				.sessionId(sessionId)
-				.userId(userId)
-				.objectName(objectName)
-				.build();
-
-		FilePreSignedResponse responseData = fileService.getAttachedFileUrl(option);
-
-		return ResponseEntity.ok(new ApiResponse<>(responseData));
+		return ResponseEntity.ok(
+			new ApiResponse<>(fileService.getAttachedFileUrl(workspaceId, sessionId, objectName))
+		);
 	}
 
 	/**
@@ -374,26 +295,17 @@ public class DashboardFileRestController {
 			TAG,
 			"REST API: GET "
 				+ REST_PATH + "/"
-				+ (workspaceId != null ? workspaceId : "{}")
-				+ (userId != null ? userId : "{}")
-				+ (id != null ? id : "{}"),
+				+ workspaceId + "/"
+				+ userId + "/"
+				+ id,
 			"getServerRecordFileDownloadUrlRequestHandler"
 		);
-		if ((workspaceId != null && workspaceId.isEmpty())
-			|| (userId != null && userId.isEmpty())
-		) {
+		if (StringUtils.isBlank(workspaceId) || StringUtils.isBlank(userId)) {
 			throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
 		}
-
-		FileDataRequest option = FileDataRequest.builder()
-				.workspaceId(workspaceId)
-				.userId(userId)
-				.id(id)
-				.build();
-
-		String responseData = fileService.getServerRecordFileUrl(option);
-
-		return ResponseEntity.ok(new ApiResponse<>(responseData));
+		return ResponseEntity.ok(
+			new ApiResponse<>(fileService.getServerRecordFileUrl(workspaceId, userId, id))
+		);
 	}
 
 	/**
@@ -417,27 +329,15 @@ public class DashboardFileRestController {
 			TAG,
 			"REST API: GET "
 				+ REST_PATH + "/"
-				+ (workspaceId != null ? workspaceId : "{}")
-				+ (sessionId != null ? sessionId : "{}"),
+				+ workspaceId + "/"
+				+ sessionId,
 			"getLocalRecordFileDownloadUrlRequestHandler"
 		);
-		if ((workspaceId != null && workspaceId.isEmpty())
-			|| (sessionId != null && sessionId.isEmpty())
-			|| (userId != null && userId.isEmpty())
-			|| (objectName != null && objectName.isEmpty())
-		) {
+		if (StringUtils.isBlank(workspaceId) || StringUtils.isBlank(sessionId) || StringUtils.isBlank(userId) || StringUtils.isBlank(objectName)) {
 			throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
 		}
-
-		FileDataRequest option = FileDataRequest.builder()
-				.workspaceId(workspaceId)
-				.sessionId(sessionId)
-				.userId(userId)
-				.objectName(objectName)
-				.build();
-
-		FilePreSignedResponse responseData = fileService.getLocalRecordFileUrl(option);
-
-		return ResponseEntity.ok(new ApiResponse<>(responseData));
+		return ResponseEntity.ok(
+			new ApiResponse<>(fileService.getLocalRecordFileUrl(workspaceId, sessionId, objectName))
+		);
 	}
 }

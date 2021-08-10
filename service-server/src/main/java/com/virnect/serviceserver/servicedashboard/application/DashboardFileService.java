@@ -10,13 +10,14 @@ import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.ObjectUtils;
 
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import com.virnect.data.application.record.RecordRestService;
-import com.virnect.data.application.user.UserRestService;
+import com.virnect.data.application.account.AccountRestService;
 import com.virnect.data.application.workspace.WorkspaceRestService;
 import com.virnect.data.dao.file.FileRepository;
 import com.virnect.data.dao.file.RecordFileRepository;
@@ -35,7 +36,6 @@ import com.virnect.serviceserver.servicedashboard.dto.mapper.file.DashboardFileP
 import com.virnect.serviceserver.servicedashboard.dto.mapper.file.DashboardFileUserInfoMapper;
 import com.virnect.serviceserver.servicedashboard.dto.mapper.record.DashboardRecordFileDetailMapper;
 import com.virnect.serviceserver.servicedashboard.dto.mapper.record.DashboardRecordFilePreSignedMapper;
-import com.virnect.serviceserver.servicedashboard.dto.request.FileDataRequest;
 import com.virnect.serviceserver.servicedashboard.dto.response.FileDeleteResponse;
 import com.virnect.serviceserver.servicedashboard.dto.response.FileDetailInfoListResponse;
 import com.virnect.serviceserver.servicedashboard.dto.response.FileDetailInfoResponse;
@@ -50,8 +50,10 @@ import com.virnect.serviceserver.servicedashboard.dto.response.FileUserInfoRespo
 @Transactional
 public class DashboardFileService {
 
+	private final int EXPIRY = 60 * 60 * 24; //one day
+
 	private final WorkspaceRestService workspaceRestService;
-	private final UserRestService userRestService;
+	private final AccountRestService accountRestService;
 	private final IFileManagementService fileManagementService;
 	private final RecordRestService recordRestService;
 	private final FileRepository fileRepository;
@@ -74,47 +76,24 @@ public class DashboardFileService {
 
 	/**
 	 * 첨부파일 목록 요청 처리
-	 *
-	 * @param fileDataRequest - 파일 요청 데이터
 	 * @return - 첨부파일 목록
 	 */
-	public FileInfoListResponse getAttachedFileList(FileDataRequest fileDataRequest) {
-
+	public FileInfoListResponse getAttachedFileList(
+		String workspaceId,
+		String sessionId,
+		boolean delete
+	) {
 		List<FileInfoResponse> fileInfoList;
-
 		try {
-			/*List<File> files;
-
-			if (fileDataRequest.isDeleted()) {
-				files = fileRepository.findByWorkspaceIdAndSessionIdAndDeleted(
-					fileDataRequest.getWorkspaceId(),
-					fileDataRequest.getSessionId(),
-					fileDataRequest.isDeleted()
-				);
-			} else {
-				files = fileRepository.findByWorkspaceIdAndSessionIdAndDeletedIsFalse(
-					fileDataRequest.getWorkspaceId(),
-					fileDataRequest.getSessionId()
-				);
-			}*/
-
-			List<File> files = fileRepository.findByWorkspaceIdAndSessionIdAndDeleted(
-				fileDataRequest.getWorkspaceId(),
-				fileDataRequest.getSessionId(),
-				fileDataRequest.isDeleted()
-			);
-
+			List<File> files = fileRepository.findByWorkspaceIdAndSessionIdAndDeleted(workspaceId, sessionId, delete);
 			fileInfoList = files
 				.stream()
-				.map(
-					file -> dashboardFileInfoMapper.toDto(file)
-				)
+				.map(dashboardFileInfoMapper::toDto)
 				.sorted((Comparator.comparing(FileInfoResponse::getCreatedDate)))
 				.collect(Collectors.toList());
 
 			for (FileInfoResponse file : fileInfoList) {
-				ApiResponse<WorkspaceMemberInfoResponse> workspaceMemberInfo
-					= workspaceRestService.getWorkspaceMemberInfo(fileDataRequest.getWorkspaceId(), file.getUuid());
+				ApiResponse<WorkspaceMemberInfoResponse> workspaceMemberInfo = workspaceRestService.getWorkspaceMemberInfo(workspaceId, file.getUuid());
 				file.setNickName(workspaceMemberInfo.getData().getNickName());
 			}
 		} catch (Exception exception) {
@@ -125,37 +104,18 @@ public class DashboardFileService {
 
 	/**
 	 * 로컬 녹화 파일 목록 요청 처리
-	 *
-	 * @param fileDataRequest - 파일 요청 데이터
 	 * @return - 로컬 녹화 파일 목록
 	 */
-	public FileDetailInfoListResponse getLocalRecordFileList(FileDataRequest fileDataRequest) {
-
+	public FileDetailInfoListResponse getLocalRecordFileList(
+		String workspaceId,
+		String sessionId,
+		boolean deleted
+	) {
 		List<FileDetailInfoResponse> fileDetailInfoList = new ArrayList<>();
-
-		/*List<RecordFile> recordFiles;
-
-		if (fileDataRequest.isDeleted()) {
-			recordFiles = recordFileRepository.findByWorkspaceIdAndSessionIdAndDeletedIsTrue(
-				fileDataRequest.getWorkspaceId(),
-				fileDataRequest.getSessionId()
-			);
-		} else {
-			recordFiles = recordFileRepository.findByWorkspaceIdAndSessionIdAndDeletedIsFalse(
-				fileDataRequest.getWorkspaceId(),
-				fileDataRequest.getSessionId()
-			);
-		}*/
-
-		List<RecordFile> recordFiles = recordFileRepository.findByWorkspaceIdAndSessionIdAndDeleted(
-			fileDataRequest.getWorkspaceId(),
-			fileDataRequest.getSessionId(),
-			fileDataRequest.isDeleted()
-		);
-
 		try {
+			List<RecordFile> recordFiles = recordFileRepository.findByWorkspaceIdAndSessionIdAndDeleted(workspaceId, sessionId, deleted);
 			for (RecordFile recordFile : recordFiles) {
-				ApiResponse<UserInfoResponse> feignResponse = userRestService.getUserInfoByUserId(recordFile.getUuid());
+				ApiResponse<UserInfoResponse> feignResponse = accountRestService.getUserInfoByUserId(recordFile.getUuid());
 
 				FileUserInfoResponse fileUserInfoResponse = dashboardFileUserInfoMapper.toDto(feignResponse.getData());
 				FileDetailInfoResponse fileDetailInfoResponse = dashboardRecordFileDetailMapper.toDto(recordFile);
@@ -163,9 +123,7 @@ public class DashboardFileService {
 				fileDetailInfoResponse.setFileUserInfo(fileUserInfoResponse);
 				fileDetailInfoList.add(fileDetailInfoResponse);
 			}
-			fileDetailInfoList
-				.stream()
-				.sorted(Comparator.comparing(FileDetailInfoResponse::getCreatedDate));
+			fileDetailInfoList.stream().sorted(Comparator.comparing(FileDetailInfoResponse::getCreatedDate));
 		} catch (Exception exception) {
 			throw new RestServiceException(ErrorCode.ERR_FILE_FIND_LIST_FAILED);
 		}
@@ -174,136 +132,99 @@ public class DashboardFileService {
 
 	/**
 	 * 로컬 녹화 파일 목록 요청 처리
-	 *
-	 * @param fileDataRequest - 파일 요청 데이터
 	 * @return - 로컬 녹화 파일 목록
 	 */
-	public RecordServerFileInfoListResponse getServerRecordFileList(FileDataRequest fileDataRequest) {
+	public RecordServerFileInfoListResponse getServerRecordFileList(
+		String workspaceId,
+		String sessionId,
+		String userId,
+		String order
+	) {
 		RecordServerFileInfoListResponse responseData;
 		try {
-			responseData = recordRestService.getServerRecordFileList(
-				fileDataRequest.getWorkspaceId(),
-				fileDataRequest.getUserId(),
-				fileDataRequest.getSessionId(),
-				fileDataRequest.getOrder()
-			).getData();
+			responseData = recordRestService.getServerRecordFileList(workspaceId, userId, sessionId, order).getData();
 		} catch (Exception exception) {
-			throw new RestServiceException(ErrorCode.ERR_SERVER_RECORD_FILE_FOUND);
+			throw new RestServiceException(ErrorCode.ERR_SERVER_RECORD_FILE_EXCEPTION);
 		}
 		return responseData;
 	}
 
 	/**
 	 * 첨부파일 URL 요청 처리
-	 *
-	 * @param fileDataRequest - 파일 요청 데이터
 	 * @return - 첨부파일 URL 정보
 	 */
-	public FilePreSignedResponse getAttachedFileUrl(FileDataRequest fileDataRequest) {
-
+	public FilePreSignedResponse getAttachedFileUrl(
+		String workspaceId,
+		String sessionId,
+		String objectName
+	) {
 		FilePreSignedResponse filePreSignedResponse;
-
-		File file = fileRepository.findByWorkspaceIdAndSessionIdAndObjectName(
-			fileDataRequest.getWorkspaceId(),
-			fileDataRequest.getSessionId(),
-			fileDataRequest.getObjectName()
-		).orElse(null);
-
-		if (file != null) {
-			try {
-				StringBuilder stringBuilder;
-				stringBuilder = new StringBuilder();
-				stringBuilder.append(fileDataRequest.getWorkspaceId()).append("/")
-					.append(fileDataRequest.getSessionId()).append("/")
-					.append(file.getObjectName());
-
-				String bucketPath = generateDirPath(fileDataRequest.getWorkspaceId(), fileDataRequest.getSessionId());
-
-				int expiry = 60 * 60 * 24; //one day
-
-				String url = fileManagementService.filePreSignedUrl(
-					bucketPath,
-					fileDataRequest.getObjectName(),
-					expiry,
-					file.getName(),
-					FileType.FILE
-				);
-				filePreSignedResponse = dashboardFilePreSignedMapper.toDto(file);
-				filePreSignedResponse.setExpiry(expiry);
-				filePreSignedResponse.setUrl(url);
-
-			} catch (IOException | NoSuchAlgorithmException | InvalidKeyException exception) {
-				throw new RestServiceException(ErrorCode.ERR_FILE_GET_SIGNED_EXCEPTION);
+		try {
+			File file = fileRepository.findByWorkspaceIdAndSessionIdAndObjectName(workspaceId, sessionId, objectName).orElse(null);
+			if (ObjectUtils.isEmpty(file)) {
+				throw new RestServiceException(ErrorCode.ERR_FILE_NOT_FOUND);
 			}
-		} else {
-			throw new RestServiceException(ErrorCode.ERR_FILE_NOT_FOUND);
+			String url = fileManagementService.filePreSignedUrl(
+				generateDirPath(workspaceId, sessionId),	// bucket path
+				objectName,
+				EXPIRY,
+				file.getName(),
+				FileType.FILE
+			);
+			filePreSignedResponse = dashboardFilePreSignedMapper.toDto(file);
+			filePreSignedResponse.setExpiry(EXPIRY);
+			filePreSignedResponse.setUrl(url);
+		} catch (IOException | NoSuchAlgorithmException | InvalidKeyException exception) {
+			throw new RestServiceException(ErrorCode.ERR_FILE_GET_SIGNED_EXCEPTION);
 		}
-
 		return filePreSignedResponse;
 	}
 
 	/**
 	 * 로컬 녹화 파일 다운로드 URL 요청 처리
-	 *
-	 * @param fileDataRequest - 파일 요청 데이터
 	 * @return - 로컬 녹화 파일  URL 정보
 	 */
-	public FilePreSignedResponse getLocalRecordFileUrl(FileDataRequest fileDataRequest) {
-
+	public FilePreSignedResponse getLocalRecordFileUrl(
+		String workspaceId,
+		String sessionId,
+		String objectName
+	) {
 		FilePreSignedResponse filePreSignedResponse;
-
-		RecordFile recordFile = recordFileRepository.findByWorkspaceIdAndSessionIdAndObjectName(
-			fileDataRequest.getWorkspaceId(),
-			fileDataRequest.getSessionId(),
-			fileDataRequest.getObjectName()
-		).orElse(null);
-
-		if (recordFile != null) {
-
-			try {
-				StringBuilder stringBuilder;
-				stringBuilder = new StringBuilder();
-				stringBuilder.append(fileDataRequest.getWorkspaceId()).append("/")
-					.append(fileDataRequest.getSessionId()).append("/")
-					.append(recordFile.getObjectName());
-				// upload to file storage
-				String bucketPath = generateDirPath(fileDataRequest.getWorkspaceId(), fileDataRequest.getSessionId());
-				int expiry = 60 * 60 * 24; //one day
-
-				String url = fileManagementService.filePreSignedUrl(
-					bucketPath,
-					fileDataRequest.getObjectName(),
-					expiry,
-					recordFile.getName(),
-					FileType.RECORD
-				);
-
-				filePreSignedResponse = dashboardRecordFilePreSignedMapper.toDto(recordFile);
-				filePreSignedResponse.setExpiry(expiry);
-				filePreSignedResponse.setUrl(url);
-			} catch (IOException | NoSuchAlgorithmException | InvalidKeyException exception) {
-				throw new RestServiceException(ErrorCode.ERR_FILE_GET_SIGNED_EXCEPTION);
+		try {
+			RecordFile recordFile = recordFileRepository.findByWorkspaceIdAndSessionIdAndObjectName(workspaceId, sessionId, objectName).orElse(null);
+			if (ObjectUtils.isEmpty(recordFile)) {
+				throw new RestServiceException(ErrorCode.ERR_FILE_NOT_FOUND);
 			}
-		} else {
-			throw new RestServiceException(ErrorCode.ERR_FILE_NOT_FOUND);
+
+			String url = fileManagementService.filePreSignedUrl(
+				generateDirPath(workspaceId, sessionId),	// bucket path
+				objectName,
+				EXPIRY,
+				recordFile.getName(),
+				FileType.RECORD
+			);
+			filePreSignedResponse = dashboardRecordFilePreSignedMapper.toDto(recordFile);
+			filePreSignedResponse.setExpiry(EXPIRY);
+			filePreSignedResponse.setUrl(url);
+		} catch (IOException | NoSuchAlgorithmException | InvalidKeyException exception) {
+			throw new RestServiceException(ErrorCode.ERR_FILE_GET_SIGNED_EXCEPTION);
 		}
+
 		return filePreSignedResponse;
 	}
 
 	/**
 	 * 서버 녹화 파일 다운로드 URL 요청 처리
-	 *
-	 * @param fileDataRequest - 파일 요청 데이터
 	 * @return - 서버 녹화 파일  URL 정보
 	 */
-	public String getServerRecordFileUrl(FileDataRequest fileDataRequest) {
+	public String getServerRecordFileUrl(
+		String workspaceId,
+		String userId,
+		String id
+	) {
 		String responseUrl;
 		try {
-			responseUrl = recordRestService.getServerRecordFileDownloadUrl(
-				fileDataRequest.getWorkspaceId(),
-				fileDataRequest.getUserId(),
-				fileDataRequest.getId()
-			).getData();
+			responseUrl = recordRestService.getServerRecordFileDownloadUrl(workspaceId, userId, id).getData();
 		} catch (Exception exception) {
 			throw new RestServiceException(ErrorCode.ERR_SERVER_RECORD_URL_FOUND);
 		}
@@ -312,104 +233,85 @@ public class DashboardFileService {
 
 	/**
 	 * 첨부파일 삭제 요청 처리
-	 *
-	 * @param fileDataRequest - 파일 요청 데이터
 	 * @return - 첨부파일 삭제 결과
 	 */
-	public FileDeleteResponse deleteAttachedFile(FileDataRequest fileDataRequest) {
-
-		FileDeleteResponse fileDeleteResponse = new FileDeleteResponse();
-
-		File file = fileRepository.findByWorkspaceIdAndSessionIdAndObjectName(
-			fileDataRequest.getWorkspaceId(),
-			fileDataRequest.getSessionId(),
-			fileDataRequest.getObjectName()
-		).orElse(null);
-
-		if (file != null) {
-			fileRepository.delete(file);
-
-			boolean result = false;
-			try {
-				StringBuilder stringBuilder;
-				stringBuilder = new StringBuilder();
-				stringBuilder.append(fileDataRequest.getWorkspaceId()).append("/")
-					.append(fileDataRequest.getSessionId()).append("/")
-					.append("file").append("/")
-					.append(file.getObjectName());
-				result = fileManagementService.removeObject(stringBuilder.toString());
-			} catch (IOException | NoSuchAlgorithmException | InvalidKeyException exception) {
-				exception.printStackTrace();
-			}
-			if (result) {
-				fileDeleteResponse.setWorkspaceId(file.getWorkspaceId());
-				fileDeleteResponse.setSessionId(file.getSessionId());
-				fileDeleteResponse.setFileName(file.getName());
-			} else {
-				throw new RestServiceException(ErrorCode.ERR_FILE_DELETE_FAILED);
-			}
-		} else {
+	public FileDeleteResponse deleteAttachedFile(
+		String workspaceId,
+		String sessionId,
+		String objectName
+	) {
+		File file = fileRepository.findByWorkspaceIdAndSessionIdAndObjectName(workspaceId, sessionId, objectName).orElse(null);
+		if (ObjectUtils.isEmpty(file)) {
 			throw new RestServiceException(ErrorCode.ERR_FILE_NOT_FOUND);
 		}
+		try {
+			fileRepository.delete(file);
 
-		return fileDeleteResponse;
+			String stringBuilder = workspaceId + "/"
+				+ sessionId + "/"
+				+ "file" + "/"
+				+ file.getObjectName();
+			if (!fileManagementService.removeObject(stringBuilder)) {
+				throw new RestServiceException(ErrorCode.ERR_FILE_DELETE_FAILED);
+			}
+		} catch (IOException | NoSuchAlgorithmException | InvalidKeyException exception) {
+			exception.printStackTrace();
+		}
+		return FileDeleteResponse.builder()
+			.workspaceId(file.getWorkspaceId())
+			.sessionId(file.getSessionId())
+			.fileName(file.getName())
+			.build();
 	}
 
 	/**
 	 * 로컬 녹화 파일 삭제 요청 처리
-	 *
-	 * @param fileDataRequest - 파일 요청 데이터
 	 * @return - 삭제 결과
 	 */
-	public FileDeleteResponse deleteLocalRecordFileUrl(FileDataRequest fileDataRequest) {
-
-		FileDeleteResponse fileDeleteResponse = new FileDeleteResponse();
-
-		RecordFile file = recordFileRepository.findByWorkspaceIdAndSessionIdAndObjectName(
-			fileDataRequest.getWorkspaceId(),
-			fileDataRequest.getSessionId(),
-			fileDataRequest.getObjectName()
-		).orElse(null);
-
-		recordFileRepository.delete(file);
-
-		//remove object
-		boolean result = false;
-
+	public FileDeleteResponse deleteLocalRecordFileUrl(
+		String workspaceId,
+		String sessionId,
+		String objectName
+	) {
+		RecordFile file = recordFileRepository.findByWorkspaceIdAndSessionIdAndObjectName(workspaceId, sessionId, objectName).orElse(null);
+		if (ObjectUtils.isEmpty(file)) {
+			throw new RestServiceException(ErrorCode.ERR_FILE_NOT_FOUND);
+		}
 		try {
-			StringBuilder stringBuilder;
-			stringBuilder = new StringBuilder();
-			stringBuilder.append(fileDataRequest.getWorkspaceId()).append("/")
-				.append(fileDataRequest.getSessionId()).append("/")
-				.append("record").append("/")
-				.append(file.getObjectName());
-			result = fileManagementService.removeObject(stringBuilder.toString());
+			recordFileRepository.delete(file);
+
+			String stringBuilder = workspaceId + "/"
+				+ sessionId + "/"
+				+ "record" + "/"
+				+ file.getObjectName();
+			if (!fileManagementService.removeObject(stringBuilder)) {
+				throw new RestServiceException(ErrorCode.ERR_FILE_DELETE_FAILED);
+			}
 		} catch (IOException | NoSuchAlgorithmException | InvalidKeyException exception) {
 			exception.printStackTrace();
 		}
-		if (result) {
-			fileDeleteResponse.setWorkspaceId(file.getWorkspaceId());
-			fileDeleteResponse.setSessionId(file.getSessionId());
-			fileDeleteResponse.setFileName(file.getName());
-		} else {
-			throw new RestServiceException(ErrorCode.ERR_FILE_DELETE_FAILED);
-		}
-		return fileDeleteResponse;
+		return FileDeleteResponse.builder()
+			.workspaceId(file.getWorkspaceId())
+			.sessionId(file.getSessionId())
+			.fileName(file.getName())
+			.build();
 	}
 
 	/**
 	 * 서버 녹화 파일 삭제 요청 처리
-	 *
-	 * @param fileDataRequest - 파일 요청 데이터
 	 * @return - 삭제 결과
 	 */
-	public Object deleteServerRecordFileUrl(FileDataRequest fileDataRequest) {
+	public Object deleteServerRecordFileUrl(
+		String workspaceId,
+		String userId,
+		String id
+	) {
 		Object responseData;
 		try {
 			responseData = recordRestService.deleteServerRecordFile(
-				fileDataRequest.getWorkspaceId(),
-				fileDataRequest.getUserId(),
-				fileDataRequest.getId()
+				workspaceId,
+				userId,
+				id
 			).getData();
 		} catch (Exception exception) {
 			throw new RestServiceException(ErrorCode.ERR_SERVER_RECORD_DELETE);

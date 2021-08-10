@@ -13,15 +13,15 @@ public class RecordServerFileInfoListResponse {
 
 	private int currentPage;
 	private int totalPage;
-	private List<RecordServerFileInfoResponse> infos;
+	private List<RecordServerFileInfoResponse> recordServerFileInfoResponses;
 
 	public RecordServerFileInfoListResponse(
 		int currentPage, int totalPage,
-		List<RecordServerFileInfoResponse> infos
+		List<RecordServerFileInfoResponse> recordServerFileInfoResponses
 	) {
 		this.currentPage = currentPage;
 		this.totalPage = totalPage;
-		this.infos = infos;
+		this.recordServerFileInfoResponses = recordServerFileInfoResponses;
 	}
 
 	@Override
@@ -29,7 +29,7 @@ public class RecordServerFileInfoListResponse {
 		return "RecordServerFileInfoListResponse{" +
 			"currentPage=" + currentPage +
 			", totalPage=" + totalPage +
-			", infos=" + infos +
+			", infos=" + recordServerFileInfoResponses +
 			'}';
 	}
 }

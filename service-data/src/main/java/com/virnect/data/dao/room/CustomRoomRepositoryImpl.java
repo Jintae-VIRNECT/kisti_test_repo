@@ -94,27 +94,6 @@ public class CustomRoomRepositoryImpl extends QuerydslRepositorySupport implemen
 
 	/**
 	 * 진행 중인 협업 다이나믹 쿼리
-	 * @param workspaceId - 조회될 대상 워크스페이스 식별자
-	 * @param sessionId - 조회될 대상 세션 식별자
-	 * @return - 해당 사용자가 참여한 room 검색 조건 쿼리
-	 */
-	public Optional<Room> findRoomByWorkspaceIdAndSessionId(
-		String workspaceId, String sessionId
-	) {
-		return Optional.ofNullable(
-			query.selectFrom(room)
-			.innerJoin(room.members, member).fetchJoin()
-			.innerJoin(room.sessionProperty, sessionProperty).fetchJoin()
-			.where(
-				room.workspaceId.eq(workspaceId),
-				room.sessionId.eq(sessionId)
-			)
-			.distinct()
-			.fetchOne());
-	}
-
-	/**
-	 * 진행 중인 협업 다이나믹 쿼리
 	 * @param sessionId - 조회될 대상 세션 식별자
 	 * @return - 해당 사용자가 참여한 room 검색 조건 쿼리
 	 */
@@ -175,49 +154,6 @@ public class CustomRoomRepositoryImpl extends QuerydslRepositorySupport implemen
 				.fetchOne());
 	}
 
-
-	/**
-	 * 진행 중인 협업 다이나믹 쿼리
-	 * @param workspaceId - 진행중인 협업이 속한 워크스페이스
-	 * @param pageable - 페이징
-	 * @return - 해당 사용자가 참여한 room 검색 조건 쿼리
-	 */
-	@Override
-	public Page<Room> findRoomByWorkspaceId(
-		String workspaceId, Pageable pageable
-	) {
-		JPQLQuery<Room> queryResult = query.selectFrom(room)
-			.innerJoin(room.members, member).fetchJoin()
-			.innerJoin(room.sessionProperty, sessionProperty).fetchJoin()
-			.where(
-				room.workspaceId.eq(workspaceId),
-				room.roomStatus.eq(RoomStatus.ACTIVE)
-			)
-			.orderBy(room.createdDate.desc())
-			.distinct();
-		long totalCount = queryResult.fetchCount();
-		List<Room> results = Objects.requireNonNull(getQuerydsl()).applyPagination(pageable, queryResult).fetch();
-		return new PageImpl<>(results, pageable, totalCount);
-
-	}
-
-	/**
-	 * 진행 중인 협업 다이나믹 쿼리
-	 * @param workspaceId - 진행중인 협업이 속한 워크스페이스
-	 * @return - 해당 사용자가 참여한 room 검색 조건 쿼리
-	 */
-	@Override
-	public List<Room> findByWorkspaceId(String workspaceId) {
-		return query.selectFrom(room)
-			.innerJoin(room.members, member).fetchJoin()
-			.innerJoin(room.sessionProperty, sessionProperty).fetchJoin()
-			.where(
-				room.workspaceId.eq(workspaceId)
-			)
-			.distinct()
-			.fetch();
-	}
-
 	@Override
 	public Page<Room> findMyRoomSpecificUserId(
 		String workspaceId,
@@ -269,43 +205,6 @@ public class CustomRoomRepositoryImpl extends QuerydslRepositorySupport implemen
 		long totalCount = queryResult.fetchCount();
 		List<Room> results = Objects.requireNonNull(getQuerydsl()).applyPagination(pageable, queryResult).fetch();
 		return new PageImpl<>(results, pageable, totalCount);
-	}
-
-	@Override
-	public Page<Room> findMyRoomSpecificUserIdBySearch(
-		String workspaceId,
-		String userId,
-		String search,
-		Pageable pageable
-	) {
-		JPQLQuery<Room> queryResult = query
-			.selectFrom(room)
-			.leftJoin(room.members, member).fetchJoin()
-			.innerJoin(room.sessionProperty, sessionProperty).fetchJoin()
-			.where(
-				room.workspaceId.eq(workspaceId),
-				room.members.any().uuid.eq(userId)
-					.or(room.sessionProperty.sessionType.eq(SessionType.OPEN))
-					.or(includeTitleSearch(search)),
-				room.roomStatus.eq(RoomStatus.ACTIVE)
-			)
-			.orderBy(room.createdDate.desc())
-			.distinct();
-		long totalCount = queryResult.fetchCount();
-		List<Room> results = Objects.requireNonNull(getQuerydsl()).applyPagination(pageable, queryResult).fetch();
-		return new PageImpl<>(results, pageable, totalCount);
-	}
-
-	/**
-	 * 사용자 정보 조회 다이나믹 쿼리
-	 * @param search - 조회될 사용자 정보 식별자
-	 * @return - 해당 사용자가 참여한 roomHistory 검색 조건 쿼리
-	 */
-	private BooleanExpression includeTitleSearch(String search){
-		if (search == null || search.isEmpty()) {
-			return null;
-		}
-		return room.title.contains(search);
 	}
 
 	/**

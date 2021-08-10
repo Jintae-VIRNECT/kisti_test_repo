@@ -16,6 +16,7 @@ import org.springframework.context.annotation.DependsOn;
 import org.springframework.data.redis.listener.ChannelTopic;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
 
 import com.google.gson.Gson;
@@ -69,21 +70,19 @@ import com.virnect.serviceserver.serviceremote.dao.SessionDataRepository;
 @RequiredArgsConstructor
 public class ServiceSessionManager {
 	private static final String TAG = ServiceSessionManager.class.getSimpleName();
-	private final String SESSION_METHOD = "generateSession";
+	private static final ChannelTopic REDIS_CHANNEL = new ChannelTopic("force-logout");
+	private static final String SESSION_METHOD = "generateSession";
 
 	SessionManager sessionManager;
-	private final SessionDataRepository sessionDataRepository;
 	private final FileService fileService;
-
 	private final AccessStatusService accessStatusService;
 	private final WorkspaceRestService workspaceRestService;
 
-	private static final ChannelTopic REDIS_CHANNEL = new ChannelTopic("force-logout");
 	private final RedisPublisher redisPublisher;
+	private final MemberRepository memberRepository;
+	private final SessionDataRepository sessionDataRepository;
 
 	private final MemberWorkspaceMapper memberWorkspaceMapper;
-
-	private final MemberRepository memberRepository;
 
 	@Autowired
 	public void setSessionManager(SessionManager sessionManager) {
@@ -577,7 +576,7 @@ public class ServiceSessionManager {
 
 	public boolean closeActiveSession(String sessionId) {
 		Session session = this.sessionManager.getSession(sessionId);
-		if (session != null) {
+		if (!ObjectUtils.isEmpty(session)) {
 			log.info("REST API: DELETE closeSession");
 			this.sessionManager.closeSession(sessionId, EndReason.sessionClosedByServer);
 			return true;
@@ -587,7 +586,7 @@ public class ServiceSessionManager {
 
 	public boolean closeNotActiveSession(String sessionId) {
 		Session sessionNotActive = this.sessionManager.getSessionNotActive(sessionId);
-		if (sessionNotActive != null) {
+		if (!ObjectUtils.isEmpty(sessionNotActive)) {
 			try {
 				if (sessionNotActive.closingLock.writeLock().tryLock(15, TimeUnit.SECONDS)) {
 					try {
@@ -641,9 +640,9 @@ public class ServiceSessionManager {
 
 		Session session = sessionManager.getSession(sessionId);
 		String SESSION_MESSAGE_METHOD = "generateMessage";
-		if (session == null) {
+		if (ObjectUtils.isEmpty(session)) {
 			session = sessionManager.getSessionNotActive(sessionId);
-			if (session != null) {
+			if (!ObjectUtils.isEmpty(session)) {
 				// Session is not active (no connected participants)
 				return generateErrorMessage(
 					"Session is not active (no connected participants)",
@@ -659,12 +658,12 @@ public class ServiceSessionManager {
 			);
 		}
 
-		if (type != null) {
+		if (!StringUtils.isBlank(type)) {
 			completeMessage.addProperty("type", type);
 		}
 
 		//create data to json object string
-		if (data != null) {
+		if (!StringUtils.isBlank(data)) {
 			//example as {data : {"type" : "evict"}}
 			JsonObject jsonObject = new JsonObject();
 			jsonObject.addProperty("type", data);
@@ -673,7 +672,7 @@ public class ServiceSessionManager {
 			//completeMessage.addProperty("data", data);
 		}
 
-		if (to != null) {
+		if (!CollectionUtils.isEmpty(to)) {
 			try {
 				Gson gson = new GsonBuilder().create();
 				JsonArray toArray = gson.toJsonTree(to).getAsJsonArray();
@@ -702,13 +701,13 @@ public class ServiceSessionManager {
 
 	public boolean evictParticipant(String sessionId, String connectionId) {
 		Session session = this.sessionManager.getSessionWithNotActive(sessionId);
-		if (session == null) {
+		if (ObjectUtils.isEmpty(session)) {
 			return false;
 		}
 
 		//evictedParticipant
 		Participant participant = session.getParticipantByPublicId(connectionId);
-		if (participant != null) {
+		if (!ObjectUtils.isEmpty(participant)) {
 			this.sessionManager.evictParticipant(participant, null, null, EndReason.forceDisconnectByUser);
 			return true;
 			//return new ResponseEntity<>(HttpStatus.NO_CONTENT);
@@ -753,32 +752,7 @@ public class ServiceSessionManager {
 
 		// 강제 로그 아웃 대상이 없을 경우 (대상 전체가 이미 로그아웃 또는 협업 중인 경우)
 		if (forceLogoutRequest.getTargetUserIds().size() == 0) {
-			/*for (String failMemberUuid : failUserIds) {
-				ApiResponse<WorkspaceMemberInfoResponse> workspaceMemberInfo = workspaceRestService.getWorkspaceMemberInfo(
-					forceLogoutRequest.getWorkspaceId(), failMemberUuid);
-				if (workspaceMemberInfo.getCode() != ErrorCode.ERR_SUCCESS.getCode()) {
-					return new ApiResponse<>(ErrorCode.ERR_UNEXPECTED_SERVER_ERROR);
-				}
-				failMembers.add(workspaceMemberInfo.getData());
-			}
-			// Mapper Response
-			failMembersResponse = failMembers.stream()
-				.map(workspaceMemberInfoResponse -> memberWorkspaceMapper.toDto(workspaceMemberInfoResponse))
-				.collect(Collectors.toList());
-			// 페이징 데이터 셋팅 (페이징 사용안함)
-			pageMeta = PageMetadataResponse.builder()
-				.currentPage(1)
-				.currentSize(1)
-				.totalPage(1)
-				.totalElements(0)
-				.numberOfElements(0)
-				.build();
-			 */
-			return
-				new ApiResponse<>(
-					new MemberInfoListResponse(failMembersResponse, pageMeta),
-					ErrorCode.ERR_MEMBER_LOGOUT_OR_JOIN
-				);
+			return new ApiResponse<>(new MemberInfoListResponse(failMembersResponse, pageMeta), ErrorCode.ERR_MEMBER_LOGOUT_OR_JOIN);
 		}
 
 		// Redis force-logout 채널로 정보 전송
@@ -822,22 +796,8 @@ public class ServiceSessionManager {
 				.numberOfElements(failMembersResponse.size())
 				.build();
 		}
-		/*else {
-			// 페이징 데이터 셋팅 (페이징 사용안함)
-			pageMeta = PageMetadataResponse.builder()
-				.currentPage(1)
-				.currentSize(1)
-				.totalPage(1)
-				.totalElements(0)
-				.numberOfElements(0)
-				.build();
-		}*/
 
-		return
-			new ApiResponse<>(
-				new MemberInfoListResponse(failMembersResponse, pageMeta),
-				ErrorCode.ERR_SUCCESS
-			);
+		return new ApiResponse<>(new MemberInfoListResponse(failMembersResponse, pageMeta));
 	}
 
 	public Boolean checkLoading(String workspaceId, String uuid) {

@@ -6,8 +6,11 @@ import org.springframework.web.multipart.MultipartFile;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
+
+import com.virnect.data.domain.DeviceType;
 
 @Getter
 @Setter
