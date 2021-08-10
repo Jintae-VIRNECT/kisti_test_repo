@@ -6,8 +6,6 @@ const HtmlWebpackPlugin = require('html-webpack-plugin')
 const baseWebpackConfig = require('./webpack.base.conf')
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 
-const WorkboxPlugin = require('workbox-webpack-plugin')
-
 const mode =
   process.env.NODE_ENV === 'develop' ? 'development' : process.env.NODE_ENV
 
@@ -57,13 +55,6 @@ const productionWebpackConfig = merge(baseWebpackConfig(mode), {
     }),
     new webpack.DefinePlugin({
       GOOGLE_MAP_API: '"AIzaSyD0JClrnwr2SpYViHpY69M6_euI7GyUpu8"',
-    }),
-
-    new WorkboxPlugin.GenerateSW({
-      // these options encourage the ServiceWorkers to get in there fast
-      // and not allow any straggling "old" SWs to hang around
-      clientsClaim: true,
-      skipWaiting: true,
     }),
   ],
   optimization: {},
