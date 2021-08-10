@@ -97,7 +97,7 @@ public class MinioFileService implements FileService {
 		log.info("[MINIO_DELETE_BEGIN]");
 		log.info("[MINIO_DELETE] - {}", url);
 
-		if (url.equals("default")) {
+		if (url.equalsIgnoreCase("default")) {
 			log.info("[MINIO_DELETE_SKIP_DEFAULT_IMAGE]");
 			log.info("[MINIO_DELETE_END]");
 			return true;

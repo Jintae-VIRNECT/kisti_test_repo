@@ -151,7 +151,7 @@ public class User extends BaseTimeEntity {
 		this.name = registerMemberRequest.getEmail() + "-Member";
 		this.nickname = registerMemberRequest.getEmail() + "-Member";
 		this.profile = Default.USER_PROFILE.getValue();
-		this.userType = UserType.USER;
+		this.userType = UserType.WORKSPACE_ONLY_USER;
 		this.birth = LocalDate.now();
 		this.joinInfo = "워크스페이스 멤버 등록";
 		this.serviceInfo = "워크스페이스 멤버 등록";

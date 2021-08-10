@@ -5,7 +5,6 @@ import static com.virnect.uaa.global.common.LogMessagePrefix.*;
 import javax.validation.Valid;
 
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.context.annotation.Profile;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -25,7 +24,7 @@ import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import com.virnect.uaa.domain.user.application.OffUserInformationService;
+import com.virnect.uaa.domain.user.application.MemberUserInformationService;
 import com.virnect.uaa.domain.user.dto.request.MemberPasswordUpdateRequest;
 import com.virnect.uaa.domain.user.dto.request.RegisterMemberRequest;
 import com.virnect.uaa.domain.user.dto.request.UserIdentityCheckRequest;
@@ -38,14 +37,13 @@ import com.virnect.uaa.domain.user.error.UserAccountErrorCode;
 import com.virnect.uaa.domain.user.exception.UserServiceException;
 import com.virnect.uaa.global.common.ApiResponse;
 
-@Api(value = "OnPremise 환경 전용 API")
+@Api
 @Slf4j
-@Profile("onpremise")
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/users")
-public class OffUserInfoController {
-	private final OffUserInformationService offUserInformationService;
+public class MemberUserInfoController {
+	private final MemberUserInformationService memberUserInformationService;
 
 	@ApiImplicitParams(
 		@ApiImplicitParam(name = "serviceID", value = "요청 서버 명", paramType = "header", example = "workspace-server")
@@ -61,7 +59,7 @@ public class OffUserInfoController {
 			result.getAllErrors().forEach(message -> log.error(PARAMETER_LOG_MESSAGE, message));
 			throw new UserServiceException(UserAccountErrorCode.ERR_INVALID_REQUEST_PARAMETER);
 		}
-		UserInfoResponse userInfoResponse = offUserInformationService.registerNewMember(registerMemberRequest);
+		UserInfoResponse userInfoResponse = memberUserInformationService.registerNewMember(registerMemberRequest);
 		return ResponseEntity.ok(new ApiResponse<>(userInfoResponse));
 	}
 
@@ -77,7 +75,7 @@ public class OffUserInfoController {
 			log.error("SERVICE_ID:[{}]", serviceID);
 			throw new UserServiceException(UserAccountErrorCode.ERR_INVALID_REQUEST_PARAMETER);
 		}
-		UserDeleteResponse userDeleteResponse = offUserInformationService.deleteMemberUser(userUUID);
+		UserDeleteResponse userDeleteResponse = memberUserInformationService.deleteMemberUser(userUUID);
 		return ResponseEntity.ok(new ApiResponse<>(userDeleteResponse));
 	}
 
@@ -89,7 +87,7 @@ public class OffUserInfoController {
 		if (StringUtils.isEmpty(email)) {
 			throw new UserServiceException(UserAccountErrorCode.ERR_INVALID_REQUEST_PARAMETER);
 		}
-		UserEmailExistCheckResponse userEmailExistCheckResponse = offUserInformationService.userEmailDuplicateCheck(
+		UserEmailExistCheckResponse userEmailExistCheckResponse = memberUserInformationService.userEmailDuplicateCheck(
 			email);
 		return ResponseEntity.ok(new ApiResponse<>(userEmailExistCheckResponse));
 	}
@@ -103,7 +101,7 @@ public class OffUserInfoController {
 			result.getAllErrors().forEach(message -> log.error(PARAMETER_LOG_MESSAGE, message));
 			throw new UserServiceException(UserAccountErrorCode.ERR_INVALID_REQUEST_PARAMETER);
 		}
-		UserIdentityCheckResponse userIdentityCheckResponse = offUserInformationService.verifyPasswordResetQuestion(
+		UserIdentityCheckResponse userIdentityCheckResponse = memberUserInformationService.verifyPasswordResetQuestion(
 			userIdentityCheckRequest);
 		return ResponseEntity.ok(new ApiResponse<>(userIdentityCheckResponse));
 	}
@@ -122,7 +120,7 @@ public class OffUserInfoController {
 			result.getAllErrors().forEach(message -> log.error(PARAMETER_LOG_MESSAGE, message));
 			throw new UserServiceException(UserAccountErrorCode.ERR_INVALID_REQUEST_PARAMETER);
 		}
-		MemberPasswordUpdateResponse responseMessage = offUserInformationService.updateMemberPassword(
+		MemberPasswordUpdateResponse responseMessage = memberUserInformationService.updateMemberPassword(
 			memberPasswordUpdateRequest);
 		return ResponseEntity.ok(new ApiResponse<>(responseMessage));
 	}

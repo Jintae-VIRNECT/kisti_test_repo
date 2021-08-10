@@ -154,6 +154,8 @@ public class UserInformationUpdateServiceImpl implements UserInformationUpdateSe
 	}
 
 	private void deleteUserInformation(User user) {
+		// Delete user profile image
+		fileService.delete(user.getProfile());
 		// Delete user account permission
 		userPermissionRepository.deleteAllUserPermissionByUser(user);
 		// Delete user otp code information

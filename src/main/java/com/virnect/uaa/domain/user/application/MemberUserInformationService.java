@@ -31,6 +31,7 @@ import com.virnect.uaa.domain.user.error.UserAccountErrorCode;
 import com.virnect.uaa.domain.user.exception.UserServiceException;
 import com.virnect.uaa.domain.user.mapper.UserInfoMapper;
 import com.virnect.uaa.global.common.ApiResponse;
+import com.virnect.uaa.infra.file.FileService;
 import com.virnect.uaa.infra.rest.remote.RemoteRestService;
 import com.virnect.uaa.infra.rest.remote.dto.RemoteSecessionResponse;
 
@@ -38,7 +39,8 @@ import com.virnect.uaa.infra.rest.remote.dto.RemoteSecessionResponse;
 @Service
 @Transactional
 @RequiredArgsConstructor
-public class OffUserInformationService {
+public class MemberUserInformationService {
+	private final FileService fileService;
 	private final UserInfoMapper userInfoMapper;
 	private final UserRepository userRepository;
 	private final UserAccessLogRepository userAccessLogRepository;
@@ -53,6 +55,12 @@ public class OffUserInformationService {
 	 * @return - 등록된 새 멤버 사용자 정보
 	 */
 	public UserInfoResponse registerNewMember(RegisterMemberRequest registerMemberRequest) {
+
+		if (userRepository.existsByEmail(registerMemberRequest.getEmail())) {
+			log.error("Member User Create Fail. Email Duplicate : {}", registerMemberRequest.getEmail());
+			throw new UserServiceException(UserAccountErrorCode.ERR_REGISTER_MEMBER_DUPLICATE_ID);
+		}
+
 		User user = User.ByRegisterMemberUserBuilder()
 			.registerMemberRequest(registerMemberRequest)
 			.encodedPassword(passwordEncoder.encode(registerMemberRequest.getPassword()))
@@ -77,7 +85,6 @@ public class OffUserInformationService {
 
 		userAccessLogRepository.deleteAllUserAccessLogByUser(deleteTargetUser);
 		userRepository.delete(deleteTargetUser);
-
 		deleteUserInformation(deleteTargetUser);
 
 		// send user delete event to remote service
@@ -99,6 +106,7 @@ public class OffUserInformationService {
 		Optional<User> user = userRepository.findByEmail(email);
 
 		if (!user.isPresent()) {
+			log.info("[CREATE_WORKSPACE_ONLY_USER] - Email duplicate [{}]", email);
 			return new UserEmailExistCheckResponse(email, false, LocalDateTime.now());
 		}
 
@@ -134,7 +142,8 @@ public class OffUserInformationService {
 	 * @return - 비밀번호 재설정 처리 결과
 	 */
 	public MemberPasswordUpdateResponse updateMemberPassword(MemberPasswordUpdateRequest memberPasswordUpdateRequest) {
-		User memberUser = userRepository.findByUuidAndUserType(memberPasswordUpdateRequest.getUuid(), MEMBER_USER)
+		User memberUser = userRepository.findByUuidAndUserType(
+			memberPasswordUpdateRequest.getUuid(), WORKSPACE_ONLY_USER)
 			.orElseThrow(() -> new UserServiceException(UserAccountErrorCode.ERR_USER_NOT_FOUND));
 
 		String encodedPassword = passwordEncoder.encode(memberPasswordUpdateRequest.getPassword());
@@ -145,6 +154,8 @@ public class OffUserInformationService {
 	}
 
 	private void deleteUserInformation(User user) {
+		// Delete user profile image
+		fileService.delete(user.getProfile());
 		// Delete user account permission
 		userPermissionRepository.deleteAllUserPermissionByUser(user);
 		// Delete user otp code information
