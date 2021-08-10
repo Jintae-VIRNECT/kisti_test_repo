@@ -1,5 +1,6 @@
 package com.virnect.workspace.dto.request;
 
+import com.virnect.workspace.domain.workspace.Role;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
 import lombok.Setter;
@@ -18,9 +19,17 @@ import java.util.List;
 @Getter
 @Setter
 public class MemberAccountCreateRequest {
-	@ApiModelProperty(value = "계정 생성 요청 유저 식별자", required = true, example = "498b1839dc29ed7bb2ee90ad6985c608", position = 0)
-	@NotBlank
-	private String userId;
-	@Valid
-	private List<MemberAccountCreateInfo> memberAccountCreateRequest;
+    @ApiModelProperty(value = "계정 생성 요청 유저 식별자", required = true, example = "498b1839dc29ed7bb2ee90ad6985c608", position = 0)
+    @NotBlank
+    private String userId;
+    @Valid
+    private List<MemberAccountCreateInfo> memberAccountCreateRequest;
+
+    public boolean existSeatRoleUser() {
+        return memberAccountCreateRequest.stream().anyMatch(memberAccountCreateInfo -> memberAccountCreateInfo.getRole().equals(Role.SEAT.name()));
+    }
+
+    public boolean existMasterRoleUser() {
+        return memberAccountCreateRequest.stream().anyMatch(memberAccountCreateInfo -> memberAccountCreateInfo.getRole().equals(Role.MASTER.name()));
+    }
 }

@@ -8,11 +8,7 @@ import com.virnect.workspace.domain.setting.SettingName;
 import com.virnect.workspace.domain.setting.SettingValue;
 import com.virnect.workspace.domain.setting.WorkspaceCustomSetting;
 import com.virnect.workspace.domain.workspace.*;
-import com.virnect.workspace.dto.request.MemberAccountCreateInfo;
-import com.virnect.workspace.dto.request.MemberAccountCreateRequest;
-import com.virnect.workspace.dto.request.MemberAccountDeleteRequest;
-import com.virnect.workspace.dto.request.WorkspaceInviteRequest;
-import com.virnect.workspace.dto.request.WorkspaceMemberPasswordChangeRequest;
+import com.virnect.workspace.dto.request.*;
 import com.virnect.workspace.dto.response.WorkspaceMemberInfoListResponse;
 import com.virnect.workspace.dto.response.WorkspaceMemberPasswordChangeResponse;
 import com.virnect.workspace.dto.response.WorkspaceUserInfoResponse;
@@ -77,13 +73,18 @@ public class OffWorkspaceUserServiceImpl extends WorkspaceUserService {
     public WorkspaceMemberInfoListResponse createWorkspaceMemberAccount(
             String workspaceId, MemberAccountCreateRequest memberAccountCreateRequest
     ) {
+        //계정 유형 체크
+        if (memberAccountCreateRequest.existMasterRoleUser() || memberAccountCreateRequest.existSeatRoleUser()) {
+            throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_USER_ACCOUNT_CREATE_FAIL);
+        }
+
         //1. 요청한 사람의 권한 체크
         Workspace workspace = workspaceRepository.findByUuid(workspaceId).orElseThrow(() -> new WorkspaceException(ErrorCode.ERR_WORKSPACE_NOT_FOUND));
         WorkspaceUserPermission requestUserPermission = workspaceUserPermissionRepository.findByWorkspaceUser_WorkspaceAndWorkspaceUser_UserId(workspace, memberAccountCreateRequest.getUserId()).orElseThrow(() -> new WorkspaceException(ErrorCode.ERR_WORKSPACE_USER_NOT_FOUND));
         Optional<WorkspaceCustomSetting> workspaceCustomSettingOptional = workspaceCustomSettingRepository.findByWorkspace_UuidAndSetting_Name(workspaceId, SettingName.PRIVATE_USER_MANAGEMENT_ROLE_SETTING);
         memberAccountCreateRequest.getMemberAccountCreateRequest().forEach(memberAccountCreateInfo -> {
             WorkspaceRole requestUserRole = requestUserPermission.getWorkspaceRole();
-            WorkspaceRole createUserRole = workspaceRoleRepository.findByRole(memberAccountCreateInfo.getRole()).orElseThrow(() -> new WorkspaceException(ErrorCode.ERR_WORKSPACE_ROLE_NOT_FOUND));
+            WorkspaceRole createUserRole = workspaceRoleRepository.findByRole(Role.valueOf(memberAccountCreateInfo.getRole())).orElseThrow(() -> new WorkspaceException(ErrorCode.ERR_WORKSPACE_ROLE_NOT_FOUND));
 
             if (!workspaceCustomSettingOptional.isPresent() || workspaceCustomSettingOptional.get().getValue() == SettingValue.UNUSED || workspaceCustomSettingOptional.get().getValue() == SettingValue.MASTER_OR_MANAGER) {
                 //상위 유저에 대해서는 계정을 생성 할 수 없음.
@@ -214,7 +215,7 @@ public class OffWorkspaceUserServiceImpl extends WorkspaceUserService {
                     .userId(userInfoRestResponse.getUuid())
                     .workspace(workspace)
                     .build();
-            WorkspaceRole workspaceRole = workspaceRoleRepository.findByRole(memberAccountCreateInfo.getRole()).orElseThrow(() -> new WorkspaceException(ErrorCode.ERR_WORKSPACE_ROLE_NOT_FOUND));
+            WorkspaceRole workspaceRole = workspaceRoleRepository.findByRole(Role.valueOf(memberAccountCreateInfo.getRole())).orElseThrow(() -> new WorkspaceException(ErrorCode.ERR_WORKSPACE_ROLE_NOT_FOUND));
             WorkspacePermission workspacePermission = workspacePermissionRepository.findById(Permission.ALL.getValue()).orElseThrow(() -> new WorkspaceException(ErrorCode.ERR_WORKSPACE_PERMISSION_NOT_FOUND));
             WorkspaceUserPermission newWorkspaceUserPermission = WorkspaceUserPermission.builder()
                     .workspaceUser(newWorkspaceUser)
@@ -432,7 +433,7 @@ public class OffWorkspaceUserServiceImpl extends WorkspaceUserService {
                 Arrays.toString(roles),
                 workspaceUserPermission.getWorkspaceRole().getRole()
         );
-        if (Arrays.stream(roles).noneMatch(role -> workspaceUserPermission.getWorkspaceRole().getRole()==role)) {
+        if (Arrays.stream(roles).noneMatch(role -> workspaceUserPermission.getWorkspaceRole().getRole() == role)) {
             throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_INVALID_PERMISSION);
         }
         return workspace;

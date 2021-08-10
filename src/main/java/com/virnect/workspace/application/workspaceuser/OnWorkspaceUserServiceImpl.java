@@ -10,12 +10,10 @@ import com.virnect.workspace.domain.setting.SettingName;
 import com.virnect.workspace.domain.setting.SettingValue;
 import com.virnect.workspace.domain.setting.WorkspaceCustomSetting;
 import com.virnect.workspace.domain.workspace.*;
-import com.virnect.workspace.dto.request.MemberAccountCreateRequest;
-import com.virnect.workspace.dto.request.MemberAccountDeleteRequest;
-import com.virnect.workspace.dto.request.WorkspaceInviteRequest;
-import com.virnect.workspace.dto.request.WorkspaceMemberPasswordChangeRequest;
+import com.virnect.workspace.dto.request.*;
 import com.virnect.workspace.dto.response.WorkspaceMemberInfoListResponse;
 import com.virnect.workspace.dto.response.WorkspaceMemberPasswordChangeResponse;
+import com.virnect.workspace.dto.response.WorkspaceUserInfoResponse;
 import com.virnect.workspace.dto.rest.*;
 import com.virnect.workspace.event.history.HistoryAddEvent;
 import com.virnect.workspace.event.invite.InviteSessionDeleteEvent;
@@ -69,6 +67,7 @@ public class OnWorkspaceUserServiceImpl extends WorkspaceUserService {
     private final ApplicationEventPublisher applicationEventPublisher;
     private final WorkspaceCustomSettingRepository workspaceCustomSettingRepository;
     private final MailContextHandler mailContextHandler;
+    private final RestMapStruct restMapStruct;
     private static final int MAX_JOIN_WORKSPACE_AMOUNT = 49;//최대 참여 가능한 워크스페이스 수
 
     public OnWorkspaceUserServiceImpl(WorkspaceRepository workspaceRepository, WorkspaceUserRepository workspaceUserRepository, WorkspaceRoleRepository workspaceRoleRepository, WorkspaceUserPermissionRepository workspaceUserPermissionRepository, UserRestService userRestService, MessageSource messageSource, LicenseRestService licenseRestService, RestMapStruct restMapStruct, ApplicationEventPublisher applicationEventPublisher, WorkspaceCustomSettingRepository workspaceCustomSettingRepository, MailContextHandler mailContextHandler, WorkspacePermissionRepository workspacePermissionRepository, UserInviteRepository userInviteRepository, RedirectProperty redirectProperty) {
@@ -86,6 +85,7 @@ public class OnWorkspaceUserServiceImpl extends WorkspaceUserService {
         this.applicationEventPublisher = applicationEventPublisher;
         this.workspaceCustomSettingRepository = workspaceCustomSettingRepository;
         this.mailContextHandler = mailContextHandler;
+        this.restMapStruct = restMapStruct;
     }
 
     @Override
@@ -425,7 +425,7 @@ public class OnWorkspaceUserServiceImpl extends WorkspaceUserService {
         workspaceUserPermissionRepository.save(newWorkspaceUserPermission);
 
         String message;
-        if (userInvite.getRole()==Role.MANAGER) {
+        if (userInvite.getRole() == Role.MANAGER) {
             message = messageSource.getMessage("WORKSPACE_INVITE_MANAGER", new String[]{inviteUserInfo.getNickname(), String.join(",", requestPlanList)}, locale);
         } else {
             message = messageSource.getMessage("WORKSPACE_INVITE_MEMBER", new String[]{inviteUserInfo.getNickname(), String.join(",", requestPlanList)}, locale);
@@ -509,9 +509,126 @@ public class OnWorkspaceUserServiceImpl extends WorkspaceUserService {
 
 
     @Override
-    public WorkspaceMemberInfoListResponse createWorkspaceMemberAccount(String
-                                                                                workspaceId, MemberAccountCreateRequest memberAccountCreateRequest) {
-        return null;
+    public WorkspaceMemberInfoListResponse createWorkspaceMemberAccount(String workspaceId, MemberAccountCreateRequest memberAccountCreateRequest) {
+        //계정 유형 체크
+        if (memberAccountCreateRequest.existMasterRoleUser() || memberAccountCreateRequest.existSeatRoleUser()) {
+            throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_USER_ACCOUNT_CREATE_FAIL);
+        }
+        //1. 요청한 사람의 권한 체크
+        Workspace workspace = workspaceRepository.findByUuid(workspaceId).orElseThrow(() -> new WorkspaceException(ErrorCode.ERR_WORKSPACE_NOT_FOUND));
+        WorkspaceUserPermission requestUserPermission = workspaceUserPermissionRepository.findByWorkspaceUser_WorkspaceAndWorkspaceUser_UserId(workspace, memberAccountCreateRequest.getUserId()).orElseThrow(() -> new WorkspaceException(ErrorCode.ERR_WORKSPACE_USER_NOT_FOUND));
+        Optional<WorkspaceCustomSetting> workspaceCustomSettingOptional = workspaceCustomSettingRepository.findByWorkspace_UuidAndSetting_Name(workspaceId, SettingName.PRIVATE_USER_MANAGEMENT_ROLE_SETTING);
+        memberAccountCreateRequest.getMemberAccountCreateRequest().forEach(memberAccountCreateInfo -> {
+            WorkspaceRole requestUserRole = requestUserPermission.getWorkspaceRole();
+            WorkspaceRole createUserRole = workspaceRoleRepository.findByRole(Role.valueOf(memberAccountCreateInfo.getRole())).orElseThrow(() -> new WorkspaceException(ErrorCode.ERR_WORKSPACE_ROLE_NOT_FOUND));
+
+            if (!workspaceCustomSettingOptional.isPresent() || workspaceCustomSettingOptional.get().getValue() == SettingValue.UNUSED || workspaceCustomSettingOptional.get().getValue() == SettingValue.MASTER_OR_MANAGER) {
+                //상위 유저에 대해서는 계정을 생성 할 수 없음.
+                if (requestUserRole.getId() > createUserRole.getId()) {
+                    throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_INVALID_PERMISSION);
+                }
+
+                //마스터 또는 매니저 유저만 계정을 생성할 수 있음.
+                if (requestUserRole.getRole() != Role.MASTER && requestUserRole.getRole() != Role.MANAGER) {
+                    throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_INVALID_PERMISSION);
+                }
+            }
+            if (workspaceCustomSettingOptional.isPresent()) {
+                //마스터 유저만 계정을 생성할 수 있음.
+                if (workspaceCustomSettingOptional.get().getValue() == SettingValue.MASTER) {
+                    if (requestUserRole.getRole() != Role.MASTER) {
+                        throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_INVALID_PERMISSION);
+                    }
+                }
+                //마스터 또는 매니저 또는 멤버 유저만 계정을 생성할 수 있음.
+                if (workspaceCustomSettingOptional.get().getValue() == SettingValue.MASTER_OR_MANAGER_OR_MEMBER) {
+                    if (requestUserRole.getRole() != Role.MASTER && requestUserRole.getRole() != Role.MANAGER && requestUserRole.getRole() != Role.MEMBER) {
+                        throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_INVALID_PERMISSION);
+                    }
+                }
+            }
+        });
+
+
+        List<String> responseLicense = new ArrayList<>();
+        List<WorkspaceUserInfoResponse> workspaceUserInfoResponseList = new ArrayList<>();
+
+        for (MemberAccountCreateInfo memberAccountCreateInfo : memberAccountCreateRequest.getMemberAccountCreateRequest()) {
+            //1. user-server 멤버 정보 등록 api 요청
+            RegisterMemberRequest registerMemberRequest = new RegisterMemberRequest();
+            registerMemberRequest.setEmail(memberAccountCreateInfo.getId());
+            registerMemberRequest.setPassword(memberAccountCreateInfo.getPassword());
+            UserInfoRestResponse userInfoRestResponse = userRestService.registerMemberRequest(registerMemberRequest, "workspace-server").getData();
+
+            if (userInfoRestResponse == null || !StringUtils.hasText(userInfoRestResponse.getUuid())) {
+                log.error("[CREATE WORKSPACE MEMBER ACCOUNT] USER SERVER Member Register fail.");
+                throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_USER_ACCOUNT_CREATE_FAIL);
+            }
+
+            //3. license-server grant api 요청 -> 실패시 user-server 롤백 api 요청
+            if (memberAccountCreateInfo.isPlanRemote()) {
+                MyLicenseInfoResponse myLicenseInfoResponse = licenseRestService.grantWorkspaceLicenseToUser(workspaceId, userInfoRestResponse.getUuid(), "REMOTE").getData();
+                if (myLicenseInfoResponse == null || !StringUtils.hasText(myLicenseInfoResponse.getProductName())) {
+                    log.error("[CREATE WORKSPACE MEMBER ACCOUNT] LICENSE SERVER license grant fail. Request User UUID : [{}], Product License : [{}]", userInfoRestResponse.getUuid(), "REMOTE");
+                    UserDeleteRestResponse userDeleteRestResponse = userRestService.userDeleteRequest(userInfoRestResponse.getUuid(), "workspace-server").getData();
+                    log.error("[CREATE WORKSPACE MEMBER ACCOUNT] LICENSE SERVER license grant fail >>>> USER SERVER account delete process. Request User UUID : [{}], Delete Date : [{}]", userDeleteRestResponse.getUserUUID(), userDeleteRestResponse.getDeletedDate());
+                    throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_USER_LICENSE_GRANT_FAIL);
+                }
+                responseLicense.add("REMOTE");
+            }
+            if (memberAccountCreateInfo.isPlanMake()) {
+                MyLicenseInfoResponse myLicenseInfoResponse = licenseRestService.grantWorkspaceLicenseToUser(
+                        workspaceId, userInfoRestResponse.getUuid(), "MAKE").getData();
+                if (myLicenseInfoResponse == null || !StringUtils.hasText(myLicenseInfoResponse.getProductName())) {
+                    log.error("[CREATE WORKSPACE MEMBER ACCOUNT] LICENSE SERVER license grant fail. Request User UUID : [{}], Product License : [{}]", userInfoRestResponse.getUuid(), "REMOTE");
+                    UserDeleteRestResponse userDeleteRestResponse = userRestService.userDeleteRequest(userInfoRestResponse.getUuid(), "workspace-server").getData();
+                    log.error("[CREATE WORKSPACE MEMBER ACCOUNT] LICENSE SERVER license grant fail >>>> USER SERVER account delete process. Request User UUID : [{}], Delete Date : [{}]", userDeleteRestResponse.getUserUUID(), userDeleteRestResponse.getDeletedDate());
+                    throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_USER_LICENSE_GRANT_FAIL);
+                }
+                responseLicense.add("MAKE");
+            }
+            if (memberAccountCreateInfo.isPlanView()) {
+                MyLicenseInfoResponse myLicenseInfoResponse = licenseRestService.grantWorkspaceLicenseToUser(workspaceId, userInfoRestResponse.getUuid(), "VIEW").getData();
+                if (myLicenseInfoResponse == null || !StringUtils.hasText(myLicenseInfoResponse.getProductName())) {
+                    log.error("[CREATE WORKSPACE MEMBER ACCOUNT] LICENSE SERVER license grant fail. Request User UUID : [{}], Product License : [{}]", userInfoRestResponse.getUuid(), "REMOTE");
+                    UserDeleteRestResponse userDeleteRestResponse = userRestService.userDeleteRequest(userInfoRestResponse.getUuid(), "workspace-server").getData();
+                    log.error("[CREATE WORKSPACE MEMBER ACCOUNT] LICENSE SERVER license grant fail >>>> USER SERVER account delete process. Request User UUID : [{}], Delete Date : [{}]", userDeleteRestResponse.getUserUUID(), userDeleteRestResponse.getDeletedDate());
+                    throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_USER_LICENSE_GRANT_FAIL);
+                }
+                responseLicense.add("VIEW");
+            }
+
+            //4. workspace 권한 및 소속 부여
+            WorkspaceUser newWorkspaceUser = WorkspaceUser.builder()
+                    .userId(userInfoRestResponse.getUuid())
+                    .workspace(workspace)
+                    .build();
+            WorkspaceRole workspaceRole = workspaceRoleRepository.findByRole(Role.valueOf(memberAccountCreateInfo.getRole())).orElseThrow(() -> new WorkspaceException(ErrorCode.ERR_WORKSPACE_ROLE_NOT_FOUND));
+            WorkspacePermission workspacePermission = workspacePermissionRepository.findById(Permission.ALL.getValue()).orElseThrow(() -> new WorkspaceException(ErrorCode.ERR_WORKSPACE_PERMISSION_NOT_FOUND));
+            WorkspaceUserPermission newWorkspaceUserPermission = WorkspaceUserPermission.builder()
+                    .workspaceUser(newWorkspaceUser)
+                    .workspacePermission(workspacePermission)
+                    .workspaceRole(workspaceRole)
+                    .build();
+
+            workspaceUserRepository.save(newWorkspaceUser);
+            workspaceUserPermissionRepository.save(newWorkspaceUserPermission);
+
+            log.info(
+                    "[CREATE WORKSPACE MEMBER ACCOUNT] Workspace add user success. Request User UUID : [{}], Role : [{}], JoinDate : [{}]",
+                    userInfoRestResponse.getUuid(), workspaceRole.getRole(), newWorkspaceUser.getCreatedDate()
+            );
+
+            //5. response
+            WorkspaceUserInfoResponse memberInfoResponse = restMapStruct.userInfoRestResponseToWorkspaceUserInfoResponse(userInfoRestResponse);
+            memberInfoResponse.setRole(newWorkspaceUserPermission.getWorkspaceRole().getRole());
+            memberInfoResponse.setRoleId(newWorkspaceUserPermission.getWorkspaceRole().getId());
+            memberInfoResponse.setJoinDate(newWorkspaceUser.getCreatedDate());
+            memberInfoResponse.setLicenseProducts(responseLicense.toArray(new String[0]));
+            workspaceUserInfoResponseList.add(memberInfoResponse);
+        }
+
+        return new WorkspaceMemberInfoListResponse(workspaceUserInfoResponseList);
     }
 
     @Override
