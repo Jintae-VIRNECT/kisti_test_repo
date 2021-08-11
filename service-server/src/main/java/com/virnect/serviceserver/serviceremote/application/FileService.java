@@ -1,5 +1,6 @@
 package com.virnect.serviceserver.serviceremote.application;
 
+import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -16,6 +17,7 @@ import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 import javax.imageio.ImageIO;
+import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.disk.DiskFileItem;
@@ -31,10 +33,13 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ObjectUtils;
-import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.commons.CommonsMultipartFile;
 
+import com.drew.imaging.ImageMetadataReader;
+import com.drew.metadata.Directory;
+import com.drew.metadata.Metadata;
+import com.drew.metadata.exif.ExifIFD0Directory;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.io.Files;
@@ -44,7 +49,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import com.virnect.data.application.license.LicenseRestService;
-import com.virnect.data.application.user.UserRestService;
+import com.virnect.data.application.account.AccountRestService;
 import com.virnect.data.dao.file.FileRepository;
 import com.virnect.data.dao.file.RecordFileRepository;
 import com.virnect.data.dao.member.MemberRepository;
@@ -79,8 +84,10 @@ import com.virnect.data.dto.rest.UserInfoResponse;
 import com.virnect.data.dto.rest.WorkspaceLicensePlanInfoResponse;
 import com.virnect.data.error.ErrorCode;
 import com.virnect.data.global.common.ApiResponse;
+import com.virnect.data.global.util.paging.PagingUtils;
 import com.virnect.data.infra.file.IFileManagementService;
 import com.virnect.data.infra.utils.JsonUtil;
+import com.virnect.serviceserver.servicedashboard.dto.response.FileBufferImageResponse;
 import com.virnect.serviceserver.serviceremote.dto.mapper.file.FileInfoMapper;
 import com.virnect.serviceserver.serviceremote.dto.mapper.file.FileUploadMapper;
 import com.virnect.serviceserver.serviceremote.dto.mapper.file.FileUserInfoMapper;
@@ -96,10 +103,16 @@ public class FileService {
 
 	private final int THUMBNAIL_WIDTH = 120;
 	private final int THUMBNAIL_HEIGHT = 70;
+	private final int EXPIRY = 60 * 60 * 24;
 
 	private final IFileManagementService fileManagementService;
-	private final UserRestService userRestService;
+	private final AccountRestService accountRestService;
 	private final LicenseRestService licenseRestService;
+
+	private final FileRepository fileRepository;
+	private final RoomRepository roomRepository;
+	private final RecordFileRepository recordFileRepository;
+	private final MemberRepository memberRepository;
 
 	private final FileUploadMapper fileUploadMapper;
 	private final RecordFileMapper recordFileMapper;
@@ -108,14 +121,6 @@ public class FileService {
 	private final RecordFileDetailMapper recordFileDetailMapper;
 	private final ShareUploadFileMapper shareUploadFileMapper;
 	private final ShareFileInfoMapper shareFileInfoMapper;
-
-	private final FileRepository fileRepository;
-	private final RoomRepository roomRepository;
-	private final RecordFileRepository recordFileRepository;
-
-	private final SessionTransactionalService sessionTransactionalService;
-
-	private final MemberRepository memberRepository;
 
 	private List<String> shareFileAllowExtensionList = null;
 
@@ -129,19 +134,21 @@ public class FileService {
 	}
 
 	@Transactional
-	public ApiResponse<FileUploadResponse> uploadFile(FileUploadRequest fileUploadRequest, FileType fileType) {
+	public ApiResponse<FileUploadResponse> uploadFile(FileUploadRequest fileUploadRequest) {
 
 		// Storage check
 		FileStorageCheckResponse storageCheckResult = checkStorageCapacity(fileUploadRequest.getWorkspaceId());
-		if (storageCheckResult.getErrorCode() == ErrorCode.ERR_STORAGE_CAPACITY_FULL) {
-			return new ApiResponse<>(ErrorCode.ERR_STORAGE_CAPACITY_FULL);
+		if (storageCheckResult.getErrorCode() != ErrorCode.ERR_SUCCESS) {
+			return new ApiResponse<>(storageCheckResult.getErrorCode());
 		}
 
-		String bucketPath = generateDirPath(fileUploadRequest.getWorkspaceId(), fileUploadRequest.getSessionId());
 		String objectName = null;
-
 		try {
-			UploadResult uploadResult = fileManagementService.upload(fileUploadRequest.getFile(), bucketPath, FileType.FILE);
+			UploadResult uploadResult = fileManagementService.upload(
+				fileUploadRequest.getFile(),
+				generateDirPath(fileUploadRequest.getWorkspaceId(), fileUploadRequest.getSessionId()), 	// bucket path
+				FileType.FILE
+			);
 			switch (uploadResult.getErrorCode()) {
 				case ERR_FILE_ASSUME_DUMMY:
 				case ERR_FILE_UNSUPPORTED_EXTENSION:
@@ -160,21 +167,8 @@ public class FileService {
 			);
 		}
 
-		File file = File.builder()
-			.workspaceId(fileUploadRequest.getWorkspaceId())
-			.sessionId(fileUploadRequest.getSessionId())
-			.uuid(fileUploadRequest.getUserId())
-			.name(fileUploadRequest.getFile().getOriginalFilename())
-			.objectName(objectName)
-			.contentType(fileUploadRequest.getFile().getContentType())
-			.size(fileUploadRequest.getFile().getSize())
-			.fileType(fileType)
-			.width(0)
-			.height(0)
-			.build();
-
-		File uploadResult = fileRepository.save(file);
-		if (ObjectUtils.isEmpty(uploadResult)) {
+		File file = buildAttachFile(fileUploadRequest, objectName);
+		if (ObjectUtils.isEmpty(fileRepository.save(file))) {
 			return new ApiResponse<>(ErrorCode.ERR_FILE_UPLOAD_FAILED);
 		}
 
@@ -187,14 +181,11 @@ public class FileService {
 	@Transactional
 	public ApiResponse<FileUploadResponse> uploadRecordFile(RecordFileUploadRequest recordFileUploadRequest) {
 
-		// upload to file storage
-		String bucketPath = generateDirPath(recordFileUploadRequest.getWorkspaceId(), recordFileUploadRequest.getSessionId());
 		String objectName = null;
-
 		try {
 			UploadResult uploadResult = fileManagementService.upload(
 				recordFileUploadRequest.getFile(),
-				bucketPath,
+				generateDirPath(recordFileUploadRequest.getWorkspaceId(), recordFileUploadRequest.getSessionId()),	// bucket path
 				FileType.RECORD
 			);
 
@@ -212,24 +203,12 @@ public class FileService {
 			return new ApiResponse<>(ErrorCode.ERR_FILE_UPLOAD_EXCEPTION);
 		}
 
-		RecordFile recordFile = RecordFile.builder()
-			.workspaceId(recordFileUploadRequest.getWorkspaceId())
-			.sessionId(recordFileUploadRequest.getSessionId())
-			.uuid(recordFileUploadRequest.getUserId())
-			.name(recordFileUploadRequest.getFile().getOriginalFilename())
-			.objectName(objectName)
-			.contentType(recordFileUploadRequest.getFile().getContentType())
-			.size(recordFileUploadRequest.getFile().getSize())
-			.durationSec(recordFileUploadRequest.getDurationSec())
-			.build();
-
+		RecordFile recordFile = buildRecordFile(recordFileUploadRequest, objectName);
 		if (ObjectUtils.isEmpty(recordFileRepository.save(recordFile))) {
 			return new ApiResponse<>(ErrorCode.ERR_FILE_UPLOAD_FAILED);
 		}
 
-		FileUploadResponse fileUploadResponse = recordFileMapper.toDto(recordFile);
-
-		return new ApiResponse<>(fileUploadResponse);
+		return new ApiResponse<>(recordFileMapper.toDto(recordFile));
 	}
 
 	@Transactional
@@ -241,13 +220,9 @@ public class FileService {
 
 		// Storage check
 		FileStorageCheckResponse storageCheckResult = checkStorageCapacity(workspaceId);
-		if (storageCheckResult.getErrorCode() == ErrorCode.ERR_STORAGE_CAPACITY_FULL) {
-			return new ApiResponse<>(ErrorCode.ERR_STORAGE_CAPACITY_FULL);
+		if (storageCheckResult.getErrorCode() != ErrorCode.ERR_SUCCESS) {
+			return new ApiResponse<>(storageCheckResult.getErrorCode());
 		}
-
-		RoomProfileUpdateResponse roomProfileUpdateResponse = new RoomProfileUpdateResponse();
-		String profileUrl = IFileManagementService.DEFAULT_ROOM_PROFILE;
-		String objectName;
 
 		Room room = roomRepository.findRoomByWorkspaceIdAndSessionIdForWrite(workspaceId, sessionId).orElse(null);
 		if (ObjectUtils.isEmpty(room)) {
@@ -258,6 +233,7 @@ public class FileService {
 			return new ApiResponse<>(ErrorCode.ERR_ROOM_INVALID_PERMISSION);
 		}
 
+		String profileUrl = IFileManagementService.DEFAULT_ROOM_PROFILE;
 		if (!ObjectUtils.isEmpty(roomProfileUpdateRequest.getProfile())) {
 			try {
 				UploadResult uploadResult = fileManagementService.uploadProfile(
@@ -280,29 +256,14 @@ public class FileService {
 			}
 		}
 
+		RoomProfileUpdateResponse roomProfileUpdateResponse = new RoomProfileUpdateResponse();
 		roomProfileUpdateResponse.setSessionId(sessionId);
 		roomProfileUpdateResponse.setProfile(profileUrl);
 		roomProfileUpdateResponse.setUsedStoragePer(storageCheckResult.getUsedStoragePer());
 		room.setProfile(profileUrl);
 
-		Room roomUpdateResult = roomRepository.save(room);
-
-		// 협업 프로필 파일정보 DB 저장
-		File file = File.builder()
-			.workspaceId(workspaceId)
-			.sessionId(sessionId)
-			.uuid(roomProfileUpdateRequest.getUuid())
-			.name(roomProfileUpdateRequest.getProfile().getOriginalFilename())
-			.objectName(profileUrl)
-			.contentType(roomProfileUpdateRequest.getProfile().getContentType())
-			.size(roomProfileUpdateRequest.getProfile().getSize())
-			.fileType(FileType.PROFILE)
-			.width(0)
-			.height(0)
-			.build();
-		File fileUploadResult = fileRepository.save(file);
-
-		if (ObjectUtils.isEmpty(roomUpdateResult) || ObjectUtils.isEmpty(fileUploadResult)) {
+		File file = buildProfileFile(roomProfileUpdateRequest, workspaceId, sessionId, profileUrl);
+		if (ObjectUtils.isEmpty(roomRepository.save(room)) || ObjectUtils.isEmpty(fileRepository.save(file))) {
 			new ApiResponse<>(ErrorCode.ERR_PROFILE_UPLOAD_FAILED);
 		}
 
@@ -348,27 +309,24 @@ public class FileService {
 
 		log.info("file download: {}", file.getObjectName());
 		try {
-			StringBuilder stringBuilder;
-			stringBuilder = new StringBuilder();
-			stringBuilder.append(workspaceId).append("/")
-				.append(sessionId).append("/")
-				.append(file.getObjectName());
-
-			// upload to file storage
-			String bucketPath = generateDirPath(workspaceId, sessionId);
-
-			int expiry = 60 * 60 * 24; //one day
 			String url = fileManagementService.filePreSignedUrl(
-				bucketPath, objectName, expiry, file.getName(), FileType.FILE);
-			FilePreSignedResponse filePreSignedResponse = new FilePreSignedResponse();
-			filePreSignedResponse.setWorkspaceId(file.getWorkspaceId());
-			filePreSignedResponse.setSessionId(file.getSessionId());
-			filePreSignedResponse.setName(file.getName());
-			filePreSignedResponse.setObjectName(file.getObjectName());
-			filePreSignedResponse.setContentType(file.getContentType());
-			filePreSignedResponse.setUrl(url);
-			filePreSignedResponse.setExpiry(expiry);
-			return new ApiResponse<>(filePreSignedResponse);
+				generateDirPath(workspaceId, sessionId), // bucket path
+				objectName,
+				EXPIRY,
+				file.getName(),
+				FileType.FILE
+			);
+			return new ApiResponse<>(
+				FilePreSignedResponse.builder()
+					.workspaceId(file.getWorkspaceId())
+					.sessionId(file.getSessionId())
+					.name(file.getName())
+					.objectName(file.getObjectName())
+					.contentType(file.getContentType())
+					.url(url)
+					.expiry(EXPIRY)
+					.build()
+			);
 		} catch (IOException | NoSuchAlgorithmException | InvalidKeyException exception) {
 			log.info("{}", exception.getMessage());
 			return new ApiResponse<>(ErrorCode.ERR_FILE_GET_SIGNED_EXCEPTION);
@@ -379,20 +337,15 @@ public class FileService {
 	public ApiResponse<String> downloadThumbnailFileUrl(File targetFile) {
 		log.info("file download: {}", targetFile.getObjectName());
 		try {
-			StringBuilder stringBuilder;
-			stringBuilder = new StringBuilder();
-			stringBuilder.append(targetFile.getWorkspaceId()).append("/")
-				.append(targetFile.getSessionId()).append("/")
-				.append(targetFile.getObjectName());
-
-			// upload to file storage
-			String bucketPath = generateDirPath(targetFile.getWorkspaceId(), targetFile.getSessionId());
-
-			int expiry = 60 * 60 * 24; //one day
-			String url = fileManagementService.filePreSignedUrl(
-				bucketPath, targetFile.getObjectName(), expiry, targetFile.getName(), FileType.FILE);
-
-			return new ApiResponse<>(url);
+			return new ApiResponse<>(
+				fileManagementService.filePreSignedUrl(
+				generateDirPath(targetFile.getWorkspaceId(),	// bucket path
+				targetFile.getSessionId()),
+				targetFile.getObjectName(),
+				EXPIRY,
+				targetFile.getName(),
+				FileType.FILE
+			));
 		} catch (IOException | NoSuchAlgorithmException | InvalidKeyException exception) {
 			log.info("{}", exception.getMessage());
 			return new ApiResponse<>(ErrorCode.ERR_FILE_GET_SIGNED_EXCEPTION);
@@ -401,21 +354,17 @@ public class FileService {
 
 	@Transactional(readOnly = true)
 	public ApiResponse<String> downloadThumbnailFileUrl(String workspace, String sessionId, String objectName, String name) {
-
 		log.info("file download: {}", objectName);
 		try {
-			StringBuilder stringBuilder;
-			stringBuilder = new StringBuilder();
-			stringBuilder.append(workspace).append("/")
-				.append(sessionId).append("/")
-				.append(objectName);
-			// upload to file storage
-			String bucketPath = generateDirPath(workspace, sessionId);
-
-			int expiry = 60 * 60 * 24; //one day
-			String url = fileManagementService.filePreSignedUrl(
-				bucketPath, objectName, expiry, name, FileType.FILE);
-			return new ApiResponse<>(url);
+			return new ApiResponse<>(
+				fileManagementService.filePreSignedUrl(
+					generateDirPath(workspace, sessionId), 	// bucket path
+					objectName,
+					EXPIRY,
+					name,
+					FileType.FILE
+				)
+			);
 		} catch (IOException | NoSuchAlgorithmException | InvalidKeyException exception) {
 			log.info("{}", exception.getMessage());
 			return new ApiResponse<>(ErrorCode.ERR_FILE_GET_SIGNED_EXCEPTION);
@@ -437,27 +386,24 @@ public class FileService {
 
 		log.info("recordFile download: {}", recordFile.getObjectName());
 		try {
-			StringBuilder stringBuilder;
-			stringBuilder = new StringBuilder();
-			stringBuilder.append(workspaceId).append("/")
-				.append(sessionId).append("/")
-				.append(recordFile.getObjectName());
-
-			// upload to file storage
-			String bucketPath = generateDirPath(workspaceId, sessionId);
-
-			int expiry = 60 * 60 * 24; //one day
-			String url = fileManagementService.filePreSignedUrl(
-				bucketPath, objectName, expiry, recordFile.getName(), FileType.RECORD);
-			FilePreSignedResponse filePreSignedResponse = new FilePreSignedResponse();
-			filePreSignedResponse.setWorkspaceId(recordFile.getWorkspaceId());
-			filePreSignedResponse.setSessionId(recordFile.getSessionId());
-			filePreSignedResponse.setName(recordFile.getName());
-			filePreSignedResponse.setObjectName(recordFile.getObjectName());
-			filePreSignedResponse.setContentType(recordFile.getContentType());
-			filePreSignedResponse.setUrl(url);
-			filePreSignedResponse.setExpiry(expiry);
-			return new ApiResponse<>(filePreSignedResponse);
+			return new ApiResponse<>(
+				FilePreSignedResponse.builder()
+				.workspaceId(recordFile.getWorkspaceId())
+				.sessionId(recordFile.getSessionId())
+				.name(recordFile.getName())
+				.objectName(recordFile.getObjectName())
+				.contentType(recordFile.getContentType())
+				.url(
+					fileManagementService.filePreSignedUrl(
+					generateDirPath(workspaceId, sessionId),	// bucket path
+					objectName,
+					EXPIRY,
+					recordFile.getName(),
+					FileType.RECORD
+				))
+				.expiry(EXPIRY)
+				.build()
+			);
 		} catch (IOException | NoSuchAlgorithmException | InvalidKeyException exception) {
 			log.info("{}", exception.getMessage());
 			return new ApiResponse<>(ErrorCode.ERR_FILE_GET_SIGNED_EXCEPTION);
@@ -475,19 +421,19 @@ public class FileService {
 		Page<File> filePage = fileRepository.findByWorkspaceIdAndSessionIdAndDeletedAndFileType(
 			workspaceId, sessionId, isDeleted, pageable);
 
-		PageMetadataResponse pageMeta = PageMetadataResponse.builder()
-			.currentPage(pageable.getPageNumber())
-			.currentSize(pageable.getPageSize())
-			.numberOfElements(filePage.getNumberOfElements())
-			.totalPage(filePage.getTotalPages())
-			.totalElements(filePage.getNumberOfElements())
-			.last(filePage.isLast())
-			.build();
-
 		List<FileInfoResponse> fileInfoList = filePage.toList()
 			.stream()
 			.map(fileInfoMapper::toDto)
 			.collect(Collectors.toList());
+
+		PageMetadataResponse pageMeta = PagingUtils.pagingBuilder(
+			true,
+			pageable,
+			filePage.getNumberOfElements(),
+			filePage.getTotalPages(),
+			filePage.getNumberOfElements(),
+			filePage.isLast()
+		);
 
 		return new ApiResponse<>(new FileInfoListResponse(fileInfoList, pageMeta));
 	}
@@ -507,7 +453,7 @@ public class FileService {
 		List<FileDetailInfoResponse> fileDetailInfoList = new ArrayList<>();
 		for (RecordFile recordFile : recordFilePage.toList()) {
 			log.info("getRecordFileInfoList : {}", recordFile.getObjectName());
-			ApiResponse<UserInfoResponse> feignResponse = userRestService.getUserInfoByUserId(recordFile.getUuid());
+			ApiResponse<UserInfoResponse> feignResponse = accountRestService.getUserInfoByUserId(recordFile.getUuid());
 
 			FileUserInfoResponse fileUserInfoResponse = fileUserInfoMapper.toDto(feignResponse.getData());
 			FileDetailInfoResponse fileDetailInfoResponse = recordFileDetailMapper.toDto(recordFile);
@@ -517,14 +463,14 @@ public class FileService {
 			fileDetailInfoList.add(fileDetailInfoResponse);
 		}
 
-		PageMetadataResponse pageMeta = PageMetadataResponse.builder()
-			.currentPage(pageable.getPageNumber())
-			.currentSize(pageable.getPageSize())
-			.numberOfElements(recordFilePage.getNumberOfElements())
-			.totalPage(recordFilePage.getTotalPages())
-			.totalElements(recordFilePage.getTotalElements())
-			.last(recordFilePage.isLast())
-			.build();
+		PageMetadataResponse pageMeta = PagingUtils.pagingBuilder(
+			true,
+			pageable,
+			recordFilePage.getNumberOfElements(),
+			recordFilePage.getTotalPages(),
+			recordFilePage.getNumberOfElements(),
+			recordFilePage.isLast()
+		);
 
 		return new ApiResponse<>(new FileDetailInfoListResponse(fileDetailInfoList, pageMeta));
 	}
@@ -541,19 +487,17 @@ public class FileService {
 		if (ObjectUtils.isEmpty(file)) {
 			return new ApiResponse<>(ErrorCode.ERR_FILE_NOT_FOUND);
 		}
+		file.setDeleted(true);
 
-		Objects.requireNonNull(file).setDeleted(true);
 		fileRepository.save(file);
 
 		//remove object
 		boolean result = false;
 		try {
-			StringBuilder stringBuilder;
-			stringBuilder = new StringBuilder();
-			stringBuilder.append(workspaceId).append("/")
-				.append(sessionId).append("/")
-				.append(file.getObjectName());
-			result = fileManagementService.removeObject(stringBuilder.toString());
+			String stringBuilder = workspaceId + "/"
+				+ sessionId + "/"
+				+ file.getObjectName();
+			result = fileManagementService.removeObject(stringBuilder);
 		} catch (IOException | NoSuchAlgorithmException | InvalidKeyException exception) {
 			exception.printStackTrace();
 			log.info("{}", exception.getMessage());
@@ -564,12 +508,13 @@ public class FileService {
 			return new ApiResponse<>(ErrorCode.ERR_FILE_DELETE_FAILED);
 		}
 
-		FileDeleteResponse fileDeleteResponse = new FileDeleteResponse();
-		fileDeleteResponse.setWorkspaceId(file.getWorkspaceId());
-		fileDeleteResponse.setSessionId(file.getSessionId());
-		fileDeleteResponse.setObjectName(file.getName());
-
-		return new ApiResponse<>(fileDeleteResponse);
+		return new ApiResponse<>(
+			FileDeleteResponse.builder()
+			.workspaceId(file.getWorkspaceId())
+			.sessionId(file.getSessionId())
+			.objectName(file.getName())
+			.build()
+		);
 	}
 
 	@Transactional
@@ -613,42 +558,44 @@ public class FileService {
 		FileUploadRequest fileUploadRequest
 	) throws IOException, NoSuchAlgorithmException, InvalidKeyException {
 
+		// 비밀번호가 있는 PDF 일 경우
+		if (Objects.equals(fileUploadRequest.getFile().getContentType(), "application/pdf")) {
+			try {
+				java.io.File file = convertMultiFileToFile(fileUploadRequest.getFile());
+				PDDocument document = PDDocument.load(file);
+				document.close();
+			} catch (Exception e) {
+				log.info("This PDF File is locked");
+				return FileUploadResult.builder()
+					.errorCode(ErrorCode.ERR_PASSWORD_PDF)
+					.build();
+			}
+		}
+
 		// 공유 파일 업로드 (to Storage)
 		UploadResult uploadResult = fileManagementService.upload(
 			fileUploadRequest.getFile(),
-			generateDirPath(fileUploadRequest.getWorkspaceId(), fileUploadRequest.getSessionId()),
+			generateDirPath(fileUploadRequest.getWorkspaceId(),
+			fileUploadRequest.getSessionId()),
 			FileType.FILE
 		);
 		if (uploadResult.getErrorCode() != ErrorCode.ERR_SUCCESS) {
-			new ApiResponse<>(ErrorCode.ERR_FILE_UPLOAD_EXCEPTION);
+			return FileUploadResult.builder()
+				.errorCode(ErrorCode.ERR_FILE_UPLOAD_EXCEPTION)
+				.build();
 		}
 
 		// 공유 파일 정보 저장 (to DB)
-		int width;
-		int height;
-		if (Objects.equals(fileUploadRequest.getFile().getContentType(), "application/pdf")) {
-			width = 0;
-			height = 0;
-		} else {
+		int width = 0;
+		int height = 0;
+		if (!Objects.equals(fileUploadRequest.getFile().getContentType(), "application/pdf")) {
 			BufferedImage image = ImageIO.read(fileUploadRequest.getFile().getInputStream());
 			width = image.getWidth();
 			height = image.getHeight();
 		}
 
-		File file = File.builder()
-			.workspaceId(fileUploadRequest.getWorkspaceId())
-			.sessionId(fileUploadRequest.getSessionId())
-			.uuid(fileUploadRequest.getUserId())
-			.name(fileUploadRequest.getFile().getOriginalFilename())
-			.objectName(uploadResult.getResult())
-			.contentType(fileUploadRequest.getFile().getContentType())
-			.size(fileUploadRequest.getFile().getSize())
-			.fileType(FileType.SHARE)
-			.width(width)
-			.height(height)
-			.build();
+		File file = buildShareFile(fileUploadRequest, uploadResult.getResult(), width, height);
 		fileRepository.save(file);
-
 		return new FileUploadResult(uploadResult.getResult(), file, uploadResult.getErrorCode());
 	}
 
@@ -670,60 +617,62 @@ public class FileService {
 			new ApiResponse<>(ErrorCode.ERR_FILE_UPLOAD_EXCEPTION);
 		}
 
-		File file = File.builder()
-			.workspaceId(fileUploadRequest.getWorkspaceId())
-			.sessionId(fileUploadRequest.getSessionId())
-			.uuid(fileUploadRequest.getUserId())
-			.name(fileUploadRequest.getFile().getOriginalFilename())
-			.objectName(objectName)
-			.contentType("image/png")
-			.size(targetFile.getSize())
-			.fileType(FileType.SHARE)
-			.width(THUMBNAIL_WIDTH)
-			.height(THUMBNAIL_HEIGHT)
-			.build();
-		fileRepository.save(file);
+		File file = buildThumbnailFile(fileUploadRequest, objectName, targetFile.getSize());
 
+		fileRepository.save(file);
 		return new FileUploadResult(file, uploadResult.getErrorCode());
 	}
 
-
 	@Transactional
 	public ApiResponse<ShareFileUploadResponse> uploadShareFile(
-		FileUploadRequest fileUploadRequest
-	) throws IOException, NoSuchAlgorithmException, InvalidKeyException {
+		FileUploadRequest fileUploadRequest, HttpServletRequest httpServletRequest
+	) throws Exception {
 
 		// Check Extension
 		if (!checkShareFileExtension(fileUploadRequest.getFile())) {
 			return new ApiResponse<>(ErrorCode.ERR_FILE_UNSUPPORTED_EXTENSION);
 		}
 
-		// Storage check
+		// Check Storage
 		FileStorageCheckResponse storageCheckResult = checkStorageCapacity(fileUploadRequest.getWorkspaceId());
-		if (storageCheckResult.getErrorCode() == ErrorCode.ERR_STORAGE_CAPACITY_FULL) {
-			return new ApiResponse<>(ErrorCode.ERR_STORAGE_CAPACITY_FULL);
+		if (storageCheckResult.getErrorCode() != ErrorCode.ERR_SUCCESS) {
+			return new ApiResponse<>(storageCheckResult.getErrorCode());
 		}
 
-		// Make Thumbnail Image
-		BufferedImage bufferedImage = makeThumbnail(fileUploadRequest.getFile());
-		MultipartFile thumbnailFile = convertBufferImgToMultipartFile(fileUploadRequest, bufferedImage);
+		// Check File Orientation (Only AOS)
+		boolean checkAos = false;
+		if ("mobile".equalsIgnoreCase(httpServletRequest.getHeader("client"))
+			&& !Objects.equals(fileUploadRequest.getFile().getContentType(), "application/pdf")
+		) {
+			MultipartFile orientationAppliedFile = fileOrientation(fileUploadRequest);
+			fileUploadRequest.setFile(orientationAppliedFile);
+			checkAos = true;
+		}
 
-		// Save Thumbnail and upload file
+		// Save upload file
 		FileUploadResult fileUploadResult = saveShareFile(fileUploadRequest);
-		FileUploadResult thumbnailUploadResult = saveShareFileThumbnail(fileUploadRequest, thumbnailFile, fileUploadResult.getObjectName());
-
-		if (thumbnailUploadResult.getErrorCode() != ErrorCode.ERR_SUCCESS || fileUploadResult.getErrorCode() != ErrorCode.ERR_SUCCESS) {
+		if(fileUploadResult.getErrorCode() != ErrorCode.ERR_SUCCESS) {
 			return new ApiResponse<>(fileUploadResult.getErrorCode());
 		}
 
-		ShareFileUploadResponse fileUploadResponse = shareUploadFileMapper.toDto(fileUploadResult.getFile());
+		// Make Thumbnail Image
+		FileBufferImageResponse bufferImageResponse = makeThumbnail(fileUploadRequest.getFile(), checkAos);
+		if (bufferImageResponse.getErrorCode() != ErrorCode.ERR_SUCCESS) {
+			return new ApiResponse<>(bufferImageResponse.getErrorCode());
+		}
 
-		// Get File thumbnail download url
-		ApiResponse<String> downloadUrl = downloadThumbnailFileUrl(thumbnailUploadResult.getFile());
-		fileUploadResponse.setThumbnailDownloadUrl(downloadUrl.getData());
+		// BufferImg to MultiFile (thumbnail)
+		MultipartFile thumbnailFile = convertBufferImgToMultipartFile(fileUploadRequest, bufferImageResponse.getBufferedImage());
+		FileUploadResult thumbnailUploadResult = saveShareFileThumbnail(fileUploadRequest, thumbnailFile, fileUploadResult.getObjectName());
+		if (thumbnailUploadResult.getErrorCode() != ErrorCode.ERR_SUCCESS) {
+			return new ApiResponse<>(thumbnailUploadResult.getErrorCode());
+		}
+
+		// Make result response
+		ShareFileUploadResponse fileUploadResponse = shareUploadFileMapper.toDto(fileUploadResult.getFile());
+		fileUploadResponse.setThumbnailDownloadUrl(downloadThumbnailFileUrl(thumbnailUploadResult.getFile()).getData());
 		fileUploadResponse.setDeleted(fileUploadResult.getFile().isDeleted());
 		fileUploadResponse.setUsedStoragePer(storageCheckResult.getUsedStoragePer());
-
 		return new ApiResponse<>(fileUploadResponse);
 	}
 
@@ -734,8 +683,6 @@ public class FileService {
 		String leaderUserId,
 		String objectName
 	) {
-		FileDeleteResponse fileDeleteResponse = new FileDeleteResponse();
-
 		Member leaderInfo = memberRepository.findRoomLeaderBySessionId(workspaceId, sessionId);
 		if (!leaderUserId.equals(leaderInfo.getUuid())) {
 			return new ApiResponse<>(ErrorCode.ERR_ROOM_MEMBER_STATUS_INVALID);
@@ -752,12 +699,10 @@ public class FileService {
 		//remove object
 		boolean result;
 		try {
-			StringBuilder stringBuilder;
-			stringBuilder = new StringBuilder();
-			stringBuilder.append(workspaceId).append("/")
-				.append(sessionId).append("/")
-				.append(file.getObjectName());
-			result = fileManagementService.removeObject(stringBuilder.toString());
+			String stringBuilder = workspaceId + "/"
+				+ sessionId + "/"
+				+ file.getObjectName();
+			result = fileManagementService.removeObject(stringBuilder);
 			if (!result) {
 				new ApiResponse<>(ErrorCode.ERR_FILE_DELETE_FAILED);
 			}
@@ -767,10 +712,12 @@ public class FileService {
 			new ApiResponse<>(ErrorCode.ERR_FILE_DELETE_EXCEPTION);
 		}
 
-		fileDeleteResponse.setWorkspaceId(file.getWorkspaceId());
-		fileDeleteResponse.setSessionId(file.getSessionId());
-		fileDeleteResponse.setObjectName(file.getName());
-		return new ApiResponse<>(fileDeleteResponse);
+		return new ApiResponse<>(FileDeleteResponse.builder()
+			.workspaceId(file.getWorkspaceId())
+			.sessionId(file.getSessionId())
+			.objectName(file.getName())
+			.build()
+		);
 	}
 
 	@Transactional
@@ -793,12 +740,10 @@ public class FileService {
 			file.setDeleted(true);
 			fileRepository.save(file);
 			try {
-				StringBuilder stringBuilder;
-				stringBuilder = new StringBuilder();
-				stringBuilder.append(workspaceId).append("/")
-					.append(sessionId).append("/")
-					.append(file.getObjectName());
-				result = result && fileManagementService.removeObject(stringBuilder.toString());
+				String stringBuilder = workspaceId + "/"
+					+ sessionId + "/"
+					+ file.getObjectName();
+				result = result && fileManagementService.removeObject(stringBuilder);
 			} catch (IOException | NoSuchAlgorithmException | InvalidKeyException exception) {
 				exception.printStackTrace();
 				log.info("{}", exception.getMessage());
@@ -810,11 +755,11 @@ public class FileService {
 			return new ApiResponse<>(ErrorCode.ERR_FILE_DELETE_FAILED);
 		}
 
-		FileDeleteResponse fileDeleteResponse = new FileDeleteResponse();
-		fileDeleteResponse.setWorkspaceId(workspaceId);
-		fileDeleteResponse.setSessionId(sessionId);
-
-		return new ApiResponse<>(fileDeleteResponse);
+		return new ApiResponse<>(FileDeleteResponse.builder()
+			.workspaceId(workspaceId)
+			.sessionId(sessionId)
+			.build()
+		);
 	}
 
 	@Transactional(readOnly = true)
@@ -825,13 +770,11 @@ public class FileService {
 		Pageable pageable
 	) {
 
-		List<ShareFileInfoResponse> shareFileInfoResponses = new ArrayList<>();
-		PageMetadataResponse pageMeta;
-
 		Page<File> shareFilePage = fileRepository.findShareFileByWorkspaceAndSessionId(workspaceId, sessionId, paging, pageable);
+
+		List<ShareFileInfoResponse> shareFileInfoResponses = new ArrayList<>();
 		if (!shareFilePage.isEmpty()) {
-			shareFileInfoResponses = shareFilePage
-				.stream()
+			shareFileInfoResponses = shareFilePage.stream()
 				.map(shareFileInfoMapper::toDto)
 				.collect(Collectors.toList());
 		}
@@ -846,62 +789,93 @@ public class FileService {
 			shareFileInfoResponse.setThumbnailDownloadUrl(downloadUrl.getData());
 		}
 
-		if (paging) {
-			pageMeta = PageMetadataResponse.builder()
-				.currentPage(pageable.getPageNumber())
-				.currentSize(pageable.getPageSize())
-				.numberOfElements(shareFilePage.getNumberOfElements())
-				.totalPage(shareFilePage.getTotalPages())
-				.totalElements(shareFilePage.getTotalElements())
-				.last(shareFilePage.isLast())
-				.build();
-		} else {
-			pageMeta = PageMetadataResponse.builder()
-				.currentPage(1)
-				.currentSize(1)
-				.numberOfElements(shareFileInfoResponses.size())
-				.totalPage(1)
-				.totalElements(shareFileInfoResponses.size())
-				.last(true)
-				.build();
-		}
+		PageMetadataResponse pageMeta = PagingUtils.pagingBuilder(
+			paging,
+			pageable,
+			shareFilePage.getNumberOfElements(),
+			shareFilePage.getTotalPages(),
+			shareFilePage.getTotalElements(),
+			shareFilePage.isLast()
+		);
+
 		return new ApiResponse<>(new ShareFileInfoListResponse(shareFileInfoResponses, pageMeta));
 	}
 
-	private BufferedImage makePdfThumbnail(MultipartFile targetFile) {
-		BufferedImage pdfThumbnail = null;
+	private FileBufferImageResponse makePdfThumbnail(MultipartFile targetFile) {
+		BufferedImage pdfThumbnail;
 		try {
-			java.io.File file = convertFile(targetFile);
+			java.io.File file = convertMultiFileToFile(targetFile);
 			PDDocument document = PDDocument.load(file);
 			PDFRenderer pdfRenderer = new PDFRenderer(document);
-
 			pdfThumbnail = pdfRenderer.renderImageWithDPI( 0, 100, ImageType.RGB );
 			document.close();
 		} catch (Exception e) {
 			log.info("makePdfThumbnail Error message : " + e.getMessage());
+			return FileBufferImageResponse.builder()
+				.bufferedImage(null)
+				.contentType("application/pdf")
+				.errorCode(ErrorCode.ERR_FILE_UPLOAD_FAILED)
+				.build();
 		}
-		return pdfThumbnail;
+		return FileBufferImageResponse.builder()
+			.bufferedImage(pdfThumbnail)
+			.contentType("application/pdf")
+			.errorCode(ErrorCode.ERR_SUCCESS)
+			.build();
 	}
 
-	private BufferedImage makeThumbnail(MultipartFile targetFile) {
-		BufferedImage responseImg;
+	private FileBufferImageResponse makeThumbnail(
+		MultipartFile targetFile,
+		boolean checkAos
+	) {
+		FileBufferImageResponse bufferImageResponse;
 		try {
 			if (Objects.equals(targetFile.getContentType(), "application/pdf")) {
-				responseImg = makePdfThumbnail(targetFile);
+				bufferImageResponse = makePdfThumbnail(targetFile);
+				if (bufferImageResponse.getErrorCode() != ErrorCode.ERR_SUCCESS) {
+					bufferImageResponse = buildFileBufferImage(
+						null,
+						0,
+						0,
+						targetFile.getContentType(),
+						ErrorCode.ERR_MAKE_THUMBNAIL
+					);
+				}
 			} else {
-				InputStream in = targetFile.getInputStream();
-				BufferedImage originalImage = ImageIO.read(in);
-				responseImg = Scalr.resize(originalImage, THUMBNAIL_WIDTH, THUMBNAIL_HEIGHT);
-				in.close();
+				java.io.File fileData = convertMultiFileToFile(targetFile);
+				if (checkAos) {
+					bufferImageResponse = buildFileBufferImage(
+						applyImageOrientation(fileData, getOrientation(fileData)),
+						THUMBNAIL_WIDTH,
+						THUMBNAIL_HEIGHT,
+						targetFile.getContentType(),
+						ErrorCode.ERR_SUCCESS
+					);
+				} else {
+					InputStream in = targetFile.getInputStream();
+					bufferImageResponse = buildFileBufferImage(
+						ImageIO.read(in),
+						THUMBNAIL_WIDTH,
+						THUMBNAIL_HEIGHT,
+						targetFile.getContentType(),
+						ErrorCode.ERR_SUCCESS
+					);
+					in.close();
+				}
 			}
 		} catch (Exception e) {
-			log.info("makeThumbnail Error message : " + e.getMessage());
-			responseImg = null;
+			bufferImageResponse = buildFileBufferImage(
+				null,
+				0,
+				0,
+				targetFile.getContentType(),
+				ErrorCode.ERR_MAKE_THUMBNAIL
+			);
 		}
-		return responseImg;
+		return bufferImageResponse;
 	}
 
-	private java.io.File convertFile(MultipartFile multipartFile) throws IOException {
+	private java.io.File convertMultiFileToFile(MultipartFile multipartFile) throws IOException {
 		java.io.File file = new java.io.File(Objects.requireNonNull(multipartFile.getOriginalFilename()));
 		file.createNewFile();
 		FileOutputStream fos = new FileOutputStream(file);
@@ -913,8 +887,7 @@ public class FileService {
 	public ApiResponse<String> downloadGuideFileUrl(String objectName) {
 		String url;
 		try {
-			int expiry = 60 * 60 * 24; //one day
-			url = fileManagementService.filePreSignedUrl("guide", objectName, expiry);
+			url = fileManagementService.filePreSignedUrl("guide", objectName, EXPIRY);
 			if (Strings.isBlank(url)) {
 				return new ApiResponse<>(ErrorCode.ERR_FILE_NOT_FOUND);
 			}
@@ -927,34 +900,29 @@ public class FileService {
 
 	@Transactional
 	public void removeFiles(String sessionId) {
-
-		String workspaceId = sessionTransactionalService.getRoom(sessionId).getWorkspaceId();
-		if (!StringUtils.isEmpty(workspaceId)) {
-			try {
-
+		try {
+			Room room = roomRepository.findBySessionId(sessionId).orElse(null);
+			if (!ObjectUtils.isEmpty(room)) {
 				List<String> listName = new LinkedList<>();
-				List<File> files = fileRepository.findByWorkspaceIdAndSessionId(workspaceId, sessionId);
+				List<File> files = fileRepository.findByWorkspaceIdAndSessionId(room.getWorkspaceId(), sessionId);
 				for (File file : files) {
 					listName.add(file.getObjectName());
 				}
-
 				if (!listName.isEmpty()) {
-					String dirPath = generateDirPath(workspaceId, sessionId);
+					String dirPath = generateDirPath(room.getWorkspaceId(), sessionId);
 					fileManagementService.removeBucket(null, dirPath, listName, FileType.FILE);
 				}
-			} catch (IOException | NoSuchAlgorithmException | InvalidKeyException e) {
-				e.printStackTrace();
+				deleteFiles(room.getWorkspaceId(), sessionId);
 			}
-			deleteFiles(workspaceId, sessionId);
+		} catch (IOException | NoSuchAlgorithmException | InvalidKeyException e) {
+			e.printStackTrace();
 		}
 	}
 
 	@Transactional
 	public void removeFiles(String workspaceId, String sessionId) {
-
 		log.info("ROOM removeFiles {}, {}", workspaceId, sessionId);
 		try {
-
 			List<String> listName = new ArrayList<>();
 			List<File> files = fileRepository.findByWorkspaceIdAndSessionId(workspaceId, sessionId);
 			for (File file : files) {
@@ -997,15 +965,15 @@ public class FileService {
 		attachFileStorageSize = (attachFileStorageSize / 1024) / 1024;
 		shareFileStorageSize = (shareFileStorageSize / 1024) / 1024;
 
-		FileStorageInfoResponse result = FileStorageInfoResponse.builder()
+		return new ApiResponse<>(
+			FileStorageInfoResponse.builder()
 			.workspaceId(workspaceId)
 			.profileStorageSize(profileStorageSize)
 			.attachFileStorageSize(attachFileStorageSize)
 			.shareFileStorageSize(shareFileStorageSize)
 			.totalRemoteUseStorageSize(profileStorageSize + attachFileStorageSize + shareFileStorageSize)
-			.build();
-
-		return new ApiResponse<>(result);
+			.build()
+		);
 	}
 
 	public FileStorageCheckResponse checkStorageCapacity(String workspaceId) {
@@ -1035,8 +1003,8 @@ public class FileService {
 	}
 
 	@PostConstruct
-	private void init() throws IOException {
-
+	private void init() {
+		try {
 		shareFileAllowExtensionList = new ArrayList<>();
 		InputStream inputStream = getClass().getClassLoader().getResourceAsStream("policy/shareFileExtension.json");
 
@@ -1045,15 +1013,13 @@ public class FileService {
 
 		ObjectMapper objectMapper = new ObjectMapper();
 		JsonObject resourceObject = jsonObject.getAsJsonObject("resource");
-		try {
-			List<String> docPDFList = objectMapper.readValue(resourceObject.getAsJsonArray("document_pdf").toString(), new TypeReference<List<String>>(){});
-			shareFileAllowExtensionList.addAll(docPDFList);
+		List<String> docPDFList = objectMapper.readValue(resourceObject.getAsJsonArray("document_pdf").toString(), new TypeReference<List<String>>(){});
+		shareFileAllowExtensionList.addAll(docPDFList);
 
-			List<String> imageList = objectMapper.readValue(resourceObject.getAsJsonArray("image").toString(), new TypeReference<List<String>>(){});
-			shareFileAllowExtensionList.addAll(imageList);
+		List<String> imageList = objectMapper.readValue(resourceObject.getAsJsonArray("image").toString(), new TypeReference<List<String>>(){});
+		shareFileAllowExtensionList.addAll(imageList);
 
-			inputStream.close();
-
+		inputStream.close();
 		} catch (Exception e) {
 			log.info("shareFileAllowExtensionList init fail");
 		}
@@ -1069,4 +1035,162 @@ public class FileService {
 		return false;
 	}
 
+	private File buildAttachFile(FileUploadRequest fileUploadRequest, String objectName) {
+		return File.builder()
+			.workspaceId(fileUploadRequest.getWorkspaceId())
+			.sessionId(fileUploadRequest.getSessionId())
+			.uuid(fileUploadRequest.getUserId())
+			.name(fileUploadRequest.getFile().getOriginalFilename())
+			.objectName(objectName)
+			.contentType(fileUploadRequest.getFile().getContentType())
+			.size(fileUploadRequest.getFile().getSize())
+			.fileType(FileType.FILE)
+			.height(0)
+			.width(0)
+			.build();
+	}
+
+	private File buildProfileFile(RoomProfileUpdateRequest fileUploadRequest, String workspaceId, String sessionId, String profileUrl) {
+		return File.builder()
+			.workspaceId(workspaceId)
+			.sessionId(sessionId)
+			.uuid(fileUploadRequest.getUuid())
+			.name(fileUploadRequest.getProfile().getOriginalFilename())
+			.objectName(profileUrl)
+			.contentType(fileUploadRequest.getProfile().getContentType())
+			.size(fileUploadRequest.getProfile().getSize())
+			.fileType(FileType.PROFILE)
+			.height(0)
+			.width(0)
+			.build();
+	}
+
+	private RecordFile buildRecordFile(RecordFileUploadRequest recordFileUploadRequest, String objectName) {
+		return RecordFile.builder()
+			.workspaceId(recordFileUploadRequest.getWorkspaceId())
+			.sessionId(recordFileUploadRequest.getSessionId())
+			.uuid(recordFileUploadRequest.getUserId())
+			.name(recordFileUploadRequest.getFile().getOriginalFilename())
+			.objectName(objectName)
+			.contentType(recordFileUploadRequest.getFile().getContentType())
+			.size(recordFileUploadRequest.getFile().getSize())
+			.durationSec(recordFileUploadRequest.getDurationSec())
+			.build();
+	}
+
+	private File buildShareFile(FileUploadRequest fileUploadRequest, String objectName, int height, int width) {
+		return File.builder()
+			.workspaceId(fileUploadRequest.getWorkspaceId())
+			.sessionId(fileUploadRequest.getSessionId())
+			.uuid(fileUploadRequest.getUserId())
+			.name(fileUploadRequest.getFile().getOriginalFilename())
+			.objectName(objectName)
+			.contentType(fileUploadRequest.getFile().getContentType())
+			.size(fileUploadRequest.getFile().getSize())
+			.fileType(FileType.SHARE)
+			.height(height)
+			.width(width)
+			.build();
+	}
+
+	private File buildThumbnailFile(FileUploadRequest fileUploadRequest, String objectName, long size) {
+		return File.builder()
+			.workspaceId(fileUploadRequest.getWorkspaceId())
+			.sessionId(fileUploadRequest.getSessionId())
+			.uuid(fileUploadRequest.getUserId())
+			.name(fileUploadRequest.getFile().getOriginalFilename())
+			.objectName(objectName)
+			.contentType("image/png")
+			.size(size)
+			.fileType(FileType.SHARE)
+			.width(THUMBNAIL_WIDTH)
+			.height(THUMBNAIL_HEIGHT)
+			.build();
+	}
+
+	private FileBufferImageResponse buildFileBufferImage(
+		BufferedImage bufferedImage,
+		int width,
+		int height,
+		String contentType,
+		ErrorCode errorCode
+	) {
+		if (bufferedImage == null) {
+			return FileBufferImageResponse.builder()
+				.bufferedImage(null)
+				.contentType(contentType)
+				.errorCode(errorCode)
+				.build();
+		} else {
+			return FileBufferImageResponse.builder()
+				.bufferedImage(Scalr.resize(bufferedImage, width, height))
+				.contentType(contentType)
+				.errorCode(errorCode)
+				.build();
+		}
+	}
+
+	private MultipartFile fileOrientation(FileUploadRequest fileUploadRequest) throws Exception {
+		java.io.File fileData = convertMultiFileToFile(fileUploadRequest.getFile());
+		BufferedImage bufferedImage = applyImageOrientation(fileUploadRequest.getFile(), getOrientation(fileData));
+		ImageIO.write(bufferedImage,"jpg", fileData);
+		return convertBufferImgToMultipartFile(fileUploadRequest, bufferedImage);
+	}
+
+	private BufferedImage applyImageOrientation(java.io.File file, int orientation) throws Exception {
+		BufferedImage bufferedImage = ImageIO.read(file);
+		if (orientation == 1) { // 정위치
+			return bufferedImage;
+		} else if (orientation == 6) {
+			return rotateImage(bufferedImage, 90);
+		} else if (orientation == 3) {
+			return rotateImage(bufferedImage, 180);
+		} else if (orientation == 8) {
+			return rotateImage(bufferedImage, 270);
+		} else{
+			return bufferedImage;
+		}
+	}
+
+	private BufferedImage applyImageOrientation(MultipartFile file, int orientation) throws Exception {
+		BufferedImage bufferedImage = ImageIO.read(file.getInputStream());
+		if (orientation == 1) { // 정위치
+			return bufferedImage;
+		} else if (orientation == 6) {
+			return rotateImage(bufferedImage, 90);
+		} else if (orientation == 3) {
+			return rotateImage(bufferedImage, 180);
+		} else if (orientation == 8) {
+			return rotateImage(bufferedImage, 270);
+		} else{
+			return bufferedImage;
+		}
+	}
+
+	private int getOrientation(java.io.File file) throws Exception {
+		int orientation = 1;
+		Metadata metadata = ImageMetadataReader.readMetadata(file);
+		Directory directory = metadata.getFirstDirectoryOfType(ExifIFD0Directory.class);
+		if (directory != null) {
+			orientation = directory.getInt(ExifIFD0Directory.TAG_ORIENTATION);
+		}
+		return orientation;
+	}
+	private BufferedImage rotateImage (BufferedImage targetImage, int radians) {
+		BufferedImage newImage;
+		if(radians == 90 || radians == 270) {
+			newImage = new BufferedImage(targetImage.getHeight(),targetImage.getWidth(),targetImage.getType());
+		} else if (radians==180){
+			newImage = new BufferedImage(targetImage.getWidth(),targetImage.getHeight(),targetImage.getType());
+		} else{
+			return targetImage;
+		}
+
+		Graphics2D graphics = (Graphics2D) newImage.getGraphics();
+		graphics.rotate(Math.toRadians(radians), newImage.getWidth() / 2, newImage.getHeight() / 2);
+		graphics.translate((newImage.getWidth() - targetImage.getWidth()) / 2, (newImage.getHeight() - targetImage.getHeight()) / 2);
+		graphics.drawImage(targetImage, 0, 0, targetImage.getWidth(), targetImage.getHeight(), null);
+
+		return newImage;
+	}
 }

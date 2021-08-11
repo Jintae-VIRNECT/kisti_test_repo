@@ -55,6 +55,9 @@ public enum ErrorCode {
 	ERR_ROOM_MEMBER_NOT_EVICTED(4023, "This member need to force disconnect."),
 	ERR_ROOM_CLOSE_FAIL(4024, "Current Room was not removed beforehand."),
 	ERR_ROOM_MEMBER_EVICTED_STATUS(4025, "This member is evicted status"),
+	ERR_GROUP_NOT_FOUND(4026, "remote group can not found"),
+	ERR_GROUP_COUNT_OVER(4027, "remote group over count"),
+	ERR_GROUP_MEMBER_COUNT_OVER(4027, "remote group member over count"),
 
 	// error code for service validation
 	ERR_LICENSE_NOT_VALIDITY(5001, "License has no validity"),
@@ -87,6 +90,8 @@ public enum ErrorCode {
 	ERR_PROFILE_UPLOAD_FAILED(7015, "Profile upload has failed"),
 	ERR_STORAGE_LIMIT_REACHED(7016, "The storage limit is about to be reached"),
 	ERR_STORAGE_CAPACITY_FULL(7017, "The storage capacity is full"),
+	ERR_PASSWORD_PDF(7018, "The pdf file is locked"),
+	ERR_MAKE_THUMBNAIL(7019, "Failed to convert the thumbnail file"),
 
 	ERR_ROOM_HISTORY_FOUND(3101, "Room History can not found"),
 	ERR_ROOM_HISTORY_HANDLE(3102, "Room History handling fail"),
@@ -97,7 +102,7 @@ public enum ErrorCode {
 	// error code for file upload and download
 	ERR_ATTACHED_FILE_FOUND(7101, "Attached file can not found"),
 	ERR_LOCAL_RECORD_FILE_FOUND(7102, "Local record file can not found"),
-	ERR_SERVER_RECORD_FILE_FOUND(7103, "Server record file can not found"),
+	ERR_SERVER_RECORD_FILE_EXCEPTION(7103, "Get Server record file exception"),
 	ERR_SERVER_RECORD_URL_FOUND(7104, "Server record file can not found"),
 	ERR_SERVER_RECORD_DELETE(7105, "Server record file can not delete"),
 	ERR_FILE_FIND_LIST_FAILED(7114, "This file list can not found."),
@@ -117,6 +122,7 @@ public enum ErrorCode {
 	ERR_MEMBER_LOGOUT_OR_JOIN(8008, "Members are already logout or join"),
 	ERR_SESSION_CLIENT_METADATA_NULL(8010, "Client metadata error"),
 	ERR_SESSION_CLIENT_METADATA_EXCEPTION(8009, "Client metadata error"),
+	ERR_DATA_SAVE_EXCEPTION(8010, "Data save error"),
 	ERR_UNEXPECTED_SERVER_ERROR(9999, "Unexpected Server Error, Please contact Administrator");
 
 

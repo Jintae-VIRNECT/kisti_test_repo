@@ -1,5 +1,16 @@
 package com.virnect.serviceserver.serviceremote.application;
 
+import java.time.LocalDateTime;
+import java.util.List;
+
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.ObjectUtils;
+
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+
 import com.virnect.data.dao.company.CompanyRepository;
 import com.virnect.data.dao.member.MemberRepository;
 import com.virnect.data.dao.room.RoomRepository;
@@ -13,17 +24,6 @@ import com.virnect.data.domain.room.RoomStatus;
 import com.virnect.data.domain.roomhistory.RoomHistory;
 import com.virnect.data.error.ErrorCode;
 import com.virnect.data.error.exception.RestServiceException;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Isolation;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Optional;
 
 @Slf4j
 @Service
@@ -35,65 +35,37 @@ public class SessionTransactionalService {
 	private final RoomHistoryRepository roomHistoryRepository;
 	private final CompanyRepository companyRepository;
 
+	//===========================================  Company Services     =================================================//
 	@Transactional
-	public Company createCompany(Company company) {
-		return companyRepository.save(company);
-	}
-	//===========================================  Admin Services     =================================================//
+	public Company updateCompany(Company company) { return companyRepository.save(company); }
 	@Transactional
-	public Company updateCompany(Company company) {
-		return companyRepository.save(company);
-	}
-
-	public Company getCompany(String workspaceId) {
-		return companyRepository.findByWorkspaceId(workspaceId).orElse(null);
-	}
+	public Company createCompany(Company company) { return companyRepository.save(company); }
 
 	//===========================================  Room Services     =================================================//
 	@Transactional
-	public Room createRoom(Room room) {
-		return roomRepository.save(room);
-	}
-
+	public Room createRoom(Room room) { return roomRepository.save(room); }
 	@Transactional
 	public void createSession(String sessionId) {
 		log.info("session create and sessionEventHandler is here");
 		Room room = roomRepository.findBySessionId(sessionId).orElseThrow(() -> new RestServiceException(ErrorCode.ERR_ROOM_NOT_FOUND));
-
 		//set active time
 		LocalDateTime activeTime = LocalDateTime.now();
 		room.setActiveDate(activeTime);
 		room.setRoomStatus(RoomStatus.ACTIVE);
 		roomRepository.save(room);
 	}
-
 	@Transactional(isolation = Isolation.SERIALIZABLE)
 	public Room getRoomForWrite(String workspaceId, String sessionId) {
 		return this.roomRepository.findRoomByWorkspaceIdAndSessionIdForWrite(workspaceId, sessionId).orElse(null);
 	}
-
-	public Optional<Room> getRoom(String workspaceId, String sessionId) {
-		return this.roomRepository.findRoomByWorkspaceIdAndSessionIdForWrite(workspaceId, sessionId);
-	}
-
-	public Room getRoom(String sessionId) {
-		return  this.roomRepository.findBySessionId(sessionId).orElse(null);
-	}
-
-	@Deprecated
-	public Page<Room> getRoomPageList(String workspaceId, Pageable pageable) {
-		return this.roomRepository.findRoomByWorkspaceId(workspaceId, pageable);
-	}
-
-	public List<Room> getRoomList() {
-		return this.roomRepository.findAll();
-	}
-
 	@Transactional
-	public void setRoom(Room room) {
-		this.roomRepository.save(room);
-	}
+	public void setRoom(Room room) { this.roomRepository.save(room); }
+	@Transactional
+	public void deleteRoom(Room room) { roomRepository.delete(room); }
+	@Transactional
+	public Room updateRoom(Room room) { return this.roomRepository.save(room); }
 
+	//===========================================  Room history Services     =================================================//
 	@Transactional
 	public void setRoomHistory(RoomHistory roomHistory) {
 		boolean result = this.roomHistoryRepository.existsByWorkspaceIdAndSessionId(roomHistory.getWorkspaceId(), roomHistory.getSessionId());
@@ -104,31 +76,14 @@ public class SessionTransactionalService {
 		}
 	}
 
+	//===========================================  Member Services     =================================================//
 	@Transactional
-	public void setMember(Member member) {
-		this.memberRepository.save(member);
-	}
-
-	public Member getMember(String workspaceId, String sessionId, String userId) {
-		return memberRepository.findByWorkspaceIdAndSessionIdAndUuid(workspaceId, sessionId, userId).orElse(null);
-	}
-
-	@Transactional
-	public void deleteRoom(Room room) {
-		//roomRepository.deleteByWorkspaceIdAndSessionId(room.getWorkspaceId(), room.getSessionId());
-		roomRepository.delete(room);
-	}
-
-	@Transactional
-	public Room updateRoom(Room room) {
-		return this.roomRepository.save(room);
-	}
-
+	public void setMember(Member member) { this.memberRepository.save(member); }
 	@Transactional
 	public void updateMember(Room room, List<String> userIds) {
 		for (String userId: userIds) {
 			Member member = memberRepository.findByWorkspaceIdAndSessionIdAndUuid(room.getWorkspaceId(), room.getSessionId(), userId).orElse(null);
-			if(member == null) {
+			if(ObjectUtils.isEmpty(member)) {
 				memberRepository.save(Member.builder()
 					.room(room)
 					.memberType(MemberType.UNKNOWN)
@@ -143,18 +98,14 @@ public class SessionTransactionalService {
 			}
 		}
 	}
-
 	@Transactional
 	public void updateMember(Member member, MemberStatus memberStatus) {
-		if (memberStatus == MemberStatus.EVICTED) {//member.setRoom(null);
+		if (memberStatus == MemberStatus.EVICTED) {
 			member.setMemberStatus(memberStatus);
 		}
 		memberRepository.save(member);
 	}
-
 	@Transactional
-	public void deleteMember(Member member) {
-		this.memberRepository.delete(member);
-	}
+	public void deleteMember(Member member) { this.memberRepository.delete(member); }
 
 }

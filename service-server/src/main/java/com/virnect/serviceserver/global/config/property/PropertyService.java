@@ -2,9 +2,6 @@ package com.virnect.serviceserver.global.config.property;
 
 import java.util.Map;
 
-/**
- *
- */
 public abstract class PropertyService {
 
 	public Map<String, ?> propertiesSource;

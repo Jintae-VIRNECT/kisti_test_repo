@@ -98,7 +98,6 @@ public class Room extends BaseTimeEntity {
         String workspaceId,
         String licenseName,
         int maxUserCount,
-        //boolean restrictedMode,
         boolean videoRestrictedMode,
         boolean audioRestrictedMode,
         SessionProperty sessionProperty

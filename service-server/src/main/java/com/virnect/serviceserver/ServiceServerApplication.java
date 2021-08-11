@@ -198,7 +198,7 @@ public class ServiceServerApplication extends SpringBootServletInitializer imple
         );
     }
 
-    public static void main(String[] args) throws Exception {
+    public static void main(String[] args) {
         ConfigurableApplicationContext app = SpringApplication.run(RemoteServiceConfig.class,
             "--spring.main.web-application-type=none"
         );
@@ -206,8 +206,8 @@ public class ServiceServerApplication extends SpringBootServletInitializer imple
         RemoteServiceProperties remoteServiceProperties = app.getBean(RemoteServiceProperties.class);
         RemoteStorageProperties remoteStorageProperties = app.getBean(RemoteStorageProperties.class);
 
-        System.out.println(remoteServiceProperties.toString());
-        System.out.println(remoteStorageProperties.toString());
+        System.out.println(remoteServiceProperties);
+        System.out.println(remoteStorageProperties);
 
         app.close();
 

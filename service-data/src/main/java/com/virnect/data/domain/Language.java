@@ -65,7 +65,6 @@ public class Language extends BaseTimeEntity {
         Boolean transPlPl,
         Boolean transThTh
     ) {
-
         this.company = company;
         this.transKoKr = transKoKr;
         this.transEnUs = transEnUs;
@@ -77,23 +76,5 @@ public class Language extends BaseTimeEntity {
         this.transUkUa = transUkUa;
         this.transPlPl = transPlPl;
         this.transThTh = transThTh;
-    }
-
-    @Override
-    public String toString() {
-        return "Language{" +
-            "id=" + id +
-            ", transKoKr=" + transKoKr +
-            ", transEnUs=" + transEnUs +
-            ", transJaJp=" + transJaJp +
-            ", transZh=" + transZh +
-            ", transFrFr=" + transFrFr +
-            ", transEsEs=" + transEsEs +
-            ", transRuRu=" + transRuRu +
-            ", transUkUa=" + transUkUa +
-            ", transPlPl=" + transPlPl +
-            ", transThTh=" + transThTh +
-            ", company=" + company +
-            '}';
     }
 }

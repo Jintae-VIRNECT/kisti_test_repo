@@ -1,5 +1,6 @@
 package com.virnect.serviceserver.servicedashboard.api;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -41,18 +42,15 @@ public class DashboardSessionRestController {
 			TAG,
 			"REST API: GET "
 				+ REST_PATH + "/"
-				+ (workspaceId != null ? workspaceId : "{}") + "::"
-				+ (sessionId != null ? sessionId : "{}"),
+				+ workspaceId + "/"
+				+ sessionId,
 			"getRoomDetailInfoRequestHandler"
 		);
-		if ((workspaceId != null && workspaceId.isEmpty())
-			|| (sessionId != null && sessionId.isEmpty())
-		) {
+		if (StringUtils.isBlank(workspaceId) || StringUtils.isBlank(sessionId)) {
 			throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
 		}
-
-		RoomDetailInfoResponse responseData = historyService.getOngoingRoomDetail(workspaceId, sessionId);
-
-		return ResponseEntity.ok(new ApiResponse<>(responseData));
+		return ResponseEntity.ok(
+			new ApiResponse<>(historyService.getOngoingRoomDetail(workspaceId, sessionId))
+		);
 	}
 }

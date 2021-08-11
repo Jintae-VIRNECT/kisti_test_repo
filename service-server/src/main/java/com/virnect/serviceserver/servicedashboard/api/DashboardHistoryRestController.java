@@ -1,5 +1,6 @@
 package com.virnect.serviceserver.servicedashboard.api;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -20,9 +21,7 @@ import com.virnect.data.error.exception.RestServiceException;
 import com.virnect.data.global.common.ApiResponse;
 import com.virnect.data.infra.utils.LogMessage;
 import com.virnect.serviceserver.servicedashboard.application.DashboardHistoryService;
-import com.virnect.serviceserver.servicedashboard.dto.request.RoomHistoryDetailRequest;
 import com.virnect.serviceserver.servicedashboard.dto.request.RoomHistoryListRequest;
-import com.virnect.serviceserver.servicedashboard.dto.request.RoomHistoryStatsRequest;
 import com.virnect.serviceserver.servicedashboard.dto.response.HistoryCountResponse;
 import com.virnect.serviceserver.servicedashboard.dto.response.RoomHistoryDetailInfoResponse;
 import com.virnect.serviceserver.servicedashboard.dto.response.RoomHistoryInfoListResponse;
@@ -37,6 +36,7 @@ public class DashboardHistoryRestController {
 	private static final String REST_PATH = "/remote/dashboard";
 
 	private final DashboardHistoryService historyService;
+
 	/*
 	 *  1. 워크스페이스 내의 모든 협업 기록을 반환하는 API
 	 *	4. 워크스페이스의 지정일 내에서 발생한 시간별 개인 & 전체 협업 수
@@ -74,8 +74,8 @@ public class DashboardHistoryRestController {
 			TAG,
 			"REST API: GET "
 				+ REST_PATH + "/"
-				+ (workspaceId != null ? workspaceId : "{}") + "::"
-				+ (option.toString() != null ? option.toString() : "{}"),
+				+ workspaceId + "::"
+				+ option.toString(),
 			"getRoomHistoryRequestHandler"
 		);
 		if (result.hasErrors()) {
@@ -90,10 +90,7 @@ public class DashboardHistoryRestController {
 			);
 			throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
 		}
-
-		RoomHistoryInfoListResponse responseData = historyService.getRoomHistory(option, workspaceId, null);
-
-		return ResponseEntity.ok(new ApiResponse<>(responseData));
+		return ResponseEntity.ok(historyService.getRoomHistory(workspaceId, null, option));
 	}
 
 	/**
@@ -117,27 +114,16 @@ public class DashboardHistoryRestController {
 			TAG,
 			"REST API: GET "
 				+ REST_PATH + "/"
-				+ (workspaceId != null ? workspaceId : "{}") + "::"
-				+ (userId != null ? userId : "{}"),
+				+ workspaceId + "/"
+				+ userId,
 			"getRoomHistoryWithInDateRequestHandler"
 		);
-		if ((workspaceId != null && workspaceId.isEmpty())
-			|| (userId != null && userId.isEmpty())
-			|| (selectedDate != null && selectedDate.isEmpty())
-		) {
+		if (StringUtils.isBlank(workspaceId) || StringUtils.isBlank(userId) || StringUtils.isBlank(selectedDate)) {
 			throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
 		}
-
-		RoomHistoryStatsRequest option = RoomHistoryStatsRequest.builder()
-			.workspaceId(workspaceId)
-			.userId(userId)
-			.period(selectedDate)
-			.diffTime(timeDifference)
-			.build();
-
-		HistoryCountResponse responseData = historyService.getRoomHistoryStatsInDate(option);
-
-		return ResponseEntity.ok(new ApiResponse<>(responseData));
+		return ResponseEntity.ok(
+			new ApiResponse<>(historyService.getRoomHistoryStatsInDate(workspaceId, userId, selectedDate, timeDifference))
+		);
 	}
 
 	/**
@@ -161,27 +147,17 @@ public class DashboardHistoryRestController {
 			TAG,
 			"REST API: GET "
 				+ REST_PATH + "/"
-				+ (workspaceId != null ? workspaceId : "{}") + "::"
-				+ (userId != null ? userId : "{}"),
+				+ workspaceId + "/"
+				+ userId,
 			"getRoomHistoryWithInMonthRequestHandler"
 		);
-		if ((workspaceId != null && workspaceId.isEmpty())
-			|| (userId != null && userId.isEmpty())
-			|| (selectedMonth != null && selectedMonth.isEmpty())
-		) {
+
+		if (StringUtils.isBlank(workspaceId) || StringUtils.isBlank(userId) || StringUtils.isBlank(selectedMonth)) {
 			throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
 		}
-
-		RoomHistoryStatsRequest option = RoomHistoryStatsRequest.builder()
-			.workspaceId(workspaceId)
-			.userId(userId)
-			.period(selectedMonth)
-			.diffTime(timeDifference)
-			.build();
-
-		HistoryCountResponse responseData = historyService.getRoomHistoryStatsOnMonth(option);
-
-		return ResponseEntity.ok(new ApiResponse<>(responseData));
+		return ResponseEntity.ok(
+			new ApiResponse<>(historyService.getRoomHistoryStatsOnMonth(workspaceId, userId, selectedMonth, timeDifference))
+		);
 	}
 
 	/**
@@ -208,28 +184,20 @@ public class DashboardHistoryRestController {
 	ResponseEntity<ApiResponse<RoomHistoryInfoListResponse>> getRoomHistoryMineRequestHandler(
 		@PathVariable(name = "workspaceId") String workspaceId,
 		@PathVariable(name = "userId") String userId,
-		@ApiIgnore RoomHistoryListRequest option,
-		BindingResult bindingResult
+		@ApiIgnore RoomHistoryListRequest option
 	) {
 		LogMessage.formedInfo(
 			TAG,
 			"REST API: GET "
 				+ REST_PATH + "/"
-				+ (workspaceId != null ? workspaceId : "{}") + "::"
-				+ (userId != null ? userId : "{}"),
+				+ workspaceId + "/"
+				+ userId,
 			"getRoomHistoryMineRequestHandler"
 		);
-		if ((workspaceId != null && workspaceId.isEmpty())
-			|| (userId != null && userId.isEmpty())
-		) {
+		if (StringUtils.isBlank(workspaceId) || StringUtils.isBlank(userId)) {
 			throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
 		}
-
-		option.setWorkspaceId(workspaceId);
-		option.setUserId(userId);
-		RoomHistoryInfoListResponse responseData = historyService.getRoomHistory(option, workspaceId, userId);
-
-		return ResponseEntity.ok(new ApiResponse<>(responseData));
+		return ResponseEntity.ok(historyService.getRoomHistory(workspaceId, userId, option));
 	}
 
 	/**
@@ -245,24 +213,16 @@ public class DashboardHistoryRestController {
 			TAG,
 			"REST API: GET "
 				+ REST_PATH + "/"
-				+ (workspaceId != null ? workspaceId : "{}") + "::"
-				+ (sessionId != null ? sessionId : "{}"),
+				+ workspaceId + "/"
+				+ sessionId,
 			"getRoomHistoryDetailRequestHandler"
 		);
-		if ((workspaceId != null && workspaceId.isEmpty())
-			|| (sessionId != null && sessionId.isEmpty())
-		) {
+		if (StringUtils.isBlank(workspaceId) || StringUtils.isBlank(sessionId)) {
 			throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
 		}
-
-		RoomHistoryDetailRequest option = RoomHistoryDetailRequest.builder()
-			.workspaceId(workspaceId)
-			.sessionId(sessionId)
-			.build();
-
-		RoomHistoryDetailInfoResponse responseData = historyService.getEndRoomDetail(option);
-
-		return ResponseEntity.ok(new ApiResponse<>(responseData));
+		return ResponseEntity.ok(
+			new ApiResponse<>(historyService.getEndRoomDetail(workspaceId, sessionId))
+		);
 	}
 
 }

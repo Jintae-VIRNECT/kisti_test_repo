@@ -15,7 +15,6 @@ import com.virnect.data.domain.member.MemberType;
 public class CustomMemberRepositoryImpl  extends QuerydslRepositorySupport implements CustomMemberRepository {
 
 	private final JPAQueryFactory query;
-	private final long EXPIRATION_DATE = 30;
 
 	public CustomMemberRepositoryImpl(JPAQueryFactory query) {
 		super(MemberHistory.class);

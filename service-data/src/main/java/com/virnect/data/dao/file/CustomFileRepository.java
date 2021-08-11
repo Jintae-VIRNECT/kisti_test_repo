@@ -6,7 +6,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 import com.virnect.data.domain.file.File;
-import com.virnect.data.domain.file.FileType;
 
 public interface CustomFileRepository {
 
