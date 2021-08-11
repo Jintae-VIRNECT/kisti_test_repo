@@ -18,7 +18,9 @@ public enum UserAccountErrorCode {
 	ERR_REGISTER_DUPLICATE_EMAIL(2104, "Register email is duplicate"),
 
 	// 회원 등록 관련 에러
-	ERR_REGISTER_MEMBER_DUPLICATE_ID(2201, "Workspace Only User Registration fail. User ID is duplicated."),
+	ERR_REGISTER_MEMBER_DUPLICATE_ID(2201, "Workspace only User registration fail. User ID duplicated."),
+	ERR_REGISTER_MEMBER_MASTER_PERMISSION_DENIED(
+		2202, "Workspace only user registration fail, Request Master User Not Found."),
 
 	//사용자 정보 관련 에러
 	ERR_USER_INFO(4000, "User Info Error"),

@@ -1,5 +1,7 @@
 package com.virnect.uaa.domain.user.application;
 
+import static com.virnect.uaa.domain.user.domain.UserType.*;
+
 import java.time.LocalDateTime;
 import java.util.Optional;
 
@@ -18,7 +20,7 @@ import com.virnect.uaa.domain.user.dao.useraccesslog.UserAccessLogRepository;
 import com.virnect.uaa.domain.user.dao.userpermission.UserPermissionRepository;
 import com.virnect.uaa.domain.user.domain.User;
 import com.virnect.uaa.domain.user.dto.request.MemberPasswordUpdateRequest;
-import com.virnect.uaa.domain.user.dto.request.RegisterMemberRequest;
+import com.virnect.uaa.domain.user.dto.request.MemberRegistrationRequest;
 import com.virnect.uaa.domain.user.dto.request.UserIdentityCheckRequest;
 import com.virnect.uaa.domain.user.dto.response.MemberPasswordUpdateResponse;
 import com.virnect.uaa.domain.user.dto.response.UserDeleteResponse;
@@ -49,19 +51,24 @@ public class MemberUserInformationService {
 
 	/**
 	 * 새 멤버 사용자 등록
-	 * @param registerMemberRequest - 멤버 사용자 데이터
+	 * @param memberRegistrationRequest - 멤버 사용자 데이터
 	 * @return - 등록된 새 멤버 사용자 정보
 	 */
-	public UserInfoResponse registerNewMember(RegisterMemberRequest registerMemberRequest) {
+	public UserInfoResponse registerNewMember(MemberRegistrationRequest memberRegistrationRequest) {
 
-		if (userRepository.existsByEmail(registerMemberRequest.getEmail())) {
-			log.error("Member User Create Fail. Email Duplicate : {}", registerMemberRequest.getEmail());
+		if (userRepository.existsByEmail(memberRegistrationRequest.getEmail())) {
+			log.error("Member User Create Fail. Email Duplicate : {}", memberRegistrationRequest.getEmail());
 			throw new UserServiceException(UserAccountErrorCode.ERR_REGISTER_MEMBER_DUPLICATE_ID);
 		}
 
+		User masterUser = userRepository.findByUuid(memberRegistrationRequest.getMasterUUID())
+			.orElseThrow(
+				() -> new UserServiceException(UserAccountErrorCode.ERR_REGISTER_MEMBER_MASTER_PERMISSION_DENIED));
+
 		User user = User.ByRegisterMemberUserBuilder()
-			.registerMemberRequest(registerMemberRequest)
-			.encodedPassword(passwordEncoder.encode(registerMemberRequest.getPassword()))
+			.masterUser(masterUser)
+			.memberRegistrationRequest(memberRegistrationRequest)
+			.encodedPassword(passwordEncoder.encode(memberRegistrationRequest.getPassword()))
 			.build();
 
 		userRepository.save(user);
@@ -73,6 +80,7 @@ public class MemberUserInformationService {
 
 	/**
 	 * 기존 멤버 사용자 삭제
+	 *
 	 * @param userUUID - 사용자 정보 식별자
 	 * @return - 사용자 삭제 처리 결과
 	 */
@@ -140,6 +148,7 @@ public class MemberUserInformationService {
 	 * @return - 비밀번호 재설정 처리 결과
 	 */
 	public MemberPasswordUpdateResponse updateMemberPassword(MemberPasswordUpdateRequest memberPasswordUpdateRequest) {
+
 		User memberUser = userRepository.findByUuid(memberPasswordUpdateRequest.getUuid())
 			.orElseThrow(() -> new UserServiceException(UserAccountErrorCode.ERR_USER_NOT_FOUND));
 

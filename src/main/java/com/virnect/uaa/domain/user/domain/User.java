@@ -13,6 +13,8 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
@@ -22,12 +24,13 @@ import org.hibernate.envers.Audited;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import lombok.Builder;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import com.virnect.uaa.domain.auth.account.dto.request.RegisterRequest;
-import com.virnect.uaa.domain.user.dto.request.RegisterMemberRequest;
+import com.virnect.uaa.domain.user.dto.request.MemberRegistrationRequest;
 import com.virnect.uaa.infra.file.Default;
 
 /**
@@ -42,6 +45,7 @@ import com.virnect.uaa.infra.file.Default;
 @Setter
 @Audited
 @Table(name = "users")
+@EqualsAndHashCode(of = {"id","uuid"}, callSuper = false)
 @NoArgsConstructor
 public class User extends BaseTimeEntity {
 	@Id
@@ -120,6 +124,13 @@ public class User extends BaseTimeEntity {
 	@Column(name = "password_update_at")
 	private LocalDateTime passwordUpdateDate;
 
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "master_user_uuid")
+	private User master;
+
+	@OneToMany(fetch = FetchType.LAZY, mappedBy = "master")
+	private List<User> seatUsers;
+
 	@Column(name = "account_non_expired")
 	private boolean accountNonExpired = true;
 
@@ -140,16 +151,18 @@ public class User extends BaseTimeEntity {
 
 	@Builder(builderClassName = "ByRegisterMemberUserBuilder", builderMethodName = "ByRegisterMemberUserBuilder")
 	public User(
-		RegisterMemberRequest registerMemberRequest,
+		MemberRegistrationRequest memberRegistrationRequest,
+		User masterUser,
 		String encodedPassword
 	) {
+		this.master = masterUser;
 		this.uuid = RandomStringUtils.randomAlphanumeric(13);
-		this.email = registerMemberRequest.getEmail();
+		this.email = memberRegistrationRequest.getEmail();
 		this.password = encodedPassword;
-		this.lastName = registerMemberRequest.getEmail();
+		this.lastName = memberRegistrationRequest.getEmail();
 		this.firstName = "-Member";
-		this.name = registerMemberRequest.getEmail() + "-Member";
-		this.nickname = registerMemberRequest.getEmail() + "-Member";
+		this.name = memberRegistrationRequest.getEmail() + "-Member";
+		this.nickname = memberRegistrationRequest.getEmail() + "-Member";
 		this.profile = Default.USER_PROFILE.getValue();
 		this.userType = UserType.WORKSPACE_ONLY_USER;
 		this.birth = LocalDate.now();

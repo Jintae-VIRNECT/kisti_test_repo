@@ -12,7 +12,9 @@ import lombok.Setter;
 @Getter
 @Setter
 @ApiModel
-public class RegisterMemberRequest {
+public class MemberRegistrationRequest {
+	@NotBlank(message = "마스터 사용자의 식별정보는 반드시 입력되어야 합니다.")
+	private String masterUUID;
 	@Pattern(regexp = "[a-zA-Z0-9]{4,20}")
 	@NotBlank(message = "로그인 이메일 정보는 반드시 입력되어야 합니다.")
 	private String email;
@@ -23,6 +25,7 @@ public class RegisterMemberRequest {
 	@Override
 	public String toString() {
 		return "RegisterMemberRequest{" +
+			"masterUUID='" + masterUUID + '\'' +
 			", email='" + email + '\'' +
 			", password='" + password + '\'' +
 			'}';

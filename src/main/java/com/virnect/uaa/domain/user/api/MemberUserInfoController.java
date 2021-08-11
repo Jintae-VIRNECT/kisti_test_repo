@@ -26,7 +26,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import com.virnect.uaa.domain.user.application.MemberUserInformationService;
 import com.virnect.uaa.domain.user.dto.request.MemberPasswordUpdateRequest;
-import com.virnect.uaa.domain.user.dto.request.RegisterMemberRequest;
+import com.virnect.uaa.domain.user.dto.request.MemberRegistrationRequest;
 import com.virnect.uaa.domain.user.dto.request.UserIdentityCheckRequest;
 import com.virnect.uaa.domain.user.dto.response.MemberPasswordUpdateResponse;
 import com.virnect.uaa.domain.user.dto.response.UserDeleteResponse;
@@ -51,7 +51,7 @@ public class MemberUserInfoController {
 	@ApiOperation(value = "멤버 등록 API")
 	@PostMapping(value = "/register/member")
 	public ResponseEntity<ApiResponse<UserInfoResponse>> registerMemberRequestHandler(
-		@RequestBody @Valid RegisterMemberRequest registerMemberRequest,
+		@RequestBody @Valid MemberRegistrationRequest memberRegistrationRequest,
 		@RequestHeader("serviceID") String serviceID, BindingResult result
 	) {
 		if (result.hasErrors() || StringUtils.isEmpty(serviceID) || !serviceID.equals("workspace-server")) {
@@ -59,7 +59,7 @@ public class MemberUserInfoController {
 			result.getAllErrors().forEach(message -> log.error(PARAMETER_LOG_MESSAGE, message));
 			throw new UserServiceException(UserAccountErrorCode.ERR_INVALID_REQUEST_PARAMETER);
 		}
-		UserInfoResponse userInfoResponse = memberUserInformationService.registerNewMember(registerMemberRequest);
+		UserInfoResponse userInfoResponse = memberUserInformationService.registerNewMember(memberRegistrationRequest);
 		return ResponseEntity.ok(new ApiResponse<>(userInfoResponse));
 	}
 
