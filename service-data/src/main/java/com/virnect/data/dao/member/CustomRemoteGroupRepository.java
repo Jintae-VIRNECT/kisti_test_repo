@@ -8,7 +8,7 @@ public interface CustomRemoteGroupRepository {
 
 	List<RemoteGroup> findByWorkspaceIdAndUserId(String workspaceId, String userId);
 
-	long findByWorkspaceIdCount(String workspaceId);
+	long findByWorkspaceIdAndUserIdGroupCount(String workspaceId, String userId);
 
 	RemoteGroup findByWorkspaceIdAndGroupId(String workspaceId, String groupId);
 

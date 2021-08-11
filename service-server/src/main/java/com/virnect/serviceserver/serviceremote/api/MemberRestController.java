@@ -4,6 +4,7 @@ import java.util.List;
 
 import javax.validation.Valid;
 
+import com.virnect.data.domain.member.MemberAuthType;
 import com.virnect.data.dto.response.member.RemoteGroupInfoListResponse;
 import org.apache.logging.log4j.util.Strings;
 import org.springframework.http.ResponseEntity;
@@ -187,7 +188,7 @@ public class MemberRestController {
 
     @ApiOperation(value = "Create member group", notes = "멤버 그룹을 생성합니다")
     @PostMapping(value = "members/group/{workspaceId}/{userId}")
-    public ResponseEntity<ApiResponse<RemoteGroupInfoResponse>> createGroup(
+    public ResponseEntity<ApiResponse<RemoteGroupInfoResponse>> createGroupByMaster(
         @PathVariable(name = "workspaceId") String workspaceId,
         @PathVariable(name = "userId") String userId,
         @RequestBody @Valid GroupRequest groupRequest
@@ -199,12 +200,35 @@ public class MemberRestController {
                 + workspaceId + "/"
                 + userId + "::"
                 + "groupRequest:" + groupRequest.toString(),
-            "createGroup"
+            "createGroupByMaster"
         );
-        if (Strings.isBlank(workspaceId)) {
+        if (Strings.isBlank(workspaceId) || Strings.isBlank(userId)) {
             throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
-        ApiResponse<RemoteGroupInfoResponse> responseData = memberService.createGroup(workspaceId, userId, groupRequest);
+        ApiResponse<RemoteGroupInfoResponse> responseData = memberService.createGroup(workspaceId, userId, groupRequest, MemberAuthType.MASTER);
+        return ResponseEntity.ok(responseData);
+    }
+
+    @ApiOperation(value = "Create member my-group", notes = "개인별 멤버 그룹을 생성합니다")
+    @PostMapping(value = "members/my-group/{workspaceId}/{userId}")
+    public ResponseEntity<ApiResponse<RemoteGroupInfoResponse>> createGroupByUserId(
+        @PathVariable(name = "workspaceId") String workspaceId,
+        @PathVariable(name = "userId") String userId,
+        @RequestBody @Valid GroupRequest groupRequest
+    ) {
+        LogMessage.formedInfo(
+            TAG,
+            "REST API: POST "
+                + REST_PATH + "/"
+                + workspaceId + "/"
+                + userId + "::"
+                + "groupRequest:" + groupRequest.toString(),
+            "createGroupByUserId"
+        );
+        if (Strings.isBlank(workspaceId) || Strings.isBlank(userId)) {
+            throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
+        }
+        ApiResponse<RemoteGroupInfoResponse> responseData = memberService.createGroup(workspaceId, userId, groupRequest, MemberAuthType.NORMAL_USER);
         return ResponseEntity.ok(responseData);
     }
 

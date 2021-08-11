@@ -42,11 +42,15 @@ public class CustomRemoteGroupRepositoryImpl extends QuerydslRepositorySupport i
 	}
 
 	@Override
-	public long findByWorkspaceIdCount(String workspaceId) {
+	public long findByWorkspaceIdAndUserIdGroupCount(
+		String workspaceId,
+		String userId
+	) {
 		return query
 			.selectFrom(remoteGroup)
 			.where(
-				remoteGroup.workspaceId.eq(workspaceId)
+				remoteGroup.workspaceId.eq(workspaceId),
+				remoteGroup.uuid.eq(userId)
 			)
 			.distinct()
 			.fetchCount();

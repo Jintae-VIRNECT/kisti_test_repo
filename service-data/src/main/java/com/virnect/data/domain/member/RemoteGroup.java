@@ -30,6 +30,9 @@ public class RemoteGroup extends BaseTimeEntity {
 	@Column(name = "group_name", nullable = false)
 	private String groupName;
 
+	@Column(name = "uuid", nullable = false)
+	private String uuid;
+
 	@OneToMany(mappedBy = "remoteGroup", cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
 	private List<RemoteGroupMember> groupMembers = new ArrayList<>();
 
@@ -37,11 +40,13 @@ public class RemoteGroup extends BaseTimeEntity {
 	public RemoteGroup(
 		String workspaceId,
 		String groupId,
-		String groupName
+		String groupName,
+		String uuid
 	) {
 		this.workspaceId = workspaceId;
 		this.groupId = groupId;
 		this.groupName = groupName;
+		this.uuid = uuid;
 	}
 
 	@Override
@@ -51,6 +56,7 @@ public class RemoteGroup extends BaseTimeEntity {
 			", workspaceId='" + workspaceId + '\'' +
 			", groupId='" + groupId + '\'' +
 			", groupName='" + groupName + '\'' +
+			", uuid='" + uuid + '\'' +
 			", groupMembers=" + groupMembers +
 			'}';
 	}

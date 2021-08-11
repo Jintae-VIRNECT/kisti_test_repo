@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+import com.virnect.data.domain.member.MemberAuthType;
 import com.virnect.data.dto.response.member.*;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.RandomStringUtils;
@@ -226,14 +227,17 @@ public class MemberService {
 	public ApiResponse<RemoteGroupInfoResponse> createGroup(
 		String workspaceId,
 		String userId,
-		GroupRequest groupRequest
+		GroupRequest groupRequest,
+		MemberAuthType memberAuthType
 	) {
 		// 권한 확인 (Only Master)
-		if (!checkMaster(workspaceId, userId)) {
-			return new ApiResponse<>(ErrorCode.ERR_API_AUTHENTICATION);
+		if (memberAuthType == MemberAuthType.MASTER) {
+			if (!checkMaster(workspaceId, userId)) {
+				return new ApiResponse<>(ErrorCode.ERR_API_AUTHENTICATION);
+			}
 		}
 
-		long groupCount = groupRepository.findByWorkspaceIdCount(workspaceId);
+		long groupCount = groupRepository.findByWorkspaceIdAndUserIdGroupCount(workspaceId, userId);
 		if (groupCount >= 10) {
 			return new ApiResponse<>(ErrorCode.ERR_GROUP_COUNT_OVER);
 		}
@@ -260,6 +264,7 @@ public class MemberService {
 		if (ObjectUtils.isEmpty(result)) {
 			return new ApiResponse<>(ErrorCode.ERR_DATA_SAVE_EXCEPTION);
 		}
+
 		return new ApiResponse<>(setGroupMembersInfo(result));
 	}
 
