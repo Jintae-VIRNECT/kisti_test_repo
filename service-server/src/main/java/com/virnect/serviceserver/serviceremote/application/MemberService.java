@@ -273,7 +273,7 @@ public class MemberService {
 		String userId
 	) {
 
-		// 본인이 멤버로 포함된 그룹 리스트만 가져오기
+		// 본인이 생성한 그룹 가져오기
 		List<RemoteGroup> groups = groupRepository.findByWorkspaceIdAndUserId(workspaceId, userId);
 		if (CollectionUtils.isEmpty(groups)) {
 			return new ApiResponse<>(

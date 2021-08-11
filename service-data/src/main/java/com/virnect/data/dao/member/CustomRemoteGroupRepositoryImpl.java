@@ -34,7 +34,8 @@ public class CustomRemoteGroupRepositoryImpl extends QuerydslRepositorySupport i
 			.innerJoin(remoteGroup.groupMembers, remoteGroupMember).fetchJoin()
 			.where(
 				remoteGroup.workspaceId.eq(workspaceId),
-				includeUserId(userId)
+				remoteGroup.uuid.eq(userId)
+				//includeUserId(userId)
 			)
 			.orderBy(remoteGroup.groupName.asc())
 			.distinct()
