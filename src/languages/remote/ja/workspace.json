@@ -29,6 +29,8 @@
     "confirm_force_logout_complete": "がログアウトしました。",
     "confirm_force_logout_received": "マスターによって強制的にログアウトされます。",
     "confirm_force_logout_unavailable": "はコラボレーションにアクセスしたため、ログアウトできません。",
+    "confirm_video_restrict_join":"[映像制限モード]コラボレーションルームに接続します。\nリーダーによって、リモートでカメラが制御されることがあります。\n[接続]を選択すると、カメラ制御の合意されます。",
+
 
     "history": "最近履歴",
     "remote": "リモート協業",
@@ -75,6 +77,8 @@
     "setting_record_resolution_tooltip": "720p(HD)級以上の解像度設定時、PCの性能によってサービスが<br>円滑でない恐れがあります。",
     "setting_record_setting_description": "修正された設定値は、録画開始時点に適用されます。",
     "setting_server_record": "サーバー録画設定",
+    "setting_auto_server_record":"自動サーバー録画",
+    "setting_use_auto_server_record":"自動録画使用",
     "setting_video": "Video設定",
     "setting_video_choice": "カメラ",
     "setting_video_resolution": "入力解像度",

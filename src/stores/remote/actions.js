@@ -65,6 +65,11 @@ export default {
           type = types.TOOL_LINE_WIDTH
       }
 
+      window.myStorage.setItemPiece(
+        'drawingInfo',
+        payload.target,
+        payload.value,
+      )
       commit(type, payload.value)
     }
   },
@@ -172,5 +177,12 @@ export default {
    */
   setServerRecordStatus({ commit }, status) {
     commit(types.SETTINGS.SET_SERVER_RECORD_STATUS, status)
+  },
+
+  /**
+   * update auto server record
+   */
+  setAutoServerRecord({ commit }, status) {
+    commit(types.SETTINGS.SET_AUTO_SERVER_RECORD, status)
   },
 }

@@ -40,7 +40,8 @@
     "leave_exit":"종료",
     "add_group":"그룹 추가",
     "member":"멤버",
-    "group_manage":"그룹 관리"
+    "group_manage":"그룹 관리",
+    "connect":"접속"
   },
   "date": {
     "lastday": "[어제] A",

@@ -217,6 +217,7 @@
     "record_server_end_message": "サーバー録画を終了します。",
     "record_server_over_max_count": "現在、実行可能なサーバーの録画数を超えました。 もう一度やり直してください。",
     "record_server_no_storage": "サーバーに録画ファイルを保存できるスペースがございません。 管理者へお問い合わせください。",
+    "record_server_start_auto_record_message":"サーバー録画を自動的にはじめます。",
     
     "reconnect_network_connecting": "ネットワーク連絡中",
     "reconnect_room_connecting": "協業再接続中です…",

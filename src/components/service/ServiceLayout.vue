@@ -75,6 +75,7 @@ import Store from 'stores/remote/store'
 import confirmMixin from 'mixins/confirm'
 import { checkInput } from 'utils/deviceCheck'
 import ReconnectModal from './modal/ReconnectModal'
+import { MyStorage } from 'utils/storage'
 
 import { mapGetters, mapActions } from 'vuex'
 export default {
@@ -151,7 +152,7 @@ export default {
   },
 
   methods: {
-    ...mapActions(['useStt']),
+    ...mapActions(['useStt', 'setTool']),
     changeOrientation(event) {
       if (!this.myInfo || !this.myInfo.stream) return
       const tracks = this.myInfo.stream.getVideoTracks()
@@ -253,10 +254,23 @@ export default {
       this.$router.push({ name: 'workspace' })
       return
     }
+
+    //드로잉 도구 정보를 셋팅
+    const drawingInfo = window.myStorage.getItem('drawingInfo')
+    if (drawingInfo) {
+      for (const key in drawingInfo) {
+        this.setTool({
+          target: key,
+          value: drawingInfo[key],
+        })
+      }
+    }
+
     this.initTimeout()
     window.onbeforeunload = () => {
       return true
     }
+
     navigator.mediaDevices.ondevicechange = this.onDeviceChange
     window.addEventListener('keydown', this.stopLocalRecordByKeyPress)
     window.addEventListener('orientationchange', this.changeOrientation)
