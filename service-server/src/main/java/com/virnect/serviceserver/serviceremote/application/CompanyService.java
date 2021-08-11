@@ -75,6 +75,7 @@ public class CompanyService {
 				.transPlPl(companyRequest.getLanguage().isTransPlPl())
 				.transRuRu(companyRequest.getLanguage().isTransRuRu())
 				.transUkUa(companyRequest.getLanguage().isTransUkUa())
+				.transThTh(companyRequest.getLanguage().isTransThTh())
 				.company(company)
 				.build()
 			);
@@ -124,6 +125,7 @@ public class CompanyService {
 				.transPlPl(companyRequest.getLanguage().isTransPlPl())
 				.transRuRu(companyRequest.getLanguage().isTransRuRu())
 				.transUkUa(companyRequest.getLanguage().isTransUkUa())
+				.transThTh(companyRequest.getLanguage().isTransThTh())
 				.company(company)
 				.build()
 			);
@@ -244,7 +246,8 @@ public class CompanyService {
 			new LanguageCode(TranslationItem.LANGUAGE_ES),
 			new LanguageCode(TranslationItem.LANGUAGE_RU),
 			new LanguageCode(TranslationItem.LANGUAGE_UK),
-			new LanguageCode(TranslationItem.LANGUAGE_PL)
+			new LanguageCode(TranslationItem.LANGUAGE_PL),
+			new LanguageCode(TranslationItem.LANGUAGE_TH)
 		));
 
 		CompanyInfoResponse companyInfoResponse = new CompanyInfoResponse();
@@ -332,6 +335,10 @@ public class CompanyService {
 		}
 		if (language.isTransPlPl()) {
 			LanguageCode languageCode = new LanguageCode(TranslationItem.LANGUAGE_PL);
+			languageCodes.add(languageCode);
+		}
+		if (language.isTransThTh()) {
+			LanguageCode languageCode = new LanguageCode(TranslationItem.LANGUAGE_TH);
 			languageCodes.add(languageCode);
 		}
 		return languageCodes;
