@@ -1,7 +1,5 @@
 package com.virnect.uaa.domain.user.application;
 
-import static com.virnect.uaa.domain.user.domain.UserType.*;
-
 import java.time.LocalDateTime;
 import java.util.Optional;
 
@@ -21,6 +19,7 @@ import com.virnect.uaa.domain.user.dao.userpermission.UserPermissionRepository;
 import com.virnect.uaa.domain.user.domain.User;
 import com.virnect.uaa.domain.user.dto.request.MemberPasswordUpdateRequest;
 import com.virnect.uaa.domain.user.dto.request.MemberRegistrationRequest;
+import com.virnect.uaa.domain.user.dto.request.SeatMemberRegistrationRequest;
 import com.virnect.uaa.domain.user.dto.request.UserIdentityCheckRequest;
 import com.virnect.uaa.domain.user.dto.response.MemberPasswordUpdateResponse;
 import com.virnect.uaa.domain.user.dto.response.UserDeleteResponse;
@@ -157,6 +156,30 @@ public class MemberUserInformationService {
 		userRepository.save(memberUser);
 
 		return MemberPasswordUpdateResponse.ofMemberUserInfo(memberUser);
+	}
+
+	/**
+	 * seat 사용자 계정 등록 요청 처리
+	 * @param seatMemberRegistrationRequest - seat 사용자 등록 요청  정보
+	 * @return - seat 사용자 정보
+	 */
+	public UserInfoResponse registerNewSeatMember(SeatMemberRegistrationRequest seatMemberRegistrationRequest) {
+		User masterUser = userRepository.findByUuid(seatMemberRegistrationRequest.getMasterUserUUID())
+			.orElseThrow(
+				() -> new UserServiceException(UserAccountErrorCode.ERR_REGISTER_MEMBER_MASTER_PERMISSION_DENIED));
+		String seatUserPassword = masterUser.getUuid() + "_" + seatMemberRegistrationRequest.getWorkspaceUUID();
+		int currentSeatUserCount = (int)userRepository.countCurrentSeatUserNumber(masterUser);
+
+		User seatUser = User.ByRegisterSeatMemberUserBuilder()
+			.workspaceUUID(seatMemberRegistrationRequest.getWorkspaceUUID())
+			.masterUser(masterUser)
+			.encodedPassword(passwordEncoder.encode(seatUserPassword))
+			.seatUserSequence(currentSeatUserCount + 1)
+			.build();
+
+		userRepository.save(seatUser);
+
+		return userInfoMapper.toUserInfoResponse(seatUser);
 	}
 
 	private void deleteUserInformation(User user) {

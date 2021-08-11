@@ -3,6 +3,7 @@ package com.virnect.uaa.domain.user.dao.user;
 import static com.virnect.uaa.domain.user.domain.QPermission.*;
 import static com.virnect.uaa.domain.user.domain.QUser.*;
 import static com.virnect.uaa.domain.user.domain.QUserPermission.*;
+import static com.virnect.uaa.domain.user.domain.UserType.*;
 
 import java.util.List;
 import java.util.Optional;
@@ -98,6 +99,11 @@ public class UserCustomRepositoryImpl extends QuerydslRepositorySupport implemen
 		QueryResults<User> userQueryResults = pageableAndSortingQuery.fetchResults();
 
 		return new PageImpl<>(userQueryResults.getResults(), pageable, userQueryResults.getTotal());
+	}
+
+	@Override
+	public long countCurrentSeatUserNumber(User masterUser) {
+		return query.selectFrom(user).where(user.master.eq(masterUser).and(user.userType.eq(SEAT_USER))).fetchCount();
 	}
 
 	/**
