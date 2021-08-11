@@ -314,7 +314,8 @@ public abstract class WorkspaceUserService {
      * @return - 유저 정보
      */
     public UserInfoRestResponse getUserInfoByUserId(String userId) {
-        return userRestService.getUserInfoByUserId(userId).getData();
+        ApiResponse<UserInfoRestResponse> apiResponse = userRestService.getUserInfoByUserId(userId);
+        return apiResponse.getData();
     }
 
     /**
@@ -334,12 +335,10 @@ public abstract class WorkspaceUserService {
     public ApiResponse<Boolean> reviseMemberInfo(
             String workspaceId, MemberUpdateRequest memberUpdateRequest, Locale locale
     ) {
-        //1-2. 요청 워크스페이스 조회
+        //1-1. 요청 워크스페이스 조회
         Workspace workspace = workspaceRepository.findByUuid(workspaceId).orElseThrow(() -> new WorkspaceException(ErrorCode.ERR_WORKSPACE_NOT_FOUND));
-        //1-3. 요청 권한 조회
-        WorkspaceRole workspaceRole = workspaceRoleRepository.findByRole(Role.valueOf(memberUpdateRequest.getRole())).orElseThrow(() -> new WorkspaceException(ErrorCode.ERR_WORKSPACE_ROLE_NOT_FOUND));
 
-        //1-4. 요청 유저 권한 조회
+        //1-2. 요청 유저 권한 조회
         WorkspaceUserPermission requestUserPermission = workspaceUserPermissionRepository.findByWorkspaceUser_WorkspaceAndWorkspaceUser_UserId(workspace, memberUpdateRequest.getRequestUserId()).orElseThrow(() -> new WorkspaceException(ErrorCode.ERR_WORKSPACE_USER_NOT_FOUND));
         WorkspaceUserPermission updateUserPermission = workspaceUserPermissionRepository.findByWorkspaceUser_WorkspaceAndWorkspaceUser_UserId(workspace, memberUpdateRequest.getUserId()).orElseThrow(() -> new WorkspaceException(ErrorCode.ERR_WORKSPACE_USER_NOT_FOUND));
 
@@ -351,7 +350,7 @@ public abstract class WorkspaceUserService {
         //2. 사용자 닉네임 변경
         if (StringUtils.hasText(memberUpdateRequest.getNickname())) {
             //2-1. 유저 타입 확인
-            if (!updateUser.getUserType().equals("USER")) {
+            if (updateUser.getUserType().equals("USER")) {
                 throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_USER_INFO_UPDATE_USER_TYPE);
             }
             //2-2. 권한 확인
@@ -372,6 +371,8 @@ public abstract class WorkspaceUserService {
             //3-2. 요청 유저 권한 체크
             checkUserRoleUpdatePermission(requestUserPermission, updateUserPermission, workspaceId);
             //3-3. 권한 정보 변경
+            //1-3. 요청 권한 조회
+            WorkspaceRole workspaceRole = workspaceRoleRepository.findByRole(Role.valueOf(memberUpdateRequest.getRole())).orElseThrow(() -> new WorkspaceException(ErrorCode.ERR_WORKSPACE_ROLE_NOT_FOUND));
             updateUserPermission.setWorkspaceRole(workspaceRole);
             workspaceUserPermissionRepository.save(updateUserPermission);
 

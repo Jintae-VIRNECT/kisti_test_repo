@@ -266,7 +266,7 @@ public class OnWorkspaceUserServiceImpl extends WorkspaceUserService {
      * @param userInfoList  - 초대 대상 유저 역할 리스트
      */
     private void checkWorkspaceInvitePermission(String workspaceId, String requestUserId, List<WorkspaceInviteRequest.UserInfo> userInfoList) {
-        List<Role> invitedUserRoleList = userInfoList.stream().map(WorkspaceInviteRequest.UserInfo::getRole).collect(Collectors.toList());
+        List<Role> invitedUserRoleList = userInfoList.stream().map(userInfo -> Role.valueOf(userInfo.getRole())).collect(Collectors.toList());
         WorkspaceUserPermission requestUserPermission = workspaceUserPermissionRepository.findWorkspaceUser(workspaceId, requestUserId).orElseThrow(() -> new WorkspaceException(ErrorCode.ERR_WORKSPACE_INVALID_PERMISSION));
 
         //초대 권한이 설정 정보에 따라 변경됨.
@@ -415,7 +415,7 @@ public class OnWorkspaceUserServiceImpl extends WorkspaceUserService {
         workspaceUserRepository.save(workspaceUser);
 
         //워크스페이스 권한 부여하기 (workspace_user_permission)
-        WorkspaceRole workspaceRole = workspaceRoleRepository.findByRole(userInvite.getRole()).orElseThrow(() -> new WorkspaceException(ErrorCode.ERR_UNEXPECTED_SERVER_ERROR));
+        WorkspaceRole workspaceRole = workspaceRoleRepository.findByRole(Role.valueOf(userInvite.getRole())).orElseThrow(() -> new WorkspaceException(ErrorCode.ERR_UNEXPECTED_SERVER_ERROR));
         WorkspacePermission workspacePermission = workspacePermissionRepository.findById(Permission.ALL.getValue()).orElseThrow(() -> new WorkspaceException(ErrorCode.ERR_UNEXPECTED_SERVER_ERROR));
         WorkspaceUserPermission newWorkspaceUserPermission = WorkspaceUserPermission.builder()
                 .workspaceUser(workspaceUser)
@@ -425,7 +425,7 @@ public class OnWorkspaceUserServiceImpl extends WorkspaceUserService {
         workspaceUserPermissionRepository.save(newWorkspaceUserPermission);
 
         String message;
-        if (userInvite.getRole() == Role.MANAGER) {
+        if (Role.valueOf(userInvite.getRole()) == Role.MANAGER) {
             message = messageSource.getMessage("WORKSPACE_INVITE_MANAGER", new String[]{inviteUserInfo.getNickname(), String.join(",", requestPlanList)}, locale);
         } else {
             message = messageSource.getMessage("WORKSPACE_INVITE_MEMBER", new String[]{inviteUserInfo.getNickname(), String.join(",", requestPlanList)}, locale);
@@ -434,7 +434,7 @@ public class OnWorkspaceUserServiceImpl extends WorkspaceUserService {
         WorkspaceInviteProcess workspaceInviteAcceptProcess = WorkspaceInviteProcess.builder()
                 .applicationEventPublisher(applicationEventPublisher)
                 .historyAddEvent(new HistoryAddEvent(message, userInvite.getInvitedUserId(), workspace))
-                .mailSendEvent(new MailSendEvent(mailContextHandler.getWorkspaceInviteAcceptContext(workspace.getName(), masterUserInfo, inviteUserInfo, userInvite.getRole().toString(), userInvite.isPlanRemote(), userInvite.isPlanMake(), userInvite.isPlanView()),
+                .mailSendEvent(new MailSendEvent(mailContextHandler.getWorkspaceInviteAcceptContext(workspace.getName(), masterUserInfo, inviteUserInfo, userInvite.getRole(), userInvite.isPlanRemote(), userInvite.isPlanMake(), userInvite.isPlanView()),
                         Mail.WORKSPACE_INVITE_ACCEPT,
                         locale,
                         getMasterAndManagerEmail(workspace, masterUserInfo)
@@ -635,17 +635,17 @@ public class OnWorkspaceUserServiceImpl extends WorkspaceUserService {
     public boolean deleteWorkspaceMemberAccount(String workspaceId, MemberAccountDeleteRequest
             memberAccountDeleteRequest) {
         //전용 계정인지 체크
-        UserInfoRestResponse userInfoRestResponse = getUserInfoByUserId(memberAccountDeleteRequest.getDeleteUserId());
+        UserInfoRestResponse userInfoRestResponse = getUserInfoByUserId(memberAccountDeleteRequest.getRequestUserId());
         if (!userInfoRestResponse.getUserType().equals("WORKSPACE_ONLY_USER")) {
             throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_USER_ACCOUNT_DELETE_FAIL);
         }
         Workspace workspace = workspaceRepository.findByUuid(workspaceId).orElseThrow(() -> new WorkspaceException(ErrorCode.ERR_WORKSPACE_NOT_FOUND));
 
         //1. 요청한 사람의 권한 체크
-        WorkspaceUserPermission deleteUserPermission = workspaceUserPermissionRepository.findByWorkspaceUser_WorkspaceAndWorkspaceUser_UserId(workspace, memberAccountDeleteRequest.getDeleteUserId()).orElseThrow(() -> new WorkspaceException(ErrorCode.ERR_WORKSPACE_NOT_FOUND));
-        WorkspaceUserPermission requestUserPermission = workspaceUserPermissionRepository.findByWorkspaceUser_WorkspaceAndWorkspaceUser_UserId(workspace, memberAccountDeleteRequest.getUserId()).orElseThrow(() -> new WorkspaceException(ErrorCode.ERR_WORKSPACE_NOT_FOUND));
+        WorkspaceUserPermission deleteUserPermission = workspaceUserPermissionRepository.findByWorkspaceUser_WorkspaceAndWorkspaceUser_UserId(workspace, memberAccountDeleteRequest.getRequestUserId()).orElseThrow(() -> new WorkspaceException(ErrorCode.ERR_WORKSPACE_NOT_FOUND));
+        WorkspaceUserPermission requestUserPermission = workspaceUserPermissionRepository.findByWorkspaceUser_WorkspaceAndWorkspaceUser_UserId(workspace, memberAccountDeleteRequest.getRequestUserId()).orElseThrow(() -> new WorkspaceException(ErrorCode.ERR_WORKSPACE_NOT_FOUND));
         // 본인 정보 수정은 권한체크하지 않는다.
-        if (!memberAccountDeleteRequest.getUserId().equals(memberAccountDeleteRequest.getDeleteUserId())) {
+        if (!memberAccountDeleteRequest.getRequestUserId().equals(memberAccountDeleteRequest.getRequestUserId())) {
             Optional<WorkspaceCustomSetting> workspaceCustomSettingOptional = workspaceCustomSettingRepository.findByWorkspace_UuidAndSetting_Name(workspaceId, SettingName.PRIVATE_USER_MANAGEMENT_ROLE_SETTING);
             if (!workspaceCustomSettingOptional.isPresent() || workspaceCustomSettingOptional.get().getValue() == SettingValue.UNUSED || workspaceCustomSettingOptional.get().getValue() == SettingValue.MASTER_OR_MANAGER) {
                 // 요청한 사람이 마스터 또는 매니저여야 한다.
@@ -674,20 +674,20 @@ public class OnWorkspaceUserServiceImpl extends WorkspaceUserService {
 
         //2. license-sever revoke api 요청
         MyLicenseInfoListResponse myLicenseInfoListResponse = licenseRestService.getMyLicenseInfoRequestHandler(
-                workspaceId, memberAccountDeleteRequest.getDeleteUserId()).getData();
+                workspaceId, memberAccountDeleteRequest.getRequestUserId()).getData();
 
         if (myLicenseInfoListResponse.getLicenseInfoList() != null && !myLicenseInfoListResponse.getLicenseInfoList()
                 .isEmpty()) {
             myLicenseInfoListResponse.getLicenseInfoList().forEach(myLicenseInfoResponse -> {
                 Boolean revokeResult = licenseRestService.revokeWorkspaceLicenseToUser(
                         workspaceId,
-                        memberAccountDeleteRequest.getDeleteUserId(),
+                        memberAccountDeleteRequest.getRequestUserId(),
                         myLicenseInfoResponse.getProductName()
                 ).getData();
                 if (!revokeResult) {
                     log.error(
                             "[DELETE WORKSPACE MEMBER ACCOUNT] LICENSE SERVER license revoke fail. Request user UUID : [{}], Product License [{}]",
-                            memberAccountDeleteRequest.getUserId(),
+                            memberAccountDeleteRequest.getRequestUserId(),
                             myLicenseInfoResponse.getProductName()
                     );
                     throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_USER_LICENSE_REVOKE_FAIL);
@@ -696,16 +696,16 @@ public class OnWorkspaceUserServiceImpl extends WorkspaceUserService {
         }
 
         //3. user-server에 멤버 삭제 api 요청 -> 실패시 grant api 요청
-        UserDeleteRestResponse userDeleteRestResponse = userRestService.userDeleteRequest(memberAccountDeleteRequest.getDeleteUserId(), "workspace-server").getData();
+        UserDeleteRestResponse userDeleteRestResponse = userRestService.userDeleteRequest(memberAccountDeleteRequest.getRequestUserId(), "workspace-server").getData();
         if (userDeleteRestResponse == null || !StringUtils.hasText(userDeleteRestResponse.getUserUUID())) {
             log.error("[DELETE WORKSPACE MEMBER ACCOUNT] USER SERVER delete user fail.");
             if (myLicenseInfoListResponse.getLicenseInfoList() != null && !myLicenseInfoListResponse.getLicenseInfoList().isEmpty()) {
                 myLicenseInfoListResponse.getLicenseInfoList().forEach(myLicenseInfoResponse -> {
-                    MyLicenseInfoResponse grantResult = licenseRestService.grantWorkspaceLicenseToUser(workspaceId, memberAccountDeleteRequest.getDeleteUserId(), myLicenseInfoResponse.getProductName()
+                    MyLicenseInfoResponse grantResult = licenseRestService.grantWorkspaceLicenseToUser(workspaceId, memberAccountDeleteRequest.getRequestUserId(), myLicenseInfoResponse.getProductName()
                     ).getData();
                     log.error(
                             "[DELETE WORKSPACE MEMBER ACCOUNT] USER SERVER delete user fail. >>>> LICENSE SERVER license revoke process. Request user UUID : [{}], Product License [{}]",
-                            memberAccountDeleteRequest.getDeleteUserId(), grantResult.getProductName()
+                            memberAccountDeleteRequest.getRequestUserId(), grantResult.getProductName()
                     );
                 });
             }
@@ -722,7 +722,7 @@ public class OnWorkspaceUserServiceImpl extends WorkspaceUserService {
 
         log.info(
                 "[DELETE WORKSPACE MEMBER ACCOUNT] Workspace delete user success. Request User UUID : [{}], Delete User UUID : [{}], DeleteDate : [{}]",
-                memberAccountDeleteRequest.getUserId(), memberAccountDeleteRequest.getDeleteUserId(), LocalDateTime.now()
+                memberAccountDeleteRequest.getRequestUserId(), memberAccountDeleteRequest.getRequestUserId(), LocalDateTime.now()
         );
         return true;
     }
@@ -730,7 +730,12 @@ public class OnWorkspaceUserServiceImpl extends WorkspaceUserService {
     @Override
     public WorkspaceMemberPasswordChangeResponse memberPasswordChange(WorkspaceMemberPasswordChangeRequest passwordChangeRequest, String workspaceId) {
         //전용 계정인지 체크
-        UserInfoRestResponse userInfoRestResponse = getUserInfoByUserId(passwordChangeRequest.getUserId());
+        ApiResponse<UserInfoRestResponse> apiResponse = userRestService.getUserInfoByUserId(passwordChangeRequest.getUserId());
+        if (apiResponse.getCode() != 200) {
+            log.error("[GET USER INFO BY USER UUID] request user uuid : {}, response code : {}, response message : {}", passwordChangeRequest.getUserId(), apiResponse.getCode(), apiResponse.getMessage());
+            throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_USER_NOT_FOUND);
+        }
+        UserInfoRestResponse userInfoRestResponse = apiResponse.getData();
         if (!userInfoRestResponse.getUserType().equals("WORKSPACE_ONLY_USER")) {
             throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_USER_PASSWORD_CHANGE);
         }

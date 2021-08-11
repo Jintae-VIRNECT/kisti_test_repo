@@ -37,7 +37,7 @@ public class WorkspaceInviteRequest {
         private String email;
         @ApiModelProperty(value = "role", example = "MEMBER", position = 1)
         @NotBlank(message = "초대할 유저의 워크스페이스 권한은 필수값입니다.")
-        private Role role;
+        private String role;
         @ApiModelProperty(value = "planRemote", position = 2)
         @NotNull(message = "초대할 유저의 리모트 플랜 부여 여부는 필수값입니다.")
         private boolean planRemote;
@@ -51,7 +51,7 @@ public class WorkspaceInviteRequest {
 
     @ApiModelProperty(hidden = true)
     public boolean existMasterUserInvite() {
-        return userInfoList.stream().anyMatch(userInfo -> userInfo.getRole()==(Role.MASTER));
+        return userInfoList.stream().anyMatch(userInfo -> userInfo.getRole().equals(Role.MASTER.name()));
     }
 }
 

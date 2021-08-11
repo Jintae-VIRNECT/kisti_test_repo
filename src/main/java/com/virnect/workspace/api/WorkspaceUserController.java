@@ -338,10 +338,11 @@ public class WorkspaceUserController {
     //@Profile("onpremise")
     //@ApiOperation(value = "워크스페이스 멤버 비밀번호 재설정", tags = "on-premise only")
     @ApiOperation(value = "워크스페이스 전용계정 비밀번호 재설정")
+    @ApiImplicitParam(name = "workspaceId", value = "워크스페이스 식별자", dataType = "string", defaultValue = "4d6eab0860969a50acbfa4599fbb5ae8", paramType = "path", required = true)
     @PostMapping("/{workspaceId}/members/password")
     public ResponseEntity<ApiResponse<WorkspaceMemberPasswordChangeResponse>> memberPasswordChangeRequest(
             @PathVariable("workspaceId") String workspaceId,
-            @RequestBody WorkspaceMemberPasswordChangeRequest passwordChangeRequest,
+            @RequestBody @Valid WorkspaceMemberPasswordChangeRequest passwordChangeRequest,
             BindingResult bindingResult
     ) {
         if (bindingResult.hasErrors()) {
