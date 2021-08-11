@@ -1,5 +1,6 @@
 <template>
   <tab-view
+    v-if="mode === 'user'"
     :title="$t('workspace.user_title')"
     :description="$t('workspace.user_description')"
     :placeholder="$t('workspace.search_member')"
@@ -10,9 +11,11 @@
     :listCount="list.length"
     :showDeleteButton="false"
     :showRefreshButton="true"
+    :showManageGroupButton="isMaster"
     :loading="loading"
     @refresh="getList"
     @search="doSearch"
+    @showgroup="toggleMode"
   >
     <div class="grid-container">
       <member-card
@@ -29,12 +32,40 @@
       </member-card>
     </div>
   </tab-view>
+  <tab-view
+    v-else
+    :title="$t('그룹 관리')"
+    :description="$t('최대 10개 그룹의 생성이 가능합니다.')"
+    :emptyImage="require('assets/image/img_user_empty.svg')"
+    :emptyTitle="emptyTitle"
+    :emptyDescription="emptyDescription"
+    :empty="list.length === 0"
+    :listCount="list.length"
+    :showMemberButton="true"
+    :showAddGroupButton="true"
+    :loading="loading"
+    :showSubHeader="true"
+    @showmember="toggleMode"
+  >
+    <div class="list-wrapper">
+      <member-group
+        v-for="group in groupList"
+        :key="'group_' + group.groupId"
+        :group="group"
+      ></member-group>
+    </div>
+  </tab-view>
 </template>
 
 <script>
+import MemberGroup from 'MemberGroup'
 import TabView from '../partials/WorkspaceTabView'
 import MemberCard from 'MemberCard'
-import { getMemberList } from 'api/http/member'
+import {
+  getMemberList,
+  getMemberGroupList,
+  getMemberGroupItem,
+} from 'api/http/member'
 import { WORKSPACE_ROLE } from 'configs/status.config'
 import confirmMixin from 'mixins/confirm'
 import { forceLogout } from 'api/http/message'
@@ -42,7 +73,7 @@ import { forceLogout } from 'api/http/message'
 export default {
   name: 'WorkspaceUser',
   mixins: [confirmMixin],
-  components: { TabView, MemberCard },
+  components: { TabView, MemberCard, MemberGroup },
   data() {
     return {
       memberList: [],
@@ -62,6 +93,28 @@ export default {
       searchText: '',
       searchMemberList: [],
       loading: false,
+      mode: 'group', //'user', 'group'
+      groupList: [
+        {
+          workspaceId: '40f9bbee9d85dca7a34a0dd205aae718',
+          groupId: '1234567489',
+          groupName: '로또 당첨',
+          remoteGroupMemberInfoResponseList: [
+            {
+              uuid: '1234156',
+              nickName: '치킨',
+              profile: 'defalut',
+              accessType: 'LOGOUT',
+            },
+            {
+              uuid: '1234123156',
+              nickName: '치dd킨',
+              profile: 'defalut',
+              accessType: 'LOGOUT',
+            },
+          ],
+        },
+      ],
     }
   },
   computed: {
@@ -103,6 +156,17 @@ export default {
       handler() {
         if (this.searchMemberList.length) this.doSearch(this.searchText)
       },
+    },
+
+    async mode(now) {
+      // if (now === 'group') {
+      //   //@TODO : 예외처리
+      //   const groups = await getMemberGroupList({
+      //     workspaceId: this.workspace.uuid,
+      //     userId: this.account.uuid,
+      //   })
+      //   this.groupList = groups.groupInfoResponseList
+      // }
     },
   },
   methods: {
@@ -203,6 +267,13 @@ export default {
       }
       //갱신한 멤버 목록에 해당 유저가 없는 경우(예외상황)
       else return
+    },
+    toggleMode() {
+      if (this.mode === 'user') {
+        this.mode = 'group'
+      } else {
+        this.mode = 'user'
+      }
     },
   },
 

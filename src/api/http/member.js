@@ -103,3 +103,98 @@ export const inviteRoom = async ({
 
   return returnVal
 }
+
+/**
+ * 멤버 그룹 목록 반환
+ *
+ * @query {String} workspaceId
+ * @parm {String} userId
+ * @returns 멤버 그룹 목록
+ */
+export const getMemberGroupList = async ({ workspaceId, userId }) => {
+  const returnVal = await http('MEMBER_GROUP_LIST', {
+    workspaceId,
+    userId,
+  })
+
+  return returnVal
+}
+
+/**
+ *
+ * 단일 멤버 그룹 정보 반환
+ *
+ * @query {String} workspaceId
+ * @query {String} groupId
+ * @returns 단일 멤버 그룹 정보
+ */
+export const getMemberGroupItem = async ({ workspaceId, groupId }) => {
+  const returnVal = await http('MEMBER_GROUP_LIST_ITEM', {
+    workspaceId,
+    groupId,
+  })
+
+  return returnVal
+}
+
+/**
+ * 멤버 그룹 생성
+ *
+ * @query {String} workspaceId
+ * @query {String} userId
+ * @param {String} groupName 그룹의 이름
+ * @param {Array[String]} memberList 유저 uuid 목록
+ * @returns 요청 응답
+ */
+export const createMemberGroup = async ({
+  workspaceId,
+  userId,
+  groupName,
+  memberList,
+}) => {
+  const returnVal = await http('CREATE_MEMBER_GROUP', {
+    workspaceId,
+    userId,
+    groupName,
+    memberList,
+  })
+
+  return returnVal
+}
+
+/**
+ * 멤버 그룹 삭제
+ *
+ * @query {String} workspaceId
+ * @query {String} userId
+ * @query {String} groupId 그룹의 이름
+ * @returns 요청 응답
+ */
+export const deleteMemberGroup = async ({ workspaceId, userId, groupId }) => {
+  const returnVal = await http('DELETE_MEMBER_GROUP', {
+    workspaceId,
+    userId,
+    groupId,
+  })
+
+  return returnVal
+}
+
+/**
+ * 멤버 그룹 업데이트
+ *
+ * @query {String} workspaceId
+ * @query {String} userId
+ * @query {String} groupId 그룹의 이름
+ *
+ * @returns 요청 응답
+ */
+export const updateMemberGroup = async ({ workspaceId, userId, groupId }) => {
+  const returnVal = await http('UPDATE_MEMBER_GROUP', {
+    workspaceId,
+    userId,
+    groupId,
+  })
+
+  return returnVal
+}

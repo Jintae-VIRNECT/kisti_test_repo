@@ -25,6 +25,22 @@ export default {
     '/remote/members/{workspaceId}/{sessionId}/{userId}',
   ],
 
+  /* Workspace - Member Group */
+  MEMBER_GROUP_LIST: ['GET', '/remote/members/group/{workspaceId}'],
+  MEMBER_GROUP_LIST_ITEM: [
+    'GET',
+    '/remote/members/group/{workspaceId}/{groupId}',
+  ],
+  CREATE_MEMBER_GROUP: ['POST', '/remote/members/group/{workspaceId}/{userId}'],
+  DELETE_MEMBER_GROUP: [
+    'DELETE',
+    '/remote/members/group/{workspaceId}/{userId}/{groupId}',
+  ],
+  UPDATE_MEMBER_GROUP: [
+    'PUT',
+    '/remote/members/group/{workspaceId}/{userId}/{groupId}',
+  ],
+
   /* Workspace - Room */
   ROOM_LIST: ['GET', '/remote/room'],
   ROOM_SEARCH: ['GET', '/remote/room/search'],
