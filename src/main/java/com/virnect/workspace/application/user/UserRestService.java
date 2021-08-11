@@ -85,7 +85,7 @@ public interface UserRestService {
     ApiResponse<UserInfoRestResponse> modifyUserInfoRequest(@PathVariable("userId") String userId, @RequestBody UserInfoModifyRequest userInfoModifyRequest);
 
     //프로필 변경
-    @PostMapping("/users/{userId}/profile")
-    ApiResponse<UserProfileUpdateResponse> modifyUserProfileRequest(@PathVariable("userId") String userId, @ModelAttribute MultipartFile profile);
+    @RequestMapping(method = RequestMethod.POST, value = "/users/{userId}/profile", consumes = "multipart/form-data")
+    ApiResponse<UserProfileUpdateResponse> modifyUserProfileRequest(@PathVariable("userId") String userId, @RequestPart("profile") MultipartFile profile, @RequestParam("updateAsDefaultImage") Boolean updateAsDefaultImage);
 }
 

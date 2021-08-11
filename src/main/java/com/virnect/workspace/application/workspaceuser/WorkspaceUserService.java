@@ -933,17 +933,14 @@ public abstract class WorkspaceUserService {
         return Comparator.nullsFirst(Comparator.naturalOrder());
     }
 
-    @Profile("onpremise")
     @Transactional
     public abstract WorkspaceMemberInfoListResponse createWorkspaceMemberAccount(String
                                                                                          workspaceId, MemberAccountCreateRequest memberAccountCreateRequest);
 
-    @Profile("onpremise")
     @Transactional
     public abstract boolean deleteWorkspaceMemberAccount(String workspaceId, MemberAccountDeleteRequest
             memberAccountDeleteRequest);
 
-    @Profile("onpremise")
     @Transactional
     public abstract WorkspaceMemberPasswordChangeResponse memberPasswordChange
             (WorkspaceMemberPasswordChangeRequest
@@ -1142,6 +1139,10 @@ public abstract class WorkspaceUserService {
         if (deleteUserPermission.getWorkspaceRole().getRole() != Role.SEAT) {
             throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_SEAT_USER_DELETE);
         }
+        UserInfoRestResponse userInfoRestResponse = getUserInfoByUserId(memberSeatDeleteRequest.getUserId());
+        if (!userInfoRestResponse.getUserType().equals("SEAT_USER")) {
+            throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_SEAT_USER_DELETE);
+        }
 
         //2. 라이선스 해제 요청
         MyLicenseInfoListResponse myLicenseInfoListResponse = getMyLicenseInfoRequestHandler(workspaceId, memberSeatDeleteRequest.getUserId());
@@ -1169,7 +1170,8 @@ public abstract class WorkspaceUserService {
     private void deleteUserByUserId(String userId) {
         ApiResponse<UserDeleteRestResponse> apiResponse = userRestService.userDeleteRequest(userId, "workspace-server");
         if (apiResponse.getCode() != 200) {
-            log.error("[DELETE USER BY USER UUID] request userId : {}, response code : {}", userId, apiResponse.getCode());
+            log.error("[DELETE USER BY USER UUID] request userId : {}, response code : {}, response message : {}", userId, apiResponse.getCode(), apiResponse.getMessage());
+            throw new WorkspaceException(ErrorCode.ERR_UNEXPECTED_SERVER_ERROR);
         }
     }
 
@@ -1247,13 +1249,19 @@ public abstract class WorkspaceUserService {
         }
 
         //2. 프로필 이미지 변경 요청
-        ApiResponse<UserProfileUpdateResponse> apiResponse = userRestService.modifyUserProfileRequest(memberProfileUpdateRequest.getUserId(), memberProfileUpdateRequest.getProfile());
+        ApiResponse<UserProfileUpdateResponse> apiResponse;
+        if (memberProfileUpdateRequest.getUpdateAsDefaultImage() != null && memberProfileUpdateRequest.getUpdateAsDefaultImage()) {
+            apiResponse = userRestService.modifyUserProfileRequest(memberProfileUpdateRequest.getUserId(), null, true);
+        } else {
+            apiResponse = userRestService.modifyUserProfileRequest(memberProfileUpdateRequest.getUserId(), memberProfileUpdateRequest.getProfile(), false);
+        }
+
         if (apiResponse.getCode() != 200) {
             log.error("[UPDATE USER PROFILE BY USER UUID] response code : {}, response message : {}", apiResponse.getCode(), apiResponse.getMessage());
             throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_USER_INFO_UPDATE);
         }
 
         //3. 응답
-        return new MemberProfileUpdateResponse(true, apiResponse.getData().getProfile());
+        return new MemberProfileUpdateResponse(true, apiResponse.getData().getProfile(), LocalDateTime.now());
     }
 }

@@ -402,9 +402,9 @@ public class OffWorkspaceUserServiceImpl extends WorkspaceUserService {
             String workspaceId
     ) {
         checkWorkspaceAndUserRole(
-                workspaceId, passwordChangeRequest.getMasterUUID(), new Role[]{Role.MASTER});
+                workspaceId, passwordChangeRequest.getRequestUserId(), new Role[]{Role.MASTER});
         MemberUserPasswordChangeRequest changeRequest = new MemberUserPasswordChangeRequest(
-                passwordChangeRequest.getMemberUUID(), passwordChangeRequest.getPassword()
+                passwordChangeRequest.getUserId(), passwordChangeRequest.getPassword()
         );
 
         ApiResponse<MemberUserPasswordChangeResponse> responseMessage = userRestService.memberUserPasswordChangeRequest(
@@ -420,7 +420,7 @@ public class OffWorkspaceUserServiceImpl extends WorkspaceUserService {
         }
 
         return new WorkspaceMemberPasswordChangeResponse(
-                passwordChangeRequest.getMasterUUID(),
+                passwordChangeRequest.getRequestUserId(),
                 responseMessage.getData().getUuid(),
                 responseMessage.getData().getPasswordChangedDate()
         );

@@ -163,7 +163,7 @@ public class WorkspaceController {
         return ResponseEntity.ok(new ApiResponse<>(response));
     }
 
-    @ApiOperation(value = "워크스페이스 관련 정보 삭제 - 회원탈퇴", tags = "user server only")
+    @ApiOperation(value = "워크스페이스 관련 정보 삭제 - 회원탈퇴", tags = "user-server-only-controller")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "userUUID", value = "유저의 식별자", paramType = "path", example = "LtvGcPoq0WUFv"),
             @ApiImplicitParam(name = "serviceID", value = "요청 서버 명", paramType = "header", example = "user-server")
@@ -181,7 +181,7 @@ public class WorkspaceController {
     }
 
     @Profile("onpremise")
-    @ApiOperation(value = "워크스페이스 고객사명 변경", tags = "on-premise only")
+    @ApiOperation(value = "워크스페이스 고객사명 변경", tags = "on-premise-only-controller")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "workspaceId", value = "워크스페이스 식별자", dataType = "string", defaultValue = "4d6eab0860969a50acbfa4599fbb5ae8", paramType = "path", required = true),
     })
@@ -202,7 +202,7 @@ public class WorkspaceController {
     }
 
     @Profile("onpremise")
-    @ApiOperation(value = "워크스페이스 로고 변경", tags = "on-premise only")
+    @ApiOperation(value = "워크스페이스 로고 변경", tags = "on-premise-only-controller")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "workspaceId", value = "워크스페이스 식별자", dataType = "string", defaultValue = "4d6eab0860969a50acbfa4599fbb5ae8", paramType = "path", required = true),
             @ApiImplicitParam(name = "userId", value = "로고 변경 유저 식별자", dataType = "string", paramType = "form", required = true, example = "498b1839dc29ed7bb2ee90ad6985c608"),
@@ -229,7 +229,7 @@ public class WorkspaceController {
     }
 
     @Profile("onpremise")
-    @ApiOperation(value = "워크스페이스 파비콘 변경", tags = "on-premise only")
+    @ApiOperation(value = "워크스페이스 파비콘 변경", tags = "on-premise-only-controller")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "workspaceId", value = "워크스페이스 식별자", dataType = "string", defaultValue = "4d6eab0860969a50acbfa4599fbb5ae8", paramType = "path", required = true),
             @ApiImplicitParam(name = "userId", value = "파비콘 변경 유저 식별자", dataType = "string", paramType = "form", required = true, example = "498b1839dc29ed7bb2ee90ad6985c608"),
@@ -250,7 +250,7 @@ public class WorkspaceController {
     }
 
     @Profile("onpremise")
-    @ApiOperation(value = "워크스페이스 커스텀 설정 조회", tags = "on-premise only")
+    @ApiOperation(value = "워크스페이스 커스텀 설정 조회", tags = "on-premise-only-controller")
     @GetMapping("/setting")
     public ResponseEntity<ApiResponse<WorkspaceCustomSettingResponse>> getWorkspaceCustomSetting(
     ) {
@@ -294,14 +294,14 @@ public class WorkspaceController {
         return ResponseEntity.ok(new ApiResponse<>(responseMessage));
     }
 
-    @ApiOperation(value = "설정 정보 목록 조회", tags = "only license server")
+    @ApiOperation(value = "설정 정보 목록 조회", tags = "license-server-only-controller")
     @GetMapping("/settings")
     public ResponseEntity<ApiResponse<SettingInfoListResponse>> findSettingList() {
         SettingInfoListResponse responseMessage = workspaceService.getSettingList();
         return ResponseEntity.ok(new ApiResponse<>(responseMessage));
     }
 
-    @ApiOperation(value = "설정 정보 수정", tags = "only license server")
+    @ApiOperation(value = "설정 정보 수정", tags = "license-server-only-controller")
     @PutMapping("/settings")
     public ResponseEntity<ApiResponse<SettingUpdateResponse>> updateSetting(@RequestBody SettingUpdateRequest settingUpdateRequest, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {

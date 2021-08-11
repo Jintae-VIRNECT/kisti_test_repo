@@ -88,7 +88,7 @@ public class UserRestFallbackFactory implements FallbackFactory<UserRestService>
             }
 
             @Override
-            public ApiResponse<UserProfileUpdateResponse> modifyUserProfileRequest(String userId, MultipartFile profile) {
+            public ApiResponse<UserProfileUpdateResponse> modifyUserProfileRequest(String userId, MultipartFile profile, Boolean updateAsDefaultImage) {
                 return new ApiResponse<>(new UserProfileUpdateResponse());
             }
         };

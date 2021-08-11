@@ -293,7 +293,7 @@ public class WorkspaceUserController {
 
     //@Profile("onpremise")
     //@ApiOperation(value = "워크스페이스 멤버 계정 생성", tags = "on-premise only")
-    @ApiOperation(value = "워크스페이스 전용 계정 멤버 계정 생성")
+    @ApiOperation(value = "워크스페이스 전용 계정 생성")
     @ApiImplicitParam(name = "workspaceId", value = "워크스페이스 식별자", dataType = "string", defaultValue = "4d6eab0860969a50acbfa4599fbb5ae8", paramType = "path", required = true)
     @PostMapping("/{workspaceId}/members/account")
     public ResponseEntity<ApiResponse<WorkspaceMemberInfoListResponse>> createWorkspaceMemberAccount(
@@ -315,7 +315,7 @@ public class WorkspaceUserController {
 
     //@Profile("onpremise")
     //@ApiOperation(value = "마스터 비밀번호로 워크스페이스 멤버 계정 삭제 및 내보내기", tags = "on-premise only")
-    @ApiOperation(value = "워크스페이스 전용 계정 멤버 삭제 및 내보내기")
+    @ApiOperation(value = "워크스페이스 전용 계정 삭제 및 내보내기")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "workspaceId", value = "워크스페이스 식별자", dataType = "string", defaultValue = "4d6eab0860969a50acbfa4599fbb5ae8", paramType = "path", required = true)
     })
@@ -337,7 +337,7 @@ public class WorkspaceUserController {
 
     //@Profile("onpremise")
     //@ApiOperation(value = "워크스페이스 멤버 비밀번호 재설정", tags = "on-premise only")
-    @ApiOperation(value = "워크스페이스 멤버 비밀번호 재설정")
+    @ApiOperation(value = "워크스페이스 전용계정 비밀번호 재설정")
     @PostMapping("/{workspaceId}/members/password")
     public ResponseEntity<ApiResponse<WorkspaceMemberPasswordChangeResponse>> memberPasswordChangeRequest(
             @PathVariable("workspaceId") String workspaceId,
@@ -394,8 +394,11 @@ public class WorkspaceUserController {
         return ResponseEntity.ok(new ApiResponse<>(response));
     }
 
-    @ApiOperation(value = "워크스페이스 유저 프로필 이미지 변경")
-    @ApiImplicitParam(name = "workspaceId", value = "워크스페이스 식별자", dataType = "string", defaultValue = "4d6eab0860969a50acbfa4599fbb5ae8", paramType = "path", required = true)
+    @ApiOperation(value = "워크스페이스 전용계정/시트계정 프로필 이미지 변경")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "workspaceId", value = "워크스페이스 식별자", dataType = "string", defaultValue = "4d6eab0860969a50acbfa4599fbb5ae8", paramType = "path", required = true),
+            @ApiImplicitParam(name = "profile", value = "워크스페이스 프로필", dataType = "__file", paramType = "form"),
+    })
     @PostMapping("/{workspaceId}/members/profile")
     public ResponseEntity<ApiResponse<MemberProfileUpdateResponse>> deleteWorkspaceMemberAccount(
             @PathVariable("workspaceId") String workspaceId,
