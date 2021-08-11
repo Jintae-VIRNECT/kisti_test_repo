@@ -46,7 +46,7 @@ export default {
           role = room.leaderId === this.account.uuid ? ROLE.LEADER : ROLE.EXPERT
         }
 
-        room.videoRestrictedMode = this.checkVideoStrictMode(room)
+        room.videoRestrictedMode = await this.checkVideoStrictMode(room)
 
         const showVideoRestrictModal =
           role !== ROLE.LEADER &&
