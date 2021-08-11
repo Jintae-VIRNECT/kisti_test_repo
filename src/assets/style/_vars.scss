@@ -1,3 +1,7 @@
+/* vds ui assets */
+@import "@virnect/ui-assets/stylesheets/abstracts/_mixins";
+@import "theme-old";
+
 /* Layout */
 $header_height: 4rem;
 $header_m_height: 5.4rem;
@@ -53,8 +57,6 @@ $color_bg: #181819;
 $color_bg_sub: #242427;
 $color_bg_item: #4c5259;
 
-$new_color_bg_sub: var(--color-gray-30);
-
 /* Other Color */
 $color_white: #ffffff;
 $color_red: #eb001d;
@@ -104,3 +106,26 @@ $font_family: "Noto Sans KR";
 $font_family2: "Roboto";
 // $font_family2: "Noto Sans";
 $font_family3: "Noto Sans SC";
+
+//background
+$new_color_bg: var(--color-gray-30); //#272b30
+$new_color_bg_sub: var(--color-gray-20); //#1c2024
+$new_color_bg_item: var(--color-gray-40); //#32373f
+$new_color_bg_popover: var(--color-gray-40); //#32373f
+$new_color_bg_active: var(--color-gray-60); //#616872
+
+$new_color_bg_hover: var(--color-gray-50); //#3e454f
+$new_color_bg_icon: var(--color-gray-50); //#3e454f
+
+$new_color_bg_button_primary: var(--color-blue-40); //#1571e4
+$new_color_bg_button_sub: var(--color-gray-60); //#616872
+
+//border
+$new_color_line_border: var(--color-gray-50); //#3e454f
+$new_color_sub_border: var(--color-gray-40); //#32373f
+
+//font-color
+$new_color_text_main: #f7f8f9;
+$new_color_text_sub: #aeb6c2;
+$new_color_text_sub_description: #7d8899;
+$new_color_text_blue: #4a9aff;

@@ -32,6 +32,8 @@
     </vue2-scrollbar>
     <plan-overflow :visible.sync="showPlanOverflow"></plan-overflow>
     <room-loading :visible.sync="showLoading"></room-loading>
+    <float-button class=""></float-button>
+    <float-button class=""></float-button>
   </section>
 </template>
 
@@ -89,6 +91,7 @@ export default {
     PlanOverflow,
     RoomLoading,
     CookiePolicy: () => import('CookiePolicy'),
+    FloatButton: () => import('FloatButton'),
   },
   data() {
     const cookie = localStorage.getItem('ServiceCookiesAgree')

@@ -4,7 +4,7 @@
       slot="body"
       customClass="toggle-header stream"
       :description="`${$t('common.video')} on/off`"
-      size="2.429rem"
+      :size="size"
       :disabled="disable"
       :active="video.isOn"
       :activeSrc="require('assets/image/ic_video_on.svg')"
@@ -26,6 +26,12 @@ export default {
   components: {
     Tooltip,
     ToggleButton,
+  },
+  props: {
+    size: {
+      type: String,
+      default: '2.429rem',
+    },
   },
   data() {
     return {}

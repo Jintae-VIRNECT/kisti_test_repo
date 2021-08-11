@@ -100,7 +100,7 @@ export default {
       window.addEventListener('resize', fn)
     },
     removeEventListenerScreenResize(fn) {
-      window.addEventListener('resize', fn)
+      if (fn) window.addEventListener('resize', fn)
     },
   },
 }

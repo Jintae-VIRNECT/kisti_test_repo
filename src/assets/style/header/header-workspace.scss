@@ -93,8 +93,13 @@
         border-color: $color_primary;
       }
     }
+
+    .header-lnb-selector__profile {
+      display: none;
+    }
   }
 }
+
 .header-lnb-selector__check {
   position: absolute;
   top: 50%;
@@ -124,6 +129,12 @@
       transform: rotate(45deg);
       content: "";
     }
+  }
+}
+.header-lnb-selector__mobilecheck {
+  display: none;
+  &.active {
+    display: none;
   }
 }
 .header-lnb-selector__title {
@@ -195,6 +206,7 @@
       display: flex;
       align-items: center;
       margin-left: 1em;
+      color: $new_color_text_main;
       @include fontLevel(200);
     }
   }
@@ -217,7 +229,7 @@
         @include fontLevel(150);
 
         &.selected {
-          background-color: red; //@color 수정 필요
+          background-color: $new_color_bg_active; //@color 수정 필요
         }
         &::after {
           right: 0.8rem;
@@ -231,6 +243,63 @@
 
   .header-lnb-selector.popover {
     top: 6.4rem !important;
+    width: 34rem !important;
+    height: 32.8rem !important;
+    background-color: $new_color_bg_popover;
+
+    .popover--body > .vue-scrollbar__wrapper {
+      max-height: 32.8rem;
+    }
+    .vue-scrollbar__scrollbar-vertical {
+      background-color: transparent;
+    }
+
+    .header-lnb-selector__layer {
+      li {
+        height: 5.6rem;
+
+        &:hover,
+        > .active {
+          color: $new_color_text_main;
+          background-color: $new_color_bg_hover;
+        }
+        > button {
+          display: flex;
+          align-items: center;
+          padding-left: 1.7rem;
+        }
+
+        .header-lnb-selector__profile {
+          display: flex;
+          align-items: center;
+          width: 3rem;
+          background-color: transparent;
+        }
+
+        .header-lnb-selector__title {
+          display: block;
+          width: 23.6rem;
+          margin-right: 1.2rem;
+          margin-left: 0.9rem;
+          padding: 0;
+          overflow-x: hidden;
+          color: $new_color_text_main;
+          white-space: nowrap;
+          text-overflow: ellipsis;
+          @include fontLevel(150);
+        }
+      }
+    }
+
+    .header-lnb-selector__check {
+      display: none;
+    }
+    .header-lnb-selector__mobilecheck.active {
+      display: block;
+      width: 2rem;
+      height: 2rem;
+      background: url(~assets/image/icon_check_16.svg) 50% no-repeat;
+    }
   }
 
   .header-workspace-tools {
@@ -244,15 +313,28 @@
 
       //알림
       &.toggle-header.header-tools__notice {
-        margin-right: 0.5rem;
-        background-position: 40%;
-        background-size: 155%;
+        margin-right: 0.3rem;
+        background-size: 60%;
+
+        &.visible {
+          background-color: $new_color_bg_active;
+          border-radius: 0.6rem;
+        }
       }
     }
 
     //프로필
     .popover--wrapper > .profile {
       margin-right: 0.4rem;
+      margin-left: 0;
+      cursor: none;
+      &:hover {
+        opacity: 1;
+      }
+      &.visible .profile--thumb {
+        background-color: $new_color_bg_active;
+        border-radius: 0.6rem;
+      }
     }
 
     //워크스페이스 선택하는 화면의 경우 우측 tools 아이콘 표시 X

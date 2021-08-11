@@ -19,6 +19,7 @@
           @search="text => $emit('search', text)"
         ></search>
         <icon-button
+          class="delete"
           v-if="showDeleteButton"
           :imgSrc="require('assets/image/ic_delete.svg')"
           :text="deleteButtonText ? deleteButtonText : $t('button.remove')"

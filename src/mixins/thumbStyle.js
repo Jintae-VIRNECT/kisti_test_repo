@@ -41,7 +41,6 @@ export default {
   },
   beforeDestroy() {
     //이벤트 함수 제거
-    if (this.mobileSizeEventFn)
-      this.removeEventListenerScreenResize(this.mobileSizeEventFn)
+    this.removeEventListenerScreenResize(this.mobileSizeEventFn)
   },
 }

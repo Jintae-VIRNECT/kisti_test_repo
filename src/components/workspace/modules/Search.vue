@@ -104,7 +104,7 @@ export default {
     width: 3.2rem;
     height: 3.2rem;
     margin-right: 0.8rem;
-    background-color: red; //@color 적용 필요
+    background-color: $new_color_bg_icon; //@color 적용 필요
     border: none;
     border-radius: 0.6rem;
     &:focus-within {

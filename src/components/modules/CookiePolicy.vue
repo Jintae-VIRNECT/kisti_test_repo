@@ -123,6 +123,7 @@ export default {
 
 @include responsive-mobile {
   .cookie-policy {
+    background-color: $new_color_bg_active;
     border-radius: 1rem 1rem 0 0;
   }
   .cookie-policy-wrapper {
@@ -144,6 +145,12 @@ export default {
       height: 4.8rem;
       margin-top: 3.2rem;
       @include fontLevel(150);
+      color: $new_color_text_blue;
+      &:hover,
+      &:active,
+      &:focus {
+        background-color: white;
+      }
     }
   }
 }

@@ -206,6 +206,7 @@ export default {
     this.init()
   },
   mounted() {
+    //모바일 반응형 이미지 리소스
     this.responsiveEmptyImage = this.callAndGetMobileResponsiveFunction(
       this.setEmptyImageMobile,
       this.setEmptyImageDefault,
@@ -213,8 +214,7 @@ export default {
     this.addEventListenerScreenResize(this.responsiveEmptyImage)
   },
   beforeDestroy() {
-    if (this.responsiveEmptyImage)
-      this.removeEventListenerScreenResize(this.responsiveEmptyImage)
+    this.removeEventListenerScreenResize(this.responsiveEmptyImage)
   },
 }
 </script>

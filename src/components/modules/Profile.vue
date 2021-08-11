@@ -1,7 +1,10 @@
 <template>
   <figure class="profile" :class="status" v-on="{ ...$listeners }">
     <div class="profile--thumb" :style="thumbStyle">
-      <div class="profile--image" :class="{ group: group, image: useImage }">
+      <div
+        class="profile--image"
+        :class="{ group: group, image: useImage, 'profile-menu': profileMenu }"
+      >
         <img
           v-if="useImage"
           :src="imageUrl"
@@ -57,6 +60,10 @@ export default {
       default: null,
     },
     group: {
+      type: Boolean,
+      default: false,
+    },
+    profileMenu: {
       type: Boolean,
       default: false,
     },

@@ -201,9 +201,20 @@
       &.workspace-selected {
         display: block;
         margin-right: 0.6rem;
+        color: rgba($new_color_text_main, 0.8);
         @include fontLevel(200);
       }
     }
+
+    .tab-view__count {
+      height: 2rem;
+      margin-top: 0;
+      color: $new_color_text_main;
+      background-color: $new_color_bg_icon;
+      border-radius: 1.2rem;
+      @include fontLevel(50);
+    }
+
     //검색, 새로고침 버튼
     .tab-view .tab-view__header .tab-view__tools {
       top: -12%;
@@ -213,6 +224,30 @@
     }
 
     .tab-view__tools {
+      //삭제 버튼
+      .icon-button.delete {
+        align-items: center;
+        justify-content: center;
+        width: 3.2rem;
+        height: 3.2rem;
+        margin-right: 0.8rem;
+        margin-left: 0;
+        padding: 0;
+        background-color: $new_color_bg_icon; //@color 적용 필요
+        border-radius: 0.6rem;
+        opacity: 1;
+        img {
+          width: 1.6rem;
+          max-width: 1.6rem;
+          height: 1.6rem;
+          margin-right: 0;
+          content: url(~assets/image/ic_delete_16.svg);
+        }
+        span {
+          display: none;
+        }
+      }
+
       //새로고침 버튼
       .icon-button.refresh {
         align-items: center;
@@ -221,8 +256,7 @@
         height: 3.2rem;
         margin-left: 0;
         padding: 0;
-        //background: url(~assets/image/workspace/ic_renew_16.svg) 50%/1.6rem no-repeat;
-        background-color: red; //@color 적용 필요
+        background-color: $new_color_bg_icon; //@color 적용 필요
         border-radius: 0.6rem;
         opacity: 1;
         img {
@@ -247,7 +281,14 @@
         background-color: transparent;
       }
     }
+
+    //loading
+    .tab-view__loading {
+      background-color: $new_color_bg_sub;
+    }
+
     .tab-view {
+      background-color: $new_color_bg_sub;
       //워크스페이스 선택 목록
       .workcard-list {
         grid-template-columns: repeat(2, minmax(15.9rem, auto));
@@ -256,10 +297,15 @@
         column-gap: 1rem;
         row-gap: 1rem;
       }
+      .groupcard-list {
+        grid-template-columns: 1fr;
+      }
     }
   }
 
   .workspace-tab__nav {
+    background-color: $new_color_bg;
+
     ul {
       display: grid;
       grid-template-columns: repeat(4, 1fr);
@@ -273,6 +319,7 @@
         width: 100%;
         padding: 1rem 0 1.2rem 0;
         @include fontLevel(150);
+        color: $new_color_text_main;
 
         //active bar 굵기 변경
         &::after {
@@ -289,7 +336,7 @@
     //tab 메뉴
     &.fix {
       width: initial;
-      background-color: initial;
+      background-color: $new_color_bg;
     }
 
     //tab메뉴에 표시되는 협업방 생성 버튼 레이아웃 비활성화

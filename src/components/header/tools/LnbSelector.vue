@@ -17,6 +17,12 @@
             @click="changeSelect(work)"
             :class="{ active: work.uuid === workspace.uuid }"
           >
+            <profile
+              class="header-lnb-selector__profile"
+              :group="true"
+              :image="workspace.profile"
+              :thumbStyle="{ width: '3rem', height: '3rem' }"
+            ></profile>
             <span
               class="header-lnb-selector__check"
               :class="{ active: work.uuid === workspace.uuid }"
@@ -25,6 +31,10 @@
             <!-- <p class="header-lnb-selector__description">
               워크스테이션 멤버: {{ option.member }}명
             </p> -->
+            <span
+              class="header-lnb-selector__mobilecheck"
+              :class="{ active: work.uuid === workspace.uuid }"
+            ></span>
           </button>
         </li>
       </ul>
@@ -42,11 +52,13 @@
 
 <script>
 import Popover from 'Popover'
+import Profile from 'Profile'
 import { mapGetters, mapActions } from 'vuex'
 export default {
   name: 'LnbSelector',
   components: {
     Popover,
+    Profile,
   },
   data() {
     return {
