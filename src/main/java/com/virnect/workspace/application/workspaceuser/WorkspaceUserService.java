@@ -696,7 +696,15 @@ public abstract class WorkspaceUserService {
         );
         Workspace workspace = workspaceRepository.findByUuid(workspaceId).orElseThrow(() -> new WorkspaceException(ErrorCode.ERR_WORKSPACE_NOT_FOUND));
 
-
+        //전용계정, 시트계정은 내보내기 할 수 없고 무조건 삭제해야 함.
+        ApiResponse<UserInfoRestResponse> apiResponse = userRestService.getUserInfoByUserId(memberKickOutRequest.getKickedUserId());
+        if (apiResponse.getCode() != 200) {
+            log.error("[GET USER INFO BY USER UUID] request user uuid : {}, response code : {}, response message : {}", memberKickOutRequest.getKickedUserId(), apiResponse.getCode(), apiResponse.getMessage());
+            throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_USER_NOT_FOUND);
+        }
+        if (apiResponse.getData().getUserType().equals("WORKSPACE_ONLY_USER") || apiResponse.getData().getUserType().equals("SEAT_USER")) {
+            throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_INVALID_PERMISSION);
+        }
         WorkspaceUserPermission workspaceUserPermission = workspaceUserPermissionRepository.findByWorkspaceUser_WorkspaceAndWorkspaceUser_UserId(
                 workspace, memberKickOutRequest.getUserId()).orElseThrow(() -> new WorkspaceException(ErrorCode.ERR_WORKSPACE_USER_NOT_FOUND));
         WorkspaceUserPermission kickedUserPermission = workspaceUserPermissionRepository.findByWorkspaceUser_WorkspaceAndWorkspaceUser_UserId(
@@ -782,49 +790,6 @@ public abstract class WorkspaceUserService {
         applicationEventPublisher.publishEvent(new UserWorkspacesDeleteEvent(memberKickOutRequest.getKickedUserId()));
         return new ApiResponse<>(true);
     }
-
-    /*
-하위유저는 상위유저 또는 동급유저에 대한 권한이 없으므로 이에 대해 체크한다.
-단 멤버유저의 경우 동급유저(멤버)에 대한 권한을 허용한다.
- *//*
-    private boolean checkWorkspaceRole(SettingValue settingValue, String requestUserRole, String responseUserRole) {
-        log.info("[WORKSPACE ROLE CHECK] setting value : [{}], request user role : [{}] , response user role : [{}]", settingValue, requestUserRole, responseUserRole);
-        //요청자가 마스터 -> 대상자는 매니저, 멤버
-        if (settingValue == SettingValue.MASTER) {
-            if (!requestUserRole.equals("MASTER") || !responseUserRole.matches("MANAGER|MEMBER")) {
-                return false;
-            }
-
-        }
-        //요청자가 마스터 -> 대상자는 매니저, 멤버
-        //요청자가 매니저 -> 대상자는 멤버
-        if (settingValue == SettingValue.MASTER_OR_MANAGER) {
-            if (requestUserRole.equals("MASTER") && !responseUserRole.matches("MANAGER|MEMBER")) {
-                return false;
-            }
-            if (requestUserRole.equals("MANAGER") && !responseUserRole.equals("MEMBER")) {
-                return false;
-            }
-            if (requestUserRole.equals("MEMBER")) {
-                return false;
-            }
-        }
-        //요청자가 마스터  -> 대상자는 매니저, 멤버
-        //요청자가 매니저 -> 대상자는 멤버
-        //요청자가 멤버 -> 대상자는 멤버
-        if (settingValue == SettingValue.MASTER_OR_MANAGER_OR_MEMBER) {
-            if (requestUserRole.equals("MASTER") && !responseUserRole.matches("MANAGER|MEMBER")) {
-                return false;
-            }
-            if (requestUserRole.equals("MANAGER") && !responseUserRole.equals("MEMBER")) {
-                return false;
-            }
-            if (requestUserRole.equals("MEMBER") && !responseUserRole.equals("MEMBER")) {
-                return false;
-            }
-        }
-        return true;
-    }*/
 
     @Profile("!onpremise")
     public abstract ApiResponse<Boolean> inviteWorkspace(String workspaceId, WorkspaceInviteRequest
