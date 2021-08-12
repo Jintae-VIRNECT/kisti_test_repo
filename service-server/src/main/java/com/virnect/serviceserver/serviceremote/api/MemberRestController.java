@@ -1,7 +1,5 @@
 package com.virnect.serviceserver.serviceremote.api;
 
-import java.util.List;
-
 import javax.validation.Valid;
 
 import com.virnect.data.domain.member.MemberAuthType;
@@ -228,7 +226,7 @@ public class MemberRestController {
         if (Strings.isBlank(workspaceId) || Strings.isBlank(userId)) {
             throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
-        ApiResponse<RemoteGroupInfoResponse> responseData = memberService.createGroup(workspaceId, userId, groupRequest, MemberAuthType.NORMAL_USER);
+        ApiResponse<RemoteGroupInfoResponse> responseData = memberService.createGroup(workspaceId, userId, groupRequest, MemberAuthType.USER);
         return ResponseEntity.ok(responseData);
     }
 
@@ -289,7 +287,7 @@ public class MemberRestController {
 
     @ApiOperation(value = "Update group list", notes = "멤버 그룹정보를 수정합니다")
     @PutMapping(value = "members/group/{workspaceId}/{userId}/{groupId}")
-    public ResponseEntity<ApiResponse<RemoteGroupInfoResponse>> updateGroup(
+    public ResponseEntity<ApiResponse<RemoteGroupInfoResponse>> updateGroupByMaster(
         @PathVariable(name = "workspaceId") String workspaceId,
         @PathVariable(name = "userId") String userId,
         @PathVariable(name = "groupId") String groupId,
@@ -302,18 +300,54 @@ public class MemberRestController {
                 + workspaceId + "/"
                 + userId + "::"
                 + "groupRequest:" + groupRequest.toString(),
-            "updateGroup"
+            "updateGroupByMaster"
         );
         if (Strings.isBlank(workspaceId)) {
             throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
-        ApiResponse<RemoteGroupInfoResponse> responseData = memberService.updateGroup(workspaceId, userId, groupId, groupRequest);
+        ApiResponse<RemoteGroupInfoResponse> responseData = memberService.updateGroup(
+            workspaceId,
+            userId,
+            groupId,
+            groupRequest,
+            MemberAuthType.MASTER
+        );
+        return ResponseEntity.ok(responseData);
+    }
+
+    @ApiOperation(value = "Update my-group list", notes = "개인별 멤버 그룹정보를 수정합니다")
+    @PutMapping(value = "members/my-group/{workspaceId}/{userId}/{groupId}")
+    public ResponseEntity<ApiResponse<RemoteGroupInfoResponse>> updateGroupByUserId(
+        @PathVariable(name = "workspaceId") String workspaceId,
+        @PathVariable(name = "userId") String userId,
+        @PathVariable(name = "groupId") String groupId,
+        @RequestBody @Valid GroupRequest groupRequest
+    ) {
+        LogMessage.formedInfo(
+            TAG,
+            "REST API: PUT "
+                + REST_PATH + "/"
+                + workspaceId + "/"
+                + userId + "::"
+                + "groupRequest:" + groupRequest.toString(),
+            "updateGroupByUserId"
+        );
+        if (Strings.isBlank(workspaceId)) {
+            throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
+        }
+        ApiResponse<RemoteGroupInfoResponse> responseData = memberService.updateGroup(
+            workspaceId,
+            userId,
+            groupId,
+            groupRequest,
+            MemberAuthType.USER
+        );
         return ResponseEntity.ok(responseData);
     }
 
     @ApiOperation(value = "Delete group list", notes = "멤버 그룹을 삭제합니다")
     @DeleteMapping(value = "members/group/{workspaceId}/{userId}/{groupId}")
-    public ResponseEntity<ApiResponse<ResultResponse>> deleteGroup(
+    public ResponseEntity<ApiResponse<ResultResponse>> deleteGroupByMaster(
         @PathVariable(name = "workspaceId") String workspaceId,
         @PathVariable(name = "userId") String userId,
         @PathVariable(name = "groupId") String groupId
@@ -325,12 +359,35 @@ public class MemberRestController {
                 + workspaceId + "/"
                 + userId + "::"
                 + "groupId:" + groupId,
-            "updateGroup"
+            "deleteGroupByMaster"
         );
         if (Strings.isBlank(workspaceId)) {
             throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
-        ApiResponse<ResultResponse> responseData = memberService.deleteGroup(workspaceId, userId, groupId);
+        ApiResponse<ResultResponse> responseData = memberService.deleteGroup(workspaceId, userId, groupId, MemberAuthType.MASTER);
+        return ResponseEntity.ok(responseData);
+    }
+
+    @ApiOperation(value = "Delete group list", notes = "멤버 그룹을 삭제합니다")
+    @DeleteMapping(value = "members/my-group/{workspaceId}/{userId}/{groupId}")
+    public ResponseEntity<ApiResponse<ResultResponse>> deleteGroupByUserId(
+        @PathVariable(name = "workspaceId") String workspaceId,
+        @PathVariable(name = "userId") String userId,
+        @PathVariable(name = "groupId") String groupId
+    ) {
+        LogMessage.formedInfo(
+            TAG,
+            "REST API: PUT "
+                + REST_PATH + "/"
+                + workspaceId + "/"
+                + userId + "::"
+                + "groupId:" + groupId,
+            "deleteGroupByUserId"
+        );
+        if (Strings.isBlank(workspaceId)) {
+            throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
+        }
+        ApiResponse<ResultResponse> responseData = memberService.deleteGroup(workspaceId, userId, groupId, MemberAuthType.USER);
         return ResponseEntity.ok(responseData);
     }
 

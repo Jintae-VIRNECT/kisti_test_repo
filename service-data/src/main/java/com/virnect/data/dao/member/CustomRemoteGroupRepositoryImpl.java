@@ -72,6 +72,19 @@ public class CustomRemoteGroupRepositoryImpl extends QuerydslRepositorySupport i
 			.fetchOne();
 	}
 
+	@Override
+	public RemoteGroup findByWorkspaceIdAndGroupIdAndUserId(String workspaceId, String groupId, String userId) {
+		return query
+			.selectFrom(remoteGroup)
+			.where(
+				remoteGroup.workspaceId.eq(workspaceId),
+				remoteGroup.groupId.eq(groupId),
+				remoteGroup.uuid.eq(userId)
+			)
+			.distinct()
+			.fetchOne();
+	}
+
 	private BooleanExpression includeUserId(String userId) {
 		if (StringUtils.isEmpty(userId)) {
 			return null;

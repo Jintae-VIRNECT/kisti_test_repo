@@ -12,4 +12,6 @@ public interface CustomRemoteGroupRepository {
 
 	RemoteGroup findByWorkspaceIdAndGroupId(String workspaceId, String groupId);
 
+	RemoteGroup findByWorkspaceIdAndGroupIdAndUserId(String workspaceId, String groupId, String userId);
+
 }

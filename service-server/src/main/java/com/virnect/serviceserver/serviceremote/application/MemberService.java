@@ -376,22 +376,30 @@ public class MemberService {
 		String workspaceId,
 		String userId,
 		String groupId,
-		GroupRequest groupRequest
+		GroupRequest groupRequest,
+		MemberAuthType memberAuthType
 	) {
+
+		RemoteGroup targetGroup;
+
 		// 권한 확인 (Only Master)
-		if (!checkMaster(workspaceId, userId)) {
-			return new ApiResponse<>(ErrorCode.ERR_API_AUTHENTICATION);
+		if (memberAuthType == MemberAuthType.MASTER) {
+			if (!checkMaster(workspaceId, userId)) {
+				return new ApiResponse<>(ErrorCode.ERR_API_AUTHENTICATION);
+			}
+			targetGroup = groupRepository.findByWorkspaceIdAndGroupId(workspaceId, groupId);
+		} else {
+			targetGroup = groupRepository.findByWorkspaceIdAndGroupIdAndUserId(workspaceId, groupId, userId);
 		}
 
-		RemoteGroup remoteGroup = groupRepository.findByWorkspaceIdAndGroupId(workspaceId, groupId);
-		if (ObjectUtils.isEmpty(remoteGroup)) {
+		if (ObjectUtils.isEmpty(targetGroup)) {
 			return new ApiResponse<>(ErrorCode.ERR_GROUP_NOT_FOUND);
 		}
 
-		remoteGroup.setGroupName(groupRequest.getGroupName());
-		remoteGroup.setGroupMembers(remoteGroup.getGroupMembers());
+		targetGroup.setGroupName(groupRequest.getGroupName());
+		targetGroup.setGroupMembers(targetGroup.getGroupMembers());
 
-		RemoteGroup result = groupRepository.save(remoteGroup);
+		RemoteGroup result = groupRepository.save(targetGroup);
 		if (ObjectUtils.isEmpty(result)) {
 			return new ApiResponse<>(ErrorCode.ERR_DATA_SAVE_EXCEPTION);
 		}
@@ -401,19 +409,27 @@ public class MemberService {
 	public ApiResponse<ResultResponse> deleteGroup(
 		String workspaceId,
 		String userId,
-		String groupId
+		String groupId,
+		MemberAuthType memberAuthType
 	) {
+
+		RemoteGroup targetGroup;
+
 		// 권한 확인 (Only Master)
-		if (!checkMaster(workspaceId, userId)) {
-			return new ApiResponse<>(ErrorCode.ERR_API_AUTHENTICATION);
+		if (memberAuthType == MemberAuthType.MASTER) {
+			if (!checkMaster(workspaceId, userId)) {
+				return new ApiResponse<>(ErrorCode.ERR_API_AUTHENTICATION);
+			}
+			targetGroup = groupRepository.findByWorkspaceIdAndGroupId(workspaceId, groupId);
+		} else {
+			targetGroup = groupRepository.findByWorkspaceIdAndGroupIdAndUserId(workspaceId, groupId, userId);
 		}
 
-		RemoteGroup remoteGroup = groupRepository.findByWorkspaceIdAndGroupId(workspaceId, groupId);
-		if (ObjectUtils.isEmpty(remoteGroup)) {
+		if (ObjectUtils.isEmpty(targetGroup)) {
 			return new ApiResponse<>(ErrorCode.ERR_GROUP_NOT_FOUND);
 		}
 
-		groupRepository.delete(remoteGroup);
+		groupRepository.delete(targetGroup);
 
 		ResultResponse resultResponse = new ResultResponse();
 		resultResponse.userId = userId;
