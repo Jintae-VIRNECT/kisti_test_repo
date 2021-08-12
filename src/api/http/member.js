@@ -128,10 +128,17 @@ export const getMemberGroupList = async ({ workspaceId, userId }) => {
  * @query {String} groupId
  * @returns 단일 멤버 그룹 정보
  */
-export const getMemberGroupItem = async ({ workspaceId, groupId }) => {
+export const getMemberGroupItem = async ({
+  workspaceId,
+  groupId,
+  page = 0,
+  size = 0,
+}) => {
   const returnVal = await http('MEMBER_GROUP_LIST_ITEM', {
     workspaceId,
     groupId,
+    page,
+    size,
   })
 
   return returnVal
@@ -146,13 +153,38 @@ export const getMemberGroupItem = async ({ workspaceId, groupId }) => {
  * @param {Array[String]} memberList 유저 uuid 목록
  * @returns 요청 응답
  */
-export const createMemberGroup = async ({
+// export const createMemberGroup = async ({
+//   workspaceId,
+//   userId,
+//   groupName,
+//   memberList,
+// }) => {
+//   const returnVal = await http('CREATE_MEMBER_GROUP', {
+//     workspaceId,
+//     userId,
+//     groupName,
+//     memberList,
+//   })
+
+//   return returnVal
+// }
+
+/**
+ * 멤버 그룹 생성
+ *
+ * @query {String} workspaceId
+ * @query {String} userId
+ * @param {String} groupName 그룹의 이름
+ * @param {Array[String]} memberList 유저 uuid 목록
+ * @returns 요청 응답
+ */
+export const createPrivateMemberGroup = async ({
   workspaceId,
   userId,
   groupName,
   memberList,
 }) => {
-  const returnVal = await http('CREATE_MEMBER_GROUP', {
+  const returnVal = await http('CREATE_PRIVATE_MEMBER_GROUP', {
     workspaceId,
     userId,
     groupName,
@@ -170,8 +202,12 @@ export const createMemberGroup = async ({
  * @query {String} groupId 그룹의 이름
  * @returns 요청 응답
  */
-export const deleteMemberGroup = async ({ workspaceId, userId, groupId }) => {
-  const returnVal = await http('DELETE_MEMBER_GROUP', {
+export const deletePrivateMemberGroup = async ({
+  workspaceId,
+  userId,
+  groupId,
+}) => {
+  const returnVal = await http('DELETE_PRIVATE_MEMBER_GROUP', {
     workspaceId,
     userId,
     groupId,
@@ -189,11 +225,19 @@ export const deleteMemberGroup = async ({ workspaceId, userId, groupId }) => {
  *
  * @returns 요청 응답
  */
-export const updateMemberGroup = async ({ workspaceId, userId, groupId }) => {
-  const returnVal = await http('UPDATE_MEMBER_GROUP', {
+export const updatePrivateMemberGroup = async ({
+  workspaceId,
+  userId,
+  groupId,
+  groupName,
+  memberList,
+}) => {
+  const returnVal = await http('UPDATE_PRIVATE_MEMBER_GROUP', {
     workspaceId,
     userId,
     groupId,
+    groupName,
+    memberList,
   })
 
   return returnVal

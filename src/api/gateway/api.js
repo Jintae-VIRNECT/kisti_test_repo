@@ -31,14 +31,19 @@ export default {
     'GET',
     '/remote/members/group/{workspaceId}/{groupId}',
   ],
-  CREATE_MEMBER_GROUP: ['POST', '/remote/members/group/{workspaceId}/{userId}'],
-  DELETE_MEMBER_GROUP: [
-    'DELETE',
-    '/remote/members/group/{workspaceId}/{userId}/{groupId}',
+
+  // CREATE_MEMBER_GROUP: ['POST', '/remote/members/group/{workspaceId}/{userId}'],
+  CREATE_PRIVATE_MEMBER_GROUP: [
+    'POST',
+    '/remote/members/my-group/{workspaceId}/{userId}',
   ],
-  UPDATE_MEMBER_GROUP: [
+  DELETE_PRIVATE_MEMBER_GROUP: [
+    'DELETE',
+    '/remote/members/my-group/{workspaceId}/{userId}/{groupId}',
+  ],
+  UPDATE_PRIVATE_MEMBER_GROUP: [
     'PUT',
-    '/remote/members/group/{workspaceId}/{userId}/{groupId}',
+    '/remote/members/my-group/{workspaceId}/{userId}/{groupId}',
   ],
 
   /* Workspace - Room */
