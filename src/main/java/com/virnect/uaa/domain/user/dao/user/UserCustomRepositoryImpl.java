@@ -20,6 +20,7 @@ import com.querydsl.jpa.JPQLQuery;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 
+import com.virnect.uaa.domain.user.domain.QUser;
 import com.virnect.uaa.domain.user.domain.User;
 
 /**
@@ -104,6 +105,18 @@ public class UserCustomRepositoryImpl extends QuerydslRepositorySupport implemen
 	@Override
 	public long countCurrentSeatUserNumber(User masterUser) {
 		return query.selectFrom(user).where(user.master.eq(masterUser).and(user.userType.eq(SEAT_USER))).fetchCount();
+	}
+
+	@Override
+	public Optional<User> findSeatUserByMasterAndSeatUserUUID(User masterUser, String uuid) {
+		User seatUser = query.selectFrom(QUser.user)
+			.where(
+				user.master.eq(masterUser),
+				user.userType.eq(SEAT_USER),
+				user.uuid.eq(uuid)
+			)
+			.fetchOne();
+		return Optional.ofNullable(seatUser);
 	}
 
 	/**

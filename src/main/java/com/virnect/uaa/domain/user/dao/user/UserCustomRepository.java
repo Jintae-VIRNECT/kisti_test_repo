@@ -32,4 +32,6 @@ public interface UserCustomRepository {
 	Page<User> findAllUserBySearchAndPaging(String search, Pageable pageable);
 
 	long countCurrentSeatUserNumber(User masterUser);
+
+	Optional<User> findSeatUserByMasterAndSeatUserUUID(User master, String uuid);
 }

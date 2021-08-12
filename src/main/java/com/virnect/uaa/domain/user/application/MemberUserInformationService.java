@@ -13,12 +13,14 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import com.virnect.uaa.domain.auth.account.dao.UserOTPRepository;
+import com.virnect.uaa.domain.user.dao.secession.SecessionUserRepository;
 import com.virnect.uaa.domain.user.dao.user.UserRepository;
 import com.virnect.uaa.domain.user.dao.useraccesslog.UserAccessLogRepository;
 import com.virnect.uaa.domain.user.dao.userpermission.UserPermissionRepository;
 import com.virnect.uaa.domain.user.domain.User;
 import com.virnect.uaa.domain.user.dto.request.MemberPasswordUpdateRequest;
 import com.virnect.uaa.domain.user.dto.request.MemberRegistrationRequest;
+import com.virnect.uaa.domain.user.dto.request.SeatMemberDeleteRequest;
 import com.virnect.uaa.domain.user.dto.request.SeatMemberRegistrationRequest;
 import com.virnect.uaa.domain.user.dto.request.UserIdentityCheckRequest;
 import com.virnect.uaa.domain.user.dto.response.MemberPasswordUpdateResponse;
@@ -44,6 +46,7 @@ public class MemberUserInformationService {
 	private final UserRepository userRepository;
 	private final UserAccessLogRepository userAccessLogRepository;
 	private final UserPermissionRepository userPermissionRepository;
+	private final SecessionUserRepository secessionUserRepository;
 	private final UserOTPRepository userOTPRepository;
 	private final PasswordEncoder passwordEncoder;
 	private final RemoteRestService remoteRestService;
@@ -78,7 +81,7 @@ public class MemberUserInformationService {
 	}
 
 	/**
-	 * 기존 멤버 사용자 삭제
+	 * 멤버 사용자 삭제
 	 *
 	 * @param userUUID - 사용자 정보 식별자
 	 * @return - 사용자 삭제 처리 결과
@@ -88,15 +91,7 @@ public class MemberUserInformationService {
 		User deleteTargetUser = userRepository.findByUuid(userUUID)
 			.orElseThrow(() -> new UserServiceException(UserAccountErrorCode.ERR_USER_NOT_FOUND));
 
-		userAccessLogRepository.deleteAllUserAccessLogByUser(deleteTargetUser);
-		userRepository.delete(deleteTargetUser);
-		deleteUserInformation(deleteTargetUser);
-
-		// send user delete event to remote service
-		ApiResponse<RemoteSecessionResponse> remoteResponse = remoteRestService.remoteUserSecession(userUUID);
-		if (remoteResponse == null || !remoteResponse.getData().isResult()) {
-			log.error("[REMOTE_MEMBER_USER_SECESSION ERROR]");
-		}
+		deleteMemberInformation(deleteTargetUser);
 
 		return new UserDeleteResponse(userUUID, LocalDateTime.now());
 	}
@@ -159,14 +154,14 @@ public class MemberUserInformationService {
 	}
 
 	/**
-	 * seat 사용자 계정 등록 요청 처리
+	 * 시트 사용자 계정 등록 요청 처리
 	 * @param seatMemberRegistrationRequest - seat 사용자 등록 요청  정보
 	 * @return - seat 사용자 정보
 	 */
 	public UserInfoResponse registerNewSeatMember(SeatMemberRegistrationRequest seatMemberRegistrationRequest) {
 		User masterUser = userRepository.findByUuid(seatMemberRegistrationRequest.getMasterUserUUID())
 			.orElseThrow(
-				() -> new UserServiceException(UserAccountErrorCode.ERR_REGISTER_MEMBER_MASTER_PERMISSION_DENIED));
+				() -> new UserServiceException(UserAccountErrorCode.ERR_REGISTER_SEAT_MEMBER_MASTER_PERMISSION_DENIED));
 		String seatUserPassword = masterUser.getUuid() + "_" + seatMemberRegistrationRequest.getWorkspaceUUID();
 		int currentSeatUserCount = (int)userRepository.countCurrentSeatUserNumber(masterUser);
 
@@ -182,6 +177,39 @@ public class MemberUserInformationService {
 		return userInfoMapper.toUserInfoResponse(seatUser);
 	}
 
+	/**
+	 * 시트 사용자 계정 삭제 요청 처리
+	 * @param seatMemberDeleteRequest - 시트 사용자 계정 삭제 요청
+	 * @return - 삭제 처리 결과
+	 */
+	@CacheEvict(value = "userInfo", key = "#seatMemberDeleteRequest.seatUserUUID")
+	public UserDeleteResponse deleteSeatMember(SeatMemberDeleteRequest seatMemberDeleteRequest) {
+		User masterUser = userRepository.findByUuid(seatMemberDeleteRequest.getMasterUUID())
+			.orElseThrow(
+				() -> new UserServiceException(UserAccountErrorCode.ERR_REGISTER_SEAT_MEMBER_MASTER_PERMISSION_DENIED));
+
+		User seatUser = userRepository.findSeatUserByMasterAndSeatUserUUID(
+			masterUser,
+			seatMemberDeleteRequest.getSeatUserUUID()
+		).orElseThrow(() -> new UserServiceException(UserAccountErrorCode.ERR_USER_NOT_FOUND));
+
+		deleteMemberInformation(seatUser);
+
+		return new UserDeleteResponse(seatUser.getUuid(), LocalDateTime.now());
+	}
+
+	private void deleteMemberInformation(User deleteUser) {
+		userAccessLogRepository.deleteAllUserAccessLogByUser(deleteUser);
+		deleteUserInformation(deleteUser);
+		userRepository.delete(deleteUser);
+
+		// send user delete event to remote service
+		ApiResponse<RemoteSecessionResponse> response = remoteRestService.remoteUserSecession(deleteUser.getUuid());
+		if (response == null || !response.getData().isResult()) {
+			log.error("[REMOTE_MEMBER_USER_SECESSION ERROR]");
+		}
+	}
+
 	private void deleteUserInformation(User user) {
 		// Delete user profile image
 		fileService.delete(user.getProfile());
@@ -192,5 +220,4 @@ public class MemberUserInformationService {
 		// Delete user access log history
 		userAccessLogRepository.deleteAllUserAccessLogByUser(user);
 	}
-
 }
