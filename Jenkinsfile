@@ -48,7 +48,7 @@ pipeline {
                         sh 'count=`docker ps -a | grep pf-account-onpremise | wc -l`; if [ ${count} -gt 0 ]; then echo "Running STOP&DELETE"; docker stop pf-account-onpremise && docker rm pf-account-onpremise; else echo "Not Running STOP&DELETE"; fi;'
                         sh 'docker run -p 18322:8322  --restart=always  -e "CONFIG_SERVER=http://192.168.6.3:6383" -e "VIRNECT_ENV=onpremise" -d --name=pf-account-onpremise pf-account'
                         catchError {
-                             sh "if [ `docker images | grep pf-account | grep -v 103505534696 | wc -l` -gt 2 ]; then docker rmi  -f \$(docker images | grep \"pf-account\" | grep -v \\${GIT_TAG} | grep -v \"latest\" | awk \'{print \$3}\'); else echo \"Just One Images...\"; fi;"
+                             sh "if [ `docker images | grep pf-account | grep -v 103505534696 | wc -l` -gt 2 ]; then docker rmi  -f \$(docker images | grep \"pf-account\" | grep -v \"latest\" | awk \'{print \$3}\'); else echo \"Just One Images...\"; fi;"
                         }
                     }
                 }
