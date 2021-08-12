@@ -7,6 +7,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 import com.virnect.uaa.domain.user.domain.User;
+import com.virnect.uaa.domain.user.domain.UserType;
 
 /**
  * @author jeonghyeon.chang (johnmark)
@@ -29,4 +30,9 @@ public interface UserCustomRepository {
 	Optional<User> findLoginUserInformationByUserEmail(String email);
 
 	Page<User> findAllUserBySearchAndPaging(String search, Pageable pageable);
+
+	long countCurrentSeatUserNumber(User masterUser);
+
+	Optional<User> findSeatUserByMasterAndSeatUserUUID(User master, String uuid);
+	Optional<User> findWorkspaceOnlyUserByMasterAndSeatUserUUID(User master, String uuid);
 }

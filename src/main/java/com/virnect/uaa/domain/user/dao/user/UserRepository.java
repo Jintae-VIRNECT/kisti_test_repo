@@ -22,21 +22,9 @@ public interface UserRepository extends JpaRepository<User, Long>, UserCustomRep
 
 	Optional<User> findByUuid(final String uuid);
 
-	Page<User> findByNameIsContainingOrEmailIsContaining(final String name, final String email, Pageable pageable);
-
-	List<User> findByNameIsContainingOrEmailIsContaining(final String name, final String email);
-
-	List<User> findByNicknameIsContainingOrEmailIsContaining(final String nickName, final String email);
-
-	List<User> findByEmailIsIn(String[] email);
-
 	boolean existsByEmail(String email);
 
 	Page<User> findAll(Pageable pageable);
-
-	Optional<User> findByEmailAndUuid(String email, String uuid);
-
-	Optional<User> findByUuidAndUserType(String uuid, UserType userType);
 
 	boolean existsByUuid(String userId);
 

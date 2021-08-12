@@ -9,16 +9,21 @@ package com.virnect.uaa.domain.user.error;
  */
 public enum UserAccountErrorCode {
 	// 로그인 관련 에러
-	ERR_LOGIN(2000, "Login error occurred caused not matched email or password"),
+	ERR_LOGIN(2000, "Login error occurred caused not matched email or password."),
 
 	// 회원가입 관련 에러
 	ERR_REGISTER(2101, "Account registration fail."),
 	ERR_REGISTER_AUTHENTICATION(2102, "Email authentication fail."),
 	ERR_REGISTER_SESSION_EXPIRE(2103, "Register session expire."),
-	ERR_REGISTER_DUPLICATE_EMAIL(2104, "Register email is duplicate"),
+	ERR_REGISTER_DUPLICATE_EMAIL(2104, "Register email is duplicate."),
 
 	// 회원 등록 관련 에러
-	ERR_REGISTER_MEMBER_DUPLICATE_ID(2201, "Workspace Only User Registration fail. User ID is duplicated."),
+	ERR_REGISTER_MEMBER_DUPLICATE_ID(2201, "Workspace only user registration fail. User ID duplicated."),
+	ERR_REGISTER_MEMBER_MASTER_PERMISSION_DENIED(
+		2202, "Workspace only user registration fail, Master user not found."),
+	ERR_DELETE_MEMBER_MASTER_PERMISSION_DENIED(2203, "Workspace only user delete fail, Master user not found."),
+	ERR_REGISTER_SEAT_MEMBER_MASTER_PERMISSION_DENIED(2204, "Seat user registration fail. Master user not found."),
+	ERR_DELETE_SEAT_MEMBER_MASTER_PERMISSION_DENIED(2205, "Seat user delete fail. Master user not found."),
 
 	//사용자 정보 관련 에러
 	ERR_USER_INFO(4000, "User Info Error"),

@@ -3,6 +3,7 @@ package com.virnect.uaa.domain.user.dao.user;
 import static com.virnect.uaa.domain.user.domain.QPermission.*;
 import static com.virnect.uaa.domain.user.domain.QUser.*;
 import static com.virnect.uaa.domain.user.domain.QUserPermission.*;
+import static com.virnect.uaa.domain.user.domain.UserType.*;
 
 import java.util.List;
 import java.util.Optional;
@@ -19,6 +20,7 @@ import com.querydsl.jpa.JPQLQuery;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 
+import com.virnect.uaa.domain.user.domain.QUser;
 import com.virnect.uaa.domain.user.domain.User;
 
 /**
@@ -98,6 +100,35 @@ public class UserCustomRepositoryImpl extends QuerydslRepositorySupport implemen
 		QueryResults<User> userQueryResults = pageableAndSortingQuery.fetchResults();
 
 		return new PageImpl<>(userQueryResults.getResults(), pageable, userQueryResults.getTotal());
+	}
+
+	@Override
+	public long countCurrentSeatUserNumber(User masterUser) {
+		return query.selectFrom(user).where(user.master.eq(masterUser).and(user.userType.eq(SEAT_USER))).fetchCount();
+	}
+
+	@Override
+	public Optional<User> findSeatUserByMasterAndSeatUserUUID(User masterUser, String uuid) {
+		User seatUser = query.selectFrom(QUser.user)
+			.where(
+				user.master.eq(masterUser),
+				user.userType.eq(SEAT_USER),
+				user.uuid.eq(uuid)
+			)
+			.fetchOne();
+		return Optional.ofNullable(seatUser);
+	}
+
+	@Override
+	public Optional<User> findWorkspaceOnlyUserByMasterAndSeatUserUUID(User masterUser, String uuid) {
+		User seatUser = query.selectFrom(QUser.user)
+			.where(
+				user.master.eq(masterUser),
+				user.userType.eq(WORKSPACE_ONLY_USER),
+				user.uuid.eq(uuid)
+			)
+			.fetchOne();
+		return Optional.ofNullable(seatUser);
 	}
 
 	/**

@@ -17,8 +17,11 @@ import com.virnect.uaa.domain.user.dao.user.UserRepository;
 import com.virnect.uaa.domain.user.dao.useraccesslog.UserAccessLogRepository;
 import com.virnect.uaa.domain.user.dao.userpermission.UserPermissionRepository;
 import com.virnect.uaa.domain.user.domain.User;
+import com.virnect.uaa.domain.user.dto.request.MemberDeleteRequest;
 import com.virnect.uaa.domain.user.dto.request.MemberPasswordUpdateRequest;
-import com.virnect.uaa.domain.user.dto.request.RegisterMemberRequest;
+import com.virnect.uaa.domain.user.dto.request.MemberRegistrationRequest;
+import com.virnect.uaa.domain.user.dto.request.SeatMemberDeleteRequest;
+import com.virnect.uaa.domain.user.dto.request.SeatMemberRegistrationRequest;
 import com.virnect.uaa.domain.user.dto.request.UserIdentityCheckRequest;
 import com.virnect.uaa.domain.user.dto.response.MemberPasswordUpdateResponse;
 import com.virnect.uaa.domain.user.dto.response.UserDeleteResponse;
@@ -49,19 +52,24 @@ public class MemberUserInformationService {
 
 	/**
 	 * 새 멤버 사용자 등록
-	 * @param registerMemberRequest - 멤버 사용자 데이터
+	 * @param memberRegistrationRequest - 멤버 사용자 데이터
 	 * @return - 등록된 새 멤버 사용자 정보
 	 */
-	public UserInfoResponse registerNewMember(RegisterMemberRequest registerMemberRequest) {
+	public UserInfoResponse registerNewMember(MemberRegistrationRequest memberRegistrationRequest) {
 
-		if (userRepository.existsByEmail(registerMemberRequest.getEmail())) {
-			log.error("Member User Create Fail. Email Duplicate : {}", registerMemberRequest.getEmail());
+		if (userRepository.existsByEmail(memberRegistrationRequest.getEmail())) {
+			log.error("Member User Create Fail. Email Duplicate : {}", memberRegistrationRequest.getEmail());
 			throw new UserServiceException(UserAccountErrorCode.ERR_REGISTER_MEMBER_DUPLICATE_ID);
 		}
 
+		User masterUser = userRepository.findByUuid(memberRegistrationRequest.getMasterUUID())
+			.orElseThrow(
+				() -> new UserServiceException(UserAccountErrorCode.ERR_REGISTER_MEMBER_MASTER_PERMISSION_DENIED));
+
 		User user = User.ByRegisterMemberUserBuilder()
-			.registerMemberRequest(registerMemberRequest)
-			.encodedPassword(passwordEncoder.encode(registerMemberRequest.getPassword()))
+			.masterUser(masterUser)
+			.memberRegistrationRequest(memberRegistrationRequest)
+			.encodedPassword(passwordEncoder.encode(memberRegistrationRequest.getPassword()))
 			.build();
 
 		userRepository.save(user);
@@ -72,26 +80,24 @@ public class MemberUserInformationService {
 	}
 
 	/**
-	 * 기존 멤버 사용자 삭제
-	 * @param userUUID - 사용자 정보 식별자
+	 * 멤버 사용자 삭제
+	 *
+	 * @param memberDeleteRequest - 멤버 사용자 정보 삭제 요청 데이터
 	 * @return - 사용자 삭제 처리 결과
 	 */
-	@CacheEvict(value = "userInfo", key = "#userUUID")
-	public UserDeleteResponse deleteMemberUser(String userUUID) {
-		User deleteTargetUser = userRepository.findByUuid(userUUID)
-			.orElseThrow(() -> new UserServiceException(UserAccountErrorCode.ERR_USER_NOT_FOUND));
+	@CacheEvict(value = "userInfo", key = "#memberDeleteRequest.memberUserUUID")
+	public UserDeleteResponse deleteMemberUser(MemberDeleteRequest memberDeleteRequest) {
+		User masterUser = userRepository.findByUuid(memberDeleteRequest.getMasterUUID())
+			.orElseThrow(
+				() -> new UserServiceException(UserAccountErrorCode.ERR_DELETE_MEMBER_MASTER_PERMISSION_DENIED));
 
-		userAccessLogRepository.deleteAllUserAccessLogByUser(deleteTargetUser);
-		userRepository.delete(deleteTargetUser);
-		deleteUserInformation(deleteTargetUser);
+		User deleteTargetUser = userRepository.findWorkspaceOnlyUserByMasterAndSeatUserUUID(
+			masterUser, memberDeleteRequest.getMemberUserUUID()
+		).orElseThrow(() -> new UserServiceException(UserAccountErrorCode.ERR_USER_NOT_FOUND));
 
-		// send user delete event to remote service
-		ApiResponse<RemoteSecessionResponse> remoteResponse = remoteRestService.remoteUserSecession(userUUID);
-		if (remoteResponse == null || !remoteResponse.getData().isResult()) {
-			log.error("[REMOTE_MEMBER_USER_SECESSION ERROR]");
-		}
+		deleteMemberInformation(deleteTargetUser);
 
-		return new UserDeleteResponse(userUUID, LocalDateTime.now());
+		return new UserDeleteResponse(deleteTargetUser.getUuid(), LocalDateTime.now());
 	}
 
 	/**
@@ -140,6 +146,7 @@ public class MemberUserInformationService {
 	 * @return - 비밀번호 재설정 처리 결과
 	 */
 	public MemberPasswordUpdateResponse updateMemberPassword(MemberPasswordUpdateRequest memberPasswordUpdateRequest) {
+
 		User memberUser = userRepository.findByUuid(memberPasswordUpdateRequest.getUuid())
 			.orElseThrow(() -> new UserServiceException(UserAccountErrorCode.ERR_USER_NOT_FOUND));
 
@@ -148,6 +155,65 @@ public class MemberUserInformationService {
 		userRepository.save(memberUser);
 
 		return MemberPasswordUpdateResponse.ofMemberUserInfo(memberUser);
+	}
+
+	/**
+	 * 시트 사용자 계정 등록 요청 처리
+	 * @param seatMemberRegistrationRequest - seat 사용자 등록 요청  정보
+	 * @return - seat 사용자 정보
+	 */
+	public UserInfoResponse registerNewSeatMember(SeatMemberRegistrationRequest seatMemberRegistrationRequest) {
+		User masterUser = userRepository.findByUuid(seatMemberRegistrationRequest.getMasterUserUUID())
+			.orElseThrow(
+				() -> new UserServiceException(UserAccountErrorCode.ERR_REGISTER_SEAT_MEMBER_MASTER_PERMISSION_DENIED)
+			);
+		String seatUserPassword = masterUser.getUuid() + "_" + seatMemberRegistrationRequest.getWorkspaceUUID();
+		int currentSeatUserCount = (int)userRepository.countCurrentSeatUserNumber(masterUser);
+
+		User seatUser = User.ByRegisterSeatMemberUserBuilder()
+			.workspaceUUID(seatMemberRegistrationRequest.getWorkspaceUUID())
+			.masterUser(masterUser)
+			.encodedPassword(passwordEncoder.encode(seatUserPassword))
+			.seatUserSequence(currentSeatUserCount + 1)
+			.build();
+
+		userRepository.save(seatUser);
+
+		return userInfoMapper.toUserInfoResponse(seatUser);
+	}
+
+	/**
+	 * 시트 사용자 계정 삭제 요청 처리
+	 * @param seatMemberDeleteRequest - 시트 사용자 계정 삭제 요청
+	 * @return - 삭제 처리 결과
+	 */
+	@CacheEvict(value = "userInfo", key = "#seatMemberDeleteRequest.seatUserUUID")
+	public UserDeleteResponse deleteSeatMember(SeatMemberDeleteRequest seatMemberDeleteRequest) {
+		User masterUser = userRepository.findByUuid(seatMemberDeleteRequest.getMasterUUID())
+			.orElseThrow(
+				() -> new UserServiceException(UserAccountErrorCode.ERR_DELETE_SEAT_MEMBER_MASTER_PERMISSION_DENIED)
+			);
+
+		User seatUser = userRepository.findSeatUserByMasterAndSeatUserUUID(
+			masterUser,
+			seatMemberDeleteRequest.getSeatUserUUID()
+		).orElseThrow(() -> new UserServiceException(UserAccountErrorCode.ERR_USER_NOT_FOUND));
+
+		deleteMemberInformation(seatUser);
+
+		return new UserDeleteResponse(seatUser.getUuid(), LocalDateTime.now());
+	}
+
+	private void deleteMemberInformation(User deleteUser) {
+		userAccessLogRepository.deleteAllUserAccessLogByUser(deleteUser);
+		deleteUserInformation(deleteUser);
+		userRepository.delete(deleteUser);
+
+		// send user delete event to remote service
+		ApiResponse<RemoteSecessionResponse> response = remoteRestService.remoteUserSecession(deleteUser.getUuid());
+		if (response == null || !response.getData().isResult()) {
+			log.error("[REMOTE_MEMBER_USER_SECESSION ERROR]");
+		}
 	}
 
 	private void deleteUserInformation(User user) {
@@ -160,5 +226,4 @@ public class MemberUserInformationService {
 		// Delete user access log history
 		userAccessLogRepository.deleteAllUserAccessLogByUser(user);
 	}
-
 }
