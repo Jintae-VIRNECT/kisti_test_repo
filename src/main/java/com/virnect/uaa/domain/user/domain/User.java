@@ -125,7 +125,7 @@ public class User extends BaseTimeEntity {
 	private LocalDateTime passwordUpdateDate;
 
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "master_user_uuid")
+	@JoinColumn(name = "master_user")
 	private User master;
 
 	@OneToMany(fetch = FetchType.LAZY, mappedBy = "master")
