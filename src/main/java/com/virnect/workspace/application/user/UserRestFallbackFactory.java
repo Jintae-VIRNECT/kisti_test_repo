@@ -53,15 +53,13 @@ public class UserRestFallbackFactory implements FallbackFactory<UserRestService>
 
             @Override
             public ApiResponse<UserInfoRestResponse> registerMemberRequest(
-                    RegisterMemberRequest registerMemberRequest, String serviceID
+                    MemberRegistrationRequest memberRegistrationRequest, String serviceID
             ) {
                 return new ApiResponse<>(new UserInfoRestResponse());
             }
 
             @Override
-            public ApiResponse<UserDeleteRestResponse> userDeleteRequest(
-                    String userUUId, String serviceID
-            ) {
+            public ApiResponse<UserDeleteRestResponse> userDeleteRequest(MemberDeleteRequest memberDeleteRequest, String serviceID) {
                 return new ApiResponse<>(new UserDeleteRestResponse());
             }
 
@@ -74,8 +72,7 @@ public class UserRestFallbackFactory implements FallbackFactory<UserRestService>
 
             @Override
             public ApiResponse<MemberUserPasswordChangeResponse> memberUserPasswordChangeRequest(
-                    String serviceID,
-                    MemberUserPasswordChangeRequest memberUserPasswordChangeRequest
+                    MemberUserPasswordChangeRequest memberUserPasswordChangeRequest, String serviceID
             ) {
                 return new ApiResponse<>(
                         new MemberUserPasswordChangeResponse(false, "", "", LocalDateTime.now())
@@ -90,6 +87,16 @@ public class UserRestFallbackFactory implements FallbackFactory<UserRestService>
             @Override
             public ApiResponse<UserProfileUpdateResponse> modifyUserProfileRequest(String userId, MultipartFile profile, Boolean updateAsDefaultImage) {
                 return new ApiResponse<>(new UserProfileUpdateResponse());
+            }
+
+            @Override
+            public ApiResponse<UserInfoRestResponse> seatMemberRegistrationRequest(SeatMemberRegistrationRequest seatMemberRegistrationRequest, String serviceID) {
+                return null;
+            }
+
+            @Override
+            public ApiResponse<UserDeleteRestResponse> seatMemberDeleteRequest(SeatMemberDeleteRequest seatMemberDeleteRequest, String serviceID) {
+                return null;
             }
         };
     }

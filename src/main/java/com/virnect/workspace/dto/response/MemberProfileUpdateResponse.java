@@ -17,5 +17,6 @@ import java.time.LocalDateTime;
 public class MemberProfileUpdateResponse {
     private final boolean result;
     private final String profile;
+    private final String userId;
     private final LocalDateTime updatedDate;
 }

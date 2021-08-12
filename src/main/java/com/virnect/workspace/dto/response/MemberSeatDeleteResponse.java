@@ -16,5 +16,6 @@ import java.time.LocalDateTime;
 @RequiredArgsConstructor
 public class MemberSeatDeleteResponse {
     private final boolean result;
+    private final String deletedUserId;
     private final LocalDateTime deletedDate;
 }

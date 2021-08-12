@@ -291,8 +291,6 @@ public class WorkspaceUserController {
         return ResponseEntity.ok(new ApiResponse<>(response));
     }
 
-    //@Profile("onpremise")
-    //@ApiOperation(value = "워크스페이스 멤버 계정 생성", tags = "on-premise only")
     @ApiOperation(value = "워크스페이스 전용 계정 생성")
     @ApiImplicitParam(name = "workspaceId", value = "워크스페이스 식별자", dataType = "string", defaultValue = "4d6eab0860969a50acbfa4599fbb5ae8", paramType = "path", required = true)
     @PostMapping("/{workspaceId}/members/account")
@@ -313,8 +311,6 @@ public class WorkspaceUserController {
         return ResponseEntity.ok(new ApiResponse<>(response));
     }
 
-    //@Profile("onpremise")
-    //@ApiOperation(value = "마스터 비밀번호로 워크스페이스 멤버 계정 삭제 및 내보내기", tags = "on-premise only")
     @ApiOperation(value = "워크스페이스 전용 계정 삭제 및 내보내기")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "workspaceId", value = "워크스페이스 식별자", dataType = "string", defaultValue = "4d6eab0860969a50acbfa4599fbb5ae8", paramType = "path", required = true)
@@ -335,8 +331,6 @@ public class WorkspaceUserController {
         return ResponseEntity.ok(new ApiResponse<>(response));
     }
 
-    //@Profile("onpremise")
-    //@ApiOperation(value = "워크스페이스 멤버 비밀번호 재설정", tags = "on-premise only")
     @ApiOperation(value = "워크스페이스 전용계정 비밀번호 재설정")
     @ApiImplicitParam(name = "workspaceId", value = "워크스페이스 식별자", dataType = "string", defaultValue = "4d6eab0860969a50acbfa4599fbb5ae8", paramType = "path", required = true)
     @PostMapping("/{workspaceId}/members/password")
@@ -355,7 +349,7 @@ public class WorkspaceUserController {
         return ResponseEntity.ok(new ApiResponse<>(response));
     }
 
-    @ApiOperation(value = "워크스페이스 시트 계정 생성", hidden = true)
+    @ApiOperation(value = "워크스페이스 시트 계정 생성")
     @ApiImplicitParam(name = "workspaceId", value = "워크스페이스 식별자", dataType = "string", defaultValue = "4d6eab0860969a50acbfa4599fbb5ae8", paramType = "path", required = true)
     @PostMapping("/{workspaceId}/members/seat")
     public ResponseEntity<ApiResponse<WorkspaceMemberInfoListResponse>> createWorkspaceMemberAccount(
