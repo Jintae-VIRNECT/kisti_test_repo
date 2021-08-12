@@ -13,11 +13,11 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import com.virnect.uaa.domain.auth.account.dao.UserOTPRepository;
-import com.virnect.uaa.domain.user.dao.secession.SecessionUserRepository;
 import com.virnect.uaa.domain.user.dao.user.UserRepository;
 import com.virnect.uaa.domain.user.dao.useraccesslog.UserAccessLogRepository;
 import com.virnect.uaa.domain.user.dao.userpermission.UserPermissionRepository;
 import com.virnect.uaa.domain.user.domain.User;
+import com.virnect.uaa.domain.user.dto.request.MemberDeleteRequest;
 import com.virnect.uaa.domain.user.dto.request.MemberPasswordUpdateRequest;
 import com.virnect.uaa.domain.user.dto.request.MemberRegistrationRequest;
 import com.virnect.uaa.domain.user.dto.request.SeatMemberDeleteRequest;
@@ -46,7 +46,6 @@ public class MemberUserInformationService {
 	private final UserRepository userRepository;
 	private final UserAccessLogRepository userAccessLogRepository;
 	private final UserPermissionRepository userPermissionRepository;
-	private final SecessionUserRepository secessionUserRepository;
 	private final UserOTPRepository userOTPRepository;
 	private final PasswordEncoder passwordEncoder;
 	private final RemoteRestService remoteRestService;
@@ -83,17 +82,22 @@ public class MemberUserInformationService {
 	/**
 	 * 멤버 사용자 삭제
 	 *
-	 * @param userUUID - 사용자 정보 식별자
+	 * @param memberDeleteRequest - 멤버 사용자 정보 삭제 요청 데이터
 	 * @return - 사용자 삭제 처리 결과
 	 */
-	@CacheEvict(value = "userInfo", key = "#userUUID")
-	public UserDeleteResponse deleteMemberUser(String userUUID) {
-		User deleteTargetUser = userRepository.findByUuid(userUUID)
-			.orElseThrow(() -> new UserServiceException(UserAccountErrorCode.ERR_USER_NOT_FOUND));
+	@CacheEvict(value = "userInfo", key = "#memberDeleteRequest.memberUserUUID")
+	public UserDeleteResponse deleteMemberUser(MemberDeleteRequest memberDeleteRequest) {
+		User masterUser = userRepository.findByUuid(memberDeleteRequest.getMasterUUID())
+			.orElseThrow(
+				() -> new UserServiceException(UserAccountErrorCode.ERR_DELETE_MEMBER_MASTER_PERMISSION_DENIED));
+
+		User deleteTargetUser = userRepository.findWorkspaceOnlyUserByMasterAndSeatUserUUID(
+			masterUser, memberDeleteRequest.getMemberUserUUID()
+		).orElseThrow(() -> new UserServiceException(UserAccountErrorCode.ERR_USER_NOT_FOUND));
 
 		deleteMemberInformation(deleteTargetUser);
 
-		return new UserDeleteResponse(userUUID, LocalDateTime.now());
+		return new UserDeleteResponse(deleteTargetUser.getUuid(), LocalDateTime.now());
 	}
 
 	/**
@@ -161,7 +165,8 @@ public class MemberUserInformationService {
 	public UserInfoResponse registerNewSeatMember(SeatMemberRegistrationRequest seatMemberRegistrationRequest) {
 		User masterUser = userRepository.findByUuid(seatMemberRegistrationRequest.getMasterUserUUID())
 			.orElseThrow(
-				() -> new UserServiceException(UserAccountErrorCode.ERR_REGISTER_SEAT_MEMBER_MASTER_PERMISSION_DENIED));
+				() -> new UserServiceException(UserAccountErrorCode.ERR_REGISTER_SEAT_MEMBER_MASTER_PERMISSION_DENIED)
+			);
 		String seatUserPassword = masterUser.getUuid() + "_" + seatMemberRegistrationRequest.getWorkspaceUUID();
 		int currentSeatUserCount = (int)userRepository.countCurrentSeatUserNumber(masterUser);
 
@@ -186,7 +191,8 @@ public class MemberUserInformationService {
 	public UserDeleteResponse deleteSeatMember(SeatMemberDeleteRequest seatMemberDeleteRequest) {
 		User masterUser = userRepository.findByUuid(seatMemberDeleteRequest.getMasterUUID())
 			.orElseThrow(
-				() -> new UserServiceException(UserAccountErrorCode.ERR_REGISTER_SEAT_MEMBER_MASTER_PERMISSION_DENIED));
+				() -> new UserServiceException(UserAccountErrorCode.ERR_DELETE_SEAT_MEMBER_MASTER_PERMISSION_DENIED)
+			);
 
 		User seatUser = userRepository.findSeatUserByMasterAndSeatUserUUID(
 			masterUser,

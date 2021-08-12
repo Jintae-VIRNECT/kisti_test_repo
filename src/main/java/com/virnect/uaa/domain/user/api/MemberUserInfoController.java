@@ -9,7 +9,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -25,6 +24,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import com.virnect.uaa.domain.user.application.MemberUserInformationService;
+import com.virnect.uaa.domain.user.dto.request.MemberDeleteRequest;
 import com.virnect.uaa.domain.user.dto.request.MemberPasswordUpdateRequest;
 import com.virnect.uaa.domain.user.dto.request.MemberRegistrationRequest;
 import com.virnect.uaa.domain.user.dto.request.SeatMemberDeleteRequest;
@@ -69,15 +69,16 @@ public class MemberUserInfoController {
 	@ApiImplicitParams(
 		@ApiImplicitParam(name = "serviceID", value = "요청 서버 명", paramType = "header", example = "workspace-server")
 	)
-	@DeleteMapping("/members/{userUUID}")
+	@DeleteMapping("/members")
 	public ResponseEntity<ApiResponse<UserDeleteResponse>> userDeleteRequestHandler(
-		@PathVariable("userUUID") String userUUID, @RequestHeader("serviceID") String serviceID
+		@RequestBody @Valid MemberDeleteRequest memberDeleteRequest,
+		@RequestHeader("serviceID") String serviceID, BindingResult result
 	) {
-		if (StringUtils.isEmpty(userUUID) || StringUtils.isEmpty(serviceID) || !serviceID.equals("workspace-server")) {
+		if (result.hasErrors() || StringUtils.isEmpty(serviceID) || !serviceID.equals("workspace-server")) {
 			log.error("SERVICE_ID:[{}]", serviceID);
 			throw new UserServiceException(UserAccountErrorCode.ERR_INVALID_REQUEST_PARAMETER);
 		}
-		UserDeleteResponse userDeleteResponse = memberUserInformationService.deleteMemberUser(userUUID);
+		UserDeleteResponse userDeleteResponse = memberUserInformationService.deleteMemberUser(memberDeleteRequest);
 		return ResponseEntity.ok(new ApiResponse<>(userDeleteResponse));
 	}
 

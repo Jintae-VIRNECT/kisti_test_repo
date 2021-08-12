@@ -34,4 +34,5 @@ public interface UserCustomRepository {
 	long countCurrentSeatUserNumber(User masterUser);
 
 	Optional<User> findSeatUserByMasterAndSeatUserUUID(User master, String uuid);
+	Optional<User> findWorkspaceOnlyUserByMasterAndSeatUserUUID(User master, String uuid);
 }

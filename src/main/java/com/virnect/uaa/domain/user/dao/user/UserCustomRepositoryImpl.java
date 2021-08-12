@@ -119,6 +119,18 @@ public class UserCustomRepositoryImpl extends QuerydslRepositorySupport implemen
 		return Optional.ofNullable(seatUser);
 	}
 
+	@Override
+	public Optional<User> findWorkspaceOnlyUserByMasterAndSeatUserUUID(User masterUser, String uuid) {
+		User seatUser = query.selectFrom(QUser.user)
+			.where(
+				user.master.eq(masterUser),
+				user.userType.eq(WORKSPACE_ONLY_USER),
+				user.uuid.eq(uuid)
+			)
+			.fetchOne();
+		return Optional.ofNullable(seatUser);
+	}
+
 	/**
 	 *
 	 *  다이나믹쿼리를 위한 조건 메서드

@@ -18,11 +18,12 @@ public enum UserAccountErrorCode {
 	ERR_REGISTER_DUPLICATE_EMAIL(2104, "Register email is duplicate."),
 
 	// 회원 등록 관련 에러
-	ERR_REGISTER_MEMBER_DUPLICATE_ID(2201, "Workspace only User registration fail. User ID duplicated."),
+	ERR_REGISTER_MEMBER_DUPLICATE_ID(2201, "Workspace only user registration fail. User ID duplicated."),
 	ERR_REGISTER_MEMBER_MASTER_PERMISSION_DENIED(
 		2202, "Workspace only user registration fail, Master user not found."),
-	ERR_REGISTER_SEAT_MEMBER_MASTER_PERMISSION_DENIED(2203, "Seat user registration fail. Master user not found."),
-
+	ERR_DELETE_MEMBER_MASTER_PERMISSION_DENIED(2203, "Workspace only user delete fail, Master user not found."),
+	ERR_REGISTER_SEAT_MEMBER_MASTER_PERMISSION_DENIED(2204, "Seat user registration fail. Master user not found."),
+	ERR_DELETE_SEAT_MEMBER_MASTER_PERMISSION_DENIED(2205, "Seat user delete fail. Master user not found."),
 
 	//사용자 정보 관련 에러
 	ERR_USER_INFO(4000, "User Info Error"),
