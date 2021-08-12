@@ -120,7 +120,7 @@ public class MemberUserInfoController {
 	}
 
 	@ApiOperation(value = "계정 아이디 확인 API")
-	@GetMapping("/exist")
+	@GetMapping("/members/exist")
 	public ResponseEntity<ApiResponse<UserEmailExistCheckResponse>> userEmailExistCheckRequestHandler(
 		@RequestParam("email") String email
 	) {
@@ -133,7 +133,7 @@ public class MemberUserInfoController {
 	}
 
 	@ApiOperation(value = "비밀번호 변경 질의 응답 확인 API")
-	@PostMapping("/password/identity/check")
+	@PostMapping("/members/password/identity/check")
 	public ResponseEntity<ApiResponse<UserIdentityCheckResponse>> userIdentityCheckRequestHandler(
 		@RequestBody UserIdentityCheckRequest userIdentityCheckRequest, BindingResult result
 	) {
@@ -150,7 +150,7 @@ public class MemberUserInfoController {
 	@ApiImplicitParams(
 		@ApiImplicitParam(name = "serviceID", value = "요청 서버 명", paramType = "header", example = "workspace-server")
 	)
-	@PostMapping(value = "/member/password")
+	@PostMapping(value = "/members/password")
 	public ResponseEntity<ApiResponse<MemberPasswordUpdateResponse>> memberUserPasswordChangeRequest(
 		@RequestBody @Valid MemberPasswordUpdateRequest memberPasswordUpdateRequest,
 		@RequestHeader("serviceID") String serviceID, BindingResult result
