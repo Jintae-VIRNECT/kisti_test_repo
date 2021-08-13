@@ -13,7 +13,7 @@
       ></icon-button>
     </div>
     <div class="createroom-user__body">
-      <scroller v-if="users.length > 0" :height="scrollHeight">
+      <scroller v-if="users.length > 0">
         <div>
           <wide-card
             v-for="(user, idx) of users"
@@ -97,10 +97,6 @@ export default {
     loading: {
       type: Boolean,
       default: false,
-    },
-    scrollHeight: {
-      type: String,
-      default: null,
     },
   },
   computed: {
