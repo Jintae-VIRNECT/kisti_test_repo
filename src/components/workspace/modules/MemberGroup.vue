@@ -4,11 +4,11 @@
       <p>{{ index | idxFilter }}</p>
     </div>
     <div class="card-item">
-      {{ group.groupName }}
+      <p class="title">{{ group.groupName }}</p>
     </div>
 
     <div class="card-item">
-      <p class="label">그룹 멤버:</p>
+      <p class="label">즐겨찾기 멤버:</p>
       <profile-list
         style="min-height: 0px;"
         class="member-group"
@@ -98,12 +98,13 @@ export default {
 @import '~assets/style/_mixin';
 .widecard {
   display: flex;
-  // flex-basis: 0px;
   align-items: center;
   justify-content: flex-start;
 
   width: 100%;
-  margin-bottom: 0.571em;
+  height: 5.1429rem;
+
+  margin-bottom: 0.7143rem;
   padding: 1.571em 2.143em;
   background-color: $color_darkgray_600;
   border-radius: 2px;
@@ -128,10 +129,16 @@ export default {
       font-weight: 500;
       font-size: 15px;
     }
+
+    & > .title {
+      color: rgb(255, 255, 255);
+      font-weight: 500;
+      font-size: 16px;
+    }
   }
   .card-item:first-of-type {
     display: inherit;
-    flex-grow: 0.5;
+    flex-grow: 0.2;
 
     min-width: 112px;
   }
