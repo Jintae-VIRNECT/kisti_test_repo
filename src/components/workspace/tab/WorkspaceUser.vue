@@ -34,26 +34,41 @@
   </tab-view>
   <tab-view
     v-else
-    :title="$t('그룹 관리')"
-    :description="$t('최대 10개 그룹의 생성이 가능합니다.')"
+    :title="$t('workspace.workspace_member_group')"
+    :description="$t('workspace.workspace_member_group_max_description')"
     :emptyImage="require('assets/image/img_user_empty.svg')"
     :emptyTitle="emptyTitle"
-    :emptyDescription="emptyDescription"
-    :empty="list.length === 0"
-    :listCount="list.length"
+    :emptyDescription="'생성한 즐겨찾기가 없습니다.'"
+    :empty="groupList.length === 0"
+    :listCount="groupList.length"
     :showMemberButton="true"
     :showAddGroupButton="true"
     :loading="loading"
     :showSubHeader="true"
     @showmember="toggleMode"
+    @addgroup="showGroup"
   >
     <div class="list-wrapper">
       <member-group
-        v-for="group in groupList"
+        v-for="(group, index) in groupList"
         :key="'group_' + group.groupId"
+        :index="index + 1"
         :group="group"
+        @deletegroup="deleteGroup"
+        @updategroup="updategroup"
       ></member-group>
     </div>
+    <template v-slot:modal>
+      <member-group-modal
+        :visible.sync="memberGroupModalFlag"
+        :users="memberList"
+        :groupMembers="groupMemberList"
+        :groupId="selectedGroupId"
+        :groupName="selectedGroupName"
+        :total="groupMemberList.length"
+        @refresh="refreshGroupMember"
+      ></member-group-modal>
+    </template>
   </tab-view>
 </template>
 
@@ -61,11 +76,16 @@
 import MemberGroup from 'MemberGroup'
 import TabView from '../partials/WorkspaceTabView'
 import MemberCard from 'MemberCard'
+
+import MemberGroupModal from '../modal/WorkspaceMemberGroup'
+
 import {
   getMemberList,
   getMemberGroupList,
   getMemberGroupItem,
+  deletePrivateMemberGroup,
 } from 'api/http/member'
+
 import { WORKSPACE_ROLE } from 'configs/status.config'
 import confirmMixin from 'mixins/confirm'
 import { forceLogout } from 'api/http/message'
@@ -73,7 +93,7 @@ import { forceLogout } from 'api/http/message'
 export default {
   name: 'WorkspaceUser',
   mixins: [confirmMixin],
-  components: { TabView, MemberCard, MemberGroup },
+  components: { TabView, MemberCard, MemberGroup, MemberGroupModal },
   data() {
     return {
       memberList: [],
@@ -93,28 +113,17 @@ export default {
       searchText: '',
       searchMemberList: [],
       loading: false,
-      mode: 'group', //'user', 'group'
-      groupList: [
-        {
-          workspaceId: '40f9bbee9d85dca7a34a0dd205aae718',
-          groupId: '1234567489',
-          groupName: '로또 당첨',
-          remoteGroupMemberInfoResponseList: [
-            {
-              uuid: '1234156',
-              nickName: '치킨',
-              profile: 'defalut',
-              accessType: 'LOGOUT',
-            },
-            {
-              uuid: '1234123156',
-              nickName: '치dd킨',
-              profile: 'defalut',
-              accessType: 'LOGOUT',
-            },
-          ],
-        },
-      ],
+      groupLoading: false,
+
+      memberGroupModalFlag: false,
+
+      mode: 'user', //'user', 'group'
+
+      selectedGroupId: null,
+      selectedGroupName: '',
+
+      groupList: [],
+      groupMemberList: [],
     }
   },
   computed: {
@@ -147,6 +156,9 @@ export default {
     workspace(val, oldVal) {
       if (val.uuid !== oldVal.uuid) {
         this.getList()
+
+        const groups = this.getMemberGroups()
+        this.groupList = groups.groupInfoResponseList
       }
     },
     // 'list.length': 'scrollReset',
@@ -158,15 +170,23 @@ export default {
       },
     },
 
+    async memberGroupModalFlag(flag) {
+      const groups = await this.getMemberGroups()
+      this.groupList = groups.groupInfoResponseList
+
+      if (!flag) {
+        this.groupMemberList = []
+        this.selectedGroupId = null
+        this.selectedGroupName = ''
+      }
+    },
+
     async mode(now) {
-      // if (now === 'group') {
-      //   //@TODO : 예외처리
-      //   const groups = await getMemberGroupList({
-      //     workspaceId: this.workspace.uuid,
-      //     userId: this.account.uuid,
-      //   })
-      //   this.groupList = groups.groupInfoResponseList
-      // }
+      if (now === 'group') {
+        //@TODO : 예외처리
+        const groups = await this.getMemberGroups()
+        this.groupList = groups.groupInfoResponseList
+      }
     },
   },
   methods: {
@@ -182,13 +202,17 @@ export default {
       })
       this.searchText = text
     },
-    async getList() {
+    async getList(reason) {
       try {
+        if (reason !== 'data_loading') {
+          this.loading = true
+        }
+
         const params = {
           workspaceId: this.workspace.uuid,
           userId: this.account.uuid,
         }
-        this.loading = true
+
         const datas = await getMemberList(params)
         this.memberList = datas.memberList
         this.memberList.sort((A, B) => {
@@ -202,7 +226,10 @@ export default {
             return 0
           }
         })
-        this.loading = false
+
+        if (reason !== 'data_loading') {
+          this.loading = false
+        }
       } catch (err) {
         this.loading = false
         console.error(err)
@@ -274,6 +301,71 @@ export default {
       } else {
         this.mode = 'user'
       }
+    },
+
+    showGroup() {
+      this.memberGroupModalFlag = true
+    },
+    async updategroup(groupId) {
+      const group = await getMemberGroupItem({
+        workspaceId: this.workspace.uuid,
+        groupId: groupId,
+      })
+
+      //자기자신은 제외
+      this.groupMemberList = group.remoteGroupMemberInfoResponseList.filter(
+        member => {
+          return member.uuid !== this.account.uuid
+        },
+      )
+
+      //그룹 수정 모달 출력
+      this.selectedGroupId = groupId
+      this.selectedGroupName = group.groupName
+      this.memberGroupModalFlag = true
+    },
+    async deleteGroup(groupId) {
+      //@TODO : 예외처리 & 목록 업데이트
+      const result = await deletePrivateMemberGroup({
+        workspaceId: this.workspace.uuid,
+        userId: this.account.uuid,
+        groupId: groupId,
+      })
+
+      const groups = await this.getMemberGroups()
+      this.groupList = groups.groupInfoResponseList
+    },
+    async refreshGroupMember(groupId) {
+      if (groupId) {
+        //자기자신은 제외
+        const group = await getMemberGroupItem({
+          workspaceId: this.workspace.uuid,
+          groupId: groupId,
+        })
+
+        this.groupMemberList = group.remoteGroupMemberInfoResponseList.filter(
+          member => {
+            return member.uuid !== this.account.uuid
+          },
+        )
+
+        //그룹 수정 모달 출력
+        this.selectedGroupId = groupId
+        this.selectedGroupName = group.groupNam
+      } else {
+        this.getList('data_loading')
+      }
+    },
+    async getMemberGroups() {
+      this.groupLoading = true
+
+      const groups = await getMemberGroupList({
+        workspaceId: this.workspace.uuid,
+        userId: this.account.uuid,
+      })
+
+      this.groupLoading = false
+      return groups
     },
   },
 

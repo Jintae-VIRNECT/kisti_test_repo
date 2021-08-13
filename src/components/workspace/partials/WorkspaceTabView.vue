@@ -26,11 +26,11 @@
           @click="$emit('refresh')"
         ></icon-button>
 
-        <!-- 그룹 관리 -->
+        <!-- 즐겨 찾기 -->
         <icon-button
           v-if="showManageGroupButton"
           :imgSrc="require('assets/image/workspace/ic_manage_member_group.svg')"
-          :text="$t('button.group_manage')"
+          :text="$t('button.member_group_bookmark')"
           @click="$emit('showgroup')"
         ></icon-button>
 
@@ -46,7 +46,7 @@
         <icon-button
           v-if="showAddGroupButton"
           :imgSrc="require('assets/image/workspace/ic_add_member_group_.svg')"
-          :text="$t('button.add_group')"
+          :text="$t('button.add_group_bookmark')"
           @click="$emit('addgroup')"
         ></icon-button>
       </div>
@@ -57,6 +57,7 @@
       }}</span>
     </div>
     <div class="tab-view__body offsetwidth">
+      <slot name="modal"></slot>
       <slot v-if="!empty && !loading"></slot>
       <show-empty
         v-else

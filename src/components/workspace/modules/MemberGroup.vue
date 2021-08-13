@@ -1,25 +1,27 @@
 <template>
   <div class="widecard" :style="{ height: height }" :class="{ ...customClass }">
     <div class="card-item">
-      <div class="label label--noraml">01</div>
+      <p>{{ index | idxFilter }}</p>
     </div>
     <div class="card-item">
       {{ group.groupName }}
     </div>
 
     <div class="card-item">
-      <span>그룹 멤버:</span>
+      <p class="label">그룹 멤버:</p>
       <profile-list
+        style="min-height: 0px;"
+        class="member-group"
         :users="group.remoteGroupMemberInfoResponseList"
         size="2.143em"
       ></profile-list>
     </div>
 
-    <div class="widecard-tools">
-      <button>
+    <div class="widecard-tools ">
+      <button @click="updateGroup">
         수정
       </button>
-      <button>
+      <button @click="deleteGroup">
         삭제
       </button>
     </div>
@@ -37,7 +39,9 @@ export default {
   },
   props: {
     group: Object,
-
+    index: {
+      type: Number,
+    },
     height: {
       type: [Number, String],
       default: 86,
@@ -64,15 +68,32 @@ export default {
       showRoomInfo: false,
     }
   },
+
+  filters: {
+    idxFilter(idx) {
+      if (idx > 9) {
+        return idx
+      } else {
+        return '0' + idx
+      }
+    },
+  },
   computed: {},
-  methods: {},
+  methods: {
+    updateGroup() {
+      this.$emit('updategroup', this.group.groupId)
+    },
+    deleteGroup() {
+      this.$emit('deletegroup', this.group.groupId)
+    },
+  },
 
   /* Lifecycles */
   mounted() {},
 }
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 @import '~assets/style/vars';
 @import '~assets/style/_mixin';
 .widecard {
@@ -91,47 +112,39 @@ export default {
   &:hover {
     background-color: $color_darkgray_500;
   }
-  &.open {
-    background-color: #203531;
-    border-color: #0a4338;
-    &:hover {
-      background-color: #1d4e44;
-    }
-  }
+
   .card-item {
     flex: 1 1 0;
+
     min-width: 0;
-    // flex-basis: 0;
-    // flex-grow: 1;
-    // flex-shrink: 1;
-    // @include tablet {
-    //   flex-grow: 0.5;
-    // }
-    > .btn.small {
-      padding: 0.5em 2.143em;
+    color: #949495;
+    font-weight: 500;
+    font-size: 15px;
+    opacity: 0.8;
+
+    & > .label {
+      padding-right: 8px;
+      color: rgb(148, 148, 149);
+      font-weight: 500;
+      font-size: 15px;
     }
   }
   .card-item:first-of-type {
     display: inherit;
-    flex-grow: 0.2;
-    width: 0px;
-    // min-width: 21.4286rem;
-  }
-  .card-item:nth-of-type(2) {
-    // width: 500px;
-    // flex-grow: 0.8;
+    flex-grow: 0.5;
 
-    padding-right: 0.7143rem;
+    min-width: 112px;
+  }
+
+  .card-item:nth-of-type(2) {
+    flex-grow: 1.4;
   }
   .card-item:nth-last-child(2) {
     display: flex;
     align-items: center;
-    // justify-content: center;
-    // flex-grow: 0.7;
     padding-right: 0.7143rem;
   }
   .card-item:last-of-type {
-    // flex-grow: 0.6;
   }
 }
 
