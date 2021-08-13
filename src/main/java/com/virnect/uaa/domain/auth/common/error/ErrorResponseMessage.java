@@ -1,4 +1,4 @@
-package com.virnect.uaa.domain.auth.account.error;
+package com.virnect.uaa.domain.auth.common.error;
 
 import java.util.HashMap;
 import java.util.Map;

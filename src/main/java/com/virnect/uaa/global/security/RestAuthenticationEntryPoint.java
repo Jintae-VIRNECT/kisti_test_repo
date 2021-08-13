@@ -14,7 +14,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import lombok.RequiredArgsConstructor;
 
-import com.virnect.uaa.domain.auth.account.error.AuthenticationErrorCode;
+import com.virnect.uaa.domain.auth.common.error.AuthenticationErrorCode;
 import com.virnect.uaa.global.common.ErrorResponseMessage;
 
 /**

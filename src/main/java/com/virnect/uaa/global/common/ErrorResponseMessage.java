@@ -8,7 +8,7 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import com.virnect.uaa.domain.auth.account.error.AuthenticationErrorCode;
+import com.virnect.uaa.domain.auth.common.error.AuthenticationErrorCode;
 import com.virnect.uaa.domain.user.error.UserAccountErrorCode;
 
 @Getter

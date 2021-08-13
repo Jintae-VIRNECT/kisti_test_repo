@@ -26,7 +26,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import com.virnect.uaa.domain.auth.account.dao.LoginAttemptRepository;
 import com.virnect.uaa.domain.auth.account.domain.LoginAttempt;
-import com.virnect.uaa.domain.auth.account.error.AuthenticationErrorCode;
+import com.virnect.uaa.domain.auth.common.error.AuthenticationErrorCode;
 import com.virnect.uaa.domain.auth.account.event.account.AccountLockEvent;
 import com.virnect.uaa.domain.user.dao.user.UserRepository;
 import com.virnect.uaa.domain.user.domain.User;

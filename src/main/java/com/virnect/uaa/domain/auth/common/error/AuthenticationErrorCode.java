@@ -1,4 +1,4 @@
-package com.virnect.uaa.domain.auth.account.error;
+package com.virnect.uaa.domain.auth.common.error;
 
 /**
  * @project: PF-Auth
@@ -42,6 +42,14 @@ public enum AuthenticationErrorCode {
 	// 앱 인증 관련 에러
 	ERR_APP_AUTHENTICATION(4000, "Application authentication process fail."),
 	ERR_APP_INFORMATION_DECRYPT(4001, "Application authentication process fail. detail data decrypt fail."),
+
+
+	// 게스트 사용자 인증 관련 에러
+	ERR_GUEST_USER_NOT_FOUND(5000, "Authentication fail. Guest user not found."),
+	ERR_GUEST_USER_NOT_ENOUGH(5001, "Not enough unassigned guest users."),
+
+
+
 
 	// 공통 에러
 	ERR_INVALID_REQUEST_PARAMETER(8001, "Invalid request parameter cause api errors"),

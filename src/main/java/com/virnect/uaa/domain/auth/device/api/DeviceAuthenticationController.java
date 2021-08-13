@@ -14,8 +14,8 @@ import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import com.virnect.uaa.domain.auth.account.error.AuthenticationErrorCode;
-import com.virnect.uaa.domain.auth.account.error.exception.UserAuthenticationServiceException;
+import com.virnect.uaa.domain.auth.common.error.AuthenticationErrorCode;
+import com.virnect.uaa.domain.auth.common.exception.UserAuthenticationServiceException;
 import com.virnect.uaa.domain.auth.device.application.DeviceAuthenticationService;
 import com.virnect.uaa.domain.auth.device.dto.request.DeviceAuthenticationRequest;
 import com.virnect.uaa.domain.auth.device.dto.response.DeviceAuthenticationResponse;

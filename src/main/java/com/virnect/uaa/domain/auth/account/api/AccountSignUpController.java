@@ -32,8 +32,8 @@ import com.virnect.uaa.domain.auth.account.dto.request.RegisterRequest;
 import com.virnect.uaa.domain.auth.account.dto.response.EmailAuthResponse;
 import com.virnect.uaa.domain.auth.account.dto.response.EmailVerificationResponse;
 import com.virnect.uaa.domain.auth.account.dto.response.OAuthTokenResponse;
-import com.virnect.uaa.domain.auth.account.error.AuthenticationErrorCode;
-import com.virnect.uaa.domain.auth.account.error.exception.UserAuthenticationServiceException;
+import com.virnect.uaa.domain.auth.common.error.AuthenticationErrorCode;
+import com.virnect.uaa.domain.auth.common.exception.UserAuthenticationServiceException;
 import com.virnect.uaa.global.common.ApiResponse;
 
 @Slf4j

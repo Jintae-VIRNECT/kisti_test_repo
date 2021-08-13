@@ -1,4 +1,4 @@
-package com.virnect.uaa.domain.auth.account.error;
+package com.virnect.uaa.domain.auth.common.error;
 
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -8,10 +8,10 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 
 import lombok.extern.slf4j.Slf4j;
 
-import com.virnect.uaa.domain.auth.account.error.exception.AccountPasswordNotInitializedException;
-import com.virnect.uaa.domain.auth.account.error.exception.DeviceAuthenticationServiceException;
-import com.virnect.uaa.domain.auth.account.error.exception.LoginFailException;
-import com.virnect.uaa.domain.auth.account.error.exception.UserAuthenticationServiceException;
+import com.virnect.uaa.domain.auth.common.exception.AccountPasswordNotInitializedException;
+import com.virnect.uaa.domain.auth.common.exception.DeviceAuthenticationServiceException;
+import com.virnect.uaa.domain.auth.common.exception.LoginFailException;
+import com.virnect.uaa.domain.auth.common.exception.UserAuthenticationServiceException;
 import com.virnect.uaa.global.common.ErrorResponseMessage;
 
 /**

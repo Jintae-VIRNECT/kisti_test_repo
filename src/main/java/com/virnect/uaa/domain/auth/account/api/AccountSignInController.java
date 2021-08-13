@@ -25,8 +25,8 @@ import com.virnect.uaa.domain.auth.account.dto.request.OTPQRGenerateRequest;
 import com.virnect.uaa.domain.auth.account.dto.response.LogoutResponse;
 import com.virnect.uaa.domain.auth.account.dto.response.OAuthTokenResponse;
 import com.virnect.uaa.domain.auth.account.dto.response.OTPQRGenerateResponse;
-import com.virnect.uaa.domain.auth.account.error.AuthenticationErrorCode;
-import com.virnect.uaa.domain.auth.account.error.exception.UserAuthenticationServiceException;
+import com.virnect.uaa.domain.auth.common.error.AuthenticationErrorCode;
+import com.virnect.uaa.domain.auth.common.exception.UserAuthenticationServiceException;
 import com.virnect.uaa.global.common.ApiResponse;
 
 /**

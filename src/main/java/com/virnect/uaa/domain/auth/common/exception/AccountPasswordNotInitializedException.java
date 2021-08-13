@@ -1,6 +1,6 @@
-package com.virnect.uaa.domain.auth.account.error.exception;
+package com.virnect.uaa.domain.auth.common.exception;
 
-import com.virnect.uaa.domain.auth.account.error.AuthenticationErrorCode;
+import com.virnect.uaa.domain.auth.common.error.AuthenticationErrorCode;
 
 public class AccountPasswordNotInitializedException extends RuntimeException {
 	private final String sessionCode;

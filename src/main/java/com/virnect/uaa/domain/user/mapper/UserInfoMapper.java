@@ -1,5 +1,7 @@
 package com.virnect.uaa.domain.user.mapper;
 
+import static com.virnect.uaa.domain.user.domain.UserType.*;
+
 import java.time.LocalDateTime;
 
 import org.mapstruct.AfterMapping;
@@ -102,6 +104,13 @@ public abstract class UserInfoMapper {
 			&& !user.isAccountPasswordInitialized()
 		) {
 			user.setAccountPasswordInitialized(true);
+		}
+	}
+
+	@AfterMapping
+	protected void seatUserInformationConvert(User user, @MappingTarget UserInfoResponse userInfoResponse) {
+		if (user.getUserType() == SEAT_USER) {
+			userInfoResponse.setEmail("");
 		}
 	}
 }
