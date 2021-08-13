@@ -11,7 +11,7 @@
     :listCount="list.length"
     :showDeleteButton="false"
     :showRefreshButton="true"
-    :showManageGroupButton="isMaster"
+    :showManageGroupButton="true"
     :loading="loading"
     @refresh="getList"
     @search="doSearch"
@@ -88,11 +88,14 @@ import {
 
 import { WORKSPACE_ROLE } from 'configs/status.config'
 import confirmMixin from 'mixins/confirm'
+import toastMixin from 'mixins/toast'
 import { forceLogout } from 'api/http/message'
+
+import { memberSort } from 'utils/sort'
 
 export default {
   name: 'WorkspaceUser',
-  mixins: [confirmMixin],
+  mixins: [confirmMixin, toastMixin],
   components: { TabView, MemberCard, MemberGroup, MemberGroupModal },
   data() {
     return {
@@ -153,12 +156,10 @@ export default {
     },
   },
   watch: {
-    workspace(val, oldVal) {
+    async workspace(val, oldVal) {
       if (val.uuid !== oldVal.uuid) {
-        this.getList()
-
-        const groups = this.getMemberGroups()
-        this.groupList = groups.groupInfoResponseList
+        await this.getList()
+        await this.getMemberGroups()
       }
     },
     // 'list.length': 'scrollReset',
@@ -171,8 +172,7 @@ export default {
     },
 
     async memberGroupModalFlag(flag) {
-      const groups = await this.getMemberGroups()
-      this.groupList = groups.groupInfoResponseList
+      await this.getMemberGroups()
 
       if (!flag) {
         this.groupMemberList = []
@@ -183,9 +183,7 @@ export default {
 
     async mode(now) {
       if (now === 'group') {
-        //@TODO : 예외처리
-        const groups = await this.getMemberGroups()
-        this.groupList = groups.groupInfoResponseList
+        await this.getMemberGroups()
       }
     },
   },
@@ -215,17 +213,7 @@ export default {
 
         const datas = await getMemberList(params)
         this.memberList = datas.memberList
-        this.memberList.sort((A, B) => {
-          if (A.role === 'MASTER') {
-            return -1
-          } else if (B.role === 'MASTER') {
-            return 1
-          } else if (A.role === 'MANAGER' && B.role !== 'MANAGER') {
-            return -1
-          } else {
-            return 0
-          }
-        })
+        this.memberList.sort(memberSort)
 
         if (reason !== 'data_loading') {
           this.loading = false
@@ -295,12 +283,9 @@ export default {
       //갱신한 멤버 목록에 해당 유저가 없는 경우(예외상황)
       else return
     },
+
     toggleMode() {
-      if (this.mode === 'user') {
-        this.mode = 'group'
-      } else {
-        this.mode = 'user'
-      }
+      this.mode = this.mode === 'user' ? 'group' : 'user'
     },
 
     showGroup() {
@@ -324,16 +309,23 @@ export default {
       this.selectedGroupName = group.groupName
       this.memberGroupModalFlag = true
     },
-    async deleteGroup(groupId) {
-      //@TODO : 예외처리 & 목록 업데이트
-      const result = await deletePrivateMemberGroup({
-        workspaceId: this.workspace.uuid,
-        userId: this.account.uuid,
-        groupId: groupId,
-      })
 
-      const groups = await this.getMemberGroups()
-      this.groupList = groups.groupInfoResponseList
+    /**
+     * 그룹 삭제
+     * @param {String} 삭제할 그룹 id
+     */
+    async deleteGroup(groupId) {
+      try {
+        await deletePrivateMemberGroup({
+          workspaceId: this.workspace.uuid,
+          userId: this.account.uuid,
+          groupId: groupId,
+        })
+      } catch (err) {
+        this.toastError(this.$t('confirm.network_error'))
+      }
+
+      await this.getMemberGroups()
     },
     async refreshGroupMember(groupId) {
       if (groupId) {
@@ -351,21 +343,28 @@ export default {
 
         //그룹 수정 모달 출력
         this.selectedGroupId = groupId
-        this.selectedGroupName = group.groupNam
+        this.selectedGroupName = group.groupName
       } else {
         this.getList('data_loading')
       }
     },
+    /**
+     * 그룹 멤버 호출
+     */
     async getMemberGroups() {
       this.groupLoading = true
 
-      const groups = await getMemberGroupList({
-        workspaceId: this.workspace.uuid,
-        userId: this.account.uuid,
-      })
-
-      this.groupLoading = false
-      return groups
+      try {
+        const groups = await getMemberGroupList({
+          workspaceId: this.workspace.uuid,
+          userId: this.account.uuid,
+        })
+        this.groupList = groups.groupInfoResponseList
+      } catch (err) {
+        this.toastError(this.$t('confirm.network_error'))
+      } finally {
+        this.groupLoading = false
+      }
     },
   },
 
@@ -375,9 +374,7 @@ export default {
   async created() {
     this.getList()
   },
-  beforeDestroy() {
-    this.$eventBus.$off('refresh')
-  },
+  beforeDestroy() {},
 }
 </script>
 

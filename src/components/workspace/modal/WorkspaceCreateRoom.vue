@@ -47,6 +47,7 @@ import { maxParticipants } from 'utils/callOptions'
 import { ROOM_STATUS } from 'configs/status.config'
 import callMixin from 'mixins/call'
 import { isRegisted } from 'utils/auth'
+import { memberSort } from 'utils/sort'
 
 export default {
   name: 'WorkspaceCreateRoom',
@@ -136,17 +137,7 @@ export default {
         userId: this.account.uuid,
       })
       this.users = inviteList.memberList
-      this.users.sort((A, B) => {
-        if (A.role === 'MASTER') {
-          return -1
-        } else if (B.role === 'MASTER') {
-          return 1
-        } else if (A.role === 'MANAGER' && B.role !== 'MANAGER') {
-          return -1
-        } else {
-          return 0
-        }
-      })
+      this.users.sort(memberSort)
       this.selection = this.users.filter(
         user =>
           this.selectHistory.findIndex(history => history.uuid === user.uuid) >
