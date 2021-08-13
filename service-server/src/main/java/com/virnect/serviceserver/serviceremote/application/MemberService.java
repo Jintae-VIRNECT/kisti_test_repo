@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+import com.virnect.data.dao.member.RemoteGroupMemberRepository;
 import com.virnect.data.domain.member.MemberAuthType;
 import com.virnect.data.dto.response.member.*;
 import org.apache.commons.lang.StringUtils;
@@ -59,6 +60,7 @@ public class MemberService {
 	private final RoomRepository roomRepository;
 	private final MemberHistoryRepository memberHistoryRepository;
 	private final RemoteGroupRepository groupRepository;
+	private final RemoteGroupMemberRepository remoteGroupMemberRepository;
 
 	private final MemberWorkspaceMapper memberWorkspaceMapper;
 	private final RemoteGroupMemberMapper remoteGroupMemberMapper;
@@ -327,8 +329,6 @@ public class MemberService {
 		String groupId,
 		String filter,
 		String search,
-		int page,
-		int size,
 		boolean accessTypeFilter
 	) {
 
@@ -381,7 +381,6 @@ public class MemberService {
 	) {
 
 		RemoteGroup targetGroup;
-
 		// 권한 확인 (Only Master)
 		if (memberAuthType == MemberAuthType.MASTER) {
 			if (!checkMaster(workspaceId, userId)) {
@@ -396,9 +395,20 @@ public class MemberService {
 			return new ApiResponse<>(ErrorCode.ERR_GROUP_NOT_FOUND);
 		}
 
+		if (!CollectionUtils.isEmpty(groupRequest.getMemberList())) {
+			// 기존 그룹 멤버 테이블 데이터 삭제
+			targetGroup.getGroupMembers().clear();
+			// 신규 그룹 멤버 데이터 추가
+			for (String uuid : groupRequest.getMemberList()) {
+				RemoteGroupMember groupMember = RemoteGroupMember.builder()
+					.remoteGroup(targetGroup)
+					.workspaceId(workspaceId)
+					.uuid(uuid)
+					.build();
+				targetGroup.getGroupMembers().add(groupMember);
+			}
+		}
 		targetGroup.setGroupName(groupRequest.getGroupName());
-		targetGroup.setGroupMembers(targetGroup.getGroupMembers());
-
 		RemoteGroup result = groupRepository.save(targetGroup);
 		if (ObjectUtils.isEmpty(result)) {
 			return new ApiResponse<>(ErrorCode.ERR_DATA_SAVE_EXCEPTION);

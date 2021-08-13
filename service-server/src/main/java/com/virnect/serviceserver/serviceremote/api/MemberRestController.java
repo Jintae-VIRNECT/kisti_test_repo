@@ -258,8 +258,6 @@ public class MemberRestController {
         @PathVariable(name = "groupId") String groupId,
         @RequestParam(value = "filter", required = false) String filter,
         @RequestParam(value = "search", required = false) String search,
-        @RequestParam(value = "page") int page,
-        @RequestParam(value = "size") int size,
         @RequestParam(value = "accessTypeFilter", required = false) boolean accessTypeFilter
     ) {
         LogMessage.formedInfo(
@@ -278,8 +276,6 @@ public class MemberRestController {
             groupId,
             filter,
             search,
-            page,
-            size,
             accessTypeFilter
         );
         return ResponseEntity.ok(responseData);

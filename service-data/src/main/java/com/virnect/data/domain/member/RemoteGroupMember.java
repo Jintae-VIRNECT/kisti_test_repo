@@ -25,6 +25,7 @@ public class RemoteGroupMember extends BaseTimeEntity {
 	private String uuid;
 
 	@ManyToOne(fetch = FetchType.LAZY)
+
 	@JoinColumn(name = "remote_group_id")
 	private RemoteGroup remoteGroup;
 
