@@ -1,8 +1,8 @@
 <template>
   <modal
     :title="$t('workspace.workspace_add_and_update_member_group')"
-    width="712px"
-    height="852px"
+    width="50.8571rem"
+    height="60.8571rem"
     :showClose="true"
     :visible.sync="visibleFlag"
     :beforeClose="beforeClose"
@@ -207,14 +207,7 @@ export default {
       }
     },
   },
-  async mounted() {
-    // if (this.groupId) {
-    //   //그룹 상세 멤버 조회
-    //   this.groupNameInput = this.groupName
-    // } else {
-    //   //해당 워크스페이스 멤버 전체 조회
-    // }
-  },
+  async mounted() {},
 }
 </script>
 
@@ -223,7 +216,7 @@ export default {
   height: 100%;
   .modal--inner {
     > .modal--body {
-      padding: 33px 36px 30px 36px;
+      padding: 2.3571rem 2.5714rem 2.1429rem 2.5714rem;
     }
   }
   .member-group {
@@ -237,7 +230,7 @@ export default {
       flex: 1;
       width: 100%;
       margin: 0;
-      margin-top: 52px;
+      margin-top: 3.7143rem;
     }
 
     .input-row {
@@ -245,9 +238,9 @@ export default {
     }
   }
   .save-group {
-    width: 258px;
-    height: 48px;
-    margin-top: 32px;
+    width: 18.4286rem;
+    height: 3.4286rem;
+    margin-top: 2.2857rem;
     border-radius: 2px;
   }
 }
