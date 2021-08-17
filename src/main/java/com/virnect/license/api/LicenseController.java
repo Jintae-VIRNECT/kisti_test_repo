@@ -1,11 +1,14 @@
 package com.virnect.license.api;
 
+import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.StringUtils;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -22,10 +25,12 @@ import lombok.extern.slf4j.Slf4j;
 import springfox.documentation.annotations.ApiIgnore;
 
 import com.virnect.license.application.LicenseService;
+import com.virnect.license.dto.license.request.UserLicenseInfoRetrieveRequest;
 import com.virnect.license.dto.license.response.LicenseSecessionResponse;
 import com.virnect.license.dto.license.response.MyLicenseInfoListResponse;
 import com.virnect.license.dto.license.response.MyLicenseInfoResponse;
 import com.virnect.license.dto.license.response.MyLicensePlanInfoListResponse;
+import com.virnect.license.dto.license.response.UserLicenseInfoResponse;
 import com.virnect.license.dto.license.response.WorkspaceLicensePlanInfoResponse;
 import com.virnect.license.exception.LicenseServiceException;
 import com.virnect.license.global.common.ApiResponse;
@@ -62,6 +67,21 @@ public class LicenseController {
 		// Todo: 필터 기능 추가
 		WorkspaceLicensePlanInfoResponse responseMessage = licenseService.getWorkspaceLicensePlanInfo(workspaceId);
 		return ResponseEntity.ok(new ApiResponse<>(responseMessage));
+	}
+
+
+	@ApiOperation(value = "워크스페이스 내 사용자 라이선스 정보 조회")
+	@GetMapping("/{workspaceId}")
+	public ResponseEntity<ApiResponse<UserLicenseInfoResponse>> getUserLicenseInfos(
+		@ModelAttribute @Valid UserLicenseInfoRetrieveRequest userLicenseInfoRetrieveRequest,
+		BindingResult result
+	){
+		if(result.hasErrors()){
+			throw new LicenseServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
+		}
+
+		UserLicenseInfoResponse responses = licenseService.getUserLicenseInfos(userLicenseInfoRetrieveRequest);
+		return ResponseEntity.ok(new ApiResponse<>(responses));
 	}
 
 	@ApiOperation(value = "워크스페이스에서 할당받은 내 라이선스 정보 조회")

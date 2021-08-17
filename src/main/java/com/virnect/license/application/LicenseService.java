@@ -1,5 +1,7 @@
 package com.virnect.license.application;
 
+import static com.virnect.license.domain.licenseplan.PlanStatus.*;
+
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -38,6 +40,7 @@ import com.virnect.license.domain.product.LicenseProductStatus;
 import com.virnect.license.domain.product.Product;
 import com.virnect.license.dto.ResourceCalculate;
 import com.virnect.license.dto.UserLicenseDetailsInfo;
+import com.virnect.license.dto.license.request.UserLicenseInfoRetrieveRequest;
 import com.virnect.license.dto.license.response.LicenseInfoResponse;
 import com.virnect.license.dto.license.response.LicenseProductInfoResponse;
 import com.virnect.license.dto.license.response.LicenseSecessionResponse;
@@ -45,6 +48,7 @@ import com.virnect.license.dto.license.response.MyLicenseInfoListResponse;
 import com.virnect.license.dto.license.response.MyLicenseInfoResponse;
 import com.virnect.license.dto.license.response.MyLicensePlanInfoListResponse;
 import com.virnect.license.dto.license.response.MyLicensePlanInfoResponse;
+import com.virnect.license.dto.license.response.UserLicenseInfoResponse;
 import com.virnect.license.dto.license.response.WorkspaceLicensePlanInfoResponse;
 import com.virnect.license.dto.rest.content.ContentResourceUsageInfoResponse;
 import com.virnect.license.dto.rest.remote.FileStorageInfoResponse;
@@ -299,7 +303,7 @@ public class LicenseService {
 	) {
 		//워크스페이스 플랜찾기 ( 비활성화 또는 활성화)
 		LicensePlan licensePlan = licensePlanRepository.findByWorkspaceIdAndPlanStatus(
-			workspaceId, PlanStatus.ACTIVE
+			workspaceId, ACTIVE
 		).orElseThrow(() -> new LicenseServiceException(ErrorCode.ERR_LICENSE_PLAN_NOT_FOUND));
 
 		LicenseProduct licenseProduct = licenseProductRepository.findByLicensePlanAndProduct_Name(
@@ -499,7 +503,7 @@ public class LicenseService {
 	public LicenseSecessionResponse deleteAllLicenseInfo(String userUUID, long userNumber) {
 		// find all license plan of user
 		List<LicensePlan> licensePlanList = licensePlanRepository.findAllByUserIdAndPlanStatus(
-			userUUID, PlanStatus.ACTIVE
+			userUUID, ACTIVE
 		);
 
 		if (licensePlanList.isEmpty()) {
@@ -542,4 +546,12 @@ public class LicenseService {
 		log.info("[LICENSE_PLAN_SECESSION][TERMINATED_DONE] - {}", licensePlan);
 	}
 
+	public UserLicenseInfoResponse getUserLicenseInfos(UserLicenseInfoRetrieveRequest userLicenseInfoRetrieveRequest) {
+		LicensePlan licensePlan = licensePlanRepository.findByWorkspaceIdAndPlanStatus(
+			userLicenseInfoRetrieveRequest.getWorkspaceId(), ACTIVE)
+			.orElseThrow(() -> new LicenseServiceException(ErrorCode.ERR_LICENSE_PLAN_NOT_FOUND));
+
+
+		return null;
+	}
 }
