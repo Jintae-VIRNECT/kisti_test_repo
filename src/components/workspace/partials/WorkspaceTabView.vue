@@ -1,12 +1,12 @@
 <template>
   <section class="tab-view" :class="[customClass]">
-    <div class="tab-view__header offsetwidth" :class="{ sub: showSubHeader }">
-      <span class="tab-view__title">{{ title }}</span>
+    <span class="tab-view__title">{{ title }}</span>
     <div class="tab-view__header offsetwidth">
       <span
         class="tab-view__title"
         :class="{
           'workspace-selected': workspace && workspace.uuid,
+          sub: showSubHeader,
         }"
         >{{ title }}</span
       >
