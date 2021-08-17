@@ -8,7 +8,9 @@
     :disabled="disabled"
     @visible="visible => (show = visible)"
     :targetElement="targetElement"
-    width="311px"
+    :useTopMargin="true"
+    :scrollHide="true"
+    width="22.2143rem"
   >
     <button
       slot="reference"
@@ -35,7 +37,7 @@
           class="select-option--check"
           :src="require('assets/image/ic_check_select_off.svg')"
         />
-        {{ option[text] }}
+        <p class="select-option--text">{{ option[text] }}</p>
 
         <span class="select-option--sub-text">{{ option[subText] }}</span>
       </button>
@@ -233,29 +235,35 @@ export default {
   color: rgba($color_text, 0.5);
   line-height: 1.429rem;
   text-align: left;
-  // &:last-child {
-  //   padding-bottom: 1.143rem;
-  // }
+
   &:first-child {
-    padding-top: 1.143rem;
+    padding-top: 1.0001rem;
   }
   &.active {
     color: rgba($color_text, 0.76);
   }
   &:hover {
     color: rgba($color_text, 0.76);
+    background-color: #2b2b2d;
   }
+}
+
+.select-option--text {
+  width: 80%;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
 }
 
 .select-option--sub-text {
   position: absolute;
-  right: 15px;
+  right: 1.0714rem;
   color: rgb(255, 255, 255);
 
-  font-size: 13px;
+  font-size: 0.9286rem;
   opacity: 0.5;
 }
 .select-option--check {
-  padding-right: 13px;
+  padding-right: 0.9286rem;
 }
 </style>

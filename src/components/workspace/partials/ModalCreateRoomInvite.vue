@@ -241,12 +241,12 @@ export default {
   .select-label {
     position: absolute;
     top: -0.571em;
-    right: 104px;
-    width: 174px;
-    min-width: 174px;
-    height: 36px;
-    min-height: 36px;
-    padding: 7.0024px 12.006px 9px 12.006px;
+    right: 7.4286rem;
+    width: 12.4286rem;
+    min-width: 12.4286rem;
+    height: 2.5714rem;
+    min-height: 2.5714rem;
+    padding: 0.5002rem 0.8576rem 0.6429rem 0.8576rem;
     background-color: #1a1a1b;
     // border: 1px solid rgb(165, 165, 165);
     border-radius: 2px;
