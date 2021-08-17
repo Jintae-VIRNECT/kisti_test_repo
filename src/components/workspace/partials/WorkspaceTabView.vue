@@ -1,6 +1,5 @@
 <template>
   <section class="tab-view" :class="[customClass]">
-    <span class="tab-view__title">{{ title }}</span>
     <div class="tab-view__header offsetwidth">
       <span
         class="tab-view__title"
