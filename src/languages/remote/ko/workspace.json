@@ -29,6 +29,7 @@
     "confirm_force_logout_complete": "님이 로그아웃 되었습니다.",
     "confirm_force_logout_received": "마스터에 의해 강제 로그아웃 되었습니다.",
     "confirm_force_logout_unavailable": "님이 협업에 접속하여 로그아웃이 불가능합니다.",
+    "confirm_video_restrict_join": "[영상 제한 모드] 협업 룸으로 접속합니다.\n리더에 의해 원격으로 카메라가 제어될 수 있습니다.\n[접속] 선택 시, 카메라 제어의 동의로 간주됩니다.",
 
     "history": "최근 기록",
     "remote": "원격 협업",
@@ -75,6 +76,8 @@
     "setting_record_resolution_tooltip": "720p(HD)급이상 해상도 설정 시, PC의 성능에 따라 서비스가<br>원활하지 않을 수 있습니다.",
     "setting_record_setting_description":"수정된 설정 값은 녹화를 시작하는 시점에 적용이 됩니다.",
     "setting_server_record":"서버 녹화 설정",
+    "setting_auto_server_record":"자동 서버 녹화",
+    "setting_use_auto_server_record":"자동 녹화 사용",
     "setting_video": "영상 설정",
     "setting_video_choice": "카메라",
     "setting_video_resolution": "입력 해상도",

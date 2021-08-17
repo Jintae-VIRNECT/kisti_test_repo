@@ -163,6 +163,7 @@ export default {
       'setServerRecord',
       'setScreenStrict',
       'clearWorkspace',
+      'setAutoServerRecord',
     ]),
 
     async init() {
@@ -277,6 +278,11 @@ export default {
       const screenStrict = window.myStorage.getItem('screenStrict')
       if (screenStrict) {
         this.setScreenStrict(screenStrict)
+      }
+
+      const autoServerRecord = window.myStorage.getItem('autoServerRecord')
+      if (autoServerRecord) {
+        this.setAutoServerRecord(autoServerRecord)
       }
     },
     showDeviceDenied() {
