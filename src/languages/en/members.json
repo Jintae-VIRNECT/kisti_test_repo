@@ -78,6 +78,35 @@
         "updateFail": "Failed to update member details from the Workspace please try again later.",
         "updateSuccess": "Succesfully updated selected member details.",
         "notChangeMasterPlan": "Master's plan can only be changed by the master."
+      },
+      "nicknameCaution": "Please enter 20 characters or less. You can use Korean English special characters (excluding (>), (<)) and spaces.",
+      "account": "Account",
+      "seatAccount": "Seat",
+      "seatId": "Seat ID",
+      "personalAccount": "Persnal Account",
+      "workspaceAccount": "Workstation Dedicated Account",
+      "delete": "Delete",
+      "deletePlaceholder": "Enter confirmation text",
+      "deleteDesc": "Enter 'Delete Account'.",
+      "deleteAccount": "Delete Account",
+      "deleteSeat": "Delete Seat",
+      "password": "Password",
+      "passwordPlaceholder": "Please enter a new password",
+      "passwordCaution": "Your password must be between 8 and 20 characters long. Your password needs to be included with at least 3 of following character types. <br>- Uppercase letter <br>- Lowercase letter<br>- Number <br>- Special character ( . ! @ # $ % ). <br>Also your password must not contain consecutive numbers and more than four of same characters.",
+      "workspaceRole": "Role",
+      "workspaceRoleDesc": "Workspace Role",
+      "submit": "Edit",
+      "image": {
+        "image": "Profile Image",
+        "edit": "Edit Profile Image",
+        "success": "Successfully uploaded image",
+        "fail": "Failed to upload image file",
+        "notAllowFileExtension": "Unsupported file type",
+        "notAllowFileSize": "Unsupported file size"
+      },
+      "seat": {
+        "title": "Seat",
+        "seatId": "Seat ID"
       }
     },
     "kick": {
