@@ -186,59 +186,54 @@ export default {
 ></style>
 <style lang="scss">
 @import '~assets/style/mixin';
-
 @include responsive-mobile {
   .createroom-user__header .icon-button > img {
     content: url(~assets/image/workspace/ic_renew_16.svg);
   }
-}
-
-//user card item
-.widecard.choice {
-  .profile .profile--text {
-    max-width: 65%;
-    .profile--role__mobile {
-      display: block;
-      margin-right: 0.6rem;
-      margin-left: 0;
-      color: #58a3f7;
-      border-color: #58a3f7;
+  //user card item
+  .widecard.choice {
+    .profile .profile--text {
+      max-width: 65%;
+      .profile--role__mobile {
+        display: block;
+        margin-right: 0.6rem;
+        margin-left: 0;
+        color: #58a3f7;
+        border-color: #58a3f7;
+      }
+      .profile--maintext {
+        @include fontLevel(100);
+        color: $new_color_text_main;
+      }
+      .profile--subtext {
+        @include fontLevel(75);
+        color: $new_color_text_sub;
+      }
     }
-    .profile--maintext {
-      @include fontLevel(100);
-      color: $new_color_text_main;
-    }
-    .profile--subtext {
-      @include fontLevel(75);
-      color: $new_color_text_sub;
-    }
-  }
-
-  .profile--role {
-    display: none;
-  }
-}
-
-.createroom-user__body {
-  .createroom-user__empty {
-    background-color: $new_color_bg_sub;
-    img {
-      width: 20rem;
-      content: url('~assets/image/img_inviteuser_empty_new.svg');
-    }
-    .createroom-user__empty-title {
-      margin-top: 1.6rem;
-      @include fontLevel(200);
-      color: $new_color_text_main;
-    }
-    .createroom-user__empty-description {
-      padding-top: 0.2rem;
-      color: $new_color_text_sub_description;
+    .profile--role {
+      display: none;
     }
   }
-
-  .createroom-user__loading.loading {
-    background-color: $new_color_bg_sub;
+  .createroom-user__body {
+    .createroom-user__empty {
+      background-color: $new_color_bg_sub;
+      img {
+        width: 20rem;
+        content: url('~assets/image/img_inviteuser_empty_new.svg');
+      }
+      .createroom-user__empty-title {
+        margin-top: 1.6rem;
+        @include fontLevel(200);
+        color: $new_color_text_main;
+      }
+      .createroom-user__empty-description {
+        padding-top: 0.2rem;
+        color: $new_color_text_sub_description;
+      }
+    }
+    .createroom-user__loading.loading {
+      background-color: $new_color_bg_sub;
+    }
   }
 }
 
