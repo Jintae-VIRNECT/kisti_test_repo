@@ -12,36 +12,10 @@ import { ROOM_STATUS } from 'configs/status.config'
 import { ROLE } from 'configs/remote.config'
 import toastMixin from 'mixins/toast'
 import callMixin from 'mixins/call'
-import { mapActions, mapGetters } from 'vuex'
-import { maxParticipants } from 'utils/callOptions'
+import { mapActions } from 'vuex'
 
 export default {
   mixins: [toastMixin, callMixin],
-  props: {
-    sessionId: {
-      type: String,
-      default: '',
-    },
-    visible: {
-      type: Boolean,
-      default: false,
-    },
-  },
-  data() {
-    return {
-      clicked: false,
-      selection: [],
-      selectHistory: [],
-      users: [],
-      loading: false,
-      visibleFlag: false,
-      roomInfo: {},
-      maxSelect: maxParticipants - 1,
-    }
-  },
-  computed: {
-    ...mapGetters(['restrictedMode', 'targetCompany', 'useScreenStrict']),
-  },
   watch: {
     async visible(flag) {
       if (flag) {

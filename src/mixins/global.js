@@ -85,7 +85,7 @@ export default {
     },
 
     //모바일 반응형 사이즈 이벤트 함수 : js로 반응형 처리를 해야하는 경우에 사용
-    callAndGetMobileResponsiveFunction(fn, resetFn) {
+    callAndGetMobileResponsiveFunction(fn, resetFn = fn) {
       //call
       if (matchMedia('screen and (max-width: 767px)').matches) fn()
       else resetFn()

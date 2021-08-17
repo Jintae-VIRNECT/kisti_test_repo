@@ -15,7 +15,7 @@ export default {
   },
   methods: {
     onClick() {
-      this.$emit('onClick')
+      this.$eventBus.$emit('open:modal:create')
     },
   },
 }

@@ -32,11 +32,8 @@
     </vue2-scrollbar>
     <plan-overflow :visible.sync="showPlanOverflow"></plan-overflow>
     <room-loading :visible.sync="showLoading"></room-loading>
-    <collabo-float-button @onClick="showCreateCollabo"></collabo-float-button>
+    <collabo-float-button></collabo-float-button>
     <openroom-float-button></openroom-float-button>
-    <workspace-mobile-create-room
-      :visible.sync="createCollaboModalVisible"
-    ></workspace-mobile-create-room>
   </section>
 </template>
 
@@ -96,8 +93,6 @@ export default {
     CookiePolicy: () => import('CookiePolicy'),
     CollaboFloatButton: () => import('./partials/CollaboFloatButton'),
     OpenroomFloatButton: () => import('./partials/OpenroomFloatButton'),
-    WorkspaceMobileCreateRoom: () =>
-      import('./modal/WorkspaceMobileCreateRoom'),
   },
   data() {
     const cookie = localStorage.getItem('ServiceCookiesAgree')
@@ -111,9 +106,6 @@ export default {
       showPlanOverflow: false,
       showLoading: false,
       inited: false,
-
-      createCollaboModalVisible: false,
-      createOpenroomModalVisible: false,
     }
   },
   watch: {
@@ -325,12 +317,6 @@ export default {
     },
     setTabTop() {
       this.tabTop = this.$refs['tabSection'].$el.offsetTop
-    },
-    showCreateCollabo() {
-      this.createCollaboModalVisible = true
-    },
-    showOpenroomCollabo() {
-      this.createOpenroomModalVisible = true
     },
   },
 

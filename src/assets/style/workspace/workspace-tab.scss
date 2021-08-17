@@ -226,49 +226,49 @@
     .tab-view__tools {
       //삭제 버튼
       .icon-button.delete {
-        align-items: center;
-        justify-content: center;
-        width: 3.2rem;
-        height: 3.2rem;
-        margin-right: 0.8rem;
-        margin-left: 0;
-        padding: 0;
-        background-color: $new_color_bg_icon; //@color 적용 필요
-        border-radius: 0.6rem;
-        opacity: 1;
+        // align-items: center;
+        // justify-content: center;
+        // width: 3.2rem;
+        // height: 3.2rem;
+        // margin-right: 0.8rem;
+        // margin-left: 0;
+        // padding: 0;
+        // background-color: $new_color_bg_icon; //@color 적용 필요
+        // border-radius: 0.6rem;
+        // opacity: 1;
         img {
-          width: 1.6rem;
-          max-width: 1.6rem;
-          height: 1.6rem;
-          margin-right: 0;
+          // width: 1.6rem;
+          // max-width: 1.6rem;
+          // height: 1.6rem;
+          // margin-right: 0;
           content: url(~assets/image/ic_delete_16.svg);
         }
-        span {
-          display: none;
-        }
+        // span {
+        //   display: none;
+        // }
       }
 
       //새로고침 버튼
       .icon-button.refresh {
-        align-items: center;
-        justify-content: center;
-        width: 3.2rem;
-        height: 3.2rem;
-        margin-left: 0;
-        padding: 0;
-        background-color: $new_color_bg_icon; //@color 적용 필요
-        border-radius: 0.6rem;
-        opacity: 1;
+        // align-items: center;
+        // justify-content: center;
+        // width: 3.2rem;
+        // height: 3.2rem;
+        // margin-left: 0;
+        // padding: 0;
+        // background-color: $new_color_bg_icon; //@color 적용 필요
+        // border-radius: 0.6rem;
+        // opacity: 1;
         img {
-          width: 1.6rem;
-          max-width: 1.6rem;
-          height: 1.6rem;
-          margin-right: 0;
+          // width: 1.6rem;
+          // max-width: 1.6rem;
+          // height: 1.6rem;
+          // margin-right: 0;
           content: url(~assets/image/workspace/ic_renew_16.svg);
         }
-        span {
-          display: none;
-        }
+        // span {
+        //   display: none;
+        // }
       }
     }
 

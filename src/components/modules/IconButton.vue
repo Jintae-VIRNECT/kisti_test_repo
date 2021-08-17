@@ -48,6 +48,8 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+@import '~assets/style/mixin';
+
 .icon-button {
   display: flex;
   margin-left: 0.643em;
@@ -82,6 +84,30 @@ export default {
       color: rgba(#d2d2d2, 1);
       background-color: #38383a;
       opacity: 1;
+    }
+  }
+}
+
+@include responsive-mobile {
+  .icon-button {
+    align-items: center;
+    justify-content: center;
+    width: 3.2rem;
+    height: 3.2rem;
+    margin-right: 0.8rem;
+    margin-left: 0;
+    padding: 0;
+    background-color: $new_color_bg_icon; //@color 적용 필요
+    border-radius: 0.6rem;
+    opacity: 1;
+    > img {
+      width: 1.6rem;
+      max-width: 1.6rem;
+      height: 1.6rem;
+      margin-right: 0;
+    }
+    > span {
+      display: none;
     }
   }
 }

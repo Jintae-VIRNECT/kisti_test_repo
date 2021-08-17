@@ -13,3 +13,93 @@
   display: flex;
   height: 100%;
 }
+
+.workspace-mobile-createroom {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 100;
+  display: none;
+  background-color: $new_color_bg_sub;
+  .createroom-user {
+    height: 100%;
+  }
+}
+
+@include responsive-mobile {
+  .createroom-modal.modal {
+    display: none;
+  }
+
+  .workspace-mobile-createroom {
+    display: flex;
+    flex-direction: column;
+
+    .mobile-createroom__header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 5.4rem;
+      background-color: $new_color_bg;
+    }
+    h1 {
+      @include fontLevel(200);
+      color: $new_color_text_main;
+    }
+
+    .mobile-createroom__button {
+      min-height: 4.8rem;
+      margin: 0 1.6rem 1.6rem;
+      color: $new_color_text_main;
+      background-color: $new_color_bg_button_primary;
+      border-radius: 0.4rem;
+      @include fontLevel(200);
+    }
+  }
+
+  .mobile-createroom__header {
+    border-bottom: 1px solid $new_color_sub_border;
+    h1 {
+      margin-left: 1.6rem;
+      @include fontLevel(200);
+      color: $new_color_text_main;
+    }
+    .header-close-btn {
+      width: 2.4rem;
+      height: 2.4rem;
+      margin-right: 1.6rem;
+      background: url(~assets/image/ic_close_24.svg) 50% no-repeat;
+    }
+  }
+
+  .mobile-createroom__selected {
+    position: relative;
+    border-bottom: 6px solid $new_color_sub_border;
+
+    .selected-header {
+      display: flex;
+      align-items: center;
+      padding: 1.6rem;
+      h1 {
+        margin-right: 0.8rem;
+        opacity: 0.8;
+      }
+      .selected-status {
+        @include fontLevel(150);
+        color: $new_color_text_blue;
+      }
+    }
+    .profilelist {
+      padding: 0 1rem 1.6rem 1.35rem;
+      .profilelist-user {
+        margin: 0 0.5rem;
+      }
+      .profilelist-user__image {
+        margin: 0 0.85rem;
+        overflow: visible;
+      }
+    }
+  }
+}

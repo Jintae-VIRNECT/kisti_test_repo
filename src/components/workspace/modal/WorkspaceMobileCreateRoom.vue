@@ -1,12 +1,27 @@
 <template>
-  <div class="workspace-mobile-createroom" :class="{ visible }">
-    <header>{{ $t('workspace.create_remote') }}</header>
+  <div class="workspace-mobile-createroom" v-if="visibleFlag">
+    <header class="mobile-createroom__header">
+      <h1>{{ $t('workspace.create_remote') }}</h1>
+      <button class="header-close-btn" @click="close"></button>
+    </header>
 
-    <button click="close-btn" @click="close">close</button>
-
-    {{ $t('workspace.create_remote_selected') }}
-
-    <profile-list v-if="selection.length > 0" :users="selection"></profile-list>
+    <section class="mobile-createroom__selected" v-if="selection.length > 0">
+      <div class="selected-header">
+        <h1>{{ $t('workspace.create_remote_selected') }}</h1>
+        <p class="selected-status">
+          {{ `${onlineMemeberOfSelection}/${selection.length}` }}
+        </p>
+        <button></button>
+      </div>
+      <profile-list
+        :users="selection"
+        :remove="true"
+        :showNickname="true"
+        :showStatus="true"
+        size="4.3rem"
+        @remove="selectUser"
+      ></profile-list>
+    </section>
 
     <create-room-invite
       :users="users"
@@ -17,7 +32,7 @@
     ></create-room-invite>
 
     <button
-      class="btn large createroom-info__button"
+      class="btn mobile-createroom__button"
       :class="{ disabled: btnDisabled, 'btn-loading': btnLoading }"
       @click="startRemoteMobile"
     >
@@ -29,7 +44,6 @@
 <script>
 import CreateRoomInvite from '../partials/ModalCreateRoomInvite'
 import ProfileList from 'ProfileList'
-import createRoomMixin from 'mixins/createRoom'
 import confirmMixin from 'mixins/confirm'
 
 export default {
@@ -37,16 +51,44 @@ export default {
     CreateRoomInvite,
     ProfileList,
   },
-  mixins: [createRoomMixin, confirmMixin],
+  mixins: [confirmMixin],
   data() {
-    return {}
+    return {
+      visibleFlag: false,
+    }
+  },
+  props: {
+    visible: {
+      type: Boolean,
+      dafault: false,
+    },
+    btnLoading: {
+      type: Boolean,
+    },
+    beforeClose: {
+      type: Function,
+    },
+    users: {
+      type: Array,
+    },
+    selection: {
+      type: Array,
+    },
+    roomInfo: {
+      type: Object,
+    },
+    loading: {
+      type: Boolean,
+    },
+  },
+  watch: {
+    visible(flag) {
+      this.visibleFlag = flag
+    },
   },
   computed: {
     btnDisabled() {
       return this.selection.length < 1
-    },
-    btnLoading() {
-      return this.clicked //mixin data
     },
     shortName() {
       if (this.account.nickname.length > 10) {
@@ -55,10 +97,19 @@ export default {
         return this.account.nickname
       }
     },
+    onlineMemeberOfSelection() {
+      return this.selection.filter(user => user.accessType === 'LOGIN').length
+    },
   },
   methods: {
     close() {
       this.beforeClose()
+    },
+    selectUser(user) {
+      this.$emit('userSelect', user)
+    },
+    inviteRefresh() {
+      this.$emit('inviteRefresh')
     },
     startRemoteMobile() {
       if (this.btnDisabled) {
@@ -72,8 +123,7 @@ export default {
         return
       }
 
-      //mixin
-      this.startRemote({
+      this.$emit('startRemote', {
         title: `${this.shortName}'s Room`,
         description: '',
         imageFile: this.roomInfo.description,
@@ -84,25 +134,3 @@ export default {
   },
 }
 </script>
-
-<style lang="scss" scoped>
-@import '~assets/style/vars';
-
-.workspace-mobile-createroom {
-  position: absolute;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  left: 0;
-  z-index: 999;
-  display: none;
-  background-color: $new_color_bg_sub;
-  &.visible {
-    display: flex;
-    flex-direction: column;
-  }
-  .createroom-user {
-    height: 100%;
-  }
-}
-</style>

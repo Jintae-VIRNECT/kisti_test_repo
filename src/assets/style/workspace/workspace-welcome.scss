@@ -88,7 +88,7 @@
 }
 
 @include responsive-mobile {
-  .workspace-welcome {
+  .workspace-welcome .workspace-welcome__body {
     display: none;
   }
 }
