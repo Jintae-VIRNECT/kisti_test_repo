@@ -26,10 +26,21 @@ export default {
         }
         this.inviteRefresh()
       }
-      this.visibleFlag = flag
+      this.callAndGetMobileResponsiveFunction(
+        this.setVisibleMobileFlag,
+        this.setVisiblePcFlag,
+      )
     },
   },
   methods: {
+    setVisiblePcFlag() {
+      this.visiblePcFlag = this.visible
+      this.visibleMobileFlag = false
+    },
+    setVisibleMobileFlag() {
+      this.visiblePcFlag = false
+      this.visibleMobileFlag = this.visible
+    },
     beforeClose() {
       this.$emit('update:visible', false)
     },
@@ -230,5 +241,15 @@ export default {
         }
       }
     },
+  },
+  mounted() {
+    this.responsiveFn = this.callAndGetMobileResponsiveFunction(
+      this.setVisibleMobileFlag,
+      this.setVisiblePcFlag,
+    )
+    this.addEventListenerScreenResize(this.responsiveFn)
+  },
+  beforeDestroy() {
+    this.removeEventListenerScreenResize(this.responsiveFn)
   },
 }

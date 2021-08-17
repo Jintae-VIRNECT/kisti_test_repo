@@ -4,7 +4,7 @@
       :title="$t('workspace.create_remote')"
       width="78.429em"
       :showClose="true"
-      :visible.sync="visibleFlag"
+      :visible.sync="visiblePcFlag"
       :beforeClose="beforeClose"
       customClass="createroom-modal"
     >
@@ -26,7 +26,7 @@
       </div>
     </modal>
     <workspace-mobile-create-room
-      :visible.sync="visibleFlag"
+      :visible.sync="visibleMobileFlag"
       :btnLoading="clicked"
       :roomInfo="roomInfo"
       :users="users"
@@ -74,9 +74,10 @@ export default {
       selectHistory: [],
       users: [],
       loading: false,
-      visibleFlag: false,
       roomInfo: {},
       maxSelect: maxParticipants - 1,
+      visiblePcFlag: false,
+      visibleMobileFlag: false,
     }
   },
   computed: {
@@ -88,6 +89,7 @@ export default {
       this.selectHistory = []
     },
   },
+  mounted() {},
 }
 </script>
 
