@@ -32,8 +32,12 @@
     </vue2-scrollbar>
     <plan-overflow :visible.sync="showPlanOverflow"></plan-overflow>
     <room-loading :visible.sync="showLoading"></room-loading>
-    <collabo-float-button></collabo-float-button>
-    <openroom-float-button></openroom-float-button>
+    <collabo-float-button
+      v-if="workspace && workspace.uuid"
+    ></collabo-float-button>
+    <openroom-float-button
+      v-if="workspace && workspace.uuid"
+    ></openroom-float-button>
   </section>
 </template>
 
