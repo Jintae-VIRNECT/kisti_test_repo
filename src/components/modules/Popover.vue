@@ -42,6 +42,8 @@ function calcOffset(element) {
   }
 }
 
+const RIGHT_TOLERANCE = 10 //우측 여유 영역
+
 export default {
   name: 'Popover',
   props: {
@@ -198,7 +200,8 @@ export default {
           const isOverflow =
             popover.offsetWidth + left > window.innerWidth ? true : false
           if (isOverflow)
-            left -= popover.offsetWidth + left - window.innerWidth + 10
+            left -=
+              popover.offsetWidth + left - window.innerWidth + RIGHT_TOLERANCE
           else {
             //nothing
           }
