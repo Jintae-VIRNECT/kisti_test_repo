@@ -9,13 +9,9 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
-import java.util.concurrent.ConcurrentHashMap;
 
-import org.springframework.data.redis.connection.Message;
-import org.springframework.data.redis.connection.MessageListener;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.listener.ChannelTopic;
-import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
@@ -26,10 +22,10 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import com.virnect.data.redis.domain.AccessStatus;
-import com.virnect.data.redis.domain.ForceLogoutMessage;
 import com.virnect.data.redis.domain.StatusMessage;
 import com.virnect.uaa.domain.auth.websocket.dao.AccessStatusRepository;
 import com.virnect.uaa.domain.auth.websocket.exception.StatusMessageNotValidException;
@@ -38,42 +34,27 @@ import com.virnect.uaa.domain.auth.websocket.message.LogoutMessage;
 import com.virnect.uaa.domain.auth.websocket.message.WebSocketRequestMessage;
 import com.virnect.uaa.domain.auth.websocket.message.WebSocketResponseMessage;
 import com.virnect.uaa.domain.auth.websocket.message.WorkspaceChangeMessage;
+import com.virnect.uaa.domain.auth.websocket.session.SessionManager;
 import com.virnect.uaa.global.config.redis.RedisPublisher;
 
 @Slf4j
-public class WebSocketHandler extends TextWebSocketHandler implements MessageListener {
+@Service
+@RequiredArgsConstructor
+public class WebSocketHandler extends TextWebSocketHandler {
 	private static final ChannelTopic REDIS_CHANNEL = new ChannelTopic("rm-service");
 	private static final String LOGIN_STATUS = "Login";
 	private static final String LOGOUT_STATUS = "Logout";
-	private static final String PING_MESSAGE = "PING";
 	private static final String PONG_MESSAGE = "PONG";
 	private static final long HEART_BEAT_TIME = 5000;
-	private static final long HEART_BEAT_DELAY_TIME = 10000;
-	private final Map<String, String> userWebSocketSessionInfoStore = new ConcurrentHashMap<>();
-	private final Map<WebSocketSession, ClientSessionInfo> clientSessionInfoStore = new ConcurrentHashMap<>();
+	private final SessionManager<ClientSessionInfo> sessionManager;
 	private final ObjectMapper objectMapper;
-	private final RedisTemplate redisTemplate;
 	private final RedisPublisher redisPublisher;
 	private final AccessStatusRepository accessStatusRepository;
-
-	public WebSocketHandler(
-		ObjectMapper objectMapper, RedisPublisher redisPublisher,
-		RedisTemplate<String, Object> redisTemplate,
-		AccessStatusRepository accessStatusRepository
-	) {
-		this.objectMapper = objectMapper;
-		this.redisTemplate = redisTemplate;
-		this.redisPublisher = redisPublisher;
-		this.accessStatusRepository = accessStatusRepository;
-	}
 
 	@Override
 	public void afterConnectionEstablished(WebSocketSession session) throws Exception {
 		log.info(WEB_SOCKET_LOG_FORMAT, CONNECT_EVENT, session.getId(), "New Socket Connect.");
-
-		// Save Client Session Info to Client Session Info Store
-		ClientSessionInfo clientSessionInfo = ClientSessionInfo.firstConnectInfo();
-		clientSessionInfoStore.put(session, clientSessionInfo);
+		sessionManager.registerNewSession(session);
 
 		WebSocketResponseMessage connectSuccessMessage = connectSuccessResponse(session.getId());
 		String successResponseMessage = messageConvertToText(connectSuccessMessage);
@@ -118,12 +99,12 @@ public class WebSocketHandler extends TextWebSocketHandler implements MessageLis
 			);
 
 			// 1. found previous client information
-			ClientSessionInfo clientSessionInfo = clientSessionInfoStore.get(session);
+			ClientSessionInfo clientSessionInfo = sessionManager.getSessionInformation(session);
 			StatusMessage originStatusMessage = clientSessionInfo.getStatusMessage();
-			String sessionId = userWebSocketSessionInfoStore.get(originStatusMessage.getUserAccessStatusKey());
+			String sessionId = sessionManager.findUserCurrentSessionId(originStatusMessage.getUserAccessStatusKey());
 
 			// 2. check duplicate
-			if (userWebSocketSessionInfoStore.containsKey(workspaceChangeMessage.getUserAccessStatusKey())) {
+			if (sessionManager.hasExistUserSessionId(workspaceChangeMessage.getUserAccessStatusKey())) {
 				log.info(
 					WEB_SOCKET_LOG_FORMAT, WORKSPACE_UPDATE, session.getId(),
 					" Change Target Workspace Duplicate Session Exist"
@@ -144,7 +125,7 @@ public class WebSocketHandler extends TextWebSocketHandler implements MessageLis
 			);
 
 			// 3.2 remove previous session information
-			userWebSocketSessionInfoStore.remove(originStatusMessage.getUserAccessStatusKey());
+			sessionManager.removeUserSessionId(originStatusMessage.getUserAccessStatusKey());
 			// 3.3 update origin status workspace Id and status
 			originStatusMessage.setWorkspaceId(workspaceChangeMessage.getWorkspaceId());
 			originStatusMessage.setStatus(LOGIN_STATUS);
@@ -152,11 +133,11 @@ public class WebSocketHandler extends TextWebSocketHandler implements MessageLis
 				String.format("Update Session For Login: %s", originStatusMessage)
 			);
 			// 3.4 create new user session information with changed workspaceId
-			userWebSocketSessionInfoStore.put(originStatusMessage.getUserAccessStatusKey(), sessionId);
+			sessionManager.putUserSessionId(originStatusMessage.getUserAccessStatusKey(), sessionId);
 			// 3.5 update current client session information
 			clientSessionInfo.setStatusMessage(originStatusMessage);
 			// 3.4 update current client session store
-			clientSessionInfoStore.put(session, clientSessionInfo);
+			sessionManager.putSessionInformation(session, clientSessionInfo);
 			redisPublisher.publish(REDIS_CHANNEL, originStatusMessage, sessionId);
 			log.info(WEB_SOCKET_LOG_FORMAT, WORKSPACE_UPDATE, session.getId(),
 				String.format("Update Client Session Info: %s", clientSessionInfo)
@@ -227,7 +208,7 @@ public class WebSocketHandler extends TextWebSocketHandler implements MessageLis
 			);
 
 			// find target user web socket
-			String targetUserSessionId = userWebSocketSessionInfoStore.get(
+			String targetUserSessionId = sessionManager.findUserCurrentSessionId(
 				logoutMessage.getLogoutTargetUserAccessStatusKey());
 
 			log.info(
@@ -307,7 +288,17 @@ public class WebSocketHandler extends TextWebSocketHandler implements MessageLis
 	private void sendRemoteExitRequestToTargetUserSession(
 		String requestSessionId, LogoutMessage logoutMessage, String targetUserSessionId
 	) throws IOException {
-		WebSocketSession targetUserSession = getTargetUserWebSocketSession(targetUserSessionId);
+		Optional<WebSocketSession> targetUserSessionInfo = sessionManager.findWebSocketSessionBySessionId(
+			targetUserSessionId);
+
+		if (!targetUserSessionInfo.isPresent()) {
+			log.error(WEB_SOCKET_LOG_FORMAT, REMOTE_EXIT_EVENT, requestSessionId,
+				String.format("Remote Exit User Session Not Found [%s]", targetUserSessionId)
+			);
+			return;
+		}
+
+		WebSocketSession targetUserSession = targetUserSessionInfo.get();
 		WebSocketResponseMessage remoteExitResponse = remoteExitResponse(targetUserSessionId, logoutMessage);
 		String remoteExitResponseMessage = messageConvertToText(remoteExitResponse);
 		targetUserSession.sendMessage(new TextMessage(remoteExitResponseMessage));
@@ -318,7 +309,7 @@ public class WebSocketHandler extends TextWebSocketHandler implements MessageLis
 	}
 
 	private boolean isTargetUserNotExitCurrentSessionStore(WebSocketSession session, String sessionId) {
-		if (sessionId == null || getTargetUserWebSocketSession(sessionId) == null) {
+		if (sessionId == null || !sessionManager.findWebSocketSessionBySessionId(sessionId).isPresent()) {
 			// logout fail error response to request user
 			log.error(
 				WEB_SOCKET_LOG_FORMAT, REMOTE_EXIT_EVENT, session.getId(),
@@ -337,7 +328,7 @@ public class WebSocketHandler extends TextWebSocketHandler implements MessageLis
 			statusMessageValidation(statusMessage);
 
 			// Check Session Duplicate
-			if (isUserAlreadyExistAndWorking(statusMessage.getUserAccessStatusKey())) {
+			if (sessionManager.hasExistUserSessionId(statusMessage.getUserAccessStatusKey())) {
 				handleDuplicateRegisterRequestMessage(session, statusMessage);
 				return;
 			}
@@ -348,16 +339,16 @@ public class WebSocketHandler extends TextWebSocketHandler implements MessageLis
 			);
 
 			// Get Client WebSocket Message Information from store
-			ClientSessionInfo clientSessionInfo = clientSessionInfoStore.get(session);
+			ClientSessionInfo clientSessionInfo = sessionManager.getSessionInformation(session);
 
 			// Set Current Client Status Message
 			clientSessionInfo.setStatusMessage(statusMessage);
 
 			// Update Last Message Received at LocalDate.
-			clientSessionInfoStore.put(session, clientSessionInfo);
+			sessionManager.putSessionInformation(session, clientSessionInfo);
 
 			// Store New User Information With Current Session Information
-			userWebSocketSessionInfoStore.put(statusMessage.getUserAccessStatusKey(), session.getId());
+			sessionManager.putUserSessionId(statusMessage.getUserAccessStatusKey(), session.getId());
 
 			log.info(
 				WEB_SOCKET_LOG_FORMAT, REGISTER_EVENT, session.getId(),
@@ -420,7 +411,7 @@ public class WebSocketHandler extends TextWebSocketHandler implements MessageLis
 	@Override
 	public void afterConnectionClosed(WebSocketSession session, CloseStatus status) {
 		log.info(WEB_SOCKET_LOG_FORMAT, CONNECT_CLOSE_EVENT, session.getId(), "Connection Closed. " + status);
-		ClientSessionInfo removedClientSessionInfo = clientSessionInfoStore.remove(session);
+		ClientSessionInfo removedClientSessionInfo = sessionManager.removeSessionInformation(session);
 		if (removedClientSessionInfo == null) {
 			log.error(
 				WEB_SOCKET_LOG_FORMAT, CONNECT_CLOSE_EVENT, session.getId(),
@@ -450,7 +441,7 @@ public class WebSocketHandler extends TextWebSocketHandler implements MessageLis
 			WEB_SOCKET_LOG_FORMAT, CONNECT_CLOSE_EVENT, session.getId(), "Publish Logout Status Event. " + statusMessage
 		);
 		redisPublisher.publish(REDIS_CHANNEL, statusMessage, session.getId());
-		String removedSessionId = userWebSocketSessionInfoStore.remove(statusMessage.getUserAccessStatusKey());
+		String removedSessionId = sessionManager.removeUserSessionId(statusMessage.getUserAccessStatusKey());
 		log.info(
 			WEB_SOCKET_LOG_FORMAT, CONNECT_CLOSE_EVENT, session.getId(),
 			"Current User Session Information Deleted. Removed Session Id Is [" + removedSessionId + "]"
@@ -463,37 +454,16 @@ public class WebSocketHandler extends TextWebSocketHandler implements MessageLis
 		userAccessStatusChangeToLogout(statusMessage, session.getId());
 	}
 
-	private void sendPingMessage(WebSocketSession session) throws Exception {
-		try {
-			long lastPingTime = System.currentTimeMillis();
-			session.sendMessage(new TextMessage(PING_MESSAGE));
-			log.debug(WEB_SOCKET_LOG_FORMAT, PING_EVENT, session.getId(), "Send Ping Message");
-			ClientSessionInfo clientSessionInfo = clientSessionInfoStore.get(session);
-			log.debug(
-				WEB_SOCKET_LOG_FORMAT, PING_EVENT, session.getId(),
-				"" + clientSessionInfo + " Update Last Ping Time To " + lastPingTime
-			);
-			clientSessionInfo.setLastPingTime(System.currentTimeMillis());
-			clientSessionInfoStore.put(session, clientSessionInfo);
-		} catch (IOException e) {
-			log.error(
-				WEB_SOCKET_LOG_FORMAT, PING_EVENT, session.getId(),
-				"Send Ping Message Fail. WebSocket Session Will Be Closed."
-			);
-			session.close();
-		}
-	}
-
 	private void handlerPongMessage(WebSocketSession session) {
 		long lastPongTime = System.currentTimeMillis();
 		log.debug(WEB_SOCKET_LOG_FORMAT, PONG_EVENT, session.getId(), "Server Received Pong Message.");
-		ClientSessionInfo clientSessionInfo = clientSessionInfoStore.get(session);
+		ClientSessionInfo clientSessionInfo = sessionManager.getSessionInformation(session);
 		log.debug(
 			WEB_SOCKET_LOG_FORMAT, PONG_EVENT, session.getId(),
 			"" + clientSessionInfo + " Update Last Pong Time To " + lastPongTime
 		);
 		clientSessionInfo.setLastPongTime(lastPongTime);
-		clientSessionInfoStore.put(session, clientSessionInfo);
+		sessionManager.putSessionInformation(session, clientSessionInfo);
 	}
 
 	private void remoteExitClientNotFoundResponse(WebSocketSession session) throws IOException {
@@ -509,15 +479,6 @@ public class WebSocketHandler extends TextWebSocketHandler implements MessageLis
 			exception.printStackTrace();
 			session.close();
 		}
-	}
-
-	private WebSocketSession getTargetUserWebSocketSession(String sessionId) {
-		for (WebSocketSession targetUserSession : clientSessionInfoStore.keySet()) {
-			if (targetUserSession.getId().equals(sessionId)) {
-				return targetUserSession;
-			}
-		}
-		return null;
 	}
 
 	public void userAccessStatusChangeToLogin(StatusMessage statusMessage, String sessionId) {
@@ -633,19 +594,6 @@ public class WebSocketHandler extends TextWebSocketHandler implements MessageLis
 		return message;
 	}
 
-	private WebSocketResponseMessage forceLogoutResponse(
-		final String workspaceId, final String targetUserId
-	) {
-		// Create Socket Connect Success Response
-		Map<String, Object> payload = new HashMap<>();
-		payload.put("workspaceId", workspaceId);
-		payload.put("userId", targetUserId);
-
-		WebSocketResponseMessage message = WebSocketResponseMessage.of(CLIENT_FORCE_LOGOUT);
-		message.setData(payload);
-		return message;
-	}
-
 	private WebSocketResponseMessage registerFailResponse(final String sessionId) {
 		// Create Socket Connect Success Response
 		Map<String, Object> payload = new HashMap<>();
@@ -691,105 +639,5 @@ public class WebSocketHandler extends TextWebSocketHandler implements MessageLis
 	private String messageConvertToText(WebSocketResponseMessage webSocketResponseMessage) throws
 		JsonProcessingException {
 		return objectMapper.writeValueAsString(webSocketResponseMessage);
-	}
-
-	private boolean isUserAlreadyExistAndWorking(String currentUserSessionKey) {
-		// If not registered current user session information store then, user not exit and not working
-		return userWebSocketSessionInfoStore.containsKey(currentUserSessionKey);
-	}
-
-	// every 5 seconds (default HEART_BEAT_TIME)
-	@Scheduled(fixedDelay = HEART_BEAT_TIME)
-	public void sessionManagement() throws Exception {
-		for (Map.Entry<WebSocketSession, ClientSessionInfo> sessionInfoEntry : clientSessionInfoStore.entrySet()) {
-			WebSocketSession session = sessionInfoEntry.getKey();
-			ClientSessionInfo clientSessionInfo = sessionInfoEntry.getValue();
-
-			if (clientSessionInfo.getLastPingPongRelayTime() >= HEART_BEAT_DELAY_TIME) {
-				log.error(
-					"[FORCE_CONNECT_CLOSE][CLIENT][{}] - No Response from PING Message - {}", session.getId(),
-					clientSessionInfo.getStatusMessage()
-				);
-				session.close(CloseStatus.GOING_AWAY);
-				return;
-			}
-
-			if (session.isOpen()) {
-				sendPingMessage(session);
-				clientSessionInfo.setLastPingTime(System.currentTimeMillis());
-				clientSessionInfoStore.put(session, clientSessionInfo);
-			} else {
-				log.error(
-					"[FORCE_CONNECT_CLOSE][CLIENT][{}] - Socket Not Open - {}", session.getId(),
-					clientSessionInfo.getStatusMessage()
-				);
-				session.close(CloseStatus.GOING_AWAY);
-			}
-		}
-	}
-
-	@Override
-	public void onMessage(Message message, byte[] pattern) {
-		String messages = (String)redisTemplate.getStringSerializer().deserialize(message.getBody());
-
-		log.info("[RedisEventSubscribe][force-logout] - {}", messages);
-
-		ForceLogoutMessage forceLogoutMessage;
-		try {
-			forceLogoutMessage = objectMapper.readValue(messages, ForceLogoutMessage.class);
-		} catch (Exception exception) {
-			log.error(messages);
-			log.error(exception.getMessage(), exception);
-			return;
-		}
-
-		for (String targetUserId : forceLogoutMessage.getTargetUserIds()) {
-			String forceLogoutUserAccessKey = forceLogoutMessage.getWorkspaceId() + "_" + targetUserId;
-			log.info("[RedisEventSubscribe][force-logout][Target] - {}", forceLogoutUserAccessKey);
-
-			// find target user web socket
-			String sessionId = userWebSocketSessionInfoStore.get(forceLogoutUserAccessKey);
-
-			WebSocketSession targetUserSession = getTargetUserWebSocketSession(sessionId);
-
-			if (targetUserSession == null) {
-				log.error(
-					"[RedisEventSubscribe][	force-logout][USER_SESSION_NOT_FOUND] - {}", forceLogoutUserAccessKey);
-				Optional<AccessStatus> userAccessStatusInformation = findUserAccessStatusInformation(
-					forceLogoutUserAccessKey);
-				if (userAccessStatusInformation.isPresent()) {
-					AccessStatus accessStatus = userAccessStatusInformation.get();
-					log.error(
-						"[RedisEventSubscribe][force-logout][USER_SESSION_NOT_FOUND] - But Found AccessStatus {}",
-						accessStatus
-					);
-					accessStatus.setAccessType(LOGOUT);
-					accessStatusRepository.save(accessStatus);
-					log.error(
-						"[RedisEventSubscribe][force-logout][USER_SESSION_NOT_FOUND] - But Found AccessStatus And Update To {}",
-						accessStatus
-					);
-				}
-				continue;
-			}
-
-			try {
-				WebSocketResponseMessage forceLogoutResponse = forceLogoutResponse(
-					forceLogoutMessage.getWorkspaceId(),
-					targetUserId
-				);
-
-				String forceLogoutResponseMessage = messageConvertToText(forceLogoutResponse);
-				targetUserSession.sendMessage(new TextMessage(forceLogoutResponseMessage));
-				log.info(
-					WEB_SOCKET_LOG_FORMAT, FORCE_LOGOUT_EVENT, sessionId,
-					"Send Force Logout Message " + forceLogoutResponseMessage
-				);
-				targetUserSession.close();
-			} catch (Exception exception) {
-				log.info(WEB_SOCKET_LOG_FORMAT, FORCE_LOGOUT_EVENT, "NONE", exception.getMessage());
-			}
-		}
-
 	}
 }

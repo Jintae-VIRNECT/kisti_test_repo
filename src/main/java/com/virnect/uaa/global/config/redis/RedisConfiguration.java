@@ -15,11 +15,11 @@ import org.springframework.data.redis.serializer.StringRedisSerializer;
 
 import lombok.extern.slf4j.Slf4j;
 
-import com.virnect.uaa.domain.auth.websocket.WebSocketHandler;
+import com.virnect.uaa.domain.auth.websocket.session.RedisSessionMessageSubscriber;
 
+@Slf4j
 @Configuration
 @EnableRedisRepositories
-@Slf4j
 public class RedisConfiguration {
 	private static final String FORCE_LOGOUT_CHANNEL = "force-logout";
 	@Value("${spring.redis.host}")
@@ -45,8 +45,8 @@ public class RedisConfiguration {
 	}
 
 	@Bean
-	public MessageListenerAdapter messageListenerAdapter(WebSocketHandler webSocketHandler) {
-		return new MessageListenerAdapter(webSocketHandler);
+	public MessageListenerAdapter messageListenerAdapter(RedisSessionMessageSubscriber redisSessionMessageSubscriber) {
+		return new MessageListenerAdapter(redisSessionMessageSubscriber);
 	}
 
 	@Bean
