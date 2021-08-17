@@ -103,6 +103,10 @@ const localWebpackConfig = merge(baseWebpackConfig(mode), {
         res.sendFile(path.join(__dirname, '../static/js/pdf.worker.js'))
       })
 
+      app.get('/sw.js', function(req, res) {
+        res.sendFile(path.join(__dirname, '../static/js/sw.js'))
+      })
+
       app.post('/translate', express.json(), function(req, res) {
         const text = req.body.text
         const target = req.body.target

@@ -25,6 +25,8 @@ import { version } from '@/package.json'
 
 import { logger, debug } from 'utils/logger'
 
+import '../../registerServiceWorker'
+
 Vue.use(DayJS)
 Vue.use(PUSH)
 Vue.use(VueToasted)

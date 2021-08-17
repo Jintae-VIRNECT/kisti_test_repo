@@ -2,9 +2,9 @@
   <tooltip :content="`${$t('common.mic')} on/off`">
     <toggle-button
       slot="body"
-      customClass="toggle-header"
+      customClass="toggle-header mic"
       :description="`${$t('common.mic')} on/off`"
-      size="2.429rem"
+      :size="size"
       :disabled="disable"
       :active="mic.isOn"
       :activeSrc="require('assets/image/call/gnb_ic_voice_on.svg')"
@@ -25,6 +25,12 @@ export default {
   components: {
     Tooltip,
     ToggleButton,
+  },
+  props: {
+    size: {
+      type: String,
+      default: '2.429rem',
+    },
   },
   computed: {
     ...mapGetters(['mic', 'roomInfo', 'allowCameraControl']),

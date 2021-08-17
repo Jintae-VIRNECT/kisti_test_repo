@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="24px" height="24px" viewBox="0 0 24 24" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>ic_main_dropdown_off</title>
+    <defs>
+        <path d="M14.9458025,6.94580254 C14.7492982,6.74929822 14.4372825,6.7423848 14.2298304,6.94938492 L10,11.17 L5.7701696,6.94938492 C5.57125342,6.75090211 5.24825507,6.75174493 5.05419746,6.94580254 L4.35580254,7.64419746 C4.15929822,7.84070178 4.16048551,8.16048551 4.35735893,8.35735893 L10,14 L15.6426411,8.35735893 C15.840005,8.15999504 15.8382551,7.83825507 15.6441975,7.64419746 L14.9458025,6.94580254 Z" id="path-1"></path>
+    </defs>
+    <g id="Remote_Main_Mobile" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Icon" transform="translate(-454.000000, -410.000000)">
+            <g id="24-x-24" transform="translate(36.000000, 346.000000)">
+                <g id="ic_dropdown_off" transform="translate(400.000000, 46.000000)">
+                    <g id="Group-8" transform="translate(18.000000, 18.000000)">
+                        <rect id="tr-copy-5" x="0" y="0" width="24" height="24"></rect>
+                        <g id="icon-/-20px-/-ic_arrow_down_20" transform="translate(2.000000, 2.000000)">
+                            <mask id="mask-2" fill="white">
+                                <use xlink:href="#path-1"></use>
+                            </mask>
+                            <g id="shape"></g>
+                            <rect id="🎨-Color" fill="#FFFFFF" mask="url(#mask-2)" x="-14" y="-14" width="48" height="48"></rect>
+                        </g>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

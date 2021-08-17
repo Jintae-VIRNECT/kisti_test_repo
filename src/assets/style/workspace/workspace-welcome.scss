@@ -86,3 +86,9 @@
     background-color: #005545;
   }
 }
+
+@include responsive-mobile {
+  .workspace-welcome .workspace-welcome__body {
+    display: none;
+  }
+}

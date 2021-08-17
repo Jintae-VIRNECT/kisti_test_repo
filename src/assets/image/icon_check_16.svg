@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="16px" height="16px" viewBox="0 0 16 16" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>E7A392F3-D6E0-44B6-8386-5C94465B789E@2x</title>
+    <defs>
+        <path d="M8,1 C11.8659932,1 15,4.13400675 15,8 C15,11.8659932 11.8659932,15 8,15 C4.13400675,15 1,11.8659932 1,8 C1,4.13400675 4.13400675,1 8,1 Z M10.9393398,4.93933983 L7,8.87833983 L5.06066017,6.93933983 L4,8 L7,11 L12,6 L10.9393398,4.93933983 Z" id="path-1"></path>
+    </defs>
+    <g id="Remote_Main_Mobile" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Icon" transform="translate(-1230.000000, -121.000000)">
+            <g id="icon_check_s_on" transform="translate(1230.000000, 121.000000)">
+                <rect id="tr" fill-rule="nonzero" x="0" y="0" width="16" height="16"></rect>
+                <mask id="mask-2" fill="white">
+                    <use xlink:href="#path-1"></use>
+                </mask>
+                <use id="shape" fill="#6BB4F9" fill-rule="nonzero" xlink:href="#path-1"></use>
+            </g>
+        </g>
+    </g>
+</svg>

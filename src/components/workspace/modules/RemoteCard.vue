@@ -14,7 +14,7 @@
           <profile
             :group="true"
             :image="room.profile"
-            :thumbStyle="{ width: '5.143rem', height: '5.143rem' }"
+            :thumbStyle="thumbStyle"
           ></profile>
         </div>
         <!-- <img
@@ -57,6 +57,17 @@
           ></profile-list>
         </div>
       </div>
+      <div class="groupcard-info-mobile">
+        <p class="room-title">{{ title ? title : room.title }}</p>
+        <div>
+          <span class="room-leader">{{
+            `${$t('common.leader')} : ${leader.nickName}`
+          }}</span>
+          <span class="room-member">{{
+            `${activeMemberList.length}/ ${room.maxUserCount}`
+          }}</span>
+        </div>
+      </div>
       <button class="groupcard-button btn small" @click="join">
         {{ $t('button.invite') }}
       </button>
@@ -95,10 +106,14 @@ import RoominfoModal from '../modal/WorkspaceRoomInfo'
 import { STATUS, ROOM_STATUS } from 'configs/status.config'
 import { ROLE } from 'configs/remote.config'
 import mixinToast from 'mixins/toast'
+import thumbStyle from 'mixins/thumbStyle'
+
+const defaultThumbStyle = { width: '5.143rem', height: '5.143rem' }
+const mobileThumbStyle = { width: '4.2rem', height: '4.2rem' }
 
 export default {
   name: 'RemoteCard',
-  mixins: [mixinToast],
+  mixins: [mixinToast, thumbStyle],
   components: {
     Card,
     Profile,
@@ -109,6 +124,7 @@ export default {
     return {
       showRoomInfo: false,
       title: '',
+      thumbStyle: defaultThumbStyle,
     }
   },
   props: {
@@ -180,7 +196,15 @@ export default {
   },
 
   /* Lifecycles */
-  mounted() {},
+  mounted() {
+    this.setSizeVariable(
+      defaultThumbStyle.width,
+      defaultThumbStyle.height,
+      mobileThumbStyle.width,
+      mobileThumbStyle.height,
+    )
+    this.activateThumbStyleHandlerOnMobileSize()
+  },
 }
 </script>
 
@@ -192,6 +216,7 @@ export default {
 
 <style lang="scss">
 @import '~assets/style/vars';
+@import '~assets/style/mixin';
 
 .popover.group-menu {
   width: 8.571em;
@@ -218,6 +243,22 @@ export default {
     }
     &:active {
       background-color: rgba($color_bg_item, 0.5);
+    }
+  }
+}
+
+@include responsive-mobile {
+  .popover.group-menu {
+    background-color: #606a77; //@추가 color
+    border: none; //@추가 color
+  }
+  .groupcard-popover {
+    .group-pop__button {
+      @include fontLevel(100);
+      width: 12.1rem;
+      height: 4rem;
+      padding: 0;
+      padding-left: 2rem;
     }
   }
 }

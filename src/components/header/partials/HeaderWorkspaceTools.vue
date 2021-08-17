@@ -5,8 +5,18 @@
       <mic></mic>
       <speaker></speaker>
     </template>
-    <notice></notice>
-    <profile></profile>
+    <notice
+      :class="{
+        'workspace-select-tools': !hasWorkspace,
+      }"
+    ></notice>
+    <profile
+      :class="{
+        'workspace-select-tools': !hasWorkspace,
+      }"
+    >
+      ></profile
+    >
   </ul>
 </template>
 
