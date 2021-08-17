@@ -2,7 +2,11 @@
   <div class="workspace-tab">
     <nav
       class="workspace-tab__nav"
-      :class="{ fix: !!fix, nolicense: !(hasWorkspace && !expireLicense) }"
+      :class="{
+        fix: !!fix,
+        nolicense: !(hasWorkspace && !expireLicense),
+        'tab-mobile': !(hasWorkspace && !expireLicense),
+      }"
     >
       <ul class="flex offsetwidth">
         <tab-button

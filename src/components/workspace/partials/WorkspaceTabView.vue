@@ -1,7 +1,13 @@
 <template>
   <section class="tab-view" :class="[customClass]">
     <div class="tab-view__header offsetwidth">
-      <span class="tab-view__title">{{ title }}</span>
+      <span
+        class="tab-view__title"
+        :class="{
+          'workspace-selected': workspace && workspace.uuid,
+        }"
+        >{{ title }}</span
+      >
       <span class="tab-view__count" v-if="!(listCount === null)">
         {{ listCount }}
       </span>
@@ -13,12 +19,14 @@
           @search="text => $emit('search', text)"
         ></search>
         <icon-button
+          class="delete"
           v-if="showDeleteButton"
           :imgSrc="require('assets/image/ic_delete.svg')"
           :text="deleteButtonText ? deleteButtonText : $t('button.remove')"
           @click="$emit('delete')"
         ></icon-button>
         <icon-button
+          class="refresh"
           v-if="showRefreshButton"
           :imgSrc="require('assets/image/workspace/ic_renew.svg')"
           animation="rotate360"

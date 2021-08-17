@@ -1,9 +1,9 @@
 <template>
   <popover
     trigger="click"
-    placement="bottom-end"
+    :placement="placement"
     popperClass="popover-notice"
-    width="29.571rem"
+    :width="width"
     @visible="setVisible"
   >
     <toggle-button
@@ -12,11 +12,11 @@
       "
       slot="reference"
       :description="$t('common.notice')"
-      size="2.429rem"
+      :size="size"
       :toggle="!onPush"
       :active="active"
-      :activeSrc="require('assets/image/ic_notice.svg')"
-      :inactiveSrc="require('assets/image/ic_notice_off.svg')"
+      :activeSrc="activeSrc"
+      :inactiveSrc="inactiveSrc"
       @action="notice"
     ></toggle-button>
 
@@ -131,6 +131,17 @@ import confirmMixin from 'mixins/confirm'
 import errorMsgMixin from 'mixins/errorMsg'
 import { isRegisted } from 'utils/auth'
 
+const defaultPopoverWidth = '29.571rem'
+const mobilePopoverWidth = '26.5rem'
+const deafultPlacement = 'bottom-end'
+const mobilePlacement = 'bottom-start'
+const defaultNoticeIconSize = '2.429rem'
+const mobileNoticeIconSize = '4rem'
+const defaultActiveSrc = require('assets/image/ic_notice.svg')
+const defaultInactiveSrc = require('assets/image/ic_notice_off.svg')
+const mobileActiveSrc = require('assets/image/ic_notice_24.svg')
+const mobileInactiveSrc = require('assets/image/ic_notice_off_24.svg')
+
 export default {
   name: 'Notice',
   mixins: [roomMixin, alarmMixin, toastMixin, confirmMixin, errorMsgMixin],
@@ -149,6 +160,12 @@ export default {
       visible: false,
       muted: true,
       // alarmList: [],
+      activeSrc: defaultActiveSrc,
+      inactiveSrc: defaultInactiveSrc,
+      responsiveNoticeIcon: null,
+      size: defaultNoticeIconSize,
+      placement: deafultPlacement,
+      width: defaultPopoverWidth,
     }
   },
   computed: {
@@ -355,10 +372,31 @@ export default {
       await this.$push.init(this.workspace)
       this.$push.addListener(this.key, this.alarmListener)
     },
+    setNoticeIconMobile() {
+      this.activeSrc = mobileActiveSrc
+      this.inactiveSrc = mobileInactiveSrc
+      this.size = mobileNoticeIconSize
+      this.placement = mobilePlacement
+      this.width = mobilePopoverWidth
+    },
+    setNoticeIconDefault() {
+      this.activeSrc = defaultActiveSrc
+      this.inactiveSrc = defaultInactiveSrc
+      this.size = defaultNoticeIconSize
+      this.placement = deafultPlacement
+      this.width = defaultPopoverWidth
+    },
   },
 
   /* Lifecycles */
   mounted() {
+    //모바일 반응형 아이콘 리소스
+    this.responsiveNoticeIcon = this.callAndGetMobileResponsiveFunction(
+      this.setNoticeIconMobile,
+      this.setNoticeIconDefault,
+    )
+    this.addEventListenerScreenResize(this.responsiveNoticeIcon)
+
     if (this.isSafari) {
       this.$refs['noticeAudio'].onloadeddata = this.loadeddata
       this.$refs['noticeAudio'].autoplay = true
@@ -378,12 +416,14 @@ export default {
     if (this.isSafari) {
       window.removeEventListener('touchstart', this.loadAudio)
     }
+
+    this.removeEventListenerScreenResize(this.responsiveEmptyImage)
   },
 }
 </script>
 
 <style lang="scss">
-@import '~assets/style/vars';
+@import '~assets/style/mixin';
 
 .popover.popover-notice {
   overflow: hidden;
@@ -402,6 +442,8 @@ export default {
   border-bottom: solid 1px rgba($color_line_border, 0.06);
   > span {
     // padding: 11px 12px;
+    display: flex;
+    align-items: center;
     color: $color_text;
     font-size: 1.143rem;
   }
@@ -448,6 +490,49 @@ export default {
   > span {
     color: rgba($color_text, 0.74);
     font-size: 0.929rem;
+  }
+}
+
+@include responsive-mobile {
+  .popover.popover-notice {
+    background-color: $new_color_bg_popover;
+    border: none;
+  }
+  .popover-notice__header {
+    height: 4.8rem;
+    border-bottom-color: $new_color_line_border;
+    > span {
+      @include fontLevel(150);
+    }
+
+    .switcher .switcher-text {
+      color: $new_color_text_sub_description;
+      @include fontLevel(75);
+    }
+
+    .switcher .switcher-toggle {
+      display: flex;
+      align-items: center;
+      width: 3.2rem;
+      height: 1.4rem;
+      border-radius: 0.8rem;
+
+      .switcher-toggle__type {
+        width: 2rem;
+        height: 2rem;
+        transform: translateY(0%);
+      }
+    }
+  }
+  .popover-notice__body .popover-notice__empty-box {
+    > img {
+      width: 8rem;
+      height: 8rem;
+    }
+    > span {
+      @include fontLevel(150);
+      color: $new_color_text_sub;
+    }
   }
 }
 </style>

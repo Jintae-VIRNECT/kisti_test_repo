@@ -49,6 +49,7 @@
     "@virnect/remote-stream-recorder": "^1.0.5",
     "@virnect/remote-webrtc": "^1.2.3",
     "@virnect/stylelint-config": "^1.0.2",
+    "@virnect/ui-assets": "^1.8.0",
     "@vue/cli-plugin-pwa": "~4.5.0",
     "@vue/eslint-config-prettier": "^6.0.0",
     "animejs": "^2.2.0",

@@ -1,7 +1,12 @@
 <template>
   <figure class="profile" :class="status" v-on="{ ...$listeners }">
+    <div v-if="remove" class="profile--remove__mobile" @click="onRemove"></div>
+
     <div class="profile--thumb" :style="thumbStyle">
-      <div class="profile--image" :class="{ group: group, image: useImage }">
+      <div
+        class="profile--image"
+        :class="{ group: group, image: useImage, 'profile-menu': profileMenu }"
+      >
         <img
           v-if="useImage"
           :src="imageUrl"
@@ -14,10 +19,15 @@
       </div>
     </div>
     <figcaption class="profile--text" v-if="mainText && mainText.length > 0">
-      <p class="profile--maintext">{{ mainText }}</p>
+      <div class="profile--mainheader">
+        <role class="profile--role__mobile" v-if="showRole" :role="role">{{
+          role
+        }}</role>
+        <p class="profile--maintext">{{ mainText }}</p>
+      </div>
       <p class="profile--subtext" v-if="subText">{{ subText }}</p>
     </figcaption>
-    <role v-if="showRole" :role="role">{{ role }}</role>
+    <role class="profile--role" v-if="showRole" :role="role">{{ role }}</role>
   </figure>
 </template>
 
@@ -35,7 +45,7 @@ export default {
     thumbStyle: {
       type: Object,
       default: () => {
-        return {}
+        return { width: '5.143rem', height: '5.143rem' }
       },
     },
     image: String,
@@ -60,7 +70,15 @@ export default {
       type: Boolean,
       default: false,
     },
+    profileMenu: {
+      type: Boolean,
+      default: false,
+    },
     isMe: {
+      type: Boolean,
+      default: false,
+    },
+    remove: {
       type: Boolean,
       default: false,
     },
@@ -90,6 +108,11 @@ export default {
       if (img && img.style.display === 'none') {
         img.style.display = 'block'
       }
+    },
+  },
+  methods: {
+    onRemove() {
+      this.$emit('remove')
     },
   },
 }
@@ -146,6 +169,12 @@ export default {
     max-width: 10em;
   }
 }
+.profile--mainheader {
+  display: flex;
+}
+.profile--role__mobile {
+  display: none;
+}
 .profile--maintext {
   color: #fafafa;
   font-weight: 500;
@@ -158,21 +187,25 @@ export default {
   @include ellipsis;
 }
 
+.profile--remove__mobile {
+  display: none;
+}
+
 .profile--badge {
   position: absolute;
+  top: 66%;
   left: 66%;
-  top: 64%;
-  width: 1.333em;
-  height: 1.333em;
-  border-radius: 50%;
+  width: 1.142em;
+  height: 1.142em;
   background-color: inherit;
+  border-radius: 50%;
 }
 
 .profile--badge__core {
-  width: 0.833em;
-  height: 0.833em;
+  width: 0.714em;
+  height: 0.714em;
+  margin: 0.214em;
   border-radius: 50%;
-  margin: 0.25em;
 
   &.me {
     background: url('~assets/image/mdpi_icon_me.svg') center;
@@ -185,6 +218,26 @@ export default {
   }
   &.logout {
     background-color: $color_logout;
+  }
+}
+
+@include responsive-mobile {
+  .profile--remove__mobile {
+    position: absolute;
+    top: -2px;
+    left: -2px;
+    z-index: 2;
+    display: block;
+    width: 1.6em;
+    height: 1.6em;
+    background-color: $new_color_bg_icon;
+    background-image: url(~assets/image/ic_close.svg);
+    background-position: center;
+    background-size: 12px;
+    border-radius: 50%;
+  }
+  .profile--badge {
+    font-size: 14px;
   }
 }
 </style>

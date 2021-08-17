@@ -3,7 +3,7 @@
     <popover
       v-if="menu"
       trigger="click"
-      placement="bottom-start"
+      :placement="placement"
       :popperClass="popoverClass"
       width="auto"
       :scrollHide="true"
@@ -20,6 +20,10 @@
 
 <script>
 import Popover from 'Popover'
+
+const defaultPlacement = 'bottom-start'
+const mobilePlacement = 'left-start'
+
 export default {
   name: 'Card',
   components: {
@@ -44,7 +48,10 @@ export default {
     },
   },
   data() {
-    return {}
+    return {
+      placement: defaultPlacement,
+      responsivePlacement: null,
+    }
   },
   computed: {
     cardWidth() {
@@ -62,15 +69,33 @@ export default {
       }
     },
   },
-  methods: {},
+  methods: {
+    setDefaultPlacement() {
+      this.placement = defaultPlacement
+    },
+    setMobilePlacement() {
+      this.placement = mobilePlacement
+    },
+  },
 
   /* Lifecycles */
-  mounted() {},
+  mounted() {
+    this.responsivePlacement = this.callAndGetMobileResponsiveFunction(
+      this.setMobilePlacement,
+      this.setDefaultPlacement,
+    )
+    this.addEventListenerScreenResize(this.responsivePlacement)
+  },
+  beforeDestroy() {
+    this.removeEventListenerScreenResize(this.responsivePlacement)
+  },
 }
 </script>
 
 <style lang="scss" scoped>
 @import '~assets/style/vars';
+@import '~assets/style/mixin';
+
 .card {
   position: relative;
   padding: 2.143em;
@@ -104,6 +129,28 @@ export default {
   &:hover {
     &:before {
       background-color: rgba(#fff, 0.05);
+    }
+  }
+}
+@include responsive-mobile {
+  .card > .popover--wrapper {
+    top: 50%;
+    right: 0.2rem;
+    z-index: 99;
+    transform: translateY(-50%);
+  }
+  .card__button {
+    width: 3.2rem;
+    height: 3.2rem;
+    background: none;
+    &:before {
+      background: url(~assets/image/ic_more_vertical_24.svg) 50%/3.2rem 3.2rem
+        no-repeat;
+    }
+    &:hover {
+      &:before {
+        background-color: $new_color_bg_hover;
+      }
     }
   }
 }

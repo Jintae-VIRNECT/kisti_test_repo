@@ -1,6 +1,6 @@
 .remote-layout {
   position: relative;
-  min-width: $size_tab_min;
+  //min-width: $size_tab_min;
   height: 100%;
   overflow: hidden;
   background-color: $color_bg_default;
@@ -35,4 +35,26 @@
   // margin-top: 56px;
   // text-align: center;
   background-color: $color_bg;
+}
+
+//모바일 반응형 v2.5
+@include responsive-mobile {
+  //스크롤 margin으로 인해 아래 배경색이 노출되므로 수정
+  .remote-layout {
+    background-color: $new_color_bg_sub; //@color 수정 필요
+  }
+  .remote-wrapper {
+    height: calc(100% - #{$header_m_height});
+    margin-top: $header_m_height;
+    padding-right: 0;
+
+    //스크롤 부분 컬러 수정
+    .vue-scrollbar__scrollbar-vertical {
+      background-color: $new_color_bg_sub; //@color 수정 필요
+      opacity: 1;
+      .scrollbar {
+        opacity: 0.5;
+      }
+    }
+  }
 }

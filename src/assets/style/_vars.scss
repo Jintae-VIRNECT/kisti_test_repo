@@ -1,5 +1,10 @@
+/* vds ui assets */
+@import "@virnect/ui-assets/stylesheets/abstracts/_mixins";
+@import "theme-old";
+
 /* Layout */
 $header_height: 4rem;
+$header_m_height: 5.4rem;
 
 /* Layout - Workspace */
 $welcome_height: 17.143rem; //156px + 64px + 64px
@@ -34,7 +39,7 @@ $color_state_bad: #ffdc00;
 //$color_online: #7ed321;
 //$color_offline: #cccccc;
 //$color_busy: #ef3e33;
-$color_login: #3BE038;
+$color_login: #3be038;
 $color_collabo: #26a8ff;
 $color_logout: #474750;
 $color_text_login: #34ff83;
@@ -88,8 +93,40 @@ $size_m_max: 767px;
 $size_m_min: 320px;
 $size_m_pad: 20px;
 
+/* Responsive Screen Size */
+$responsive_pc_max: 1920px;
+$responsive_pc_min: 1024px;
+$responsive_tab_max: 1023px;
+$responsive_tab_min: 768px;
+$responsive_m_max: 767px;
+$responsive_m_min: 360px;
+
 /* Font */
 $font_family: "Noto Sans KR";
 $font_family2: "Roboto";
 // $font_family2: "Noto Sans";
 $font_family3: "Noto Sans SC";
+
+//background
+$new_color_bg: var(--color-gray-30); //#272b30
+$new_color_bg_sub: var(--color-gray-20); //#1c2024
+$new_color_bg_item: var(--color-gray-40); //#32373f
+$new_color_bg_popover: var(--color-gray-40); //#32373f
+$new_color_bg_active: var(--color-gray-60); //#616872
+
+$new_color_bg_hover: var(--color-gray-50); //#3e454f
+$new_color_bg_icon: var(--color-gray-50); //#3e454f
+
+$new_color_bg_button_primary: var(--color-blue-40); //#1571e4
+$new_color_bg_button_subprimary: var(--color-green-40); //#319373
+$new_color_bg_button_sub: var(--color-gray-60); //#616872
+
+//border
+$new_color_line_border: var(--color-gray-50); //#3e454f
+$new_color_sub_border: var(--color-gray-40); //#32373f
+
+//font-color
+$new_color_text_main: #f7f8f9;
+$new_color_text_sub: #aeb6c2;
+$new_color_text_sub_description: #7d8899;
+$new_color_text_blue: #4a9aff;

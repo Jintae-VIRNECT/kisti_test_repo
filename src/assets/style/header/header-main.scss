@@ -22,3 +22,22 @@
     margin: 0.929rem 1.214rem;
   }
 }
+
+//모바일 반응형 v2.5
+@include responsive-mobile {
+  .header {
+    height: $header_m_height;
+    background-color: $new_color_bg; //@color 수정 필요
+  }
+
+  //workspace 선택 화면 이외에는 header의 아래 border선 제거
+  .header.workspace-selected {
+    &::after {
+      display: none;
+    }
+
+    .header-workspace-selector {
+      color: $new_color_text_main;
+    }
+  }
+}
