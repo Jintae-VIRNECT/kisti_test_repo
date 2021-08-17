@@ -18,41 +18,39 @@
       <span>{{ selected[text] }}</span>
     </button>
     <div class="select-optionbox">
-      <scroller height="300px">
-        <button
-          class="select-option"
-          v-for="(option, idx) of options"
-          :key="idx"
-          :class="{ active: selected[value] === option[value] }"
-          @click="select(option)"
-        >
-          <img
-            v-if="selected[value] === option[value]"
-            class="select-option--check"
-            :src="require('assets/image/ic_check_select_on.svg')"
-          />
-          <img
-            v-else
-            class="select-option--check"
-            :src="require('assets/image/ic_check_select_off.svg')"
-          />
-          {{ option[text] }}
+      <button
+        class="select-option"
+        v-for="(option, idx) of options"
+        :key="idx"
+        :class="{ active: selected[value] === option[value] }"
+        @click="select(option)"
+      >
+        <img
+          v-if="selected[value] === option[value]"
+          class="select-option--check"
+          :src="require('assets/image/ic_check_select_on.svg')"
+        />
+        <img
+          v-else
+          class="select-option--check"
+          :src="require('assets/image/ic_check_select_off.svg')"
+        />
+        {{ option[text] }}
 
-          <span class="select-option--sub-text">{{ option[subText] }}</span>
-        </button>
-      </scroller>
+        <span class="select-option--sub-text">{{ option[subText] }}</span>
+      </button>
     </div>
   </popover>
 </template>
 
 <script>
 import Popover from 'Popover'
-import Scroller from 'Scroller'
+// import Scroller from 'Scroller'
 export default {
   name: 'RemoteSelectCheck',
   components: {
     Popover,
-    Scroller,
+    // Scroller,
   },
   data() {
     return {
