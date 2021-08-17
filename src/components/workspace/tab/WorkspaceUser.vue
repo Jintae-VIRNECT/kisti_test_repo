@@ -361,6 +361,7 @@ export default {
         })
         this.groupList = groups.groupInfoResponseList
       } catch (err) {
+        console.error(err)
         this.toastError(this.$t('confirm.network_error'))
       } finally {
         this.groupLoading = false

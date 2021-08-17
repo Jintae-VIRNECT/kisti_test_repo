@@ -5,6 +5,15 @@
         {{ $t('workspace.create_select_member_list') }}
         <span class="createroom-user__number">{{ totalNum }}</span>
       </p>
+      <r-select-check
+        v-if="showMemberGroupSelect"
+        class="createroom-user--group-selects"
+        :options="groupList"
+        value="groupId"
+        text="groupName"
+        subText="memberCount"
+        :selectedValue.sync="selectedGroupId"
+      ></r-select-check>
       <icon-button
         :text="$t('button.refresh')"
         :imgSrc="require('assets/image/workspace/ic_renew.svg')"
@@ -65,6 +74,7 @@ import Scroller from 'Scroller'
 import Profile from 'Profile'
 import WideCard from 'WideCard'
 import IconButton from 'IconButton'
+import RSelectCheck from '../modules/RemoteSelectCheck'
 
 export default {
   name: 'ModalCreateRoomInvite',
@@ -73,9 +83,12 @@ export default {
     Profile,
     WideCard,
     IconButton,
+    RSelectCheck,
   },
   data() {
-    return {}
+    return {
+      selectedGroupId: '',
+    }
   },
   props: {
     users: {
@@ -98,6 +111,14 @@ export default {
       type: Boolean,
       default: false,
     },
+    showMemberGroupSelect: {
+      type: Boolean,
+      default: false,
+    },
+    groupList: {
+      type: Array,
+      default: () => [],
+    },
   },
   computed: {
     totalNum() {
@@ -108,8 +129,14 @@ export default {
       }
     },
   },
+  watch: {
+    selectedGroupId() {
+      this.$emit('selectedgroupid', this.selectedGroupId)
+    },
+  },
   methods: {
     refresh() {
+      this.selectedGroupId = 'NONE'
       this.$emit('inviteRefresh')
     },
     selectUser(user) {
@@ -122,7 +149,7 @@ export default {
   },
 
   /* Lifecycles */
-  mounted() {},
+  async mounted() {},
 }
 </script>
 
@@ -131,3 +158,32 @@ export default {
   scoped
   src="assets/style/workspace/workspace-createroom-invite.scss"
 ></style>
+<style lang="scss">
+.createroom-user--group-selects {
+  .select-label {
+    position: absolute;
+    top: -0.571em;
+    right: 104px;
+    width: 174px;
+    min-width: 174px;
+    height: 36px;
+    min-height: 36px;
+    padding: 7.0024px 12.006px 9px 12.006px;
+    background-color: #1a1a1b;
+    // border: 1px solid rgb(165, 165, 165);
+    border-radius: 2px;
+    &::after {
+      right: 0.994px;
+    }
+    &:hover {
+      background-color: #1a1a1b;
+    }
+    &:active {
+      background-color: #1a1a1b;
+    }
+    &:focus {
+      background-color: #1a1a1b;
+    }
+  }
+}
+</style>

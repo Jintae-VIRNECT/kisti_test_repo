@@ -53,6 +53,7 @@ import {
 } from 'api/http/member'
 
 import toastMixin from 'mixins/toast'
+import { maxParticipants } from 'utils/callOptions'
 
 export default {
   name: 'WorkspaceMemberGroup',
@@ -93,7 +94,7 @@ export default {
       visibleFlag: false,
       loading: false,
       selection: [],
-      maxSelect: 5,
+      maxSelect: maxParticipants - 1,
       groupNameInput: '',
       groupNameInValid: true,
     }

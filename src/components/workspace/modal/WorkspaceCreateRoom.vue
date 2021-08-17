@@ -20,7 +20,10 @@
         :selection="selection"
         @userSelect="selectUser"
         @inviteRefresh="inviteRefresh"
+        @selectedgroupid="getGroupMembers"
         :loading="loading"
+        :showMemberGroupSelect="true"
+        :groupList="groupList"
       ></create-room-invite>
     </div>
   </modal>
@@ -39,6 +42,9 @@ import {
   updateRoomProfile,
   getRoomInfo,
 } from 'api/http/room'
+
+import { getMemberGroupList, getMemberGroupItem } from 'api/http/member'
+
 import { ROLE } from 'configs/remote.config'
 import toastMixin from 'mixins/toast'
 import confirmMixin from 'mixins/confirm'
@@ -67,6 +73,8 @@ export default {
       roomInfo: {},
       loading: false,
       clicked: false,
+
+      groupList: [],
     }
   },
   computed: {
@@ -91,6 +99,7 @@ export default {
           await this.getInfo()
         }
         this.inviteRefresh()
+        this.getGroups()
       }
       this.visibleFlag = flag
     },
@@ -281,11 +290,54 @@ export default {
         }
       }
     },
+    async getGroups() {
+      try {
+        const groups = await getMemberGroupList({
+          workspaceId: this.workspace.uuid,
+          userId: this.account.uuid,
+        })
+
+        this.groupList = groups.groupInfoResponseList
+        this.groupList.map(group => {
+          group.memberCount = `${group.remoteGroupMemberInfoResponseList
+            .length - 1}/${this.maxSelect}`
+        })
+        this.groupList.unshift({
+          groupName: '선택 안함',
+          groupId: 'NONE',
+        })
+      } catch (err) {
+        console.error(err)
+        this.toastError(this.$t('confirm.network_error'))
+      }
+    },
+    async getGroupMembers(groupId) {
+      console.log(groupId)
+      try {
+        if (groupId === 'NONE') {
+          this.selection = []
+          return
+        }
+
+        const group = await getMemberGroupItem({
+          workspaceId: this.workspace.uuid,
+          groupId: groupId,
+        })
+
+        this.selection = group.remoteGroupMemberInfoResponseList.filter(
+          member => {
+            return member.uuid !== this.account.uuid
+          },
+        )
+      } catch (err) {
+        console.error(err)
+      }
+    },
   },
 
   /* Lifecycles */
   created() {},
-  mounted() {},
+  async mounted() {},
 }
 </script>
 
