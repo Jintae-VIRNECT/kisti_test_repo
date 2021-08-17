@@ -48,4 +48,16 @@ public class MemberUpdateRequest {
         return licenseRemote != null || licenseMake != null || licenseView != null;
     }
 
+    @Override
+    public String toString() {
+        return "MemberUpdateRequest{" +
+                "requestUserId='" + requestUserId + '\'' +
+                ", userId='" + userId + '\'' +
+                ", role='" + role + '\'' +
+                ", licenseRemote=" + licenseRemote +
+                ", licenseMake=" + licenseMake +
+                ", licenseView=" + licenseView +
+                ", nickname='" + nickname + '\'' +
+                '}';
+    }
 }

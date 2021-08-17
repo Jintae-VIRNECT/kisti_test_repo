@@ -7,7 +7,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.MessageSource;
 import org.springframework.context.event.EventListener;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 import org.thymeleaf.context.Context;
 import org.thymeleaf.spring5.SpringTemplateEngine;
@@ -28,7 +27,7 @@ public class MailEventHandler {
     private final MessageRestService messageRestService;
 
     @EventListener
-    @Async
+    //@Async
     public void sendMailEventListener(MailSendEvent mailSendEvent) {
         log.info("[SEND MAIL EVENT] - [{}]", mailSendEvent.toString());
         Context context = mailSendEvent.getContext();

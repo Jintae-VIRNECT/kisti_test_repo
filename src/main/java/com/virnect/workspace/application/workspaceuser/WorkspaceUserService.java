@@ -343,6 +343,7 @@ public abstract class WorkspaceUserService {
     public ApiResponse<Boolean> reviseMemberInfo(
             String workspaceId, MemberUpdateRequest memberUpdateRequest, Locale locale
     ) {
+        log.info("[REVISE MEMBER INFO] Revise User Role Info. Update request info >> [{}].", memberUpdateRequest.toString());
         //1-1. 요청 워크스페이스 조회
         Workspace workspace = workspaceRepository.findByUuid(workspaceId).orElseThrow(() -> new WorkspaceException(ErrorCode.ERR_WORKSPACE_NOT_FOUND));
 
@@ -362,7 +363,7 @@ public abstract class WorkspaceUserService {
                 throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_USER_INFO_UPDATE_USER_TYPE);
             }
             //2-2. 권한 확인
-            checkUserRoleUpdatePermission(requestUserPermission, updateUserPermission, workspaceId);
+            checkUserInfoUpdatePermission(requestUserPermission, updateUserPermission, workspaceId);
             //2-3. 변경 요청
             modifyUserInfoByUserId(memberUpdateRequest.getUserId(), new UserInfoModifyRequest(memberUpdateRequest.getNickname()));
 
@@ -406,17 +407,10 @@ public abstract class WorkspaceUserService {
         //4. 사용자 제품 라이선스 유형 변경
         MyLicenseInfoListResponse myLicenseInfoListResponse = getMyLicenseInfoRequestHandler(workspaceId, memberUpdateRequest.getUserId());
         List<String> currentProductList = myLicenseInfoListResponse.getLicenseInfoList().stream().map(MyLicenseInfoResponse::getProductName).collect(Collectors.toList());
-        /*
-        List<String> removedProductList = getRemovedProductList(memberUpdateRequest.getLicenseRemote(), memberUpdateRequest.getLicenseMake(), memberUpdateRequest.getLicenseView(), currentProductList);
-        List<String> addedProductList = getAddedProductList(memberUpdateRequest.getLicenseRemote(), memberUpdateRequest.getLicenseMake(), memberUpdateRequest.getLicenseView(), currentProductList);
-        if (!removedProductList.isEmpty() || !addedProductList.isEmpty()) {*/
-        /*if (!memberUpdateRequest.isEssentialLicenseToUser()) {
-            throw new WorkspaceException(ErrorCode.ERR_INCORRECT_USER_LICENSE_INFO);
-        }*/
         if (memberUpdateRequest.existLicenseUpdate()) {
             log.info("[REVISE MEMBER INFO] Revise License Info. Current License Product Info >> [{}], ", org.apache.commons.lang.StringUtils.join(currentProductList, ","));
             //4-1. 유저 타입 체크
-            if (updateUser.getUserType().equals("SEAT_USER")) {
+            if (updateUser.getUserType().equals("SEAT_USER") || updateUserPermission.getWorkspaceRole().getRole() == Role.SEAT) {
                 throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_USER_INFO_UPDATE_USER_TYPE);
             }
             //4-2. 요청 유저 권한 체크
@@ -425,31 +419,31 @@ public abstract class WorkspaceUserService {
             //4-3. 제품 라이선스 부여/해제 요청
             List<String> addedProductList = new ArrayList<>();
             List<String> removedProductList = new ArrayList<>();
-            if (memberUpdateRequest.getLicenseRemote() != null && memberUpdateRequest.getLicenseRemote()) {
+            if (memberUpdateRequest.getLicenseRemote() != null && memberUpdateRequest.getLicenseRemote() && !currentProductList.contains("REMOTE")) {
                 grantWorkspaceLicenseToUser(workspace.getUuid(), updateUser.getUuid(), "REMOTE");
                 addedProductList.add("REMOTE");
             }
 
-            if (memberUpdateRequest.getLicenseRemote() != null && !memberUpdateRequest.getLicenseRemote()) {
+            if (memberUpdateRequest.getLicenseRemote() != null && !memberUpdateRequest.getLicenseRemote() && currentProductList.contains("REMOTE")) {
                 revokeWorkspaceLicenseToUser(workspace.getUuid(), updateUser.getUuid(), "REMOTE");
                 removedProductList.add("REMOTE");
             }
 
-            if (memberUpdateRequest.getLicenseMake() != null && memberUpdateRequest.getLicenseMake()) {
+            if (memberUpdateRequest.getLicenseMake() != null && memberUpdateRequest.getLicenseMake() && !currentProductList.contains("MAKE")) {
                 grantWorkspaceLicenseToUser(workspace.getUuid(), updateUser.getUuid(), "MAKE");
                 addedProductList.add("MAKE");
             }
 
-            if (memberUpdateRequest.getLicenseMake() != null && !memberUpdateRequest.getLicenseMake()) {
+            if (memberUpdateRequest.getLicenseMake() != null && !memberUpdateRequest.getLicenseMake() && currentProductList.contains("MAKE")) {
                 revokeWorkspaceLicenseToUser(workspace.getUuid(), updateUser.getUuid(), "MAKE");
                 removedProductList.add("MAKE");
             }
-            if (memberUpdateRequest.getLicenseView() != null && memberUpdateRequest.getLicenseView()) {
+            if (memberUpdateRequest.getLicenseView() != null && memberUpdateRequest.getLicenseView() && !currentProductList.contains("VIEW")) {
                 grantWorkspaceLicenseToUser(workspace.getUuid(), updateUser.getUuid(), "VIEW");
                 addedProductList.add("VIEW");
             }
 
-            if (memberUpdateRequest.getLicenseView() != null && !memberUpdateRequest.getLicenseView()) {
+            if (memberUpdateRequest.getLicenseView() != null && !memberUpdateRequest.getLicenseView() && currentProductList.contains("VIEW")) {
                 revokeWorkspaceLicenseToUser(workspace.getUuid(), updateUser.getUuid(), "VIEW");
                 removedProductList.add("VIEW");
             }
@@ -475,6 +469,42 @@ public abstract class WorkspaceUserService {
             applicationEventPublisher.publishEvent(new MailSendEvent(context, Mail.WORKSPACE_USER_PLAN_UPDATE, locale, receiver));
         }
         return new ApiResponse<>(true);
+    }
+
+    private void checkUserInfoUpdatePermission(WorkspaceUserPermission requestUserPermission, WorkspaceUserPermission updateUserPermission, String workspaceId) {
+        //본인에 대한 닉네임 수정은 권한 체크 하지 않음.
+        if (requestUserPermission.getWorkspaceUser().getUserId().equals(updateUserPermission.getWorkspaceUser().getUserId())) {
+            return;
+        }
+        //상위 유저, 동급 유저에 대해서는 닉네임을 변경할 수 없음.
+        if (requestUserPermission.getId() >= updateUserPermission.getId()) {
+            throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_INVALID_PERMISSION);
+        }
+
+        //워크스페이스 설정 정보에 따라 권한 체크가 달라짐.
+        Optional<WorkspaceCustomSetting> workspaceCustomSettingOptional = workspaceCustomSettingRepository.findByWorkspace_UuidAndSetting_Name(workspaceId, SettingName.USER_ROLE_MANAGEMENT_ROLE_SETTING);
+        Role requestUserRole = requestUserPermission.getWorkspaceRole().getRole();
+        if (!workspaceCustomSettingOptional.isPresent() || workspaceCustomSettingOptional.get().getValue() == SettingValue.UNUSED || workspaceCustomSettingOptional.get().getValue() == SettingValue.MASTER) {
+            //요청 유저 권한 체크 -> 마스터가 아니면 던짐
+            if (requestUserRole != Role.MASTER) {
+                throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_INVALID_PERMISSION);
+            }
+        }
+        if (workspaceCustomSettingOptional.isPresent()) {
+            log.info("[REVISE MEMBER INFO] workspace custom setting value : [{}]", workspaceCustomSettingOptional.get().getValue());
+            //요청 유저 권한 체크 -> 마스터 또는 매니저가 아니면 던짐
+            if (workspaceCustomSettingOptional.get().getValue() == SettingValue.MASTER_OR_MANAGER) {
+                if (requestUserRole != Role.MASTER && requestUserRole != Role.MANAGER) {
+                    throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_INVALID_PERMISSION);
+                }
+            }
+            //요청 유저 권한 체크 -> 마스터 또는 매니저 또는 멤버가 아니면 던짐
+            if (workspaceCustomSettingOptional.get().getValue() == SettingValue.MASTER_OR_MANAGER_OR_MEMBER) {
+                if (requestUserRole != Role.MASTER && requestUserRole != Role.MANAGER && requestUserRole != Role.MEMBER) {
+                    throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_INVALID_PERMISSION);
+                }
+            }
+        }
     }
 
     private void modifyUserInfoByUserId(String userId, UserInfoModifyRequest userInfoModifyRequest) {
