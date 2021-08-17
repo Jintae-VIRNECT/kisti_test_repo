@@ -184,7 +184,7 @@ public class MemberRestController {
         return ResponseEntity.ok(new ApiResponse<>(responseData));
     }
 
-    @ApiOperation(value = "Create member group", notes = "멤버 그룹을 생성합니다")
+    @ApiOperation(value = "[MASTER] Create member group", notes = "멤버 그룹을 생성합니다")
     @PostMapping(value = "members/group/{workspaceId}/{userId}")
     public ResponseEntity<ApiResponse<RemoteGroupInfoResponse>> createGroupByMaster(
         @PathVariable(name = "workspaceId") String workspaceId,
@@ -207,7 +207,7 @@ public class MemberRestController {
         return ResponseEntity.ok(responseData);
     }
 
-    @ApiOperation(value = "Create member my-group", notes = "개인별 멤버 그룹을 생성합니다")
+    @ApiOperation(value = "[NORMAL USER] Create member group", notes = "개인별 멤버 그룹을 생성합니다")
     @PostMapping(value = "members/my-group/{workspaceId}/{userId}")
     public ResponseEntity<ApiResponse<RemoteGroupInfoResponse>> createGroupByUserId(
         @PathVariable(name = "workspaceId") String workspaceId,
@@ -230,9 +230,9 @@ public class MemberRestController {
         return ResponseEntity.ok(responseData);
     }
 
-    @ApiOperation(value = "Get group list", notes = "멤버 그룹을 조회합니다")
+    @ApiOperation(value = "[MASTER] Get member groups", notes = "멤버 그룹을 조회합니다")
     @GetMapping(value = "members/group/{workspaceId}")
-    public ResponseEntity<ApiResponse<RemoteGroupInfoListResponse>> getGroupsByWorkspaceId(
+    public ResponseEntity<ApiResponse<RemoteGroupInfoListResponse>> getGroupsByMaster(
         @PathVariable(name = "workspaceId") String workspaceId,
         @RequestParam(name = "userId") String userId
     ) {
@@ -242,7 +242,7 @@ public class MemberRestController {
                 + REST_PATH + "/"
                 + workspaceId + "/"
                 + userId,
-            "getGroupsByWorkspaceId"
+            "getGroupsByMaster"
         );
         if (Strings.isBlank(workspaceId)) {
             throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
@@ -251,9 +251,9 @@ public class MemberRestController {
         return ResponseEntity.ok(responseData);
     }
 
-    @ApiOperation(value = "Get selected group information", notes = "멤버그룹을 상세조회합니다")
+    @ApiOperation(value = "[MASTER] Get selected member group detail information", notes = "멤버그룹을 상세조회합니다")
     @GetMapping(value = "members/group/{workspaceId}/{groupId}")
-    public ResponseEntity<ApiResponse<RemoteGroupInfoResponse>> getGroupsByWorkspaceIdAndGroupId(
+    public ResponseEntity<ApiResponse<RemoteGroupInfoResponse>> getGroupsDetailInfoByMaster(
         @PathVariable(name = "workspaceId") String workspaceId,
         @PathVariable(name = "groupId") String groupId,
         @RequestParam(value = "filter", required = false) String filter,
@@ -266,7 +266,7 @@ public class MemberRestController {
                 + REST_PATH + "/"
                 + workspaceId + "/"
                 + groupId,
-            "getGroupsByWorkspaceIdAndGroupId"
+            "getGroupsDetailInfoByMaster"
         );
         if (Strings.isBlank(workspaceId) || Strings.isBlank(groupId)) {
             throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
@@ -281,7 +281,58 @@ public class MemberRestController {
         return ResponseEntity.ok(responseData);
     }
 
-    @ApiOperation(value = "Update group list", notes = "멤버 그룹정보를 수정합니다")
+    @ApiOperation(value = "[NORMAL USER] Get member groups", notes = "개인별 멤버 그룹을 조회합니다")
+    @GetMapping(value = "members/my-group/{workspaceId}")
+    public ResponseEntity<ApiResponse<RemoteGroupInfoListResponse>> getGroupsByUserId(
+        @PathVariable(name = "workspaceId") String workspaceId,
+        @RequestParam(name = "userId") String userId
+    ) {
+        LogMessage.formedInfo(
+            TAG,
+            "REST API: GET "
+                + REST_PATH + "/"
+                + workspaceId + "/"
+                + userId,
+            "getGroupsByUserId"
+        );
+        if (Strings.isBlank(workspaceId)) {
+            throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
+        }
+        ApiResponse<RemoteGroupInfoListResponse> responseData = memberService.getGroups(workspaceId, userId);
+        return ResponseEntity.ok(responseData);
+    }
+
+    @ApiOperation(value = "[NORMAL USER] Get selected member group detail information", notes = "개인별 멤버그룹을 상세조회합니다")
+    @GetMapping(value = "members/my-group/{workspaceId}/{groupId}")
+    public ResponseEntity<ApiResponse<RemoteGroupInfoResponse>> getGroupDetailInfoByUserId(
+        @PathVariable(name = "workspaceId") String workspaceId,
+        @PathVariable(name = "groupId") String groupId,
+        @RequestParam(value = "filter", required = false) String filter,
+        @RequestParam(value = "search", required = false) String search,
+        @RequestParam(value = "accessTypeFilter", required = false) boolean accessTypeFilter
+    ) {
+        LogMessage.formedInfo(
+            TAG,
+            "REST API: GET "
+                + REST_PATH + "/"
+                + workspaceId + "/"
+                + groupId,
+            "getGroupDetailInfoByUserId"
+        );
+        if (Strings.isBlank(workspaceId) || Strings.isBlank(groupId)) {
+            throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
+        }
+        ApiResponse<RemoteGroupInfoResponse> responseData = memberService.getGroup(
+            workspaceId,
+            groupId,
+            filter,
+            search,
+            accessTypeFilter
+        );
+        return ResponseEntity.ok(responseData);
+    }
+
+    @ApiOperation(value = "[MASTER] Update member group", notes = "멤버 그룹정보를 수정합니다")
     @PutMapping(value = "members/group/{workspaceId}/{userId}/{groupId}")
     public ResponseEntity<ApiResponse<RemoteGroupInfoResponse>> updateGroupByMaster(
         @PathVariable(name = "workspaceId") String workspaceId,
@@ -311,7 +362,7 @@ public class MemberRestController {
         return ResponseEntity.ok(responseData);
     }
 
-    @ApiOperation(value = "Update my-group list", notes = "개인별 멤버 그룹정보를 수정합니다")
+    @ApiOperation(value = "[NORMAL USER] Update member group", notes = "개인별 멤버 그룹정보를 수정합니다")
     @PutMapping(value = "members/my-group/{workspaceId}/{userId}/{groupId}")
     public ResponseEntity<ApiResponse<RemoteGroupInfoResponse>> updateGroupByUserId(
         @PathVariable(name = "workspaceId") String workspaceId,
@@ -341,7 +392,7 @@ public class MemberRestController {
         return ResponseEntity.ok(responseData);
     }
 
-    @ApiOperation(value = "Delete group list", notes = "멤버 그룹을 삭제합니다")
+    @ApiOperation(value = "[MASTER] Delete member group", notes = "멤버 그룹을 삭제합니다")
     @DeleteMapping(value = "members/group/{workspaceId}/{userId}/{groupId}")
     public ResponseEntity<ApiResponse<ResultResponse>> deleteGroupByMaster(
         @PathVariable(name = "workspaceId") String workspaceId,
@@ -364,7 +415,7 @@ public class MemberRestController {
         return ResponseEntity.ok(responseData);
     }
 
-    @ApiOperation(value = "Delete group list", notes = "멤버 그룹을 삭제합니다")
+    @ApiOperation(value = "[NORMAL USER] Delete member group", notes = "개인별 멤버 그룹을 삭제합니다")
     @DeleteMapping(value = "members/my-group/{workspaceId}/{userId}/{groupId}")
     public ResponseEntity<ApiResponse<ResultResponse>> deleteGroupByUserId(
         @PathVariable(name = "workspaceId") String workspaceId,
