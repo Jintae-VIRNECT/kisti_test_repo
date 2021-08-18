@@ -1,5 +1,6 @@
 package com.virnect.workspace.application.license;
 
+import com.virnect.workspace.dto.rest.LicenseRevokeResponse;
 import com.virnect.workspace.dto.rest.MyLicenseInfoListResponse;
 import com.virnect.workspace.dto.rest.MyLicenseInfoResponse;
 import com.virnect.workspace.dto.rest.WorkspaceLicensePlanInfoResponse;
@@ -30,5 +31,5 @@ public interface LicenseRestService {
     ApiResponse<MyLicenseInfoResponse> grantWorkspaceLicenseToUser(@PathVariable("workspaceId") String workspaceId, @PathVariable("userId") String userId, @RequestParam(value = "productName") String productName);
 
     @PutMapping(value = "/licenses/{workspaceId}/{userId}/revoke")
-    ApiResponse<Boolean> revokeWorkspaceLicenseToUser(@PathVariable("workspaceId") String workspaceId, @PathVariable("userId") String userId, @RequestParam(value = "productName") String productName);
+    ApiResponse<LicenseRevokeResponse> revokeWorkspaceLicenseToUser(@PathVariable("workspaceId") String workspaceId, @PathVariable("userId") String userId, @RequestParam(value = "productName") String productName);
 }

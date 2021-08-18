@@ -680,10 +680,12 @@ public abstract class WorkspaceUserService {
     }
 
     void revokeWorkspaceLicenseToUser(String workspaceId, String userId, String productName) {
-        ApiResponse<Boolean> apiResponse = licenseRestService.revokeWorkspaceLicenseToUser(workspaceId, userId, productName);
-        if (apiResponse.getCode() != 200 || apiResponse.getData() == null || !apiResponse.getData()) {
+        ApiResponse<LicenseRevokeResponse> apiResponse = licenseRestService.revokeWorkspaceLicenseToUser(workspaceId, userId, productName);
+        if (apiResponse.getCode() != 200 || !apiResponse.getData().isResult()) {
             log.error("[REVOKE WORKSPACE LICENSE TO USER] License revoke fail. workspace uuid : {}, user uuid : {}, product name : {}, response code : {}, response message : {}", workspaceId, userId, productName, apiResponse.getCode(), apiResponse.getMessage());
-            throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_USER_LICENSE_REVOKE_FAIL);
+            if (apiResponse.getCode() != 5002) {
+                throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_USER_LICENSE_REVOKE_FAIL);
+            }
         } else {
             log.info("[REVOKE WORKSPACE LICENSE TO USER ] License revoke success. workspace uuid : {}, user uuid : {}, product name : {}", workspaceId, userId, productName);
         }
@@ -786,13 +788,7 @@ public abstract class WorkspaceUserService {
                         "[WORKSPACE KICK OUT USER] Workspace User License Revoke. License Product Name >> {}",
                         myLicenseInfoResponse.getProductName()
                 );
-                boolean revokeResult = licenseRestService.revokeWorkspaceLicenseToUser(
-                        workspaceId, memberKickOutRequest.getKickedUserId(), myLicenseInfoResponse.getProductName())
-                        .getData();
-
-                if (!revokeResult) {
-                    throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_USER_LICENSE_REVOKE_FAIL);
-                }
+                revokeWorkspaceLicenseToUser(workspaceId, memberKickOutRequest.getKickedUserId(), myLicenseInfoResponse.getProductName());
             });
         }
 
@@ -844,13 +840,7 @@ public abstract class WorkspaceUserService {
         //라이선스 해제
         MyLicenseInfoListResponse myLicenseInfoListResponse = getMyLicenseInfoRequestHandler(workspaceId, userId);
         if (!CollectionUtils.isEmpty(myLicenseInfoListResponse.getLicenseInfoList())) {
-            myLicenseInfoListResponse.getLicenseInfoList().forEach(myLicenseInfoResponse -> {
-                boolean revokeResult = licenseRestService.revokeWorkspaceLicenseToUser(
-                        workspaceId, userId, myLicenseInfoResponse.getProductName()).getData();
-                if (!revokeResult) {
-                    throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_USER_LICENSE_REVOKE_FAIL);
-                }
-            });
+            myLicenseInfoListResponse.getLicenseInfoList().forEach(myLicenseInfoResponse -> revokeWorkspaceLicenseToUser(workspaceId, userId, myLicenseInfoResponse.getProductName()));
         }
 
         workspaceUserPermissionRepository.delete(workspaceUserPermission);
