@@ -42,6 +42,7 @@ import com.virnect.license.dto.ResourceCalculate;
 import com.virnect.license.dto.UserLicenseDetailsInfo;
 import com.virnect.license.dto.license.response.LicenseInfoResponse;
 import com.virnect.license.dto.license.response.LicenseProductInfoResponse;
+import com.virnect.license.dto.license.response.LicenseRevokeResponse;
 import com.virnect.license.dto.license.response.LicenseSecessionResponse;
 import com.virnect.license.dto.license.response.MyLicenseInfoListResponse;
 import com.virnect.license.dto.license.response.MyLicenseInfoResponse;
@@ -362,7 +363,9 @@ public class LicenseService {
 	 * @return 할당 해제 처리 결과
 	 */
 	@Transactional
-	public boolean userLicenseRevokeRequestHandler(String workspaceId, String userId, String productName) {
+	public LicenseRevokeResponse userLicenseRevokeRequestHandler(
+		String workspaceId, String userId, String productName
+	) {
 		LicensePlan licensePlan = licensePlanRepository.findByWorkspaceIdAndPlanStatusNot(
 			workspaceId, PlanStatus.TERMINATE
 		).orElseThrow(() -> new LicenseServiceException(ErrorCode.ERR_LICENSE_PLAN_NOT_FOUND));
@@ -379,7 +382,7 @@ public class LicenseService {
 				"Retrieve user license info via license plan : {} and license product: {} , but license info not found",
 				licensePlan, licenseProduct
 			);
-			throw new LicenseServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
+			throw new LicenseServiceException(ErrorCode.ERR_LICENSE_REVOKE_NOT_FOUND);
 		}
 
 		// 제품 라이선스 상태가 만약 초과 상태인 경우, 라이선스 종료 상태로 표시
@@ -414,7 +417,7 @@ public class LicenseService {
 		log.info("[LICENSE DEALLOCATE_PUSH_MESSAGE_REQUEST] - {}", licenseExpiredEvent.toString());
 		applicationEventPublisher.publishEvent(licenseExpiredEvent);
 
-		return true;
+		return new LicenseRevokeResponse(true, LocalDateTime.now());
 	}
 
 	/**

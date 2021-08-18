@@ -24,6 +24,7 @@ import lombok.extern.slf4j.Slf4j;
 import springfox.documentation.annotations.ApiIgnore;
 
 import com.virnect.license.application.LicenseService;
+import com.virnect.license.dto.license.response.LicenseRevokeResponse;
 import com.virnect.license.dto.license.response.LicenseSecessionResponse;
 import com.virnect.license.dto.license.response.MyLicenseInfoListResponse;
 import com.virnect.license.dto.license.response.MyLicenseInfoResponse;
@@ -133,14 +134,14 @@ public class LicenseController {
 		@ApiImplicitParam(name = "productName", value = "제품명", paramType = "query", defaultValue = "make"),
 	})
 	@PutMapping("/{workspaceId}/{userId}/revoke")
-	public ResponseEntity<ApiResponse<Boolean>> revokeWorkspaceLicenseToUser(
+	public ResponseEntity<ApiResponse<LicenseRevokeResponse>> revokeWorkspaceLicenseToUser(
 		@PathVariable("workspaceId") String workspaceId, @PathVariable("userId") String userId,
 		@RequestParam(value = "productName") String productName
 	) {
 		if (!StringUtils.hasText(workspaceId) || !StringUtils.hasText(userId) || !StringUtils.hasText(productName)) {
 			throw new LicenseServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
 		}
-		boolean responseMessage = licenseService.userLicenseRevokeRequestHandler(workspaceId, userId,
+		LicenseRevokeResponse responseMessage = licenseService.userLicenseRevokeRequestHandler(workspaceId, userId,
 			productName
 		);
 		return ResponseEntity.ok(new ApiResponse<>(responseMessage));
