@@ -41,7 +41,9 @@
     "add_group_bookmark":"즐겨찾기 추가",
     "member":"멤버",
     "member_group_bookmark":"즐겨찾기",
-    "connect":"접속"
+    "connect":"접속",
+    "modify":"수정",
+    "delete":"삭제"
   },
   "date": {
     "lastday": "[어제] A",

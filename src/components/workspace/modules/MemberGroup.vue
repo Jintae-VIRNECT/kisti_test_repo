@@ -8,7 +8,7 @@
     </div>
 
     <div class="card-item">
-      <p class="label">즐겨찾기 멤버:</p>
+      <p class="label">{{ $t('workspace.workspace_member_group_member') }}:</p>
       <profile-list
         style="min-height: 0px;"
         class="member-group"
@@ -17,12 +17,12 @@
       ></profile-list>
     </div>
 
-    <div class="widecard-tools ">
+    <div class="widecard-tools">
       <button @click="updateGroup">
-        수정
+        {{ $t('button.modify') }}
       </button>
       <button @click="deleteGroup">
-        삭제
+        {{ $t('button.delete') }}
       </button>
     </div>
   </div>
@@ -120,20 +120,20 @@ export default {
     min-width: 0;
     color: #949495;
     font-weight: 500;
-    font-size: 15px;
+    font-size: 1.0714rem;
     opacity: 0.8;
 
     & > .label {
       padding-right: 8px;
       color: rgb(148, 148, 149);
       font-weight: 500;
-      font-size: 15px;
+      font-size: 1.0714rem;
     }
 
     & > .title {
       color: rgb(255, 255, 255);
       font-weight: 500;
-      font-size: 16px;
+      font-size: 1.1429rem;
     }
   }
   .card-item:first-of-type {
@@ -161,12 +161,21 @@ export default {
   justify-content: flex-end;
 
   & > button {
-    width: 102px;
-    height: 38px;
-    margin-left: 10px;
-    background: rgb(89, 89, 96);
+    width: 7.2857rem;
+    height: 2.7143rem;
+    margin-left: 0.7143rem;
+    background: #595960;
     border-radius: 2px;
     box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.16);
+
+    &:hover {
+      background: #8f8f9b;
+      transition: background-color 0.2s;
+    }
+    &:focus,
+    &:active {
+      background-color: $color_darkgray_400;
+    }
   }
 }
 </style>

@@ -38,7 +38,7 @@
     :description="$t('workspace.workspace_member_group_max_description')"
     :emptyImage="require('assets/image/img_user_empty.svg')"
     :emptyTitle="emptyTitle"
-    :emptyDescription="'생성한 즐겨찾기가 없습니다.'"
+    :emptyDescription="$t('workspace.workspace_group_empty')"
     :empty="groupList.length === 0"
     :listCount="groupList.length"
     :showMemberButton="true"

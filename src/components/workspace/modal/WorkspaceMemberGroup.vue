@@ -36,7 +36,7 @@
         :disabled="selection.length === 0 || groupNameInValid"
         @click="save"
       >
-        {{ $t('button.confirm') }} {{ selection.length }}/5
+        {{ $t('button.confirm') }} {{ selection.length }}/{{ this.maxSelect }}
       </button>
     </div>
   </modal>
@@ -109,7 +109,7 @@ export default {
     },
     groupNameInvalidMessage() {
       if (this.groupNameInput.length < 2) {
-        return this.$t('그룹 이름은 두글자 이상 입력해주세요.')
+        return this.$t('workspace.workspace_member_group_name_valid1')
       } else {
         return this.$t('workspace.remote_name_valid2')
       }
@@ -198,7 +198,7 @@ export default {
       } catch (error) {
         if (error.code === 4027) {
           this.toastDefault(
-            this.$t('최대 10개 즐겨찾기 그룹의 생성이 가능합니다'),
+            this.$t('workspace.workspace_member_group_max_description'),
           )
         } else {
           this.toastError(this.$t('confirm.network_error'))

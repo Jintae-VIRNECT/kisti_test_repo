@@ -38,7 +38,12 @@
     "force_logout": "Log out",
     "retry":"Retry",
     "leave_exit": "Leave",
-    "connect":"Connect"
+    "add_group_bookmark":"Add to Favorites​",
+    "member":"Member",
+    "member_group_bookmark":"Favorites",
+    "connect":"Connect",
+    "modify":"Modify",
+    "delete":"Delete"
   },
   "date": {
     "lastday": "[Yesterday]",
