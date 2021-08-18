@@ -1,23 +1,30 @@
 <template>
-  <div class="widecard" :style="{ height: height }" :class="{ ...customClass }">
-    <div class="card-item">
+  <div
+    class="member-group-row"
+    :style="{ height: height }"
+    :class="{ ...customClass }"
+  >
+    <div class="group-item">
       <p>{{ index | idxFilter }}</p>
     </div>
-    <div class="card-item">
+    <div class="group-item">
       <p class="title">{{ group.groupName }}</p>
     </div>
 
-    <div class="card-item">
-      <p class="label">{{ $t('workspace.workspace_member_group_member') }}:</p>
+    <div class="group-item">
+      <p class="label hide-tablet">
+        {{ $t('workspace.workspace_member_group_member') }}:
+      </p>
       <profile-list
         style="min-height: 0px;"
-        class="member-group"
         :users="group.remoteGroupMemberInfoResponseList"
         size="2.143em"
+        :max="isTablet ? 3 : maxParticipants"
+        class="member-group-profile"
       ></profile-list>
     </div>
 
-    <div class="widecard-tools">
+    <div class="member-group__tools">
       <button @click="updateGroup">
         {{ $t('button.modify') }}
       </button>
@@ -30,11 +37,11 @@
 
 <script>
 import ProfileList from 'ProfileList'
+import { maxParticipants } from 'utils/callOptions'
 
 export default {
   name: 'MemberGroup',
   components: {
-    // Popover,
     ProfileList,
   },
   props: {
@@ -66,6 +73,7 @@ export default {
   data() {
     return {
       showRoomInfo: false,
+      maxParticipants: maxParticipants,
     }
   },
 
@@ -93,10 +101,10 @@ export default {
 }
 </script>
 
-<style lang="scss" scoped>
+<style lang="scss">
 @import '~assets/style/vars';
 @import '~assets/style/_mixin';
-.widecard {
+.member-group-row {
   display: flex;
   align-items: center;
   justify-content: flex-start;
@@ -114,7 +122,7 @@ export default {
     background-color: $color_darkgray_500;
   }
 
-  .card-item {
+  .group-item {
     flex: 1 1 0;
 
     min-width: 0;
@@ -124,38 +132,48 @@ export default {
     opacity: 0.8;
 
     & > .label {
-      padding-right: 8px;
+      padding-right: 0.5714rem;
       color: rgb(148, 148, 149);
       font-weight: 500;
       font-size: 1.0714rem;
     }
 
     & > .title {
+      overflow: hidden;
       color: rgb(255, 255, 255);
       font-weight: 500;
       font-size: 1.1429rem;
+      text-overflow: ellipsis;
     }
   }
-  .card-item:first-of-type {
+  .group-item:first-of-type {
     display: inherit;
     flex-grow: 0.2;
 
-    min-width: 112px;
+    min-width: 8rem;
   }
 
-  .card-item:nth-of-type(2) {
+  .group-item:nth-of-type(2) {
     flex-grow: 1.4;
   }
-  .card-item:nth-last-child(2) {
+  .group-item:nth-last-child(2) {
     display: flex;
     align-items: center;
     padding-right: 0.7143rem;
-  }
-  .card-item:last-of-type {
+    overflow: hidden;
   }
 }
 
-.widecard-tools {
+.member-group-profile.profilelist {
+  .profilelist-user__expend {
+    width: 2.143em;
+    height: 2.143em;
+    overflow: hidden;
+    line-height: 2.143em;
+  }
+}
+
+.member-group__tools {
   display: flex;
   align-items: center;
   justify-content: flex-end;
