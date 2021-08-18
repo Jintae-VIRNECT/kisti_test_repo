@@ -114,6 +114,9 @@ export default {
       this.selection = []
       this.selectHistory = []
     },
+    /**
+     * 즐겨찾기 목록 호출
+     */
     async getGroups() {
       try {
         const groups = await getMemberGroupList({
@@ -122,10 +125,14 @@ export default {
         })
 
         this.groupList = groups.groupInfoResponseList
+
+        //멤버 숫자 표기
         this.groupList.map(group => {
           group.memberCount = `${group.remoteGroupMemberInfoResponseList
             .length - 1}/${this.maxSelect}`
         })
+
+        //'선택 없음' 항목 추가
         this.groupList.unshift({
           groupName: this.$t(
             'workspace.workspace_member_group_member_no_selection',
@@ -137,8 +144,12 @@ export default {
         this.toastError(this.$t('confirm.network_error'))
       }
     },
+
+    /**
+     * 즐겨찾기 그룹 상세 조회
+     * @param {String} groupId 조회할 즐겨찾기 그룹 id
+     */
     async getGroupMembers(groupId) {
-      console.log(groupId)
       try {
         if (groupId === 'NONE') {
           this.selection = []
@@ -150,6 +161,7 @@ export default {
           groupId: groupId,
         })
 
+        //자기 자신은 제외하여 표출
         this.selection = group.remoteGroupMemberInfoResponseList.filter(
           member => {
             return member.uuid !== this.account.uuid
@@ -157,6 +169,7 @@ export default {
         )
       } catch (err) {
         console.error(err)
+        this.toastError(this.$t('confirm.network_error'))
       }
     },
   },
