@@ -1,14 +1,13 @@
 package com.virnect.license.api;
 
-import javax.validation.Valid;
+import java.util.List;
+
 import javax.validation.constraints.NotBlank;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.StringUtils;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -25,7 +24,6 @@ import lombok.extern.slf4j.Slf4j;
 import springfox.documentation.annotations.ApiIgnore;
 
 import com.virnect.license.application.LicenseService;
-import com.virnect.license.dto.license.request.UserLicenseInfoRetrieveRequest;
 import com.virnect.license.dto.license.response.LicenseSecessionResponse;
 import com.virnect.license.dto.license.response.MyLicenseInfoListResponse;
 import com.virnect.license.dto.license.response.MyLicenseInfoResponse;
@@ -69,18 +67,23 @@ public class LicenseController {
 		return ResponseEntity.ok(new ApiResponse<>(responseMessage));
 	}
 
-
 	@ApiOperation(value = "워크스페이스 내 사용자 라이선스 정보 조회(서버용)")
+	@ApiImplicitParams({
+		@ApiImplicitParam(name = "workspaceId", value = "워크스페이스 식별자", paramType = "path", required = true, defaultValue = "4d6eab0860969a50acbfa4599fbb5ae8"),
+		@ApiImplicitParam(name = "userIds", value = "사용자 식별자 번호", paramType = "query", required = true, defaultValue = "498b1839dc29ed7bb2ee90ad6985c608"),
+		@ApiImplicitParam(name = "product", value = "라이선스 조회 제품명 필터", paramType = "query"),
+	})
 	@GetMapping("/{workspaceId}")
 	public ResponseEntity<ApiResponse<UserLicenseInfoResponse>> getUserLicenseInfos(
-		@ModelAttribute @Valid UserLicenseInfoRetrieveRequest userLicenseInfoRetrieveRequest,
-		BindingResult result
-	){
-		if(result.hasErrors()){
+		@PathVariable("workspaceId") String workspaceId,
+		@RequestParam("userIds") List<String> userIds,
+		@RequestParam(value = "product", required = false) String product
+	) {
+		if (StringUtils.isEmpty(workspaceId) || userIds == null) {
 			throw new LicenseServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
 		}
 
-		UserLicenseInfoResponse responses = licenseService.getUserLicenseInfos(userLicenseInfoRetrieveRequest);
+		UserLicenseInfoResponse responses = licenseService.getUserLicenseInfos(workspaceId, userIds, product);
 		return ResponseEntity.ok(new ApiResponse<>(responses));
 	}
 

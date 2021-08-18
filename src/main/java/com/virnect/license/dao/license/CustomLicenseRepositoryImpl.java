@@ -106,13 +106,6 @@ public class CustomLicenseRepositoryImpl implements CustomLicenseRepository {
 	public List<License> findAllLicenseByUserUUIDListAndLicensePlanAndProductName(
 		LicensePlan targetLicensePlan, String productName, List<String> userUUIDList
 	) {
-		/*
-			select * from license as l
-			inner join license_product as lp on l.license_product_id = lp.license_product_id
-			inner join license_plan as lp2 on lp.license_plan_id = lp2.license_plan_id
-			inner join product as p on lp.product_id  = p.product_id
-			where l.user_id in (a,b,c) and p.productName = 'REMOTE'
-		 */
 		return query.selectFrom(license)
 			.innerJoin(license.licenseProduct, licenseProduct).fetchJoin()
 			.innerJoin(licenseProduct.licensePlan, licensePlan).fetchJoin()
@@ -124,6 +117,6 @@ public class CustomLicenseRepositoryImpl implements CustomLicenseRepository {
 		if (StringUtils.isEmpty(productName)) {
 			return null;
 		}
-		return license.licenseProduct.product.name.eq(productName);
+		return product.name.eq(productName);
 	}
 }

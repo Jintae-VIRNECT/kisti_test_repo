@@ -40,7 +40,6 @@ import com.virnect.license.domain.product.LicenseProductStatus;
 import com.virnect.license.domain.product.Product;
 import com.virnect.license.dto.ResourceCalculate;
 import com.virnect.license.dto.UserLicenseDetailsInfo;
-import com.virnect.license.dto.license.request.UserLicenseInfoRetrieveRequest;
 import com.virnect.license.dto.license.response.LicenseInfoResponse;
 import com.virnect.license.dto.license.response.LicenseProductInfoResponse;
 import com.virnect.license.dto.license.response.LicenseSecessionResponse;
@@ -547,13 +546,12 @@ public class LicenseService {
 		log.info("[LICENSE_PLAN_SECESSION][TERMINATED_DONE] - {}", licensePlan);
 	}
 
-	public UserLicenseInfoResponse getUserLicenseInfos(UserLicenseInfoRetrieveRequest userLicenseInfoRetrieveRequest) {
-		LicensePlan licensePlan = licensePlanRepository.findByWorkspaceIdAndPlanStatus(
-			userLicenseInfoRetrieveRequest.getWorkspaceId(), ACTIVE)
+	public UserLicenseInfoResponse getUserLicenseInfos(String workspaceId, List<String> userIds, String product) {
+		LicensePlan licensePlan = licensePlanRepository.findByWorkspaceIdAndPlanStatus(workspaceId, ACTIVE)
 			.orElseThrow(() -> new LicenseServiceException(ErrorCode.ERR_LICENSE_PLAN_NOT_FOUND));
 
 		List<License> licenses = licenseRepository.findAllLicenseByUserUUIDListAndLicensePlanAndProductName(
-			licensePlan, userLicenseInfoRetrieveRequest.getProduct(), userLicenseInfoRetrieveRequest.getUserIds()
+			licensePlan, product, userIds
 		);
 
 		List<UserLicenseInfo> userLicenseInfos = licenses.stream().map(license -> {
@@ -567,6 +565,6 @@ public class LicenseService {
 			return userLicenseInfo;
 		}).collect(Collectors.toList());
 
-		return new UserLicenseInfoResponse(userLicenseInfos, userLicenseInfoRetrieveRequest.getWorkspaceId());
+		return new UserLicenseInfoResponse(userLicenseInfos, workspaceId);
 	}
 }
