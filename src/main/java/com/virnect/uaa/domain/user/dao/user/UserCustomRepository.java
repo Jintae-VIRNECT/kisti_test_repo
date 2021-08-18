@@ -35,4 +35,7 @@ public interface UserCustomRepository {
 
 	Optional<User> findSeatUserByMasterAndSeatUserUUID(User master, String uuid);
 	Optional<User> findWorkspaceOnlyUserByMasterAndSeatUserUUID(User master, String uuid);
+
+
+	List<User> findAllSeatUsersByWorkspaceId(String workspaceId);
 }

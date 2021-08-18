@@ -131,6 +131,12 @@ public class UserCustomRepositoryImpl extends QuerydslRepositorySupport implemen
 		return Optional.ofNullable(seatUser);
 	}
 
+	@Override
+	public List<User> findAllSeatUsersByWorkspaceId(String workspaceId) {
+		String seatUserDomain = "@" + workspaceId + ".com";
+		return query.selectFrom(user).where(user.email.endsWith(seatUserDomain)).fetch();
+	}
+
 	/**
 	 *
 	 *  다이나믹쿼리를 위한 조건 메서드
