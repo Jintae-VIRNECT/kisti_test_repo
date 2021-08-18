@@ -8,6 +8,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.apache.commons.lang.StringUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -21,6 +23,7 @@ import com.google.gson.JsonObject;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import com.virnect.data.application.account.AccountRestService;
 import com.virnect.data.application.workspace.WorkspaceRestService;
 import com.virnect.data.dao.member.MemberRepository;
 import com.virnect.data.dao.room.RoomRepository;
@@ -44,6 +47,8 @@ import com.virnect.data.dto.request.room.KickRoomRequest;
 import com.virnect.data.dto.request.room.ModifyRoomInfoRequest;
 import com.virnect.data.dto.request.room.RoomRequest;
 import com.virnect.data.dto.response.ResultResponse;
+import com.virnect.data.dto.response.guest.GuestInfoResponse;
+import com.virnect.data.dto.response.guest.GuestInviteUrlResponse;
 import com.virnect.data.dto.response.member.MemberInfoResponse;
 import com.virnect.data.dto.response.room.CoturnResponse;
 import com.virnect.data.dto.response.room.InviteRoomResponse;
@@ -53,6 +58,7 @@ import com.virnect.data.dto.response.room.RoomDetailInfoResponse;
 import com.virnect.data.dto.response.room.RoomInfoListResponse;
 import com.virnect.data.dto.response.room.RoomInfoResponse;
 import com.virnect.data.dto.response.room.RoomResponse;
+import com.virnect.data.dto.rest.GuestAccountResponse;
 import com.virnect.data.dto.rest.WorkspaceMemberInfoListResponse;
 import com.virnect.data.dto.rest.WorkspaceMemberInfoResponse;
 import com.virnect.data.error.ErrorCode;
@@ -78,26 +84,30 @@ public class RoomService {
 	private static final String TAG = SessionRestController.class.getSimpleName();
 	private static final String REST_PATH = "/remote/room";
 
+	private final RemoteServiceConfig config;
+
 	private final RoomRepository roomRepository;
 	private final SessionDataRepository sessionDataRepository;
 	private final RoomHistoryRepository roomHistoryRepository;
-	private final WorkspaceRestService workspaceRestService;
 	private final MemberRepository memberRepository;
+
+	private final WorkspaceRestService workspaceRestService;
+	private final AccountRestService accountRestService;
+
 	private final ServiceSessionManager serviceSessionManager;
+
+	private final AccessStatusService accessStatusService;
 	private final FileService fileService;
 
 	private final RoomInfoMapper roomInfoMapper;
 	private final RoomDetailMapper roomDetailMapper;
 	private final MemberMapper memberMapper;
 
-	private final AccessStatusService accessStatusService;
 
 	@Override
 	protected Object clone() throws CloneNotSupportedException {
 		return super.clone();
 	}
-
-	private final RemoteServiceConfig config;
 
 	private List<MemberInfoResponse> setLeader(List<MemberInfoResponse> members) {
 		members.sort((t1, t2) -> {
@@ -905,6 +915,71 @@ public class RoomService {
 			result = AccessType.LOGOUT;
 		}
 		return result;
+	}
+
+	public ApiResponse<GuestInviteUrlResponse> createGuestInviteUrl(String workspaceId, String sessionId) {
+
+		Room room = roomRepository.findRoomByGuest(workspaceId, sessionId).orElse(null);
+		if (ObjectUtils.isEmpty(room)) {
+			return new ApiResponse<>(ErrorCode.ERR_ROOM_NOT_FOUND);
+		}
+
+		return new ApiResponse<>(GuestInviteUrlResponse.builder()
+			.workspaceId(workspaceId)
+			.sessionId(sessionId)
+			.url(config.remoteServiceProperties.getRemoteServicePublicUrl() + "/remote/invitation/guest/" + workspaceId + "/" + sessionId)
+			.build());
+	}
+
+	public ApiResponse<GuestInfoResponse> getGuestAndRoomInfoResponse(
+		String workspaceId,
+		String sessionId,
+		HttpServletRequest request
+	) {
+		// Guest 계정 정보
+		ApiResponse<GuestAccountResponse> guestAccount = accountRestService.getGuestAccountInfo(
+			"remote",
+			workspaceId,
+			request.getHeader("user-agent"),
+			extractIpFromRequest(request)
+		);
+		if (guestAccount.getCode() != ErrorCode.ERR_SUCCESS.getCode()) {
+			return new ApiResponse<>(ErrorCode.ERR_GUEST_ACCOUNT_INFO);
+		}
+		if (guestAccount.getData().getGuestUserStat().getTotalSeatUser() == guestAccount.getData().getGuestUserStat().getAllocateSeatUserTotal()) {
+			return new ApiResponse<>(ErrorCode.ERR_GUEST_ACCOUNT_ALLOCATE);
+		}
+
+		// Guest Open Room 정보
+		ApiResponse<RoomDetailInfoResponse> openRoom = getRoomDetailBySessionId(workspaceId, sessionId);
+		if (openRoom.getCode() != ErrorCode.ERR_SUCCESS.getCode()) {
+			return new ApiResponse<>(openRoom.getCode(), openRoom.getMessage());
+		}
+
+		GuestInfoResponse guestInfoResponse = GuestInfoResponse.builder()
+			.workspaceId(workspaceId)
+			.accessToken(guestAccount.getData().getAccessToken())
+			.refreshToken(guestAccount.getData().getRefreshToken())
+			.expireIn(guestAccount.getData().getExpireIn())
+			.roomInfoResponse(openRoom.getData())
+			.build();
+
+		return new ApiResponse<>(guestInfoResponse);
+	}
+
+	private String extractIpFromRequest(HttpServletRequest request) {
+		String clientIp;
+		String clientXForwardedForIp = request.getHeader("x-forwarded-for");
+		if (StringUtils.isBlank(clientXForwardedForIp)) {
+			clientIp = parseXForwardedHeader(clientXForwardedForIp);
+		} else {
+			clientIp = request.getRemoteAddr();
+		}
+		return clientIp;
+	}
+
+	private String parseXForwardedHeader(String header)	{
+		return header.split(" *,*")[0];
 	}
 
 }

@@ -26,6 +26,7 @@ public interface CustomRoomRepository {
 
 	Page<Room> findMyRoomSpecificUserIdBySearch(String workspaceId, String userId, List<String> userIds, String search, Pageable pageable);
 
+	Optional<Room> findRoomByGuest(String workspaceId, String sessionId);
 }
 
  

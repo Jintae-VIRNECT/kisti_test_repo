@@ -5,6 +5,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import com.virnect.data.dto.rest.GuestAccountResponse;
+import com.virnect.data.dto.rest.GuestUserStat;
 import com.virnect.data.dto.rest.UserInfoListOnlyResponse;
 import com.virnect.data.dto.rest.UserInfoListResponse;
 import com.virnect.data.dto.rest.UserInfoResponse;
@@ -31,4 +33,12 @@ public interface AccountRestService {
 
 	@GetMapping("/users/infoList")
 	ApiResponse<UserInfoListOnlyResponse> getUserInfoListByUserUUIDArray(@RequestParam("uuid") String[] uuid);
+
+	@GetMapping("/auth/guest")
+	ApiResponse<GuestAccountResponse> getGuestAccountInfo(
+		@RequestParam("product") String product,
+		@RequestParam("workspaceId") String workspaceId,
+		@RequestParam("x-guest-user-agent") String xGuestUserAgent,
+		@RequestParam("x-guest-user-ip") String xGuestUserIp
+	);
 }

@@ -20,7 +20,6 @@ import lombok.extern.slf4j.Slf4j;
 import com.virnect.mediaserver.config.MediaServerProperties;
 import com.virnect.serviceserver.infra.utils.ConfigValidation;
 
-@Profile({"staging", "production"})
 @Slf4j
 @Getter
 @Setter
@@ -141,11 +140,11 @@ public class RemoteServiceProperties extends PropertyService {
 
 	private void checkDomainOrPublicIp(String domain) {
 		if (domain != null && !domain.isEmpty()) {
-			this.remoteServicePublicUrl = "https://" + domainOrPublicIp;
+			//this.remoteServicePublicUrl = "https://" + domainOrPublicIp;
 			this.remoteWebsocketUrl = wss;
-			if (this.httpsPort != null && this.httpsPort != 443) {
+			/*if (this.httpsPort != null && this.httpsPort != 443) {
 				this.remoteServicePublicUrl += (":" + this.httpsPort);
-			}
+			}*/
 		}
 	}
 

@@ -207,6 +207,21 @@ public class CustomRoomRepositoryImpl extends QuerydslRepositorySupport implemen
 		return new PageImpl<>(results, pageable, totalCount);
 	}
 
+	@Override
+	public Optional<Room> findRoomByGuest(String workspaceId, String sessionId) {
+		return Optional.ofNullable(
+			query.selectFrom(room)
+				.leftJoin(room.members, member).fetchJoin()
+				.innerJoin(room.sessionProperty, sessionProperty).fetchJoin()
+				.where(
+					room.workspaceId.eq(workspaceId),
+					room.sessionId.eq(sessionId),
+					room.sessionProperty.sessionType.eq(SessionType.OPEN)
+				)
+				.distinct()
+				.fetchOne());
+	}
+
 	/**
 	 * 강퇴된 사용자 제외 서브 쿼리
 	 * @param userId - 조회될 사용자 정보 식별자

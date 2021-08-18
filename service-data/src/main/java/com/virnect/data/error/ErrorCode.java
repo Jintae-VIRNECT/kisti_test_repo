@@ -58,6 +58,8 @@ public enum ErrorCode {
 	ERR_GROUP_NOT_FOUND(4026, "remote group can not found"),
 	ERR_GROUP_COUNT_OVER(4027, "remote group over count"),
 	ERR_GROUP_MEMBER_COUNT_OVER(4027, "remote group member over count"),
+	ERR_GUEST_ACCOUNT_ALLOCATE(4028, "Allocated accounts are not usable."),
+	ERR_GUEST_ACCOUNT_INFO(4028, "Guest account Info Error"),
 
 	// error code for service validation
 	ERR_LICENSE_NOT_VALIDITY(5001, "License has no validity"),

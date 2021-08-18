@@ -39,7 +39,7 @@ public class ConfigService {
 		json.addProperty("domain_or_public_ip", remoteServiceConfig.remoteServiceProperties.getDomainOrPublicIp());
 		json.addProperty("https_port", remoteServiceConfig.remoteServiceProperties.getHttpsPort());
 		json.addProperty(
-			"remote_service_publicurl", remoteServiceConfig.remoteServiceProperties.getRemoteServicePublicUrl());
+			"remote_service_public_url", remoteServiceConfig.remoteServiceProperties.getRemoteServicePublicUrl());
 		json.addProperty("remote_service_cdr", remoteServiceConfig.remoteServiceProperties.isRemoteCdr());
 
 		//BandwidthProperty

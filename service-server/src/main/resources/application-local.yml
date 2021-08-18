@@ -124,6 +124,7 @@ service:
     remote_webhook_endpoint: https://webhook.site/67d3ca77-8754-428f-b814-91f45146a26a
     remote_webhook_events: ["sessionCreated","sessionDestroyed","participantJoined","participantLeft","webrtcConnectionCreated","webrtcConnectionDestroyed","recordingStatusChanged","filterEventDispatched","mediaNodeStatusChanged"]
     remote_webhook_headers: []
+    remote_service_public_url: https://192.168.6.3:8073
 
 storage:
     enabled: true

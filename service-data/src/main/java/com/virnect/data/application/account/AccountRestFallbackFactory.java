@@ -7,6 +7,8 @@ import org.springframework.stereotype.Component;
 import feign.hystrix.FallbackFactory;
 import lombok.extern.slf4j.Slf4j;
 
+import com.virnect.data.dto.rest.GuestAccountResponse;
+import com.virnect.data.dto.rest.GuestUserStat;
 import com.virnect.data.dto.rest.UserInfoListOnlyResponse;
 import com.virnect.data.dto.rest.UserInfoListResponse;
 import com.virnect.data.dto.rest.UserInfoResponse;
@@ -49,13 +51,16 @@ public class AccountRestFallbackFactory implements FallbackFactory<AccountRestSe
             public ApiResponse<UserInfoListOnlyResponse> getUserInfoListByUserUUIDArray(String[] uuid) {
                 return null;
             }
+
+            @Override
+            public ApiResponse<GuestAccountResponse> getGuestAccountInfo(
+                String product, String workspaceId, String xGuestUserAgent, String xGuestUserIp
+            ) {
+                log.info("[GUEST ACCOUNT INFORMATION API FALLBACK] => WORKSPACE ID : {}", workspaceId);
+                GuestAccountResponse empty = new GuestAccountResponse();
+                return new ApiResponse<>(empty);
+            }
         };
 
-        /*return (search, paging) -> {
-            log.info("[USER WORKSPACE LIST API FALLBACK] => USER_ID: {}");
-            UserInfoListResponse empty = new UserInfoListResponse();
-            empty.setUserInfoList(new ArrayList<>());
-            return new ApiResponse<UserInfoListResponse>(empty);
-        };*/
     }
 }

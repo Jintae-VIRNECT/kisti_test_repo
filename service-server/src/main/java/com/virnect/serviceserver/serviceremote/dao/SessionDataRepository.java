@@ -818,7 +818,7 @@ public class SessionDataRepository {
      * Prepare to join the room the user is....
      */
     public ApiResponse<Boolean> prepareJoinRoom(String workspaceId, String sessionId, String userId) {
-            
+
         Room room = sessionService.getRoomForWrite(workspaceId, sessionId);
         if (ObjectUtils.isEmpty(room)) {
             return new ApiResponse<>(false, ErrorCode.ERR_ROOM_NOT_FOUND);
@@ -1124,53 +1124,5 @@ public class SessionDataRepository {
             sessionService.setRoomHistory(roomHistory);
             sessionService.deleteRoom(room);
         }
-    }
-
-    public ApiResponse<RoomResponse> joinOpenRoomOnlyNonmember(String workspaceId, String sessionId, String sessionToken) {
-
-        Room room = sessionService.getRoomForWrite(workspaceId, sessionId);
-        if (room == null) {
-            throw new RestServiceException(ErrorCode.ERR_ROOM_NOT_FOUND);
-        }
-
-        if (room.getSessionProperty().getSessionType() != SessionType.OPEN) {
-            throw new RestServiceException(ErrorCode.ERR_ROOM_INFO_ACCESS);
-        }
-
-        if (!room.getMembers().isEmpty()) {
-            long memberCount = room.getMembers().stream().filter(member -> !(member.getMemberStatus() == MemberStatus.UNLOAD)).count();
-            if (memberCount >= ROOM_MEMBER_LIMIT) {
-                throw new RestServiceException(ErrorCode.ERR_ROOM_MEMBER_MAX_COUNT);
-            }
-        }
-
-        // Pre data process
-        SessionTokenResponse sessionTokenResponse = null;
-        try {
-            sessionTokenResponse = objectMapper.readValue(sessionToken, SessionTokenResponse.class);
-        } catch (JsonProcessingException e) {
-            e.printStackTrace();
-        }
-
-        Member member = Member.builder()
-            .workspaceId(workspaceId)
-            .sessionId(sessionId)
-            .uuid("NONMEMBER")
-            .memberType(MemberType.NONMEMBER)
-            .room(room)
-            .build();
-
-        sessionService.setMember(member);
-
-        RoomResponse roomResponse = new RoomResponse();
-        //not set session create at property
-        roomResponse.setSessionId(sessionId);
-        roomResponse.setToken(sessionTokenResponse.getToken());
-        roomResponse.setWss(config.remoteServiceProperties.getWss() + WS_PATH);
-        roomResponse.setVideoRestrictedMode(room.isVideoRestrictedMode());
-        roomResponse.setAudioRestrictedMode(room.isAudioRestrictedMode());
-        roomResponse.setSessionType(room.getSessionProperty().getSessionType());
-
-        return new ApiResponse<>(roomResponse);
     }
 }
