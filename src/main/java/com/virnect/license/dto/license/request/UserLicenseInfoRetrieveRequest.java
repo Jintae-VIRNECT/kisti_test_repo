@@ -14,12 +14,12 @@ import lombok.Setter;
 @Setter
 public class UserLicenseInfoRetrieveRequest {
 	@NotBlank
-	@ApiModelProperty(value = "워크스페이스 식별자 정보")
+	@ApiModelProperty(value = "워크스페이스 식별자 정보", required = true)
 	private String workspaceId;
-	@ApiModelProperty(value = "사용자 식별자 배열")
+	@ApiModelProperty(value = "사용자 식별자 배열", position = 1, required = true)
 	@NotNull
 	private List<String> userIds = new ArrayList<>();
-	@ApiModelProperty(value = "라이선스 제품명")
+	@ApiModelProperty(value = "라이선스 조회 제품명 (필터링용)", position = 2)
 	private String product;
 
 	@Override

@@ -8,7 +8,6 @@ import lombok.Setter;
 @Getter
 @Setter
 public class UserLicenseInfo {
-	private String workspaceId;
 	private String userId;
 	private long licenseId;
 	private String serialKey;
@@ -19,7 +18,6 @@ public class UserLicenseInfo {
 	@Override
 	public String toString() {
 		return "UserLicenseInfo{" +
-			"workspaceId='" + workspaceId + '\'' +
 			", userId='" + userId + '\'' +
 			", licenseId=" + licenseId +
 			", serialKey='" + serialKey + '\'' +

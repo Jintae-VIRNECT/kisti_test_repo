@@ -70,7 +70,7 @@ public class LicenseController {
 	}
 
 
-	@ApiOperation(value = "워크스페이스 내 사용자 라이선스 정보 조회")
+	@ApiOperation(value = "워크스페이스 내 사용자 라이선스 정보 조회(서버용)")
 	@GetMapping("/{workspaceId}")
 	public ResponseEntity<ApiResponse<UserLicenseInfoResponse>> getUserLicenseInfos(
 		@ModelAttribute @Valid UserLicenseInfoRetrieveRequest userLicenseInfoRetrieveRequest,

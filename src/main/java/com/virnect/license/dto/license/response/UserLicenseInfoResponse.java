@@ -3,10 +3,12 @@ package com.virnect.license.dto.license.response;
 import java.util.List;
 
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
 @Getter
-@Setter
+@RequiredArgsConstructor
 public class UserLicenseInfoResponse {
-	private List<UserLicenseInfo> userLicenseInfos;
+	private final List<UserLicenseInfo> userLicenseInfos;
+	private final String workspaceId;
 }

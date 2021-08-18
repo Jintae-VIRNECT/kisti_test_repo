@@ -48,6 +48,7 @@ import com.virnect.license.dto.license.response.MyLicenseInfoListResponse;
 import com.virnect.license.dto.license.response.MyLicenseInfoResponse;
 import com.virnect.license.dto.license.response.MyLicensePlanInfoListResponse;
 import com.virnect.license.dto.license.response.MyLicensePlanInfoResponse;
+import com.virnect.license.dto.license.response.UserLicenseInfo;
 import com.virnect.license.dto.license.response.UserLicenseInfoResponse;
 import com.virnect.license.dto.license.response.WorkspaceLicensePlanInfoResponse;
 import com.virnect.license.dto.rest.content.ContentResourceUsageInfoResponse;
@@ -551,7 +552,21 @@ public class LicenseService {
 			userLicenseInfoRetrieveRequest.getWorkspaceId(), ACTIVE)
 			.orElseThrow(() -> new LicenseServiceException(ErrorCode.ERR_LICENSE_PLAN_NOT_FOUND));
 
+		List<License> licenses = licenseRepository.findAllLicenseByUserUUIDListAndLicensePlanAndProductName(
+			licensePlan, userLicenseInfoRetrieveRequest.getProduct(), userLicenseInfoRetrieveRequest.getUserIds()
+		);
 
-		return null;
+		List<UserLicenseInfo> userLicenseInfos = licenses.stream().map(license -> {
+			UserLicenseInfo userLicenseInfo = new UserLicenseInfo();
+			userLicenseInfo.setLicenseId(license.getId());
+			userLicenseInfo.setUserId(license.getUserId());
+			userLicenseInfo.setSerialKey(license.getSerialKey());
+			userLicenseInfo.setProductName(license.getLicenseProduct().getProduct().getName());
+			userLicenseInfo.setCreatedDate(license.getCreatedDate());
+			userLicenseInfo.setUpdatedDate(license.getUpdatedDate());
+			return userLicenseInfo;
+		}).collect(Collectors.toList());
+
+		return new UserLicenseInfoResponse(userLicenseInfos, userLicenseInfoRetrieveRequest.getWorkspaceId());
 	}
 }
