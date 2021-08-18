@@ -127,7 +127,9 @@ export default {
             .length - 1}/${this.maxSelect}`
         })
         this.groupList.unshift({
-          groupName: '선택 안함',
+          groupName: this.$t(
+            'workspace.workspace_member_group_member_no_selection',
+          ),
           groupId: 'NONE',
         })
       } catch (err) {
