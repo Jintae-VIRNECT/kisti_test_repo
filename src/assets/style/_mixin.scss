@@ -290,6 +290,38 @@ root div에 theme 설정
 }
 */
 
+@mixin responsive-widecard {
+  padding-right: 1.2rem;
+  padding-left: 1.5rem;
+  background-color: $new_color_bg_item;
+  border-radius: 0.6rem;
+  &.selected {
+    border-color: $new_color_bg_button_primary;
+  }
+  .profile .profile--text {
+    max-width: 65%;
+    .profile--role__mobile {
+      display: block;
+      margin-right: 0.6rem;
+      margin-left: 0;
+      color: #58a3f7;
+      border-color: #58a3f7;
+    }
+    .profile--maintext {
+      @include fontLevel(100);
+      color: $new_color_text_main;
+    }
+    .profile--subtext {
+      @include fontLevel(75);
+      color: $new_color_text_sub;
+    }
+  }
+
+  .profile--role {
+    display: none;
+  }
+}
+
 //반응형 모바일 (360px) ~ 767px
 @mixin responsive-mobile {
   @media screen and (max-width: $responsive_m_max) {

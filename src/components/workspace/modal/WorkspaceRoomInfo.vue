@@ -1,71 +1,87 @@
 <template>
-  <modal
-    :title="$t('workspace.info_remote_detail')"
-    width="64.286em"
-    height="56.429em"
-    :showClose="true"
-    :visible.sync="visibleFlag"
-    :beforeClose="beforeClose"
-    customClass="modal-roominfo"
-  >
-    <div class="roominfo">
-      <section class="roominfo-nav">
-        <div class="roominfo-nav__image">
-          <profile
-            :group="true"
-            :image="image"
-            :thumbStyle="{ width: '5.143rem', height: '5.143rem' }"
-          ></profile>
-        </div>
-        <div class="roominfo-nav__menus">
-          <button
-            class="roominfo-nav__menu"
-            :class="{ active: tabview === 'group' }"
-            :data-text="$t('workspace.info_remote')"
-            @click="tabChange('group')"
-          >
-            {{ $t('workspace.info_remote') }}
-          </button>
-          <button
-            class="roominfo-nav__menu"
-            :class="{ active: tabview === 'user' }"
-            :data-text="$t('workspace.info_remote_member')"
-            @click="tabChange('user')"
-          >
-            {{ $t('workspace.info_remote_member') }}
-          </button>
-          <button
-            v-if="useStorage"
-            class="roominfo-nav__menu"
-            :class="{ active: tabview === 'download' }"
-            :data-text="$t('button.download')"
-            @click="tabChange('download')"
-          >
-            {{ $t('button.download') }}
-          </button>
-        </div>
-      </section>
+  <div>
+    <modal
+      :title="$t('workspace.info_remote_detail')"
+      width="64.286em"
+      height="56.429em"
+      :showClose="true"
+      :visible.sync="visiblePcFlag"
+      :beforeClose="beforeClose"
+      customClass="modal-roominfo"
+    >
+      <div class="roominfo">
+        <section class="roominfo-nav">
+          <div class="roominfo-nav__image">
+            <profile
+              :group="true"
+              :image="image"
+              :thumbStyle="{ width: '5.143rem', height: '5.143rem' }"
+            ></profile>
+          </div>
+          <div class="roominfo-nav__menus">
+            <button
+              class="roominfo-nav__menu"
+              :class="{ active: tabview === 'group' }"
+              :data-text="$t('workspace.info_remote')"
+              @click="tabChange('group')"
+            >
+              {{ $t('workspace.info_remote') }}
+            </button>
+            <button
+              class="roominfo-nav__menu"
+              :class="{ active: tabview === 'user' }"
+              :data-text="$t('workspace.info_remote_member')"
+              @click="tabChange('user')"
+            >
+              {{ $t('workspace.info_remote_member') }}
+            </button>
+            <button
+              v-if="useStorage"
+              class="roominfo-nav__menu"
+              :class="{ active: tabview === 'download' }"
+              :data-text="$t('button.download')"
+              @click="tabChange('download')"
+            >
+              {{ $t('button.download') }}
+            </button>
+          </div>
+        </section>
 
-      <keep-alive>
-        <room-info
-          v-if="tabview === 'group'"
-          :room="room"
-          :image.sync="image"
-          :isLeader="isLeader"
-          @update="update"
-        ></room-info>
+        <keep-alive>
+          <room-info
+            v-if="tabview === 'group'"
+            :room="room"
+            :image.sync="image"
+            :isLeader="isLeader"
+            @update="update"
+          ></room-info>
 
-        <participants-info
-          v-else-if="tabview === 'user'"
-          :participants="memberList"
-          :isLeader="isLeader"
-          :sessionId="sessionId"
-          @kickout="kickout"
-        ></participants-info>
-        <room-download v-else :sessionId="sessionId"></room-download>
-      </keep-alive>
-    </div>
-  </modal>
+          <participants-info
+            v-else-if="tabview === 'user'"
+            :participants="memberList"
+            :isLeader="isLeader"
+            :sessionId="sessionId"
+            @kickout="kickout"
+          ></participants-info>
+          <room-download v-else :sessionId="sessionId"></room-download>
+        </keep-alive>
+      </div>
+    </modal>
+    <workspace-mobile-room-info
+      :room="room"
+      :sessionId="sessionId"
+      :isLeader="isLeader"
+      :visible.sync="visibleMobileFlag"
+      :beforeClose="beforeClose"
+      :image.sync="image"
+      :tabview="tabview"
+      :memberList="memberList"
+      @tabChange="tabChange"
+      @update="update"
+      @kickout="kickout"
+    >
+    </workspace-mobile-room-info>
+  </div>
 </template>
 
 <script>
@@ -85,6 +101,7 @@ import Profile from 'Profile'
 import toastMixin from 'mixins/toast'
 import confirmMixin from 'mixins/confirm'
 import errorMsgMixin from 'mixins/errorMsg'
+import responsiveModalVisibleMixin from 'mixins/responsiveModalVisible'
 
 import { ERROR } from 'configs/error.config'
 
@@ -92,19 +109,24 @@ import { mapGetters } from 'vuex'
 
 export default {
   name: 'WorkspaceRoomInfo',
-  mixins: [toastMixin, confirmMixin, errorMsgMixin],
+  mixins: [
+    toastMixin,
+    confirmMixin,
+    errorMsgMixin,
+    responsiveModalVisibleMixin,
+  ],
   components: {
     Modal,
     Profile,
     RoomInfo,
     ParticipantsInfo,
     RoomDownload,
+    WorkspaceMobileRoomInfo: () => import('./WorkspaceMobileRoomInfo'),
   },
   data() {
     return {
       room: null,
       tabview: 'group',
-      visibleFlag: false,
       image: null,
     }
   },
@@ -137,7 +159,7 @@ export default {
       if (flag === true) {
         this.initRemote()
       }
-      this.visibleFlag = flag
+      this.setVisiblePcOrMobileFlag(flag)
     },
   },
   methods: {

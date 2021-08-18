@@ -333,3 +333,127 @@
     background-color: $color_primary_dark;
   }
 }
+
+@include responsive-mobile {
+  .workspace-mobile-roominfo {
+    .roominfo-nav {
+      width: 100%;
+      min-width: auto;
+      height: 4.6rem;
+      padding: 0;
+      background-color: $new_color_bg;
+      border: none;
+      border-radius: 0;
+    }
+    .roominfo-nav__menus {
+      flex-direction: row;
+      align-items: center;
+      justify-content: start;
+      height: 100%;
+      margin: 0;
+      margin-left: 1.4rem;
+
+      > button {
+        position: relative;
+        display: flex;
+        justify-content: center;
+        width: 8rem;
+        height: 100%;
+        margin-right: 1.2rem;
+        margin-bottom: 0;
+        color: $new_color_text_main;
+        @include fontLevel(100);
+
+        &::after {
+          position: absolute;
+          bottom: 0;
+          left: 0;
+          z-index: 2;
+          width: 0;
+          height: 0.3rem;
+          background-color: white;
+          visibility: visible;
+          transition: width 0.3s;
+          content: "";
+        }
+
+        &.active::after {
+          width: 100%;
+        }
+      }
+    }
+  }
+
+  //ModalRoomInfo
+  .roominfo-view {
+    width: 100%;
+    height: calc(100vh - 4.6rem - 5.4rem);
+    padding: 2.3rem 1.6rem 2.3rem 1.6rem;
+  }
+  .roominfo-view__title {
+    color: $new_color_text_main;
+    @include fontLevel(400);
+  }
+  .roominfo-view__body {
+    margin-top: -0.2rem;
+
+    .roominfo-figure:first-child .roominfo-figure__text {
+      color: $new_color_text_main;
+    }
+
+    .roominfo-figure {
+      display: flex;
+      align-items: center;
+      margin-top: 2.2rem;
+
+      .roominfo-figure__title {
+        min-width: 5.5rem;
+        @include fontLevel(100);
+        margin-right: 5.8rem;
+        color: $new_color_text_sub;
+      }
+      .roominfo-figure__text {
+        display: flex;
+        justify-content: flex-end;
+        width: 100%;
+        margin: 0;
+        @include fontLevel(200);
+        color: $new_color_text_sub;
+      }
+    }
+  }
+
+  .roominfo-view__footer {
+    margin-top: 3.2rem;
+    padding-top: 1.6rem;
+    border-top: 1.5px solid $new_color_sub_border;
+
+    .roominfo-view__data {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 1.6rem;
+      @include fontLevel(100);
+
+      .data-title {
+        color: $new_color_text_sub;
+      }
+      .data-value {
+        color: $new_color_text_main;
+      }
+    }
+  }
+
+  //ModalParticipantsInfo
+  .roominfo-view__body.table {
+    margin-top: 1.6rem;
+  }
+
+  //UserInfo
+  .roominfo-view__body .remoteinfo-usercard.widecard {
+    @include responsive-widecard;
+    .userinfo__image {
+      width: 2.8rem;
+      height: 2.8rem;
+    }
+  }
+}

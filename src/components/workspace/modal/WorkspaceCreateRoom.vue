@@ -1,5 +1,5 @@
 <template>
-  <div class="workspace-createroom-wrapper">
+  <div>
     <modal
       :title="$t('workspace.create_remote')"
       width="78.429em"
@@ -64,7 +64,7 @@ export default {
     },
     visible: {
       type: Boolean,
-      default: false,
+      default: true,
     },
   },
   data() {

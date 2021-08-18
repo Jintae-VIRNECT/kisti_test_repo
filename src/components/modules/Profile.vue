@@ -171,9 +171,11 @@ export default {
 }
 .profile--mainheader {
   display: flex;
+  align-items: center;
 }
 .profile--role__mobile {
   display: none;
+  margin-top: 0.2rem;
 }
 .profile--maintext {
   color: #fafafa;

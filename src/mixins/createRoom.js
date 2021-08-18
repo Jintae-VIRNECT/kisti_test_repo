@@ -12,10 +12,11 @@ import { ROOM_STATUS } from 'configs/status.config'
 import { ROLE } from 'configs/remote.config'
 import toastMixin from 'mixins/toast'
 import callMixin from 'mixins/call'
+import responsiveModalVisibleMixin from 'mixins/responsiveModalVisible'
 import { mapActions } from 'vuex'
 
 export default {
-  mixins: [toastMixin, callMixin],
+  mixins: [toastMixin, callMixin, responsiveModalVisibleMixin],
   watch: {
     async visible(flag) {
       if (flag) {
@@ -26,21 +27,10 @@ export default {
         }
         this.inviteRefresh()
       }
-      this.callAndGetMobileResponsiveFunction(
-        this.setVisibleMobileFlag,
-        this.setVisiblePcFlag,
-      )
+      this.setVisiblePcOrMobileFlag(flag)
     },
   },
   methods: {
-    setVisiblePcFlag() {
-      this.visiblePcFlag = this.visible
-      this.visibleMobileFlag = false
-    },
-    setVisibleMobileFlag() {
-      this.visiblePcFlag = false
-      this.visibleMobileFlag = this.visible
-    },
     beforeClose() {
       this.$emit('update:visible', false)
     },
@@ -241,15 +231,5 @@ export default {
         }
       }
     },
-  },
-  mounted() {
-    this.responsiveFn = this.callAndGetMobileResponsiveFunction(
-      this.setVisibleMobileFlag,
-      this.setVisiblePcFlag,
-    )
-    this.addEventListenerScreenResize(this.responsiveFn)
-  },
-  beforeDestroy() {
-    this.removeEventListenerScreenResize(this.responsiveFn)
   },
 }

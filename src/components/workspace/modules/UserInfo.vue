@@ -2,7 +2,7 @@
   <wide-card
     :key="user.uuid"
     :customClass="['remoteinfo-usercard', { offline: !isOnline }]"
-    height="6.143em"
+    :height="height"
   >
     <div class="roominfo-userinfo">
       <profile
@@ -12,7 +12,7 @@
         :subText="user.email"
         :role="user.memberType"
         :status="accessType(user.accessType)"
-        :thumbStyle="{ width: '3em', height: '3em' }"
+        :thumbStyle="thumbStyle"
         :isMe="isMe"
       ></profile>
 
@@ -38,12 +38,15 @@ import WideCard from 'WideCard'
 import Profile from 'Profile'
 import { DEVICE } from 'configs/device.config'
 import { STATUS } from 'configs/status.config'
+import responsiveWideCard from 'mixins/responsiveWideCard'
+
 export default {
   name: 'UserInfo',
   components: {
     WideCard,
     Profile,
   },
+  mixins: [responsiveWideCard],
   props: {
     user: {
       type: Object,
@@ -55,9 +58,6 @@ export default {
       type: Boolean,
       default: false,
     },
-  },
-  data() {
-    return {}
   },
   computed: {
     deviceImg() {

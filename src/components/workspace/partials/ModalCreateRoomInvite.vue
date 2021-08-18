@@ -66,11 +66,7 @@ import Scroller from 'Scroller'
 import Profile from 'Profile'
 import WideCard from 'WideCard'
 import IconButton from 'IconButton'
-
-const defaultWideCardHeight = '6.143em'
-const mobileWideCardHeight = '7.2rem'
-const defaultThumbStyle = { width: '3em', height: '3em' }
-const mobileThumbStyle = { width: '4.3rem', height: '4.3rem' }
+import responsiveWideCard from 'mixins/responsiveWideCard'
 
 export default {
   name: 'ModalCreateRoomInvite',
@@ -80,13 +76,7 @@ export default {
     WideCard,
     IconButton,
   },
-  data() {
-    return {
-      height: defaultWideCardHeight,
-      thumbStyle: defaultThumbStyle,
-      responsiveFn: null,
-    }
-  },
+  mixins: [responsiveWideCard],
   props: {
     users: {
       type: Array,
@@ -129,26 +119,6 @@ export default {
       if (accessType) return accessType.toLowerCase()
       return ''
     },
-    responsiveMobile() {
-      this.height = mobileWideCardHeight
-      this.thumbStyle = mobileThumbStyle
-    },
-    responsiveDefault() {
-      this.height = defaultWideCardHeight
-      this.thumbStyle = defaultThumbStyle
-    },
-  },
-
-  /* Lifecycles */
-  mounted() {
-    this.responsiveFn = this.callAndGetMobileResponsiveFunction(
-      this.responsiveMobile,
-      this.responsiveDefault,
-    )
-    this.addEventListenerScreenResize(this.responsiveFn)
-  },
-  beforeDestroy() {
-    this.removeEventListenerScreenResize(this.responsiveFn)
   },
 }
 </script>
@@ -166,33 +136,11 @@ export default {
     content: url(~assets/image/workspace/ic_renew_16.svg);
   }
 
-  //user card item
-  .widecard.choice {
-    .profile .profile--text {
-      max-width: 65%;
-      .profile--role__mobile {
-        display: block;
-        margin-right: 0.6rem;
-        margin-left: 0;
-        color: #58a3f7;
-        border-color: #58a3f7;
-      }
-      .profile--maintext {
-        @include fontLevel(100);
-        color: $new_color_text_main;
-      }
-      .profile--subtext {
-        @include fontLevel(75);
-        color: $new_color_text_sub;
-      }
-    }
-
-    .profile--role {
-      display: none;
-    }
-  }
-
   .createroom-user__body {
+    .widecard.choice {
+      @include responsive-widecard;
+    }
+
     .createroom-user__empty {
       background-color: $new_color_bg_sub;
       img {
