@@ -195,6 +195,8 @@
     "workspace_member_group_max_description":"최대 10개 즐겨찾기 그룹의 생성이 가능합니다.",
     "workspace_member_group_name_valid1":"즐겨찾기 이름을 입력해주세요.",
     "workspace_member_group_member":"즐겨찾기 멤버",
+    "workspace_member_group_member_no_selection" :"선택 없음",
+
     "workspace_select": "워크스페이스 선택"
   }
 }

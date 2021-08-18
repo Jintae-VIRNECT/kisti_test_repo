@@ -197,6 +197,8 @@
     "workspace_member_group_max_description":"最大10個のコラボグループの作成が可能です。​",
     "workspace_member_group_name_valid1":"コラボグループ名を入力してください。",
     "workspace_member_group_member":"コラボグループメンバー",
+    "workspace_member_group_member_no_selection" :"選択しない​",
+
     "workspace_select":"ワークスペース選択"
   }
 }
