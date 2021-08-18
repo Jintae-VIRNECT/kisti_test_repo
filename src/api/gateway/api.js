@@ -26,13 +26,12 @@ export default {
   ],
 
   /* Workspace - Member Group */
-  MEMBER_GROUP_LIST: ['GET', '/remote/members/group/{workspaceId}'],
-  MEMBER_GROUP_LIST_ITEM: [
+  PRIVATE_MEMBER_GROUP_LIST: ['GET', '/remote/members/my-group/{workspaceId}'],
+  PRIVATE_MEMBER_GROUP_LIST_ITEM: [
     'GET',
-    '/remote/members/group/{workspaceId}/{groupId}',
+    '/remote/members/my-group/{workspaceId}/{groupId}',
   ],
 
-  // CREATE_MEMBER_GROUP: ['POST', '/remote/members/group/{workspaceId}/{userId}'],
   CREATE_PRIVATE_MEMBER_GROUP: [
     'POST',
     '/remote/members/my-group/{workspaceId}/{userId}',

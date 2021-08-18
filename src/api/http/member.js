@@ -112,7 +112,7 @@ export const inviteRoom = async ({
  * @returns 멤버 그룹 목록
  */
 export const getMemberGroupList = async ({ workspaceId, userId }) => {
-  const returnVal = await http('MEMBER_GROUP_LIST', {
+  const returnVal = await http('PRIVATE_MEMBER_GROUP_LIST', {
     workspaceId,
     userId,
   })
@@ -134,7 +134,7 @@ export const getMemberGroupItem = async ({
   page = 0,
   size = 0,
 }) => {
-  const returnVal = await http('MEMBER_GROUP_LIST_ITEM', {
+  const returnVal = await http('PRIVATE_MEMBER_GROUP_LIST_ITEM', {
     workspaceId,
     groupId,
     page,
