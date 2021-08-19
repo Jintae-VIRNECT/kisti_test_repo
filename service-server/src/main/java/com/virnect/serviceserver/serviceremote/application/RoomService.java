@@ -58,7 +58,7 @@ import com.virnect.data.dto.response.room.RoomDetailInfoResponse;
 import com.virnect.data.dto.response.room.RoomInfoListResponse;
 import com.virnect.data.dto.response.room.RoomInfoResponse;
 import com.virnect.data.dto.response.room.RoomResponse;
-import com.virnect.data.dto.rest.GuestAccountResponse;
+import com.virnect.data.dto.rest.GuestAccountInfoResponse;
 import com.virnect.data.dto.rest.WorkspaceMemberInfoListResponse;
 import com.virnect.data.dto.rest.WorkspaceMemberInfoResponse;
 import com.virnect.data.error.ErrorCode;
@@ -937,7 +937,7 @@ public class RoomService {
 		HttpServletRequest request
 	) {
 		// Guest 계정 정보
-		ApiResponse<GuestAccountResponse> guestAccount = accountRestService.getGuestAccountInfo(
+		ApiResponse<GuestAccountInfoResponse> guestAccount = accountRestService.getGuestAccountInfo(
 			"remote",
 			workspaceId,
 			request.getHeader("user-agent"),
@@ -949,7 +949,7 @@ public class RoomService {
 		if (guestAccount.getCode() != ErrorCode.ERR_SUCCESS.getCode()) {
 			return new ApiResponse<>(ErrorCode.ERR_GUEST_ACCOUNT_INFO);
 		}
-		if (guestAccount.getData().getGuestUserStat().getTotalSeatUser() == guestAccount.getData().getGuestUserStat().getAllocateSeatUserTotal()) {
+		if (guestAccount.getData().getSeatUserStat().getTotalSeatUser() == guestAccount.getData().getSeatUserStat().getAllocateSeatUserTotal()) {
 			return new ApiResponse<>(ErrorCode.ERR_GUEST_ACCOUNT_ALLOCATE);
 		}
 

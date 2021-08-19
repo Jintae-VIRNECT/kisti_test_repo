@@ -16,7 +16,7 @@ public class GuestInfoResponse {
 	private String workspaceId;
 	private String accessToken;
 	private String refreshToken;
-	private int expireIn;
+	private long expireIn;
 	private RoomDetailInfoResponse roomInfoResponse;
 
 	@Override

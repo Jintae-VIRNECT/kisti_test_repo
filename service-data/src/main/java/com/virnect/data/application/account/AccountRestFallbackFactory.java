@@ -7,8 +7,7 @@ import org.springframework.stereotype.Component;
 import feign.hystrix.FallbackFactory;
 import lombok.extern.slf4j.Slf4j;
 
-import com.virnect.data.dto.rest.GuestAccountResponse;
-import com.virnect.data.dto.rest.GuestUserStat;
+import com.virnect.data.dto.rest.GuestAccountInfoResponse;
 import com.virnect.data.dto.rest.UserInfoListOnlyResponse;
 import com.virnect.data.dto.rest.UserInfoListResponse;
 import com.virnect.data.dto.rest.UserInfoResponse;
@@ -53,11 +52,11 @@ public class AccountRestFallbackFactory implements FallbackFactory<AccountRestSe
             }
 
             @Override
-            public ApiResponse<GuestAccountResponse> getGuestAccountInfo(
+            public ApiResponse<GuestAccountInfoResponse> getGuestAccountInfo(
                 String product, String workspaceId, String xGuestUserAgent, String xGuestUserIp
             ) {
                 log.info("[GUEST ACCOUNT INFORMATION API FALLBACK] => WORKSPACE ID : {}", workspaceId);
-                GuestAccountResponse empty = new GuestAccountResponse();
+                GuestAccountInfoResponse empty = new GuestAccountInfoResponse();
                 return new ApiResponse<>(empty);
             }
         };

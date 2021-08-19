@@ -6,10 +6,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import com.netflix.ribbon.proxy.annotation.Http;
-
-import com.virnect.data.dto.rest.GuestAccountResponse;
-import com.virnect.data.dto.rest.GuestUserStat;
+import com.virnect.data.dto.rest.GuestAccountInfoResponse;
 import com.virnect.data.dto.rest.UserInfoListOnlyResponse;
 import com.virnect.data.dto.rest.UserInfoListResponse;
 import com.virnect.data.dto.rest.UserInfoResponse;
@@ -38,7 +35,7 @@ public interface AccountRestService {
 	ApiResponse<UserInfoListOnlyResponse> getUserInfoListByUserUUIDArray(@RequestParam("uuid") String[] uuid);
 
 	@GetMapping("/auth/guest")
-	ApiResponse<GuestAccountResponse> getGuestAccountInfo(
+	ApiResponse<GuestAccountInfoResponse> getGuestAccountInfo(
 		@RequestParam("product") String product,
 		@RequestParam("workspaceId") String workspaceId,
 		@RequestHeader("x-guest-user-agent") String xGuestUserAgent,
