@@ -38,7 +38,7 @@ import WideCard from 'WideCard'
 import Profile from 'Profile'
 import { DEVICE } from 'configs/device.config'
 import { STATUS } from 'configs/status.config'
-import responsiveWideCard from 'mixins/responsiveWideCard'
+import responsiveCardMixin from 'mixins/responsiveCard'
 
 export default {
   name: 'UserInfo',
@@ -46,7 +46,7 @@ export default {
     WideCard,
     Profile,
   },
-  mixins: [responsiveWideCard],
+  mixins: [responsiveCardMixin],
   props: {
     user: {
       type: Object,

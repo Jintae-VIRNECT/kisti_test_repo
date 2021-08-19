@@ -528,6 +528,7 @@ export default {
     > img {
       width: 8rem;
       height: 8rem;
+      content: url(~assets/image/img_noalram_new.svg);
     }
     > span {
       @include fontLevel(150);

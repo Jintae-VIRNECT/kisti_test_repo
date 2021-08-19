@@ -3,7 +3,7 @@
     :title="$t('workspace.history_title')"
     :placeholder="$t('workspace.search_room')"
     customClass="history"
-    :emptyImage="require('assets/image/img_recent_empty.svg')"
+    :emptyImage="emptyImage"
     :emptyTitle="emptyTitle"
     :emptyDescription="emptyDescription"
     :empty="list.length === 0"
@@ -24,7 +24,9 @@
       <history
         v-for="(history, index) in list"
         :key="index"
-        height="6.143rem"
+        :height="height"
+        :thumbStyle="thumbStyle"
+        :placement="placement"
         :menu="true"
         :history="history"
         @createRoom="createRoom(history.sessionId, history.sessionType)"
@@ -60,6 +62,7 @@ import Loader from 'Loader'
 import confirmMixin from 'mixins/confirm'
 import { ROOM_STATUS } from 'configs/status.config'
 import { nameExp as EXP_NAME } from 'utils/regexp'
+import responsiveCardMixin from 'mixins/responsiveCard'
 
 import {
   getHistoryList,
@@ -68,9 +71,15 @@ import {
   searchHistoryList,
 } from 'api/http/history'
 
+const mobileWideCardHeight = '6.6rem'
+const mobileThumbStyle = { width: '4.2rem', height: '4.2rem' }
+const mobilePlacement = 'left-start'
+const defaultEmptyImage = require('assets/image/img_recent_empty.svg')
+const mobileEmptyImage = require('assets/image/img_recent_empty_new.svg')
+
 export default {
   name: 'WorkspaceHistory',
-  mixins: [confirmMixin],
+  mixins: [confirmMixin, responsiveCardMixin],
   components: {
     Loader,
     TabView,
@@ -105,6 +114,8 @@ export default {
         last: false,
       },
       searchingText: '',
+      emptyImage: defaultEmptyImage,
+      responsiveFn: null,
     }
   },
   computed: {
@@ -138,6 +149,12 @@ export default {
     },
   },
   methods: {
+    setMobileEmptyImage() {
+      this.emptyImage = mobileEmptyImage
+    },
+    setDefaultEmptyImage() {
+      this.emptyImage = defaultEmptyImage
+    },
     //상세보기
     openRoomInfo(sessionId) {
       this.$eventBus.$emit('popover:close')
@@ -375,15 +392,25 @@ export default {
       }
     },
   },
-
+  created() {
+    this.setMobileHeightAndThumbStyle(mobileWideCardHeight, mobileThumbStyle)
+    this.setMobilePlacement(mobilePlacement)
+  },
   mounted() {
     if (this.workspace.uuid) {
       this.init()
     }
     this.$eventBus.$on('scroll:end', this.moreHistory)
+
+    this.responsiveFn = this.callAndGetMobileResponsiveFunction(
+      this.setMobileEmptyImage,
+      this.setDefaultEmptyImage,
+    )
+    this.addEventListenerScreenResize(this.responsiveFn)
   },
   beforeDestroy() {
     this.$eventBus.$off('scroll:end', this.moreHistory)
+    this.removeEventListenerScreenResize(this.responsiveFn)
   },
 }
 </script>

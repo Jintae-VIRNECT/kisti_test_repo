@@ -299,6 +299,9 @@ root div에 theme 설정
     border-color: $new_color_bg_button_primary;
   }
   .profile .profile--text {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
     max-width: 65%;
     .profile--role__mobile {
       display: block;
@@ -319,6 +322,22 @@ root div에 theme 설정
 
   .profile--role {
     display: none;
+  }
+}
+
+@mixin responsive-popover {
+  &.popover {
+    background-color: #606a77; //@추가 color
+    border: none; //@추가 color
+  }
+  .groupcard-popover {
+    .group-pop__button {
+      @include fontLevel(100);
+      width: 12.1rem;
+      height: 4rem;
+      padding: 0;
+      padding-left: 2rem;
+    }
   }
 }
 

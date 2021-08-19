@@ -4,7 +4,8 @@
     :class="{ open: isOpenRoom }"
     :menu="true"
     width="100%"
-    height="33rem"
+    :height="height"
+    :placement="placement"
     popoverClass="group-menu"
   >
     <div class="groupcard-body">
@@ -110,6 +111,10 @@ import thumbStyle from 'mixins/thumbStyle'
 
 const defaultThumbStyle = { width: '5.143rem', height: '5.143rem' }
 const mobileThumbStyle = { width: '4.2rem', height: '4.2rem' }
+const defaultPlacement = 'bottom-start'
+const mobilePlacement = 'left-start'
+const defaultCardHeight = '33rem'
+const mobileCardHeight = '8.4rem'
 
 export default {
   name: 'RemoteCard',
@@ -125,6 +130,8 @@ export default {
       showRoomInfo: false,
       title: '',
       thumbStyle: defaultThumbStyle,
+      placement: defaultPlacement,
+      height: defaultCardHeight,
     }
   },
   props: {
@@ -193,17 +200,27 @@ export default {
         open: this.isOpenRoom,
       })
     },
+    setResponsiveDefault() {
+      this.placement = defaultPlacement
+      this.thumbStyle = defaultThumbStyle
+      this.height = defaultCardHeight
+    },
+    setResponsiveMobile() {
+      this.placement = mobilePlacement
+      this.thumbStyle = mobileThumbStyle
+      this.height = mobileCardHeight
+    },
   },
-
   /* Lifecycles */
   mounted() {
-    this.setSizeVariable(
-      defaultThumbStyle.width,
-      defaultThumbStyle.height,
-      mobileThumbStyle.width,
-      mobileThumbStyle.height,
+    this.responsiveFn = this.callAndGetMobileResponsiveFunction(
+      this.setResponsiveMobile,
+      this.setResponsiveDefault,
     )
-    this.activateThumbStyleHandlerOnMobileSize()
+    this.addEventListenerScreenResize(this.responsiveFn)
+  },
+  beforeDestroy() {
+    this.removeEventListenerScreenResize(this.responsiveFn)
   },
 }
 </script>
@@ -248,18 +265,21 @@ export default {
 }
 
 @include responsive-mobile {
-  .popover.group-menu {
-    background-color: #606a77; //@추가 color
-    border: none; //@추가 color
+  .group-menu {
+    @include responsive-popover;
   }
-  .groupcard-popover {
-    .group-pop__button {
-      @include fontLevel(100);
-      width: 12.1rem;
-      height: 4rem;
-      padding: 0;
-      padding-left: 2rem;
-    }
-  }
+  // .popover.group-menu {
+  //   background-color: #606a77; //@추가 color
+  //   border: none; //@추가 color
+  // }
+  // .groupcard-popover {
+  //   .group-pop__button {
+  //     @include fontLevel(100);
+  //     width: 12.1rem;
+  //     height: 4rem;
+  //     padding: 0;
+  //     padding-left: 2rem;
+  //   }
+  // }
 }
 </style>

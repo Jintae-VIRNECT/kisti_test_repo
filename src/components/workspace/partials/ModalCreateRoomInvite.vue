@@ -66,7 +66,7 @@ import Scroller from 'Scroller'
 import Profile from 'Profile'
 import WideCard from 'WideCard'
 import IconButton from 'IconButton'
-import responsiveWideCard from 'mixins/responsiveWideCard'
+import responsiveCardMixin from 'mixins/responsiveCard'
 
 export default {
   name: 'ModalCreateRoomInvite',
@@ -76,7 +76,7 @@ export default {
     WideCard,
     IconButton,
   },
-  mixins: [responsiveWideCard],
+  mixins: [responsiveCardMixin],
   props: {
     users: {
       type: Array,

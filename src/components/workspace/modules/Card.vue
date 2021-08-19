@@ -21,9 +21,6 @@
 <script>
 import Popover from 'Popover'
 
-const defaultPlacement = 'bottom-start'
-const mobilePlacement = 'left-start'
-
 export default {
   name: 'Card',
   components: {
@@ -46,12 +43,10 @@ export default {
       type: String,
       default: '',
     },
-  },
-  data() {
-    return {
-      placement: defaultPlacement,
-      responsivePlacement: null,
-    }
+    placement: {
+      type: String,
+      default: 'bottom-start',
+    },
   },
   computed: {
     cardWidth() {
@@ -68,26 +63,6 @@ export default {
         return this.height + 'px'
       }
     },
-  },
-  methods: {
-    setDefaultPlacement() {
-      this.placement = defaultPlacement
-    },
-    setMobilePlacement() {
-      this.placement = mobilePlacement
-    },
-  },
-
-  /* Lifecycles */
-  mounted() {
-    this.responsivePlacement = this.callAndGetMobileResponsiveFunction(
-      this.setMobilePlacement,
-      this.setDefaultPlacement,
-    )
-    this.addEventListenerScreenResize(this.responsivePlacement)
-  },
-  beforeDestroy() {
-    this.removeEventListenerScreenResize(this.responsivePlacement)
   },
 }
 </script>
@@ -140,10 +115,13 @@ export default {
     transform: translateY(-50%);
   }
   .card__button {
-    width: 3.2rem;
+    width: 3.8rem;
     height: 3.2rem;
     background: none;
     &:before {
+      right: 0;
+      left: 6px;
+      width: 3.2rem;
       background: url(~assets/image/ic_more_vertical_24.svg) 50%/3.2rem 3.2rem
         no-repeat;
     }

@@ -186,6 +186,8 @@
 //워크스페이스 선택 모바일 레이아웃
 @include responsive-mobile {
   .workspace-tab {
+    background-color: $new_color_bg_sub;
+
     //헤더
     .tab-view .tab-view__header {
       width: initial;
