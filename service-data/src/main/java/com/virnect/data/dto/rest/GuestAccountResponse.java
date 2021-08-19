@@ -16,4 +16,15 @@ public class GuestAccountResponse {
 	private int expireIn;
 	private GuestUserStat guestUserStat;
 
+	@Override
+	public String toString() {
+		return "GuestAccountResponse{" +
+			"accessToken='" + accessToken + '\'' +
+			", refreshToken='" + refreshToken + '\'' +
+			", scope='" + scope + '\'' +
+			", tokenType='" + tokenType + '\'' +
+			", expireIn=" + expireIn +
+			", guestUserStat=" + guestUserStat +
+			'}';
+	}
 }

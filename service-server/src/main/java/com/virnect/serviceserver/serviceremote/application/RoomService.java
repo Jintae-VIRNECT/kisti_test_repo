@@ -943,6 +943,9 @@ public class RoomService {
 			request.getHeader("user-agent"),
 			extractIpFromRequest(request)
 		);
+
+		log.info("guest account toString : " + guestAccount.getData().toString());
+
 		if (guestAccount.getCode() != ErrorCode.ERR_SUCCESS.getCode()) {
 			return new ApiResponse<>(ErrorCode.ERR_GUEST_ACCOUNT_INFO);
 		}

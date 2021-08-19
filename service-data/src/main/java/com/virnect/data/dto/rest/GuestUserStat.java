@@ -11,4 +11,12 @@ public class GuestUserStat {
 	private int allocateSeatUserTotal;
 	private int deallocateSeatUserTotal;
 
+	@Override
+	public String toString() {
+		return "GuestUserStat{" +
+			"totalSeatUser=" + totalSeatUser +
+			", allocateSeatUserTotal=" + allocateSeatUserTotal +
+			", deallocateSeatUserTotal=" + deallocateSeatUserTotal +
+			'}';
+	}
 }
