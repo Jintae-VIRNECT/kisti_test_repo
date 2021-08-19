@@ -3,7 +3,10 @@ package com.virnect.data.application.account;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestParam;
+
+import com.netflix.ribbon.proxy.annotation.Http;
 
 import com.virnect.data.dto.rest.GuestAccountResponse;
 import com.virnect.data.dto.rest.GuestUserStat;
@@ -38,7 +41,7 @@ public interface AccountRestService {
 	ApiResponse<GuestAccountResponse> getGuestAccountInfo(
 		@RequestParam("product") String product,
 		@RequestParam("workspaceId") String workspaceId,
-		@RequestParam("x-guest-user-agent") String xGuestUserAgent,
-		@RequestParam("x-guest-user-ip") String xGuestUserIp
+		@RequestHeader("x-guest-user-agent") String xGuestUserAgent,
+		@RequestHeader("x-guest-user-ip") String xGuestUserIp
 	);
 }
