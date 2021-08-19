@@ -400,6 +400,9 @@
     .roominfo-figure:first-child .roominfo-figure__text {
       color: $new_color_text_main;
     }
+    .roominfo-figure:nth-child(2) {
+      align-items: flex-start;
+    }
 
     .roominfo-figure {
       display: flex;
@@ -408,17 +411,17 @@
 
       .roominfo-figure__title {
         min-width: 5.5rem;
-        @include fontLevel(100);
         margin-right: 5.8rem;
         color: $new_color_text_sub;
+        @include fontLevel(100);
       }
       .roominfo-figure__text {
-        display: flex;
-        justify-content: flex-end;
         width: 100%;
         margin: 0;
-        @include fontLevel(200);
         color: $new_color_text_sub;
+        text-align: right;
+        word-break: break-all;
+        @include fontLevel(200);
       }
     }
   }
