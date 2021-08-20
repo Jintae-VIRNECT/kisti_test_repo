@@ -44,7 +44,7 @@ public class CustomFavoriteGroupRepositoryImpl extends QuerydslRepositorySupport
 				favoriteGroup.workspaceId.eq(workspaceId),
 				includeUserId(userId)
 			)
-			.orderBy(remoteGroup.groupName.asc())
+			.orderBy(favoriteGroup.groupName.asc())
 			.distinct()
 			.fetch();
 	}
