@@ -1,19 +1,17 @@
-package com.virnect.data.dao.member;
+package com.virnect.data.dao.group;
 
-import static com.virnect.data.domain.member.QMember.member;
-import static com.virnect.data.domain.member.QRemoteGroup.*;
-import static com.virnect.data.domain.member.QRemoteGroupMember.*;
-import static com.virnect.data.domain.room.QRoom.room;
+import static com.virnect.data.domain.group.QRemoteGroup.*;
+import static com.virnect.data.domain.group.QRemoteGroupMember.*;
 
 import java.util.List;
 
-import com.querydsl.core.types.dsl.BooleanExpression;
 import org.springframework.data.jpa.repository.support.QuerydslRepositorySupport;
+import org.springframework.util.StringUtils;
 
+import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 
-import com.virnect.data.domain.member.RemoteGroup;
-import org.springframework.util.StringUtils;
+import com.virnect.data.domain.group.RemoteGroup;
 
 public class CustomRemoteGroupRepositoryImpl extends QuerydslRepositorySupport implements CustomRemoteGroupRepository {
 
@@ -25,17 +23,14 @@ public class CustomRemoteGroupRepositoryImpl extends QuerydslRepositorySupport i
 	}
 
 	@Override
-	public List<RemoteGroup> findByWorkspaceIdAndUserId(
-		String workspaceId,
-		String userId
+	public List<RemoteGroup> findByWorkspaceId(
+		String workspaceId
 	) {
 		return query
 			.selectFrom(remoteGroup)
 			.innerJoin(remoteGroup.groupMembers, remoteGroupMember).fetchJoin()
 			.where(
-				remoteGroup.workspaceId.eq(workspaceId),
-				remoteGroup.uuid.eq(userId)
-				//includeUserId(userId)
+				remoteGroup.workspaceId.eq(workspaceId)
 			)
 			.orderBy(remoteGroup.groupName.asc())
 			.distinct()
@@ -43,15 +38,13 @@ public class CustomRemoteGroupRepositoryImpl extends QuerydslRepositorySupport i
 	}
 
 	@Override
-	public long findByWorkspaceIdAndUserIdGroupCount(
-		String workspaceId,
-		String userId
+	public long findByWorkspaceIdGroupCount(
+		String workspaceId
 	) {
 		return query
 			.selectFrom(remoteGroup)
 			.where(
-				remoteGroup.workspaceId.eq(workspaceId),
-				remoteGroup.uuid.eq(userId)
+				remoteGroup.workspaceId.eq(workspaceId)
 			)
 			.distinct()
 			.fetchCount();
@@ -78,8 +71,7 @@ public class CustomRemoteGroupRepositoryImpl extends QuerydslRepositorySupport i
 			.selectFrom(remoteGroup)
 			.where(
 				remoteGroup.workspaceId.eq(workspaceId),
-				remoteGroup.groupId.eq(groupId),
-				remoteGroup.uuid.eq(userId)
+				remoteGroup.groupId.eq(groupId)
 			)
 			.distinct()
 			.fetchOne();

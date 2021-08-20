@@ -1,4 +1,4 @@
-package com.virnect.data.dto.response.member;
+package com.virnect.data.dto.response.group;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -10,7 +10,7 @@ import com.virnect.data.redis.domain.AccessType;
 @Getter
 @Setter
 @ApiModel
-public class RemoteGroupMemberInfoResponse {
+public class RemoteGroupMemberResponse {
 
 	@ApiModelProperty(value = "User Unique Identifier", position = 1, example = "498b1839dc29ed7bb2ee90ad6985c608")
 	private String uuid = "";

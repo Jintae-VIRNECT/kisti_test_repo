@@ -1,4 +1,4 @@
-package com.virnect.data.dto.response.member;
+package com.virnect.data.dto.response.group;
 
 import java.util.List;
 
@@ -11,8 +11,8 @@ import lombok.Setter;
 @Setter
 @ApiModel
 @Builder
-public class RemoteGroupInfoListResponse {
+public class FavoriteGroupListResponse {
 
-	private List<RemoteGroupInfoResponse> groupInfoResponseList;
+	private List<FavoriteGroupResponse> favoriteGroupResponses;
 
 }

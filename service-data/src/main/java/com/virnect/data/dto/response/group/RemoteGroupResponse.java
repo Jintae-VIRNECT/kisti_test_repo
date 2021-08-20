@@ -1,4 +1,4 @@
-package com.virnect.data.dto.response.member;
+package com.virnect.data.dto.response.group;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,8 +11,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @ApiModel
-public class RemoteGroupInfoResponse {
-
+public class RemoteGroupResponse {
 	@ApiModelProperty(value = "Workspace Identifier", position = 1, example = "40f9bbee9d85dca7a34a0dd205aae718")
 	private String workspaceId = "";
 
@@ -23,6 +22,5 @@ public class RemoteGroupInfoResponse {
 	private String groupName = "";
 
 	@ApiModelProperty(value = "Group members", position = 4, example = "group members")
-	private List<RemoteGroupMemberInfoResponse> remoteGroupMemberInfoResponseList = new ArrayList<>();
-
+	private List<RemoteGroupMemberResponse> remoteGroupMemberResponses = new ArrayList<>();
 }

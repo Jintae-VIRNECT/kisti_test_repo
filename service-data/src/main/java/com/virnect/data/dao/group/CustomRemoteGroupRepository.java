@@ -1,14 +1,14 @@
-package com.virnect.data.dao.member;
+package com.virnect.data.dao.group;
 
 import java.util.List;
 
-import com.virnect.data.domain.member.RemoteGroup;
+import com.virnect.data.domain.group.RemoteGroup;
 
 public interface CustomRemoteGroupRepository {
 
-	List<RemoteGroup> findByWorkspaceIdAndUserId(String workspaceId, String userId);
+	List<RemoteGroup> findByWorkspaceId(String workspaceId);
 
-	long findByWorkspaceIdAndUserIdGroupCount(String workspaceId, String userId);
+	long findByWorkspaceIdGroupCount(String workspaceId);
 
 	RemoteGroup findByWorkspaceIdAndGroupId(String workspaceId, String groupId);
 
