@@ -1,6 +1,6 @@
 <template>
   <section class="tab-view" :class="[customClass]">
-    <div class="tab-view__header offsetwidth">
+    <div class="tab-view__header offsetwidth" :class="{ sub: showSubHeader }">
       <span
         class="tab-view__title"
         :class="{
@@ -33,33 +33,39 @@
           :text="$t('button.refresh')"
           @click="$emit('refresh')"
         ></icon-button>
+
+        <!-- 즐겨 찾기 -->
+        <icon-button
+          v-if="showManageGroupButton"
+          :imgSrc="require('assets/image/workspace/ic_manage_member_group.svg')"
+          :text="$t('button.member_group_bookmark')"
+          @click="$emit('showgroup')"
+        ></icon-button>
+
+        <!-- 멤버 화면으로 가는 버튼 -->
+        <icon-button
+          v-if="showMemberButton"
+          :imgSrc="require('assets/image/workspace/ic_member.svg')"
+          :text="$t('button.member')"
+          @click="$emit('showmember')"
+        ></icon-button>
+
+        <!-- 그룹 추가 버튼 -->
+        <icon-button
+          v-if="showAddGroupButton"
+          :imgSrc="require('assets/image/workspace/ic_add_member_group_.svg')"
+          :text="$t('button.add_group_bookmark')"
+          @click="$emit('addgroup')"
+        ></icon-button>
       </div>
     </div>
-    <!-- <div class="tab-view__sub-header offsetwidth" v-if="!hideTitle">
-      <span class="tab-view__description">{{ description }}</span>
-      <div class="tab-view__tools" v-if="description.length > 0">
-        <search
-          v-if="placeholder.length > 0"
-          :placeholder="placeholder"
-          appendClass="tab-view__search"
-          @search="text => $emit('search', text)"
-        ></search>
-        <icon-button
-          v-if="showDeleteButton"
-          :imgSrc="require('assets/image/ic_delete.svg')"
-          :text="deleteButtonText ? deleteButtonText : $t('button.remove')"
-          @click="$emit('delete')"
-        ></icon-button>
-        <icon-button
-          v-if="showRefreshButton"
-          :imgSrc="require('assets/image/workspace/ic_renew.svg')"
-          animation="rotate360"
-          :text="$t('button.refresh')"
-          @click="$emit('refresh')"
-        ></icon-button>
-      </div>
-    </div> -->
+    <div class="tab-view__sub-header offsetwidth" v-if="showSubHeader">
+      <span class="tab-view__description" v-if="description.length > 0">{{
+        description
+      }}</span>
+    </div>
     <div class="tab-view__body offsetwidth">
+      <slot name="modal"></slot>
       <slot v-if="!empty && !loading"></slot>
       <show-empty
         v-else
@@ -136,11 +142,24 @@ export default {
       type: Boolean,
       default: false,
     },
+    showManageGroupButton: {
+      type: Boolean,
+      default: false,
+    },
+    showMemberButton: {
+      type: Boolean,
+      default: false,
+    },
+    showAddGroupButton: {
+      type: Boolean,
+      default: false,
+    },
     deleteButtonText: {
       type: String,
       default: null,
     },
-    hideTitle: {
+
+    showSubHeader: {
       type: Boolean,
       default: false,
     },
