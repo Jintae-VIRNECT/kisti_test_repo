@@ -340,6 +340,7 @@ public class GroupService {
 			.workspaceId(workspaceId)
 			.groupId("group_" + RandomStringUtils.randomAlphabetic(1).toUpperCase() + RandomStringUtils.randomAlphanumeric(9))
 			.groupName(groupRequest.getGroupName())
+			.uuid(userId)
 			.build();
 
 		for (String uuid : groupRequest.getMemberList()) {

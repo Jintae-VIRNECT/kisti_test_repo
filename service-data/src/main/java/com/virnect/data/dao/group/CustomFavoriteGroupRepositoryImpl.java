@@ -1,14 +1,12 @@
 package com.virnect.data.dao.group;
 
-import static com.virnect.data.domain.group.QRemoteGroup.*;
-
-import org.apache.commons.lang.StringUtils;
-import org.springframework.data.jpa.repository.support.QuerydslRepositorySupport;
-
 import static com.virnect.data.domain.group.QFavoriteGroup.*;
 import static com.virnect.data.domain.group.QFavoriteGroupMember.*;
 
 import java.util.List;
+
+import org.apache.commons.lang.StringUtils;
+import org.springframework.data.jpa.repository.support.QuerydslRepositorySupport;
 
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
