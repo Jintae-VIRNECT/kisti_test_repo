@@ -26,23 +26,26 @@ export default {
   ],
 
   /* Workspace - Member Group */
-  PRIVATE_MEMBER_GROUP_LIST: ['GET', '/remote/members/my-group/{workspaceId}'],
+  PRIVATE_MEMBER_GROUP_LIST: [
+    'GET',
+    '/remote/members/favorite-group/{workspaceId}',
+  ],
   PRIVATE_MEMBER_GROUP_LIST_ITEM: [
     'GET',
-    '/remote/members/my-group/{workspaceId}/{groupId}',
+    '/remote/members/favorite-group/{workspaceId}/{groupId}',
   ],
 
   CREATE_PRIVATE_MEMBER_GROUP: [
     'POST',
-    '/remote/members/my-group/{workspaceId}/{userId}',
+    '/remote/members/favorite-group/{workspaceId}/{userId}',
   ],
   DELETE_PRIVATE_MEMBER_GROUP: [
     'DELETE',
-    '/remote/members/my-group/{workspaceId}/{userId}/{groupId}',
+    '/remote/members/favorite-group/{workspaceId}/{userId}/{groupId}',
   ],
   UPDATE_PRIVATE_MEMBER_GROUP: [
     'PUT',
-    '/remote/members/my-group/{workspaceId}/{userId}/{groupId}',
+    '/remote/members/favorite-group/{workspaceId}/{userId}/{groupId}',
   ],
 
   /* Workspace - Room */

@@ -124,12 +124,12 @@ export default {
           userId: this.account.uuid,
         })
 
-        this.groupList = groups.groupInfoResponseList
+        this.groupList = groups.favoriteGroupResponses
 
         //멤버 숫자 표기
         this.groupList.map(group => {
-          group.memberCount = `${group.remoteGroupMemberInfoResponseList
-            .length - 1}/${this.maxSelect}`
+          group.memberCount = `${group.favoriteGroupMemberResponses.length -
+            1}/${this.maxSelect}`
         })
 
         //'선택 없음' 항목 추가
@@ -162,11 +162,9 @@ export default {
         })
 
         //자기 자신은 제외하여 표출
-        this.selection = group.remoteGroupMemberInfoResponseList.filter(
-          member => {
-            return member.uuid !== this.account.uuid
-          },
-        )
+        this.selection = group.favoriteGroupMemberResponses.filter(member => {
+          return member.uuid !== this.account.uuid
+        })
       } catch (err) {
         console.error(err)
         this.toastError(this.$t('confirm.network_error'))

@@ -297,7 +297,7 @@ export default {
       })
 
       //자기자신은 제외
-      this.groupMemberList = group.remoteGroupMemberInfoResponseList.filter(
+      this.groupMemberList = group.favoriteGroupMemberResponses.filter(
         member => {
           return member.uuid !== this.account.uuid
         },
@@ -334,7 +334,7 @@ export default {
           groupId: groupId,
         })
 
-        this.groupMemberList = group.remoteGroupMemberInfoResponseList.filter(
+        this.groupMemberList = group.favoriteGroupMemberResponses.filter(
           member => {
             return member.uuid !== this.account.uuid
           },
@@ -358,7 +358,7 @@ export default {
           workspaceId: this.workspace.uuid,
           userId: this.account.uuid,
         })
-        this.groupList = groups.groupInfoResponseList
+        this.groupList = groups.favoriteGroupResponses
       } catch (err) {
         console.error(err)
         this.toastError(this.$t('confirm.network_error'))

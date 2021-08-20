@@ -17,7 +17,7 @@
       </p>
       <profile-list
         style="min-height: 0px;"
-        :users="group.remoteGroupMemberInfoResponseList"
+        :users="group.favoriteGroupMemberResponses"
         size="2.143em"
         :max="isTablet ? 3 : maxParticipants"
         class="member-group-profile"
