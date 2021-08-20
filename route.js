@@ -133,27 +133,6 @@ router.get('/support', function(req, res) {
   res.send(extra[lang])
 })
 
-if (config.getEnv() !== 'onpremise') {
-  router.get('/policy/*', function(req, res) {
-    const lang = acceptLang(req)
-    res.send(extra[lang])
-  })
-
-  router.get('/policy', function(req, res) {
-    res.redirect('/policy/terms')
-  })
-
-  router.get('/OSS/*', function(req, res) {
-    const lang = acceptLang(req)
-    res.send(extra[lang])
-  })
-
-  router.get('/OSS', function(req, res) {
-    const lang = acceptLang(req)
-    res.send(extra[lang])
-  })
-}
-
 router.get('/configs', function(req, res) {
   // req.query.origin
   res.header('Content-Type', 'application/json')
