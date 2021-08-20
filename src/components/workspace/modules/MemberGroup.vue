@@ -160,7 +160,6 @@ export default {
     display: flex;
     align-items: center;
     padding-right: 0.7143rem;
-    overflow: hidden;
   }
 }
 
