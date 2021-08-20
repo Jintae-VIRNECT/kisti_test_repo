@@ -7,7 +7,7 @@ import org.springframework.stereotype.Component;
 import feign.hystrix.FallbackFactory;
 import lombok.extern.slf4j.Slf4j;
 
-import com.virnect.data.dto.rest.RecordServerFileInfoListResponse;
+import com.virnect.data.dto.rest.ListRecordingFilesResponse;
 import com.virnect.data.dto.rest.SuccessResponse;
 import com.virnect.data.dto.rest.StopRecordingResponse;
 import com.virnect.data.global.common.ApiResponse;
@@ -28,33 +28,33 @@ public class RecordRestFallbackFactory implements FallbackFactory<RecordRestServ
             }
 
             @Override
-            public ApiResponse<RecordServerFileInfoListResponse> getServerRecordFileList(
+            public ApiResponse<ListRecordingFilesResponse> getServerRecordFileList(
                 String workspaceId, String userId
             ) {
                 log.error(
                     "[USER REMOTE RECORD SERVER INFO LIST API FALLBACK] => WORKSAPCE_ID: {}, {}", workspaceId,
                     cause.getMessage()
                 );
-                RecordServerFileInfoListResponse empty = new RecordServerFileInfoListResponse();
-                empty.setRecordServerFileInfoResponses(new ArrayList<>());
+                ListRecordingFilesResponse empty = new ListRecordingFilesResponse();
+                empty.setInfos(new ArrayList<>());
                 return new ApiResponse<>(empty);
             }
 
             @Override
-            public ApiResponse<RecordServerFileInfoListResponse> getServerRecordFileList(
+            public ApiResponse<ListRecordingFilesResponse> getServerRecordFileList(
                 String workspaceId, String userId, String sessionId
             ) {
                 log.error(
                     "[USER REMOTE RECORD SERVER INFO LIST API FALLBACK] => WORKSAPCE_ID: {}, {}", workspaceId,
                     cause.getMessage()
                 );
-                RecordServerFileInfoListResponse empty = new RecordServerFileInfoListResponse();
-                empty.setRecordServerFileInfoResponses(new ArrayList<>());
+                ListRecordingFilesResponse empty = new ListRecordingFilesResponse();
+                empty.setInfos(new ArrayList<>());
                 return new ApiResponse<>(empty);
             }
 
             @Override
-            public ApiResponse<RecordServerFileInfoListResponse> getServerRecordFileList(
+            public ApiResponse<ListRecordingFilesResponse> getServerRecordFileList(
                 String workspaceId,
                 String userId,
                 String order,
@@ -64,8 +64,8 @@ public class RecordRestFallbackFactory implements FallbackFactory<RecordRestServ
                     "[USER REMOTE RECORD SERVER INFO LIST API FALLBACK] => WORKSAPCE_ID: {}, {}", workspaceId,
                     cause.getMessage()
                 );
-                RecordServerFileInfoListResponse empty = new RecordServerFileInfoListResponse();
-                empty.setRecordServerFileInfoResponses(new ArrayList<>());
+                ListRecordingFilesResponse empty = new ListRecordingFilesResponse();
+                empty.setInfos(new ArrayList<>());
                 return new ApiResponse<>(empty);
             }
 

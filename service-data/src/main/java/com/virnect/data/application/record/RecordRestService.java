@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import com.virnect.data.dto.rest.RecordServerFileInfoListResponse;
+import com.virnect.data.dto.rest.ListRecordingFilesResponse;
 import com.virnect.data.dto.rest.StopRecordingResponse;
 import com.virnect.data.global.common.ApiResponse;
 
@@ -20,20 +20,20 @@ public interface RecordRestService {
 		@RequestParam(name = "sessionId") String sessionId);
 
 	@GetMapping("/remote/recorder/workspaces/{workspaceId}/users/{userId}/files")
-	ApiResponse<RecordServerFileInfoListResponse> getServerRecordFileList(
+	ApiResponse<ListRecordingFilesResponse> getServerRecordFileList(
 		@PathVariable("workspaceId") String workspaceId,
 		@PathVariable("userId") String userId,
 		@RequestParam("sessionId") String sessionId
 	);
 
 	@GetMapping("/remote/recorder/workspaces/{workspaceId}/users/{userId}/files")
-	ApiResponse<RecordServerFileInfoListResponse> getServerRecordFileList(
+	ApiResponse<ListRecordingFilesResponse> getServerRecordFileList(
 		@PathVariable("workspaceId") String workspaceId,
 		@PathVariable("userId") String userId
 	);
 
 	@GetMapping("/remote/recorder/workspaces/{workspaceId}/users/{userId}/files")
-	ApiResponse<RecordServerFileInfoListResponse> getServerRecordFileList(
+	ApiResponse<ListRecordingFilesResponse> getServerRecordFileList(
 		@PathVariable("workspaceId") String workspaceId,
 		@PathVariable("userId") String userId,
 		@RequestParam("sessionId") String sessionId,

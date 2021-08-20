@@ -15,7 +15,7 @@ import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import com.virnect.data.dto.rest.RecordServerFileInfoListResponse;
+import com.virnect.data.dto.rest.ListRecordingFilesResponse;
 import com.virnect.data.error.ErrorCode;
 import com.virnect.data.error.exception.RestServiceException;
 import com.virnect.data.global.common.ApiResponse;
@@ -125,7 +125,7 @@ public class DashboardFileRestController {
 		@ApiImplicitParam(name = "order", value = "정렬", paramType = "query", defaultValue = "createdAt.asc")
 	})
 	@GetMapping(value = "record/{workspaceId}/{userId}")
-	ResponseEntity<ApiResponse<RecordServerFileInfoListResponse>> getServerRecordFileListRequestHandler(
+	ResponseEntity<ApiResponse<ListRecordingFilesResponse>> getServerRecordFileListRequestHandler(
 		@PathVariable(name = "workspaceId") String workspaceId,
 		@PathVariable(name = "userId") String userId,
 		@RequestParam(name = "sessionId") String sessionId,

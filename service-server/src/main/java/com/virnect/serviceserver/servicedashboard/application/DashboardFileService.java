@@ -24,7 +24,7 @@ import com.virnect.data.dao.file.RecordFileRepository;
 import com.virnect.data.domain.file.File;
 import com.virnect.data.domain.file.FileType;
 import com.virnect.data.domain.file.RecordFile;
-import com.virnect.data.dto.rest.RecordServerFileInfoListResponse;
+import com.virnect.data.dto.rest.ListRecordingFilesResponse;
 import com.virnect.data.dto.rest.UserInfoResponse;
 import com.virnect.data.dto.rest.WorkspaceMemberInfoResponse;
 import com.virnect.data.error.ErrorCode;
@@ -134,13 +134,13 @@ public class DashboardFileService {
 	 * 로컬 녹화 파일 목록 요청 처리
 	 * @return - 로컬 녹화 파일 목록
 	 */
-	public RecordServerFileInfoListResponse getServerRecordFileList(
+	public ListRecordingFilesResponse getServerRecordFileList(
 		String workspaceId,
 		String sessionId,
 		String userId,
 		String order
 	) {
-		RecordServerFileInfoListResponse responseData;
+		ListRecordingFilesResponse responseData;
 		try {
 			responseData = recordRestService.getServerRecordFileList(workspaceId, userId, sessionId, order).getData();
 		} catch (Exception exception) {

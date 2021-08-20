@@ -16,6 +16,7 @@ import java.util.stream.IntStream;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -39,7 +40,7 @@ import com.virnect.data.domain.room.Room;
 import com.virnect.data.domain.roomhistory.RoomHistory;
 import com.virnect.data.domain.roomhistory.RoomHistorySortType;
 import com.virnect.data.dto.PageMetadataResponse;
-import com.virnect.data.dto.rest.RecordServerFileInfoResponse;
+import com.virnect.data.dto.rest.RecordingFiles;
 import com.virnect.data.dto.rest.UserInfoListResponse;
 import com.virnect.data.dto.rest.UserInfoResponse;
 import com.virnect.data.dto.rest.WorkspaceMemberInfoResponse;
@@ -392,8 +393,7 @@ public class DashboardHistoryService {
 		RoomHistoryListRequest request,
 		List<RoomHistoryInfoResponse> roomHistories
 	) {
-
-		if (roomHistories.isEmpty()) {
+		if (CollectionUtils.isEmpty(roomHistories)) {
 			return new ApiResponse<>(
 				RoomHistoryInfoListResponse.builder()
 					.roomHistoryInfoList(Collections.emptyList())
@@ -412,8 +412,11 @@ public class DashboardHistoryService {
 			//roomHistory.getSessionId(),
 			false
 		);
-		List<RecordServerFileInfoResponse> serverRecFileAll = recordRestService.getServerRecordFileList(workspaceId, "DASHBOARD").getData().getRecordServerFileInfoResponses();
-		serverRecFileAll = serverRecFileAll == null ? new ArrayList<>() : serverRecFileAll;
+		List<RecordingFiles> serverRecFileAll = recordRestService.getServerRecordFileList(workspaceId, "DASHBOARD").getData().getInfos();
+		if (CollectionUtils.isEmpty(serverRecFileAll)) {
+			serverRecFileAll = new ArrayList<>();
+		}
+		log.info("RECORD SERVER LIST SIZE : " + serverRecFileAll.size());
 
 		for (RoomHistoryInfoResponse roomHistory : roomHistories) {
 			for (MemberInfoResponse memberInfoResponse : roomHistory.getMemberList()) {
