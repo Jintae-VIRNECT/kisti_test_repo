@@ -246,9 +246,8 @@ export default {
     min-width: 12.4286rem;
     height: 2.4286rem;
     min-height: 2.4286rem;
-    padding: 0.5002rem 0.8576rem 0.6429rem 0.8576rem;
+    padding: 0.5002rem 2.2862rem 0.6429rem 0.8576rem;
     background-color: #1a1a1b;
-    // border: 1px solid rgb(165, 165, 165);
     border-radius: 2px;
     &::after {
       right: 0.994px;
