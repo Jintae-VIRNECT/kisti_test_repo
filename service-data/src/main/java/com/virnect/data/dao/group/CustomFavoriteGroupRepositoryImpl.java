@@ -78,12 +78,11 @@ public class CustomFavoriteGroupRepositoryImpl extends QuerydslRepositorySupport
 		if (StringUtils.isEmpty(userId)) {
 			return null;
 		}
-		List<Long> includedFavoriteGroup = query.selectFrom(favoriteGroup)
+		List<Long> includedFavoriteGroupIds = query.selectFrom(favoriteGroupMember)
 			.select(favoriteGroupMember.favoriteGroup.id)
 			.where(favoriteGroupMember.uuid.eq(userId)
-			)
-			.fetch();
-		return favoriteGroup.id.in(includedFavoriteGroup);
+			).fetch();
+		return favoriteGroup.id.in(includedFavoriteGroupIds);
 	}
 
 }

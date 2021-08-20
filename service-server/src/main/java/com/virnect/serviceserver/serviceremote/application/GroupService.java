@@ -104,8 +104,8 @@ public class GroupService {
 		String workspaceId
 	) {
 
-		List<RemoteGroup> lowGroups = groupRepository.findByWorkspaceId(workspaceId);
-		if (CollectionUtils.isEmpty(lowGroups)) {
+		List<RemoteGroup> remoteGroups = groupRepository.findByWorkspaceId(workspaceId);
+		if (CollectionUtils.isEmpty(remoteGroups)) {
 			return new ApiResponse<>(
 				RemoteGroupListResponse.builder().groupInfoResponseList(Collections.emptyList()).build()
 			);
@@ -113,7 +113,7 @@ public class GroupService {
 
 		// Make uuid array
 		List<String> userList = new ArrayList<>();
-		for (RemoteGroup remoteGroup : lowGroups) {
+		for (RemoteGroup remoteGroup : remoteGroups) {
 			for (RemoteGroupMember groupMember : remoteGroup.getGroupMembers()) {
 				if (!(StringUtils.isBlank(groupMember.getUuid()))) {
 					userList.add(groupMember.getUuid());
@@ -128,7 +128,12 @@ public class GroupService {
 		);
 
 		List<RemoteGroupResponse> groupInfoResponseList = new ArrayList<>();
-		for (RemoteGroup remoteGroup : lowGroups) {
+
+		// Add default group
+		// 워크스페이스 전체 멤버에서 그룹 멤버에 있는 멤버 제외한 데이터
+
+
+		for (RemoteGroup remoteGroup : remoteGroups) {
 			RemoteGroupResponse remoteGroupResponse = remoteGroupMapper.toDto(remoteGroup);
 			// Mapping Member List Data to Member Information List
 			List<RemoteGroupMemberResponse> groupMembersInfo = remoteGroup.getGroupMembers().stream()
