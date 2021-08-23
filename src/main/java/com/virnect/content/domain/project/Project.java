@@ -100,11 +100,7 @@ public class Project extends BaseTimeEntity {
 		EditPermission editPermission,
 		String userUUID,
 		String workspaceUUID,
-		String properties,
-		List<ProjectShareUser> projectShareUserList,
-		List<ProjectEditUser> projectEditUserList,
-		List<ProjectMode> projectModeList,
-		ProjectTarget projectTarget
+		String properties
 	) {
 		this.uuid = uuid;
 		this.name = name;
@@ -115,9 +111,5 @@ public class Project extends BaseTimeEntity {
 		this.userUUID = userUUID;
 		this.workspaceUUID = workspaceUUID;
 		this.properties = properties;
-		this.projectShareUserList = projectShareUserList;
-		this.projectEditUserList = projectEditUserList;
-		this.projectModeList = projectModeList;
-		this.projectTarget = projectTarget;
 	}
 }

@@ -48,11 +48,11 @@ public interface FileUploadService {
 	/**
 	 * Multipartfile를 file input stream 으로 읽어와 s3에 업로드하는 메서드
 	 * @param file - 업로드하고자하는 MultipartFile
-	 * @param fileName
+	 * @param fileName - 확장자를 제외한 파일 이름
 	 * @return
 	 * @throws IOException
 	 */
-	String uploadByFileInputStream(MultipartFile file, String fileName) throws IOException;
+	String uploadByFileInputStream(MultipartFile file, String fileName);
 
 	String copyByFileObject(String sourceFileName, String destinationFileName);
 }

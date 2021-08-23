@@ -122,7 +122,7 @@ public class MinioUploadService implements FileUploadService {
     }
 
     @Override
-    public String uploadByFileInputStream(MultipartFile file, String fileName) throws IOException {
+    public String uploadByFileInputStream(MultipartFile file, String fileName){
         // 1. 파일 크기 확인
         log.info("[FILE INPUT STREAM UPLOADER] - UPLOAD FILE SIZE >> " + file.getSize());
         if (file.getSize() <= 0) {
@@ -139,17 +139,16 @@ public class MinioUploadService implements FileUploadService {
         }
 
         String objectName = String.format("%s%s/%s%s", bucketResource, CONTENT_DIRECTORY, fileName, fileExtension);
-        PutObjectArgs putObjectArgs = PutObjectArgs.builder()
+        try {
+            PutObjectArgs putObjectArgs = PutObjectArgs.builder()
                 .bucket(bucketName)
                 .object(objectName)
                 .contentType(file.getContentType())
                 .stream(file.getInputStream(), file.getSize(), -1)
                 .build();
-        try {
             minioClient.putObject(putObjectArgs);
             return minioServer + "/" + bucketName + "/" + objectName;
-        } catch (ErrorResponseException | InsufficientDataException | InternalException | InvalidKeyException | InvalidResponseException | NoSuchAlgorithmException |
-                ServerException | XmlParserException exception) {
+        } catch (ErrorResponseException | InsufficientDataException | InternalException | InvalidKeyException | InvalidResponseException | NoSuchAlgorithmException | ServerException | XmlParserException | IOException exception) {
             log.error(exception.getMessage());
             throw new ContentServiceException(ErrorCode.ERR_CONTENT_UPLOAD);
         }

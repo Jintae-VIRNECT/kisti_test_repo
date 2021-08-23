@@ -9,7 +9,8 @@ package com.virnect.content.domain;
  */
 public enum TargetType {
 	QR("QR"),
-	VTarget("VTarget");
+	VTarget("VTarget"),
+	IMAGE("IMAGE");
 
 	private String message;
 

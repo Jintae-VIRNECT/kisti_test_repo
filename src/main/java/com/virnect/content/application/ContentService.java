@@ -169,75 +169,70 @@ public class ContentService {
                 workspaceUUID, contentSize, uploadRequest.getUserUUID());
 
         // 1. 콘텐츠 업로드 파일 저장
-        try {
-            String contentUUID = UUID.randomUUID().toString();
+        String contentUUID = UUID.randomUUID().toString();
 
-            log.info("CONTENT UPLOAD - contentUUID : {}, request : {}", contentUUID, uploadRequest.toString());
+        log.info("CONTENT UPLOAD - contentUUID : {}, request : {}", contentUUID, uploadRequest.toString());
 
-            // 파일명은 컨텐츠 식별자(contentUUID)와 동일
-            String fileUploadPath = this.fileUploadService.uploadByFileInputStream(
-                    uploadRequest.getContent(), contentUUID + "");
+        // 파일명은 컨텐츠 식별자(contentUUID)와 동일
+        String fileUploadPath = this.fileUploadService.uploadByFileInputStream(
+                uploadRequest.getContent(), contentUUID + "");
 
-            // 2-1. 프로퍼티로 메타데이터 생성
-            //MetadataInfo metadataInfo = metadataService.convertMetadata(uploadRequest.getProperties(), uploadRequest.getUserUUID(), uploadRequest.getName());
-            //String metadata = gson.toJson(metadataInfo);
+        // 2-1. 프로퍼티로 메타데이터 생성
+        //MetadataInfo metadataInfo = metadataService.convertMetadata(uploadRequest.getProperties(), uploadRequest.getUserUUID(), uploadRequest.getName());
+        //String metadata = gson.toJson(metadataInfo);
 
-            // 2-2. 업로드 컨텐츠 정보 수집
-            Content content = Content.builder()
-                    // TODO : 유효한 워크스페이스 인지 검증 필요.
-                    .workspaceUUID(uploadRequest.getWorkspaceUUID())
-                    .uuid(contentUUID)
-                    .name(uploadRequest.getName())
-                    //.metadata(metadata)
-                    .properties(uploadRequest.getProperties())
-                    .userUUID(uploadRequest.getUserUUID())
-                    .shared(INIT_IS_SHARED)
-                    .converted(INIT_IS_CONVERTED)
-                    .deleted(INIT_IS_DELETED)
-                    .size(uploadRequest.getContent().getSize())
-                    .path(fileUploadPath)
-                    .build();
+        // 2-2. 업로드 컨텐츠 정보 수집
+        Content content = Content.builder()
+                // TODO : 유효한 워크스페이스 인지 검증 필요.
+                .workspaceUUID(uploadRequest.getWorkspaceUUID())
+                .uuid(contentUUID)
+                .name(uploadRequest.getName())
+                //.metadata(metadata)
+                .properties(uploadRequest.getProperties())
+                .userUUID(uploadRequest.getUserUUID())
+                .shared(INIT_IS_SHARED)
+                .converted(INIT_IS_CONVERTED)
+                .deleted(INIT_IS_DELETED)
+                .size(uploadRequest.getContent().getSize())
+                .path(fileUploadPath)
+                .build();
 
-            // 3. 컨텐츠 씬그룹 관련 정보 파싱 및 컨텐츠 정보에 추가
-            //addSceneGroupToContent(content, content.getMetadata());
-            addSceneGroupToContent(content, content.getProperties());
+        // 3. 컨텐츠 씬그룹 관련 정보 파싱 및 컨텐츠 정보에 추가
+        //addSceneGroupToContent(content, content.getMetadata());
+        addSceneGroupToContent(content, content.getProperties());
 
-            // 타겟 저장 후 타겟데이터 반환
-            String targetData = null;
+        // 타겟 저장 후 타겟데이터 반환
+        String targetData = null;
 
-            // contentDuplicate의 경우 targetData가 없을 수 있으므로 체크한다.
-            if (Objects.nonNull(uploadRequest.getTargetData())) {
-                // 이미 있는 타겟 데이터인지 체크
-                if (isExistTargetData(uploadRequest.getTargetData())) {
-                    throw new ContentServiceException(ErrorCode.ERR_TARGET_DATA_ALREADY_EXIST);
-                } else {
-                    targetData = addTargetToContent(
-                            content, uploadRequest.getTargetType(), uploadRequest.getTargetData());
-                }
+        // contentDuplicate의 경우 targetData가 없을 수 있으므로 체크한다.
+        if (Objects.nonNull(uploadRequest.getTargetData())) {
+            // 이미 있는 타겟 데이터인지 체크
+            if (isExistTargetData(uploadRequest.getTargetData())) {
+                throw new ContentServiceException(ErrorCode.ERR_TARGET_DATA_ALREADY_EXIST);
+            } else {
+                targetData = addTargetToContent(
+                        content, uploadRequest.getTargetType(), uploadRequest.getTargetData());
             }
-
-            // 4. 업로드 요청 컨텐츠 정보 저장
-            this.contentRepository.save(content);
-
-            ContentUploadResponse result = this.modelMapper.map(content, ContentUploadResponse.class);
-
-            result.setLicenseInfo(licenseInfoResponse);
-
-            List<Target> targets = content.getTargetList();
-            List<ContentTargetResponse> contentTargetResponseList = targets.stream()
-                    .map(target -> this.modelMapper.map(target, ContentTargetResponse.class))
-                    .collect(Collectors.toList());
-
-            // 반환할 타겟정보
-            result.setTargets(contentTargetResponseList);
-            result.setContentUUID(contentUUID);
-
-            log.info("[RESPONSE LOGGER] :: [{}]", result.toString());
-            return new ApiResponse<>(result);
-        } catch (IOException e) {
-            log.info("CONTENT UPLOAD ERROR: {}", e.getMessage());
-            throw new ContentServiceException(ErrorCode.ERR_CONTENT_UPLOAD);
         }
+
+        // 4. 업로드 요청 컨텐츠 정보 저장
+        this.contentRepository.save(content);
+
+        ContentUploadResponse result = this.modelMapper.map(content, ContentUploadResponse.class);
+
+        result.setLicenseInfo(licenseInfoResponse);
+
+        List<Target> targets = content.getTargetList();
+        List<ContentTargetResponse> contentTargetResponseList = targets.stream()
+                .map(target -> this.modelMapper.map(target, ContentTargetResponse.class))
+                .collect(Collectors.toList());
+
+        // 반환할 타겟정보
+        result.setTargets(contentTargetResponseList);
+        result.setContentUUID(contentUUID);
+
+        log.info("[RESPONSE LOGGER] :: [{}]", result.toString());
+        return new ApiResponse<>(result);
     }
 
     /**
@@ -342,14 +337,9 @@ public class ContentService {
         fileUploadService.delete(targetContent.getPath());
 
         //3. 수정 컨텐츠 업로드
-        try {
-            String fileUploadPath = fileUploadService.uploadByFileInputStream(updateRequest.getContent(), targetContent.getUuid());
-            // 3 수정 컨텐츠 경로 반영
-            targetContent.setPath(fileUploadPath);
-        } catch (IOException e) {
-            log.info("CONTENT UPDATE ERROR: {}", e.getMessage());
-            throw new ContentServiceException(ErrorCode.ERR_CONTENT_UPLOAD);
-        }
+        String fileUploadPath = fileUploadService.uploadByFileInputStream(updateRequest.getContent(), targetContent.getUuid());
+        // 3 수정 컨텐츠 경로 반영
+        targetContent.setPath(fileUploadPath);
 
         // 5. 컨텐츠 소유자 변경
         targetContent.setUserUUID(updateRequest.getUserUUID());

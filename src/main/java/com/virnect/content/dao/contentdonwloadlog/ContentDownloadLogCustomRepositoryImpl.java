@@ -9,7 +9,8 @@ import com.virnect.content.domain.QContentDownloadLog;
 
 public class ContentDownloadLogCustomRepositoryImpl extends QuerydslRepositorySupport
 	implements ContentDownloadLogCustomRepository {
-	public ContentDownloadLogCustomRepositoryImpl() {
+	public ContentDownloadLogCustomRepositoryImpl()
+	{
 		super(ContentDownloadLog.class);
 	}
 

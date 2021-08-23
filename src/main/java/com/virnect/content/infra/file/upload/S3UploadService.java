@@ -164,7 +164,7 @@ public class S3UploadService implements FileUploadService {
 	 * @throws IOException
 	 */
 	@Override
-	public String uploadByFileInputStream(MultipartFile file, String fileName) throws IOException {
+	public String uploadByFileInputStream(MultipartFile file, String fileName){
 		log.info("[AWS S3 FILE INPUT STREAM UPLOADER] - UPLOAD BEGIN");
 
 		// 1. 파일 크기 확인
@@ -210,6 +210,10 @@ public class S3UploadService implements FileUploadService {
 			log.error("AWS Error Code:    {}", e.getErrorCode());
 			log.error("Error Type:        {}", e.getErrorType());
 			log.error("Request ID:        {}", e.getRequestId());
+			throw new ContentServiceException(ErrorCode.ERR_CONTENT_UPLOAD);
+		} catch (IOException e) {
+			log.error("Caught an AmazonServiceException from PUT requests, rejected reasons:");
+			log.error("Error Message:     {}", e.getMessage());
 			throw new ContentServiceException(ErrorCode.ERR_CONTENT_UPLOAD);
 		}
 	}
