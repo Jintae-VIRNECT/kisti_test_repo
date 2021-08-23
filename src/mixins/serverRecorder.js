@@ -8,7 +8,10 @@ import { RECORD_INFO } from 'configs/env.config'
 import { ROLE } from 'configs/remote.config'
 import { DEVICE } from 'configs/device.config'
 
+import confirmMixin from 'mixins/confirm'
+
 export default {
+  mixins: [confirmMixin],
   data() {
     return {
       recordingId: null,
@@ -25,11 +28,12 @@ export default {
       'serverRecordStatus',
       'useRecording',
       'participants',
+      'autoServerRecord',
     ]),
   },
   methods: {
     ...mapActions(['setServerRecordStatus']),
-    async startServerRecord() {
+    async startServerRecord(reason) {
       try {
         this.logger('SERVER RECORD', 'start')
 
@@ -78,13 +82,20 @@ export default {
           this.stopServerRecord()
         }, timeout)
 
-        this.toastDefault(this.$t('service.record_server_start_message'))
+        //자동 시작시
+        if (reason === 'autoStart') {
+          this.toastDefault(
+            this.$t('service.record_server_start_auto_record_message'),
+          )
+        } else {
+          this.toastDefault(this.$t('service.record_server_start_message'))
+        }
       } catch (e) {
         console.error('SERVER RECORD::', 'start failed')
         if (e.code === 1001) {
-          this.toastError(this.$t('service.record_server_over_max_count'))
+          this.confirmDefault(this.$t('service.record_server_over_max_count'))
         } else if (e.code === 1002) {
-          this.toastError(this.$t('service.record_server_no_storage'))
+          this.confirmDefault(this.$t('service.record_server_no_storage'))
         }
 
         this.stopServerRecord()
@@ -109,14 +120,21 @@ export default {
         this.toastDefault(this.$t('service.record_server_end_message'))
       }
     },
-    toggleServerRecord(status) {
+    toggleServerRecord(status, reason) {
       if (status === 'STOP') {
         this.stopServerRecord()
       } else if (status === 'WAIT') {
         this.setServerRecordStatus('WAIT')
-        this.startServerRecord()
+        this.startServerRecord(reason)
       }
     },
+    /**
+     * 이전에 진행중인 서버 녹화가 있는지 체크
+     * 진행중인 서버녹화가 있는 경우 서버녹화중임을 표시
+     *
+     *
+     * @returns {Boolean} 진행중인 서버 녹화 여부
+     */
     async checkServerRecordings() {
       const result = await getServerRecordList({
         workspaceId: this.workspace.uuid,
@@ -130,7 +148,7 @@ export default {
       if (failedInPreparing) {
         this.logger('SERVER RECORD', 'failed in preparing')
         this.processPreparingFailed()
-        return
+        return false
       }
 
       if (this.isLeader && result.infos.length > 0) {
@@ -139,7 +157,7 @@ export default {
 
         if (this.serverRecordRetryCount >= 11) {
           this.processPreparingFailed()
-          return
+          return false
         }
 
         if (status === 'preparing') {
@@ -151,7 +169,7 @@ export default {
             this.logger('SERVER RECORD', 'check preparing')
             this.checkServerRecordings()
           }, retryInterval)
-          return
+          return false
         }
 
         this.recordingId = recordInfo.recordingId
@@ -164,6 +182,8 @@ export default {
 
         this.$eventBus.$emit('showServerTimer', elapsedTime)
         this.setServerRecordStatus('START')
+
+        return true
       }
     },
     clearServerRecordTimer() {
@@ -184,6 +204,11 @@ export default {
 
     this.$eventBus.$on('serverRecord', this.toggleServerRecord)
     this.checkServerRecordings()
+
+    if (this.autoServerRecord && this.serverRecordStatus === 'STOP') {
+      //서버 레코딩 시작
+      this.toggleServerRecord('WAIT', 'autoStart')
+    }
   },
   beforeDestroy() {
     if (!this.useRecording) return

@@ -92,6 +92,7 @@ import toastMixin from 'mixins/toast'
 import confirmMixin from 'mixins/confirm'
 import { inviteRoom, kickoutMember, invitableList } from 'api/http/member'
 import { getRoomInfo as roomInfo } from 'api/http/room'
+import { memberSort } from 'utils/sort'
 export default {
   name: 'InviteModal',
   mixins: [toastMixin, confirmMixin],
@@ -203,17 +204,7 @@ export default {
         sessionId: this.roomInfo.sessionId,
         userId: this.account.uuid,
       })
-      this.users = res.memberList.sort((A, B) => {
-        if (A.role === 'MASTER') {
-          return -1
-        } else if (B.role === 'MASTER') {
-          return 1
-        } else if (A.role === 'MANAGER' && B.role !== 'MANAGER') {
-          return -1
-        } else {
-          return 0
-        }
-      })
+      this.users = res.memberList.sort(memberSort)
       this.loading = false
       this.selection = []
     },

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="24px" height="24px" viewBox="0 0 24 24" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>38A3B8AD-D79D-467C-AE55-A9504AA0CDE8@1x</title>
+    <defs>
+        <path d="M12.5,16.5 C12.5,17.875 11.375,19 10,19 C8.6125,19 7.5,17.875 7.5,16.5 L7.5,16.5 Z M17,14 L17,15.5 L3,15.5 L3,14 L4.5,12.5 L4.5,8 L4.5043672,7.77879286 C4.600087,5.35886024 6.25934326,3.34085267 8.49982382,2.70708232 L8.5,2.5 L8.50686658,2.35553999 C8.57955132,1.59488808 9.22030388,1 10,1 C10.8284271,1 11.5,1.67157288 11.5,2.5 L11.4991672,2.70679702 C13.808098,3.35945095 15.5,5.48214303 15.5,8 L15.5,8 L15.5,12.501 L17,14 L17,14 Z" id="path-1"></path>
+    </defs>
+    <g id="Remote_Main_Mobile" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Icon" transform="translate(-54.000000, -410.000000)">
+            <g id="24-x-24" transform="translate(36.000000, 346.000000)">
+                <g id="ic_alarm" transform="translate(0.000000, 46.000000)">
+                    <g transform="translate(18.000000, 18.000000)">
+                        <rect id="tr" x="0" y="0" width="24" height="24"></rect>
+                        <g id="icon-/-20px-/-ic_notifications_20" transform="translate(2.000000, 2.000000)">
+                            <mask id="mask-2" fill="white">
+                                <use xlink:href="#path-1"></use>
+                            </mask>
+                            <g id="shape" fill-rule="nonzero"></g>
+                            <rect id="🎨-Color" fill="#FFFFFF" mask="url(#mask-2)" x="-14" y="-14" width="48" height="48"></rect>
+                        </g>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

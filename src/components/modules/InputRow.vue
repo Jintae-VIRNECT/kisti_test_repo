@@ -1,6 +1,10 @@
 <template>
   <figure class="inputrow">
-    <p class="inputrow-title" :class="{ required, valid }">
+    <p
+      v-if="titlePosition === 'top'"
+      class="inputrow-title"
+      :class="{ required, valid }"
+    >
       <span v-if="valid"> {{ validMessage }} </span>
       {{ title ? title : $t('workspace.remote_name') }}
     </p>
@@ -28,8 +32,15 @@
       @input="inputChange"
       :maxlength="count"
     />
+    <p
+      v-if="titlePosition === 'bottom'"
+      class="inputrow-title"
+      :class="{ required, valid }"
+    >
+      <span v-if="valid"> {{ validMessage }} </span>
+    </p>
     <slot v-else></slot>
-    <span class="inputrow-length" v-if="showCount">{{
+    <span class="inputrow-length" :class="countPosition" v-if="showCount">{{
       `${inputText.length}/${count}`
     }}</span>
   </figure>
@@ -57,6 +68,10 @@ export default {
       type: String,
       default: null,
     },
+    titlePosition: {
+      type: String,
+      default: 'top',
+    },
     placeholder: {
       type: String,
       default: null,
@@ -76,6 +91,10 @@ export default {
     count: {
       type: Number,
       default: 20,
+    },
+    countPosition: {
+      type: String,
+      default: null,
     },
     required: {
       type: Boolean,
@@ -199,5 +218,11 @@ export default {
   bottom: -1.571em;
   color: rgba(#979fb0, 0.7);
   font-size: 0.857em;
+
+  &.mid-right {
+    top: 31%;
+    right: 1.0714rem;
+    font-size: 0.857em;
+  }
 }
 </style>

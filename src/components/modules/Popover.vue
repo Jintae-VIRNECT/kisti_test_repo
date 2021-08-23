@@ -42,6 +42,9 @@ function calcOffset(element) {
   }
 }
 
+const RIGHT_TOLERANCE = 10 //우측 여유 영역
+const TOP_TOLERANCE = 10 //bottom-end 일때 useTopMargin이 true이면 top에 10px 여유추가
+
 export default {
   name: 'Popover',
   props: {
@@ -105,6 +108,10 @@ export default {
       type: String,
       default: '.remote-layout',
     },
+    useTopMargin: {
+      type: Boolean,
+      default: false,
+    },
   },
   data() {
     return {
@@ -123,6 +130,11 @@ export default {
     },
     visible() {
       this.$emit('visible', this.visible)
+    },
+    width() {
+      this.$nextTick(() => {
+        this.setPositionAndWidth()
+      })
     },
   },
   methods: {
@@ -173,68 +185,88 @@ export default {
         if (this.show) {
           this.show()
         }
-        const popover = this.$refs['popover']
-        const reference = this.$slots['reference'][0].elm
-        let top = calcOffset(reference).top
-        let left = calcOffset(reference).left
-
-        //Popover 위치 계산 - left
-        if (this.placement.indexOf('right') > -1) {
-          left += reference.offsetWidth
-        } else if (this.placement.indexOf('left') > -1) {
-          left -= popover.offsetWidth
-        } else {
-          if (this.placement.indexOf('start') > -1) {
-            //nothing
-          } else if (this.placement.indexOf('end') > -1) {
-            left -= popover.offsetWidth - reference.offsetWidth
-          } else {
-            left -= (popover.offsetWidth - reference.offsetWidth) / 2
-          }
-        }
-
-        //Popover 위치 계산 - top
-        if (this.placement.indexOf('top') > -1) {
-          top -= popover.offsetHeight
-        } else if (this.placement.indexOf('bottom') > -1) {
-          top += reference.offsetHeight
-
-          if (
-            this.placementReverse &&
-            top + popover.offsetHeight > document.body.clientHeight
-          ) {
-            this.reverse = true
-
-            top -= popover.offsetHeight + reference.offsetHeight
-          }
-        } else {
-          if (this.placement.indexOf('start') > -1) {
-            //nothing
-          } else if (this.placement.indexOf('end') > -1) {
-            top -= popover.offsetHeight - reference.offsetHeight
-          } else {
-            top -= (popover.offsetHeight - reference.offsetHeight) / 2
-          }
-        }
-        this.$set(this.style, 'top', top + 'px')
-        this.$set(this.style, 'left', left + 'px')
-        if (this.width === 0) {
-          this.$set(this.style, 'width', reference.offsetWidth + 'px')
-        } else {
-          this.$set(this.style, 'width', this.width + 'px')
-        }
-
-        if (this.fullwidth) {
-          this.$set(this.style, 'width', reference.offsetWidth + 'px')
-          if (reference.offsetWidth !== popover.offsetWidth) {
-            this.$set(
-              this.style,
-              'left',
-              left - (reference.offsetWidth - this.width) / 2 + 'px',
-            )
-          }
-        }
+        this.setPositionAndWidth()
       })
+    },
+    setPositionAndWidth() {
+      const popover = this.$refs['popover']
+      const reference = this.$slots['reference'][0].elm
+      let top = calcOffset(reference).top
+      let left = calcOffset(reference).left
+
+      //Popover 위치 계산 - left
+      if (this.placement.indexOf('right') > -1) {
+        left += reference.offsetWidth
+      } else if (this.placement.indexOf('left') > -1) {
+        left -= popover.offsetWidth
+      } else {
+        if (this.placement.indexOf('start') > -1) {
+          //popover가 화면 우측 밖으로 벗어나지 않도록 조정
+          const isOverflow =
+            popover.offsetWidth + left > window.innerWidth ? true : false
+          if (isOverflow)
+            left -=
+              popover.offsetWidth + left - window.innerWidth + RIGHT_TOLERANCE
+          else {
+            //nothing
+          }
+        } else if (this.placement.indexOf('end') > -1) {
+          left -= popover.offsetWidth - reference.offsetWidth
+        } else {
+          left -= (popover.offsetWidth - reference.offsetWidth) / 2
+        }
+      }
+
+      //Popover 위치 계산 - top
+      if (this.placement.indexOf('top') > -1) {
+        top -= popover.offsetHeight
+      } else if (this.placement.indexOf('bottom') > -1) {
+        top += reference.offsetHeight
+
+        if (
+          this.placementReverse &&
+          top + popover.offsetHeight > document.body.clientHeight
+        ) {
+          this.reverse = true
+
+          top -= popover.offsetHeight + reference.offsetHeight
+        }
+      } else {
+        if (this.placement.indexOf('start') > -1) {
+          //nothing
+        } else if (this.placement.indexOf('end') > -1) {
+          top -= popover.offsetHeight - reference.offsetHeight
+        } else {
+          top -= (popover.offsetHeight - reference.offsetHeight) / 2
+        }
+      }
+      //true시 10px를 추가함.
+      if (this.useTopMargin) {
+        top = top + TOP_TOLERANCE
+      }
+
+      this.$set(this.style, 'top', top + 'px')
+      this.$set(this.style, 'left', left + 'px')
+      if (this.width === 0) {
+        this.$set(this.style, 'width', reference.offsetWidth + 'px')
+      } else {
+        this.$set(
+          this.style,
+          'width',
+          typeof this.width === 'string' ? this.width : this.width + 'px',
+        )
+      }
+
+      if (this.fullwidth) {
+        this.$set(this.style, 'width', reference.offsetWidth + 'px')
+        if (reference.offsetWidth !== popover.offsetWidth) {
+          this.$set(
+            this.style,
+            'left',
+            left - (reference.offsetWidth - this.width) / 2 + 'px',
+          )
+        }
+      }
     },
     hidePopover() {
       this.visible = false

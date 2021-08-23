@@ -165,6 +165,7 @@ export default {
         const joinRes = await this.join({
           ...room,
           leaderId: user ? user.uuid : null,
+          showRestrictAgreeModal: false,
         })
         if (joinRes) {
           this.lottie.stop()

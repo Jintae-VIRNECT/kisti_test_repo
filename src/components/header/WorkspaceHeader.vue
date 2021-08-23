@@ -1,5 +1,8 @@
 <template>
-  <header class="header">
+  <header
+    class="header"
+    :class="{ 'workspace-selected': workspace && workspace.uuid }"
+  >
     <div class="header-workspace">
       <img
         v-if="logo !== false"
@@ -12,6 +15,11 @@
         <div class="header-divider"></div>
         <header-nav></header-nav>
       </template>
+
+      <!-- 워크스페이스 선택 문구 : 모바일에서만 표시-->
+      <h1 v-if="!workspace.uuid" class="header-workspace-select-title">
+        {{ $t('workspace.workspace_select') }}
+      </h1>
 
       <header-tools></header-tools>
     </div>

@@ -37,7 +37,13 @@
     "manual": "Manual Download",
     "force_logout": "Log out",
     "retry":"Retry",
-    "leave_exit": "Leave"
+    "leave_exit": "Leave",
+    "add_group_bookmark":"Add to Favorites​",
+    "member":"Member",
+    "member_group_bookmark":"Favorites",
+    "connect":"Connect",
+    "modify":"Modify",
+    "delete":"Delete"
   },
   "date": {
     "lastday": "[Yesterday]",

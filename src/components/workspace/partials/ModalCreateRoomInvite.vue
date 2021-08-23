@@ -5,7 +5,17 @@
         {{ $t('workspace.create_select_member_list') }}
         <span class="createroom-user__number">{{ totalNum }}</span>
       </p>
+      <r-select-check
+        v-if="showMemberGroupSelect"
+        class="createroom-user--group-selects"
+        :options="groupList"
+        value="groupId"
+        text="groupName"
+        subText="memberCount"
+        :selectedValue.sync="selectedGroupId"
+      ></r-select-check>
       <icon-button
+        class="refresh"
         :text="$t('button.refresh')"
         :imgSrc="require('assets/image/workspace/ic_renew.svg')"
         animation="rotate360"
@@ -23,7 +33,7 @@
               selected:
                 selection.findIndex(select => select.uuid === user.uuid) > -1,
             }"
-            height="6.143em"
+            :height="height"
             @click.native="selectUser(user)"
           >
             <profile
@@ -32,10 +42,10 @@
               :mainText="user.nickname || user.nickName"
               :subText="user.email"
               :role="user.role"
-              :thumbStyle="{ width: '3em', height: '3em' }"
+              :thumbStyle="thumbStyle"
               :status="accessType(user.accessType)"
-            ></profile
-          ></wide-card>
+            ></profile>
+          </wide-card>
         </div>
       </scroller>
       <div v-else class="createroom-user__empty">
@@ -65,6 +75,12 @@ import Scroller from 'Scroller'
 import Profile from 'Profile'
 import WideCard from 'WideCard'
 import IconButton from 'IconButton'
+import RSelectCheck from '../modules/RemoteSelectCheck'
+
+const defaultWideCardHeight = '6.143em'
+const mobileWideCardHeight = '7.2rem'
+const defaultThumbStyle = { width: '3em', height: '3em' }
+const mobileThumbStyle = { width: '4.3rem', height: '4.3rem' }
 
 export default {
   name: 'ModalCreateRoomInvite',
@@ -73,9 +89,15 @@ export default {
     Profile,
     WideCard,
     IconButton,
+    RSelectCheck,
   },
   data() {
-    return {}
+    return {
+      selectedGroupId: '',
+      height: defaultWideCardHeight,
+      thumbStyle: defaultThumbStyle,
+      responsiveFn: null,
+    }
   },
   props: {
     users: {
@@ -98,6 +120,14 @@ export default {
       type: Boolean,
       default: false,
     },
+    showMemberGroupSelect: {
+      type: Boolean,
+      default: false,
+    },
+    groupList: {
+      type: Array,
+      default: () => [],
+    },
   },
   computed: {
     totalNum() {
@@ -108,8 +138,14 @@ export default {
       }
     },
   },
+  watch: {
+    selectedGroupId() {
+      this.$emit('selectedgroupid', this.selectedGroupId)
+    },
+  },
   methods: {
     refresh() {
+      this.selectedGroupId = 'NONE'
       this.$emit('inviteRefresh')
     },
     selectUser(user) {
@@ -119,10 +155,27 @@ export default {
       if (accessType) return accessType.toLowerCase()
       return ''
     },
+    responsiveMobile() {
+      this.height = mobileWideCardHeight
+      this.thumbStyle = mobileThumbStyle
+    },
+    responsiveDefault() {
+      this.height = defaultWideCardHeight
+      this.thumbStyle = defaultThumbStyle
+    },
   },
 
   /* Lifecycles */
-  mounted() {},
+  mounted() {
+    this.responsiveFn = this.callAndGetMobileResponsiveFunction(
+      this.responsiveMobile,
+      this.responsiveDefault,
+    )
+    this.addEventListenerScreenResize(this.responsiveFn)
+  },
+  beforeDestroy() {
+    this.removeEventListenerScreenResize(this.responsiveFn)
+  },
 }
 </script>
 
@@ -131,3 +184,83 @@ export default {
   scoped
   src="assets/style/workspace/workspace-createroom-invite.scss"
 ></style>
+<style lang="scss">
+@import '~assets/style/mixin';
+@include responsive-mobile {
+  .createroom-user__header .icon-button > img {
+    content: url(~assets/image/workspace/ic_renew_16.svg);
+  }
+  //user card item
+  .widecard.choice {
+    .profile .profile--text {
+      max-width: 65%;
+      .profile--role__mobile {
+        display: block;
+        margin-right: 0.6rem;
+        margin-left: 0;
+        color: #58a3f7;
+        border-color: #58a3f7;
+      }
+      .profile--maintext {
+        @include fontLevel(100);
+        color: $new_color_text_main;
+      }
+      .profile--subtext {
+        @include fontLevel(75);
+        color: $new_color_text_sub;
+      }
+    }
+    .profile--role {
+      display: none;
+    }
+  }
+  .createroom-user__body {
+    .createroom-user__empty {
+      background-color: $new_color_bg_sub;
+      img {
+        width: 20rem;
+        content: url('~assets/image/img_inviteuser_empty_new.svg');
+      }
+      .createroom-user__empty-title {
+        margin-top: 1.6rem;
+        @include fontLevel(200);
+        color: $new_color_text_main;
+      }
+      .createroom-user__empty-description {
+        padding-top: 0.2rem;
+        color: $new_color_text_sub_description;
+      }
+    }
+    .createroom-user__loading.loading {
+      background-color: $new_color_bg_sub;
+    }
+  }
+}
+
+.createroom-user--group-selects {
+  .select-label {
+    position: absolute;
+    top: -0.571em;
+    right: 7.4286rem;
+    width: 12.4286rem;
+    min-width: 12.4286rem;
+    height: 2.4286rem;
+    min-height: 2.4286rem;
+    padding: 0.5002rem 2.2862rem 0.6429rem 0.8576rem;
+    background-color: #1a1a1b;
+    border-radius: 2px;
+    &::after {
+      right: 0.994px;
+    }
+    &:hover {
+      background-color: #1a1a1b;
+    }
+    &:active {
+      background-color: #1a1a1b;
+    }
+    &:focus {
+      background-color: #1a1a1b;
+    }
+  }
+}
+</style>

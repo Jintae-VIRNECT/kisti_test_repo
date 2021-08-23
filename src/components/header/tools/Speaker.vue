@@ -2,9 +2,9 @@
   <tooltip :content="`${$t('common.speaker')} on/off`">
     <toggle-button
       slot="body"
-      customClass="toggle-header"
+      customClass="toggle-header speaker"
       :description="`${$t('common.speaker')} on/off`"
-      size="2.429rem"
+      :size="size"
       :active="speaker.isOn"
       :activeSrc="require('assets/image/call/gnb_ic_volum_on.svg')"
       :inactiveSrc="require('assets/image/call/gnb_ic_volum_off.svg')"
@@ -23,6 +23,12 @@ export default {
   components: {
     Tooltip,
     ToggleButton,
+  },
+  props: {
+    size: {
+      type: String,
+      default: '2.429rem',
+    },
   },
   computed: {
     ...mapGetters(['speaker']),

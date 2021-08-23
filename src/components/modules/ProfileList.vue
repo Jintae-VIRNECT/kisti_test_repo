@@ -11,6 +11,9 @@
           <profile
             :image="user.profile"
             :thumbStyle="{ width: size, height: size }"
+            :remove="remove"
+            @remove="onRemove(user)"
+            :status="accessType(user.accessType)"
           ></profile>
         </div>
         <!-- <img
@@ -21,6 +24,9 @@
         /> -->
         <span>{{ user.nickName }}</span>
       </tooltip>
+      <p v-if="showNickname" class="profilelist-user__nickname">
+        {{ user.nickName }}
+      </p>
     </figure>
     <br />
     <popover
@@ -88,6 +94,18 @@ export default {
       type: String,
       default: '2.714em',
     },
+    remove: {
+      type: Boolean,
+      default: false,
+    },
+    showNickname: {
+      type: Boolean,
+      default: false,
+    },
+    showStatus: {
+      type: Boolean,
+      default: false,
+    },
   },
   computed: {
     showUsers() {
@@ -103,6 +121,17 @@ export default {
       } else {
         return this.users.slice(this.max - 1)
       }
+    },
+  },
+  methods: {
+    onRemove(user) {
+      this.$emit('remove', user)
+    },
+    accessType(accessType) {
+      if (this.showStatus) {
+        if (accessType) return accessType.toLowerCase()
+        return ''
+      } else return null
     },
   },
 }
@@ -153,6 +182,9 @@ export default {
     height: 2.571em;
   }
 }
+.profilelist-user__nickname {
+  display: none;
+}
 .profilelist-user__name {
   display: inline-block;
   flex: 1;
@@ -174,6 +206,24 @@ export default {
   text-align: center;
   cursor: default;
   @include profileMask(#3e3e44, 1px, #979fb0);
+}
+
+@include responsive-mobile {
+  .profilelist-user__image {
+    width: 4.3rem;
+    height: 4.3rem;
+    background-color: $new_color_bg_sub;
+  }
+  .profilelist-user__nickname {
+    display: block;
+    max-width: 6rem;
+    margin-top: 0.3rem;
+    overflow: hidden;
+    white-space: nowrap;
+    text-align: center;
+    text-overflow: ellipsis;
+    @include fontLevel(50);
+  }
 }
 </style>
 

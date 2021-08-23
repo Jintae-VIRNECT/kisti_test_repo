@@ -6,7 +6,7 @@
           <profile
             :group="true"
             :image="workspaceInfo.profile"
-            :thumbStyle="{ width: '5.143rem', height: '5.143rem' }"
+            :thumbStyle="thumbStyle"
           ></profile>
         </div>
         <p class="profile__name">{{ workspaceInfo.title }}</p>
@@ -15,6 +15,8 @@
         {{ $t('button.select') }}
       </button>
     </div>
+    <!--워크스페이스 선택 이벤트 적용되는 element 모바일 사이즈에서만 활성화됨-->
+    <div class="workcard-select" @click="join"></div>
   </card>
 </template>
 
@@ -31,6 +33,12 @@ export default {
     Profile,
   },
   props: {
+    thumbStyle: {
+      type: Object,
+      default: () => {
+        return {}
+      },
+    },
     workspaceInfo: {
       type: Object,
       default: () => {
@@ -43,7 +51,6 @@ export default {
       this.$emit('join')
     },
   },
-
   /* Lifecycles */
   mounted() {},
 }
