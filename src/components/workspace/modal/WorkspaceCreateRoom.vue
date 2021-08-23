@@ -45,12 +45,13 @@ import Modal from 'Modal'
 import CreateRoomInfo from '../partials/ModalCreateRoomInfo'
 import CreateRoomInvite from '../partials/ModalCreateRoomInvite'
 import createRoomMixin from 'mixins/createRoom'
+import roomMixin from 'mixins/room'
 import { maxParticipants } from 'utils/callOptions'
-import { mapGetters } from 'vuex'
+//import { mapGetters } from 'vuex'
 
 export default {
   name: 'WorkspaceCreateRoom',
-  mixins: [createRoomMixin],
+  mixins: [createRoomMixin, roomMixin],
   components: {
     Modal,
     CreateRoomInfo,
@@ -80,9 +81,9 @@ export default {
       visibleMobileFlag: false,
     }
   },
-  computed: {
-    ...mapGetters(['restrictedMode', 'targetCompany', 'useScreenStrict']),
-  },
+  // computed: {
+  //   ...mapGetters(['restrictedMode', 'targetCompany', 'useScreenStrict']),
+  // },
   methods: {
     reset() {
       this.selection = []

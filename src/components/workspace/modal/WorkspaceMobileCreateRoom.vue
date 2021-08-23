@@ -121,8 +121,8 @@ export default {
       this.$emit('startRemote', {
         title: `${this.shortName}'s Room`,
         description: '',
-        imageFile: this.roomInfo.description,
-        imageUrl: this.roomInfo.profile,
+        imageFile: null,
+        imageUrl: '',
         open: false,
       })
     },
