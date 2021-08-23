@@ -24,9 +24,16 @@ public interface WorkspaceRestService {
 	@GetMapping("/workspaces/{workspaceId}/members")
 	ApiResponse<WorkspaceMemberInfoListResponse> getWorkspaceMemberInfoList(
 		@PathVariable("workspaceId") String workspaceId,
-		@RequestParam(value = "filter", required = false) String filter,
+		@RequestParam(value = "plan", required = false) String plan,
 		@RequestParam(value = "search", required = false) String search,
 		@RequestParam(value = "size") int size
+	);
+
+	@GetMapping("/workspaces/{workspaceId}/members")
+	ApiResponse<WorkspaceMemberInfoListResponse> getWorkspaceMemberInfoList(
+			@PathVariable("workspaceId") String workspaceId,
+			@RequestParam(value = "plan", required = false) String plan,
+			@RequestParam(value = "size") int size
 	);
 
 	@GetMapping("/workspaces/{workspaceId}/members/info")

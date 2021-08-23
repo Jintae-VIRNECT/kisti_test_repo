@@ -1,11 +1,9 @@
 package com.virnect.serviceserver.serviceremote.application;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
+import com.virnect.serviceserver.serviceremote.dto.mapper.group.*;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.stereotype.Service;
@@ -37,10 +35,6 @@ import com.virnect.data.global.common.ApiResponse;
 import com.virnect.data.redis.application.AccessStatusService;
 import com.virnect.data.redis.domain.AccessStatus;
 import com.virnect.data.redis.domain.AccessType;
-import com.virnect.serviceserver.serviceremote.dto.mapper.group.FavoriteGroupMapper;
-import com.virnect.serviceserver.serviceremote.dto.mapper.group.FavoriteGroupMemberMapper;
-import com.virnect.serviceserver.serviceremote.dto.mapper.group.RemoteGroupMapper;
-import com.virnect.serviceserver.serviceremote.dto.mapper.group.RemoteGroupMemberMapper;
 
 @Slf4j
 @Service
@@ -57,6 +51,7 @@ public class GroupService {
 
 	private final FavoriteGroupMapper favoriteGroupMapper;
 	private final FavoriteGroupMemberMapper favoriteGroupMemberMapper;
+	private final WorkspaceToRemoteGroupMapper workspaceToRemoteGroupMapper;
 
 	private final AccessStatusService accessStatusService;
 
@@ -103,7 +98,14 @@ public class GroupService {
 	public ApiResponse<RemoteGroupListResponse> getRemoteGroups(
 		String workspaceId
 	) {
+		// Workspace 전체 멤버 가져오기
+		List<WorkspaceMemberInfoResponse> workspaceMemberAll = workspaceRestService.getWorkspaceMemberInfoList(
+				workspaceId, "remote", 99).getData().getMemberInfoList();
+		List<RemoteGroupMemberResponse> remoteGroupMemberAll = workspaceMemberAll.stream()
+				.map(workspaceToRemoteGroupMapper::toDto)
+				.collect(Collectors.toList());
 
+		// Remote group 정보
 		List<RemoteGroup> remoteGroups = groupRepository.findByWorkspaceId(workspaceId);
 		if (CollectionUtils.isEmpty(remoteGroups)) {
 			return new ApiResponse<>(
@@ -119,19 +121,31 @@ public class GroupService {
 					userList.add(groupMember.getUuid());
 				}
 			}
+		};
+		HashSet<String> distinctData = new HashSet<>(userList);
+		List<String> removedDistinctList = new ArrayList<>(distinctData);
+
+		// Make Etc group
+
+		List<RemoteGroupResponse> groupListResponse = new ArrayList<>();
+		List<RemoteGroupMemberResponse> etcGroupMember = remoteGroupMemberAll;
+		RemoteGroupResponse etcGroup = RemoteGroupResponse.builder()
+				.workspaceId(workspaceId)
+				.groupId("group_etc")
+				.groupName("기타 그룹")
+				.build();
+
+		Iterator<RemoteGroupMemberResponse> groupMemberIterator = etcGroupMember.listIterator();
+		while (groupMemberIterator.hasNext()) {
+			String memberUuid = groupMemberIterator.next().getUuid();
+			for (String uuid : removedDistinctList) {
+				if (memberUuid.equals(uuid)) {
+					groupMemberIterator.remove();
+				}
+			}
 		}
-
-		// Workspace 내 멤버 정보 가져 오기
-		ApiResponse<WorkspaceMemberInfoListResponse> memberInfo = workspaceRestService.getWorkspaceMemberInfoList(
-			workspaceId,
-			userList.stream().distinct().toArray(String[]::new)
-		);
-
-		List<RemoteGroupResponse> groupInfoResponseList = new ArrayList<>();
-
-		// Add default group
-		// 워크스페이스 전체 멤버에서 그룹 멤버에 있는 멤버 제외한 데이터
-
+		etcGroup.setRemoteGroupMemberResponses(etcGroupMember);
+		groupListResponse.add(etcGroup);
 
 		for (RemoteGroup remoteGroup : remoteGroups) {
 			RemoteGroupResponse remoteGroupResponse = remoteGroupMapper.toDto(remoteGroup);
@@ -141,19 +155,17 @@ public class GroupService {
 				.collect(Collectors.toList());
 			// Set nick name, profile in workspace members info
 			for (RemoteGroupMemberResponse groupMember : groupMembersInfo) {
-				for (WorkspaceMemberInfoResponse workspaceMemberInfoResponse : memberInfo.getData().getMemberInfoList()) {
+				for (WorkspaceMemberInfoResponse workspaceMemberInfoResponse : workspaceMemberAll) {
 					if (groupMember.getUuid().equals(workspaceMemberInfoResponse.getUuid())) {
 						groupMember.setNickName(workspaceMemberInfoResponse.getNickName());
 						groupMember.setProfile(workspaceMemberInfoResponse.getProfile());
 					}
 				}
 			}
-
 			remoteGroupResponse.setRemoteGroupMemberResponses(groupMembersInfo);
-			groupInfoResponseList.add(remoteGroupResponse);
+			groupListResponse.add(remoteGroupResponse);
 		}
-
-		return new ApiResponse<>(RemoteGroupListResponse.builder().groupInfoResponseList(groupInfoResponseList).build());
+		return new ApiResponse<>(RemoteGroupListResponse.builder().groupInfoResponseList(groupListResponse).build());
 	}
 
 	public ApiResponse<RemoteGroupResponse> getRemoteGroupDetailInfo(
@@ -165,7 +177,7 @@ public class GroupService {
 	) {
 		RemoteGroup remoteGroup = groupRepository.findByWorkspaceIdAndGroupId(workspaceId, groupId);
 		if (ObjectUtils.isEmpty(remoteGroup)) {
-			return new ApiResponse<>(new RemoteGroupResponse());
+			return new ApiResponse<>(ErrorCode.ERR_GROUP_NOT_FOUND);
 		}
 
 		WorkspaceMemberInfoListResponse memberInfo = workspaceRestService.getWorkspaceMemberInfoList(

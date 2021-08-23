@@ -17,7 +17,8 @@ public class WorkspaceRestFallbackFactory implements FallbackFactory<WorkspaceRe
 
     @Override
     public WorkspaceRestService create(Throwable cause) {
-        return new WorkspaceRestService() {
+        return new
+                WorkspaceRestService() {
             @Override
             public ApiResponse<WorkspaceMemberInfoListResponse> getWorkspaceMemberInfoList(String workspaceId, String filter, String search, int page, int size) {
                 log.error("[USER WORKSPACE INFO LIST API FALLBACK] => WORKSAPCE_ID: {}, {}", workspaceId, cause.getMessage());
@@ -37,6 +38,14 @@ public class WorkspaceRestFallbackFactory implements FallbackFactory<WorkspaceRe
             }
 
             @Override
+            public ApiResponse<WorkspaceMemberInfoListResponse> getWorkspaceMemberInfoList(String workspaceId, String plan, int size) {
+                log.error("[USER WORKSPACE INFO LIST API FALLBACK] => WORKSAPCE_ID: {}, {}", workspaceId, cause.getMessage());
+                WorkspaceMemberInfoListResponse empty = new WorkspaceMemberInfoListResponse();
+                empty.setMemberInfoList(new ArrayList<>());
+                return new ApiResponse<>(empty);
+            }
+
+                    @Override
             public ApiResponse<WorkspaceMemberInfoResponse> getWorkspaceMemberInfo(String workspaceId, String userId) {
                 log.error("[USER WORKSPACE INFO API FALLBACK] => WORKSAPCE_ID: {}, {}", workspaceId, cause.getMessage());
                 WorkspaceMemberInfoResponse empty = new WorkspaceMemberInfoResponse();
