@@ -24,5 +24,8 @@ public class RemoteGroupResponse {
 	private String groupName = "";
 
 	@ApiModelProperty(value = "Group members", position = 4, example = "group members")
-	private List<RemoteGroupMemberResponse> remoteGroupMemberResponses = new ArrayList<>();
+	private List<RemoteGroupMemberResponse> remoteGroupMemberResponses;
+
+	@ApiModelProperty(value = "Group member total count", position = 5)
+	private long memberTotalCount;
 }
