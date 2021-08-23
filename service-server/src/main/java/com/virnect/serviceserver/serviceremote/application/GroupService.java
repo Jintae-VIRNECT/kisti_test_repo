@@ -41,6 +41,8 @@ import com.virnect.data.redis.domain.AccessType;
 @RequiredArgsConstructor
 public class GroupService {
 
+	private final String etcGroupName = "group_etc";
+
 	private final WorkspaceRestService workspaceRestService;
 
 	private final RemoteGroupRepository groupRepository;
@@ -131,7 +133,7 @@ public class GroupService {
 		List<RemoteGroupMemberResponse> etcGroupMember = remoteGroupMemberAll;
 		RemoteGroupResponse etcGroup = RemoteGroupResponse.builder()
 				.workspaceId(workspaceId)
-				.groupId("group_etc")
+				.groupId(etcGroupName)
 				.groupName("기타 그룹")
 				.build();
 
@@ -175,6 +177,47 @@ public class GroupService {
 		String search,
 		boolean accessTypeFilter
 	) {
+		if (groupId.equals(etcGroupName)) {
+			// Workspace 전체 멤버 가져오기
+			List<WorkspaceMemberInfoResponse> workspaceMemberAll = workspaceRestService.getWorkspaceMemberInfoList(
+					workspaceId, "remote", 99).getData().getMemberInfoList();
+			List<RemoteGroupMemberResponse> remoteGroupMemberAll = workspaceMemberAll.stream()
+					.map(workspaceToRemoteGroupMapper::toDto)
+					.collect(Collectors.toList());
+			// Remote group 정보
+			List<RemoteGroup> remoteGroups = groupRepository.findByWorkspaceId(workspaceId);
+			// Make uuid array
+			List<String> userList = new ArrayList<>();
+			for (RemoteGroup remoteGroup : remoteGroups) {
+				for (RemoteGroupMember groupMember : remoteGroup.getGroupMembers()) {
+					if (!(StringUtils.isBlank(groupMember.getUuid()))) {
+						userList.add(groupMember.getUuid());
+					}
+				}
+			};
+			HashSet<String> distinctData = new HashSet<>(userList);
+			List<String> removedDistinctList = new ArrayList<>(distinctData);
+			// Make Etc group
+			List<RemoteGroupResponse> groupListResponse = new ArrayList<>();
+			List<RemoteGroupMemberResponse> etcGroupMember = remoteGroupMemberAll;
+			RemoteGroupResponse etcGroup = RemoteGroupResponse.builder()
+					.workspaceId(workspaceId)
+					.groupId("group_etc")
+					.groupName("기타 그룹")
+					.build();
+			Iterator<RemoteGroupMemberResponse> groupMemberIterator = etcGroupMember.listIterator();
+			while (groupMemberIterator.hasNext()) {
+				String memberUuid = groupMemberIterator.next().getUuid();
+				for (String uuid : removedDistinctList) {
+					if (memberUuid.equals(uuid)) {
+						groupMemberIterator.remove();
+					}
+				}
+			}
+			etcGroup.setRemoteGroupMemberResponses(etcGroupMember);
+			return new ApiResponse<>(etcGroup);
+		}
+
 		RemoteGroup remoteGroup = groupRepository.findByWorkspaceIdAndGroupId(workspaceId, groupId);
 		if (ObjectUtils.isEmpty(remoteGroup)) {
 			return new ApiResponse<>(ErrorCode.ERR_GROUP_NOT_FOUND);
