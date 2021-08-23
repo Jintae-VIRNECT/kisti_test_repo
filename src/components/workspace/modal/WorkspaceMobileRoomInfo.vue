@@ -31,8 +31,8 @@
         <room-info
           v-if="tabview === 'group'"
           :room="room"
-          :image.sync="image"
           :isLeader="isLeader"
+          :isHistory="isHistory"
           @update="update"
         ></room-info>
 
@@ -89,6 +89,10 @@ export default {
     },
     memberList: {
       type: Array,
+    },
+    isHistory: {
+      type: Boolean,
+      default: false,
     },
   },
   data() {

@@ -65,3 +65,49 @@
     border-radius: 4px;
   }
 }
+
+@include responsive-mobile {
+  .modal.plan-over {
+    padding-right: 2em;
+    padding-left: 2em;
+
+    .modal--inner {
+      background-color: $new_color_popup_bg;
+      border-radius: 0.6rem;
+    }
+    .modal--body {
+      padding-top: 1.91rem;
+      padding-bottom: 3.2rem;
+    }
+  }
+  .plan-over__header {
+    @include fontLevel(400);
+    color: $new_color_text_main;
+  }
+
+  .plan-over__description {
+    @include fontLevel(100);
+    color: $new_color_text_sub;
+  }
+
+  .btn.plan-over__link {
+    height: 4.8rem;
+    margin-top: 2.2rem;
+    color: $new_color_text_main;
+    background-color: $new_color_bg;
+    @include fontLevel(150);
+
+    &:after {
+      width: 2rem;
+      height: 2rem;
+      background: url("~assets/image/ic_main_enter_new.svg") center no-repeat;
+    }
+  }
+  .plan-over__footer {
+    > button {
+      width: 12rem;
+      height: 4.2rem;
+      @include fontLevel(100);
+    }
+  }
+}

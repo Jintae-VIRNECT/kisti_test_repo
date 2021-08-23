@@ -107,7 +107,6 @@ import RoominfoModal from '../modal/WorkspaceRoomInfo'
 import { STATUS, ROOM_STATUS } from 'configs/status.config'
 import { ROLE } from 'configs/remote.config'
 import mixinToast from 'mixins/toast'
-import thumbStyle from 'mixins/thumbStyle'
 
 const defaultThumbStyle = { width: '5.143rem', height: '5.143rem' }
 const mobileThumbStyle = { width: '4.2rem', height: '4.2rem' }
@@ -118,7 +117,7 @@ const mobileCardHeight = '8.4rem'
 
 export default {
   name: 'RemoteCard',
-  mixins: [mixinToast, thumbStyle],
+  mixins: [mixinToast],
   components: {
     Card,
     Profile,

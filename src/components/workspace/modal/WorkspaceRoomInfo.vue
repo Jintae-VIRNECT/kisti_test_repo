@@ -67,13 +67,14 @@
         </keep-alive>
       </div>
     </modal>
+
+    <!-- 모바일 레이아웃 -->
     <workspace-mobile-room-info
       :room="room"
       :sessionId="sessionId"
       :isLeader="isLeader"
       :visible.sync="visibleMobileFlag"
       :beforeClose="beforeClose"
-      :image.sync="image"
       :tabview="tabview"
       :memberList="memberList"
       @tabChange="tabChange"

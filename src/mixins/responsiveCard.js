@@ -1,5 +1,5 @@
-const defaultWideCardHeight = '6.143em'
-const mobileWideCardHeight = '7.2rem'
+const defaultCardHeight = '6.143em'
+const mobileCardHeight = '7.2rem'
 const defaultThumbStyle = { width: '3em', height: '3em' }
 const mobileThumbStyle = { width: '4.3rem', height: '4.3rem' }
 const defaultPlacement = 'bottom-start'
@@ -8,43 +8,49 @@ export default {
   data() {
     return {
       mobilePlacement: null,
-      mobileWideCardHeight: null,
+      mobileCardHeight: null,
+      defaultCardHeight: null,
       mobileThumbStyle: null,
-      height: defaultWideCardHeight,
+      defaultThumbStyle: null,
+      height: defaultCardHeight,
       thumbStyle: defaultThumbStyle,
-      responsiveFn: null,
+      _responsiveFn: null,
       placement: defaultPlacement,
     }
   },
   methods: {
-    setMobileHeightAndThumbStyle(wideCardHeight, thumbStyle) {
-      this.mobileWideCardHeight = wideCardHeight
-      this.mobileThumbStyle = thumbStyle
+    setDefaultHeightAndThumbStyle(cardHeight, thumbStyle) {
+      this.defaultCardHeight = cardHeight || defaultCardHeight
+      this.defaultThumbStyle = thumbStyle || defaultThumbStyle
+    },
+    setMobileHeightAndThumbStyle(cardHeight, thumbStyle) {
+      this.mobileCardHeight = cardHeight || defaultCardHeight
+      this.mobileThumbStyle = thumbStyle || defaultCardHeight
     },
     setMobilePlacement(placement) {
       this.mobilePlacement = placement
     },
     responsiveMobile() {
-      this.height = this.mobileWideCardHeight || mobileWideCardHeight
+      this.height = this.mobileCardHeight || mobileCardHeight
       this.thumbStyle = this.mobileThumbStyle || mobileThumbStyle
 
       if (this.mobilePlacement) this.placement = this.mobilePlacement
     },
     responsiveDefault() {
-      this.height = defaultWideCardHeight
-      this.thumbStyle = defaultThumbStyle
+      this.height = this.defaultCardHeight || defaultCardHeight
+      this.thumbStyle = this.defaultThumbStyle || defaultThumbStyle
 
-      if (this.mobilePlacement) this.placement = this.defaultPlacement
+      if (this.mobilePlacement) this.placement = defaultPlacement
     },
   },
   mounted() {
-    this.responsiveFn = this.callAndGetMobileResponsiveFunction(
+    this._responsiveFn = this.callAndGetMobileResponsiveFunction(
       this.responsiveMobile,
       this.responsiveDefault,
     )
-    this.addEventListenerScreenResize(this.responsiveFn)
+    this.addEventListenerScreenResize(this._responsiveFn)
   },
   beforeDestroy() {
-    this.removeEventListenerScreenResize(this.responsiveFn)
+    this.removeEventListenerScreenResize(this._responsiveFn)
   },
 }

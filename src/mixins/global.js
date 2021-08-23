@@ -102,5 +102,9 @@ export default {
     removeEventListenerScreenResize(fn) {
       if (fn) window.addEventListener('resize', fn)
     },
+
+    isMobileScreenSize() {
+      return matchMedia('screen and (max-width: 767px)').matches
+    },
   },
 }

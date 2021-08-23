@@ -803,3 +803,73 @@ body {
     }
   }
 }
+
+//모바일 스타일 수정
+@include responsive-mobile {
+  .swal2-popup {
+    background-color: $new_color_popup_bg;
+    border-radius: 0.6rem;
+
+    //문구
+    .swal2-content {
+      padding-top: 26px;
+      padding-bottom: 0;
+      .swal2-html-container {
+        display: flex !important;
+        align-items: center;
+        justify-content: center;
+        min-height: 4.8rem;
+        padding: 0;
+        color: $new_color_text_main;
+        @include fontLevel(200);
+      }
+      .swal2-validation-message {
+        display: none;
+      }
+    }
+
+    //버튼 스타일
+    .swal2-actions {
+      margin-top: 1.8rem;
+      .swal2-styled {
+        display: flex;
+        justify-content: center;
+        min-width: 10.2rem;
+        max-width: 10.2rem;
+        height: 3.6rem;
+        padding: 0;
+        border-radius: 0.4rem;
+        @include fontLevel(100);
+      }
+
+      .swal2-styled.swal2-cancel {
+        margin-right: 0.5rem;
+        background-color: $new_color_bg_button_sub;
+        border: none;
+      }
+      .swal2-styled.swal2-confirm {
+        margin-left: 0.5rem;
+        background-color: $new_color_bg_button_primary;
+        border: none;
+      }
+    }
+
+    //버튼 hover, active 효과 제거
+    .swal2-actions:not(.swal2-loading) .swal2-styled {
+      &.swal2-confirm {
+        &:hover,
+        &:active {
+          color: $new_color_text_main;
+          background-color: $new_color_bg_button_primary;
+        }
+      }
+      &.swal2-cancel {
+        &:hover,
+        &:active {
+          color: $new_color_text_main;
+          background-color: $new_color_bg_button_sub;
+        }
+      }
+    }
+  }
+}

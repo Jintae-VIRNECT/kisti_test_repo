@@ -1,7 +1,7 @@
 export default {
   data() {
     return {
-      responsiveFn: null,
+      _responsiveFn: null,
       visiblePcFlag: false,
       visibleMobileFlag: false,
       _visibleFlag: false,
@@ -25,13 +25,13 @@ export default {
     },
   },
   mounted() {
-    this.responsiveFn = this.callAndGetMobileResponsiveFunction(
+    this._responsiveFn = this.callAndGetMobileResponsiveFunction(
       this.setVisibleMobileFlag,
       this.setVisiblePcFlag,
     )
-    this.addEventListenerScreenResize(this.responsiveFn)
+    this.addEventListenerScreenResize(this._responsiveFn)
   },
   beforeDestroy() {
-    this.removeEventListenerScreenResize(this.responsiveFn)
+    this.removeEventListenerScreenResize(this._responsiveFn)
   },
 }

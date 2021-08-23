@@ -3,7 +3,7 @@
     :title="$t('workspace.user_title')"
     :description="$t('workspace.user_description')"
     :placeholder="$t('workspace.search_member')"
-    :emptyImage="require('assets/image/img_user_empty.svg')"
+    :emptyImage="emptyImage"
     :emptyTitle="emptyTitle"
     :emptyDescription="emptyDescription"
     :empty="list.length === 0"
@@ -38,10 +38,14 @@ import { getMemberList } from 'api/http/member'
 import { WORKSPACE_ROLE } from 'configs/status.config'
 import confirmMixin from 'mixins/confirm'
 import { forceLogout } from 'api/http/message'
+import responsiveEmptyImageMixin from 'mixins/responsiveEmptyImage'
+
+const defaultEmptyImage = require('assets/image/img_user_empty.svg')
+const mobileEmptyImage = require('assets/image/img_user_empty_new.svg')
 
 export default {
   name: 'WorkspaceUser',
-  mixins: [confirmMixin],
+  mixins: [confirmMixin, responsiveEmptyImageMixin],
   components: { TabView, MemberCard },
   data() {
     return {
@@ -156,7 +160,9 @@ export default {
       await this.getList()
 
       const { uuid } = targetUserinfo
-      const nickNameTag = `<span style="color:#6bb4f9">${targetUserinfo.nickName}</span> `
+      const nickNameTag = this.isMobileScreenSize()
+        ? `${targetUserinfo.nickName}\n`
+        : `<span style="color:#6bb4f9">${targetUserinfo.nickName}</span> `
 
       //갱신한 목록에서 해당 멤버 검색
       const latestTargetUserInfo = this.memberList.find(
@@ -206,10 +212,9 @@ export default {
     },
   },
 
-  mounted() {},
-
   /* Lifecycles */
   async created() {
+    this.setMobileDefaultEmptyImage(defaultEmptyImage, mobileEmptyImage)
     this.getList()
   },
   beforeDestroy() {
@@ -219,12 +224,22 @@ export default {
 </script>
 
 <style lang="scss">
-@import '~assets/style/vars';
+@import '~assets/style/mixin';
 
 .grid-container {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(14.286rem, 1fr));
   column-gap: 0.571rem;
   row-gap: 0.571rem;
+}
+
+@include responsive-mobile {
+  .grid-container {
+    grid-template-columns: repeat(2, minmax(15.9rem, 1fr));
+    -webkit-column-gap: 1rem;
+    -moz-column-gap: 1rem;
+    column-gap: 1rem;
+    row-gap: 1rem;
+  }
 }
 </style>

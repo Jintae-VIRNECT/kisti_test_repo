@@ -63,6 +63,7 @@ import confirmMixin from 'mixins/confirm'
 import { ROOM_STATUS } from 'configs/status.config'
 import { nameExp as EXP_NAME } from 'utils/regexp'
 import responsiveCardMixin from 'mixins/responsiveCard'
+import responsiveEmptyImageMixin from 'mixins/responsiveEmptyImage'
 
 import {
   getHistoryList,
@@ -79,7 +80,7 @@ const mobileEmptyImage = require('assets/image/img_recent_empty_new.svg')
 
 export default {
   name: 'WorkspaceHistory',
-  mixins: [confirmMixin, responsiveCardMixin],
+  mixins: [confirmMixin, responsiveCardMixin, responsiveEmptyImageMixin],
   components: {
     Loader,
     TabView,
@@ -114,7 +115,6 @@ export default {
         last: false,
       },
       searchingText: '',
-      emptyImage: defaultEmptyImage,
       responsiveFn: null,
     }
   },
@@ -149,12 +149,6 @@ export default {
     },
   },
   methods: {
-    setMobileEmptyImage() {
-      this.emptyImage = mobileEmptyImage
-    },
-    setDefaultEmptyImage() {
-      this.emptyImage = defaultEmptyImage
-    },
     //상세보기
     openRoomInfo(sessionId) {
       this.$eventBus.$emit('popover:close')
@@ -395,22 +389,16 @@ export default {
   created() {
     this.setMobileHeightAndThumbStyle(mobileWideCardHeight, mobileThumbStyle)
     this.setMobilePlacement(mobilePlacement)
+    this.setMobileDefaultEmptyImage(defaultEmptyImage, mobileEmptyImage)
   },
   mounted() {
     if (this.workspace.uuid) {
       this.init()
     }
     this.$eventBus.$on('scroll:end', this.moreHistory)
-
-    this.responsiveFn = this.callAndGetMobileResponsiveFunction(
-      this.setMobileEmptyImage,
-      this.setDefaultEmptyImage,
-    )
-    this.addEventListenerScreenResize(this.responsiveFn)
   },
   beforeDestroy() {
     this.$eventBus.$off('scroll:end', this.moreHistory)
-    this.removeEventListenerScreenResize(this.responsiveFn)
   },
 }
 </script>

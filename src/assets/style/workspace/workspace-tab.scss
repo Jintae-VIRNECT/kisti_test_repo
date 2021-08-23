@@ -293,7 +293,7 @@
       background-color: $new_color_bg_sub;
       //워크스페이스 선택 목록
       .workcard-list {
-        grid-template-columns: repeat(2, minmax(15.9rem, auto));
+        grid-template-columns: repeat(2, minmax(15.9rem, 1fr));
         -webkit-column-gap: 1rem;
         -moz-column-gap: 1rem;
         column-gap: 1rem;
