@@ -109,7 +109,7 @@ public class MemberUserInformationService {
 	public UserEmailExistCheckResponse userEmailDuplicateCheck(String email) {
 		Optional<User> user = userRepository.findByEmail(email);
 
-		if (!user.isPresent()) {
+		if (user.isPresent()) {
 			log.info("[CREATE_WORKSPACE_ONLY_USER] - Email duplicate [{}]", email);
 			throw new UserServiceException(UserAccountErrorCode.ERR_REGISTER_MEMBER_DUPLICATE_ID);
 		}
