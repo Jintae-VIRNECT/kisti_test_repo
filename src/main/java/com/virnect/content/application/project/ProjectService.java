@@ -15,6 +15,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.StringUtils;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -23,6 +24,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import com.virnect.content.application.license.LicenseRestService;
+import com.virnect.content.application.workspace.WorkspaceRestService;
 import com.virnect.content.dao.content.ContentRepository;
 import com.virnect.content.dao.project.ProjectEditUserRepository;
 import com.virnect.content.dao.project.ProjectModeRepository;
@@ -42,7 +44,9 @@ import com.virnect.content.dto.request.ProjectUploadRequest;
 import com.virnect.content.dto.request.PropertyInfoRequest;
 import com.virnect.content.dto.response.ProjectInfoListResponse;
 import com.virnect.content.dto.response.ProjectInfoResponse;
+import com.virnect.content.dto.response.ProjectTargetInfoResponse;
 import com.virnect.content.dto.rest.LicenseInfoResponse;
+import com.virnect.content.dto.rest.MemberInfoDTO;
 import com.virnect.content.dto.rest.MyLicenseInfoListResponse;
 import com.virnect.content.exception.ContentServiceException;
 import com.virnect.content.global.common.ApiResponse;
@@ -74,7 +78,13 @@ public class ProjectService {
 	private final LicenseRestService licenseRestService;
 	private final ContentRepository contentRepository;
 	private final ProjectResponseMapper projectResponseMapper;
+	private final WorkspaceRestService workspaceRestService;
 
+	/**
+	 * 프로젝트 업로드
+	 * @param projectUploadRequest - 업로드 요청 정보
+	 * @return - 업로드 된 프로젝트 정보
+	 */
 	@Transactional
 	public ProjectInfoResponse uploadProject(ProjectUploadRequest projectUploadRequest) {
 		//필수 값 체크 - project
@@ -151,35 +161,15 @@ public class ProjectService {
 			.project(project)
 			.build();
 		projectTargetRepository.save(projectTarget);
-		ProjectInfoResponse projectInfoResponse = projectResponseMapper.projectToProjectInfoResponse(project);
-		ObjectMapper mapper = new ObjectMapper();
-		PropertyInfoRequest propertyInfoRequest = new PropertyInfoRequest();
-		try {
-			propertyInfoRequest = mapper.readValue(project.getProperties(), PropertyInfoRequest.class);
-		} catch (JsonProcessingException e) {
-			e.printStackTrace();
-		}
-		projectInfoResponse.setModeList(modeList);
-		//projectInfoResponse.setEditUserList();
-		//projectInfoResponse.setSharedUserList();
-		projectInfoResponse.setPropertySceneTotal(propertyInfoRequest.getSceneGroupList().size());
-		int sceneGroupTotal = (int)propertyInfoRequest.getSceneGroupList()
-			.stream()
-			.map(sceneGroup -> sceneGroup.getSceneList().size())
-			.count();
-		int objectTotal = propertyInfoRequest.getSceneGroupList()
-			.stream()
-			.mapToInt(sceneGroup -> (int)sceneGroup.getSceneList()
-				.stream()
-				.map(scene -> scene.getObjectList().size())
-				.count())
-			.sum();
-		projectInfoResponse.setPropertySceneGroupTotal(sceneGroupTotal);
-		projectInfoResponse.setPropertyObjectTotal(objectTotal);
-		projectInfoResponse.setTargetInfo(projectResponseMapper.projectTargetToTargetInfoResponse(projectTarget));
+		ProjectInfoResponse projectInfoResponse = generateProjectResponse(project);
 		return projectInfoResponse;
 	}
 
+	/**
+	 * QR 타겟 업로드
+	 * @param targetData - 업로드 대상 타겟 정보
+	 * @return - 업로드 된 QR 타겟 이미지 경로
+	 */
 	private String getQRTargetFilePath(String targetData) {/*
 		String decodedTargetData = null;
 		try {
@@ -201,6 +191,11 @@ public class ProjectService {
 		}
 	}
 
+	/**
+	 * 워크스페이스 최대 용량 체크
+	 * @param workspaceUUID - 체크 대상 워크스페이스 식별자
+	 * @param requestSize - 추가 대상 용량 정보
+	 */
 	private void checkWorkspaceMaxStorage(String workspaceUUID, Long requestSize) {
 		//업로드 가능 용량 체크
 		LicenseInfoResponse licenseInfoResponse = getLicenseInfoResponse(workspaceUUID);
@@ -233,6 +228,11 @@ public class ProjectService {
 		}
 	}
 
+	/**
+	 * REST SERVICE REQ - 워크스페이스의 라이선스 정보 조회
+	 * @param workspaceUUID - 조회 대상 워크스페이스 식별자
+	 * @return - 라이선스 정보
+	 */
 	private LicenseInfoResponse getLicenseInfoResponse(String workspaceUUID) {
 		ApiResponse<LicenseInfoResponse> apiResponse = licenseRestService.getWorkspaceLicenseInfo(workspaceUUID);
 		if (apiResponse.getCode() != 200 || apiResponse.getData() == null || apiResponse.getData()
@@ -246,6 +246,11 @@ public class ProjectService {
 		return apiResponse.getData();
 	}
 
+	/**
+	 * 유저의 MAKE 라이선스 보유 여부 조회
+	 * @param userUUID - 조회 대상 유저 식별자
+	 * @param workspaceUUID - 조회 대상 워크스페이스 식별자
+	 */
 	private void checkUserHaveMAKELicense(String userUUID, String workspaceUUID) {
 		MyLicenseInfoListResponse myLicenseInfoListResponse = getMyLicenseInfoRequest(userUUID, workspaceUUID);
 		boolean userHaveMAKELicense = myLicenseInfoListResponse.getLicenseInfoList()
@@ -261,6 +266,12 @@ public class ProjectService {
 		}
 	}
 
+	/**
+	 * REST SERVICE REQ - 유저의 라이선스 정보 조회
+	 * @param userUUID - 조회 대상 유저 식별자
+	 * @param workspaceUUID - 조회 대상 워크스페이스 식별자
+	 * @return - 유저의 라이선스 정보
+	 */
 	private MyLicenseInfoListResponse getMyLicenseInfoRequest(String userUUID, String workspaceUUID) {
 		ApiResponse<MyLicenseInfoListResponse> apiResponse = licenseRestService.getMyLicenseInfoRequestHandler(
 			userUUID,
@@ -269,54 +280,76 @@ public class ProjectService {
 		if (apiResponse.getCode() != 200 || apiResponse.getData() == null || CollectionUtils.isEmpty(
 			apiResponse.getData().getLicenseInfoList())) {
 			log.error(
-				"[REQ - LICENSE SERVER][GET MY LICENSE INFO] request user uuid : {}, request workspace uuid : {}, response code : {}, response message : {}, response data : {}",
-				userUUID, workspaceUUID, apiResponse.getCode(), apiResponse.getMessage(),
-				apiResponse.getData().getLicenseInfoList()
+				"[REQ - LICENSE SERVER][GET MY LICENSE INFO] request user uuid : {}, request workspace uuid : {}, response code : {}, response message : {}",
+				userUUID, workspaceUUID, apiResponse.getCode(), apiResponse.getMessage()
 			);
 			throw new ContentServiceException(ErrorCode.ERR_CONTENT_UPLOAD_LICENSE_NOT_FOUND);
 		}
 		return apiResponse.getData();
 	}
 
+	/**
+	 * 프로젝트 목록 조회
+	 * @param workspaceUUID - 조회 대상 워크스페이스 식별자
+	 * @param userUUID - 조회 요청 유저 식별자
+	 * @param sharePermissionList - 공유 권한 필터 요청 정보
+	 * @param editPermissionList - 편집 권한 필터 요청 정보
+	 * @param modeList - 모드 필터 요청 정보
+	 * @param targetTypeList - 타겟 타입 필터 요청 정보
+	 * @param pageable - 페이징 정보
+	 * @return - 프로젝트 정보 목록
+	 */
 	public ProjectInfoListResponse getProjectList(
 		String workspaceUUID, String userUUID, List<SharePermission> sharePermissionList,
 		List<EditPermission> editPermissionList, List<Mode> modeList, List<TargetType> targetTypeList,
 		Pageable pageable
 	) {
-		//조회 유저 권한 체크
+		//1. 필터링 요청에 따른 프로젝트 목록 select
+		Page<Project> filteredProjectPage = projectRepository.getFilteredProjectPage(
+			workspaceUUID, sharePermissionList, editPermissionList, modeList, targetTypeList, pageable);
 
-		//필터링 된 프로젝트 목록
-		List<Project> projectList = projectRepository.getFilteredProjectList(
-			workspaceUUID, sharePermissionList, editPermissionList, modeList, targetTypeList);
 		//MEMBER - 체크하지 않음.
 		//SPECIFIC_MEMBER - 지정 멤버인지, 업로더인지, 마스터인지, 매니저인지 체크
 		//UPLOADER - 업로더인지, 마스터인지, 매니저인지 체크
 		//MANAGER - 마스터인지, 매니저인지 체크
 
-		//1. 지정 멤버 프로젝트 걸러서 권한체크
-		List<Project> projectList1 = new ArrayList<>();
-		projectList.forEach(project -> {
+		//2. 프로젝트 조회 - 멤버 권한이 아닌경우 필터링이 요청이 없는 경우 필터링 된 모든 프로젝트를 볼 수 있음
+		MemberInfoDTO memberInfoResponse = getMemberInfoRequest(workspaceUUID, userUUID);
+		if (!memberInfoResponse.getRole().equals("MEMBER")) {
+			List<ProjectInfoResponse> projectInfoResponseList = filteredProjectPage.stream()
+				.map(this::generateProjectResponse)
+				.collect(Collectors.toList());
+			PageMetadataResponse pageMetadataResponse = PageMetadataResponse.builder()
+				.currentPage(pageable.getPageNumber())
+				.currentSize(pageable.getPageSize())
+				.totalPage(filteredProjectPage.getTotalPages())
+				.totalElements(filteredProjectPage.getTotalElements())
+				.build();
+			return new ProjectInfoListResponse(projectInfoResponseList, pageMetadataResponse);
+		}
+		//2-1. 프로젝트 조회 - 멤버 권한일 경우 필터링 된 프로젝트 중 볼 수 있는 프로젝트가 제한됨.
+		List<Project> limitedProjectList = new ArrayList<>();
+		filteredProjectPage.forEach(project -> {
 			//1. 지정멤버 필터링
-			if (!CollectionUtils.isEmpty(sharePermissionList) && sharePermissionList.contains(
-				SharePermission.SPECIFIC_MEMBER)) {
+			if (project.getSharePermission() == SharePermission.SPECIFIC_MEMBER) {
 				boolean match = project.getProjectShareUserList()
 					.stream()
 					.anyMatch(projectShareUser -> projectShareUser.getUserUUID().equals(userUUID));
 				if (project.getUserUUID().equals(userUUID) || match) {
-					projectList1.add(project);
+					limitedProjectList.add(project);
 				}
 			}
 			//2. 업로더 필터링
-			if (!CollectionUtils.isEmpty(sharePermissionList) && sharePermissionList.contains(
-				SharePermission.UPLOADER)) {
+			if (project.getSharePermission() == SharePermission.UPLOADER) {
 				if (project.getUserUUID().equals(userUUID)) {
-					projectList1.add(project);
+					limitedProjectList.add(project);
 				}
 			}
 		});
-		Page<Project> projectPage = projectRepository.getProjectPageByProjectList(projectList1, pageable);
+		//2-1-1. 제한된 프로젝트를 바탕으로 응답
+		Page<Project> projectPage = projectRepository.getProjectPageByProjectList(limitedProjectList, pageable);
 		List<ProjectInfoResponse> projectInfoResponseList = projectPage.stream()
-			.map(projectResponseMapper::projectToProjectInfoResponse)
+			.map(this::generateProjectResponse)
 			.collect(Collectors.toList());
 		PageMetadataResponse pageMetadataResponse = PageMetadataResponse.builder()
 			.currentPage(pageable.getPageNumber())
@@ -324,6 +357,86 @@ public class ProjectService {
 			.totalPage(projectPage.getTotalPages())
 			.totalElements(projectPage.getTotalElements())
 			.build();
+
 		return new ProjectInfoListResponse(projectInfoResponseList, pageMetadataResponse);
+	}
+
+	/**
+	 * 프로젝트 상세 정보 응답 생성
+	 * @param project - 프로젝트 entity
+	 * @return - 프로젝트 상세 정보 dto
+	 */
+	private ProjectInfoResponse generateProjectResponse(Project project) {
+		ProjectInfoResponse projectInfoResponse = projectResponseMapper.projectToProjectInfoResponse(project);
+		//모드 정보
+		projectInfoResponse.setModeList(
+			project.getProjectModeList().stream().map(ProjectMode::getMode).collect(Collectors.toList()));
+
+		//공유 권한 정보
+		if (project.getSharePermission() == SharePermission.SPECIFIC_MEMBER) {
+			projectInfoResponse.setSharedUserList(project.getProjectShareUserList()
+				.stream()
+				.map(ProjectShareUser::getUserUUID)
+				.collect(Collectors.toList()));
+		}
+		//편집 권한 정보
+		if (project.getEditPermission() == EditPermission.SPECIFIC_MEMBER) {
+			projectInfoResponse.setEditUserList(project.getProjectEditUserList()
+				.stream()
+				.map(ProjectEditUser::getUserUUID)
+				.collect(Collectors.toList()));
+		}
+		//타겟 정보
+		ProjectTargetInfoResponse projectTargetInfoResponse = projectResponseMapper.projectTargetToTargetInfoResponse(
+			project.getProjectTarget());
+		projectInfoResponse.setTargetInfo(projectTargetInfoResponse);
+
+		//properties 씬 갯수 파싱
+		ObjectMapper mapper = new ObjectMapper();
+		PropertyInfoRequest propertyInfoRequest = new PropertyInfoRequest();
+		try {
+			propertyInfoRequest = mapper.readValue(project.getProperties(), PropertyInfoRequest.class);
+		} catch (JsonProcessingException e) {
+			e.printStackTrace();
+		}
+		projectInfoResponse.setPropertySceneTotal(propertyInfoRequest.getSceneGroupList().size());
+
+		//properties 씬 그룹 갯수 파싱
+		int sceneGroupTotal = (int)propertyInfoRequest.getSceneGroupList()
+			.stream()
+			.map(sceneGroup -> sceneGroup.getSceneList().size())
+			.count();
+		projectInfoResponse.setPropertySceneGroupTotal(sceneGroupTotal);
+
+		//properties 오브젝트 갯수 파싱
+		int objectTotal = propertyInfoRequest.getSceneGroupList()
+			.stream()
+			.mapToInt(sceneGroup -> (int)sceneGroup.getSceneList()
+				.stream()
+				.map(scene -> scene.getObjectList().size())
+				.count())
+			.sum();
+		projectInfoResponse.setPropertyObjectTotal(objectTotal);
+		return projectInfoResponse;
+	}
+
+	/**
+	 * REST SERVICE REQ - 워크스페이스 유저 정보 요청
+	 * @param workspaceUUID - 대상 워크스페이스 식별자
+	 * @param userUUID - 대상 유저 식별자
+	 * @return - 워크스페이스 유저 정보
+	 */
+	private MemberInfoDTO getMemberInfoRequest(String workspaceUUID, String userUUID) {
+		ApiResponse<MemberInfoDTO> apiResponse = workspaceRestService.getMemberInfo(workspaceUUID, userUUID);
+		if (apiResponse.getCode() != 200 || apiResponse.getData() == null || !StringUtils.hasText(
+			apiResponse.getData().getUuid())) {
+			log.error(
+				"[REQ - WORKSPACE SERVER][GET WORKSPACE USER INFO] request user uuid : {}, request workspace uuid : {}, response code : {}, response message : {}",
+				userUUID, workspaceUUID, apiResponse.getCode(), apiResponse.getMessage()
+			);
+			throw new ContentServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
+		}
+		return apiResponse.getData();
+
 	}
 }

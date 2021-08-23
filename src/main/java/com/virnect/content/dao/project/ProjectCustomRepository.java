@@ -3,7 +3,6 @@ package com.virnect.content.dao.project;
 import java.util.List;
 
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
 import com.virnect.content.domain.EditPermission;
@@ -20,9 +19,12 @@ import com.virnect.content.domain.project.Project;
  * DESCRIPTION:
  */
 public interface ProjectCustomRepository {
-	Long getWorkspaceStorageSize(String proejctUUID);
+	Long getWorkspaceStorageSize(String projectUUID);
 
-	List<Project> getFilteredProjectList(String worksapceUUID, List<SharePermission> sharePermissionList, List<EditPermission> editPermissionList, List<Mode> modeList, List<TargetType> targetTypeList);
+	Page<Project> getFilteredProjectPage(
+		String workspaceUUID, List<SharePermission> sharePermissionList, List<EditPermission> editPermissionList,
+		List<Mode> modeList, List<TargetType> targetTypeList, Pageable pageable
+	);
 
 	Page<Project> getProjectPageByProjectList(List<Project> projectList, Pageable pageable);
 }

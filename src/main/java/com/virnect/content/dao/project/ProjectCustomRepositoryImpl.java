@@ -3,11 +3,12 @@ package com.virnect.content.dao.project;
 import java.util.List;
 
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.support.QuerydslRepositorySupport;
 import org.springframework.util.CollectionUtils;
 
+import com.querydsl.core.types.Predicate;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.JPQLQuery;
 
@@ -29,25 +30,25 @@ import com.virnect.content.domain.project.QProjectTarget;
  */
 public class ProjectCustomRepositoryImpl extends QuerydslRepositorySupport implements ProjectCustomRepository {
 	public ProjectCustomRepositoryImpl() {
-		super(ProjectRepository.class);
+		super(Project.class);
 	}
 
 	@Override
-	public Long getWorkspaceStorageSize(String workspaceUUID) {
+	public Long getWorkspaceStorageSize(String projectUUID) {
 		QProject qProject = QProject.project;
 		Long sumSize = from(qProject)
 			.select(qProject.size.sum())
-			.where(qProject.workspaceUUID.eq(workspaceUUID))
+			.where(qProject.workspaceUUID.eq(projectUUID))
 			.fetchOne();
 
 		return sumSize;
 	}
 
 	@Override
-	public List<Project> getFilteredProjectList(
+	public Page<Project> getFilteredProjectPage(
 		String workspaceUUID,
 		List<SharePermission> sharePermissionList, List<EditPermission> editPermissionList, List<Mode> modeList,
-		List<TargetType> targetTypeList
+		List<TargetType> targetTypeList, Pageable pageable
 	) {
 		QProject qProject = QProject.project;
 		QProjectMode qProjectMode = QProjectMode.projectMode;
@@ -60,14 +61,24 @@ public class ProjectCustomRepositoryImpl extends QuerydslRepositorySupport imple
 				qProject.workspaceUUID.eq(workspaceUUID), eqSharePermission(sharePermissionList),
 				eqEditPermission(editPermissionList), eqMode(modeList), eqTargetType(targetTypeList)
 			);
-		return query.fetch();
+		List<Project> resultProjectList = getQuerydsl().applyPagination(pageable, query).fetch();
+
+		return new PageImpl<>(resultProjectList, pageable, query.fetchCount());
 	}
 
 	@Override
 	public Page<Project> getProjectPageByProjectList(
-		List<Project> projectList1, Pageable pageable
+		List<Project> projectList, Pageable pageable
 	) {
-		return null;
+		QProject qProject = QProject.project;
+		JPQLQuery<Project> query = from(qProject)
+			.select(qProject)
+			.where(qProject.in(projectList));
+
+		List<Project> resultProjectList = getQuerydsl().applyPagination(pageable, query).fetch();
+
+		return new PageImpl<>(resultProjectList, pageable, query.fetchCount());
+
 	}
 
 	private BooleanExpression eqTargetType(List<TargetType> targetTypeList) {

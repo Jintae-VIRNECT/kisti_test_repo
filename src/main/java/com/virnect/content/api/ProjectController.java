@@ -80,8 +80,8 @@ public class ProjectController {
 
 	@ApiOperation(value = "프로젝트 목록 조회", notes = "프로젝트 목록을 조회합니다. 공유 권한이 있는 프로젝트만 확인할 수 있습니다.")
 	@ApiImplicitParams({
-		@ApiImplicitParam(name = "workspaceUUID", value = "워크스페이스 식별자", dataType = "string", paramType = "query", required = true, example = ""),
-		@ApiImplicitParam(name = "userUUID", value = "목록 조회 요청 유저 식별자", dataType = "string", paramType = "query", required = true, example = ""),
+		@ApiImplicitParam(name = "workspaceUUID", value = "워크스페이스 식별자", dataType = "string", paramType = "query", required = true, example = "4d6eab0860969a50acbfa4599fbb5ae8"),
+		@ApiImplicitParam(name = "userUUID", value = "목록 조회 요청 유저 식별자", dataType = "string", paramType = "query", required = true, example = "498b1839dc29ed7bb2ee90ad6985c608"),
 		@ApiImplicitParam(name = "sharePermission", value = "공유 권한 정보", dataType = "string", paramType = "query", allowMultiple = true),
 		@ApiImplicitParam(name = "editPermission", value = "편집 권한 정보", dataType = "string", paramType = "query", allowMultiple = true),
 		@ApiImplicitParam(name = "mode", value = "모드 정보", dataType = "string", paramType = "query", allowMultiple = true),
