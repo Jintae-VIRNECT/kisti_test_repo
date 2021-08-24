@@ -26,11 +26,17 @@ export default {
   props: {
     label: String,
     amount: Number,
+    numOfSeat: Number,
   },
   computed: {
     ...mapGetters({
       activeWorkspace: 'auth/activeWorkspace',
     }),
+  },
+  watch: {
+    numOfSeat(v) {
+      this.value = v
+    },
   },
   data() {
     return {
@@ -61,6 +67,9 @@ export default {
     .el-tag__close {
       display: none;
     }
+  }
+  .el-input__inner {
+    height: 40px;
   }
 }
 body .member-seat-select__dropdown {
