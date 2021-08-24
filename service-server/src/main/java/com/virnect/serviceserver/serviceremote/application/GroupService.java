@@ -67,6 +67,9 @@ public class GroupService {
 		if (!checkMaster(workspaceId, userId)) {
 			return new ApiResponse<>(ErrorCode.ERR_API_AUTHENTICATION);
 		}
+		if (!validateUuid(workspaceId, groupRequest.getMemberList())) {
+			return new ApiResponse<>(ErrorCode.ERR_MEMBER_INVALID);
+		}
 		// 그룹 멤버 Count 확인
 		long groupCount = groupRepository.findByWorkspaceIdGroupCount(workspaceId);
 		if (groupCount >= 10) {
@@ -81,13 +84,16 @@ public class GroupService {
 			return new ApiResponse<>(ErrorCode.ERR_GROUP_MEMBER_ALREADY_JOINED);
 		}
 
+		HashSet<String> distinctData = new HashSet<>(groupRequest.getMemberList());
+		List<String> removedDistinctList = new ArrayList<>(distinctData);
+
 		RemoteGroup remoteGroup = RemoteGroup.builder()
 			.workspaceId(workspaceId)
 			.groupId("group_" + RandomStringUtils.randomAlphabetic(1).toUpperCase() + RandomStringUtils.randomAlphanumeric(9))
 			.groupName(groupRequest.getGroupName())
 			.build();
 
-		for (String uuid : groupRequest.getMemberList()) {
+		for (String uuid : removedDistinctList) {
 			RemoteGroupMember groupMember = RemoteGroupMember.builder()
 				.remoteGroup(remoteGroup)
 				.uuid(uuid)
@@ -112,11 +118,6 @@ public class GroupService {
 
 		// Remote group 정보
 		List<RemoteGroup> remoteGroups = groupRepository.findByWorkspaceId(workspaceId);
-		if (CollectionUtils.isEmpty(remoteGroups)) {
-			return new ApiResponse<>(
-				RemoteGroupListResponse.builder().groupInfoResponseList(Collections.emptyList()).build()
-			);
-		}
 
 		// Make group list response
 		List<RemoteGroupResponse> groupListResponse = new ArrayList<>();
@@ -304,7 +305,7 @@ public class GroupService {
 			}
 		}
 		remoteGroupInfoResponse.setRemoteGroupMemberResponses(groupMembersInfo);
-
+		remoteGroupInfoResponse.setMemberCount(groupMembersInfo.stream().count());
 		return remoteGroupInfoResponse;
 	}
 
@@ -603,5 +604,25 @@ public class GroupService {
 		etcGroup.setRemoteGroupMemberResponses(remoteGroupMemberAll);
 		etcGroup.setMemberCount(remoteGroupMemberAll.stream().count());
 		return etcGroup;
+	}
+
+	private boolean validateUuid(String workspaceId, List<String> userIds) {
+		boolean result = false;
+		int count = 0;
+
+		List<WorkspaceMemberInfoResponse> workspaceMemberAll = workspaceRestService.getWorkspaceMemberInfoList(
+			workspaceId, "remote", 50).getData().getMemberInfoList();
+
+		for (WorkspaceMemberInfoResponse workspaceMember : workspaceMemberAll) {
+			for (String userId : userIds) {
+				if (workspaceMember.getUuid().equals(userId)) {
+					count = count + 1;
+				}
+			}
+		}
+		if (userIds.size() == count) {
+			result = true;
+		}
+		return result;
 	}
 }

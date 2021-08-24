@@ -61,6 +61,7 @@ public enum ErrorCode {
 	ERR_GUEST_ACCOUNT_ALLOCATE(4028, "Allocated accounts are not usable."),
 	ERR_GUEST_ACCOUNT_INFO(4029, "Guest account Info Error"),
 	ERR_GROUP_MEMBER_ALREADY_JOINED(4030, "There are already joined member"),
+	ERR_MEMBER_INVALID(4031, "This member uuid is invalid"),
 
 	// error code for service validation
 	ERR_LICENSE_NOT_VALIDITY(5001, "License has no validity"),
@@ -116,9 +117,9 @@ public enum ErrorCode {
     ERR_USER_LEAVE_SERVICE(4008, "User Info Not Matched"),*/
 
 	// common error code
+	ERR_INVALID_REQUEST_PARAMETER(8001, "Invalid request parameter cause api errors"),
 	ERR_API_AUTHENTICATION(8003, "Authentication Error"),
 	ERR_INVALID_VALUE(8004, "Invalid Value"),
-	ERR_INVALID_REQUEST_PARAMETER(8001, "Invalid request parameter cause api errors"),
 	ERR_AUTHORIZATION_EXPIRED(8005, "Authorization token is expired"),
 	ERR_UNSUPPORTED_DATA_TYPE_EXCEPTION(8006, "Unsupported DataType Exception occured"),
 	ERR_IO_EXCEPTION(8007, "IOException occured"),
@@ -127,7 +128,6 @@ public enum ErrorCode {
 	ERR_SESSION_CLIENT_METADATA_EXCEPTION(8009, "Client metadata error"),
 	ERR_DATA_SAVE_EXCEPTION(8010, "Data save error"),
 	ERR_UNEXPECTED_SERVER_ERROR(9999, "Unexpected Server Error, Please contact Administrator");
-
 
 	@ApiModelProperty(value = "에러 코드")
 	private int code;
