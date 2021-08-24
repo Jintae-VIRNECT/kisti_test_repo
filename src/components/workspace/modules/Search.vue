@@ -1,6 +1,7 @@
 <template>
-  <div class="search" :class="appendClass">
+  <div class="search" :class="appendClass" @click="focus">
     <input
+      ref="search__input"
       class="search__input"
       type="text"
       :placeholder="placeholder"
@@ -44,6 +45,9 @@ export default {
       this.text = ''
       this.searchedText = ''
     },
+    focus() {
+      this.$refs['search__input'].focus()
+    },
   },
   mounted() {
     this.$eventBus.$on('search:clear', this.searchClear)
@@ -79,7 +83,7 @@ export default {
   font-size: 1rem;
   background-color: transparent;
   border: none;
-  transition: width 0.25s ease;
+  transition: width 0.25s ease, opacity 0.25s ease;
   caret-color: $color_primary;
   &::placeholder {
     color: rgba(#fff, 0.4);
@@ -108,15 +112,17 @@ export default {
     border: none;
     border-radius: 0.6rem;
     &:focus-within {
-      width: calc(100% - 4rem);
+      width: 100%;
       border: none;
       .search__input {
-        flex: 1;
+        flex: 0.9;
         width: 100%;
         margin-left: 1rem;
+        opacity: 1;
       }
       .search__input-icon {
-        margin: 0.8rem;
+        top: 0;
+        margin: 0.8rem 0;
       }
     }
   }
@@ -125,9 +131,14 @@ export default {
     width: 0px;
     margin-left: 0;
     padding: 0;
+    opacity: 0;
     @include fontLevel(75);
   }
   .search__input-icon {
+    position: absolute;
+    top: 0.8rem;
+    right: 0.5rem;
+    min-width: 22.84px;
     height: 1.6rem;
     background: url(~assets/image/ic_search_16.svg) 50%/1.571rem no-repeat;
     &.disabled {
