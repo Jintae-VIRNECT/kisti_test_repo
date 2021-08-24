@@ -13,5 +13,11 @@ export default class EditMember extends Model {
     this.licenseRemote = member.licenseProducts.includes(plans.remote.value)
     this.licenseMake = member.licenseProducts.includes(plans.make.value)
     this.licenseView = member.licenseProducts.includes(plans.view.value)
+    this.nickname = member.nickname
+    this.userType = member.userType
+    this.email = member.email
+    this.password = ''
+    this.deleteDesc = ''
+    this.image = ''
   }
 }
