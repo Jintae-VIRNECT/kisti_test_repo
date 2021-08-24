@@ -107,7 +107,8 @@ dependencies {
 
 test {
     useJUnitPlatform()
-    systemProperty("spring.active.profiles", "local")
+    systemProperty("spring.active.profiles", "test")
+    systemProperty("VIRNECT_ENV","test")
 }
 
 // querydsl 적용

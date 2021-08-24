@@ -37,7 +37,7 @@ class WorkspaceUserServiceTest {
         WorkspaceInviteRequest workspaceInviteRequest = new WorkspaceInviteRequest();
         WorkspaceInviteRequest.UserInfo userInfo = new WorkspaceInviteRequest.UserInfo();
         userInfo.setEmail("abc@abc.com");
-        userInfo.setRole(Role.MASTER);
+        userInfo.setRole(Role.MASTER.toString());
         userInfo.setPlanRemote(false);
         userInfo.setPlanMake(false);
         userInfo.setPlanView(false);
