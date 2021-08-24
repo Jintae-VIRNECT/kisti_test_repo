@@ -154,7 +154,7 @@ export default {
     },
     async submit() {
       try {
-        await workspaceService.updateMembersRole(this.form)
+        await workspaceService.updateMembersInfo(this.form)
         this.$message.success({
           message: this.$t('members.setting.message.updateSuccess'),
           duration: 2000,
