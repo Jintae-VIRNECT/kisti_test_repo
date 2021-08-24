@@ -15,8 +15,16 @@
           @kickout="kickout(participant.id)"
         ></participant-video>
         <article v-if="!openRoom && isLeader && !isMaxLength" key="append">
-          <div class="participant-video more" @click="more">
+          <div class="participant-video append more" @click="more">
             <p>{{ $t('service.participant_invite') }}</p>
+          </div>
+        </article>
+        <article v-else-if="openRoom && isLeader && !isMaxLength" key="append">
+          <div
+            class="participant-video append guest"
+            @click="showGuestInviteModal"
+          >
+            <p>{{ $t('접속 URL') }}</p>
           </div>
         </article>
       </transition-group>
@@ -127,6 +135,9 @@ export default {
     },
     more() {
       this.invite = !this.invite
+    },
+    showGuestInviteModal() {
+      this.$eventBus.$emit('guestInvite:show', true)
     },
     async kickout(participantId) {
       const params = {
