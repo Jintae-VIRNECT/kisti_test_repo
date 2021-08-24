@@ -1,0 +1,91 @@
+{
+  "projects": {
+    "allprojects": {
+      "title": "프로젝트 목록",
+      "column": {
+        "name": "이름",
+        "tracking": "트래킹",
+        "mode": "모드",
+        "uploader": "업로더",
+        "sharedStatus": "공유",
+        "Size": "크기",
+        "createdDate": "업로드"
+      }
+    },
+    "sharedStatus": {
+      "shared": "활성화",
+      "noShared": "비활성화"
+    },
+    "storage": {
+      "info": {
+        "title": "스토리지 정보",
+        "allVolume": "전체 용량",
+        "allUseVolume": "전체 사용량",
+        "projectUseVolume": "프로젝트 사용량",
+        "freeVolume": "여유 스토리지"
+      }
+    },
+    "targetTypes": {
+      "all": "전체",
+      "content": "콘텐츠",
+      "task": "작업"
+    },
+    "sharedTypes": {
+      "all": "전체",
+      "member": "멤버",
+      "selectMember": "지정 멤버",
+      "uploader": "업로더",
+      "private": "매니저"
+    },
+    "editTypes": {
+      "all": "전체",
+      "member": "멤버",
+      "selectMember": "지정 멤버",
+      "uploader": "업로더",
+      "manager": "매니저"
+    },
+    "modeTypes": {
+      "all": "전체",
+      "qr": "QR 타겟",
+      "vtarget": "V 타겟",
+      "imageTarget": "이미지 타겟"
+    },
+    "info": {
+      "title": "프로젝트 정보",
+      "project": {
+        "title": "프로젝트",
+        "name": "이름",
+        "tracking": "트래킹",
+        "mode": "콘텐츠 모드",
+        "sceneGroup": "씬 그룹",
+        "scene": "씬",
+        "object": "오브젝트",
+        "asset": "에셋",
+        "filesize": "파일 크기",
+        "update": "업로드",
+        "shared": "공유",
+        "selectMember": "지정 멤버",
+        "searchMember": "멤버 검색",
+        "edit": "편집"
+      },
+      "target": {
+        "title": "타겟",
+        "targetType": "타겟 유형",
+        "targetSize": "타겟 크기",
+        "width": "가로",
+        "height": "세로"
+      },
+      "activity": {
+        "title": "활동",
+        "nickname": "{nickname} 님이",
+        "update": "프로젝트를 업데이트했습니다.",
+        "upload": "프로젝트를 업로드했습니다.",
+        "edit": "정보 편집 권한을 {member}로 변경했습니다.",
+        "shared": "공유 상태를 {selectmember}로 변경했습니다.",
+        "moveTrash": "프로젝트를 휴지통으로 이동했습니다.",
+        "backup": "삭제된 프로젝트를 프로젝트 목록으로 이동했습니다.",
+        "download": "프로젝트를 다운로드했습니다."
+      }
+    }
+  }
+}

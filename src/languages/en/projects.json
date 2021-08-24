@@ -1,0 +1,91 @@
+{
+  "projects": {
+    "allprojects": {
+      "title": "All Projects",
+      "column": {
+        "name": "Name",
+        "tracking": "Tracking",
+        "mode": "Mode",
+        "uploader": "Uploader",
+        "sharedStatus": "Share",
+        "Size": "Size",
+        "createdDate": "Update"
+      }
+    },
+    "sharedStatus": {
+      "shared": "Activate",
+      "noShared": "Deactivate"
+    },
+    "storage": {
+      "info": {
+        "title": "Storage Info",
+        "allVolume": "All Volume",
+        "allUseVolume": "Total Usage Volume",
+        "projectUseVolume": "Project Usage Volume",
+        "freeVolume": "Remaining Volume"
+      }
+    },
+    "targetTypes": {
+      "all": "All",
+      "content": "Content",
+      "task": "Task"
+    },
+    "sharedTypes": {
+      "all": "All",
+      "member": "Member",
+      "selectMember": "Designated Member",
+      "uploader": "Uploader",
+      "private": "Manager"
+    },
+    "editTypes": {
+      "all": "All",
+      "member": "Member",
+      "selectMember": "Designated Member",
+      "uploader": "Uploader",
+      "manager": "Manager"
+    },
+    "modeTypes": {
+      "all": "All",
+      "qr": "QR Target",
+      "vtarget": "V Target",
+      "imageTarget": "Image Target"
+    },
+    "info": {
+      "title": "Project Info",
+      "project": {
+        "title": "Project",
+        "name": "Name",
+        "tracking": "Tracking",
+        "mode": "Content Mode",
+        "sceneGroup": "Scene Group",
+        "scene": "Scene",
+        "object": "Objects",
+        "asset": "Asset",
+        "filesize": "File Size",
+        "update": "Update",
+        "shared": "Shared",
+        "selectMember": "Designated Member",
+        "searchMember": "Member Search",
+        "edit": "Edit"
+      },
+      "target": {
+        "title": "Target",
+        "targetType": "Target Type",
+        "targetSize": "Target Size",
+        "width": "Width",
+        "height": "Height"
+      },
+      "activity": {
+        "title": "Activity",
+        "nickname": "{nickname}'s",
+        "update": "updateded a project.",
+        "upload": "uploaded a project.",
+        "edit": "changed the permission to edit information to {member}.",
+        "shared": "changed the sharing status to {selectmember}.",
+        "moveTrash": "moved the project to the Trash.",
+        "backup": "moved the deleted project to the project list.",
+        "download": "downloaded the project."
+      }
+    }
+  }
+}
