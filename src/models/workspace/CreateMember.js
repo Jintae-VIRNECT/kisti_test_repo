@@ -13,5 +13,6 @@ export default class CreateMember extends Model {
     this.planRemote = false
     this.planMake = false
     this.planView = false
+    this.duplicateCheck = false
   }
 }
