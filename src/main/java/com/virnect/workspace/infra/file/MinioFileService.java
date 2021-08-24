@@ -28,7 +28,7 @@ import java.util.UUID;
  * EMAIL: ljk@virnect.com
  * DESCRIPTION:
  */
-@Profile({"local", "develop", "onpremise"})
+@Profile({"local", "develop", "onpremise", "test"})
 @Slf4j
 @Service
 @RequiredArgsConstructor
