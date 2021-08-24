@@ -54,7 +54,7 @@
       />
     </div>
     <MemberAddModal
-      v-show="showAddModal"
+      v-if="showAddModal"
       :membersTotal="membersTotal"
       @refresh="searchMembers()"
       @close="closeMemberAddModal"
