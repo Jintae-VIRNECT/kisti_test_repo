@@ -278,9 +278,13 @@ export default {
           // if (!this.onPush) return
           this.alarmInviteDenied(body.contents.nickName)
           break
+
+        //제거예정
         case EVENT.LICENSE_EXPIRATION:
           this.alarmLicenseExpiration(body.contents.leftLicenseTime)
           break
+
+        //제거예정
         case EVENT.LICENSE_EXPIRED:
           if (this.$route.name === 'workspace') {
             this.clearWorkspace(this.workspace.uuid)
