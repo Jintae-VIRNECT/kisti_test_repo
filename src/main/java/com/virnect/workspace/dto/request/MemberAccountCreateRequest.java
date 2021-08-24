@@ -34,4 +34,12 @@ public class MemberAccountCreateRequest {
     public boolean existMasterRoleUser() {
         return memberAccountCreateRequest.stream().anyMatch(memberAccountCreateInfo -> memberAccountCreateInfo.getRole().equals(Role.MASTER.name()));
     }
+
+    @Override
+    public String toString() {
+        return "MemberAccountCreateRequest{" +
+                "userId='" + userId + '\'' +
+                ", memberAccountCreateRequest=" + memberAccountCreateRequest +
+                '}';
+    }
 }

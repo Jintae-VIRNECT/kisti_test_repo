@@ -154,10 +154,7 @@ public abstract class WorkspaceUserService {
         //6. 응답
         List<WorkspaceUserInfoResponse> workspaceUserInfoResponseList = new ArrayList<>();
         for (WorkspaceUserPermission workspaceUserPermission : workspaceUserPermissionPage) {
-            UserInfoRestResponse userInfoResponse = getUserInfoByUserId(workspaceUserPermission.getWorkspaceUser().getUserId());
-            if (!StringUtils.hasText(userInfoResponse.getUuid())) {
-                continue;
-            }
+            UserInfoRestResponse userInfoResponse = getUserInfoRequest(workspaceUserPermission.getWorkspaceUser().getUserId());
             WorkspaceUserInfoResponse workspaceUserInfoResponse = restMapStruct.userInfoRestResponseToWorkspaceUserInfoResponse(userInfoResponse);
             workspaceUserInfoResponse.setRole(workspaceUserPermission.getWorkspaceRole().getRole());
             workspaceUserInfoResponse.setJoinDate(workspaceUserPermission.getWorkspaceUser().getCreatedDate());
@@ -308,7 +305,7 @@ public abstract class WorkspaceUserService {
         List<WorkspaceUserPermission> workspaceUserPermissionList = workspaceUserPermissionRepository.findRecentWorkspaceUserList(4, workspaceId);
 
         return workspaceUserPermissionList.stream().map(workspaceUserPermission -> {
-            WorkspaceNewMemberInfoResponse newMemberInfo = restMapStruct.userInfoRestResponseToWorkspaceNewMemberInfoResponse(getUserInfoByUserId(workspaceUserPermission.getWorkspaceUser().getUserId()));
+            WorkspaceNewMemberInfoResponse newMemberInfo = restMapStruct.userInfoRestResponseToWorkspaceNewMemberInfoResponse(getUserInfoRequest(workspaceUserPermission.getWorkspaceUser().getUserId()));
             newMemberInfo.setJoinDate(workspaceUserPermission.getWorkspaceUser().getCreatedDate());
             newMemberInfo.setRole(workspaceUserPermission.getWorkspaceRole().getRole());
             return newMemberInfo;
@@ -321,8 +318,12 @@ public abstract class WorkspaceUserService {
      * @param userId - 유저 uuid
      * @return - 유저 정보
      */
-    public UserInfoRestResponse getUserInfoByUserId(String userId) {
+    public UserInfoRestResponse getUserInfoRequest(String userId) {
         ApiResponse<UserInfoRestResponse> apiResponse = userRestService.getUserInfoByUserId(userId);
+        if (apiResponse.getCode() != 200 || apiResponse.getData() == null || !StringUtils.hasText(apiResponse.getData().getUuid())) {
+            log.error("[REQ - USER SERVER][GET USER INFO] request user uuid : {}, response code : {}, response message : {}", userId, apiResponse.getCode(), apiResponse.getMessage());
+            throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_USER_NOT_FOUND);
+        }
         return apiResponse.getData();
     }
 
@@ -351,9 +352,9 @@ public abstract class WorkspaceUserService {
         WorkspaceUserPermission requestUserPermission = workspaceUserPermissionRepository.findByWorkspaceUser_WorkspaceAndWorkspaceUser_UserId(workspace, memberUpdateRequest.getRequestUserId()).orElseThrow(() -> new WorkspaceException(ErrorCode.ERR_WORKSPACE_USER_NOT_FOUND));
         WorkspaceUserPermission updateUserPermission = workspaceUserPermissionRepository.findByWorkspaceUser_WorkspaceAndWorkspaceUser_UserId(workspace, memberUpdateRequest.getUserId()).orElseThrow(() -> new WorkspaceException(ErrorCode.ERR_WORKSPACE_USER_NOT_FOUND));
 
-        UserInfoRestResponse masterUser = getUserInfoByUserId(workspace.getUserId());
-        UserInfoRestResponse updateUser = getUserInfoByUserId(memberUpdateRequest.getUserId());
-        UserInfoRestResponse requestUser = getUserInfoByUserId(memberUpdateRequest.getRequestUserId());
+        UserInfoRestResponse masterUser = getUserInfoRequest(workspace.getUserId());
+        UserInfoRestResponse updateUser = getUserInfoRequest(memberUpdateRequest.getUserId());
+        UserInfoRestResponse requestUser = getUserInfoRequest(memberUpdateRequest.getRequestUserId());
 
 
         //2. 사용자 닉네임 변경
@@ -434,7 +435,8 @@ public abstract class WorkspaceUserService {
                 addedProductList.add("MAKE");
             }
 
-            if (memberUpdateRequest.getLicenseMake() != null && !memberUpdateRequest.getLicenseMake() && currentProductList.contains("MAKE")) {
+            //if (memberUpdateRequest.getLicenseMake() != null && !memberUpdateRequest.getLicenseMake() && currentProductList.contains("MAKE")) {
+            if (memberUpdateRequest.getLicenseMake() != null && !memberUpdateRequest.getLicenseMake()) {
                 revokeWorkspaceLicenseToUser(workspace.getUuid(), updateUser.getUuid(), "MAKE");
                 removedProductList.add("MAKE");
             }
@@ -659,7 +661,7 @@ public abstract class WorkspaceUserService {
         }
     }
 
-    UserInfoRestResponse registerMemberRequest(MemberRegistrationRequest memberRegistrationRequest) {
+    UserInfoRestResponse registerMemberRequest(MemberRegistrationRequest memberRegistrationRequest) throws WorkspaceException {
         ApiResponse<UserInfoRestResponse> apiResponse = userRestService.registerMemberRequest(memberRegistrationRequest, "workspace-server");
         if (apiResponse.getCode() != 200 || !StringUtils.hasText(apiResponse.getData().getUuid())) {
             log.error("[REGISTRATION NEW USER BY EMAIL] request email >> {}, response code >> {}, response message >> {}", memberRegistrationRequest.getEmail(), apiResponse.getCode(), apiResponse.getMessage());
@@ -683,9 +685,7 @@ public abstract class WorkspaceUserService {
         ApiResponse<LicenseRevokeResponse> apiResponse = licenseRestService.revokeWorkspaceLicenseToUser(workspaceId, userId, productName);
         if (apiResponse.getCode() != 200 || !apiResponse.getData().isResult()) {
             log.error("[REVOKE WORKSPACE LICENSE TO USER] License revoke fail. workspace uuid : {}, user uuid : {}, product name : {}, response code : {}, response message : {}", workspaceId, userId, productName, apiResponse.getCode(), apiResponse.getMessage());
-            if (apiResponse.getCode() != 5002) {
-                throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_USER_LICENSE_REVOKE_FAIL);
-            }
+            throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_USER_LICENSE_REVOKE_FAIL);
         } else {
             log.info("[REVOKE WORKSPACE LICENSE TO USER ] License revoke success. workspace uuid : {}, user uuid : {}, product name : {}", workspaceId, userId, productName);
         }
@@ -694,7 +694,7 @@ public abstract class WorkspaceUserService {
     public WorkspaceUserInfoResponse getMemberInfo(String workspaceId, String userId) {
         Optional<WorkspaceUserPermission> workspaceUserPermission = workspaceUserPermissionRepository.findWorkspaceUser(workspaceId, userId);
         if (workspaceUserPermission.isPresent()) {
-            WorkspaceUserInfoResponse workspaceUserInfoResponse = restMapStruct.userInfoRestResponseToWorkspaceUserInfoResponse(getUserInfoByUserId(userId));
+            WorkspaceUserInfoResponse workspaceUserInfoResponse = restMapStruct.userInfoRestResponseToWorkspaceUserInfoResponse(getUserInfoRequest(userId));
             workspaceUserInfoResponse.setRole(workspaceUserPermission.get().getWorkspaceRole().getRole());
             workspaceUserInfoResponse.setLicenseProducts(getUserLicenseProductList(workspaceId, userId));
             return workspaceUserInfoResponse;
@@ -708,7 +708,7 @@ public abstract class WorkspaceUserService {
         for (String userId : userIds) {
             Optional<WorkspaceUserPermission> workspaceUserPermission = workspaceUserPermissionRepository.findWorkspaceUser(workspaceId, userId);
             if (workspaceUserPermission.isPresent()) {
-                WorkspaceUserInfoResponse workspaceUserInfoResponse = restMapStruct.userInfoRestResponseToWorkspaceUserInfoResponse(getUserInfoByUserId(userId));
+                WorkspaceUserInfoResponse workspaceUserInfoResponse = restMapStruct.userInfoRestResponseToWorkspaceUserInfoResponse(getUserInfoRequest(userId));
                 workspaceUserInfoResponse.setRole(workspaceUserPermission.get().getWorkspaceRole().getRole());
                 workspaceUserInfoResponse.setLicenseProducts(getUserLicenseProductList(workspaceId, userId));
                 workspaceUserInfoResponseList.add(workspaceUserInfoResponse);
@@ -802,7 +802,7 @@ public abstract class WorkspaceUserService {
 
         //메일 발송
         UserInfoRestResponse masterUser = userRestService.getUserInfoByUserId(workspace.getUserId()).getData();
-        UserInfoRestResponse kickedUser = getUserInfoByUserId(memberKickOutRequest.getKickedUserId());
+        UserInfoRestResponse kickedUser = getUserInfoRequest(memberKickOutRequest.getKickedUserId());
         Context context = mailContextHandler.getWorkspaceKickoutContext(workspace.getName(), masterUser);
         List<String> receiverEmailList = new ArrayList<>();
         receiverEmailList.add(kickedUser.getEmail());
@@ -942,6 +942,7 @@ public abstract class WorkspaceUserService {
 
     @Transactional
     public WorkspaceMemberInfoListResponse createWorkspaceMemberAccount(String workspaceId, MemberAccountCreateRequest memberAccountCreateRequest) {
+        log.info("[CREATE WORKSPACE MEMBER ACCOUNT] req worksapce uuid : {}, req account info : {}", workspaceId, memberAccountCreateRequest.toString());
         //1. 계정 유형 체크
         if (memberAccountCreateRequest.existMasterRoleUser() || memberAccountCreateRequest.existSeatRoleUser()) {
             throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_USER_ACCOUNT_CREATE_FAIL);
@@ -1043,7 +1044,7 @@ public abstract class WorkspaceUserService {
     public boolean deleteWorkspaceMemberAccount(String workspaceId, MemberAccountDeleteRequest
             memberAccountDeleteRequest) {
         //1. 전용 계정인지 체크
-        UserInfoRestResponse userInfoRestResponse = getUserInfoByUserId(memberAccountDeleteRequest.getRequestUserId());
+        UserInfoRestResponse userInfoRestResponse = getUserInfoRequest(memberAccountDeleteRequest.getUserId());
         if (!userInfoRestResponse.getUserType().equals("WORKSPACE_ONLY_USER")) {
             throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_USER_ACCOUNT_DELETE_FAIL);
         }
@@ -1386,7 +1387,7 @@ public abstract class WorkspaceUserService {
         if (deleteUserPermission.getWorkspaceRole().getRole() != Role.SEAT) {
             throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_SEAT_USER_DELETE);
         }
-        UserInfoRestResponse userInfoRestResponse = getUserInfoByUserId(memberSeatDeleteRequest.getUserId());
+        UserInfoRestResponse userInfoRestResponse = getUserInfoRequest(memberSeatDeleteRequest.getUserId());
         if (!userInfoRestResponse.getUserType().equals("SEAT_USER")) {
             throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_SEAT_USER_DELETE);
         }
@@ -1438,7 +1439,7 @@ public abstract class WorkspaceUserService {
         //1-2. 요청 워크스페이스 조회
         Workspace workspace = workspaceRepository.findByUuid(workspaceId).orElseThrow(() -> new WorkspaceException(ErrorCode.ERR_WORKSPACE_NOT_FOUND));
 
-        UserInfoRestResponse userInfo = getUserInfoByUserId(memberProfileUpdateRequest.getUserId());
+        UserInfoRestResponse userInfo = getUserInfoRequest(memberProfileUpdateRequest.getUserId());
         //1-2. 변경 대상 유저 타입 조회
         if (userInfo.getUserType().equals("USER")) {
             throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_USER_INFO_UPDATE_USER_TYPE);

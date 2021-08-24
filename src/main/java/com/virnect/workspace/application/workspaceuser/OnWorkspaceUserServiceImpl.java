@@ -119,7 +119,7 @@ public class OnWorkspaceUserServiceImpl extends WorkspaceUserService {
 
         // 마스터 유저 정보
         Workspace workspace = workspaceRepository.findByUuid(workspaceId).orElseThrow(() -> new WorkspaceException(ErrorCode.ERR_WORKSPACE_NOT_FOUND));
-        UserInfoRestResponse materUser = getUserInfoByUserId(workspace.getUserId());
+        UserInfoRestResponse materUser = getUserInfoRequest(workspace.getUserId());
 
         //2. 초대 정보 저장
         workspaceInviteRequest.getUserInfoList().forEach(userInfo -> {
@@ -352,7 +352,7 @@ public class OnWorkspaceUserServiceImpl extends WorkspaceUserService {
         userInviteRepository.save(userInvite);
 
         Workspace workspace = workspaceRepository.findByUuid(userInvite.getWorkspaceId()).orElseThrow(() -> new WorkspaceException(ErrorCode.ERR_WORKSPACE_NOT_FOUND));
-        UserInfoRestResponse masterUserInfo = getUserInfoByUserId(workspace.getUserId());
+        UserInfoRestResponse masterUserInfo = getUserInfoRequest(workspace.getUserId());
 
         //1-5. 유저가 최대 참여 가능한 워크스페이스 수 체크
         long maxJoinWorkspaceAmount = workspaceUserRepository.countByWorkspace_Uuid(workspace.getUuid());
@@ -484,7 +484,7 @@ public class OnWorkspaceUserServiceImpl extends WorkspaceUserService {
         List<WorkspaceUserPermission> managerUserPermissionList = workspaceUserPermissionRepository.findByWorkspaceUser_WorkspaceAndWorkspaceRole_Role(workspace, Role.MANAGER);
         if (managerUserPermissionList != null && !managerUserPermissionList.isEmpty()) {
             managerUserPermissionList.forEach(workspaceUserPermission -> {
-                UserInfoRestResponse managerUserInfo = getUserInfoByUserId(workspaceUserPermission.getWorkspaceUser().getUserId());
+                UserInfoRestResponse managerUserInfo = getUserInfoRequest(workspaceUserPermission.getWorkspaceUser().getUserId());
                 emailReceiverList.add(managerUserInfo.getEmail());
             });
         }
@@ -532,7 +532,7 @@ public class OnWorkspaceUserServiceImpl extends WorkspaceUserService {
 
         //MAIL 발송
         Workspace workspace = workspaceRepository.findByUuid(userInvite.getWorkspaceId()).orElseThrow(() -> new WorkspaceException(ErrorCode.ERR_WORKSPACE_NOT_FOUND));
-        UserInfoRestResponse masterUserInfo = getUserInfoByUserId(workspace.getUserId());
+        UserInfoRestResponse masterUserInfo = getUserInfoRequest(workspace.getUserId());
 
         List<String> emailReceiverList = getMasterAndManagerEmail(workspace, masterUserInfo);
 
