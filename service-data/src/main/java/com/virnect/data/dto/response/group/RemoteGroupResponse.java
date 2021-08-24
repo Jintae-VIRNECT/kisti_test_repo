@@ -1,6 +1,5 @@
 package com.virnect.data.dto.response.group;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import io.swagger.annotations.ApiModel;
@@ -27,5 +26,5 @@ public class RemoteGroupResponse {
 	private List<RemoteGroupMemberResponse> remoteGroupMemberResponses;
 
 	@ApiModelProperty(value = "Group member total count", position = 5)
-	private long memberTotalCount;
+	private long memberCount;
 }

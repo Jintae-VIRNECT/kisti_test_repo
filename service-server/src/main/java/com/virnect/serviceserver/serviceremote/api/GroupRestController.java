@@ -87,7 +87,7 @@ public class GroupRestController {
 
 	@ApiOperation(value = "[MASTER] Get selected member group detail information", notes = "멤버그룹을 상세조회합니다")
 	@GetMapping(value = "members/group/{workspaceId}/{groupId}")
-	public ResponseEntity<ApiResponse<RemoteGroupResponse>> getRemoteGroupDetailInfo(
+	public ResponseEntity<ApiResponse<RemoteGroupResponse>> getRemoteGroupDetail(
 		@PathVariable(name = "workspaceId") String workspaceId,
 		@PathVariable(name = "groupId") String groupId,
 		@RequestParam(value = "filter", required = false) String filter,
@@ -105,7 +105,7 @@ public class GroupRestController {
 		if (Strings.isBlank(workspaceId) || Strings.isBlank(groupId)) {
 			throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
 		}
-		ApiResponse<RemoteGroupResponse> responseData = groupService.getRemoteGroupDetailInfo(
+		ApiResponse<RemoteGroupResponse> responseData = groupService.getRemoteGroupDetail(
 			workspaceId,
 			groupId,
 			filter,

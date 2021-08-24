@@ -67,13 +67,18 @@ public class GroupService {
 		if (!checkMaster(workspaceId, userId)) {
 			return new ApiResponse<>(ErrorCode.ERR_API_AUTHENTICATION);
 		}
-
+		// 그룹 멤버 Count 확인
 		long groupCount = groupRepository.findByWorkspaceIdGroupCount(workspaceId);
 		if (groupCount >= 10) {
 			return new ApiResponse<>(ErrorCode.ERR_GROUP_COUNT_OVER);
 		}
 		if (groupRequest.getMemberList().size() > 6) {
 			return new ApiResponse<>(ErrorCode.ERR_GROUP_MEMBER_COUNT_OVER);
+		}
+		// 이미 그룹 멤버에 속해있는지 확인
+		List<RemoteGroup> joinedMember = groupRepository.findByWorkspaceIdAndUserIdArray(workspaceId, groupRequest.getMemberList());
+		if (!CollectionUtils.isEmpty(joinedMember)) {
+			return new ApiResponse<>(ErrorCode.ERR_GROUP_MEMBER_ALREADY_JOINED);
 		}
 
 		RemoteGroup remoteGroup = RemoteGroup.builder()
@@ -103,10 +108,7 @@ public class GroupService {
 	) {
 		// Workspace 전체 멤버 가져오기
 		List<WorkspaceMemberInfoResponse> workspaceMemberAll = workspaceRestService.getWorkspaceMemberInfoList(
-				workspaceId, "remote", 99).getData().getMemberInfoList();
-		List<RemoteGroupMemberResponse> remoteGroupMemberAll = workspaceMemberAll.stream()
-				.map(workspaceToRemoteGroupMapper::toDto)
-				.collect(Collectors.toList());
+				workspaceId, "remote", 50).getData().getMemberInfoList();
 
 		// Remote group 정보
 		List<RemoteGroup> remoteGroups = groupRepository.findByWorkspaceId(workspaceId);
@@ -115,18 +117,6 @@ public class GroupService {
 				RemoteGroupListResponse.builder().groupInfoResponseList(Collections.emptyList()).build()
 			);
 		}
-
-		// Make uuid array
-		List<String> userList = new ArrayList<>();
-		for (RemoteGroup remoteGroup : remoteGroups) {
-			for (RemoteGroupMember groupMember : remoteGroup.getGroupMembers()) {
-				if (!(StringUtils.isBlank(groupMember.getUuid()))) {
-					userList.add(groupMember.getUuid());
-				}
-			}
-		};
-		HashSet<String> distinctData = new HashSet<>(userList);
-		List<String> removedDistinctList = new ArrayList<>(distinctData);
 
 		// Make group list response
 		List<RemoteGroupResponse> groupListResponse = new ArrayList<>();
@@ -146,34 +136,20 @@ public class GroupService {
 				}
 			}
 			remoteGroupResponse.setRemoteGroupMemberResponses(groupMembersInfo);
-			remoteGroupResponse.setMemberTotalCount(groupMembersInfo.stream().count());
+			remoteGroupResponse.setMemberCount(groupMembersInfo.stream().count());
 			groupListResponse.add(remoteGroupResponse);
 		}
+		groupListResponse.add(makeEtcGroup(workspaceId, workspaceMemberAll));
 
-		// Make Etc group
-		RemoteGroupResponse etcGroup = RemoteGroupResponse.builder()
-				.workspaceId(workspaceId)
-				.groupId(ETC_GROUP_ID)
-				.groupName(ETC_GROUP_NAME)
-				.build();
-
-		Iterator<RemoteGroupMemberResponse> groupMemberIterator = remoteGroupMemberAll.listIterator();
-		while (groupMemberIterator.hasNext()) {
-			String memberUuid = groupMemberIterator.next().getUuid();
-			for (String uuid : removedDistinctList) {
-				if (memberUuid.equals(uuid)) {
-					groupMemberIterator.remove();
-				}
-			}
-		}
-		etcGroup.setRemoteGroupMemberResponses(remoteGroupMemberAll);
-		etcGroup.setMemberTotalCount(remoteGroupMemberAll.stream().count());
-		groupListResponse.add(etcGroup);
-
-		return new ApiResponse<>(RemoteGroupListResponse.builder().groupInfoResponseList(groupListResponse).build());
+		return new ApiResponse<>(
+			RemoteGroupListResponse.builder()
+				.groupInfoResponseList(groupListResponse)
+				.memberTotalCount(workspaceMemberAll.stream().count())
+				.build()
+		);
 	}
 
-	public ApiResponse<RemoteGroupResponse> getRemoteGroupDetailInfo(
+	public ApiResponse<RemoteGroupResponse> getRemoteGroupDetail(
 		String workspaceId,
 		String groupId,
 		String filter,
@@ -183,43 +159,8 @@ public class GroupService {
 		if (groupId.equals(ETC_GROUP_ID)) {
 			// Workspace 전체 멤버 가져오기
 			List<WorkspaceMemberInfoResponse> workspaceMemberAll = workspaceRestService.getWorkspaceMemberInfoList(
-					workspaceId, "remote", 99).getData().getMemberInfoList();
-			List<RemoteGroupMemberResponse> remoteGroupMemberAll = workspaceMemberAll.stream()
-					.map(workspaceToRemoteGroupMapper::toDto)
-					.collect(Collectors.toList());
-			// Remote group 정보
-			List<RemoteGroup> remoteGroups = groupRepository.findByWorkspaceId(workspaceId);
-			// Make uuid array
-			List<String> userList = new ArrayList<>();
-			for (RemoteGroup remoteGroup : remoteGroups) {
-				for (RemoteGroupMember groupMember : remoteGroup.getGroupMembers()) {
-					if (!(StringUtils.isBlank(groupMember.getUuid()))) {
-						userList.add(groupMember.getUuid());
-					}
-				}
-			};
-			HashSet<String> distinctData = new HashSet<>(userList);
-			List<String> removedDistinctList = new ArrayList<>(distinctData);
-
-			// Make Etc group
-			RemoteGroupResponse etcGroup = RemoteGroupResponse.builder()
-					.workspaceId(workspaceId)
-					.groupId(ETC_GROUP_ID)
-					.groupName(ETC_GROUP_NAME)
-					.build();
-
-			Iterator<RemoteGroupMemberResponse> groupMemberIterator = remoteGroupMemberAll.listIterator();
-			while (groupMemberIterator.hasNext()) {
-				String memberUuid = groupMemberIterator.next().getUuid();
-				for (String uuid : removedDistinctList) {
-					if (memberUuid.equals(uuid)) {
-						groupMemberIterator.remove();
-					}
-				}
-			}
-			etcGroup.setRemoteGroupMemberResponses(remoteGroupMemberAll);
-			etcGroup.setMemberTotalCount(remoteGroupMemberAll.stream().count());
-			return new ApiResponse<>(etcGroup);
+					workspaceId, "remote", 50).getData().getMemberInfoList();
+			return new ApiResponse<>(makeEtcGroup(workspaceId, workspaceMemberAll));
 		}
 
 		RemoteGroup remoteGroup = groupRepository.findByWorkspaceIdAndGroupId(workspaceId, groupId);
@@ -227,8 +168,8 @@ public class GroupService {
 			return new ApiResponse<>(ErrorCode.ERR_GROUP_NOT_FOUND);
 		}
 
-		WorkspaceMemberInfoListResponse memberInfo = workspaceRestService.getWorkspaceMemberInfoList(
-			workspaceId, filter, search, 0, Integer.MAX_VALUE).getData();
+		List<WorkspaceMemberInfoResponse> memberInfo = workspaceRestService.getWorkspaceMemberInfoList(
+			workspaceId, filter, search, 0, 50).getData().getMemberInfoList();
 
 		RemoteGroupResponse remoteGroupInfoResponse = remoteGroupMapper.toDto(remoteGroup);
 		// Mapping Member List Data to Member Information List
@@ -237,7 +178,7 @@ public class GroupService {
 			.collect(Collectors.toList());
 		// Set nick name, profile in workspace members info
 		for (RemoteGroupMemberResponse groupMember : groupMembersInfo) {
-			for (WorkspaceMemberInfoResponse workspaceMemberInfoResponse : memberInfo.getMemberInfoList()) {
+			for (WorkspaceMemberInfoResponse workspaceMemberInfoResponse : memberInfo) {
 				if (groupMember.getUuid().equals(workspaceMemberInfoResponse.getUuid())) {
 					groupMember.setNickName(workspaceMemberInfoResponse.getNickName());
 					groupMember.setProfile(workspaceMemberInfoResponse.getProfile());
@@ -258,7 +199,7 @@ public class GroupService {
 			}
 		}
 		remoteGroupInfoResponse.setRemoteGroupMemberResponses(groupMembersInfo);
-		remoteGroupInfoResponse.setMemberTotalCount(groupMembersInfo.stream().count());
+		remoteGroupInfoResponse.setMemberCount(groupMembersInfo.stream().count());
 
 		return new ApiResponse<>(remoteGroupInfoResponse);
 	}
@@ -620,5 +561,47 @@ public class GroupService {
 		resultResponse.userId = userId;
 		resultResponse.setResult(true);
 		return new ApiResponse<>(resultResponse);
+	}
+
+	private RemoteGroupResponse makeEtcGroup(
+		String workspaceId,
+		List<WorkspaceMemberInfoResponse> workspaceMembers
+	) {
+		List<RemoteGroupMemberResponse> remoteGroupMemberAll = workspaceMembers.stream()
+			.map(workspaceToRemoteGroupMapper::toDto)
+			.collect(Collectors.toList());
+		// Remote group 정보
+		List<RemoteGroup> remoteGroups = groupRepository.findByWorkspaceId(workspaceId);
+		// Make uuid array
+		List<String> userList = new ArrayList<>();
+		for (RemoteGroup remoteGroup : remoteGroups) {
+			for (RemoteGroupMember groupMember : remoteGroup.getGroupMembers()) {
+				if (!(StringUtils.isBlank(groupMember.getUuid()))) {
+					userList.add(groupMember.getUuid());
+				}
+			}
+		};
+		HashSet<String> distinctData = new HashSet<>(userList);
+		List<String> removedDistinctList = new ArrayList<>(distinctData);
+
+		// Make Etc group
+		RemoteGroupResponse etcGroup = RemoteGroupResponse.builder()
+			.workspaceId(workspaceId)
+			.groupId(ETC_GROUP_ID)
+			.groupName(ETC_GROUP_NAME)
+			.build();
+
+		Iterator<RemoteGroupMemberResponse> groupMemberIterator = remoteGroupMemberAll.listIterator();
+		while (groupMemberIterator.hasNext()) {
+			String memberUuid = groupMemberIterator.next().getUuid();
+			for (String uuid : removedDistinctList) {
+				if (memberUuid.equals(uuid)) {
+					groupMemberIterator.remove();
+				}
+			}
+		}
+		etcGroup.setRemoteGroupMemberResponses(remoteGroupMemberAll);
+		etcGroup.setMemberCount(remoteGroupMemberAll.stream().count());
+		return etcGroup;
 	}
 }

@@ -38,6 +38,20 @@ public class CustomRemoteGroupRepositoryImpl extends QuerydslRepositorySupport i
 	}
 
 	@Override
+	public List<RemoteGroup> findByWorkspaceIdAndUserIdArray(String workspaceId, List<String> userIds) {
+		return query
+			.selectFrom(remoteGroup)
+			.innerJoin(remoteGroup.groupMembers, remoteGroupMember).fetchJoin()
+			.where(
+				remoteGroup.workspaceId.eq(workspaceId),
+				includeUserIds(userIds)
+			)
+			.orderBy(remoteGroup.groupName.asc())
+			.distinct()
+			.fetch();
+	}
+
+	@Override
 	public long findByWorkspaceIdGroupCount(
 		String workspaceId
 	) {
@@ -86,6 +100,14 @@ public class CustomRemoteGroupRepositoryImpl extends QuerydslRepositorySupport i
 				.where(remoteGroupMember.uuid.eq(userId)
 				)
 				.fetch();
+		return remoteGroup.id.in(userRoomIdList);
+	}
+
+	private BooleanExpression includeUserIds(List<String> userIds) {
+		List<Long> userRoomIdList = query.selectFrom(remoteGroupMember)
+			.select(remoteGroupMember.remoteGroup.id)
+			.where(remoteGroupMember.uuid.in(userIds))
+			.fetch();
 		return remoteGroup.id.in(userRoomIdList);
 	}
 

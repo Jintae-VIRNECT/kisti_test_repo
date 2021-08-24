@@ -15,5 +15,6 @@ import lombok.Setter;
 public class RemoteGroupListResponse {
 
 	private List<RemoteGroupResponse> groupInfoResponseList;
+	private long memberTotalCount;
 
 }
