@@ -78,7 +78,7 @@
     <section class="seat-pane__footer">
       <el-button type="primary" @click="submit" :disabled="!numOfSeat">
         {{ $t('members.seat.submit') }}
-        <span class="number">{{ numOfSeat }}</span>
+        <span class="number" v-if="numOfSeat !== ''">{{ numOfSeat }}</span>
       </el-button>
     </section>
   </article>
@@ -95,7 +95,7 @@ export default {
       plans,
       seatTabName: 'remote',
       availablePlans: { remote: 0, make: 0, view: 0 },
-      numOfSeat: 1,
+      numOfSeat: '',
     }
   },
   methods: {
@@ -119,7 +119,7 @@ export default {
         await this.$store.dispatch('plan/getPlansInfo')
       }
       this.initAvailablePlans()
-      this.numOfSeat = 1
+      this.numOfSeat = ''
     },
     async submit() {
       const form = {}
