@@ -43,19 +43,19 @@
       </div>
       <div class="member-add-modal--right">
         <MemberInvitePane
-          v-if="tabName === 'invite'"
+          v-show="tabName === 'invite'"
           :membersTotal.sync="membersTotal"
           :maximum.sync="maximum"
           @updated="updated"
         />
         <MemberCreatePane
-          v-if="tabName === 'create'"
+          v-show="tabName === 'create'"
           :membersTotal.sync="membersTotal"
           :maximum.sync="maximum"
           @updated="updated"
         />
         <MemberSeatPane
-          v-if="tabName === 'seat'"
+          v-show="tabName === 'seat'"
           :membersTotal.sync="membersTotal"
           :maximum.sync="maximum"
           @updated="updated"
