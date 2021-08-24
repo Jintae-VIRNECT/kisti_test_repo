@@ -25,6 +25,11 @@ export default {
     const watch = store.watch(activeWorkspaceGetter, func)
     that.$on('hook:beforeDestroy', watch)
   },
+  /**
+   * 워크스페이스 정보
+   * @param {string} workspaceId
+   * @returns {WorkspaceInfo} 워크스페이스 모델
+   */
   async getWorkspaceInfo(workspaceId) {
     const data = await api('WORKSPACE_INFO', {
       route: { workspaceId },
@@ -106,6 +111,18 @@ export default {
     return new Member(data)
   },
   /**
+   * 아이디 중복 체크
+   * @param {string} userId
+   */
+  async checkMembersId(userId) {
+    const data = await api('MEMBER_ID_CHECK', {
+      params: {
+        email: userId,
+      },
+    })
+    return data
+  },
+  /**
    * 워크스페이스 프로필 설정 변경
    * @param {form} form
    */
@@ -142,11 +159,32 @@ export default {
     })
   },
   /**
-   * 멤버 권한 변경
+   * 멤버 프로필 사진 업데이트
+   * @param {object} form 폼 객체
+   */
+  async updateMembersProfile(form) {
+    if (form.profile) {
+      const formData = new FormData()
+      formData.append('profile', form.profile)
+      formData.append('requestUserId', myProfileGetter().uuid)
+      formData.append('userId', form.userId)
+      await api('MEMBER_PROFILE_UPDATE', {
+        route: {
+          workspaceId: activeWorkspaceGetter().uuid,
+        },
+        params: formData,
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      })
+    }
+  },
+  /**
+   * 멤버 정보 변경 (플랜, 닉네임, 권한)
    * @param {form} form
    */
-  async updateMembersRole(form) {
-    await api('MEMBER_ROLE_UPDATE', {
+  async updateMembersInfo(form) {
+    await api('MEMBER_INFO_UPDATE', {
       route: {
         workspaceId: activeWorkspaceGetter().uuid,
       },
@@ -187,6 +225,20 @@ export default {
     store.dispatch('plan/getPlansInfo')
   },
   /**
+   * 시트계정 생성
+   * @param {object} form
+   */
+  async createSeat(form) {
+    await api('MEMBER_SEAT_CREATE', {
+      route: { workspaceId: activeWorkspaceGetter().uuid },
+      params: {
+        ...form,
+        userId: myProfileGetter().uuid,
+      },
+    })
+    store.dispatch('plan/getPlansInfo')
+  },
+  /**
    * 멤버 활동 조회
    * @param {object} searchParams
    */
@@ -219,6 +271,10 @@ export default {
    * @param {[CreateMember]} userInfoList
    */
   async createMembers(userInfoList) {
+    userInfoList.forEach(user => {
+      delete user.duplicateCheck
+    })
+
     const data = await api('MEMBERS_CREATE', {
       route: { workspaceId: activeWorkspaceGetter().uuid },
       params: {
@@ -230,17 +286,44 @@ export default {
     return data
   },
   /**
+   * Seat 멤버 삭제
+   * @param {string} uuid
+   * @param {string} password
+   */
+  async deleteSeatMember(uuid) {
+    const params = {
+      requestUserId: myProfileGetter().uuid,
+      userId: uuid,
+    }
+
+    const data = await api('MEMBER_SEAT_DELETE', {
+      route: { workspaceId: activeWorkspaceGetter().uuid },
+      params: {
+        ...params,
+      },
+    })
+    store.dispatch('plan/getPlansInfo')
+    return data
+  },
+  /**
    * 멤버 삭제 (onpremise)
    * @param {string} uuid
    * @param {string} password
    */
   async deleteMember(uuid, password) {
+    const params = {
+      requestUserId: myProfileGetter().uuid,
+      userId: uuid,
+    }
+
+    if (password !== undefined) {
+      params.requestUserPassword = password
+    }
+
     const data = await api('MEMBER_DELETE', {
       route: { workspaceId: activeWorkspaceGetter().uuid },
       params: {
-        userId: myProfileGetter().uuid,
-        userPassword: password,
-        deleteUserId: uuid,
+        ...params,
       },
     })
     store.dispatch('plan/getPlansInfo')
@@ -255,8 +338,8 @@ export default {
     const data = await api('MEMBER_CHANGE_PASSWORD', {
       route: { workspaceId: activeWorkspaceGetter().uuid },
       params: {
-        masterUUID: myProfileGetter().uuid,
-        memberUUID: uuid,
+        requestUserId: myProfileGetter().uuid,
+        userId: uuid,
         password: password,
       },
     })
