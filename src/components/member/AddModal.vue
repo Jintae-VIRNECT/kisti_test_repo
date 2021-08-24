@@ -2,128 +2,71 @@
   <el-dialog
     class="member-add-modal"
     :visible.sync="showMe"
-    :title="$t('members.add.title')"
-    width="628px"
+    :title="$t('members.create.new')"
+    width="800px"
     top="11vh"
     :close-on-click-modal="false"
     :before-close="beforeClose"
   >
-    <div>
-      <p>{{ $t('members.add.desc') }}</p>
-      <el-form
-        ref="form"
-        v-for="(form, index) in userInfoList"
-        :key="index"
-        class="virnect-workstation-form"
-        :model="form"
-        :rules="rules"
-      >
-        <h6>
-          <img src="~assets/images/icon/ic-person.svg" />
-          <span>{{ `${$t('members.add.addUser')} ${index + 1}` }}</span>
-          <button @click.prevent="clearMember(index)">
-            <i class="el-icon-close" />
-          </button>
-        </h6>
-        <el-form-item class="horizon" prop="email" required>
-          <template slot="label">
-            <span>{{ $t('members.add.email') }}</span>
-          </template>
-          <el-input
-            class="full"
-            v-model="form.email"
-            :placeholder="$t('members.add.emailPlaceholder')"
-          />
-        </el-form-item>
-        <el-row>
-          <el-col :span="8">
-            <el-form-item class="horizon">
-              <template slot="label">
-                <span>{{ $t('members.setting.role') }}</span>
-                <el-tooltip
-                  :content="$t('members.setting.roleDesc')"
-                  placement="bottom-start"
-                >
-                  <img src="~assets/images/icon/ic-error.svg" />
-                </el-tooltip>
-              </template>
-              <MemberRoleSelect
-                v-model="form.role"
-                :disabled="!canChangeRole"
-              />
-            </el-form-item>
-          </el-col>
-        </el-row>
-        <label>
-          <span>{{ $t('members.setting.givePlans') }}</span>
-          <el-tooltip
-            :content="$t('members.setting.givePlansDesc')"
-            placement="bottom-start"
-          >
-            <img src="~assets/images/icon/ic-error.svg" />
-          </el-tooltip>
-        </label>
-        <el-row>
-          <el-col :span="8">
-            <el-form-item class="horizon" :label="plans.remote.label">
-              <MemberPlanSelect
-                v-model="form.planRemote"
-                :label="plans.remote.label"
-                :amount="availablePlans.remote"
-                @change="choosePlan"
-              />
-            </el-form-item>
-          </el-col>
-          <el-col :span="8">
-            <el-form-item class="horizon" :label="plans.make.label">
-              <MemberPlanSelect
-                v-model="form.planMake"
-                :label="plans.make.label"
-                :amount="availablePlans.make"
-                @change="choosePlan"
-              />
-            </el-form-item>
-          </el-col>
-          <el-col :span="8">
-            <el-form-item class="horizon" :label="plans.view.label">
-              <MemberPlanSelect
-                v-model="form.planView"
-                :label="plans.view.label"
-                :amount="availablePlans.view"
-                @change="choosePlan"
-              />
-            </el-form-item>
-          </el-col>
-        </el-row>
-      </el-form>
-    </div>
-    <div slot="footer">
-      <div class="available">
-        <img src="~assets/images/icon/ic-person.svg" />
-        <span v-html="$tc('members.add.available', availableMember)" />
+    <div class="member-add-modal__content">
+      <div class="member-add-modal--left">
+        <button
+          @click="showTab('invite')"
+          class="member-add-modal__tab-button"
+          :class="{
+            'member-add-modal__tab-button--clicked': tabName === 'invite',
+          }"
+        >
+          <img src="~assets/images/icon/ic-member-account-invitation.svg" />
+          <span>계정 초대</span>
+        </button>
+        <button
+          @click="showTab('create')"
+          class="member-add-modal__tab-button"
+          :class="{
+            'member-add-modal__tab-button--clicked': tabName === 'create',
+          }"
+        >
+          <img src="~assets/images/icon/ic-member-account-creation.svg" />
+          <span>계정 생성</span>
+        </button>
+        <button
+          @click="showTab('seat')"
+          class="member-add-modal__tab-button"
+          :class="{
+            'member-add-modal__tab-button--clicked': tabName === 'seat',
+          }"
+        >
+          <img src="~assets/images/icon/ic-member-sheet-registration.svg" />
+          <span>시트 등록</span>
+        </button>
       </div>
-      <el-button @click="addMember">
-        {{ $t('members.add.addMember') }}
-      </el-button>
-      <el-button
-        type="primary"
-        @click="submit"
-        :disabled="userInfoList.length < 1"
-      >
-        {{ $t('members.add.submit') }}
-        <span class="number">{{ userInfoList.length }}</span>
-      </el-button>
+      <div class="member-add-modal--right">
+        <MemberInvitePane
+          v-if="tabName === 'invite'"
+          :membersTotal.sync="membersTotal"
+          :maximum.sync="maximum"
+          @updated="updated"
+        />
+        <MemberCreatePane
+          v-if="tabName === 'create'"
+          :membersTotal.sync="membersTotal"
+          :maximum.sync="maximum"
+          @updated="updated"
+        />
+        <MemberSeatPane
+          v-if="tabName === 'seat'"
+          :membersTotal.sync="membersTotal"
+          :maximum.sync="maximum"
+          @updated="updated"
+        />
+      </div>
     </div>
   </el-dialog>
 </template>
 
 <script>
 import modalMixin from '@/mixins/modal'
-import { role } from '@/models/workspace/Member'
-import InviteMember from '@/models/workspace/InviteMember'
-import workspaceService from '@/services/workspace'
-import plans from '@/models/workspace/plans'
-import { mapGetters } from 'vuex'
 
 export default {
   mixins: [modalMixin],
@@ -132,138 +75,24 @@ export default {
   },
   data() {
     return {
-      plans,
-      roles: role.options.filter(({ value }) => value !== 'MASTER'),
-      availablePlans: { remote: 0, make: 0, view: 0 },
-      userInfoList: [new InviteMember()],
       showMe: true,
-      rules: {
-        email: [
-          {
-            required: true,
-            message: this.$t('invalid.required', [
-              this.$t('members.add.email'),
-            ]),
-          },
-          {
-            type: 'email',
-            message: this.$t('invalid.format', [this.$t('members.add.email')]),
-          },
-        ],
-      },
+      tabName: 'invite',
+      maximum: 49,
     }
   },
-  computed: {
-    ...mapGetters({
-      activeWorkspace: 'auth/activeWorkspace',
-      plansInfo: 'plan/plansInfo',
-    }),
-    canChangeRole() {
-      return this.activeWorkspace.role === 'MASTER'
-    },
-    availableMember() {
-      return 49 - this.membersTotal - this.userInfoList.length
-    },
-  },
   methods: {
+    showTab(tabName) {
+      this.tabName = tabName
+    },
     beforeClose(done) {
       this.$emit('close')
       done()
     },
-    async reset() {
-      this.userInfoList = [new InviteMember()]
-      if (this.$refs.from) {
-        this.$refs.form.forEach(form => form.resetFields())
-      }
-
-      if (!this.plansInfo.planStatus) {
-        await this.$store.dispatch('plan/getPlansInfo')
-      }
-      this.initAvailablePlans()
+    updated() {
+      this.$emit('close')
+      this.$emit('refresh')
+      this.showMe = false
     },
-    opened() {
-      this.userInfoList = this.userInfoList.filter(form => form.email)
-      if (!this.userInfoList.length) this.reset()
-    },
-    addMember() {
-      if (this.availableMember < 1) {
-        this.$message.error({
-          dangerouslyUseHTMLString: true,
-          message: this.$t('members.add.message.memberOverflow'),
-          duration: 3000,
-          showClose: true,
-        })
-      } else {
-        this.userInfoList.push(new InviteMember())
-      }
-    },
-    clearMember(index) {
-      this.userInfoList.splice(index, 1)
-      this.choosePlan()
-    },
-    initAvailablePlans() {
-      this.plansInfo.products.forEach(product => {
-        this.availablePlans[product.value.toLowerCase()] = product.unUsedAmount
-      })
-    },
-    choosePlan() {
-      this.initAvailablePlans()
-      this.userInfoList.forEach(user => {
-        if (user.planRemote) this.availablePlans.remote -= 1
-        if (user.planMake) this.availablePlans.make -= 1
-        if (user.planView) this.availablePlans.view -= 1
-      })
-    },
-    async submit() {
-      // 유효성 검사
-      try {
-        await Promise.all(this.$refs.form.map(form => form.validate()))
-      } catch (e) {
-        return false
-      }
-      // api 요청
-      try {
-        await workspaceService.inviteMembers(this.userInfoList)
-        this.$message.success({
-          message: this.$t('members.add.message.inviteSuccess'),
-          duration: 2000,
-          showClose: true,
-        })
-        this.$emit('updated', this.form)
-        this.reset()
-        this.showMe = false
-      } catch (e) {
-        const errCode = e.toString().match(/^Error: ([0-9]+)/)[1]
-        // 결제센터로
-        if (errCode === 2003) {
-          this.$confirm(this.$t('members.add.message.noHavePlans'), {
-            confirmButtonText: this.$t('common.paymentCenter'),
-            customClass: 'no-title',
-          }).then(() => {
-            window.open(`${this.$url.pay}`)
-          })
-        }
-        // 일반에러
-        else {
-          const errMsg = {
-            1002: this.$t('members.add.message.memberAlready'),
-            1007: this.$t('members.add.message.notHaveAnyPlan'),
-            1008: this.$t('members.add.message.memberOverflow'),
-            1018: this.$t('members.add.message.memberWithdrawal'),
-          }[errCode]
-          this.$message.error({
-            message: errMsg
-              ? errMsg
-              : this.$t('members.add.message.inviteFail') + `\n(${e})`,
-            duration: 4000,
-            showClose: true,
-          })
-        }
-      }
-    },
-  },
-  mounted() {
-    this.opened()
   },
 }
 </script>
@@ -271,87 +100,42 @@ export default {
 <style lang="scss">
 #__nuxt .member-add-modal {
   .el-dialog__body {
-    padding-right: 24px;
-    overflow-y: scroll;
+    padding: 0;
+    max-height: none;
   }
-  p {
-    letter-spacing: -0.3px;
-    & > span,
-    & > img {
-      vertical-align: middle;
-    }
-  }
-  .el-divider {
-    margin: 24px 0;
-  }
-
-  label,
-  .el_input__label {
-    margin-bottom: 8px;
-    color: $font-color-desc;
-    font-size: 13px;
-
-    & > span,
-    & > img {
-      display: inline-block;
-      vertical-align: middle;
+  &--left {
+    border-right: 1px solid #eaeef2;
+    padding: 12px;
+    width: 184px;
+    button:first-child {
+      margin-top: 0;
     }
   }
-
-  .el-form {
-    margin: 20px 0;
-    padding: 20px 20px 4px;
-    border: solid 1px #e6e9ee;
-    box-shadow: 0 1px 3px 0 rgba(23, 43, 77, 0.1);
-
-    .el-icon-close:before {
-      font-weight: bold;
+  &--right {
+    width: 614px;
+  }
+  .member-add-modal__content {
+    display: flex;
+  }
+  .member-add-modal__tab-button {
+    width: 160px;
+    height: 38px;
+    margin: 2px 0;
+    padding: 9px 12px;
+    border-radius: 3px;
+    text-align: left;
+    display: flex;
+    &:hover {
+      background-color: #eff2f7;
     }
-
-    h6 {
-      margin-bottom: 20px;
-      & > span,
-      & > img {
-        vertical-align: middle;
-      }
-      & > button {
-        float: right;
-        font-size: 1.1em;
-      }
-    }
-    .el-form-item {
-      margin-bottom: 20px;
-    }
-    .el-input {
-      width: 168px;
-      &.full {
-        width: 100%;
-      }
+    span {
+      @include fontLevel(100);
+      margin-left: 9px;
     }
   }
-  .el-dialog__footer {
-    border-top: solid 1px #edf0f7;
-
-    .available {
-      float: left;
-      & > img {
-        vertical-align: middle;
-        transform: scale(0.85);
-        opacity: 0.6;
-      }
-      & > span {
-        color: $font-color-desc;
-        vertical-align: middle;
-        size: 13px;
-      }
-      & > span > i {
-        color: $color-primary;
-      }
-    }
-
-    .el-button:last-child {
-      float: right;
-    }
+  .member-add-modal__tab-button--clicked {
+    @extend .member-add-modal__tab-button;
+    background-color: #eff2f7;
   }
 }
 </style>
