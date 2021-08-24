@@ -412,7 +412,7 @@ export default {
   }
   .create-pane__content {
     overflow-y: scroll;
-    max-height: 496px;
+    max-height: 498px;
     padding: 0 5px 0 24px;
     width: 610px;
     .el-tabs .el-tabs__item {
