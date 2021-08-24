@@ -58,6 +58,7 @@
       @updated="updated"
       @deleteSeat="deleteSeat"
       @delete="deleteAccount"
+      @kick="kick"
       @change-password="showMemberPasswordModal = true"
     />
     <MemberKickModal
@@ -105,9 +106,6 @@ export default {
     data(val) {
       this.myInfo = val
     },
-  },
-  mounted() {
-    console.log(this.myInfo)
   },
   computed: {
     ...mapGetters({
