@@ -134,6 +134,17 @@ export default {
 
   /* MESSAGE FORCE LOGOUT */
   FORCE_LOGOUT: ['POST', '/remote/message/push/forced-logout'],
+
+  /* guest(seat) 멤버 초대 관련 API */
+  JOIN_AS_GUEST: ['POST', '/remote/guest/room/{workspaceId}/{sessionId}/join'],
+  GUEST_INVITE_URL: ['GET', '/remote/guest/url/{workspaceId}/{sessionId}'],
+  GUEST_ROOM_INFO: [
+    'GET',
+    '/remote/invitation/guest/{workspaceId}/{sessionId}',
+  ],
+
+  /* MAIL */
+  SEND_MAIL: ['POST', '/messages/mail'],
 }
 
 export const wsUri = {
