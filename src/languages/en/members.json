@@ -49,17 +49,17 @@
         "notAllowFileExtension": "Unsupported file type",
         "notAllowFileSize": "Unsupported file size"
       },
-      "nickname":{
+      "nickname": {
         "title": "Nickname",
         "caution": "Please enter 20 characters or less. You can use Korean English special characters (excluding (>), (<)) and spaces.",
         "success": "Successfully updated your nickname",
         "fail": "Failed to edit your nickname please try again later"
-      }, 
-      "seat":{
+      },
+      "seat": {
         "title": "Seat",
         "seatId": "Seat ID"
       },
-      "password":{
+      "password": {
         "title": "Password",
         "placeholder": "Please enter a new password",
         "caution": "Your password must be between 8 and 20 characters long. Your password needs to be included with at least 3 of following character types. <br>- Uppercase letter <br>- Lowercase letter<br>- Number <br>- Special character ( . ! @ # $ % ). <br>Also your password must not contain consecutive numbers and more than four of same characters.",

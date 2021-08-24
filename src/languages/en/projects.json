@@ -73,7 +73,8 @@
         "targetType": "Target Type",
         "targetSize": "Target Size",
         "width": "Width",
-        "height": "Height"
+        "height": "Height",
+        "noImage": "There is no registered target image"
       },
       "activity": {
         "title": "Activity",

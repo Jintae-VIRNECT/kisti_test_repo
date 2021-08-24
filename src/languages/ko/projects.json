@@ -73,7 +73,8 @@
         "targetType": "타겟 유형",
         "targetSize": "타겟 크기",
         "width": "가로",
-        "height": "세로"
+        "height": "세로",
+        "noImage": "등록된 타겟 이미지가 없습니다"
       },
       "activity": {
         "title": "활동",
