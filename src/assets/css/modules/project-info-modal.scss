@@ -1,6 +1,6 @@
 .project-info-modal .el-dialog__body {
-  height: 753px;
-  max-height: 800px;
+  height: 800px;
+  max-height: 870px;
   padding: 16px 0 28px 24px;
   margin-right: 6px;
 
@@ -42,6 +42,16 @@
       height: 20px;
       margin-left: 16px;
       padding: 0;
+      &:hover,
+      &:active,
+      &:focus {
+        color: #fff;
+        background: none;
+      }
+      > span > img {
+        width: 20px;
+        height: 20px;
+      }
     }
   }
 
@@ -122,7 +132,7 @@
   }
 
   .el-divider--vertical {
-    margin-left: 16px;
+    margin: 0 0 0 16px;
     background-color: rgba(13, 42, 88, 0.5);
   }
 
@@ -176,6 +186,18 @@
     .el-tree-node__content:hover,
     .el-tree-node:focus > .el-tree-node__content {
       background-color: rgba(245, 247, 250, 0.75);
+    }
+  }
+
+  .select-label {
+    > span > img {
+      height: 10px;
+    }
+  }
+
+  .select-member {
+    .el-select__tags {
+      display: none;
     }
   }
 }
