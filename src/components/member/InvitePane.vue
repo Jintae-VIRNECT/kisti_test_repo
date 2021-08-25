@@ -155,7 +155,7 @@ export default {
       })
     },
     addMember() {
-      if (this.availableMember > this.maximum) {
+      if (this.availableMember >= this.maximum) {
         this.$message.error({
           dangerouslyUseHTMLString: true,
           message: this.$t('members.add.message.memberOverflow'),
