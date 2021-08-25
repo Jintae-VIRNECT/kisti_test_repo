@@ -114,15 +114,27 @@
     }
   }
 
-  dl.row {
+  div.activity {
     display: flex;
-
-    & > div {
-      min-width: 110px;
-
-      & > dd {
-        margin-bottom: 0px;
-      }
+    align-items: flex-start;
+    top: -10px;
+    .el-col:nth-child(1) {
+      margin-top: 5px;
+    }
+    dt {
+      margin: 0 0 2px 0;
+    }
+    dd {
+      margin: 0 0 8px 0;
+      overflow: unset;
+      white-space: unset;
+    }
+    span {
+      font-size: 12px;
+      color: #98a0a6;
+    }
+    .el-divider {
+      margin: 12px 0;
     }
   }
 

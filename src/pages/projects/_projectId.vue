@@ -9,7 +9,7 @@
     @close="closed"
   >
     <el-row type="flex">
-      <!-- 프로젝트 구성 정보 -->
+      <!-- 전체 구성 정보 -->
       <el-col :span="15">
         <el-row class="actionbar">
           <el-button type="text" :disabled="!true">
@@ -29,7 +29,7 @@
             <img src="~assets/images/icon/ic-delete.svg" />
           </el-button>
         </el-row>
-        <!-- 프로젝트 트리 뷰 -->
+        <!-- 왼쪽 트리 뷰 -->
         <el-row class="properties" v-show="activeTab !== 'target'">
           <el-tree
             :data="properties"
@@ -47,7 +47,7 @@
           </div>
         </el-row>
       </el-col>
-      <!-- 프로젝트 정보 -->
+      <!-- 오른쪽 Tabs -->
       <el-col :span="9" class="infos">
         <el-tabs v-model="activeTab">
           <el-tab-pane
@@ -58,6 +58,7 @@
           >
           </el-tab-pane>
         </el-tabs>
+        <!-- 프로젝트 정보 -->
         <el-row v-show="activeTab === 'project'">
           <dl>
             <dt>{{ $t('projects.info.project.name') }}</dt>
@@ -156,6 +157,44 @@
             </dl>
           </dd>
         </el-row>
+        <!-- 활동 정보 -->
+        <el-row v-show="activeTab === 'activity'">
+          <div
+            class="activity"
+            v-for="(activity, index) in activityList"
+            :key="index"
+          >
+            <el-col :span="4">
+              <VirnectThumbnail :size="36" :image="activity.img" />
+            </el-col>
+            <el-col :span="21">
+              <dl>
+                <dt>
+                  {{
+                    $t('projects.info.activity.nickname', {
+                      nickname: activity.nickname,
+                    })
+                  }}
+                </dt>
+                <dd>
+                  {{
+                    $t(`${activityLabel(activity)}`, {
+                      member: activity.member,
+                    })
+                  }}
+                </dd>
+                <span>
+                  {{ activity.updated | localTimeFormat }}
+                </span>
+              </dl>
+              <el-divider />
+            </el-col>
+          </div>
+          <div v-if="!activityList.length">
+            <img src="~assets/images/empty/img-content-empty.jpg" />
+            <p>{{ $t('projects.info.activity.empty') }}</p>
+          </div>
+        </el-row>
       </el-col>
     </el-row>
   </el-dialog>
@@ -163,7 +202,7 @@
 
 <script>
 import contentService from '@/services/content'
-import { sharedTypes, editTypes } from '@/models/project/Project'
+import { sharedTypes, editTypes, activityTypes } from '@/models/project/Project'
 import filters from '@/mixins/filters'
 import utils from '@/mixins/utils'
 
@@ -210,6 +249,7 @@ export default {
       // 편집 드롭메뉴
       editTypes,
       // 프로젝트의 공유, 편집 관련된 info.
+      activityTypes,
       // ex) selectTypes: 멤버, 지정멤버.. 등 드롭메뉴, members: [선택한 지정 멤버 유저 리스트]
       forms: [
         {
@@ -257,6 +297,53 @@ export default {
           img: 'https://192.168.6.3:2838/virnect-platform/profile/2021-06-15_VByqxZGplpVkdlGpucmL.jpg',
           value: 'Option5',
           label: 'User5',
+        },
+      ],
+      // 활동 탭의 활동 리스트 데이터.
+      activityList: [
+        {
+          img: 'https://192.168.6.3:2838/virnect-platform/profile/2021-06-15_VByqxZGplpVkdlGpucmL.jpg',
+          value: 'UPDATE',
+          nickname: 'User1',
+          updated: '2020-05-26T10:43:20',
+        },
+        {
+          img: 'https://192.168.6.3:2838/virnect-platform/profile/2021-06-15_VByqxZGplpVkdlGpucmL.jpg',
+          value: 'UPLOAD',
+          nickname: 'User2',
+          updated: '2020-05-26T10:43:20',
+        },
+        {
+          img: 'https://192.168.6.3:2838/virnect-platform/profile/2021-06-15_VByqxZGplpVkdlGpucmL.jpg',
+          value: 'EDIT',
+          nickname: 'User3',
+          updated: '2020-05-26T10:43:20',
+          member: '멤버',
+        },
+        {
+          img: 'https://192.168.6.3:2838/virnect-platform/profile/2021-06-15_VByqxZGplpVkdlGpucmL.jpg',
+          value: 'SHARED',
+          nickname: 'User4',
+          updated: '2020-05-26T10:43:20',
+          member: '지정 멤버',
+        },
+        {
+          img: 'https://192.168.6.3:2838/virnect-platform/profile/2021-06-15_VByqxZGplpVkdlGpucmL.jpg',
+          value: 'TRASH',
+          nickname: 'User5',
+          updated: '2020-05-26T10:43:20',
+        },
+        {
+          img: 'https://192.168.6.3:2838/virnect-platform/profile/2021-06-15_VByqxZGplpVkdlGpucmL.jpg',
+          value: 'BACKUP',
+          nickname: 'User5',
+          updated: '2020-05-26T10:43:20',
+        },
+        {
+          img: 'https://192.168.6.3:2838/virnect-platform/profile/2021-06-15_VByqxZGplpVkdlGpucmL.jpg',
+          value: 'DOWNLOAD',
+          nickname: 'User5',
+          updated: '2020-05-26T10:43:20',
         },
       ],
     }
@@ -348,6 +435,12 @@ export default {
     // 자식 컴포넌트에서 forms.members data 변경시 실행하는 메소드.
     setMembers({ key, value }) {
       this.forms.filter(form => form.key == key)[0].members = value
+    },
+    // 유저의 활동 타입에 따라, 맞는 label 값 반환.
+    activityLabel(activity) {
+      return activityTypes.find(a => {
+        return a.value == activity.value
+      }).label
     },
   },
   beforeMount() {

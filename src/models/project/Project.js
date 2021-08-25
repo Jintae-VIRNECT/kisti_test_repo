@@ -121,3 +121,37 @@ export const editTypes = [
     label: 'projects.editTypes.manager',
   },
 ]
+
+/**
+ * 프로젝트 활동정보 타입
+ */
+export const activityTypes = [
+  {
+    value: 'UPDATE',
+    label: 'projects.info.activity.update',
+  },
+  {
+    value: 'UPLOAD',
+    label: 'projects.info.activity.upload',
+  },
+  {
+    value: 'EDIT',
+    label: 'projects.info.activity.edit',
+  },
+  {
+    value: 'SHARED',
+    label: 'projects.info.activity.shared',
+  },
+  {
+    value: 'TRASH',
+    label: 'projects.info.activity.moveTrash',
+  },
+  {
+    value: 'BACKUP',
+    label: 'projects.info.activity.backup',
+  },
+  {
+    value: 'DOWNLOAD',
+    label: 'projects.info.activity.download',
+  },
+]
