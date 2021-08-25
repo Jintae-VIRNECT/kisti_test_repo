@@ -23,14 +23,17 @@ public class CustomRemoteGroupRepositoryImpl extends QuerydslRepositorySupport i
 	}
 
 	@Override
-	public List<RemoteGroup> findByWorkspaceId(
-		String workspaceId
+	public List<RemoteGroup> findByWorkspaceIdAndUserIdAndIncludeOneself(
+		String workspaceId,
+		String userId,
+		boolean includeOneself
 	) {
 		return query
 			.selectFrom(remoteGroup)
 			.innerJoin(remoteGroup.groupMembers, remoteGroupMember).fetchJoin()
 			.where(
-				remoteGroup.workspaceId.eq(workspaceId)
+				remoteGroup.workspaceId.eq(workspaceId),
+				includeOneself(userId, includeOneself)
 			)
 			.orderBy(remoteGroup.groupName.asc())
 			.distinct()
@@ -71,6 +74,7 @@ public class CustomRemoteGroupRepositoryImpl extends QuerydslRepositorySupport i
 	) {
 		return query
 			.selectFrom(remoteGroup)
+			.innerJoin(remoteGroup.groupMembers, remoteGroupMember).fetchJoin()
 			.where(
 				remoteGroup.workspaceId.eq(workspaceId),
 				remoteGroup.groupId.eq(groupId)
@@ -80,27 +84,44 @@ public class CustomRemoteGroupRepositoryImpl extends QuerydslRepositorySupport i
 	}
 
 	@Override
-	public RemoteGroup findByWorkspaceIdAndGroupIdAndUserId(String workspaceId, String groupId, String userId) {
+	public RemoteGroup findByWorkspaceIdAndGroupIdAndUserId(
+		String workspaceId,
+		String groupId,
+		String userId
+	) {
 		return query
 			.selectFrom(remoteGroup)
+			.innerJoin(remoteGroup.groupMembers, remoteGroupMember).fetchJoin()
 			.where(
 				remoteGroup.workspaceId.eq(workspaceId),
-				remoteGroup.groupId.eq(groupId)
+				remoteGroup.groupId.eq(groupId),
+				remoteGroupMember.uuid.notIn(userId)
 			)
 			.distinct()
 			.fetchOne();
 	}
 
-	private BooleanExpression includeUserId(String userId) {
-		if (StringUtils.isEmpty(userId)) {
+	@Override
+	public RemoteGroup findByWorkspaceIdAndGroupIdAndUserIdAndIncludeOneself(
+		String workspaceId, String groupId, String userId, boolean includeOneself
+	) {
+		return query
+			.selectFrom(remoteGroup)
+			.innerJoin(remoteGroup.groupMembers, remoteGroupMember).fetchJoin()
+			.where(
+				remoteGroup.workspaceId.eq(workspaceId),
+				remoteGroup.groupId.eq(groupId),
+				includeOneself(userId, includeOneself)
+			)
+			.distinct()
+			.fetchOne();
+	}
+
+	private BooleanExpression includeOneself(String userId, boolean includeOneself) {
+		if (includeOneself) {
 			return null;
 		}
-		List<Long> userRoomIdList = query.selectFrom(remoteGroupMember)
-				.select(remoteGroupMember.remoteGroup.id)
-				.where(remoteGroupMember.uuid.eq(userId)
-				)
-				.fetch();
-		return remoteGroup.id.in(userRoomIdList);
+		return remoteGroupMember.uuid.notIn(userId);
 	}
 
 	private BooleanExpression includeUserIds(List<String> userIds) {

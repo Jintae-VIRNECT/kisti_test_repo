@@ -58,7 +58,7 @@ public class MemberService {
 		int size
 	) {
 
-		WorkspaceMemberInfoListResponse responseData = workspaceRestService.getWorkspaceMemberInfoList(
+		WorkspaceMemberInfoListResponse responseData = workspaceRestService.getWorkspaceMembers(
 			workspaceId, filter, search, page, size).getData();
 
 		// set Page Metadata
@@ -80,7 +80,7 @@ public class MemberService {
 		boolean accessTypeFilter
 	) {
 
-		WorkspaceMemberInfoListResponse responseData = workspaceRestService.getWorkspaceMemberInfoList(
+		WorkspaceMemberInfoListResponse responseData = workspaceRestService.getWorkspaceMembers(
 			workspaceId, filter, search, 0, Integer.MAX_VALUE).getData();
 
 		List<WorkspaceMemberInfoResponse> workspaceMemberInfoList = responseData.getMemberInfoList();

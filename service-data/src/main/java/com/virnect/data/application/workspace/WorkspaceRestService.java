@@ -13,7 +13,7 @@ import com.virnect.data.global.common.ApiResponse;
 public interface WorkspaceRestService {
 
 	@GetMapping("/workspaces/{workspaceId}/members")
-	ApiResponse<WorkspaceMemberInfoListResponse> getWorkspaceMemberInfoList(
+	ApiResponse<WorkspaceMemberInfoListResponse> getWorkspaceMembers(
 		@PathVariable("workspaceId") String workspaceId,
 		@RequestParam(value = "filter", required = false) String filter,
 		@RequestParam(value = "search", required = false) String search,
@@ -22,7 +22,7 @@ public interface WorkspaceRestService {
 	);
 
 	@GetMapping("/workspaces/{workspaceId}/members")
-	ApiResponse<WorkspaceMemberInfoListResponse> getWorkspaceMemberInfoList(
+	ApiResponse<WorkspaceMemberInfoListResponse> getWorkspaceMembers(
 		@PathVariable("workspaceId") String workspaceId,
 		@RequestParam(value = "plan", required = false) String plan,
 		@RequestParam(value = "search", required = false) String search,
@@ -30,14 +30,22 @@ public interface WorkspaceRestService {
 	);
 
 	@GetMapping("/workspaces/{workspaceId}/members")
-	ApiResponse<WorkspaceMemberInfoListResponse> getWorkspaceMemberInfoList(
+	ApiResponse<WorkspaceMemberInfoListResponse> getWorkspaceMembers(
 			@PathVariable("workspaceId") String workspaceId,
 			@RequestParam(value = "plan", required = false) String plan,
 			@RequestParam(value = "size") int size
 	);
 
+	@GetMapping("/workspaces/{workspaceId}/members")
+	ApiResponse<WorkspaceMemberInfoListResponse> getWorkspaceMembersOnlyMember(
+		@PathVariable("workspaceId") String workspaceId,
+		@RequestParam(value = "filter", required = false) String filter,
+		@RequestParam(value = "plan", required = false) String plan,
+		@RequestParam(value = "size") int size
+	);
+
 	@GetMapping("/workspaces/{workspaceId}/members/info")
-	ApiResponse<WorkspaceMemberInfoResponse> getWorkspaceMemberInfo(
+	ApiResponse<WorkspaceMemberInfoResponse> getWorkspaceMember(
 		@PathVariable("workspaceId") String workspaceId,
 		@RequestParam(value = "userId") String userId
 	);
@@ -48,7 +56,7 @@ public interface WorkspaceRestService {
 	);
 
 	@GetMapping("/workspaces/{workspaceId}/members/infoList")
-	ApiResponse<WorkspaceMemberInfoListResponse> getWorkspaceMemberInfoList(
+	ApiResponse<WorkspaceMemberInfoListResponse> getWorkspaceMembersExcludeUserIds(
 		@PathVariable("workspaceId") String workspaceId,
 		@RequestParam(value = "userIds") String[] userIds
 	);

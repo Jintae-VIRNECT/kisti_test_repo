@@ -6,7 +6,7 @@ import com.virnect.data.domain.group.RemoteGroup;
 
 public interface CustomRemoteGroupRepository {
 
-	List<RemoteGroup> findByWorkspaceId(String workspaceId);
+	List<RemoteGroup> findByWorkspaceIdAndUserIdAndIncludeOneself(String workspaceId, String userId, boolean includeOneself);
 
 	List<RemoteGroup> findByWorkspaceIdAndUserIdArray(String workspaceId, List<String> userIds);
 
@@ -15,5 +15,7 @@ public interface CustomRemoteGroupRepository {
 	RemoteGroup findByWorkspaceIdAndGroupId(String workspaceId, String groupId);
 
 	RemoteGroup findByWorkspaceIdAndGroupIdAndUserId(String workspaceId, String groupId, String userId);
+
+	RemoteGroup findByWorkspaceIdAndGroupIdAndUserIdAndIncludeOneself(String workspaceId, String groupId, String userId, boolean includeOneself);
 
 }

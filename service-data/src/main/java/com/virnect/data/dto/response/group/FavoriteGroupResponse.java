@@ -5,11 +5,13 @@ import java.util.List;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
+@Builder
 @ApiModel
 public class FavoriteGroupResponse {
 
@@ -26,6 +28,6 @@ public class FavoriteGroupResponse {
 	private String uuid = "";
 
 	@ApiModelProperty(value = "Group members", position = 5, example = "group members")
-	private List<FavoriteGroupMemberResponse> favoriteGroupMemberResponses = new ArrayList<>();
+	private List<FavoriteGroupMemberResponse> favoriteGroupMemberResponses;
 
 }

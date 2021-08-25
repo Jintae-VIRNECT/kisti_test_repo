@@ -68,7 +68,8 @@ public class GroupRestController {
 	@GetMapping(value = "members/group/{workspaceId}")
 	public ResponseEntity<ApiResponse<RemoteGroupListResponse>> getRemoteGroups(
 		@PathVariable(name = "workspaceId") String workspaceId,
-		@RequestParam(name = "userId") String userId
+		@RequestParam(name = "userId") String userId,
+		@RequestParam(value = "includeOneself", required = false) boolean includeOneself
 	) {
 		LogMessage.formedInfo(
 			TAG,
@@ -81,7 +82,7 @@ public class GroupRestController {
 		if (Strings.isBlank(workspaceId)) {
 			throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
 		}
-		ApiResponse<RemoteGroupListResponse> responseData = groupService.getRemoteGroups(workspaceId);
+		ApiResponse<RemoteGroupListResponse> responseData = groupService.getRemoteGroups(workspaceId, userId, includeOneself);
 		return ResponseEntity.ok(responseData);
 	}
 
@@ -90,8 +91,10 @@ public class GroupRestController {
 	public ResponseEntity<ApiResponse<RemoteGroupResponse>> getRemoteGroupDetail(
 		@PathVariable(name = "workspaceId") String workspaceId,
 		@PathVariable(name = "groupId") String groupId,
+		@RequestParam(value = "userId") String userId,
 		@RequestParam(value = "filter", required = false) String filter,
 		@RequestParam(value = "search", required = false) String search,
+		@RequestParam(value = "includeOneself", required = false) boolean includeOneself,
 		@RequestParam(value = "accessTypeFilter", required = false) boolean accessTypeFilter
 	) {
 		LogMessage.formedInfo(
@@ -108,8 +111,10 @@ public class GroupRestController {
 		ApiResponse<RemoteGroupResponse> responseData = groupService.getRemoteGroupDetail(
 			workspaceId,
 			groupId,
+			userId,
 			filter,
 			search,
+			includeOneself,
 			accessTypeFilter
 		);
 		return ResponseEntity.ok(responseData);
@@ -194,7 +199,8 @@ public class GroupRestController {
 	@GetMapping(value = "members/favorite-group/{workspaceId}")
 	public ResponseEntity<ApiResponse<FavoriteGroupListResponse>> getFavoriteGroups(
 		@PathVariable(name = "workspaceId") String workspaceId,
-		@RequestParam(name = "userId") String userId
+		@RequestParam(name = "userId") String userId,
+		@RequestParam(value = "includeOneself", required = false) boolean includeOneself
 	) {
 		LogMessage.formedInfo(
 			TAG,
@@ -207,17 +213,19 @@ public class GroupRestController {
 		if (Strings.isBlank(workspaceId)) {
 			throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
 		}
-		ApiResponse<FavoriteGroupListResponse> responseData = groupService.getFavoriteGroups(workspaceId, userId);
+		ApiResponse<FavoriteGroupListResponse> responseData = groupService.getFavoriteGroups(workspaceId, userId, includeOneself);
 		return ResponseEntity.ok(responseData);
 	}
 
 	@ApiOperation(value = "[NORMAL USER] Get selected member favorite group detail information", notes = "개인별 멤버그룹을 상세조회합니다")
 	@GetMapping(value = "members/favorite-group/{workspaceId}/{groupId}")
-	public ResponseEntity<ApiResponse<FavoriteGroupResponse>> getFavoriteGroupDetailInfo(
+	public ResponseEntity<ApiResponse<FavoriteGroupResponse>> getFavoriteGroupDetail(
 		@PathVariable(name = "workspaceId") String workspaceId,
 		@PathVariable(name = "groupId") String groupId,
+		@RequestParam(value = "userId") String userId,
 		@RequestParam(value = "filter", required = false) String filter,
 		@RequestParam(value = "search", required = false) String search,
+		@RequestParam(value = "includeOneself", required = false) boolean includeOneself,
 		@RequestParam(value = "accessTypeFilter", required = false) boolean accessTypeFilter
 	) {
 		LogMessage.formedInfo(
@@ -231,11 +239,13 @@ public class GroupRestController {
 		if (Strings.isBlank(workspaceId) || Strings.isBlank(groupId)) {
 			throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
 		}
-		ApiResponse<FavoriteGroupResponse> responseData = groupService.getFavoriteGroupDetailInfo(
+		ApiResponse<FavoriteGroupResponse> responseData = groupService.getFavoriteGroupDetail(
 			workspaceId,
 			groupId,
+			userId,
 			filter,
 			search,
+			includeOneself,
 			accessTypeFilter
 		);
 		return ResponseEntity.ok(responseData);

@@ -313,7 +313,7 @@ public class DashboardHistoryService {
 			// Set Member Info
 			if (!roomDetailInfoResponse.getMemberList().isEmpty()) {
 				for (MemberInfoResponse memberInfoResponse : roomDetailInfoResponse.getMemberList()) {
-					ApiResponse<WorkspaceMemberInfoResponse> workspaceMemberInfo = workspaceRestService.getWorkspaceMemberInfo(
+					ApiResponse<WorkspaceMemberInfoResponse> workspaceMemberInfo = workspaceRestService.getWorkspaceMember(
 						workspaceId, memberInfoResponse.getUuid());
 					WorkspaceMemberInfoResponse workspaceMemberData = workspaceMemberInfo.getData();
 					memberInfoResponse.setRole(workspaceMemberData.getRole());
@@ -364,7 +364,7 @@ public class DashboardHistoryService {
 			if (!endRoom.getMemberHistories().isEmpty()) {
 				for (MemberInfoResponse memberInfoResponse : roomHistoryDetailInfoResponse.getMemberList()) {
 					ApiResponse<WorkspaceMemberInfoResponse> workspaceMemberInfo =
-						workspaceRestService.getWorkspaceMemberInfo(workspaceId, memberInfoResponse.getUuid());
+						workspaceRestService.getWorkspaceMember(workspaceId, memberInfoResponse.getUuid());
 					WorkspaceMemberInfoResponse workspaceMemberData = workspaceMemberInfo.getData();
 					memberInfoResponse.setRole(workspaceMemberData.getRole());
 					memberInfoResponse.setEmail(workspaceMemberData.getEmail());

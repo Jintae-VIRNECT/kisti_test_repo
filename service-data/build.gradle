@@ -7,6 +7,7 @@ plugins {
 // DEPENDENCIES.
 //—————————————————————————————————————————————————————————————————————————————————————————————————
 dependencies {
+    implementation 'org.jetbrains:annotations:20.1.0'
     testImplementation 'junit:junit:4.12'
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     implementation 'org.springframework.boot:spring-boot-starter-web'

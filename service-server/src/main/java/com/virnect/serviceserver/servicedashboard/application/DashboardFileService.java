@@ -93,7 +93,7 @@ public class DashboardFileService {
 				.collect(Collectors.toList());
 
 			for (FileInfoResponse file : fileInfoList) {
-				ApiResponse<WorkspaceMemberInfoResponse> workspaceMemberInfo = workspaceRestService.getWorkspaceMemberInfo(workspaceId, file.getUuid());
+				ApiResponse<WorkspaceMemberInfoResponse> workspaceMemberInfo = workspaceRestService.getWorkspaceMember(workspaceId, file.getUuid());
 				file.setNickName(workspaceMemberInfo.getData().getNickName());
 			}
 		} catch (Exception exception) {

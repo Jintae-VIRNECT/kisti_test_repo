@@ -724,7 +724,7 @@ public class ServiceSessionManager {
 		PageMetadataResponse pageMeta = PageMetadataResponse.builder().build();
 
 		// Master uuid 및 권한 체크
-		WorkspaceMemberInfoResponse masterUserInfo = workspaceRestService.getWorkspaceMemberInfo(
+		WorkspaceMemberInfoResponse masterUserInfo = workspaceRestService.getWorkspaceMember(
 			forceLogoutRequest.getWorkspaceId(), forceLogoutRequest.getUserId()).getData();
 		if (StringUtils.isBlank(masterUserInfo.getUuid())) {
 			log.info("Master uuid is null");
@@ -774,7 +774,7 @@ public class ServiceSessionManager {
 
 		// 강제 로그아웃 대상에서 제외된 유저들 정보
 		for (String failMemberUuid : failUserIds) {
-			ApiResponse<WorkspaceMemberInfoResponse> workspaceMemberInfo = workspaceRestService.getWorkspaceMemberInfo(
+			ApiResponse<WorkspaceMemberInfoResponse> workspaceMemberInfo = workspaceRestService.getWorkspaceMember(
 				forceLogoutRequest.getWorkspaceId(), failMemberUuid);
 			if (workspaceMemberInfo.getCode() != ErrorCode.ERR_SUCCESS.getCode()) {
 				return new ApiResponse<>(ErrorCode.ERR_UNEXPECTED_SERVER_ERROR);

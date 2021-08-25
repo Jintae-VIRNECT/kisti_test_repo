@@ -88,7 +88,7 @@ public class HistoryService {
 		Pageable pageable
 	) {
 
-		List<WorkspaceMemberInfoResponse> members = workspaceRestService.getWorkspaceMemberInfoList(
+		List<WorkspaceMemberInfoResponse> members = workspaceRestService.getWorkspaceMembers(
 			workspaceId,
 			"remote",
 			search,
@@ -143,7 +143,7 @@ public class HistoryService {
 		}
 
 		// Receive User list from Workspace
-		ApiResponse<WorkspaceMemberInfoListResponse> memberInfo = workspaceRestService.getWorkspaceMemberInfoList(
+		ApiResponse<WorkspaceMemberInfoListResponse> memberInfo = workspaceRestService.getWorkspaceMembersExcludeUserIds(
 			workspaceId,
 			userList.stream().distinct().toArray(String[]::new)
 		);
@@ -261,7 +261,7 @@ public class HistoryService {
 		}
 
 		// Receive User list from Workspace
-		ApiResponse<WorkspaceMemberInfoListResponse> memberInfo = workspaceRestService.getWorkspaceMemberInfoList(
+		ApiResponse<WorkspaceMemberInfoListResponse> memberInfo = workspaceRestService.getWorkspaceMembersExcludeUserIds(
 			workspaceId,
 			userList.stream().distinct().toArray(String[]::new)
 		);

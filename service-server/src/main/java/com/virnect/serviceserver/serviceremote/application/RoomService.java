@@ -582,7 +582,7 @@ public class RoomService {
 		}
 
 		// Receive User list from Workspace
-		ApiResponse<WorkspaceMemberInfoListResponse> memberInfo = workspaceRestService.getWorkspaceMemberInfoList(
+		ApiResponse<WorkspaceMemberInfoListResponse> memberInfo = workspaceRestService.getWorkspaceMembersExcludeUserIds(
 			workspaceId,
 			userList.stream().distinct().toArray(String[]::new)
 		);
@@ -647,7 +647,7 @@ public class RoomService {
 		PageRequest pageable
 	) {
 
-		List<WorkspaceMemberInfoResponse> members = workspaceRestService.getWorkspaceMemberInfoList(
+		List<WorkspaceMemberInfoResponse> members = workspaceRestService.getWorkspaceMembers(
 			workspaceId,
 			"remote",
 			search,
@@ -721,7 +721,7 @@ public class RoomService {
 
 		// find and get extra information from use-server using uuid
 		for (MemberInfoResponse memberInfoResponse : memberInfoList) {
-			ApiResponse<WorkspaceMemberInfoResponse> workspaceMemberInfo = workspaceRestService.getWorkspaceMemberInfo(
+			ApiResponse<WorkspaceMemberInfoResponse> workspaceMemberInfo = workspaceRestService.getWorkspaceMember(
 				workspaceId, memberInfoResponse.getUuid());
 			log.debug("workspaceMemberInfo: " + workspaceMemberInfo.getData().toString());
 
@@ -867,7 +867,7 @@ public class RoomService {
 		}
 
 		// Receive User list from Workspace
-		ApiResponse<WorkspaceMemberInfoListResponse> memberInfo = workspaceRestService.getWorkspaceMemberInfoList(
+		ApiResponse<WorkspaceMemberInfoListResponse> memberInfo = workspaceRestService.getWorkspaceMembersExcludeUserIds(
 			workspaceId,
 			userList.stream().distinct().toArray(String[]::new)
 		);

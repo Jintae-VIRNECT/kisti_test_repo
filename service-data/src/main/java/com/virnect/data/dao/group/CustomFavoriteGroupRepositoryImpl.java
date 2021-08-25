@@ -34,13 +34,17 @@ public class CustomFavoriteGroupRepositoryImpl extends QuerydslRepositorySupport
 	}
 
 	@Override
-	public List<FavoriteGroup> findByWorkspaceIdAndUserId(String workspaceId, String userId) {
+	public List<FavoriteGroup> findByWorkspaceIdAndUserIdAndIncludeOneself(
+		String workspaceId,
+		String userId,
+		boolean includeOneself
+	) {
 		return query
 			.selectFrom(favoriteGroup)
 			.innerJoin(favoriteGroup.favoriteGroupMembers, favoriteGroupMember).fetchJoin()
 			.where(
 				favoriteGroup.workspaceId.eq(workspaceId),
-				includeUserId(userId)
+				includeOneself(userId, includeOneself)
 			)
 			.orderBy(favoriteGroup.groupName.asc())
 			.distinct()
@@ -48,11 +52,13 @@ public class CustomFavoriteGroupRepositoryImpl extends QuerydslRepositorySupport
 	}
 
 	@Override
-	public FavoriteGroup findByWorkspaceIdAndGroupId(String workspaceId, String groupId) {
+	public FavoriteGroup findByWorkspaceIdAndUserIdAndGroupId(String workspaceId, String userId, String groupId) {
 		return query
 			.selectFrom(favoriteGroup)
+			.innerJoin(favoriteGroup.favoriteGroupMembers, favoriteGroupMember).fetchJoin()
 			.where(
 				favoriteGroup.workspaceId.eq(workspaceId),
+				favoriteGroup.uuid.eq(userId),
 				favoriteGroup.groupId.eq(groupId)
 			)
 			.distinct()
@@ -60,13 +66,20 @@ public class CustomFavoriteGroupRepositoryImpl extends QuerydslRepositorySupport
 	}
 
 	@Override
-	public FavoriteGroup findByWorkspaceIdAndUserIdAndGroupId(String workspaceId, String userId, String groupId) {
+	public FavoriteGroup findByWorkspaceIdAndUserIdAndGroupIdAndIncludeOneself(
+		String workspaceId,
+		String groupId,
+		String userId,
+		boolean includeOneself
+	) {
 		return query
 			.selectFrom(favoriteGroup)
+			.innerJoin(favoriteGroup.favoriteGroupMembers, favoriteGroupMember).fetchJoin()
 			.where(
 				favoriteGroup.workspaceId.eq(workspaceId),
 				favoriteGroup.uuid.eq(userId),
-				favoriteGroup.groupId.eq(groupId)
+				favoriteGroup.groupId.eq(groupId),
+				includeOneself(userId, includeOneself)
 			)
 			.distinct()
 			.fetchOne();
@@ -77,10 +90,18 @@ public class CustomFavoriteGroupRepositoryImpl extends QuerydslRepositorySupport
 			return null;
 		}
 		List<Long> includedFavoriteGroupIds = query.selectFrom(favoriteGroupMember)
+			.innerJoin(favoriteGroup.favoriteGroupMembers, favoriteGroupMember).fetchJoin()
 			.select(favoriteGroupMember.favoriteGroup.id)
 			.where(favoriteGroupMember.uuid.eq(userId)
 			).fetch();
 		return favoriteGroup.id.in(includedFavoriteGroupIds);
+	}
+
+	private BooleanExpression includeOneself(String userId, boolean includeOneself) {
+		if (includeOneself) {
+			return null;
+		}
+		return favoriteGroupMember.uuid.notIn(userId);
 	}
 
 }
