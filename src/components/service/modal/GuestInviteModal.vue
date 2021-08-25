@@ -119,11 +119,16 @@ export default {
       this.$emit('update:visible', false)
     },
     async getInviteUrl() {
-      const result = await getGuestInviteUrl({
-        sessionId: this.roomInfo.sessionId,
-        workspaceId: this.workspace.uuid,
-      })
-      this.inviteUrl = result.url
+      try {
+        const result = await getGuestInviteUrl({
+          sessionId: this.roomInfo.sessionId,
+          workspaceId: this.workspace.uuid,
+        })
+        this.inviteUrl = result.url
+      } catch (error) {
+        console.error(error)
+        this.beforeClose()
+      }
     },
     copyUrl() {
       navigator.clipboard.writeText(this.inviteUrl).then(
@@ -167,7 +172,7 @@ export default {
       const newLine = target === 'mailto' ? '%0D%0A' : '<br>'
 
       const msg =
-        `[VIRNECT Remote_Access information] ${newLine}` +
+        `[${this.emailSubject}] ${newLine}` +
         `(Access URL) ${newLine} ${this.inviteUrl} ${newLine} ${newLine}` +
         `(QR Code access) ${newLine} ${'qr로그인 주소'} ${newLine}`
       return msg
