@@ -86,7 +86,7 @@ export default {
         this.refresh()
       }
     },
-    'list.length': 'scrollReset',
+    //'list.length': 'scrollReset',
   },
   methods: {
     async refresh() {
