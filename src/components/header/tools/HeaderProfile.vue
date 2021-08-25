@@ -110,6 +110,15 @@ export default {
       }
     },
   },
+  watch: {
+    isMobile: {
+      immediate: true,
+      handler: function(newVal) {
+        if (newVal) this.setResponsiveMobile()
+        else this.setResponsiveDefault()
+      },
+    },
+  },
   methods: {
     link(url) {
       window.open(url)
@@ -153,16 +162,8 @@ export default {
   },
 
   /* Lifecycles */
-  mounted() {
-    this.responsiveFn = this.callAndGetMobileResponsiveFunction(
-      this.setResponsiveMobile,
-      this.setResponsiveDefault,
-    )
-    this.addEventListenerScreenResize(this.responsiveFn)
-  },
-  beforeDestroy() {
-    this.removeEventListenerScreenResize(this.responsiveFn)
-  },
+  mounted() {},
+  beforeDestroy() {},
 }
 </script>
 <style lang="scss">

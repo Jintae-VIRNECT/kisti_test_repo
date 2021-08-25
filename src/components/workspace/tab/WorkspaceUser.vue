@@ -160,7 +160,7 @@ export default {
       await this.getList()
 
       const { uuid } = targetUserinfo
-      const nickNameTag = this.isMobileScreenSize()
+      const nickNameTag = this.isMobile
         ? `${targetUserinfo.nickName}\n`
         : `<span style="color:#6bb4f9">${targetUserinfo.nickName}</span> `
 

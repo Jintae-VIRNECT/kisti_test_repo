@@ -42,10 +42,14 @@ import { ERROR } from 'configs/error.config'
 import confirmMixin from 'mixins/confirm'
 import roomMixin from 'mixins/room'
 import errorMsgMixin from 'mixins/errorMsg'
+import responsiveEmptyImageMixin from 'mixins/responsiveEmptyImage'
+
+const defaultEmptyImage = require('assets/image/img_remote_empty.svg')
+const mobileEmptyImage = require('assets/image/img_remote_empty_mobile.svg')
 
 export default {
   name: 'WorkspaceRemote',
-  mixins: [confirmMixin, roomMixin, errorMsgMixin],
+  mixins: [confirmMixin, roomMixin, errorMsgMixin, responsiveEmptyImageMixin],
   components: { TabView, RemoteCard },
   data() {
     return {
@@ -53,7 +57,6 @@ export default {
       loading: false,
       searchRooms: [],
       searchText: '',
-      emptyImage: require('assets/image/img_remote_empty.svg'),
       responsiveEmptyImage: null,
     }
   },
@@ -204,17 +207,7 @@ export default {
   /* Lifecycles */
   created() {
     this.init()
-  },
-  mounted() {
-    //모바일 반응형 이미지 리소스
-    this.responsiveEmptyImage = this.callAndGetMobileResponsiveFunction(
-      this.setEmptyImageMobile,
-      this.setEmptyImageDefault,
-    )
-    this.addEventListenerScreenResize(this.responsiveEmptyImage)
-  },
-  beforeDestroy() {
-    this.removeEventListenerScreenResize(this.responsiveEmptyImage)
+    this.setMobileDefaultEmptyImage(defaultEmptyImage, mobileEmptyImage)
   },
 }
 </script>

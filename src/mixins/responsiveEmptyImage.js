@@ -3,9 +3,14 @@ export default {
     return {
       _mobileEmptyImage: null,
       _defaultEmptyImage: null,
-      _responsiveEmptyImageFn: null,
-      emptyImage: null,
+      emptyImage: this._defaultEmptyImage,
     }
+  },
+  watch: {
+    isMobile(newVal) {
+      if (newVal) this.setMobileEmptyImage()
+      else this.setDefaultEmptyImage()
+    },
   },
   methods: {
     setMobileDefaultEmptyImage(defaultEmptyImage, mobileEmptyImage) {
@@ -18,15 +23,12 @@ export default {
     setDefaultEmptyImage() {
       this.emptyImage = this._defaultEmptyImage
     },
+    responsive(isMobile) {
+      if (isMobile) this.setMobileEmptyImage()
+      else this.setDefaultEmptyImage()
+    },
   },
   mounted() {
-    this._responsiveEmptyImageFn = this.callAndGetMobileResponsiveFunction(
-      this.setMobileEmptyImage,
-      this.setDefaultEmptyImage,
-    )
-    this.addEventListenerScreenResize(this._responsiveEmptyImageFn)
-  },
-  beforeDestroy() {
-    this.removeEventListenerScreenResize(this._responsiveEmptyImageFn)
+    this.responsive(this.isMobile)
   },
 }

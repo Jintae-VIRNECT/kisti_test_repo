@@ -1,37 +1,31 @@
 export default {
   data() {
     return {
-      _responsiveFn: null,
       visiblePcFlag: false,
       visibleMobileFlag: false,
-      _visibleFlag: false,
     }
   },
+  watch: {
+    isMobile: {
+      immediate: true,
+      handler: function(newVal) {
+        if (newVal) this.setVisibleMobileFlag(this.visible)
+        else this.setVisiblePcFlag(this.visible)
+      },
+    },
+  },
   methods: {
-    setVisiblePcFlag() {
-      this.visiblePcFlag = this._visibleFlag
+    setVisiblePcFlag(flag) {
+      this.visiblePcFlag = flag
       this.visibleMobileFlag = false
     },
-    setVisibleMobileFlag() {
+    setVisibleMobileFlag(flag) {
       this.visiblePcFlag = false
-      this.visibleMobileFlag = this._visibleFlag
+      this.visibleMobileFlag = flag
     },
     setVisiblePcOrMobileFlag(flag) {
-      this._visibleFlag = flag
-      this.callAndGetMobileResponsiveFunction(
-        this.setVisibleMobileFlag,
-        this.setVisiblePcFlag,
-      )
+      if (this.isMobile) this.setVisibleMobileFlag(flag)
+      else this.setVisiblePcFlag(flag)
     },
-  },
-  mounted() {
-    this._responsiveFn = this.callAndGetMobileResponsiveFunction(
-      this.setVisibleMobileFlag,
-      this.setVisiblePcFlag,
-    )
-    this.addEventListenerScreenResize(this._responsiveFn)
-  },
-  beforeDestroy() {
-    this.removeEventListenerScreenResize(this._responsiveFn)
   },
 }

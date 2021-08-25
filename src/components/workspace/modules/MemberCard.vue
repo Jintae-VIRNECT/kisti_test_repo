@@ -63,7 +63,6 @@ import Popover from 'Popover'
 import { WORKSPACE_ROLE, MEMBER_STATUS } from 'configs/status.config'
 import responsiveCardMixin from 'mixins/responsiveCard'
 
-const DEFAULT_PLACEMENT = 'bottom-start'
 const MOBILE_PLACEMENT = 'bottom-end'
 const DEFAULT_THUMBSTYLE = { width: '4.571rem', height: '4.571rem' }
 const MOBILE_THUMBSTYLE = { width: '4.3rem', height: '4.3rem' }
@@ -107,8 +106,8 @@ export default {
   },
   data() {
     return {
-      placement: DEFAULT_PLACEMENT,
-      thumbStyle: DEFAULT_THUMBSTYLE,
+      // placement: DEFAULT_PLACEMENT,
+      // thumbStyle: DEFAULT_THUMBSTYLE,
     }
   },
   computed: {

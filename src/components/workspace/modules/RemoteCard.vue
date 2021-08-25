@@ -107,6 +107,7 @@ import RoominfoModal from '../modal/WorkspaceRoomInfo'
 import { STATUS, ROOM_STATUS } from 'configs/status.config'
 import { ROLE } from 'configs/remote.config'
 import mixinToast from 'mixins/toast'
+import responsiveCardMixin from 'mixins/responsiveCard'
 
 const defaultThumbStyle = { width: '5.143rem', height: '5.143rem' }
 const mobileThumbStyle = { width: '4.2rem', height: '4.2rem' }
@@ -117,7 +118,7 @@ const mobileCardHeight = '8.4rem'
 
 export default {
   name: 'RemoteCard',
-  mixins: [mixinToast],
+  mixins: [mixinToast, responsiveCardMixin],
   components: {
     Card,
     Profile,
@@ -128,9 +129,6 @@ export default {
     return {
       showRoomInfo: false,
       title: '',
-      thumbStyle: defaultThumbStyle,
-      placement: defaultPlacement,
-      height: defaultCardHeight,
     }
   },
   props: {
@@ -211,15 +209,10 @@ export default {
     },
   },
   /* Lifecycles */
-  mounted() {
-    this.responsiveFn = this.callAndGetMobileResponsiveFunction(
-      this.setResponsiveMobile,
-      this.setResponsiveDefault,
-    )
-    this.addEventListenerScreenResize(this.responsiveFn)
-  },
-  beforeDestroy() {
-    this.removeEventListenerScreenResize(this.responsiveFn)
+  created() {
+    this.setDefaultHeightAndThumbStyle(defaultCardHeight, defaultThumbStyle)
+    this.setMobileHeightAndThumbStyle(mobileCardHeight, mobileThumbStyle)
+    this.setMobilePlacement(mobilePlacement)
   },
 }
 </script>

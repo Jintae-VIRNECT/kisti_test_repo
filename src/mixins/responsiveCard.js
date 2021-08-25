@@ -8,49 +8,51 @@ export default {
   data() {
     return {
       mobilePlacement: null,
-      mobileCardHeight: null,
-      defaultCardHeight: null,
-      mobileThumbStyle: null,
-      defaultThumbStyle: null,
-      height: defaultCardHeight,
-      thumbStyle: defaultThumbStyle,
-      _responsiveFn: null,
+      mobileCardHeight: mobileCardHeight,
+      defaultCardHeight: defaultCardHeight,
+      mobileThumbStyle: mobileThumbStyle,
+      defaultThumbStyle: defaultThumbStyle,
+
+      height: this.defaultCardHeight,
+      thumbStyle: this.defaultThumbStyle,
       placement: defaultPlacement,
     }
   },
   methods: {
     setDefaultHeightAndThumbStyle(cardHeight, thumbStyle) {
-      this.defaultCardHeight = cardHeight || defaultCardHeight
-      this.defaultThumbStyle = thumbStyle || defaultThumbStyle
+      this.defaultCardHeight = cardHeight || this.defaultCardHeight
+      this.defaultThumbStyle = thumbStyle || this.defaultThumbStyle
     },
     setMobileHeightAndThumbStyle(cardHeight, thumbStyle) {
-      this.mobileCardHeight = cardHeight || defaultCardHeight
-      this.mobileThumbStyle = thumbStyle || defaultCardHeight
+      this.mobileCardHeight = cardHeight || this.defaultCardHeight
+      this.mobileThumbStyle = thumbStyle || this.defaultCardHeight
     },
     setMobilePlacement(placement) {
       this.mobilePlacement = placement
     },
     responsiveMobile() {
-      this.height = this.mobileCardHeight || mobileCardHeight
-      this.thumbStyle = this.mobileThumbStyle || mobileThumbStyle
+      this.height = this.mobileCardHeight
+      this.thumbStyle = this.mobileThumbStyle
 
       if (this.mobilePlacement) this.placement = this.mobilePlacement
     },
     responsiveDefault() {
-      this.height = this.defaultCardHeight || defaultCardHeight
-      this.thumbStyle = this.defaultThumbStyle || defaultThumbStyle
+      this.height = this.defaultCardHeight
+      this.thumbStyle = this.defaultThumbStyle
 
       if (this.mobilePlacement) this.placement = defaultPlacement
     },
+    responsive(isMobile) {
+      if (isMobile) this.responsiveMobile()
+      else this.responsiveDefault()
+    },
+  },
+  watch: {
+    isMobile(newVal) {
+      this.responsive(newVal)
+    },
   },
   mounted() {
-    this._responsiveFn = this.callAndGetMobileResponsiveFunction(
-      this.responsiveMobile,
-      this.responsiveDefault,
-    )
-    this.addEventListenerScreenResize(this._responsiveFn)
-  },
-  beforeDestroy() {
-    this.removeEventListenerScreenResize(this._responsiveFn)
+    this.responsive(this.isMobile)
   },
 }

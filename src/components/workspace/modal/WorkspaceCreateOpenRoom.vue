@@ -23,23 +23,13 @@ import { mapActions } from 'vuex'
 import OpenRoomInfo from '../partials/ModalCreateOpenRoomInfo'
 
 import { getHistorySingleItem } from 'api/http/history'
-// import {
-//   createRoom,
-//   restartRoom,
-//   updateRoomProfile,
-//   getRoomInfo,
-// } from 'api/http/room'
-//import { ROLE } from 'configs/remote.config'
-//import { ROOM_STATUS } from 'configs/status.config'
-//import toastMixin from 'mixins/toast'
+
 import confirmMixin from 'mixins/confirm'
 import roomMixin from 'mixins/room'
-//import callMixin from 'mixins/call'
-//import { isRegisted } from 'utils/auth'
 
 export default {
   name: 'WorkspaceCreateOpenRoom',
-  mixins: [/*toastMixin,*/ confirmMixin, roomMixin],
+  mixins: [confirmMixin, roomMixin],
   components: {
     Modal,
     OpenRoomInfo,
@@ -68,10 +58,13 @@ export default {
         this.getInfo()
       }
     },
+    isMobile: {
+      immediate: true,
+      handler: function(newVal) {
+        if (newVal) this.beforeClose()
+      },
+    },
   },
-  // computed: {
-  //   ...mapGetters(['targetCompany', 'restrictedMode', 'useScreenStrict']),
-  // },
   methods: {
     ...mapActions(['setRoomInfo', 'roomClear', 'updateAccount']),
     async getInfo() {
@@ -95,130 +88,6 @@ export default {
     beforeClose() {
       this.$emit('update:visible', false)
     },
-    // async startRemote(info) {
-    //   try {
-    //     //멤버 상태 등록 안된 경우 협업방 입장 불가
-    //     if (!isRegisted) {
-    //       this.toastDefault(this.$t('workspace.auth_status_failed'))
-    //       return
-    //     }
-
-    //     if (this.clicked === true) return
-    //     this.clicked = true
-
-    //     this.$eventBus.$emit('roomloading:show', true)
-
-    //     const options = await this.getDeviceId()
-    //     const mediaStream = await this.$call.getStream(options)
-
-    //     let createdRes
-    //     if (this.sessionId && this.sessionId.length > 0) {
-    //       createdRes = await restartRoom({
-    //         client: 'DESKTOP',
-    //         userId: this.account.uuid,
-    //         title: info.title,
-    //         description: info.description,
-    //         leaderId: this.account.uuid,
-    //         participantIds: [],
-    //         workspaceId: this.workspace.uuid,
-    //         sessionId: this.sessionId,
-    //         sessionType: ROOM_STATUS.OPEN,
-    //         companyCode: this.targetCompany,
-    //         videoRestrictedMode:
-    //           this.restrictedMode.video && this.useScreenStrict,
-    //         audioRestrictedMode:
-    //           this.restrictedMode.audio && this.useScreenStrict,
-    //       })
-    //     } else {
-    //       createdRes = await createRoom({
-    //         client: 'DESKTOP',
-    //         userId: this.account.uuid,
-    //         title: info.title,
-    //         description: info.description,
-    //         leaderId: this.account.uuid,
-    //         sessionType: ROOM_STATUS.OPEN,
-    //         participantIds: [],
-    //         workspaceId: this.workspace.uuid,
-    //         companyCode: this.targetCompany,
-    //         videoRestrictedMode:
-    //           this.restrictedMode.video && this.useScreenStrict,
-    //         audioRestrictedMode:
-    //           this.restrictedMode.audio && this.useScreenStrict,
-    //       })
-    //     }
-    //     if (info.imageFile) {
-    //       const res = await updateRoomProfile({
-    //         profile: info.imageFile,
-    //         sessionId: createdRes.sessionId,
-    //         uuid: this.account.uuid,
-    //         workspaceId: this.workspace.uuid,
-    //       })
-
-    //       if (res.usedStoragePer >= 90) {
-    //         this.toastError(this.$t('alarm.file_storage_about_to_limit'))
-    //       }
-    //     }
-
-    //     const connRes = await this.$call.connect(
-    //       createdRes,
-    //       ROLE.LEADER,
-    //       options,
-    //       mediaStream,
-    //     )
-
-    //     const roomInfo = await getRoomInfo({
-    //       sessionId: createdRes.sessionId,
-    //       workspaceId: this.workspace.uuid,
-    //     })
-
-    //     this.setRoomInfo({
-    //       ...roomInfo,
-    //       leaderId: this.account.uuid,
-    //       open: true,
-    //       videoRestrictedMode: createdRes.videoRestrictedMode,
-    //       audioRestrictedMode: createdRes.audioRestrictedMode,
-    //     })
-
-    //     if (connRes) {
-    //       this.clicked = false
-    //       this.$eventBus.$emit('popover:close')
-
-    //       this.$nextTick(() => {
-    //         this.$router.push({ name: 'service' })
-    //       })
-    //     } else {
-    //       this.roomClear()
-    //       console.error('join room fail')
-    //       this.clicked = false
-    //     }
-    //   } catch (err) {
-    //     this.clicked = false
-    //     this.$eventBus.$emit('roomloading:show', false)
-    //     this.roomClear()
-    //     if (typeof err === 'string') {
-    //       console.error(err)
-    //       if (err === 'nodevice') {
-    //         this.toastError(this.$t('workspace.error_no_connected_device'))
-    //         return
-    //       } else if (err.toLowerCase() === 'requested device not found') {
-    //         this.toastError(this.$t('workspace.error_no_device'))
-    //         return
-    //       } else if (err.toLowerCase() === 'device access deined') {
-    //         this.$eventBus.$emit('devicedenied:show')
-    //         return
-    //       }
-    //     } else if (err.code === 7003) {
-    //       this.toastError(this.$t('service.file_type'))
-    //     } else if (err.code === 7004) {
-    //       this.toastError(this.$t('service.file_maxsize'))
-    //     } else if (err.code === 7017) {
-    //       this.toastError(this.$t('alarm.file_storage_capacity_full'))
-    //     } else {
-    //       console.error(`${err.message} (${err.code})`)
-    //       this.toastError(this.$t('confirm.network_error'))
-    //     }
-    //   }
-    // },
   },
 
   /* Lifecycles */

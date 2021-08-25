@@ -184,6 +184,13 @@ export default {
         this.pushInit()
       }
     },
+    isMobile: {
+      immediate: true,
+      handler: function(newVal) {
+        if (newVal) this.setNoticeIconMobile()
+        else this.setNoticeIconDefault()
+      },
+    },
   },
   methods: {
     ...mapActions([
@@ -392,13 +399,6 @@ export default {
 
   /* Lifecycles */
   mounted() {
-    //모바일 반응형 아이콘 리소스
-    this.responsiveNoticeIcon = this.callAndGetMobileResponsiveFunction(
-      this.setNoticeIconMobile,
-      this.setNoticeIconDefault,
-    )
-    this.addEventListenerScreenResize(this.responsiveNoticeIcon)
-
     if (this.isSafari) {
       this.$refs['noticeAudio'].onloadeddata = this.loadeddata
       this.$refs['noticeAudio'].autoplay = true
@@ -418,8 +418,6 @@ export default {
     if (this.isSafari) {
       window.removeEventListener('touchstart', this.loadAudio)
     }
-
-    this.removeEventListenerScreenResize(this.responsiveEmptyImage)
   },
 }
 </script>
