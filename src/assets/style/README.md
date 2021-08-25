@@ -22,7 +22,6 @@
 |-- _font.scss
 |-- _reset.scss
 |-- common.scss
-`-- policy.scss
 
 ```
 
