@@ -64,18 +64,41 @@
     border-color: $font-color-desc;
   }
 
-  dl.sceneRow {
+  @mixin grayBorderRound(
+    $heigth: 68px,
+    $margin: 0 0 14px 0px,
+    $padding: 12px 20px
+  ) {
     display: flex;
     justify-content: space-between;
-    height: 68px;
-    margin-bottom: 14px;
-    padding: 12px 20px;
+    height: $heigth;
+    margin: $margin;
+    padding: $padding;
     border-radius: 2px;
     border: solid 1px #e0e5ef;
     background-color: rgba(244, 246, 250, 0.8);
+  }
 
-    & > div {
-      min-width: 50px;
+  dl.gray-row {
+    &-project {
+      @include grayBorderRound();
+      & > div {
+        min-width: 50px;
+      }
+    }
+    &-target {
+      @include grayBorderRound(44px);
+      & > div {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+        width: 80px;
+        dt,
+        dd {
+          margin: 0;
+        }
+      }
     }
   }
 
@@ -186,6 +209,28 @@
     .el-tree-node__content:hover,
     .el-tree-node:focus > .el-tree-node__content {
       background-color: rgba(245, 247, 250, 0.75);
+    }
+  }
+
+  .qr {
+    display: flex;
+    justify-content: center;
+    height: 100%;
+
+    img {
+      width: 100%;
+      object-fit: contain;
+    }
+  }
+  .no-target {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    span {
+      font-size: 27px;
+      font-weight: 800;
+      color: rgb(110 127 155);
     }
   }
 

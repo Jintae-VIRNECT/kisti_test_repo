@@ -11,7 +11,7 @@
     <el-row type="flex">
       <!-- 프로젝트 구성 정보 -->
       <el-col :span="15">
-        <div class="actionbar">
+        <el-row class="actionbar">
           <el-button type="text" :disabled="!true">
             <img id="back" />
           </el-button>
@@ -28,16 +28,24 @@
           <el-button @click="remove" type="text">
             <img src="~assets/images/icon/ic-delete.svg" />
           </el-button>
-        </div>
+        </el-row>
         <!-- 프로젝트 트리 뷰 -->
-        <div class="properties" v-show="activeTab !== 'target'">
+        <el-row class="properties" v-show="activeTab !== 'target'">
           <el-tree
             :data="properties"
             :props="propertiesProps"
             node-key="id"
             :default-expanded-keys="[content.contentUUID]"
           />
-        </div>
+        </el-row>
+        <el-row class="properties" v-show="activeTab == 'target'">
+          <div class="qr" v-show="content.target.imgPath">
+            <img :src="content.target.imgPath" />
+          </div>
+          <div class="no-target" v-show="!content.target.imgPath">
+            <span>{{ $t('projects.info.target.noImage') }}</span>
+          </div>
+        </el-row>
       </el-col>
       <!-- 프로젝트 정보 -->
       <el-col :span="9" class="infos">
@@ -66,7 +74,7 @@
             </dd>
           </dl>
           <!-- 프로젝트 씬 정보 -->
-          <dl class="sceneRow">
+          <dl class="gray-row-project">
             <div>
               <dt>{{ $t('projects.info.project.sceneGroup') }}</dt>
               <dd>243</dd>
@@ -113,6 +121,40 @@
             @update:members="setMembers"
             @deleteFirstUser="deleteFirstUser"
           ></projectMemberSelect>
+        </el-row>
+        <!-- 타겟 정보 -->
+        <el-row v-show="activeTab === 'target' && content.target.imgPath">
+          <dl>
+            <dt>{{ $t('projects.info.target.targetType') }}</dt>
+            <dd>
+              <span>{{ targetType2label(content.targetType) }}</span>
+              <img
+                v-if="content.target.imgPath"
+                src="~assets/images/icon/ic-print.svg"
+                @click="print(content.target.imgPath, content.targetSize)"
+              />
+              <img
+                v-if="content.target.imgPath"
+                src="~assets/images/icon/ic-file-download.svg"
+                @click="download(content.target.imgPath, content.contentName)"
+              />
+            </dd>
+          </dl>
+
+          <dt>{{ $t('projects.info.target.targetSize') }}</dt>
+          <dd>
+            <!-- 타겟 이미지 정보 -->
+            <dl class="gray-row-target">
+              <div>
+                <dt>{{ $t('projects.info.target.width') }}:</dt>
+                <dd>{{ content.targetSize }} cm</dd>
+              </div>
+              <div>
+                <dt>{{ $t('projects.info.target.height') }}:</dt>
+                <dd>{{ content.targetSize }} cm</dd>
+              </div>
+            </dl>
+          </dd>
         </el-row>
       </el-col>
     </el-row>
