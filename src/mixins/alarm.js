@@ -226,9 +226,7 @@ export default {
      */
     callNotify(payload) {
       return this.$alarm.show(buildTemplate(payload), {
-        position: matchMedia('screen and (max-width: 767px)').matches
-          ? 'top-center'
-          : 'top-right',
+        position: 'top-right',
         duration: payload.duration | ALARM_DURATION,
         fitToScreen: true,
         keepOnHover: true,
