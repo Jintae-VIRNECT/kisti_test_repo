@@ -5,10 +5,15 @@
         class="tab-view__title"
         :class="{
           'workspace-selected': workspace && workspace.uuid,
+          'search-focused': searchFocused,
         }"
         >{{ title }}</span
       >
-      <span class="tab-view__count" v-if="!(listCount === null)">
+      <span
+        class="tab-view__count"
+        :class="{ 'search-focused': searchFocused }"
+        v-if="!(listCount === null)"
+      >
         {{ listCount }}
       </span>
       <div class="tab-view__tools">
@@ -17,6 +22,8 @@
           :placeholder="placeholder"
           appendClass="tab-view__search"
           @search="text => $emit('search', text)"
+          @onInputFocus="searchFocused = true"
+          @onInputBlur="searchFocused = false"
         ></search>
         <icon-button
           class="delete"
@@ -148,6 +155,11 @@ export default {
       type: Boolean,
       default: false,
     },
+  },
+  data() {
+    return {
+      searchFocused: false,
+    }
   },
 }
 </script>

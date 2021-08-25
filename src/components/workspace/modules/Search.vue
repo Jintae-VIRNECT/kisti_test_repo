@@ -6,6 +6,7 @@
       type="text"
       :placeholder="placeholder"
       v-model="text"
+      @blur="blur"
     />
     <button class="search__input-icon disabled">
       Search
@@ -46,7 +47,11 @@ export default {
       this.searchedText = ''
     },
     focus() {
+      this.$emit('onInputFocus')
       this.$refs['search__input'].focus()
+    },
+    blur() {
+      this.$emit('onInputBlur')
     },
   },
   mounted() {

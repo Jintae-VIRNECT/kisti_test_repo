@@ -217,6 +217,14 @@
       @include fontLevel(50);
     }
 
+    .tab-view .tab-view__header .workspace-selected,
+    .tab-view__count {
+      transition: 0.25s;
+      &.search-focused {
+        transform: translateX(-300px);
+      }
+    }
+
     //검색, 새로고침 버튼
     .tab-view .tab-view__header .tab-view__tools {
       top: -12%;
