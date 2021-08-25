@@ -219,9 +219,10 @@
 
     .tab-view .tab-view__header .workspace-selected,
     .tab-view__count {
-      transition: 0.25s;
+      transition: transform 0.25s, opacity 0.08s;
       &.search-focused {
-        transform: translateX(-300px);
+        transform: translateX(-200px);
+        opacity: 0;
       }
     }
 
