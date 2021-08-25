@@ -27,7 +27,7 @@ import com.virnect.uaa.domain.user.mapper.UserAccessDeviceInfoMapper;
 import com.virnect.uaa.domain.user.mapper.UserInfoMapper;
 
 @ExtendWith(SpringExtension.class)
-@ActiveProfiles("local")
+@ActiveProfiles("test")
 @Import(TestGsonConfiguration.class)
 @SpringBootTest
 public class UserAccessDeviceInfoMapperTest {
@@ -68,7 +68,7 @@ public class UserAccessDeviceInfoMapperTest {
 	@Test
 	@DisplayName("User Mapper Null Value Test")
 	public void userInfoMapperNullValueTest() {
-		User user = userRepository.findByEmail("bing6").orElseThrow(() -> new RuntimeException("와 못찾았따!"));
+		User user = userRepository.findByEmail("sky4561393@virnect.com").orElseThrow(() -> new RuntimeException("와 못찾았따!"));
 		UserInfoResponse userInfoResponse = userInfoMapper.toUserInfoResponse(user);
 		System.out.println("userInfoResponse = " + userInfoResponse);
 

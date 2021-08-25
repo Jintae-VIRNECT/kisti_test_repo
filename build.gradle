@@ -51,6 +51,7 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-mail'
     implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-server'
     runtimeOnly 'mysql:mysql-connector-java'
+    runtimeOnly 'com.h2database:h2'
     testImplementation('org.springframework.boot:spring-boot-starter-test') {
         exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
     }
@@ -138,6 +139,8 @@ dependencies {
 
 test {
     useJUnitPlatform()
+    systemProperty("spring.active.profiles", "test")
+    systemProperty("VIRNECT_ENV","test")
 }
 
 

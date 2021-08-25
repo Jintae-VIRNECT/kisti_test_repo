@@ -9,7 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Service
-@Profile(value = {"develop", "onpremise", "local"})
+@Profile(value = {"develop", "onpremise", "local", "test"})
 public class OnPremisePayService implements PayService {
 
 	@PostConstruct

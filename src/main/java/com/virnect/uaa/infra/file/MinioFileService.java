@@ -29,7 +29,7 @@ import com.virnect.uaa.domain.user.exception.UserServiceException;
 
 @Slf4j
 @Service
-@Profile(value = {"dev", "local", "develop", "onpremise"})
+@Profile(value = {"dev", "local", "develop", "onpremise", "test"})
 @RequiredArgsConstructor
 public class MinioFileService implements FileService {
 	private final MinioClient minioClient;

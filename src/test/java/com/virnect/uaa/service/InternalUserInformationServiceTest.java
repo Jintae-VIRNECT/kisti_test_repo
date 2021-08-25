@@ -19,7 +19,7 @@ import com.virnect.uaa.domain.user.dto.response.UserInfoListResponse;
 import com.virnect.uaa.domain.user.dto.response.UserInfoResponse;
 
 @ExtendWith(SpringExtension.class)
-@ActiveProfiles("local")
+@ActiveProfiles("test")
 @SpringBootTest
 public class InternalUserInformationServiceTest {
 	@Autowired
@@ -29,7 +29,7 @@ public class InternalUserInformationServiceTest {
 	@DisplayName("internalUserInformationServiceImpl Test")
 	void test() {
 		List<String> userUUIDList = Arrays.asList(
-			"ozvkSJotvF17h", "4163b24f04b699efb817fa2df19245ss", "yYqW1ZujSTDGh", "yzUesA6kR2xbx", "zlQeYRg8ty1cY"
+			"2HhRIGWBF93qA", "haL4NHlQJ8SU7", "wsigZkkAK5blx","5m3EsEVyQ05sw", "Si0JileQIYUO5"
 		);
 
 		UserInfoListResponse usersInfoList = internalUserInformationService.getUsersInfoList(null, userUUIDList);
