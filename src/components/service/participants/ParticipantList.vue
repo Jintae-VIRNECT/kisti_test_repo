@@ -24,7 +24,7 @@
             class="participant-video append guest"
             @click="showGuestInviteModal"
           >
-            <p>{{ $t('접속 URL') }}</p>
+            <p>{{ $t('service.guest_invite_url') }}</p>
           </div>
         </article>
       </transition-group>
