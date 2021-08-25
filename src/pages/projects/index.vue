@@ -86,23 +86,11 @@
               :label="$t('projects.allprojects.column.mode')"
               :width="290"
             >
-              <template slot-scope="scope">
-                <div class="column-modes">
-                  <router-link
-                    :to="`/contents?search=${scope.row.workerEmail}`"
-                  >
-                    <span>3D+2D</span>
-                  </router-link>
-                  <router-link :to="`/tasks?search=${scope.row.workerEmail}`">
-                    <span>3D</span>
-                  </router-link>
-                  <router-link
-                    :to="`/tasks/results/papers?search=${scope.row.workerEmail}`"
-                  >
-                    <span>2D</span>
-                  </router-link>
-                </div>
-              </template>
+              <div class="column-modes">
+                <span>3D+2D</span>
+                <span>3D</span>
+                <span>2D</span>
+              </div>
             </el-table-column>
             <ColumnUser
               :label="$t('projects.allprojects.column.uploader')"
@@ -202,7 +190,7 @@ export default {
       this.contentsTotal = total
     },
     rowClick(row) {
-      this.$router.push(`/contents/${row.contentUUID}`)
+      this.$router.push(`/projects/${row.contentUUID}`)
     },
     selectionChanged(selection) {
       this.canRemove = selection.length ? true : false

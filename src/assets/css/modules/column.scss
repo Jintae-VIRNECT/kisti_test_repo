@@ -102,25 +102,22 @@
   @mixin border($color) {
     & {
       border: solid 1.2px $color;
-    }
-    & > span {
       color: $color;
+      display: inline-block;
+      text-align: center;
+      width: 68px;
+      height: 28px;
+      margin-right: 8px;
+      padding: 3px 12px 5px;
+      border-radius: 3px;
+      font-size: 13px;
+      line-height: 20px;
+      background-color: rgba(32, 102, 243, 0.02);
     }
   }
 
   overflow: visible;
-  & > a {
-    display: inline-block;
-    text-align: center;
-    width: 68px;
-    height: 28px;
-    margin-right: 8px;
-    padding: 3px 12px 5px;
-    border-radius: 3px;
-    font-size: 13px;
-    line-height: 20px;
-    background-color: rgba(32, 102, 243, 0.02);
-
+  & > span {
     &:first-child {
       @include border(#2066f3);
     }
@@ -131,14 +128,6 @@
 
     &:nth-child(3) {
       @include border(#0091ff);
-    }
-
-    &:hover {
-      background: $color-button-hover;
-    }
-    &:active {
-      color: $color-primary;
-      background: $color-button-active;
     }
   }
 }
