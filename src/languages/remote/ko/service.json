@@ -242,6 +242,15 @@
     "spot_connecting" : "Spot 연결 중…",
     "spot_reconnecting" : "Spot 재연결 중…",
     "spot_battery_warning" : "Spot 배터리 잔량이 {battery}% 남았습니다.",
-    "encrypted_file_unsupport" : "암호화된 파일은 지원하지 않습니다."
+    "encrypted_file_unsupport" : "암호화된 파일은 지원하지 않습니다.",
+
+    "guest_invite_url":"접속 URL",
+    "guest_invite_with_url":"URL 초대하기",
+    "guest_invite_send_email":"E-mail 전송하기",
+    "guest_invite_description":"접속 URL을 통해 협업 참여시, 비회원 권한으로 참가합니다.",
+    "guest_invite_url_copied":"접속 URL을 복사했습니다.",
+    "guest_invite_email_transport_succeed":"접속 URL을 이메일로 전송하였습니다.",
+    "guest_invite_email_transport_failed":"이메일 전송에 실패하였습니다."
+    
   }
 }

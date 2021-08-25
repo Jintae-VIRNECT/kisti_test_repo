@@ -43,7 +43,9 @@
     "member_group_bookmark":"Favorites",
     "connect":"Connect",
     "modify":"Modify",
-    "delete":"Delete"
+    "delete":"Delete",
+    "copy_url":"Copy URL",
+    "send_email":"Send email"
   },
   "date": {
     "lastday": "[Yesterday]",

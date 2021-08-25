@@ -43,7 +43,9 @@
     "member_group_bookmark":"즐겨찾기",
     "connect":"접속",
     "modify":"수정",
-    "delete":"삭제"
+    "delete":"삭제",
+    "copy_url":"URL 복사",
+    "send_email":"메일 전송"
   },
   "date": {
     "lastday": "[어제] A",
