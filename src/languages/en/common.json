@@ -18,6 +18,7 @@
     "message": {
       "notAllowFileExtension": "Unsupported file type.",
       "notAllowFileSize": "Unsupported file size."
-    }
+    },
+    "apply": "Apply"
   }
 }

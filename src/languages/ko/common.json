@@ -19,6 +19,7 @@
     "message": {
       "notAllowFileExtension": "지원하지 않는 파일 형식입니다.",
       "notAllowFileSize": "지원하지 않는 파일 크기입니다."
-    }
+    },
+    "apply": "적용"
   }
 }

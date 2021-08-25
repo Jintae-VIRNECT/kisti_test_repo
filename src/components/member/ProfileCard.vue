@@ -3,11 +3,7 @@
     <dl>
       <dt>
         <span>{{ $t('members.card.profile') }}</span>
-        <span
-          v-if="canSettingMemberInfo"
-          class="dropdown"
-          @click="openMemberSettingModal"
-        >
+        <span class="dropdown" @click="openMemberSettingModal">
           <img src="~assets/images/icon/ic-more-horiz.svg" />
         </span>
       </dt>
@@ -17,7 +13,10 @@
           <el-tag :class="myInfo.role">{{ myInfo.role }}</el-tag>
         </div>
         <span class="name">{{ myInfo.nickname }}</span>
-        <span class="email">{{ myInfo.email }}</span>
+        <span class="email" v-if="myInfo.role === 'SEAT'">{{
+          myInfo.uuid
+        }}</span>
+        <span class="email" v-else>{{ myInfo.email }}</span>
       </dd>
       <el-divider />
       <dt>{{ $t('members.card.usingPlans') }}</dt>
@@ -43,10 +42,22 @@
         </router-link>
       </dd>
     </dl>
+    <OnpremiseMemberSettingModal
+      :data="myInfo"
+      :visible.sync="showMemberSettingModal"
+      v-if="$isOnpremise"
+      @updated="updated"
+      @kick="kick"
+      @delete="deleteAccount"
+      @change-password="showMemberPasswordModal = true"
+    />
     <MemberSettingModal
       :data="myInfo"
       :visible.sync="showMemberSettingModal"
+      v-else
       @updated="updated"
+      @deleteSeat="deleteSeat"
+      @delete="deleteAccount"
       @kick="kick"
       @change-password="showMemberPasswordModal = true"
     />
@@ -57,13 +68,13 @@
       @back="back"
       @kicked="kicked"
     />
+
     <OnpremiseMemberPasswordModal
       v-if="$isOnpremise"
       :data="myInfo"
       :visible.sync="showMemberPasswordModal"
     />
     <OnpremiseMemberDeleteModal
-      v-if="$isOnpremise"
       :data="myInfo"
       :visible.sync="showMemberDeleteModal"
       @kicked="kicked"
@@ -100,9 +111,6 @@ export default {
     ...mapGetters({
       activeWorkspace: 'auth/activeWorkspace',
     }),
-    canSettingMemberInfo() {
-      return this.activeWorkspace.role !== 'MEMBER'
-    },
   },
   methods: {
     openMemberSettingModal() {
@@ -130,6 +138,14 @@ export default {
       } else {
         this.showMemberKickModal = true
       }
+    },
+    deleteSeat() {
+      this.showMemberDeleteModal = false
+      this.showMemberSettingModal = false
+      this.$emit('refresh')
+    },
+    deleteAccount() {
+      this.showMemberDeleteModal = true
     },
     back() {
       this.showMemberSettingModal = true
