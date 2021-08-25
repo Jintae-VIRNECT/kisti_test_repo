@@ -10,7 +10,8 @@
         "sharedStatus": "Share",
         "Size": "Size",
         "createdDate": "Update"
-      }
+      },
+      "empty": "There is no registered project"
     },
     "sharedStatus": {
       "shared": "Activate",
@@ -82,10 +83,11 @@
         "update": "updateded a project.",
         "upload": "uploaded a project.",
         "edit": "changed the permission to edit information to {member}.",
-        "shared": "changed the sharing status to {selectmember}.",
+        "shared": "changed the sharing status to {member}.",
         "moveTrash": "moved the project to the Trash.",
         "backup": "moved the deleted project to the project list.",
-        "download": "downloaded the project."
+        "download": "downloaded the project.",
+        "empty": "No activity history"
       }
     }
   }

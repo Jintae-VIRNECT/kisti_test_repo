@@ -10,7 +10,8 @@
         "sharedStatus": "공유",
         "Size": "크기",
         "createdDate": "업로드"
-      }
+      },
+      "empty": "등록된 프로젝트가 없습니다"
     },
     "sharedStatus": {
       "shared": "활성화",
@@ -82,10 +83,11 @@
         "update": "프로젝트를 업데이트했습니다.",
         "upload": "프로젝트를 업로드했습니다.",
         "edit": "정보 편집 권한을 {member}로 변경했습니다.",
-        "shared": "공유 상태를 {selectmember}로 변경했습니다.",
+        "shared": "공유 상태를 {member}로 변경했습니다.",
         "moveTrash": "프로젝트를 휴지통으로 이동했습니다.",
         "backup": "삭제된 프로젝트를 프로젝트 목록으로 이동했습니다.",
-        "download": "프로젝트를 다운로드했습니다."
+        "download": "프로젝트를 다운로드했습니다.",
+        "empty": "활동내역이 없습니다"
       }
     }
   }
