@@ -90,17 +90,17 @@ export default {
       // event.target.src = require('assets/image/img_default_group.svg')
       event.target.style.display = 'none'
     },
-    responsive() {
+    responsiveGlobal() {
       if (matchMedia('screen and (max-width: 767px)').matches)
         this.SET_IS_MOBILE(true)
       else this.SET_IS_MOBILE(false)
     },
   },
   mounted() {
-    this.responsive()
-    window.addEventListener('resize', this.responsive)
+    this.responsiveGlobal()
+    window.addEventListener('resize', this.responsiveGlobal)
   },
   beforeDestroy() {
-    window.removeEventListener('resize', this.responsive)
+    window.removeEventListener('resize', this.responsiveGlobal)
   },
 }

@@ -57,7 +57,6 @@ export default {
       loading: false,
       searchRooms: [],
       searchText: '',
-      responsiveEmptyImage: null,
     }
   },
   computed: {

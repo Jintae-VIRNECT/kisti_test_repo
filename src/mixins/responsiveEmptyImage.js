@@ -23,12 +23,12 @@ export default {
     setDefaultEmptyImage() {
       this.emptyImage = this._defaultEmptyImage
     },
-    responsive(isMobile) {
+    responsiveEmptyImage(isMobile) {
       if (isMobile) this.setMobileEmptyImage()
       else this.setDefaultEmptyImage()
     },
   },
   mounted() {
-    this.responsive(this.isMobile)
+    this.responsiveEmptyImage(this.isMobile)
   },
 }

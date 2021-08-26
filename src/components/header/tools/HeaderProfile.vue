@@ -94,7 +94,6 @@ export default {
       },
       visible: false,
       width: defaultPopoverWidth,
-      responsiveFn: null,
     }
   },
   computed: {

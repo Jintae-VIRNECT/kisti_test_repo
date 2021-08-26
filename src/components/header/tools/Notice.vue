@@ -162,7 +162,6 @@ export default {
       // alarmList: [],
       activeSrc: defaultActiveSrc,
       inactiveSrc: defaultInactiveSrc,
-      responsiveNoticeIcon: null,
       size: defaultNoticeIconSize,
       placement: deafultPlacement,
       width: defaultPopoverWidth,
