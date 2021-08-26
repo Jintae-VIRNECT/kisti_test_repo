@@ -2,6 +2,7 @@
   <transition name="header" mode="out-in">
     <workspace-header v-if="$route.name === 'workspace'"></workspace-header>
 
+    <guest-header v-else-if="$route.name === 'connectioninfo'"></guest-header>
     <service-header v-else></service-header>
   </transition>
 </template>
@@ -9,11 +10,13 @@
 <script>
 import WorkspaceHeader from './WorkspaceHeader'
 import ServiceHeader from './ServiceHeader'
+import GuestHeader from './GuestHeader'
 export default {
   name: 'Header',
   components: {
     WorkspaceHeader,
     ServiceHeader,
+    GuestHeader,
   },
   data() {
     return {}
