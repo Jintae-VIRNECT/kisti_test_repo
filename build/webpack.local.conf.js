@@ -50,6 +50,10 @@ const localWebpackConfig = merge(baseWebpackConfig(mode), {
           to: '/extra/index.html',
         },
         {
+          from: /OSS(\/.*)?/,
+          to: '/extra/index.html',
+        },
+        {
           from: /.*/,
           to: '/remote/index.html',
         },
