@@ -24,7 +24,7 @@ import com.virnect.workspace.exception.WorkspaceException;
  * DESCRIPTION:
  */
 @SpringBootTest
-@ActiveProfiles("local")
+@ActiveProfiles("test")
 @AutoConfigureMockMvc
 public class CreateWorkspaceTest {
     @Autowired
