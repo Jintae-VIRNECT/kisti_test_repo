@@ -1082,7 +1082,7 @@ public abstract class WorkspaceUserService {
         }
 
         //2. license-sever revoke api 요청
-        MyLicenseInfoListResponse myLicenseInfoListResponse = getMyLicenseInfoRequestHandler(workspaceId, memberAccountDeleteRequest.getRequestUserId());
+        MyLicenseInfoListResponse myLicenseInfoListResponse = getMyLicenseInfoRequestHandler(workspaceId, memberAccountDeleteRequest.getUserId());
         if (!myLicenseInfoListResponse.getLicenseInfoList().isEmpty()) {
             for (MyLicenseInfoResponse myLicenseInfoResponse : myLicenseInfoListResponse.getLicenseInfoList()) {
                 revokeWorkspaceLicenseToUser(workspaceId, memberAccountDeleteRequest.getUserId(), myLicenseInfoResponse.getProductName());
@@ -1101,7 +1101,7 @@ public abstract class WorkspaceUserService {
 
         log.info(
                 "[DELETE WORKSPACE MEMBER ACCOUNT] Workspace delete user success. Request User UUID : [{}], Delete User UUID : [{}], DeleteDate : [{}]",
-                memberAccountDeleteRequest.getRequestUserId(), memberAccountDeleteRequest.getRequestUserId(), LocalDateTime.now()
+                memberAccountDeleteRequest.getRequestUserId(), memberAccountDeleteRequest.getUserId(), LocalDateTime.now()
         );
         return true;
     }

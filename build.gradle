@@ -7,8 +7,8 @@ plugins {
 }
 
 ext {
-    set('springCloudVersion' , 'Hoxton.SR10')
-    set('mapstructVersion','1.4.2.Final')
+    set('springCloudVersion', 'Hoxton.SR10')
+    set('mapstructVersion', '1.4.2.Final')
 }
 
 group = 'com.virnect'
@@ -108,7 +108,7 @@ dependencies {
 test {
     useJUnitPlatform()
     systemProperty("spring.active.profiles", "test")
-    systemProperty("VIRNECT_ENV","test")
+    environment("VIRNECT_ENV", "test")
 }
 
 // querydsl 적용
