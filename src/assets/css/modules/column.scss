@@ -98,6 +98,40 @@
   }
 }
 
+.column-modes {
+  @mixin border($color) {
+    & {
+      border: solid 1.2px $color;
+      color: $color;
+      display: inline-block;
+      text-align: center;
+      width: 68px;
+      height: 28px;
+      margin-right: 8px;
+      padding: 3px 12px 5px;
+      border-radius: 3px;
+      font-size: 13px;
+      line-height: 20px;
+      background-color: rgba(32, 102, 243, 0.02);
+    }
+  }
+
+  overflow: visible;
+  & > span {
+    &:first-child {
+      @include border(#2066f3);
+    }
+
+    &:nth-child(2) {
+      @include border(#237ffe);
+    }
+
+    &:nth-child(3) {
+      @include border(#0091ff);
+    }
+  }
+}
+
 .column-status {
   & > span {
     display: inline-block;
@@ -172,6 +206,12 @@
 }
 
 .column-date {
+  & > span {
+    word-spacing: 0.2em;
+  }
+}
+
+.column-file-size {
   & > span {
     word-spacing: 0.2em;
   }
