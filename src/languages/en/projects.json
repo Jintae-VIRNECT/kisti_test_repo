@@ -35,7 +35,8 @@
       "all": "All",
       "member": "Member",
       "selectMember": "Designated Member",
-      "uploader": "Uploader"
+      "uploader": "Uploader",
+      "private": "Manager"
     },
     "editTypes": {
       "all": "All",
@@ -79,14 +80,15 @@
       "activity": {
         "title": "Activity",
         "nickname": "{nickname}'s",
-        "update": "updateded a project.",
-        "upload": "uploaded a project.",
-        "edit": "changed the permission to edit information to {member}.",
-        "shared": "changed the sharing status to {member}.",
-        "moveTrash": "moved the project to the Trash.",
-        "backup": "moved the deleted project to the project list.",
-        "download": "downloaded the project.",
-        "empty": "No activity history"
+        "update": "Updateded a project.",
+        "upload": "Uploaded a project.",
+        "edit": "Changed the permission to edit information to {member}.",
+        "shared": "Changed the sharing status to {member}.",
+        "moveTrash": "Moved the project to the Trash.",
+        "backup": "Moved the deleted project to the project list.",
+        "download": "Downloaded the project.",
+        "empty": "No activity history",
+        "delete": "Deleted the project."
       }
     }
   }

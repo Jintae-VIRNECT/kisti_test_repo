@@ -335,6 +335,12 @@ export default {
         },
         {
           img: 'https://192.168.6.3:2838/virnect-platform/profile/2021-06-15_VByqxZGplpVkdlGpucmL.jpg',
+          value: 'DELETE',
+          nickname: 'User5',
+          updated: '2020-05-26T10:43:20',
+        },
+        {
+          img: 'https://192.168.6.3:2838/virnect-platform/profile/2021-06-15_VByqxZGplpVkdlGpucmL.jpg',
           value: 'BACKUP',
           nickname: 'User5',
           updated: '2020-05-26T10:43:20',

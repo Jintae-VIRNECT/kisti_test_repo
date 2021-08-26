@@ -147,6 +147,10 @@ export const activityTypes = [
     label: 'projects.info.activity.moveTrash',
   },
   {
+    value: 'DELETE',
+    label: 'projects.info.activity.delete',
+  },
+  {
     value: 'BACKUP',
     label: 'projects.info.activity.backup',
   },
