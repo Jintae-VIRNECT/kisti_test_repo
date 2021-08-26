@@ -113,7 +113,7 @@ router.get('/home', function(req, res) {
   }
 })
 
-router.get('/service', function(req, res) {
+router.get('/connectioninfo', function(req, res) {
   if (IsAllowBrowser(req)) {
     if (IsMobileBrowser(req)) {
       RouteSupportOrIE(req, res)
@@ -125,6 +125,11 @@ router.get('/service', function(req, res) {
     RouteSupportOrIE(req, res)
     return
   }
+})
+
+//guest 로그인 페이지(라우팅은 임시적임)
+router.get('/connectioninfo', (req, res) => {
+  res.redirect('/connectioninfo')
 })
 
 router.get('/support', function(req, res) {

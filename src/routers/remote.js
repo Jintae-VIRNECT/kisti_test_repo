@@ -6,6 +6,8 @@ const WorkspaceComponent = () =>
   import(
     /* webpackChunkName: "workspace" */ 'components/workspace/WorkspaceLayout'
   )
+const GuestComponent = () =>
+  import(/* webpackChunkName: "guest" */ 'components/guest/GuestLayout')
 import SpotRouter from './spot'
 
 Vue.use(VueRouter)
@@ -28,6 +30,11 @@ export default new VueRouter({
       path: '/home',
       name: 'workspace',
       component: WorkspaceComponent,
+    },
+    {
+      path: '/connectioninfo',
+      name: 'connectioninfo',
+      component: GuestComponent,
     },
     {
       path: '*',
