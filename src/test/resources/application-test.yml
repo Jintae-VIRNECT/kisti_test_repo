@@ -114,9 +114,9 @@ minio:
   resource: "workspace/profile"
   extension: "gif,jpg,jpeg,png"
 
-user-server:
+account-server:
   ribbon:
-    listOfServers: http://192.168.6.3:8081
+    listOfServers: http://192.168.6.3:8322
 license-server:
   ribbon:
     listOfServers: http://192.168.6.3:8632

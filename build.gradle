@@ -112,13 +112,18 @@ test {
 }
 
 // querydsl 적용
-def querydslSrcDir = 'src/main/generated'
+def querydslDir= "$buildDir/generated/querydsl"
 
 querydsl {
     library = "com.querydsl:querydsl-apt"
     jpa = true
-    querydslSourcesDir = querydslSrcDir
+    querydslSourcesDir = querydslDir
 }
+
+sourceSets {
+    main.java.srcDir querydslDir
+}
+
 
 compileQuerydsl {
     options.annotationProcessorPath = configurations.querydsl
@@ -127,15 +132,6 @@ compileQuerydsl {
 configurations {
     querydsl.extendsFrom compileClasspath
 }
-
-sourceSets {
-    main {
-        java {
-            srcDirs = ['src/main/java', querydslSrcDir]
-        }
-    }
-}
-
 
 // separate jar into app and library layers
 task moveLib {

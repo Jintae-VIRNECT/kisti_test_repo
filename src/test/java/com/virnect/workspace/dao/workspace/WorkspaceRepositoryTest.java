@@ -38,6 +38,7 @@ class WorkspaceRepositoryTests {
         Optional<Workspace> workspace =  workspaceRepository.findByUuid(workspaceId);
 
         // then
+        assertThat(workspace.isPresent()).isTrue();
         assertThat(workspace.get().getUuid()).isEqualTo(workspaceId);
     }
 
