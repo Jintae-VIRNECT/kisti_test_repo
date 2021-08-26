@@ -89,6 +89,27 @@
         "download": "프로젝트를 다운로드했습니다.",
         "empty": "활동내역이 없습니다",
         "delete": "프로젝트를 삭제했습니다."
+      },
+      "message": {
+        "moveTrash": "휴지통으로 이동",
+        "moveTrashSure": "프로젝트를 휴지통으로 이동 하시겠습니까?",
+        "moveTrashSuccess": "프로젝트가 휴지통으로 이동했습니다.",
+        "delete": "선택 프로젝트 삭제",
+        "deleteSure": "선택하신 프로젝트를 삭제 하시겠습니까? <br>삭제된 프로젝트는 복원되지 않습니다.",
+        "deleteSuccess": "프로젝트가 삭제되었습니다.",
+        "deleteFail": "프로젝트 삭제에 실패했습니다. 잠시 후 다시 이용해 주세요.",
+        "deleteNotExist": "워크스페이스에 선택하신 프로젝트가 존재하지 않습니다. 다시 확인해 주세요.",
+        "updateShareSuccess": "프로젝트 공유 상태가 변경되었습니다",
+        "updateShareFail": "프로젝트 공유 상태 변경에 실패했습니다.",
+        "updateShareMemberSuccess": "프로젝트 공유 지정 멤버가 설정되었습니다.",
+        "updateShareMemberFail": "프로젝트 공유 지정 멤버 설정에 실패했습니다.",
+        "updateShareMemberNotExist": "워크스페이스 멤버만 공유 지정 멤버로 설정할 수 있습니다.",
+        "updateEditSuccess": "프로젝트 편집 권한 설정이 변경되었습니다.",
+        "updateEditFail": "프로젝트 편집 권한 설정 변경에 실패했습니다.",
+        "updateEditMemberSuccess": "프로젝트 편집 지정 멤버가 설정되었습니다.",
+        "updateEditMemberFail": "프로젝트 편집 지정 멤버에 실패했습니다.",
+        "updateEditMemberNotExist": "워크스페이스 멤버만 편집 지정 멤버로 설정할 수 있습니다.",
+        "updateNotExist": "워크스페이스에 선택하신 프로젝트가 존재하지 않습니다. 다시 확인해 주세요."
       }
     }
   }
