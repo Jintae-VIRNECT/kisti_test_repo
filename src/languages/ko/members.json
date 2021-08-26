@@ -43,8 +43,7 @@
         "success": "이미지 업로드가 성공하였습니다.",
         "fail": "이미지 업로드에 실패하였습니다. 잠시 후 다시 시도해 주세요.",
         "notAllowFileExtension": "지원하지 않는 파일 형식입니다.",
-        "notAllowFileSize": "지원하지 않는 파일 크기입니다.",
-        "image": ""
+        "notAllowFileSize": "지원하지 않는 파일 크기입니다."
       },
       "nickname": {
         "title": "닉네임",
@@ -54,8 +53,7 @@
       },
       "seat": {
         "title": "시트",
-        "id": "시트 ID",
-        "seatId": ""
+        "id": "시트 ID"
       },
       "password": {
         "title": "비밀번호",
@@ -76,11 +74,7 @@
         "updateFail": "워크스페이스 멤버 정보 변경에 실패했습니다. 잠시 후 다시 이용해 주세요.",
         "updateSuccess": "선택하신 멤버의 정보를 변경하였습니다. ",
         "notChangeMasterPlan": "마스터의 플랜은 마스터만 변경할 수 있습니다."
-      },
-      "deletePlaceholder": "",
-      "deleteDesc": "",
-      "deleteAccount": "",
-      "deleteSeat": ""
+      }
     },
     "kick": {
       "title": "워크스페이스 멤버 내보내기",
@@ -121,11 +115,15 @@
       "desc": "입력하신 이메일 주소로 워크스페이스 멤버 초대 메일이 발송됩니다. 초대 수락시 멤버로 추가됩니다. 멤버 추가 후 [멤버 설정]에서 언제든지 구매한 플랜을 할당할 수 있습니다.",
       "addUser": "워크스페이스 멤버 추가",
       "email": "이메일",
-      "emailDesc": "",
       "emailPlaceholder": "초대할 사용자의 이메일 주소를 입력해 주세요",
       "available": "<i>{n}명</i> 의 멤버를 더 추가할 수 있습니다.",
       "addMember": "항목 추가",
       "submit": "초대",
+      "tab": {
+        "invitation": "계정 초대",
+        "create": "계정 생성",
+        "seat": "시트 등록"
+      },
       "message": {
         "inviteFail": "워크스페이스 멤버 초대 요청에 실패했습니다. 잠시 후 다시 이용해 주세요.",
         "createSuccess": "{n}개의 시트를 등록했습니다.",
@@ -138,6 +136,11 @@
         "noHavePlans": "멤버에게 할당가능한 잔여 플랜이 없습니다. 결제 센터로 이동해 이용권을 구매해 주세요.",
         "memberWithdrawal": "탈퇴 이력이 있는 이메일 계정은 초대할 수 없습니다."
       }
+    },
+    "invitation":{
+      "title": "개인 계정 초대",
+      "desc": "다른 사용자와 함께 버넥트 제품과 서비스를 이용하고 싶으신가요? <br /> 이메일 계정 사용자를 워크스페이스 멤버로 초대하세요.",
+      "list": "개인 계정 초대 목록"
     },
     "create": {
       "new": "새 맴버",
