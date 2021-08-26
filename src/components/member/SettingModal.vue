@@ -94,7 +94,7 @@
                 </el-form-item>
                 <el-form-item
                   v-if="form.userType === 'SEAT_USER'"
-                  :label="$t('members.setting.seat.title')"
+                  :label="$t('members.setting.seat.id')"
                 >
                   <el-input disabled :placeholder="form.userId" />
                 </el-form-item>

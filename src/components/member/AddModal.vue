@@ -18,7 +18,7 @@
           }"
         >
           <img src="~assets/images/icon/ic-member-account-invitation.svg" />
-          <span>계정 초대</span>
+          <span>{{ $t('members.add.tab.invitation') }}</span>
         </button>
         <button
           @click="showTab('create')"
@@ -28,7 +28,7 @@
           }"
         >
           <img src="~assets/images/icon/ic-member-account-creation.svg" />
-          <span>계정 생성</span>
+          <span>{{ $t('members.add.tab.create') }}</span>
         </button>
         <button
           @click="showTab('seat')"
@@ -38,7 +38,7 @@
           }"
         >
           <img src="~assets/images/icon/ic-member-sheet-registration.svg" />
-          <span>시트 등록</span>
+          <span>{{ $t('members.add.tab.seat') }}</span>
         </button>
       </div>
       <div class="member-add-modal--right">
@@ -119,7 +119,7 @@ export default {
   }
   .member-add-modal__tab-button {
     width: 160px;
-    height: 38px;
+    min-height: 38px;
     margin: 2px 0;
     padding: 9px 12px;
     border-radius: 3px;

@@ -33,7 +33,7 @@
     </section>
     <section class="seat-pane__content">
       <el-tabs v-model="seatTabName" @tab-click="tabClick">
-        <el-tab-pane label="Remote 플랜" name="remote">
+        <el-tab-pane :label="$t('members.seat.remoteTabName')" name="remote">
           <el-form class="virnect-workstation-form">
             <h6>{{ $t('members.seat.remoteTab.title') }}</h6>
             <el-row>
@@ -53,7 +53,7 @@
             </el-row>
           </el-form>
         </el-tab-pane>
-        <el-tab-pane label="View 플랜" name="view">
+        <el-tab-pane :label="$t('members.seat.viewTabName')" name="view">
           <el-form class="virnect-workstation-form">
             <h6>{{ $t('members.seat.viewTab.title') }}</h6>
             <el-row>

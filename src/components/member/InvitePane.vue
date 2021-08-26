@@ -1,13 +1,10 @@
 <template>
   <article class="invite-pane">
     <section class="invite-pane__title">
-      <h6>개인 계정 초대</h6>
-      <p>
-        다른 사용자와 함께 버넥트 제품과 서비스를 이용하고 싶으신가요?<br />
-        이메일 계정 사용자를 워크스페이스 멤버로 초대하세요.
-      </p>
+      <h6>{{ $t('members.invitation.title') }}</h6>
+      <p v-html="$t('members.invitation.desc')" />
       <div class="invite-pane__sub-title">
-        <p>개인 계정 초대 목록</p>
+        <p>{{ $t('members.invitation.list') }}</p>
         <div class="invite-pane__usage">
           <img src="~assets/images/icon/ic-person.svg" />
           <strong>{{ availableMember }}/{{ maximum }}</strong>
