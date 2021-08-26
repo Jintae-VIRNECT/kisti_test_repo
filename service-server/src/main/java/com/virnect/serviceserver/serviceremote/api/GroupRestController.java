@@ -79,7 +79,7 @@ public class GroupRestController {
 				+ userId,
 			"getRemoteGroups"
 		);
-		if (Strings.isBlank(workspaceId)) {
+		if (Strings.isBlank(workspaceId) || Strings.isBlank(userId)) {
 			throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
 		}
 		ApiResponse<RemoteGroupListResponse> responseData = groupService.getRemoteGroups(workspaceId, userId, includeOneself);
@@ -105,7 +105,7 @@ public class GroupRestController {
 				+ groupId,
 			"getRemoteGroupDetailInfo"
 		);
-		if (Strings.isBlank(workspaceId) || Strings.isBlank(groupId)) {
+		if (Strings.isBlank(workspaceId) || Strings.isBlank(groupId) || Strings.isBlank(userId)) {
 			throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
 		}
 		ApiResponse<RemoteGroupResponse> responseData = groupService.getRemoteGroupDetail(
@@ -137,7 +137,7 @@ public class GroupRestController {
 				+ "groupRequest:" + groupRequest.toString(),
 			"updateRemoteGroup"
 		);
-		if (Strings.isBlank(workspaceId)) {
+		if (Strings.isBlank(workspaceId) || Strings.isBlank(userId) || Strings.isBlank(groupId)) {
 			throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
 		}
 		ApiResponse<RemoteGroupResponse> responseData = groupService.updateRemoteGroup(
@@ -165,7 +165,7 @@ public class GroupRestController {
 				+ "groupId:" + groupId,
 			"deleteRemoteGroup"
 		);
-		if (Strings.isBlank(workspaceId)) {
+		if (Strings.isBlank(workspaceId) || Strings.isBlank(userId) || Strings.isBlank(groupId)) {
 			throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
 		}
 		ApiResponse<ResultResponse> responseData = groupService.deleteRemoteGroup(workspaceId, userId, groupId);
@@ -210,7 +210,7 @@ public class GroupRestController {
 				+ userId,
 			"getFavoriteGroups"
 		);
-		if (Strings.isBlank(workspaceId)) {
+		if (Strings.isBlank(workspaceId) || Strings.isBlank(userId)) {
 			throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
 		}
 		ApiResponse<FavoriteGroupListResponse> responseData = groupService.getFavoriteGroups(workspaceId, userId, includeOneself);
@@ -236,7 +236,7 @@ public class GroupRestController {
 				+ groupId,
 			"getFavoriteGroupDetailInfo"
 		);
-		if (Strings.isBlank(workspaceId) || Strings.isBlank(groupId)) {
+		if (Strings.isBlank(workspaceId) || Strings.isBlank(groupId) || Strings.isBlank(userId)) {
 			throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
 		}
 		ApiResponse<FavoriteGroupResponse> responseData = groupService.getFavoriteGroupDetail(
@@ -268,7 +268,7 @@ public class GroupRestController {
 				+ "groupRequest:" + groupRequest.toString(),
 			"updateFavoriteGroup"
 		);
-		if (Strings.isBlank(workspaceId)) {
+		if (Strings.isBlank(workspaceId) || Strings.isBlank(groupId) || Strings.isBlank(userId)) {
 			throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
 		}
 		ApiResponse<FavoriteGroupResponse> responseData = groupService.updateFavoriteGroup(
@@ -296,7 +296,7 @@ public class GroupRestController {
 				+ "groupId:" + groupId,
 			"deleteFavoriteGroup"
 		);
-		if (Strings.isBlank(workspaceId)) {
+		if (Strings.isBlank(workspaceId) || Strings.isBlank(groupId) || Strings.isBlank(userId)) {
 			throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
 		}
 		ApiResponse<ResultResponse> responseData = groupService.deleteFavoriteGroup(workspaceId, userId, groupId);
