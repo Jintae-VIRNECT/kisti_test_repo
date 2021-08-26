@@ -59,7 +59,10 @@
         </div>
       </div>
       <div class="groupcard-info-mobile">
-        <p class="room-title">{{ title ? title : room.title }}</p>
+        <div class="title-container">
+          <span class="groupcard__leader-mobile" v-if="isLeader">Leader</span>
+          <span class="room-title">{{ title ? title : room.title }}</span>
+        </div>
         <div>
           <span class="room-leader">{{
             `${$t('common.leader')} : ${leader.nickName}`

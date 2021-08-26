@@ -115,21 +115,7 @@ export default {
     transform: translateY(-50%);
   }
   .card__button {
-    width: 3.8rem;
-    height: 3.2rem;
-    background: none;
-    &:before {
-      right: 0;
-      left: 6px;
-      width: 3.2rem;
-      background: url(~assets/image/ic_more_vertical_24.svg) 50%/3.2rem 3.2rem
-        no-repeat;
-    }
-    &:hover {
-      &:before {
-        background-color: $new_color_bg_hover;
-      }
-    }
+    @include mobile-popover-btn(3.2rem);
   }
 }
 </style>

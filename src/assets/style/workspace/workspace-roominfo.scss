@@ -148,6 +148,12 @@
     }
   }
 }
+
+//모바일 리더권한일 시 협업방 프로필 사진 변경 UI
+.roominfo-profile-mobile {
+  display: block;
+}
+
 .roominfo-view__footer {
   flex: 0;
   margin-top: 2.857em;
@@ -202,6 +208,16 @@
     opacity: 0;
     pointer-events: none;
   }
+}
+
+.roominfo-userinfo > .popover--wrapper {
+  display: flex;
+  align-items: center;
+}
+
+.kickout-popover-btn {
+  position: relative;
+  @include mobile-popover-btn(3.2rem);
 }
 
 .roominfo-figure {
@@ -389,6 +405,7 @@
     width: 100%;
     height: calc(100vh - 4.6rem - 5.4rem);
     padding: 2.3rem 1.6rem 2.3rem 1.6rem;
+    overflow-y: auto;
   }
   .roominfo-view__title {
     color: $new_color_text_main;
@@ -396,6 +413,60 @@
   }
   .roominfo-view__body {
     margin-top: -0.2rem;
+
+    //모바일 리더권한일 시 협업방 프로필 사진 변경 UI
+    .roominfo-profile-mobile {
+      display: flex;
+      justify-content: center;
+      margin-top: 1.2rem;
+      margin-bottom: 3rem;
+      .profile-mobile-container {
+        position: relative;
+        display: inline-flex;
+      }
+      .mobile-regist-image {
+        position: absolute;
+        right: 0;
+        bottom: 0;
+        width: 2.6rem;
+        height: 2.6rem;
+        background-color: white;
+        border-radius: 50%;
+        img {
+          @include svg-icon(
+            "~assets/image/ic_main_camera_new.svg",
+            2.6rem,
+            2.6rem,
+            black
+          );
+        }
+      }
+    }
+
+    .inputrow {
+      .inputrow-title {
+        margin-bottom: 1.1rem;
+        @include fontLevel(100);
+        color: $new_color_text_sub;
+      }
+      .inputrow-input {
+        background-color: $new_color_bg;
+        @include fontLevel(100);
+        border-color: $new_color_bg;
+        &:hover {
+          border-color: $new_color_bg;
+        }
+        &:active,
+        &:focus {
+          border: 1px solid $new_color_active_border;
+        }
+      }
+      .inputrow-length {
+        top: 0;
+        @include fontLevel(100);
+        color: $new_color_text_sub;
+      }
+    }
 
     .roominfo-figure:first-child .roominfo-figure__text {
       color: $new_color_text_main;
@@ -427,6 +498,9 @@
   }
 
   .roominfo-view__footer {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
     margin-top: 3.2rem;
     padding-top: 1.6rem;
     border-top: 1.5px solid $new_color_sub_border;
@@ -442,6 +516,19 @@
       }
       .data-value {
         color: $new_color_text_main;
+      }
+    }
+
+    .roominfo-view__button {
+      display: flex;
+      flex: 1;
+      align-items: flex-end;
+
+      .btn {
+        width: 100%;
+        height: 4.8rem;
+        background-color: $new_color_bg_button_primary;
+        @include fontLevel(200);
       }
     }
   }

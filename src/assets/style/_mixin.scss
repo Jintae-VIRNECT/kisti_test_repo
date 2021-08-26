@@ -290,6 +290,20 @@ root div에 theme 설정
 }
 */
 
+@mixin svg-icon($path, $height, $width, $color) {
+  width: $width;
+  height: $height;
+  background-color: $color;
+  background-size: cover;
+  mask-image: url($path);
+  -webkit-mask-size: contain;
+  mask-size: contain;
+  -webkit-mask-position: center;
+  mask-position: center;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+}
+
 @mixin responsive-widecard {
   padding-right: 1.2rem;
   padding-left: 1.5rem;
@@ -325,12 +339,42 @@ root div에 theme 설정
   }
 }
 
+@mixin mobile-popover-btn($height) {
+  width: 3.8rem;
+  height: $height;
+  background: none;
+  &:before {
+    position: absolute;
+    top: 0;
+    right: 0;
+    left: 6px;
+    width: 100%;
+    width: $height;
+    height: 100%;
+    background-image: url(~assets/image/ic_more_vertical_24.svg);
+    background-repeat: no-repeat;
+    background-position-x: 50%;
+    background-position-y: 50%;
+    background-size: calc($height * 0.9);
+    border-radius: 50%;
+    transition: background-color 0.3s;
+    content: "";
+  }
+  &:hover {
+    &:before {
+      background-color: $new_color_bg_hover;
+    }
+  }
+}
+
 @mixin responsive-popover {
   &.popover {
     background-color: #606a77; //@추가 color
     border: none; //@추가 color
   }
   .groupcard-popover {
+    padding: 0;
+
     .group-pop__button {
       @include fontLevel(100);
       width: 12.1rem;

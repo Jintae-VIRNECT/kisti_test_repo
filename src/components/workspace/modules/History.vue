@@ -297,22 +297,7 @@ export default {
       display: none;
     }
     .widecard-tools__menu-button {
-      width: 3.4rem;
-      height: 2.8rem;
-      background: none;
-      &:before {
-        right: 0;
-        left: 6px;
-        width: 2.8rem;
-        background: url(~assets/image/ic_more_vertical_24.svg) 50%/2.8rem 2.8rem
-          no-repeat;
-      }
-
-      &:hover {
-        &:before {
-          background-color: $new_color_bg_hover;
-        }
-      }
+      @include mobile-popover-btn(2.8rem);
     }
   }
   .custom-popover {

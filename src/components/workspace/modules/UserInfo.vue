@@ -25,10 +25,27 @@
         class="btn line userinfo__button"
         :class="{ me: account.uuid === user.uuid }"
         @click="$emit('kickout')"
-        v-if="isLeader"
+        v-if="isLeader && !isMobile"
       >
         {{ $t('button.kickout') }}
       </button>
+      <popover
+        v-if="isLeader && isMobile && account.uuid !== user.uuid"
+        trigger="click"
+        popperClass="kickout-menu"
+        placement="left-start"
+        width="auto"
+        scrollHide
+      >
+        <button slot="reference" class="kickout-popover-btn"></button>
+        <ul class="groupcard-popover">
+          <li>
+            <button class="group-pop__button" @click="$emit('kickout')">
+              {{ $t('button.kickout') }}
+            </button>
+          </li>
+        </ul>
+      </popover>
     </div>
   </wide-card>
 </template>
@@ -39,12 +56,14 @@ import Profile from 'Profile'
 import { DEVICE } from 'configs/device.config'
 import { STATUS } from 'configs/status.config'
 import responsiveCardMixin from 'mixins/responsiveCard'
+import Popover from 'Popover'
 
 export default {
   name: 'UserInfo',
   components: {
     WideCard,
     Profile,
+    Popover,
   },
   mixins: [responsiveCardMixin],
   props: {
@@ -95,3 +114,18 @@ export default {
   mounted() {},
 }
 </script>
+<style lang="scss">
+@import '~assets/style/mixin';
+
+@include responsive-mobile {
+  .kickout-menu {
+    min-width: 12.1rem;
+
+    > .popover--body {
+      padding: 0px;
+    }
+
+    @include responsive-popover;
+  }
+}
+</style>

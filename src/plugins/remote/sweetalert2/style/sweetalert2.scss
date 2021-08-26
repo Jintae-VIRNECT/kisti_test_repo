@@ -807,6 +807,7 @@ body {
 //모바일 스타일 수정
 @include responsive-mobile {
   .swal2-popup {
+    min-width: 34rem;
     background-color: $new_color_popup_bg;
     border-radius: 0.6rem;
 
@@ -822,6 +823,12 @@ body {
         padding: 0;
         color: $new_color_text_main;
         @include fontLevel(200);
+        em {
+          color: $new_color_text_main;
+        }
+        br {
+          display: none;
+        }
       }
       .swal2-validation-message {
         display: none;

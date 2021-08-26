@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="24px" height="24px" viewBox="0 0 24 24" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>744764DE-59FC-467F-8D79-7CB2214D4D61@1x</title>
+    <defs>
+        <path d="M10.5,1.5 L12,3 L13.5,3 C14.3284271,3 15,3.67157288 15,4.5 L15,11.5 C15,12.3284271 14.3284271,13 13.5,13 L2.5,13 C1.67157288,13 1,12.3284271 1,11.5 L1,4.5 C1,3.67157288 1.67157288,3 2.5,3 L4,3 L5.5,1.5 L10.5,1.5 Z M8,4.5 C6.06700338,4.5 4.5,6.06700338 4.5,8 C4.5,9.93299662 6.06700338,11.5 8,11.5 C9.93299662,11.5 11.5,9.93299662 11.5,8 C11.5,6.06700338 9.93299662,4.5 8,4.5 Z M8,5.5 C9.38071187,5.5 10.5,6.61928813 10.5,8 C10.5,9.38071187 9.38071187,10.5 8,10.5 C6.61928813,10.5 5.5,9.38071187 5.5,8 C5.5,6.61928813 6.61928813,5.5 8,5.5 Z" id="path-1"></path>
+    </defs>
+    <g id="Remote_Main_Mobile" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Icon" transform="translate(-214.000000, -410.000000)">
+            <g id="24-x-24" transform="translate(36.000000, 346.000000)">
+                <g id="ic_camera" transform="translate(160.000000, 46.000000)">
+                    <rect id="bg" fill="transparent" x="0" y="0" width="60" height="60"></rect>
+                    <rect id="tr-copy" x="18" y="18" width="24" height="24"></rect>
+                    <g id="icon-/-16px-/-ic_photo_16" transform="translate(22.000000, 22.000000)">
+                        <mask id="mask-2" fill="white">
+                            <use xlink:href="#path-1"></use>
+                        </mask>
+                        <g id="shape"></g>
+                        <rect id="🎨-Color" fill="#FFFFFF" mask="url(#mask-2)" x="-16" y="-16" width="48" height="48"></rect>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>
