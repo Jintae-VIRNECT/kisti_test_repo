@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="22px" height="22px" viewBox="0 0 22 22" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>1106E577-6C97-479D-B7DC-750E52CDC9EF@2x</title>
+    <g id="Remote_Main" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" opacity="0.5">
+        <g id="RWS_0020-_접속-전-화면_멤버-_그룹추가" transform="translate(-1599.000000, -501.000000)">
+            <g id="list" transform="translate(219.000000, 464.000000)">
+                <g id="btn" transform="translate(1260.000000, 30.000000)">
+                    <g id="icn_plus" transform="translate(107.000000, 0.000000)">
+                        <g transform="translate(13.000000, 7.000000)">
+                            <rect id="icn_renew" opacity="0.800000012" x="0" y="0" width="22" height="22"></rect>
+                            <path d="M11,3 C6.584,3 3,6.584 3,11 C3,15.416 6.584,19 11,19 C15.416,19 19,15.416 19,11 C19,6.584 15.416,3 11,3 Z M15,11.8 L11.8,11.8 L11.8,15 L10.2,15 L10.2,11.8 L7,11.8 L7,10.2 L10.2,10.2 L10.2,7 L11.8,7 L11.8,10.2 L15,10.2 L15,11.8 Z" id="Shape" fill="#FFFFFF" fill-rule="nonzero"></path>
+                        </g>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

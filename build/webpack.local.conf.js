@@ -46,10 +46,6 @@ const localWebpackConfig = merge(baseWebpackConfig(mode), {
           to: '/extra/index.html',
         },
         {
-          from: /policy(\/.*)?/,
-          to: '/extra/index.html',
-        },
-        {
           from: /OSS(\/.*)?/,
           to: '/extra/index.html',
         },

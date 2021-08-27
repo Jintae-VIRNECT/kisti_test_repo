@@ -22,7 +22,7 @@ NODE_ENV: local, develop, production / SSL_ENV: private, public
 
 ```
 npm -> ^5.6.0
-node -> v10.15.1
+node -> v12.15.1
 ```
 
 ## Build

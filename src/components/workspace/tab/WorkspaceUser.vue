@@ -1,5 +1,6 @@
 <template>
   <tab-view
+    v-if="mode === 'user'"
     :title="$t('workspace.user_title')"
     :description="$t('workspace.user_description')"
     :placeholder="$t('workspace.search_member')"
@@ -10,9 +11,11 @@
     :listCount="list.length"
     :showDeleteButton="false"
     :showRefreshButton="true"
+    :showManageGroupButton="true"
     :loading="loading"
     @refresh="getList"
     @search="doSearch"
+    @showgroup="toggleMode"
   >
     <div class="grid-container">
       <member-card
@@ -29,24 +32,74 @@
       </member-card>
     </div>
   </tab-view>
+  <tab-view
+    v-else
+    :title="$t('workspace.workspace_member_group')"
+    :description="$t('workspace.workspace_member_group_max_description')"
+    :emptyImage="require('assets/image/img_user_empty.svg')"
+    :emptyTitle="$t('workspace.workspace_group_empty')"
+    :empty="groupList.length === 0"
+    :listCount="groupList.length"
+    :showMemberButton="true"
+    :showAddGroupButton="true"
+    :loading="loading"
+    :showSubHeader="true"
+    @showmember="toggleMode"
+    @addgroup="showGroup"
+  >
+    <div class="list-wrapper">
+      <member-group
+        v-for="(group, index) in groupList"
+        :key="'group_' + group.groupId"
+        :index="index + 1"
+        :group="group"
+        @deletegroup="deleteGroup"
+        @updategroup="updategroup"
+      ></member-group>
+    </div>
+    <template v-slot:modal>
+      <member-group-modal
+        :visible.sync="memberGroupModalFlag"
+        :users="memberList"
+        :groupMembers="groupMemberList"
+        :groupId="selectedGroupId"
+        :groupName="selectedGroupName"
+        :total="groupMemberList.length"
+        @refresh="refreshGroupMember"
+      ></member-group-modal>
+    </template>
+  </tab-view>
 </template>
 
 <script>
+import MemberGroup from 'MemberGroup'
 import TabView from '../partials/WorkspaceTabView'
 import MemberCard from 'MemberCard'
-import { getMemberList } from 'api/http/member'
+
+import MemberGroupModal from '../modal/WorkspaceMemberGroup'
+
+import {
+  getMemberList,
+  getMemberGroupList,
+  getMemberGroupItem,
+  deletePrivateMemberGroup,
+} from 'api/http/member'
+
 import { WORKSPACE_ROLE } from 'configs/status.config'
 import confirmMixin from 'mixins/confirm'
+import toastMixin from 'mixins/toast'
 import { forceLogout } from 'api/http/message'
 import responsiveEmptyImageMixin from 'mixins/responsiveEmptyImage'
 
 const defaultEmptyImage = require('assets/image/img_user_empty.svg')
 const mobileEmptyImage = require('assets/image/img_user_empty_new.svg')
 
+import { memberSort } from 'utils/sort'
+
 export default {
   name: 'WorkspaceUser',
-  mixins: [confirmMixin, responsiveEmptyImageMixin],
-  components: { TabView, MemberCard },
+  mixins: [confirmMixin, toastMixin, responsiveEmptyImageMixin],
+  components: { TabView, MemberCard, MemberGroup, MemberGroupModal },
   data() {
     return {
       memberList: [],
@@ -66,6 +119,17 @@ export default {
       searchText: '',
       searchMemberList: [],
       loading: false,
+      groupLoading: false,
+
+      memberGroupModalFlag: false,
+
+      mode: 'user', //'user', 'group'
+
+      selectedGroupId: null,
+      selectedGroupName: '',
+
+      groupList: [],
+      groupMemberList: [],
     }
   },
   computed: {
@@ -95,9 +159,10 @@ export default {
     },
   },
   watch: {
-    workspace(val, oldVal) {
+    async workspace(val, oldVal) {
       if (val.uuid !== oldVal.uuid) {
-        this.getList()
+        await this.getList()
+        await this.getMemberGroups()
       }
     },
     // 'list.length': 'scrollReset',
@@ -107,6 +172,22 @@ export default {
       handler() {
         if (this.searchMemberList.length) this.doSearch(this.searchText)
       },
+    },
+
+    async memberGroupModalFlag(flag) {
+      await this.getMemberGroups()
+
+      if (!flag) {
+        this.groupMemberList = []
+        this.selectedGroupId = null
+        this.selectedGroupName = ''
+      }
+    },
+
+    async mode(now) {
+      if (now === 'group') {
+        await this.getMemberGroups()
+      }
     },
   },
   methods: {
@@ -122,27 +203,24 @@ export default {
       })
       this.searchText = text
     },
-    async getList() {
+    async getList(reason) {
       try {
+        if (reason !== 'data_loading') {
+          this.loading = true
+        }
+
         const params = {
           workspaceId: this.workspace.uuid,
           userId: this.account.uuid,
         }
-        this.loading = true
+
         const datas = await getMemberList(params)
         this.memberList = datas.memberList
-        this.memberList.sort((A, B) => {
-          if (A.role === 'MASTER') {
-            return -1
-          } else if (B.role === 'MASTER') {
-            return 1
-          } else if (A.role === 'MANAGER' && B.role !== 'MANAGER') {
-            return -1
-          } else {
-            return 0
-          }
-        })
-        this.loading = false
+        this.memberList.sort(memberSort)
+
+        if (reason !== 'data_loading') {
+          this.loading = false
+        }
       } catch (err) {
         this.loading = false
         console.error(err)
@@ -210,6 +288,92 @@ export default {
       //갱신한 멤버 목록에 해당 유저가 없는 경우(예외상황)
       else return
     },
+
+    toggleMode() {
+      this.mode = this.mode === 'user' ? 'group' : 'user'
+    },
+
+    showGroup() {
+      this.memberGroupModalFlag = true
+    },
+    async updategroup(groupId) {
+      const group = await getMemberGroupItem({
+        workspaceId: this.workspace.uuid,
+        groupId: groupId,
+        userId: this.account.uuid,
+      })
+
+      //자기자신은 제외
+      this.groupMemberList = group.favoriteGroupMemberResponses.filter(
+        member => {
+          return member.uuid !== this.account.uuid
+        },
+      )
+
+      //그룹 수정 모달 출력
+      this.selectedGroupId = groupId
+      this.selectedGroupName = group.groupName
+      this.memberGroupModalFlag = true
+    },
+
+    /**
+     * 그룹 삭제
+     * @param {String} 삭제할 그룹 id
+     */
+    async deleteGroup(groupId) {
+      try {
+        await deletePrivateMemberGroup({
+          workspaceId: this.workspace.uuid,
+          userId: this.account.uuid,
+          groupId: groupId,
+        })
+      } catch (err) {
+        this.toastError(this.$t('confirm.network_error'))
+      }
+
+      await this.getMemberGroups()
+    },
+    async refreshGroupMember(groupId) {
+      if (groupId) {
+        //자기자신은 제외
+        const group = await getMemberGroupItem({
+          workspaceId: this.workspace.uuid,
+          groupId: groupId,
+          userId: this.account.uuid,
+        })
+
+        this.groupMemberList = group.favoriteGroupMemberResponses.filter(
+          member => {
+            return member.uuid !== this.account.uuid
+          },
+        )
+
+        //그룹 수정 모달 출력
+        this.selectedGroupId = groupId
+        this.selectedGroupName = group.groupName
+      } else {
+        this.getList('data_loading')
+      }
+    },
+    /**
+     * 그룹 멤버 호출
+     */
+    async getMemberGroups() {
+      this.groupLoading = true
+
+      try {
+        const groups = await getMemberGroupList({
+          workspaceId: this.workspace.uuid,
+          userId: this.account.uuid,
+        })
+        this.groupList = groups.favoriteGroupResponses
+      } catch (err) {
+        console.error(err)
+        this.toastError(this.$t('confirm.network_error'))
+      } finally {
+        this.groupLoading = false
+      }
+    },
   },
 
   /* Lifecycles */
@@ -217,9 +381,7 @@ export default {
     this.setMobileDefaultEmptyImage(defaultEmptyImage, mobileEmptyImage)
     this.getList()
   },
-  beforeDestroy() {
-    this.$eventBus.$off('refresh')
-  },
+  beforeDestroy() {},
 }
 </script>
 
