@@ -121,6 +121,8 @@
             @update:memberType="setMemberType"
             @update:members="setMembers"
             @deleteFirstUser="deleteFirstUser"
+            @update:updateProjectAuth="updateProjectAuth"
+            @update:updateProjectMember="updateProjectMember"
           ></projectMemberSelect>
         </el-row>
         <!-- 타겟 정보 -->
@@ -365,7 +367,6 @@ export default {
     },
   },
   methods: {
-    // TODO: closed 함수 실행 후 이전 페이지로 되돌아갈 때, 페이징 넘버도 유지되는지 확인 필요.
     closed() {
       this.showMe = false
       this.$router.push('/projects')
@@ -373,16 +374,20 @@ export default {
     async remove() {
       try {
         await this.$confirm(
-          this.$t('contents.info.message.deleteSure'),
-          this.$t('contents.info.message.delete'),
+          this.$t('projects.info.message.deleteSure'),
+          this.$t('projects.info.message.delete'),
+          {
+            confirmButtonText: this.$t('common.delete'),
+            dangerouslyUseHTMLString: true,
+          },
         )
       } catch (e) {
         return false
       }
       try {
-        await contentService.deleteContent([this.content.contentUUID])
+        // await contentService.deleteContent([this.content.contentUUID])
         this.$message.success({
-          message: this.$t('contents.info.message.deleteSuccess'),
+          message: this.$t('projects.info.message.deleteSuccess'),
           duration: 2000,
           showClose: true,
         })
@@ -391,27 +396,60 @@ export default {
       } catch (errors) {
         const e = errors[0]
         this.$message.error({
-          message:
-            e.code === 4020
-              ? this.$t('contents.info.message.deleteShared')
-              : this.$t('contents.info.message.deleteFail') + `\n(${e.msg})`,
+          message: this.$t('projects.info.message.deleteFail') + `\n(${e})`,
           duration: 2000,
           showClose: true,
         })
       }
     },
-    async update() {
+    // 공유/편집 Auth 상태변경하는 함수
+    async updateProjectAuth(designationType) {
+      const succuessMsg = {
+        shared: this.$t('projects.info.message.updateShareSuccess'),
+        edited: this.$t('projects.info.message.updateEditSuccess'),
+      }[designationType]
+      const errMsg = {
+        shared: this.$t('projects.info.message.updateShareFail'),
+        edited: this.$t('projects.info.message.updateEditFail'),
+      }[designationType]
       try {
-        await contentService.updateContent(this.content.contentUUID, this.form)
+        // TODO 프로젝트 공유/편집 Auth 상태변경 서비스 연동
+
         this.$message.success({
-          message: this.$t('contents.info.message.updateSuccess'),
+          message: succuessMsg,
           duration: 2000,
           showClose: true,
         })
         this.$emit('updated')
       } catch (e) {
         this.$message.error({
-          message: this.$t('contents.info.message.updateFail') + `\n(${e})`,
+          message: errMsg + `\n(${e})`,
+          duration: 2000,
+          showClose: true,
+        })
+      }
+    },
+    // 공유/편집 지정멤버 상태변경하는 함수
+    async updateProjectMember(designationType) {
+      const succuessMsg = {
+        shared: this.$t('projects.info.message.updateShareMemberSuccess'),
+        edited: this.$t('projects.info.message.updateEditMemberSuccess'),
+      }[designationType]
+      const errMsg = {
+        shared: this.$t('projects.info.message.updateShareMemberFail'),
+        edited: this.$t('projects.info.message.updateEditMemberFail'),
+      }[designationType]
+      try {
+        // TODO 프로젝트 공유/편집 지정멤버 변경 서비스 연동
+        this.$message.success({
+          message: succuessMsg,
+          duration: 2000,
+          showClose: true,
+        })
+        this.$emit('updated')
+      } catch (e) {
+        this.$message.error({
+          message: errMsg + `\n(${e})`,
           duration: 2000,
           showClose: true,
         })

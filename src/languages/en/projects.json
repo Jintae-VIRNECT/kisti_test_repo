@@ -109,7 +109,8 @@
         "updateEditMemberSuccess": "The project edit designation member has been set.",
         "updateEditMemberFail": "The project edit designation member failed.",
         "updateEditMemberNotExist": "Only workspace members can be set as edit-designated members.",
-        "updateNotExist": "The selected project does not exist in the workspace. Please check again."
+        "updateNotExist": "The selected project does not exist in the workspace. Please check again.",
+        "backup": "Moved the deleted project to the project list."
       }
     }
   }

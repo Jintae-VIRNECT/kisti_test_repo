@@ -48,7 +48,7 @@
             >
               <img src="~assets/images/icon/ic-file-download.svg" />
             </el-button>
-            <el-button @click="remove" type="text" :disabled="!true">
+            <el-button @click="remove" type="text" :disabled="!canRemove">
               <img src="~assets/images/icon/ic-delete.svg" />
             </el-button>
           </el-button-group>
@@ -102,8 +102,8 @@
             <ColumnBoolean
               :label="$t('projects.allprojects.column.sharedStatus')"
               prop="shared"
-              :trueText="$t('contents.sharedStatus.shared')"
-              :falseText="$t('contents.sharedStatus.noShared')"
+              :trueText="$t('projects.sharedStatus.shared')"
+              :falseText="$t('projects.sharedStatus.noShared')"
               sortable="custom"
               :width="130"
             />
@@ -199,19 +199,23 @@ export default {
     async remove() {
       try {
         await this.$confirm(
-          this.$t('contents.info.message.deleteSure'),
-          this.$t('contents.info.message.delete'),
+          this.$t('projects.info.message.deleteSure'),
+          this.$t('projects.info.message.delete'),
+          {
+            confirmButtonText: this.$t('common.delete'),
+            dangerouslyUseHTMLString: true,
+          },
         )
       } catch (e) {
         return false
       }
       try {
-        const selectedContents = this.$refs.table.selection.map(
-          content => content.contentUUID,
-        )
-        await contentService.deleteContent(selectedContents)
+        // const selectedContents = this.$refs.table.selection.map(
+        //   content => content.contentUUID,
+        // )
+        // await contentService.deleteContent(selectedContents)
         this.$message.success({
-          message: this.$t('contents.info.message.deleteSuccess'),
+          message: this.$t('projects.info.message.deleteSuccess'),
           duration: 2000,
           showClose: true,
         })
@@ -220,10 +224,8 @@ export default {
           setTimeout(() => {
             this.$message.error({
               message:
-                e.code === 4020
-                  ? this.$t('contents.info.message.deleteShared')
-                  : this.$t('contents.info.message.deleteFail') +
-                    `\n(${e.msg} / contentUUID: ${e.contentUUID})`,
+                this.$t('projects.info.message.deleteFail') +
+                `\n(${e.msg} / contentUUID: ${e.contentUUID})`,
               duration: 4000,
               showClose: true,
             })
