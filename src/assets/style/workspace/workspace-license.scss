@@ -205,3 +205,25 @@ $color_positivie: #66aaff;
   width: 25.4286rem;
   height: 4rem;
 }
+
+@include responsive-mobile {
+  .workspace-license {
+    background-color: $new_color_bg_sub;
+  }
+
+  .workspace-license__description {
+    > img {
+      content: url(~assets/image/workspace/img_noworkspace_new.svg);
+    }
+  }
+
+  .workspace-license__description--title {
+    @include fontLevel(200);
+    color: $new_color_text_main;
+  }
+
+  .workspace-license__description--sub-title {
+    @include fontLevel(75);
+    color: $new_color_text_sub_description;
+  }
+}

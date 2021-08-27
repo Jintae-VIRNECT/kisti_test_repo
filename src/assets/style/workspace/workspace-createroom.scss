@@ -14,39 +14,15 @@
   height: 100%;
 }
 
-.workspace-mobile-createroom {
-  position: fixed;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  left: 0;
-  z-index: 100;
-  display: none;
-  background-color: $new_color_bg_sub;
-  .createroom-user {
-    height: 100%;
-  }
-}
-
 @include responsive-mobile {
-  .createroom-modal.modal {
-    display: none;
-  }
-
   .workspace-mobile-createroom {
-    display: flex;
-    flex-direction: column;
-
-    .mobile-createroom__header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      min-height: 5.4rem;
-      background-color: $new_color_bg;
-    }
     h1 {
       @include fontLevel(200);
       color: $new_color_text_main;
+    }
+
+    .createroom-user {
+      height: 100%;
     }
 
     .mobile-createroom__button {
@@ -56,21 +32,6 @@
       background-color: $new_color_bg_button_primary;
       border-radius: 0.4rem;
       @include fontLevel(200);
-    }
-  }
-
-  .mobile-createroom__header {
-    border-bottom: 1px solid $new_color_sub_border;
-    h1 {
-      margin-left: 1.6rem;
-      @include fontLevel(200);
-      color: $new_color_text_main;
-    }
-    .header-close-btn {
-      width: 2.4rem;
-      height: 2.4rem;
-      margin-right: 1.6rem;
-      background: url(~assets/image/ic_close_24.svg) 50% no-repeat;
     }
   }
 

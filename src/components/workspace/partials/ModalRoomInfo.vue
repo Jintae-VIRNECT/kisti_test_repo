@@ -1,10 +1,32 @@
 <template>
   <section class="roominfo-view">
-    <p class="roominfo-view__title">
+    <p v-if="!isLeader" class="roominfo-view__title">
       {{ $t('workspace.info_remote') }}
     </p>
     <div class="roominfo-view__body">
       <template v-if="isLeader">
+        <div v-if="isMobile" class="roominfo-profile-mobile">
+          <div class="profile-mobile-container">
+            <profile-image
+              :image.sync="imageURL"
+              :deleteBtn="!!imageURL"
+              @delete="imageRemove"
+              size="8rem"
+            ></profile-image>
+            <input
+              ref="inputImage"
+              type="file"
+              name="file"
+              accept="image/gif,image/jpeg,image/png"
+              style="display: none;"
+              @change="uploadImage($event, (isProfile = true))"
+            />
+            <button class="mobile-regist-image" @click="imageUpload">
+              <img />
+            </button>
+          </div>
+        </div>
+
         <input-row
           type="text"
           :title="$t('workspace.remote_name')"
@@ -25,7 +47,11 @@
           :value.sync="description"
           :placeholder="$t('workspace.create_remote_description_input')"
         ></input-row>
-        <input-row type="buttons" :title="$t('button.image_regist')">
+        <input-row
+          v-if="!isMobile"
+          type="buttons"
+          :title="$t('button.image_regist')"
+        >
           <div>
             <input
               ref="inputImage"
@@ -111,6 +137,7 @@ export default {
   mixins: [imageMixin],
   components: {
     InputRow,
+    ProfileImage: () => import('ProfileImage'),
   },
   props: {
     room: {
@@ -160,12 +187,13 @@ export default {
     canSave() {
       console.log('canSave refreshed')
       console.log('this.image::', this.image)
-      console.log('this.room.profile::', this.room.profile)
 
       //현재 협업이 존재하는가?
       if (!this.room) {
         return false
       }
+
+      console.log('this.room.profile::', this.room.profile)
 
       //협업명이 유효한가?
       if (this.titleValid) {

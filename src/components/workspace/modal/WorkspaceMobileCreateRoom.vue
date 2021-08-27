@@ -1,10 +1,10 @@
 <template>
-  <div class="workspace-mobile-createroom" v-if="visibleFlag">
-    <header class="mobile-createroom__header">
-      <h1>{{ $t('workspace.create_remote') }}</h1>
-      <button class="header-close-btn" @click="close"></button>
-    </header>
-
+  <full-screen-modal
+    class="workspace-mobile-createroom"
+    :title="$t('workspace.create_remote')"
+    :visible="visible"
+    @close="close"
+  >
     <section class="mobile-createroom__selected" v-if="selection.length > 0">
       <div class="selected-header">
         <h1>{{ $t('workspace.create_remote_selected') }}</h1>
@@ -38,29 +38,29 @@
     >
       {{ $t('button.start') }}
     </button>
-  </div>
+  </full-screen-modal>
 </template>
 
 <script>
+import FullScreenModal from '../../modules/FullScreenModal'
 import CreateRoomInvite from '../partials/ModalCreateRoomInvite'
 import ProfileList from 'ProfileList'
 import confirmMixin from 'mixins/confirm'
 
 export default {
   components: {
+    FullScreenModal,
     CreateRoomInvite,
     ProfileList,
   },
   mixins: [confirmMixin],
   data() {
-    return {
-      visibleFlag: false,
-    }
+    return {}
   },
   props: {
     visible: {
       type: Boolean,
-      dafault: false,
+      dafault: true,
     },
     btnLoading: {
       type: Boolean,
@@ -79,11 +79,6 @@ export default {
     },
     loading: {
       type: Boolean,
-    },
-  },
-  watch: {
-    visible(flag) {
-      this.visibleFlag = flag
     },
   },
   computed: {
@@ -126,8 +121,8 @@ export default {
       this.$emit('startRemote', {
         title: `${this.shortName}'s Room`,
         description: '',
-        imageFile: this.roomInfo.description,
-        imageUrl: this.roomInfo.profile,
+        imageFile: null,
+        imageUrl: '',
         open: false,
       })
     },

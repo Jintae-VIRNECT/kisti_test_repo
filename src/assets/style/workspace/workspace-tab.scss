@@ -190,6 +190,8 @@
 //워크스페이스 선택 모바일 레이아웃
 @include responsive-mobile {
   .workspace-tab {
+    background-color: $new_color_bg_sub;
+
     //헤더
     .tab-view .tab-view__header {
       width: initial;
@@ -217,6 +219,15 @@
       background-color: $new_color_bg_icon;
       border-radius: 1.2rem;
       @include fontLevel(50);
+    }
+
+    .tab-view .tab-view__header .workspace-selected,
+    .tab-view__count {
+      transition: transform 0.25s, opacity 0.08s;
+      &.search-focused {
+        transform: translateX(-200px);
+        opacity: 0;
+      }
     }
 
     //검색, 새로고침 버튼
@@ -295,7 +306,7 @@
       background-color: $new_color_bg_sub;
       //워크스페이스 선택 목록
       .workcard-list {
-        grid-template-columns: repeat(2, minmax(15.9rem, auto));
+        grid-template-columns: repeat(2, minmax(15.9rem, 1fr));
         -webkit-column-gap: 1rem;
         -moz-column-gap: 1rem;
         column-gap: 1rem;

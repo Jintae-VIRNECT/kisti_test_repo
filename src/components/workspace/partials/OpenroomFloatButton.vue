@@ -8,14 +8,32 @@
 
 <script>
 import FloatButton from 'FloatButton'
+import roomMixin from 'mixins/room'
 
 export default {
   components: {
     FloatButton,
   },
+  mixins: [roomMixin],
+  computed: {
+    shortName() {
+      if (this.account.nickname.length > 10) {
+        return this.account.nickname.substr(0, 10)
+      } else {
+        return this.account.nickname
+      }
+    },
+  },
   methods: {
     onClick() {
-      this.$eventBus.$emit('open:modal:createOpen')
+      //this.$eventBus.$emit('open:modal:createOpen')
+      this.startRemote({
+        title: `${this.shortName}'s Room`,
+        description: '',
+        imageUrl: '',
+        imageFile: null,
+        open: true,
+      })
     },
   },
 }

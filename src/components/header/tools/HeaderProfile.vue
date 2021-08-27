@@ -94,7 +94,6 @@ export default {
       },
       visible: false,
       width: defaultPopoverWidth,
-      responsiveFn: null,
     }
   },
   computed: {
@@ -108,6 +107,15 @@ export default {
       } else {
         return false
       }
+    },
+  },
+  watch: {
+    isMobile: {
+      immediate: true,
+      handler: function(newVal) {
+        if (newVal) this.setResponsiveMobile()
+        else this.setResponsiveDefault()
+      },
     },
   },
   methods: {
@@ -153,16 +161,8 @@ export default {
   },
 
   /* Lifecycles */
-  mounted() {
-    this.responsiveFn = this.callAndGetMobileResponsiveFunction(
-      this.setResponsiveMobile,
-      this.setResponsiveDefault,
-    )
-    this.addEventListenerScreenResize(this.responsiveFn)
-  },
-  beforeDestroy() {
-    this.removeEventListenerScreenResize(this.responsiveFn)
-  },
+  mounted() {},
+  beforeDestroy() {},
 }
 </script>
 <style lang="scss">

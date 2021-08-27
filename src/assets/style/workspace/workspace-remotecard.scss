@@ -143,7 +143,6 @@
   .card.groupcard {
     display: flex;
     align-items: center;
-    height: 8.4rem !important;
     padding: 0;
     background-color: $new_color_bg;
     border: 0.15rem solid $new_color_line_border;
@@ -171,6 +170,10 @@
     align-items: center;
   }
 
+  .groupcard__leader {
+    display: none;
+  }
+
   .groupcard-profile {
     flex: 0;
     width: 4.2rem;
@@ -189,11 +192,25 @@
 
   .groupcard-info-mobile {
     display: block;
-    .room-title {
-      @include fontLevel(200);
+    .title-container {
+      display: flex;
+      align-items: center;
       margin-bottom: 0.2rem;
-      color: $new_color_text_main;
+      .groupcard__leader-mobile {
+        margin: 0 0.2rem 0.1rem -0.5rem;
+        padding: 0.1rem 1.1rem 0.1rem 1.2rem;
+        font-size: 1rem;
+        text-align: center;
+        border: 0.1rem solid white;
+        border-radius: 1.2rem;
+        transform: scale(0.8);
+      }
+      .room-title {
+        @include fontLevel(200);
+        color: $new_color_text_main;
+      }
     }
+
     .room-leader {
       @include fontLevel(75);
       margin-right: 0.8rem;

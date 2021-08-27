@@ -126,6 +126,7 @@ export default {
       this.$emit('startRemote', {
         title: this.title,
         description: this.description,
+        imageUrl: this.imageURL,
         imageFile: this.imageFile,
         open: true,
       })
