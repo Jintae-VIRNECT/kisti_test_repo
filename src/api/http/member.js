@@ -126,19 +126,14 @@ export const getMemberGroupList = async ({ workspaceId, userId }) => {
  *
  * @query {String} workspaceId
  * @query {String} groupId
+ * @query {String} uuid
  * @returns 단일 멤버 그룹 정보
  */
-export const getMemberGroupItem = async ({
-  workspaceId,
-  groupId,
-  page = 0,
-  size = 0,
-}) => {
+export const getMemberGroupItem = async ({ workspaceId, groupId, userId }) => {
   const returnVal = await http('PRIVATE_MEMBER_GROUP_LIST_ITEM', {
     workspaceId,
     groupId,
-    page,
-    size,
+    userId,
   })
 
   return returnVal

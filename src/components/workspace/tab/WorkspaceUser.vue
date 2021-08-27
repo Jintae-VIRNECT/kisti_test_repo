@@ -294,6 +294,7 @@ export default {
       const group = await getMemberGroupItem({
         workspaceId: this.workspace.uuid,
         groupId: groupId,
+        userId: this.account.uuid,
       })
 
       //자기자신은 제외
@@ -332,6 +333,7 @@ export default {
         const group = await getMemberGroupItem({
           workspaceId: this.workspace.uuid,
           groupId: groupId,
+          userId: this.account.uuid,
         })
 
         this.groupMemberList = group.favoriteGroupMemberResponses.filter(
