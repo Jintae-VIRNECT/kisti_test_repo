@@ -159,6 +159,7 @@ export default {
         const group = await getMemberGroupItem({
           workspaceId: this.workspace.uuid,
           groupId: groupId,
+          userId: this.account.uuid,
         })
 
         //자기 자신은 제외하여 표출
