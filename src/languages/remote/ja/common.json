@@ -45,8 +45,9 @@
     "modify":"変更​",
     "delete":"削除​",
     "copy_url":"URLをコピー​",
-    "send_email":"メール転送​"
-
+    "send_email":"メール転送​",
+    "join_sec":"接続 ({time} 秒)",
+    "request_again":"再要求"
   },
   "date": {
     "lastday": "[昨日] A",

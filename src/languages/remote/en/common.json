@@ -45,7 +45,9 @@
     "modify":"Modify",
     "delete":"Delete",
     "copy_url":"Copy URL",
-    "send_email":"Send email"
+    "send_email":"Send email",
+    "join_sec":"Connect ({time} sec)",
+    "request_again":"Request"
   },
   "date": {
     "lastday": "[Yesterday]",
