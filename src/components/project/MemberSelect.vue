@@ -5,7 +5,7 @@
     <dl class="select" ref="form">
       <dt>{{ $t(selectLabel) }}</dt>
       <dd class="virnect-workstation-form">
-        <el-select v-model="memberType">
+        <el-select v-model="memberTypes">
           <el-option
             v-for="type in selectTypes"
             :key="type.value"
@@ -31,12 +31,12 @@
           ref="memberSelect"
           class="select-member"
           popper-class="select-member__list"
-          v-model="members"
+          v-model="memberArray"
           name="input"
           multiple
           collapse-tags
           placeholder=""
-          @change="selectChange(members)"
+          @change="selectChange(memberArray)"
           :disabled="disabledSelect"
         >
           <el-option
@@ -72,7 +72,7 @@
               />
               <span>{{ members[0] }}</span>
               <img
-                @click="$emit('deleteFirstUser', { key: propsKey, members })"
+                @click="deleteFirstUser"
                 class="delete"
                 src="~assets/images/icon/ic-close.svg"
               />
@@ -88,41 +88,29 @@
 
 <script>
 export default {
+  props: {
+    selectLabel: String,
+    selectTypes: [Array],
+    memberType: String,
+    members: [Array],
+    options: [Array],
+  },
   data() {
     return {
+      // 현재 컴포넌트의 key 값.
+      propsKey: this.$vnode.key,
       // 지정멤버 라벨 이미지
       labelImg: '',
       // 지정멤버 드롭다운 활성화 유무
       disabledSelect: true,
+      // 공유 / 편집 멤버 타입. ex) 멤버, 지정멤버, 매니저 ...
+      memberTypes: this.memberType,
+      // 지정 멤버로 선택한 유저 리스트
+      memberArray: this.members,
     }
   },
-  props: {
-    propsKey: String,
-    selectLabel: String,
-    selectTypes: [Array],
-    propMemberType: String,
-    propMembers: [Array],
-    options: [Array],
-  },
+
   computed: {
-    // 공유 / 편집 멤버 타입. ex) 멤버, 지정멤버, 매니저 ...
-    memberType: {
-      get() {
-        return this.propMemberType
-      },
-      set(value) {
-        this.$emit('update:memberType', { key: this.propsKey, value })
-      },
-    },
-    // 지정 멤버로 선택한 유저 리스트
-    members: {
-      get() {
-        return this.propMembers
-      },
-      set(value) {
-        this.$emit('update:members', { key: this.propsKey, value })
-      },
-    },
     cssVars() {
       return {
         '--cursor': this.disabledSelect ? 'not-allowed' : 'pointer',
@@ -141,14 +129,26 @@ export default {
         )[0].img
       }
     },
+    // 선택한 지정 멤버 리스트에서, 첫 번째 인덱스 멤버를 삭제한다. 라벨의 X 버튼 클릭시 실행.
+    deleteFirstUser() {
+      if (!this.memberArray.length) {
+        return null
+      }
+      // key 값을 통해, 공유 / 편집 members 를 구분.
+      this.memberArray.shift()
+    },
   },
   watch: {
-    memberType(v) {
+    memberTypes(v) {
+      this.$emit('update:memberType', v)
       if (v == 'SELECTMEMBER') {
         this.disabledSelect = false
       } else {
         this.disabledSelect = true
       }
+    },
+    memberArray(v) {
+      this.$emit('update:members', v)
     },
   },
 }
