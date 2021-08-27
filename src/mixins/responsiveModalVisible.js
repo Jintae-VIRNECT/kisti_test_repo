@@ -6,7 +6,7 @@ export default {
     }
   },
   watch: {
-    isMobile: {
+    isMobileSize: {
       immediate: true,
       handler: function(newVal) {
         if (newVal) this.setVisibleMobileFlag(this.visible)
@@ -24,7 +24,7 @@ export default {
       this.visibleMobileFlag = flag
     },
     setVisiblePcOrMobileFlag(flag) {
-      if (this.isMobile) this.setVisibleMobileFlag(flag)
+      if (this.isMobileSize) this.setVisibleMobileFlag(flag)
       else this.setVisiblePcFlag(flag)
     },
   },

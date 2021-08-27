@@ -91,8 +91,6 @@ export default {
   data() {
     return {
       selectedGroupId: '',
-      height: defaultWideCardHeight,
-      thumbStyle: defaultThumbStyle,
       responsiveFn: null,
     }
   },

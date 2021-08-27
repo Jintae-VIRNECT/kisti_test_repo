@@ -11,7 +11,7 @@
       <p class="title">{{ group.groupName }}</p>
     </div>
 
-    <div class="group-item">
+    <div class="group-item member-list">
       <p class="label hide-tablet">
         {{ $t('workspace.workspace_member_group_member') }}:
       </p>
@@ -19,9 +19,17 @@
         style="min-height: 0px;"
         :users="group.favoriteGroupMemberResponses"
         size="2.143em"
-        :max="isTablet ? 3 : maxParticipants"
+        :max="isOverflow ? 3 : maxParticipants"
         class="member-group-profile"
       ></profile-list>
+    </div>
+
+    <div class="group-item member-number">
+      <p>
+        {{
+          `${group.favoriteGroupMemberResponses.length}/${maxParticipants - 1}`
+        }}
+      </p>
     </div>
 
     <div class="member-group__tools">
@@ -32,17 +40,42 @@
         {{ $t('button.delete') }}
       </button>
     </div>
+
+    <popover
+      v-if="isMobileSize"
+      trigger="click"
+      popperClass="member-group-menu"
+      placement="left-start"
+      width="auto"
+      scrollHide
+    >
+      <button slot="reference" class="member-group-popover-btn"></button>
+      <ul class="groupcard-popover">
+        <li>
+          <button class="group-pop__button" @click="updateGroup">
+            {{ $t('button.modify') }}
+          </button>
+        </li>
+        <li>
+          <button class="group-pop__button" @click="deleteGroup">
+            {{ $t('button.delete') }}
+          </button>
+        </li>
+      </ul>
+    </popover>
   </div>
 </template>
 
 <script>
 import ProfileList from 'ProfileList'
 import { maxParticipants } from 'utils/callOptions'
+import Popover from 'Popover'
 
 export default {
   name: 'MemberGroup',
   components: {
     ProfileList,
+    Popover,
   },
   props: {
     group: Object,
@@ -68,6 +101,10 @@ export default {
       default: () => {
         return {}
       },
+    },
+    isOverflow: {
+      type: Boolean,
+      default: false,
     },
   },
   data() {
@@ -97,7 +134,6 @@ export default {
   },
 
   /* Lifecycles */
-  mounted() {},
 }
 </script>
 
@@ -146,20 +182,23 @@ export default {
       text-overflow: ellipsis;
     }
   }
+  //number
   .group-item:first-of-type {
     display: inherit;
     flex-grow: 0.2;
-
     min-width: 8rem;
   }
-
+  //title
   .group-item:nth-of-type(2) {
     flex-grow: 1.4;
   }
-  .group-item:nth-last-child(2) {
+  .group-item.member-list {
     display: flex;
     align-items: center;
     padding-right: 0.7143rem;
+  }
+  .group-item.member-number {
+    display: none;
   }
 }
 
@@ -193,6 +232,63 @@ export default {
     &:active {
       background-color: $color_darkgray_400;
     }
+  }
+}
+
+@include responsive-mobile {
+  .member-group-row {
+    height: 4.8rem;
+    padding-right: 1rem;
+    padding-left: 1.8rem;
+    background-color: $new_color_bg_item;
+    border-radius: 0.6rem;
+
+    &:hover {
+      background-color: $new_color_bg_item;
+    }
+
+    //number
+    .group-item:first-child {
+      display: none;
+    }
+
+    .group-item {
+      flex: 0 0 2rem;
+      > .label {
+        display: none;
+      }
+      > .title {
+        @include fontLevel(100);
+      }
+    }
+
+    .group-item.member-list {
+      display: none;
+    }
+
+    .group-item.member-number {
+      display: block;
+      @include fontLevel(75);
+      margin: 0 1.4rem;
+    }
+
+    .member-group__tools {
+      display: none;
+    }
+  }
+
+  .member-group-popover-btn {
+    position: relative;
+    @include mobile-popover-btn(3.2rem);
+  }
+
+  .member-group-menu {
+    min-width: 12.1rem;
+    > .popover--body {
+      padding: 0px;
+    }
+
+    @include responsive-popover;
   }
 }
 </style>

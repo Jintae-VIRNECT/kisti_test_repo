@@ -46,7 +46,8 @@ export const SETTINGS = {
 export const ALLOW_RESET = 'ALLOW_RESET'
 export const TOGGLE_CHAT = 'TOGGLE_CHAT'
 export const SET_DEVICE = 'SET_DEVICE'
-export const SET_IS_MOBILE = 'SET_IS_MOBILE'
+export const SET_IS_MOBILE_SIZE = 'SET_IS_MOBILE_SIZE'
+export const SET_IS_TABLET_SIZE = 'SET_IS_TABLET_SIZE'
 
 // room
 export const ROOM_SET = 'ROOM_SET'
