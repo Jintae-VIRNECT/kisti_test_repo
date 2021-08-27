@@ -6,6 +6,7 @@ import javax.validation.Valid;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.util.StringUtils;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -30,10 +31,13 @@ import com.virnect.content.domain.SharePermission;
 import com.virnect.content.domain.TargetType;
 import com.virnect.content.dto.request.ProjectUpdateRequest;
 import com.virnect.content.dto.request.ProjectUploadRequest;
+import com.virnect.content.dto.response.ProjectDeleteResponse;
 import com.virnect.content.dto.response.ProjectInfoListResponse;
 import com.virnect.content.dto.response.ProjectInfoResponse;
+import com.virnect.content.exception.ProjectServiceException;
 import com.virnect.content.global.common.ApiResponse;
 import com.virnect.content.global.common.PageRequest;
+import com.virnect.content.global.error.ErrorCode;
 
 /**
  * Project: PF-ContentManagement
@@ -50,6 +54,8 @@ public class ProjectController {
 	private final ProjectService projectService;
 
 	@ApiOperation(value = "프로젝트 업로드", notes = "프로젝트를 업로드합니다.")
+	@ApiImplicitParams({
+		@ApiImplicitParam(name = "project", value = "업로드 프로젝트 파일", dataType = "__file", paramType = "form", required = true)})
 	@PostMapping
 	public ResponseEntity<ApiResponse<ProjectInfoResponse>> uploadProject(
 		@ModelAttribute @Valid ProjectUploadRequest projectUploadRequest, BindingResult bindingResult
@@ -59,6 +65,7 @@ public class ProjectController {
 				"[FIELD ERROR] => [{}] [{}]", bindingResult.getFieldError().getField(),
 				bindingResult.getFieldError().getDefaultMessage()
 			);
+			throw new ProjectServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
 		}
 		ProjectInfoResponse responseMessage = projectService.uploadProject(projectUploadRequest);
 		return ResponseEntity.ok(new ApiResponse<>(responseMessage));
@@ -100,6 +107,9 @@ public class ProjectController {
 		@RequestParam(value = "targetType", required = false) List<TargetType> targetTypeList,
 		@ApiIgnore PageRequest pageRequest
 	) {
+		if (!StringUtils.hasText(workspaceUUID) || !StringUtils.hasText(userUUID)) {
+			throw new ProjectServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
+		}
 		ProjectInfoListResponse responseMessage = projectService.getProjectList(
 			workspaceUUID, userUUID, sharePermissionList, editPermissionList, modeList, targetTypeList,
 			pageRequest.of()
@@ -109,14 +119,18 @@ public class ProjectController {
 
 	@ApiOperation(value = "프로젝트 상세 정보 조회", notes = "프로젝트 상세정보를 조회합니다. 공유 권한이 있는 사용자만 확인할 수 있습니다.")
 	@ApiImplicitParams({
-		@ApiImplicitParam(name = "projectUUID", value = "프로젝트 식별자", dataType = "string", paramType = "path", required = true),
-		@ApiImplicitParam(name = "userUUID", value = "목록 조회 요청 유저 식별자", dataType = "string", paramType = "query", required = true)
+		@ApiImplicitParam(name = "projectUUID", value = "프로젝트 식별자", dataType = "string", paramType = "path", required = true, example = "3e0e1203-9816-46b6-8b28-608f61db6f0a"),
+		@ApiImplicitParam(name = "userUUID", value = "목록 조회 요청 유저 식별자", dataType = "string", paramType = "query", required = true, example = "498b1839dc29ed7bb2ee90ad6985c608")
 	})
 	@GetMapping("/{projectUUID}")
 	public ResponseEntity<ApiResponse<ProjectInfoResponse>> getProjectInfo(
-		@PathVariable("projectUUID") String proejctUUID, @RequestParam("userUUID") String userUUID
+		@PathVariable("projectUUID") String projectUUID, @RequestParam("userUUID") String userUUID
 	) {
-		return ResponseEntity.ok(new ApiResponse<>());
+		if (!StringUtils.hasText(projectUUID) || !StringUtils.hasText(userUUID)) {
+			throw new ProjectServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
+		}
+		ProjectInfoResponse responseMessage = projectService.getProjectInfo(projectUUID, userUUID);
+		return ResponseEntity.ok(new ApiResponse<>(responseMessage));
 	}
 
 	@ApiOperation(value = "프로젝트 정보 수정 - 업데이트 또는 덮어쓰기", notes = "프로젝트 상세정보를 수정합니다. 편집 권한이 있는 사용자만 수정할 수 있습니다.", hidden = true)
@@ -137,10 +151,11 @@ public class ProjectController {
 		@ApiImplicitParam(name = "projectUUID", value = "프로젝트 식별자", dataType = "string", paramType = "path")
 	})
 	@DeleteMapping("/{projectUUID}")
-	public ResponseEntity<ApiResponse> deleteProject(
-		@PathVariable("projectUUID") String proejctUUID
+	public ResponseEntity<ApiResponse<ProjectDeleteResponse>> deleteProject(
+		@PathVariable("projectUUID") String projectUUID
 	) {
-		return ResponseEntity.ok(new ApiResponse<>());
+		ProjectDeleteResponse responseMessage = projectService.deleteProject(projectUUID);
+		return ResponseEntity.ok(new ApiResponse<>(responseMessage));
 	}
 
 }

@@ -2,6 +2,8 @@ package com.virnect.content.application.project;
 
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
@@ -10,6 +12,8 @@ import java.util.stream.Collectors;
 
 import javax.imageio.ImageIO;
 
+import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -41,14 +45,15 @@ import com.virnect.content.domain.project.ProjectMode;
 import com.virnect.content.domain.project.ProjectShareUser;
 import com.virnect.content.domain.project.ProjectTarget;
 import com.virnect.content.dto.request.ProjectUploadRequest;
-import com.virnect.content.dto.request.PropertyInfoRequest;
+import com.virnect.content.dto.request.PropertyInfoDTO;
+import com.virnect.content.dto.response.ProjectDeleteResponse;
 import com.virnect.content.dto.response.ProjectInfoListResponse;
 import com.virnect.content.dto.response.ProjectInfoResponse;
 import com.virnect.content.dto.response.ProjectTargetInfoResponse;
 import com.virnect.content.dto.rest.LicenseInfoResponse;
 import com.virnect.content.dto.rest.MemberInfoDTO;
 import com.virnect.content.dto.rest.MyLicenseInfoListResponse;
-import com.virnect.content.exception.ContentServiceException;
+import com.virnect.content.exception.ProjectServiceException;
 import com.virnect.content.global.common.ApiResponse;
 import com.virnect.content.global.common.PageMetadataResponse;
 import com.virnect.content.global.common.ProjectResponseMapper;
@@ -87,14 +92,15 @@ public class ProjectService {
 	 */
 	@Transactional
 	public ProjectInfoResponse uploadProject(ProjectUploadRequest projectUploadRequest) {
-		//필수 값 체크 - project
+		//1. 파라미터 체크
 		log.info("[PROJECT UPLOAD] REQ : {}", projectUploadRequest.toString());
 
-		//업로드 사용자의 MAKE 라이선스 체크
+		//1-1. 업로드 사용자의 MAKE 라이선스 체크
 		checkUserHaveMAKELicense(projectUploadRequest.getUserUUID(), projectUploadRequest.getWorkspaceUUID());
+		//1-2. 워크스페이스의 최대 업로드 사용량 체크
 		checkWorkspaceMaxStorage(projectUploadRequest.getWorkspaceUUID(), projectUploadRequest.getProject().getSize());
 
-		//프로젝트 저장
+		//2. 프로젝트 저장
 		String projectUUID = UUID.randomUUID().toString();
 		String projectPath = fileUploadService.uploadByFileInputStream(projectUploadRequest.getProject(), projectUUID);
 		Project project = Project.builder()
@@ -110,15 +116,13 @@ public class ProjectService {
 			.build();
 		projectRepository.save(project);
 
-		//모드 정보 저장
-		List<Mode> modeList = new ArrayList<>();
+		//2-1. 모드 정보 저장
 		for (Mode mode : projectUploadRequest.getModeList()) {
 			ProjectMode projectMode = ProjectMode.builder().mode(mode).project(project).build();
-			modeList.add(mode);
 			projectModeRepository.save(projectMode);
 		}
 
-		//공유 정보 저장
+		//2-2. 공유 정보 저장
 		if (projectUploadRequest.getSharePermission() == SharePermission.SPECIFIC_MEMBER) {
 			for (String sharedUser : projectUploadRequest.getSharedUserList()) {
 				ProjectShareUser projectShareUser = ProjectShareUser.builder()
@@ -128,7 +132,7 @@ public class ProjectService {
 				projectShareUerRepository.save(projectShareUser);
 			}
 		}
-		//편집 정보 저장
+		//2-3. 편집 정보 저장
 		if (projectUploadRequest.getEditPermission() == EditPermission.SPECIFIC_MEMBER) {
 			for (String editUser : projectUploadRequest.getEditUserList()) {
 				ProjectEditUser projectEditUser = ProjectEditUser.builder().userUUID(editUser).project(project).build();
@@ -136,59 +140,47 @@ public class ProjectService {
 			}
 		}
 
-		//타겟 저장
+		//2-4. 타겟 이미지 저장
 		String targetData = UUID.randomUUID().toString();
 		String targetPath = "";
 		if (projectUploadRequest.getTargetType() == TargetType.QR) {
-			targetPath = getQRTargetFilePath(targetData);
-
+			try (ByteArrayOutputStream os = new ByteArrayOutputStream()) {
+				BufferedImage qrImage = QRcodeGenerator.generateQRCodeImage(targetData, 256, 256);
+				ImageIO.write(qrImage, "png", os);
+				String qrString = Base64.getEncoder().encodeToString(os.toByteArray());
+				targetPath = fileUploadService.base64ImageUpload(qrString);
+			} catch (Exception e) {
+				log.error(e.getMessage());
+				throw new ProjectServiceException(ErrorCode.ERR_PROJECT_UPLOAD);
+			}
 		}
 		if (projectUploadRequest.getTargetType() == TargetType.VTarget) {
 			targetPath = fileDownloadService.getFilePath("workspace/report/", "virnect_target.png");
 		}
-		if (projectUploadRequest.getTargetType() == TargetType.IMAGE) {
+		if (projectUploadRequest.getTargetType() == TargetType.Image) {
+			String randomFileName = String.format(
+				"%s_%s%s", LocalDate.now().toString(), RandomStringUtils.randomAlphanumeric(10).toLowerCase(),
+				FilenameUtils.getExtension(projectUploadRequest.getTargetFile().getName())
+			);
 			targetPath = fileUploadService.uploadByFileInputStream(
-				projectUploadRequest.getTargetFile(),
-				projectUploadRequest.getTargetFile().getName()
-			);//todo: image target file name 정해야 함.
+				projectUploadRequest.getTargetFile(), randomFileName);
 		}
-
+		if (projectUploadRequest.getTargetType() == TargetType.VR) {
+			targetPath = null;
+		}
+		//2-5. 타겟 저장
 		ProjectTarget projectTarget = ProjectTarget.builder()
 			.type(projectUploadRequest.getTargetType())
-			.data(targetData)
 			.path(targetPath)
-			.size(projectUploadRequest.getTargetSize())
+			.width(projectUploadRequest.getTargetWidth())
+			.length(projectUploadRequest.getTargetLength())
 			.project(project)
 			.build();
 		projectTargetRepository.save(projectTarget);
+
+		//3. 응답
 		ProjectInfoResponse projectInfoResponse = generateProjectResponse(project);
 		return projectInfoResponse;
-	}
-
-	/**
-	 * QR 타겟 업로드
-	 * @param targetData - 업로드 대상 타겟 정보
-	 * @return - 업로드 된 QR 타겟 이미지 경로
-	 */
-	private String getQRTargetFilePath(String targetData) {/*
-		String decodedTargetData = null;
-		try {
-			decodedTargetData = URLDecoder.decode(targetData, "UTF-8");
-		} catch (UnsupportedEncodingException e) {
-			log.error(e.getMessage());
-			throw new ContentServiceException(ErrorCode.ERR_CONTENT_UPLOAD);
-		}
-		String decryptedTargetData = AES256EncryptUtils.decryptByBytes("virnect", decodedTargetData);*/
-		try (ByteArrayOutputStream os = new ByteArrayOutputStream()) {
-			BufferedImage qrImage = QRcodeGenerator.generateQRCodeImage(targetData, 256, 256);
-			ImageIO.write(qrImage, "png", os);
-
-			String qrString = Base64.getEncoder().encodeToString(os.toByteArray());
-			return fileUploadService.base64ImageUpload(qrString);
-		} catch (Exception e) {
-			log.error(e.getMessage());
-			throw new ContentServiceException(ErrorCode.ERR_CONTENT_UPLOAD);
-		}
 	}
 
 	/**
@@ -196,7 +188,7 @@ public class ProjectService {
 	 * @param workspaceUUID - 체크 대상 워크스페이스 식별자
 	 * @param requestSize - 추가 대상 용량 정보
 	 */
-	private void checkWorkspaceMaxStorage(String workspaceUUID, Long requestSize) {
+	private void checkWorkspaceMaxStorage(String workspaceUUID, long requestSize) {
 		//업로드 가능 용량 체크
 		LicenseInfoResponse licenseInfoResponse = getLicenseInfoResponse(workspaceUUID);
 
@@ -205,12 +197,14 @@ public class ProjectService {
 		// 라이선스의 최대 용량이 0인 경우 업로드 프로세스를 수행하지 않는다.
 		if (maxCapacity == null || maxCapacity == 0L) {
 			log.error("[CHECK WORKSPACE MAX STORAGE] workspace max storage : {}", maxCapacity);
-			throw new ContentServiceException(ErrorCode.ERR_CONTENT_UPLOAD_LICENSE);
+			throw new ProjectServiceException(ErrorCode.ERR_PROJECT_UPLOAD_MAX_STORAGE);
 		}
 
 		// 업로드를 요청하는 워크스페이스의 현재 총 용량을 가져온다. (byte 단위)
-		Long workspaceContentsCapacity = contentRepository.getWorkspaceStorageSize(workspaceUUID);
-		Long workspaceProjectsCapacity = projectRepository.getWorkspaceStorageSize(workspaceUUID);
+		Long contentsSizeSum = contentRepository.getWorkspaceStorageSize(workspaceUUID);
+		long workspaceContentsCapacity = contentsSizeSum == null ? 0L : contentsSizeSum;
+		Long projectsSizeSum = projectRepository.getWorkspaceStorageSize(workspaceUUID);
+		long workspaceProjectsCapacity = projectsSizeSum == null ? 0L : projectsSizeSum;
 
 		// 워크스페이스 총 사용 용량에 업로드 파일 용량을 더한다. (byte 단위)
 		long sumByteSize = workspaceContentsCapacity + workspaceProjectsCapacity + requestSize;
@@ -224,7 +218,7 @@ public class ProjectService {
 				"[CHECK WORKSPACE MAX STORAGE] license max capacity : {}(MB), current capacity : {}(MB)", maxCapacity,
 				convertMB
 			);
-			throw new ContentServiceException(ErrorCode.ERR_CONTENT_UPLOAD_LICENSE);
+			throw new ProjectServiceException(ErrorCode.ERR_PROJECT_UPLOAD_MAX_STORAGE);
 		}
 	}
 
@@ -256,13 +250,13 @@ public class ProjectService {
 		boolean userHaveMAKELicense = myLicenseInfoListResponse.getLicenseInfoList()
 			.stream()
 			.anyMatch(myLicenseInfoResponse -> myLicenseInfoResponse.getProductName().equals("MAKE")
-				&& myLicenseInfoResponse.getStatus().equals("ACTIVE"));
+				&& myLicenseInfoResponse.getProductPlanStatus().equals("ACTIVE"));
 		if (!userHaveMAKELicense) {
 			log.error(
 				"[CHECK USER HAVE MAKE LICENSE] User haven't active Make license. userUUID : {}, workspaceUUID : {}",
 				userUUID, workspaceUUID
 			);
-			throw new ContentServiceException(ErrorCode.ERR_CONTENT_UPLOAD_LICENSE_PRODUCT_NOT_FOUND);
+			throw new ProjectServiceException(ErrorCode.ERR_PROJECT_UPLOAD_INVALID_LICENSE);
 		}
 	}
 
@@ -283,7 +277,7 @@ public class ProjectService {
 				"[REQ - LICENSE SERVER][GET MY LICENSE INFO] request user uuid : {}, request workspace uuid : {}, response code : {}, response message : {}",
 				userUUID, workspaceUUID, apiResponse.getCode(), apiResponse.getMessage()
 			);
-			throw new ContentServiceException(ErrorCode.ERR_CONTENT_UPLOAD_LICENSE_NOT_FOUND);
+			throw new ProjectServiceException(ErrorCode.ERR_UNEXPECTED_SERVER_ERROR);
 		}
 		return apiResponse.getData();
 	}
@@ -391,31 +385,24 @@ public class ProjectService {
 			project.getProjectTarget());
 		projectInfoResponse.setTargetInfo(projectTargetInfoResponse);
 
-		//properties 씬 갯수 파싱
+		//프로퍼티
 		ObjectMapper mapper = new ObjectMapper();
-		PropertyInfoRequest propertyInfoRequest = new PropertyInfoRequest();
+
+		PropertyInfoDTO propertyInfo = new PropertyInfoDTO();
 		try {
-			propertyInfoRequest = mapper.readValue(project.getProperties(), PropertyInfoRequest.class);
+			propertyInfo = mapper.readValue(project.getProperties(), PropertyInfoDTO.class);
 		} catch (JsonProcessingException e) {
 			e.printStackTrace();
 		}
-		projectInfoResponse.setPropertySceneTotal(propertyInfoRequest.getSceneGroupList().size());
+		projectInfoResponse.setProperty(propertyInfo);
+		//properties 씬 갯수 파싱
+		projectInfoResponse.setPropertySceneGroupTotal(propertyInfo.getPropertyObjectList().size());
 
 		//properties 씬 그룹 갯수 파싱
-		int sceneGroupTotal = (int)propertyInfoRequest.getSceneGroupList()
-			.stream()
-			.map(sceneGroup -> sceneGroup.getSceneList().size())
-			.count();
-		projectInfoResponse.setPropertySceneGroupTotal(sceneGroupTotal);
-
+		int sceneTotal = propertyInfo.getSceneCount(propertyInfo.getPropertyObjectList(), 0);
 		//properties 오브젝트 갯수 파싱
-		int objectTotal = propertyInfoRequest.getSceneGroupList()
-			.stream()
-			.mapToInt(sceneGroup -> (int)sceneGroup.getSceneList()
-				.stream()
-				.map(scene -> scene.getObjectList().size())
-				.count())
-			.sum();
+		int objectTotal = propertyInfo.getObjectCount(propertyInfo.getPropertyObjectList(), 0);
+		projectInfoResponse.setPropertySceneTotal(sceneTotal);
 		projectInfoResponse.setPropertyObjectTotal(objectTotal);
 		return projectInfoResponse;
 	}
@@ -434,9 +421,62 @@ public class ProjectService {
 				"[REQ - WORKSPACE SERVER][GET WORKSPACE USER INFO] request user uuid : {}, request workspace uuid : {}, response code : {}, response message : {}",
 				userUUID, workspaceUUID, apiResponse.getCode(), apiResponse.getMessage()
 			);
-			throw new ContentServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
+			throw new ProjectServiceException(ErrorCode.ERR_UNEXPECTED_SERVER_ERROR);
 		}
 		return apiResponse.getData();
+	}
 
+	/**
+	 * 프로젝트 상세 정보 조회
+	 * @param projectUUID - 조회 대상 프로젝트 식별자
+	 * @param userUUID - 조회 요청 식별자
+	 * @return - 프로젝트 상세 정보
+	 */
+	public ProjectInfoResponse getProjectInfo(String projectUUID, String userUUID) {
+		//1. 프로젝트 조회
+		Project project = projectRepository.findByUuid(projectUUID)
+			.orElseThrow(() -> new ProjectServiceException(ErrorCode.ERR_PROJECT_NOT_FOUND));
+
+		//2. 프로젝트 공유 권한 체크
+		MemberInfoDTO memberInfoResponse = getMemberInfoRequest(project.getWorkspaceUUID(), userUUID);
+		if (project.getSharePermission() == SharePermission.SPECIFIC_MEMBER) {
+			if (project.getProjectShareUserList()
+				.stream()
+				.noneMatch(projectShareUser -> projectShareUser.getUserUUID().equals(userUUID))) {
+				throw new ProjectServiceException(ErrorCode.ERR_PROJECT_ACCESS_INVALID_SHARE_PERMISSION);
+			}
+		}
+		if (project.getSharePermission() == SharePermission.UPLOADER) {
+			if (!project.getUserUUID().equals(userUUID)) {
+				throw new ProjectServiceException(ErrorCode.ERR_PROJECT_ACCESS_INVALID_SHARE_PERMISSION);
+			}
+
+		}
+		if (project.getSharePermission() == SharePermission.MANAGER) {
+			if (!memberInfoResponse.getRole().equals("MASTER") && !memberInfoResponse.getRole().equals("MANAGER")) {
+				throw new ProjectServiceException(ErrorCode.ERR_PROJECT_ACCESS_INVALID_SHARE_PERMISSION);
+			}
+		}
+		return generateProjectResponse(project);
+	}
+
+	public ProjectDeleteResponse deleteProject(String projectUUID) {
+		Project project = projectRepository.findByUuid(projectUUID)
+			.orElseThrow(() -> new ProjectServiceException(ErrorCode.ERR_PROJECT_NOT_FOUND));
+		//모드 정보 삭제
+		projectModeRepository.deleteAll(project.getProjectModeList());
+		//공유 정보 삭제
+		if (!CollectionUtils.isEmpty(project.getProjectShareUserList())) {
+			projectShareUerRepository.deleteAll(project.getProjectShareUserList());
+		}
+		//편집 정보 삭제
+		if (!CollectionUtils.isEmpty(project.getProjectEditUserList())) {
+			projectEditUserRepository.deleteAll(project.getProjectEditUserList());
+		}
+		//타겟 정보 삭제
+		projectTargetRepository.delete(project.getProjectTarget());
+		//프로젝트 삭제
+		projectRepository.delete(project);
+		return new ProjectDeleteResponse(true, LocalDateTime.now());
 	}
 }

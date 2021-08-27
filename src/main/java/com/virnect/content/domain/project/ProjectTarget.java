@@ -45,14 +45,14 @@ public class ProjectTarget extends BaseTimeEntity {
 	@Enumerated(EnumType.STRING)
 	private TargetType type;
 
-	@Column(name = "data", unique = true, nullable = false)
-	private String data;
-
-	@Column(name = "path", nullable = false)
+	@Column(name = "path", nullable = true)
 	private String path;
 
-	@Column(name = "size", nullable = false)
-	private Long size;
+	@Column(name = "width", nullable = false)
+	private Long width;
+
+	@Column(name = "length", nullable = false)
+	private Long length;
 
 	@OneToOne(targetEntity = Project.class, fetch = FetchType.LAZY)
 	@JoinColumn(name = "project_id")
@@ -60,12 +60,12 @@ public class ProjectTarget extends BaseTimeEntity {
 
 	@Builder
 	public ProjectTarget(
-		TargetType type, String data, String path, Long size, Project project
+		TargetType type, String path, Long width, Long length, Project project
 	) {
 		this.type = type;
-		this.data = data;
 		this.path = path;
-		this.size = size;
+		this.width = width;
+		this.length = length;
 		this.project = project;
 	}
 }

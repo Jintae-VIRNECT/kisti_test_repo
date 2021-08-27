@@ -8,18 +8,9 @@ package com.virnect.content.domain;
  * @since 2020.04.08
  */
 public enum TargetType {
-	QR("QR"),
-	VTarget("VTarget"),
-	IMAGE("IMAGE");
-
-	private String message;
-
-	TargetType(String message) {
-		this.message = message;
-	}
-
-	public String getMessage() {
-		return message;
-	}
+	QR,
+	VTarget,
+	Image,
+	VR;
 }
 

@@ -18,8 +18,10 @@ import com.virnect.content.domain.TargetType;
 public class ProjectTargetInfoResponse {
 	@ApiModelProperty(value = "프로젝트 타겟 타입", position = 0, example = "")
 	private TargetType type;
-	@ApiModelProperty(value = "프로젝트 타겟 사이즈", position = 1, example = "")
-	private long size = 0L;
-	@ApiModelProperty(value = "프로젝트 타겟 경로", position = 2, example = "")
+	@ApiModelProperty(value = "프로젝트 타겟 가로 사이즈", position = 1, example = "")
+	private long width = 0L;
+	@ApiModelProperty(value = "프로젝트 타겟 세로 사이즈", position = 2, example = "")
+	private long length = 0L;
+	@ApiModelProperty(value = "프로젝트 타겟 경로", position = 3, example = "")
 	private String path = "";
 }

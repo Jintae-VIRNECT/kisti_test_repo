@@ -17,6 +17,8 @@ import com.virnect.content.dto.response.ProjectTargetInfoResponse;
  */
 @Mapper(componentModel = "spring")
 public interface ProjectResponseMapper {
+	@Mapping(target = "uploaderUUID", source = "userUUID")
 	ProjectInfoResponse projectToProjectInfoResponse(Project project);
+
 	ProjectTargetInfoResponse projectTargetToTargetInfoResponse(ProjectTarget projectTarget);
 }

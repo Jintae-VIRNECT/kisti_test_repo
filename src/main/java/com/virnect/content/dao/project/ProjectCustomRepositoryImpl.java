@@ -36,12 +36,11 @@ public class ProjectCustomRepositoryImpl extends QuerydslRepositorySupport imple
 	@Override
 	public Long getWorkspaceStorageSize(String projectUUID) {
 		QProject qProject = QProject.project;
-		Long sumSize = from(qProject)
+
+		return from(qProject)
 			.select(qProject.size.sum())
 			.where(qProject.workspaceUUID.eq(projectUUID))
 			.fetchOne();
-
-		return sumSize;
 	}
 
 	@Override

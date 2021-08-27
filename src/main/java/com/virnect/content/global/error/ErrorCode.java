@@ -37,19 +37,43 @@ public enum ErrorCode {
 	ERR_CONTENT_DELETE_SHARED(4020, "Content deletion failed. Because it is managed. Check this content is shared."),
 	ERR_CONTENT_UPLOAD_LICENSE_PRODUCT_NOT_FOUND(4021, "Content upload fail. Because user haven't make product plan"),
 	ERR_CONTENT_UPLOAD_LICENSE_NOT_FOUND(4022, "Content upload fail. Because workspace haven't license plan"),
-    ERR_CONTENT_DOWNLOAD_INVALID_SHARED(4023, "Content upload fail. Contents is not shared."),
+	ERR_CONTENT_DOWNLOAD_INVALID_SHARED(4023, "Content upload fail. Contents is not shared."),
 
-
-    // 타겟 관련
+	// 타겟 관련
 	ERR_TARGET_DATA_ALREADY_EXIST(4101, "Target insert fail. Because this target data already exist."),
 
+	//프로젝트 관련
+	ERR_PROJECT_NOT_FOUND(5000, "Project information not found."),
+
+	//프로젝트 업로드
+	ERR_PROJECT_UPLOAD(5010, "Project upload fail."),
+	ERR_PROJECT_UPLOAD_MAX_STORAGE(5011, "Project upload fail. Because maximum uploadable storage is exceeded."),
+	ERR_PROJECT_UPLOAD_INVALID_LICENSE(5012, "Project upload fail. Because user have no uploadable product license."),
+
+	//프로젝트 조회
+	ERR_PROJECT_ACCESS_INVALID_SHARE_PERMISSION(
+		5020, "Project access fail. Because user have invalid project share permission."),
+
+	//프로젝트 수정
+	ERR_PROJECT_UPDATE(5030, "Project update fail."),
+	ERR_PROJECT_UPDATE_INVALID_SHARE_PERMISSION(
+		5031, "Project update fail. Because user have invalid project share permission."),
+	ERR_PROJECT_UPDATE_INVALID_EDIT_PERMISSION(
+		5032, "Project update fail. Because user have invalid project edit permission."),
+
+	//프로젝트 다운로드
+	ERR_PROJECT_DOWNLOAD(5040, "Project download fail."),
+	ERR_PROJECT_DOWNLOAD_INVALID_SHARE_PERMISSION(
+		5041, "Project download fail. Because user have invalid project share permission."),
+
 	// 공통 에러
-	ERR_INVALID_REQUEST_PARAMETER(8001, "Invalid request parameter cause api errors");
+	ERR_INVALID_REQUEST_PARAMETER(8001, "Invalid request parameter cause api errors"),
+	ERR_UNEXPECTED_SERVER_ERROR(9999, "Unexpected Server Error, Please contact Administrator");
 
-	private int code;
-	private String message;
+	private final int code;
+	private final String message;
 
-	ErrorCode(final int code, final String message) {
+	ErrorCode(int code, String message) {
 		this.code = code;
 		this.message = message;
 	}
@@ -70,3 +94,4 @@ public enum ErrorCode {
 			'}';
 	}
 }
+
