@@ -1,5 +1,5 @@
 <template>
-  <div class="workspace-createroom-wrapper">
+  <div>
     <modal
       :title="$t('workspace.create_remote')"
       width="78.429em"
@@ -47,18 +47,14 @@
 import Modal from 'Modal'
 import CreateRoomInfo from '../partials/ModalCreateRoomInfo'
 import CreateRoomInvite from '../partials/ModalCreateRoomInvite'
-
-import { getMemberGroupList, getMemberGroupItem } from 'api/http/member'
-
-import { maxParticipants } from 'utils/callOptions'
-
 import createRoomMixin from 'mixins/createRoom'
-
-import { mapGetters } from 'vuex'
+import roomMixin from 'mixins/room'
+import { maxParticipants } from 'utils/callOptions'
+import { getMemberGroupList, getMemberGroupItem } from 'api/http/member'
 
 export default {
   name: 'WorkspaceCreateRoom',
-  mixins: [createRoomMixin],
+  mixins: [createRoomMixin, roomMixin],
   components: {
     Modal,
     CreateRoomInfo,
@@ -72,7 +68,7 @@ export default {
     },
     visible: {
       type: Boolean,
-      default: false,
+      default: true,
     },
   },
   data() {
@@ -91,9 +87,6 @@ export default {
       visibleMobileFlag: false,
     }
   },
-  computed: {
-    ...mapGetters(['targetCompany', 'restrictedMode', 'useScreenStrict']),
-  },
 
   watch: {
     async visible(flag) {
@@ -109,6 +102,7 @@ export default {
       this.visibleFlag = flag
     },
   },
+  
   methods: {
     reset() {
       this.selection = []

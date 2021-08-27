@@ -16,17 +16,15 @@
 import TabView from '../partials/WorkspaceTabView'
 import WorkspaceCard from 'WorkspaceCard'
 import { mapGetters, mapActions } from 'vuex'
-import thumbStyle from 'mixins/thumbStyle'
 
-const DEFAULT_THUMBSTYLE_SIZE = '5.143rem'
-const MOBILE_THUMBSTYLE_SIZE = '4.8rem'
+const DEFAULT_THUMBSTYLE_SIZE = { width: '5.143rem', height: '5.143rem' }
+const MOBILE_THUMBSTYLE_SIZE = { width: '4.8rem', height: '4.8rem' }
 
 export default {
   components: {
     TabView,
     WorkspaceCard,
   },
-  mixins: [thumbStyle],
   computed: {
     ...mapGetters(['workspaceList']),
   },
@@ -38,6 +36,15 @@ export default {
       },
     }
   },
+  watch: {
+    isMobile: {
+      immediate: true,
+      handler: function(newVal) {
+        if (newVal) this.thumbStyle = MOBILE_THUMBSTYLE_SIZE
+        else this.thumbStyle = DEFAULT_THUMBSTYLE_SIZE
+      },
+    },
+  },
   methods: {
     ...mapActions(['changeWorkspace']),
     refresh() {},
@@ -45,15 +52,6 @@ export default {
       this.$eventBus.$emit('scroll:reset:workspace')
       this.changeWorkspace(workspace)
     },
-  },
-  mounted() {
-    this.setSizeVariable(
-      DEFAULT_THUMBSTYLE_SIZE,
-      DEFAULT_THUMBSTYLE_SIZE,
-      MOBILE_THUMBSTYLE_SIZE,
-      MOBILE_THUMBSTYLE_SIZE,
-    )
-    this.activateThumbStyleHandlerOnMobileSize()
   },
 }
 </script>

@@ -162,7 +162,6 @@ export default {
       // alarmList: [],
       activeSrc: defaultActiveSrc,
       inactiveSrc: defaultInactiveSrc,
-      responsiveNoticeIcon: null,
       size: defaultNoticeIconSize,
       placement: deafultPlacement,
       width: defaultPopoverWidth,
@@ -183,6 +182,13 @@ export default {
       if (val.uuid && !oldVal.uuid) {
         this.pushInit()
       }
+    },
+    isMobile: {
+      immediate: true,
+      handler: function(newVal) {
+        if (newVal) this.setNoticeIconMobile()
+        else this.setNoticeIconDefault()
+      },
     },
   },
   methods: {
@@ -278,9 +284,11 @@ export default {
           // if (!this.onPush) return
           this.alarmInviteDenied(body.contents.nickName)
           break
+        //제거예정
         case EVENT.LICENSE_EXPIRATION:
           this.alarmLicenseExpiration(body.contents.leftLicenseTime)
           break
+        //제거예정
         case EVENT.LICENSE_EXPIRED:
           if (this.$route.name === 'workspace') {
             this.clearWorkspace(this.workspace.uuid)
@@ -390,13 +398,6 @@ export default {
 
   /* Lifecycles */
   mounted() {
-    //모바일 반응형 아이콘 리소스
-    this.responsiveNoticeIcon = this.callAndGetMobileResponsiveFunction(
-      this.setNoticeIconMobile,
-      this.setNoticeIconDefault,
-    )
-    this.addEventListenerScreenResize(this.responsiveNoticeIcon)
-
     if (this.isSafari) {
       this.$refs['noticeAudio'].onloadeddata = this.loadeddata
       this.$refs['noticeAudio'].autoplay = true
@@ -416,8 +417,6 @@ export default {
     if (this.isSafari) {
       window.removeEventListener('touchstart', this.loadAudio)
     }
-
-    this.removeEventListenerScreenResize(this.responsiveEmptyImage)
   },
 }
 </script>
@@ -528,6 +527,7 @@ export default {
     > img {
       width: 8rem;
       height: 8rem;
+      content: url(~assets/image/img_noalram_new.svg);
     }
     > span {
       @include fontLevel(150);

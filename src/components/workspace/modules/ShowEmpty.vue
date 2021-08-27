@@ -77,6 +77,9 @@ export default {
 }
 
 @include responsive-mobile {
+  .show-empty__image {
+    height: 23rem;
+  }
   .show-empty__title {
     @include fontLevel(200);
     color: $new_color_text_main;

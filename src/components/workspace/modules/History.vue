@@ -14,9 +14,25 @@
             length: history.memberList.length,
           })
         "
-        :thumbStyle="{ width: '3em', height: '3em' }"
+        :thumbStyle="thumbStyle"
         :group="true"
       ></profile>
+    </div>
+
+    <div class="card-item info-mobile">
+      <p class="info-mobile__title" :class="{ open: isOpenRoom }">
+        {{ history.title }}
+      </p>
+      <div class="info-mobile__subtext">
+        <span class="subtext__member">{{
+          $t('workspace.history_member_length', {
+            length: history.memberList.length,
+          })
+        }}</span>
+        <span class="subtext__date">
+          {{ date }}
+        </span>
+      </div>
     </div>
 
     <div class="card-item hide-tablet">
@@ -44,7 +60,7 @@
       </button>
       <popover
         trigger="click"
-        placement="bottom-start"
+        :placement="placement"
         popperClass="custom-popover"
         width="auto"
         :scrollHide="true"
@@ -98,6 +114,16 @@ export default {
       default: () => {
         return {}
       },
+    },
+    thumbStyle: {
+      type: Object,
+      default: () => {
+        return { width: '3em', height: '3em' }
+      },
+    },
+    placement: {
+      type: String,
+      default: 'bottom-start',
     },
   },
   data() {
@@ -215,5 +241,80 @@ export default {
   display: flex;
   align-items: center;
   justify-content: flex-end;
+}
+
+@include responsive-mobile {
+  .widecard {
+    margin-bottom: 0.4rem;
+    padding-left: 0;
+    background-color: transparent;
+    &.open {
+      background-color: transparent;
+    }
+    &:hover {
+      background: transparent;
+      &.open {
+        background-color: transparent;
+      }
+    }
+    .card-item {
+      display: none;
+      flex: none;
+      .profile {
+        margin-right: 0.5rem;
+      }
+      .profile .profile--text {
+        display: none;
+      }
+    }
+
+    .card-item.info-mobile {
+      display: block;
+      .info-mobile__title {
+        @include fontLevel(100);
+        color: $new_color_text_main;
+        &.open {
+          color: #4cda9f;
+        }
+      }
+      .info-mobile__subtext {
+        margin-top: 0.2rem;
+        @include fontLevel(75);
+        .subtext__member {
+          color: $new_color_text_sub;
+        }
+        .subtext__date {
+          margin-left: 0.8rem;
+          color: $new_color_text_sub_description;
+        }
+      }
+    }
+  }
+  .widecard-tools {
+    position: absolute;
+    right: 0;
+    > button {
+      display: none;
+    }
+    .widecard-tools__menu-button {
+      @include mobile-popover-btn(2.8rem);
+    }
+  }
+  .custom-popover {
+    @include responsive-popover;
+  }
+  // .popover.custom-popover {
+  //   background-color: #606a77; //@추가 color
+  //   border: none; //@추가 color
+  // }
+  // .groupcard-popover {
+  //   .group-pop__button {
+  //     @include fontLevel(100);
+  //     width: 12.1rem;
+  //     height: 4rem;
+  //     padding: 0;
+  //     padding-left: 2rem;
+  //   }
+  // }
 }
 </style>

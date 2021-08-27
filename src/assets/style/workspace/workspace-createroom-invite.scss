@@ -122,6 +122,7 @@
     .createroom-user__header {
       display: flex;
       align-items: center;
+      justify-content: space-between;
       margin-top: 1.3rem;
       margin-bottom: 2.2rem;
     }
@@ -145,15 +146,16 @@
   }
 
   .createroom-user__header .icon-button {
+    position: relative;
     top: 0;
   }
 
-  .widecard.choice {
-    background-color: $new_color_bg_item;
-    border-radius: 0.6rem;
+  // .widecard.choice {
+  //   background-color: $new_color_bg_item;
+  //   border-radius: 0.6rem;
 
-    &.selected {
-      border-color: $new_color_bg_button_primary;
-    }
-  }
+  //   &.selected {
+  //     border-color: $new_color_bg_button_primary;
+  //   }
+  // }
 }

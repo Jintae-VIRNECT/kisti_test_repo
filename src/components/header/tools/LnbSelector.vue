@@ -20,7 +20,7 @@
             <profile
               class="header-lnb-selector__profile"
               :group="true"
-              :image="workspace.profile"
+              :image="work.profile"
               :thumbStyle="{ width: '3rem', height: '3rem' }"
             ></profile>
             <span

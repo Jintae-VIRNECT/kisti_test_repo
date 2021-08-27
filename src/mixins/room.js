@@ -1,4 +1,10 @@
-import { joinRoom } from 'api/http/room'
+import {
+  joinRoom,
+  createRoom,
+  restartRoom,
+  updateRoomProfile,
+  getRoomInfo,
+} from 'api/http/room'
 import { ROLE } from 'configs/remote.config'
 import { DEVICE } from 'configs/device.config'
 import { ROOM_STATUS } from 'configs/status.config'
@@ -10,9 +16,7 @@ import errorMsgMixin from 'mixins/errorMsg'
 import confirmMixin from 'mixins/confirm'
 
 import { isRegisted } from 'utils/auth'
-import { mapActions } from 'vuex'
-
-import { getRoomInfo } from 'api/http/room'
+import { mapActions, mapGetters } from 'vuex'
 
 export default {
   mixins: [toastMixin, callMixin, errorMsgMixin, confirmMixin],
@@ -20,6 +24,9 @@ export default {
     return {
       clicked: false,
     }
+  },
+  computed: {
+    ...mapGetters(['targetCompany', 'restrictedMode', 'useScreenStrict']),
   },
   methods: {
     ...mapActions(['roomClear', 'setRoomInfo']),
@@ -154,6 +161,161 @@ export default {
         return roomInfo.videoRestrictedMode
       } else {
         return false
+      }
+    },
+
+    //원격 협업 시작
+    //info : {title, description, imageFile, imageUrl, open}
+    async startRemote(info) {
+      try {
+        const isOpenRoom = info.open
+
+        //멤버 상태 등록 안된 경우 협업방 입장 불가
+        if (!isRegisted) {
+          this.toastDefault(this.$t('workspace.auth_status_failed'))
+          return
+        }
+
+        if (this.clicked === true) return
+        this.clicked = true
+
+        //loading ui 표사
+        this.$eventBus.$emit('roomloading:show', true)
+
+        const options = await this.getDeviceId() //callMixin
+        const mediaStream = await this.$call.getStream(options)
+
+        //참여자 정보
+        let selectedUser = []
+        let selectedUserIds = []
+
+        if (!isOpenRoom) {
+          for (let select of this.selection) {
+            selectedUser.push({
+              id: select.uuid,
+              uuid: select.uuid,
+              email: select.email,
+            })
+            selectedUserIds.push(select.uuid)
+          }
+        }
+
+        let createdRes
+
+        //sessionId : props
+        if (
+          this.sessionId &&
+          this.sessionId.length > 0 &&
+          info.imageUrl &&
+          info.imageUrl !== 'default'
+        ) {
+          //api
+          createdRes = await restartRoom({
+            client: 'DESKTOP',
+            userId: this.account.uuid,
+            title: info.title,
+            description: info.description,
+            leaderId: this.account.uuid,
+            participantIds: selectedUserIds,
+            workspaceId: this.workspace.uuid,
+            sessionId: this.sessionId,
+            sessionType: isOpenRoom ? ROOM_STATUS.OPEN : ROOM_STATUS.PRIVATE,
+            companyCode: this.targetCompany,
+            videoRestrictedMode:
+              this.restrictedMode.video && this.useScreenStrict,
+            audioRestrictedMode:
+              this.restrictedMode.audio && this.useScreenStrict,
+          })
+        } else {
+          //api
+          createdRes = await createRoom({
+            client: 'DESKTOP',
+            userId: this.account.uuid,
+            title: info.title,
+            description: info.description,
+            leaderId: this.account.uuid,
+            participantIds: selectedUserIds,
+            workspaceId: this.workspace.uuid,
+            sessionType: isOpenRoom ? ROOM_STATUS.OPEN : ROOM_STATUS.PRIVATE,
+            companyCode: this.targetCompany,
+            videoRestrictedMode:
+              this.restrictedMode.video && this.useScreenStrict,
+            audioRestrictedMode:
+              this.restrictedMode.audio && this.useScreenStrict,
+          })
+        }
+        if (info.imageFile) {
+          const res = await updateRoomProfile({
+            profile: info.imageFile,
+            sessionId: createdRes.sessionId,
+            uuid: this.account.uuid,
+            workspaceId: this.workspace.uuid,
+          })
+
+          if (res.usedStoragePer >= 90) {
+            this.toastError(this.$t('alarm.file_storage_about_to_limit'))
+          }
+        }
+
+        const connRes = await this.$call.connect(
+          createdRes,
+          ROLE.LEADER,
+          options,
+          mediaStream,
+        )
+
+        //api
+        const roomInfo = await getRoomInfo({
+          sessionId: createdRes.sessionId,
+          workspaceId: this.workspace.uuid,
+        })
+
+        //vuex action
+        this.setRoomInfo({
+          ...roomInfo,
+          leaderId: this.account.uuid,
+          open: isOpenRoom,
+          videoRestrictedMode: createdRes.videoRestrictedMode,
+          audioRestrictedMode: createdRes.audioRestrictedMode,
+        })
+        if (connRes) {
+          this.clicked = false
+          this.$eventBus.$emit('popover:close')
+
+          this.$nextTick(() => {
+            this.$router.push({ name: 'service' })
+          })
+        } else {
+          this.roomClear() //vuex action
+          console.error('join room fail')
+          this.clicked = false
+        }
+      } catch (err) {
+        this.clicked = false
+        this.$eventBus.$emit('roomloading:show', false)
+        this.roomClear() //vuex action
+        if (typeof err === 'string') {
+          console.error(err)
+          if (err === 'nodevice') {
+            this.toastError(this.$t('workspace.error_no_connected_device'))
+            return
+          } else if (err.toLowerCase() === 'requested device not found') {
+            this.toastError(this.$t('workspace.error_no_device'))
+            return
+          } else if (err.toLowerCase() === 'device access deined') {
+            this.$eventBus.$emit('devicedenied:show')
+            return
+          }
+        } else if (err.code === 7003) {
+          this.toastError(this.$t('service.file_type'))
+        } else if (err.code === 7004) {
+          this.toastError(this.$t('service.file_maxsize'))
+        } else if (err.code === 7017) {
+          this.toastError(this.$t('alarm.file_storage_capacity_full'))
+        } else {
+          console.error(`${err.message} (${err.code})`)
+          this.toastError(this.$t('confirm.network_error'))
+        }
       }
     },
   },

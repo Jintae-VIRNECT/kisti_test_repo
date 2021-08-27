@@ -52,6 +52,7 @@ const buildTemplate = payload => {
 export default {
   methods: {
     /**
+     * 제거예정
      * 라이선스 만료 안내
      * @param {String} time
      */
@@ -108,6 +109,13 @@ export default {
                 deny()
               },
             },
+            {
+              text: '',
+              class: 'btn small close',
+              onClick: () => {
+                inviteNotify.goAway()
+              },
+            },
           ],
         },
       })
@@ -133,6 +141,7 @@ export default {
       )
     },
     /**
+     * 제거예정
      * 라이선스 만료 메시지 (협업 진행 중)
      */
     alarmLicense() {
@@ -144,6 +153,7 @@ export default {
       })
     },
     /**
+     * 제거예정
      * 라이선스 만료 메시지 (홈화면)
      */
     alarmLicenseHome() {

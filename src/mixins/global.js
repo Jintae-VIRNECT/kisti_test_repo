@@ -1,4 +1,4 @@
-import { mapGetters } from 'vuex'
+import { mapGetters, mapMutations } from 'vuex'
 import dayjs from 'dayjs'
 import { RUNTIME, RUNTIME_ENV } from 'configs/env.config'
 
@@ -35,7 +35,13 @@ export default {
     },
   },
   computed: {
-    ...mapGetters(['account', 'workspace', 'deviceType', 'hasLicense']),
+    ...mapGetters([
+      'account',
+      'workspace',
+      'deviceType',
+      'hasLicense',
+      'isMobile',
+    ]),
     isSafari() {
       const userAgent = navigator.userAgent || ''
       return (
@@ -73,6 +79,7 @@ export default {
     },
   },
   methods: {
+    ...mapMutations(['SET_IS_MOBILE']),
     onImageError(event) {
       // console.log(event.target)
       // event.target.src = require('assets/image/img_user_profile.svg')
@@ -83,24 +90,17 @@ export default {
       // event.target.src = require('assets/image/img_default_group.svg')
       event.target.style.display = 'none'
     },
-
-    //모바일 반응형 사이즈 이벤트 함수 : js로 반응형 처리를 해야하는 경우에 사용
-    callAndGetMobileResponsiveFunction(fn, resetFn = fn) {
-      //call
-      if (matchMedia('screen and (max-width: 767px)').matches) fn()
-      else resetFn()
-
-      //return event function
-      return () => {
-        if (matchMedia('screen and (max-width: 767px)').matches) fn()
-        else resetFn()
-      }
+    responsiveGlobal() {
+      if (matchMedia('screen and (max-width: 767px)').matches)
+        this.SET_IS_MOBILE(true)
+      else this.SET_IS_MOBILE(false)
     },
-    addEventListenerScreenResize(fn) {
-      window.addEventListener('resize', fn)
-    },
-    removeEventListenerScreenResize(fn) {
-      if (fn) window.addEventListener('resize', fn)
-    },
+  },
+  mounted() {
+    this.responsiveGlobal()
+    window.addEventListener('resize', this.responsiveGlobal)
+  },
+  beforeDestroy() {
+    window.removeEventListener('resize', this.responsiveGlobal)
   },
 }

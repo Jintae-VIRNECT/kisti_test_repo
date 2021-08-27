@@ -85,6 +85,9 @@ export default {
         this.$refs['contentScrollbar'].reset()
       }
     },
+    isMobile() {
+      this.responsiveReset()
+    },
   },
   methods: {
     onScroll(scrollX, scrollY) {
@@ -141,10 +144,6 @@ export default {
     this.$nextTick(() => {
       this.$eventBus.$on('scrollReset', this.reset)
     })
-    this.addEventListenerScreenResize(this.responsiveReset) //반응형으로 인해 dom이 변경되 경우 height 값을 업데이트 해줘야 함
-  },
-  beforeDestroy() {
-    this.removeEventListenerScreenResize(this.responsiveReset)
   },
   mounted() {
     this.getScrollH(this.$refs['contentScrollbar'])

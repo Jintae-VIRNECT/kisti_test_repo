@@ -93,6 +93,7 @@ export default {
     align-items: center;
     justify-content: center;
     width: 3.2rem;
+    min-width: 3.2rem;
     height: 3.2rem;
     margin-right: 0.8rem;
     margin-left: 0;
