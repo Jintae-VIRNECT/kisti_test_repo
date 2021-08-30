@@ -1,13 +1,11 @@
 package com.virnect.uaa.domain.user.application;
 
 import java.time.LocalDateTime;
-import java.util.Optional;
 
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.StringUtils;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -107,16 +105,11 @@ public class MemberUserInformationService {
 	 */
 	@Transactional(readOnly = true)
 	public UserEmailExistCheckResponse userEmailDuplicateCheck(String email) {
-		Optional<User> user = userRepository.findByEmail(email);
+		boolean userExist = userRepository.existsByEmail(email);
 
-		if (user.isPresent()) {
+		if (userExist) {
 			log.info("[CREATE_WORKSPACE_ONLY_USER] - Email duplicate [{}]", email);
 			throw new UserServiceException(UserAccountErrorCode.ERR_REGISTER_MEMBER_DUPLICATE_ID);
-		}
-
-		//  비밀번호 찾기 질의 정보가 설정되어있지 않은 경우
-		if (StringUtils.isEmpty(user.get().getQuestion()) && StringUtils.isEmpty(user.get().getAnswer())) {
-			throw new UserServiceException(UserAccountErrorCode.ERR_USER_PASSWORD_QUESTION_AND_ANSWER_NOT_INITIALIZED);
 		}
 
 		return new UserEmailExistCheckResponse(email, true, LocalDateTime.now());
