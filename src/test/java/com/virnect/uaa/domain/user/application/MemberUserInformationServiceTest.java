@@ -18,10 +18,12 @@ import com.virnect.uaa.domain.user.domain.User;
 import com.virnect.uaa.domain.user.dto.request.MemberRegistrationRequest;
 import com.virnect.uaa.domain.user.mapper.UserInfoMapper;
 
+import java.util.Optional;
+
 @Slf4j
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
-@ActiveProfiles("local")
+@ActiveProfiles("test")
 class MemberUserInformationServiceTest {
 	@Autowired
 	UserRepository userRepository;
@@ -35,33 +37,35 @@ class MemberUserInformationServiceTest {
 	@Test
 	@Transactional
 	void registerNewMember() {
-		User masterUser = userRepository.findByEmail("sky4561393@virnect.com")
-			.orElseThrow(() -> new RuntimeException("마스터 사용자 못찾음"));
+		//given
+		Optional<User> masterUser = userRepository.findByEmail("sky4561393@virnect.com");
 
 		MemberRegistrationRequest memberRegistrationRequest = new MemberRegistrationRequest();
-		memberRegistrationRequest.setMasterUUID(masterUser.getUuid());
+		memberRegistrationRequest.setMasterUUID(masterUser.get().getUuid());
 		memberRegistrationRequest.setEmail("LoveAndCode2");
 		memberRegistrationRequest.setPassword("123456");
 
 		User workspaceOnlyUser = User.ByRegisterMemberUserBuilder()
-			.masterUser(masterUser)
+			.masterUser(masterUser.get())
 			.memberRegistrationRequest(memberRegistrationRequest)
 			.encodedPassword(passwordEncoder.encode(memberRegistrationRequest.getPassword()))
 			.build();
 
+		//when
 		userRepository.save(workspaceOnlyUser);
 
-		assertThat(workspaceOnlyUser.getMaster()).isEqualTo(masterUser);
+		//then
+		assertThat(workspaceOnlyUser.getMaster()).isEqualTo(masterUser.get());
 
 		System.out.println("----------------------------");
-		System.out.println(userInfoMapper.toUserInfoResponse(masterUser));
+		System.out.println(userInfoMapper.toUserInfoResponse(masterUser.get()));
 		System.out.println("----------------------------");
 		System.out.println(userInfoMapper.toUserInfoResponse(workspaceOnlyUser));
 		System.out.println("+++++++++++++++++++++++++++++");
 		System.out.println(userInfoMapper.toUserInfoResponse(workspaceOnlyUser));
 		System.out.println(userInfoMapper.toUserInfoResponse(workspaceOnlyUser.getMaster()));
 		System.out.println("+++++++++++++++++++++++++++++");
-		masterUser.getSeatUsers().forEach(user -> System.out.println(userInfoMapper.toUserInfoResponse(user)));
+		masterUser.get().getSeatUsers().forEach(user -> System.out.println(userInfoMapper.toUserInfoResponse(user)));
 		System.out.println("+++++++++++++++++++++++++++++");
 	}
 }
