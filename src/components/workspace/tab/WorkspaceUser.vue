@@ -42,7 +42,7 @@
     :listCount="groupList.length"
     :showMemberButton="true"
     :showAddGroupButton="true"
-    :loading="loading"
+    :loading="groupLoading"
     :showSubHeader="true"
     @showmember="toggleMode"
     @addgroup="showGroup"
@@ -300,6 +300,8 @@ export default {
       this.memberGroupModalFlag = true
     },
     async updategroup(groupId) {
+      this.$eventBus.$emit('popover:close')
+
       const group = await getMemberGroupItem({
         workspaceId: this.workspace.uuid,
         groupId: groupId,
@@ -324,6 +326,8 @@ export default {
      * @param {String} 삭제할 그룹 id
      */
     async deleteGroup(groupId) {
+      this.$eventBus.$emit('popover:close')
+
       try {
         await deletePrivateMemberGroup({
           workspaceId: this.workspace.uuid,

@@ -45,12 +45,13 @@
       :visible.sync="visibleMobileFlag"
       :beforeClose="beforeClose"
       :value.sync="groupNameInput"
-      :valid.sync="groupNameInValid"
-      :groupNameInvalidMessage="groupNameInvalidMessage"
       :users="users"
       :selection="selection"
       :loading="loading"
       :maxSelect="maxSelect"
+      @userSelect="selectUser"
+      @inviteRefresh="refreshUser"
+      @save="save"
     ></workspace-mobile-member-group>
   </div>
 </template>

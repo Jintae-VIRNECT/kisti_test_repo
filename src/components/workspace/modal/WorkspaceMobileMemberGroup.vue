@@ -9,14 +9,10 @@
         :title="$t('workspace.workspace_member_group_name')"
         :placeholder="$t('workspace.workspace_member_group_name')"
         :value.sync="groupNameInput"
-        :valid.sync="groupNameInValid"
-        validate="validName"
-        :validMessage="groupNameInvalidMessage"
         type="text"
         :count="20"
         showCount
-        countPosition="mid-right"
-        titlePosition="bottom"
+        required
       ></input-row>
 
       <room-invite
@@ -29,7 +25,7 @@
       ></room-invite>
       <button
         class="btn save-group"
-        :disabled="selection.length === 0 || groupNameInValid"
+        :disabled="selection.length === 0 || groupNameInput.length === 0"
         @click="save"
       >
         {{ $t('button.confirm') }} {{ selection.length }}/{{ this.maxSelect }}
@@ -55,12 +51,12 @@ export default {
     value: {
       type: String,
     },
-    valid: {
-      type: Boolean,
-    },
-    groupNameInvalidMessage: {
-      type: String,
-    },
+    // valid: {
+    //   type: Boolean,
+    // },
+    // groupNameInvalidMessage: {
+    //   type: String,
+    // },
     users: {
       type: Array,
     },
@@ -76,20 +72,17 @@ export default {
   },
   data() {
     return {
-      groupNameInput: '',
-      groupNameInValid: null,
+      groupNameInput: this.value,
+      // groupNameInValid: this.valid,
     }
   },
   watch: {
-    visible(f) {
-      console.error(f)
-    },
     groupNameInput(newVal) {
       this.$emit('update:value', newVal)
     },
-    groupNameInValid(newVal) {
-      this.$emit('update:valid', newVal)
-    },
+    // groupNameInValid(newVal) {
+    //   this.$emit('update:valid', newVal)
+    // },
   },
   methods: {
     close() {
@@ -98,8 +91,8 @@ export default {
     save() {
       this.$emit('save')
     },
-    selectUser() {
-      this.$emit('userSelect')
+    selectUser(user) {
+      this.$emit('userSelect', user)
     },
     refreshUser() {
       this.$emit('inviteRefresh')
@@ -108,4 +101,60 @@ export default {
 }
 </script>
 
-<style></style>
+<style lang="scss">
+@import '~assets/style/_mixin';
+
+@include responsive-mobile {
+  .member-group {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+  }
+  .member-group > .inputrow {
+    padding: 2rem 1.6rem;
+    padding-bottom: 0.4rem;
+    @include fontLevel(100);
+
+    .inputrow-title {
+      margin-bottom: 1.1rem;
+      color: $new_color_text_sub;
+    }
+
+    .inputrow-input {
+      background-color: $new_color_bg;
+      @include fontLevel(100);
+      border-color: $new_color_bg;
+      &:hover {
+        border-color: $new_color_bg;
+      }
+      &:active,
+      &:focus {
+        border: 1px solid $new_color_active_border;
+      }
+    }
+    .inputrow-length {
+      top: 20px;
+      right: 16px;
+      @include fontLevel(100);
+      color: $new_color_text_sub;
+    }
+  }
+
+  .member-group > .createroom-user {
+    height: 100%;
+  }
+
+  .member-group > .btn.save-group {
+    min-height: 4.8rem;
+    margin: 0 1.6rem 1.6rem;
+    color: $new_color_text_main;
+    background-color: $new_color_bg_button_primary;
+    border-radius: 0.4rem;
+    @include fontLevel(200);
+
+    &:disabled {
+      opacity: 0.4;
+    }
+  }
+}
+</style>
