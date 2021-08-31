@@ -28,6 +28,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import com.virnect.content.application.license.LicenseRestService;
+import com.virnect.content.application.user.UserRestService;
 import com.virnect.content.application.workspace.WorkspaceRestService;
 import com.virnect.content.dao.content.ContentRepository;
 import com.virnect.content.dao.project.ProjectEditUserRepository;
@@ -53,6 +54,7 @@ import com.virnect.content.dto.response.ProjectTargetInfoResponse;
 import com.virnect.content.dto.rest.LicenseInfoResponse;
 import com.virnect.content.dto.rest.MemberInfoDTO;
 import com.virnect.content.dto.rest.MyLicenseInfoListResponse;
+import com.virnect.content.dto.rest.UserInfoResponse;
 import com.virnect.content.exception.ProjectServiceException;
 import com.virnect.content.global.common.ApiResponse;
 import com.virnect.content.global.common.PageMetadataResponse;
@@ -84,6 +86,7 @@ public class ProjectService {
 	private final ContentRepository contentRepository;
 	private final ProjectResponseMapper projectResponseMapper;
 	private final WorkspaceRestService workspaceRestService;
+	private final UserRestService userRestService;
 
 	/**
 	 * 프로젝트 업로드
@@ -295,12 +298,12 @@ public class ProjectService {
 	 */
 	public ProjectInfoListResponse getProjectList(
 		String workspaceUUID, String userUUID, List<SharePermission> sharePermissionList,
-		List<EditPermission> editPermissionList, List<Mode> modeList, List<TargetType> targetTypeList,
+		List<EditPermission> editPermissionList, List<Mode> modeList, List<TargetType> targetTypeList, String search,
 		Pageable pageable
 	) {
 		//1. 필터링 요청에 따른 프로젝트 목록 select
 		Page<Project> filteredProjectPage = projectRepository.getFilteredProjectPage(
-			workspaceUUID, sharePermissionList, editPermissionList, modeList, targetTypeList, pageable);
+			workspaceUUID, sharePermissionList, editPermissionList, modeList, targetTypeList, search, pageable);
 
 		//MEMBER - 체크하지 않음.
 		//SPECIFIC_MEMBER - 지정 멤버인지, 업로더인지, 마스터인지, 매니저인지 체크
@@ -308,7 +311,7 @@ public class ProjectService {
 		//MANAGER - 마스터인지, 매니저인지 체크
 
 		//2. 프로젝트 조회 - 멤버 권한이 아닌경우 필터링이 요청이 없는 경우 필터링 된 모든 프로젝트를 볼 수 있음
-		MemberInfoDTO memberInfoResponse = getMemberInfoRequest(workspaceUUID, userUUID);
+		MemberInfoDTO memberInfoResponse = getMemberInfoResponse(workspaceUUID, userUUID);
 		if (!memberInfoResponse.getRole().equals("MEMBER")) {
 			List<ProjectInfoResponse> projectInfoResponseList = filteredProjectPage.stream()
 				.map(this::generateProjectResponse)
@@ -404,7 +407,30 @@ public class ProjectService {
 		int objectTotal = propertyInfo.getObjectCount(propertyInfo.getPropertyObjectList(), 0);
 		projectInfoResponse.setPropertySceneTotal(sceneTotal);
 		projectInfoResponse.setPropertyObjectTotal(objectTotal);
+
+		//업로더 네임, 프로필 정보
+		UserInfoResponse userInfoResponse = getUserInfoResponse(project.getUserUUID());
+		projectInfoResponse.setUploaderName(userInfoResponse.getName());
+		projectInfoResponse.setUploaderProfile(userInfoResponse.getProfile());
 		return projectInfoResponse;
+	}
+
+	/**
+	 * 유저 정보 조회
+	 * @param userUUID -  조회 대상 유저 식별자
+	 * @return - 유저 정보
+	 */
+	private UserInfoResponse getUserInfoResponse(String userUUID) {
+		ApiResponse<UserInfoResponse> apiResponse = userRestService.getUserInfoByUserUUID(userUUID);
+		if (apiResponse.getCode() != 200 || apiResponse.getData() == null || !StringUtils.hasText(
+			apiResponse.getData().getUuid())) {
+			log.error(
+				"[REQ - USER SERVER][GET USER INFO] request user uuid : {},  response code : {}, response message : {}",
+				userUUID, apiResponse.getCode(), apiResponse.getMessage()
+			);
+			throw new ProjectServiceException(ErrorCode.ERR_UNEXPECTED_SERVER_ERROR);
+		}
+		return apiResponse.getData();
 	}
 
 	/**
@@ -413,7 +439,7 @@ public class ProjectService {
 	 * @param userUUID - 대상 유저 식별자
 	 * @return - 워크스페이스 유저 정보
 	 */
-	private MemberInfoDTO getMemberInfoRequest(String workspaceUUID, String userUUID) {
+	private MemberInfoDTO getMemberInfoResponse(String workspaceUUID, String userUUID) {
 		ApiResponse<MemberInfoDTO> apiResponse = workspaceRestService.getMemberInfo(workspaceUUID, userUUID);
 		if (apiResponse.getCode() != 200 || apiResponse.getData() == null || !StringUtils.hasText(
 			apiResponse.getData().getUuid())) {
@@ -438,7 +464,7 @@ public class ProjectService {
 			.orElseThrow(() -> new ProjectServiceException(ErrorCode.ERR_PROJECT_NOT_FOUND));
 
 		//2. 프로젝트 공유 권한 체크
-		MemberInfoDTO memberInfoResponse = getMemberInfoRequest(project.getWorkspaceUUID(), userUUID);
+		MemberInfoDTO memberInfoResponse = getMemberInfoResponse(project.getWorkspaceUUID(), userUUID);
 		if (project.getSharePermission() == SharePermission.SPECIFIC_MEMBER) {
 			if (project.getProjectShareUserList()
 				.stream()

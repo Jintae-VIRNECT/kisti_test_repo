@@ -7,8 +7,8 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.support.QuerydslRepositorySupport;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.StringUtils;
 
-import com.querydsl.core.types.Predicate;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.JPQLQuery;
 
@@ -47,7 +47,7 @@ public class ProjectCustomRepositoryImpl extends QuerydslRepositorySupport imple
 	public Page<Project> getFilteredProjectPage(
 		String workspaceUUID,
 		List<SharePermission> sharePermissionList, List<EditPermission> editPermissionList, List<Mode> modeList,
-		List<TargetType> targetTypeList, Pageable pageable
+		List<TargetType> targetTypeList, String search, Pageable pageable
 	) {
 		QProject qProject = QProject.project;
 		QProjectMode qProjectMode = QProjectMode.projectMode;
@@ -58,11 +58,18 @@ public class ProjectCustomRepositoryImpl extends QuerydslRepositorySupport imple
 			.join(qProject.projectTarget, qProjectTarget)
 			.where(
 				qProject.workspaceUUID.eq(workspaceUUID), eqSharePermission(sharePermissionList),
-				eqEditPermission(editPermissionList), eqMode(modeList), eqTargetType(targetTypeList)
+				eqEditPermission(editPermissionList), eqMode(modeList), eqTargetType(targetTypeList), eqSearch(search)
 			);
 		List<Project> resultProjectList = getQuerydsl().applyPagination(pageable, query).fetch();
 
 		return new PageImpl<>(resultProjectList, pageable, query.fetchCount());
+	}
+
+	private BooleanExpression eqSearch(String search) {
+		if (StringUtils.hasText(search)) {
+			return QProject.project.name.contains(search);
+		}
+		return null;
 	}
 
 	@Override

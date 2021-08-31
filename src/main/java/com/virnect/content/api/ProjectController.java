@@ -96,6 +96,7 @@ public class ProjectController {
 		@ApiImplicitParam(name = "size", value = "페이징 사이즈", dataType = "number", paramType = "query", defaultValue = "10"),
 		@ApiImplicitParam(name = "page", value = "size 대로 나눠진 페이지를 조회할 번호(1부터 시작)", paramType = "query", defaultValue = "1"),
 		@ApiImplicitParam(name = "sort", value = "정렬 옵션 ", paramType = "query", defaultValue = "createdDate,desc"),
+		@ApiImplicitParam(name = "search", value = "검색어 옵션(프로젝트 이름)", paramType = "query", defaultValue = ""),
 	})
 	@GetMapping
 	public ResponseEntity<ApiResponse<ProjectInfoListResponse>> getProjectList(
@@ -105,13 +106,14 @@ public class ProjectController {
 		@RequestParam(value = "editPermission", required = false) List<EditPermission> editPermissionList,
 		@RequestParam(value = "mode", required = false) List<Mode> modeList,
 		@RequestParam(value = "targetType", required = false) List<TargetType> targetTypeList,
+		@RequestParam(value = "search", required = false) String search,
 		@ApiIgnore PageRequest pageRequest
 	) {
 		if (!StringUtils.hasText(workspaceUUID) || !StringUtils.hasText(userUUID)) {
 			throw new ProjectServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
 		}
 		ProjectInfoListResponse responseMessage = projectService.getProjectList(
-			workspaceUUID, userUUID, sharePermissionList, editPermissionList, modeList, targetTypeList,
+			workspaceUUID, userUUID, sharePermissionList, editPermissionList, modeList, targetTypeList,search,
 			pageRequest.of()
 		);
 		return ResponseEntity.ok(new ApiResponse<>(responseMessage));
