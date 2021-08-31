@@ -50,7 +50,7 @@
         >
           {{ $t('button.send_email') }}</a
         >
-        <button v-else class="btn send-email" @click="processMail">
+        <button v-else class="btn send-email" @click="send">
           {{ $t('button.send_email') }}
         </button>
       </figure>
@@ -74,7 +74,6 @@ import Modal from 'Modal'
 
 import toastMixin from 'mixins/toast'
 
-import { getGuestInviteUrl } from 'api/http/guest'
 import { sendEmail } from 'api/http/mail'
 
 import { mapGetters } from 'vuex'
@@ -110,7 +109,7 @@ export default {
     visible(flag) {
       this.visibleFlag = flag
       if (flag) {
-        this.getInviteUrl()
+        this.inviteUrl = this.getInviteUrl('web')
       }
     },
   },
@@ -118,20 +117,20 @@ export default {
     beforeClose() {
       this.$emit('update:visible', false)
     },
-    async getInviteUrl() {
-      try {
-        const result = await getGuestInviteUrl({
-          sessionId: this.roomInfo.sessionId,
-          workspaceId: this.workspace.uuid,
-        })
-        this.inviteUrl = result.url
-      } catch (error) {
-        console.error(error)
-        this.beforeClose()
-      }
+    getInviteUrl(device) {
+      const route = device === 'qr' ? '/qr?' : '/connectioninfo?'
+
+      return (
+        `${window.location.origin}` +
+        route +
+        'workspaceId=' +
+        `${this.workspace.uuid}` +
+        '&sessionId=' +
+        `${this.roomInfo.sessionId}`
+      )
     },
     copyUrl() {
-      navigator.clipboard.writeText(this.inviteUrl).then(
+      navigator.clipboard.writeText(this.getInviteUrl('web')).then(
         () => {
           this.toastDefault(this.$t('service.guest_invite_url_copied'))
         },
@@ -140,7 +139,7 @@ export default {
         },
       )
     },
-    async processMail() {
+    async send() {
       try {
         await sendEmail({
           receivers: [this.emailAddress],
@@ -171,10 +170,13 @@ export default {
     getMailBody(target) {
       const newLine = target === 'mailto' ? '%0D%0A' : '<br>'
 
+      const webUrl = this.getInviteUrl('web')
+      const qrUrl = this.getInviteUrl('qr')
+
       const msg =
         `[${this.emailSubject}] ${newLine}` +
-        `(Access URL) ${newLine} ${this.inviteUrl} ${newLine} ${newLine}` +
-        `(QR Code access) ${newLine} ${'qr로그인 주소'} ${newLine}`
+        `(Access URL) ${newLine} ${webUrl} ${newLine} ${newLine}` +
+        `(QR Code access) ${newLine} ${qrUrl} ${newLine}`
       return msg
     },
   },
