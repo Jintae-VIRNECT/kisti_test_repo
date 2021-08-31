@@ -19,6 +19,8 @@
       "notAllowFileExtension": "Unsupported file type.",
       "notAllowFileSize": "Unsupported file size."
     },
-    "apply": "Apply"
+    "apply": "Apply",
+    "error": "Request failed. please try again later.",
+    "permanentlyDelete": "Permanently Delete"
   }
 }

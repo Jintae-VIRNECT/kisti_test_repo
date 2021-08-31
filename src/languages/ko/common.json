@@ -20,6 +20,8 @@
       "notAllowFileExtension": "지원하지 않는 파일 형식입니다.",
       "notAllowFileSize": "지원하지 않는 파일 크기입니다."
     },
-    "apply": "적용"
+    "apply": "적용",
+    "error": "요청에 실패했습니다. 잠시 후 다시 이용해 주세요.",
+    "permanentlyDelete": "영구 삭제"
   }
 }

@@ -137,7 +137,7 @@
         "memberWithdrawal": "Email accounts with a history of withdrawal cannot be invited."
       }
     },
-    "invitation":{
+    "invitation": {
       "title": "Personal Account Invitation",
       "desc": "Do you want to use virnect products and services with other users? <br>",
       "list": "Personal Account Invitation List"
@@ -145,13 +145,13 @@
     "create": {
       "new": "New Member",
       "title": "Add Workspace member",
-      "form": "Enter account creation info",
-      "info": "Account creation info",
-      "addMember": "Add account",
-      "createMember": "Create account",
+      "form": "Account to be created",
+      "info": "Information of account to be created",
+      "addMember": "Add Account",
+      "createMember": "Create Account",
       "id": "ID",
       "idPlaceholder": "Enter the ID of the account to be created.",
-      "idCheck": "Double Check",
+      "idCheck": "Check availability",
       "password": "Password",
       "passwordPlaceholder": "Please enter your password for the account to be created.",
       "workspaceMemberTitle": "Create Workspace-Only Accounts",
@@ -171,9 +171,9 @@
         "successTitle": "Adding member completed",
         "successContent": "The account is created based on the information entered. You may use the service using the created account. Please let the user know of setting up the password recovery question & answer ",
         "idDuplicated": "This ID is already registered, please enter a different ID.",
-        "notCheckId": "You have an account that has not been verified for redundancy.",
+        "notCheckId": "There are accounts that did not check availability.",
         "notHaveAnyPlan": "You need to allocate at least one plan to the account you are creating.",
-        "fail": "Failed to add a member, please try again later. If a same problem occurs please contact a network adminitrator."
+        "fail": "Failed to add a member, please try again later. If a same problem occurs, please contact a network adminitrator."
       }
     },
     "seat": {
