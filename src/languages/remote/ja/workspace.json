@@ -66,6 +66,7 @@
     "setting_mic_test": "マイクテスト",
     "setting_mic_test_description": "マイクに問題がありますか？ テストをスタートし、話しかけてください。 音声を繰り返します。",
     "setting_inout_device": "入出力装置",
+    "setting_video_device_choice": "映像装置設定",
     "setting_input_device": "入力装置",
     "setting_output_device": "出力装置",
     "setting_language_choice": "言語選択",

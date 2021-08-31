@@ -65,6 +65,7 @@
     "setting_mic_test": "마이크 테스트",
     "setting_mic_test_description": "마이크 문제가 있나요? 테스트를 시작하고 아무 말이나 해보세요. 다시 들려드리겠습니다.",
     "setting_inout_device": "입출력 장치",
+    "setting_video_device_choice": "영상 장치 선택",
     "setting_input_device": "입력 장치",
     "setting_output_device": "출력 장치",
     "setting_language_choice": "언어 선택",

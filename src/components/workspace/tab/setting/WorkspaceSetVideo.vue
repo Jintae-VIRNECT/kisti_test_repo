@@ -1,6 +1,6 @@
 <template>
   <section class="setting-section">
-    <div class="setting-section__title">
+    <div class="setting-section__title main">
       {{ $t('workspace.setting_video_choice') }}
     </div>
     <div class="setting-section__body horizon">
@@ -34,7 +34,7 @@
       </figure>
     </div>
     <div class="setting-section__body horizon">
-      <figure class="setting__figure">
+      <figure v-if="!isMobileSize" class="setting__figure video">
         <p class="setting__label" :class="{ warning: !!invalid }">
           {{ sumnailTitle }}
         </p>
@@ -63,6 +63,10 @@
           :max="30"
           :initValue="videoFPS"
         ></range-slider>
+
+        <p class="fps-value-mobile">
+          {{ videoFPS }}
+        </p>
       </figure>
     </div>
   </section>

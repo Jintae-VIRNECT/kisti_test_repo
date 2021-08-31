@@ -1,16 +1,21 @@
 <template>
   <div>
-    <section class="setting-section list">
-      <div class="setting-section__title">
+    <section class="setting-section list feature">
+      <div v-if="!isMobileSize" class="setting-section__title">
         {{ $t('workspace.setting_camera_control') }}
       </div>
       <div class="setting-section__body horizon">
         <figure class="setting__figure">
           <div class="setting__figure--wrapper">
             <p class="setting__label">
-              {{ $t('workspace.setting_camera_restrict_enable') }}
+              {{
+                isMobileSize
+                  ? $t('workspace.setting_camera_restrict')
+                  : $t('workspace.setting_camera_restrict_enable')
+              }}
             </p>
             <tooltip
+              v-if="!isMobileSize"
               customClass="tooltip-guide"
               :content="$t('workspace.setting_camera_restrict_info')"
               :placement="isTablet ? 'bottom' : 'right'"

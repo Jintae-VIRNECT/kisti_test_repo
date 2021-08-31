@@ -65,6 +65,7 @@
     "setting_mic_test": "mic settings",
     "setting_mic_test_description": "Are you having a trouble with your mic? Let's find out by saying any words out loud and we will play back to you.",
     "setting_inout_device": "I/O device",
+    "setting_video_device_choice": "Video device settings",
     "setting_input_device": "Input device",
     "setting_output_device": "Output device",
     "setting_language_choice": "Language selection",
