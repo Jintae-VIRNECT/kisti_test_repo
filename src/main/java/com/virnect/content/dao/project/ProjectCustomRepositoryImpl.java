@@ -1,6 +1,7 @@
 package com.virnect.content.dao.project;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -50,16 +51,23 @@ public class ProjectCustomRepositoryImpl extends QuerydslRepositorySupport imple
 		List<TargetType> targetTypeList, String search, Pageable pageable
 	) {
 		QProject qProject = QProject.project;
-		QProjectMode qProjectMode = QProjectMode.projectMode;
-		QProjectTarget qProjectTarget = QProjectTarget.projectTarget;
 		JPQLQuery<Project> query = from(qProject)
 			.select(qProject)
-			.join(qProject.projectModeList, qProjectMode)
-			.join(qProject.projectTarget, qProjectTarget)
 			.where(
 				qProject.workspaceUUID.eq(workspaceUUID), eqSharePermission(sharePermissionList),
-				eqEditPermission(editPermissionList), eqMode(modeList), eqTargetType(targetTypeList), eqSearch(search)
+				eqEditPermission(editPermissionList), eqSearch(search)
 			);
+
+		if (!CollectionUtils.isEmpty(modeList)) {
+			QProjectMode qProjectMode = QProjectMode.projectMode;
+			query = query.join(qProject.projectModeList, qProjectMode).where(qProjectMode.mode.in(modeList));
+		}
+
+		if (!CollectionUtils.isEmpty(targetTypeList)) {
+			QProjectTarget qProjectTarget = QProjectTarget.projectTarget;
+			query = query.join(qProject.projectTarget, qProjectTarget).where(qProjectTarget.type.in(targetTypeList));
+		}
+
 		List<Project> resultProjectList = getQuerydsl().applyPagination(pageable, query).fetch();
 
 		return new PageImpl<>(resultProjectList, pageable, query.fetchCount());
@@ -87,20 +95,6 @@ public class ProjectCustomRepositoryImpl extends QuerydslRepositorySupport imple
 
 	}
 
-	private BooleanExpression eqTargetType(List<TargetType> targetTypeList) {
-		if (!CollectionUtils.isEmpty(targetTypeList)) {
-			return QProjectTarget.projectTarget.type.in(targetTypeList);
-		}
-		return null;
-	}
-
-	private BooleanExpression eqMode(List<Mode> modeList) {
-		if (!CollectionUtils.isEmpty(modeList)) {
-			return QProjectMode.projectMode.mode.in(modeList);
-		}
-		return null;
-	}
-
 	private BooleanExpression eqEditPermission(List<EditPermission> editPermissionList) {
 		if (!CollectionUtils.isEmpty(editPermissionList)) {
 			return QProject.project.editPermission.in(editPermissionList);
@@ -113,5 +107,19 @@ public class ProjectCustomRepositoryImpl extends QuerydslRepositorySupport imple
 			return QProject.project.sharePermission.in(sharePermissionList);
 		}
 		return null;
+	}
+
+	@Override
+	public long calculateTotalStorageAmountByWorkspaceId(String workspaceId) {
+		QProject qProject = QProject.project;
+		Optional<Long> calculateTotalUsedStorageAmount = Optional.ofNullable(
+			from(qProject).select(qProject.size.sum()).where(qProject.workspaceUUID.eq(workspaceId)).fetchOne()
+		);
+		if (calculateTotalUsedStorageAmount.isPresent()) {
+			long totalStorageUsage = calculateTotalUsedStorageAmount.get();
+			totalStorageUsage /= 1024 * 1024;
+			return totalStorageUsage;
+		}
+		return 0L;
 	}
 }

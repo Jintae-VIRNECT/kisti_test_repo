@@ -156,6 +156,9 @@ public class ProjectController {
 	public ResponseEntity<ApiResponse<ProjectDeleteResponse>> deleteProject(
 		@PathVariable("projectUUID") String projectUUID
 	) {
+		if (!StringUtils.hasText(projectUUID)) {
+			throw new ProjectServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
+		}
 		ProjectDeleteResponse responseMessage = projectService.deleteProject(projectUUID);
 		return ResponseEntity.ok(new ApiResponse<>(responseMessage));
 	}

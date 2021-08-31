@@ -183,6 +183,9 @@ public class ProjectService {
 
 		//3. 응답
 		ProjectInfoResponse projectInfoResponse = generateProjectResponse(project);
+		projectInfoResponse.setModeList(projectUploadRequest.getModeList());
+		ProjectTargetInfoResponse projectTargetInfoResponse = projectResponseMapper.projectTargetToTargetInfoResponse(projectTarget);
+		projectInfoResponse.setTargetInfo(projectTargetInfoResponse);
 		return projectInfoResponse;
 	}
 
@@ -314,7 +317,7 @@ public class ProjectService {
 		MemberInfoDTO memberInfoResponse = getMemberInfoResponse(workspaceUUID, userUUID);
 		if (!memberInfoResponse.getRole().equals("MEMBER")) {
 			List<ProjectInfoResponse> projectInfoResponseList = filteredProjectPage.stream()
-				.map(this::generateProjectResponse)
+				.map(project -> generateProjectResponse(project))
 				.collect(Collectors.toList());
 			PageMetadataResponse pageMetadataResponse = PageMetadataResponse.builder()
 				.currentPage(pageable.getPageNumber())
@@ -346,7 +349,7 @@ public class ProjectService {
 		//2-1-1. 제한된 프로젝트를 바탕으로 응답
 		Page<Project> projectPage = projectRepository.getProjectPageByProjectList(limitedProjectList, pageable);
 		List<ProjectInfoResponse> projectInfoResponseList = projectPage.stream()
-			.map(this::generateProjectResponse)
+			.map(project -> generateProjectResponse(project))
 			.collect(Collectors.toList());
 		PageMetadataResponse pageMetadataResponse = PageMetadataResponse.builder()
 			.currentPage(pageable.getPageNumber())

@@ -40,7 +40,7 @@ public class ProjectUploadRequest {
 	private String name;
 	@ApiModelProperty(value = "프로젝트 파일", example = "", position = 3, required = true, dataType = "__file")
 	private MultipartFile project;
-	@ApiModelProperty(value = "프로젝트 속성", example = "{\"propertyName\":\"프로젝트 이름\",\"propertyObjectList\":[{\"objectName\":\"1-depth 첫번째 씬그룹\",\"objectType\":\"SceneGroup\",\"objectChildList\":[{\"objectName\":\"2-depth 씬\",\"objectType\":\"Scene\",\"objectChildList\":[{\"objectName\":\"3-depth 오브젝트111\",\"objectType\":\"TextObject\",\"objectChildList\":[{\"objectName\":\"4-depth 오브젝트\",\"objectType\":\"TextObject\",\"objectChildList\":[{\"objectName\":\"5-depth 오브젝트\",\"objectType\":\"TextObject\",\"objectChildList\":[{\"objectName\":\"무한재귀 오브젝트\",\"objectType\":\"TextObject\",\"objectChildList\":[{\"objectName\":\"무한재귀 오브젝트\",\"objectType\":\"TextObject\",\"objectChildList\":[{\"objectName\":\"무한재귀 오브젝트\",\"objectType\":\"TextObject\"}]}]}]}]}]},{\"objectName\":\"3-depth 오브젝트222\",\"objectType\":\"TextObject\"}]},{\"objectName\":\"2-depth 오브젝트\",\"objectType\":\"ImageObject\"}]},{\"objectName\":\"1-depth 두번째 씬글부\",\"objectType\":\"SceneGroup\"}]}", position = 4, required = true)
+	@ApiModelProperty(value = "프로젝트 속성", example = "{\"propertyName\":\"프로젝트 이름\",\"propertyObjectList\":[{\"objectName\":\"1-depth 첫번째 씬그룹\",\"objectType\":\"SceneGroup\",\"objectChildList\":[{\"objectName\":\"2-depth 씬\",\"objectType\":\"Scene\",\"objectChildList\":[{\"objectName\":\"3-depth 오브젝트111\",\"objectType\":\"Text\"}]}]}]}", position = 4, required = true)
 	@PropertyValidated
 	private String properties;
 	@ApiModelProperty(value = "타겟 타입", example = "VTarget", position = 5, required = true)

@@ -27,4 +27,6 @@ public interface ProjectCustomRepository {
 	);
 
 	Page<Project> getProjectPageByProjectList(List<Project> projectList, Pageable pageable);
+
+	long calculateTotalStorageAmountByWorkspaceId(String workspaceId);
 }
