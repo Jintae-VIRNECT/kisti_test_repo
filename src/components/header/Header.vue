@@ -1,8 +1,8 @@
 <template>
   <transition name="header" mode="out-in">
     <workspace-header v-if="$route.name === 'workspace'"></workspace-header>
-
     <guest-header v-else-if="$route.name === 'connectioninfo'"></guest-header>
+    <qr-header v-else-if="$route.name === 'qr'"></qr-header>
     <service-header v-else></service-header>
   </transition>
 </template>
@@ -11,12 +11,15 @@
 import WorkspaceHeader from './WorkspaceHeader'
 import ServiceHeader from './ServiceHeader'
 import GuestHeader from './GuestHeader'
+import QrHeader from './QrHeader.vue'
+
 export default {
   name: 'Header',
   components: {
     WorkspaceHeader,
     ServiceHeader,
     GuestHeader,
+    QrHeader,
   },
   data() {
     return {}

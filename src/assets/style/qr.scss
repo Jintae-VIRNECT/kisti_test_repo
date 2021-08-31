@@ -1,0 +1,137 @@
+@charset "utf-8";
+
+* {
+  -ms-touch-action: pinch-zoom;
+  touch-action: pinch-zoom;
+}
+
+html {
+  overscroll-behavior: none;
+  overflow: hidden;
+}
+body {
+  overscroll-behavior-y: contain;
+  height: 100%;
+}
+
+@import "common";
+@import "transition";
+
+@import "./workspace/workspace-layout";
+@import "./workspace/workspace-welcome";
+
+@import "./workspace/workspace-tab";
+@import "./workspace/workspace-history";
+@import "./workspace/workspace-remote";
+@import "./workspace/workspace-user";
+@import "./workspace/workspace-setting";
+@import "./workspace/workspace-license";
+
+.offsetwidth {
+  position: relative;
+  width: 100%;
+  max-width: 80%;
+  margin-right: auto;
+  margin-left: auto;
+}
+
+.qr-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  font-size: 1rem;
+  background: url("~assets/image/support/img_support_bg.svg") $color_bg_display;
+}
+.qr {
+  width: 61.4286rem;
+  height: 52.8571rem;
+  margin-top: 5.9286rem;
+  background: rgb(41, 41, 44);
+  border: 1px solid rgb(60, 60, 60);
+  border-radius: 4px;
+}
+.qr__main {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 40rem;
+}
+.qr__main--title {
+  color: rgb(255, 255, 255);
+  font-weight: 500;
+  font-size: 2.7143rem;
+}
+
+.qr__main--sub-title {
+  color: rgb(255, 255, 255);
+  font-weight: normal;
+  font-size: 1.0714rem;
+}
+
+.qr__main--code {
+  width: 17.1429rem;
+  height: 17.1429rem;
+  margin-top: 2.0714rem;
+}
+
+.qr__main--time {
+  margin-top: 1rem;
+  > time {
+    color: rgb(107, 180, 249);
+    font-weight: 500;
+    font-size: 1.0714rem;
+  }
+}
+
+.qr__main--refresh {
+  margin-top: 1.4286rem;
+}
+
+.qr__desc {
+  display: flex;
+  height: 12.8571rem;
+  padding-top: 2.7143rem;
+  background: rgb(49, 49, 53);
+  border-top: solid 1px rgb(60, 60, 60);
+}
+
+.qr-footer {
+  margin-top: 5.2143rem;
+  color: rgb(255, 255, 255);
+  font-weight: normal;
+  font-size: 1rem;
+  opacity: 0.5;
+}
+
+.qr__desc--title {
+  width: 22.5rem;
+  color: rgb(255, 255, 255);
+  font-weight: 500;
+  font-size: 1.2857rem;
+  text-align: center;
+  opacity: 0.8;
+}
+
+.qr__explain--list {
+  > li {
+    color: rgb(255, 255, 255);
+    font-weight: normal;
+    font-size: 0.9286rem;
+    line-height: 1.7143rem;
+    opacity: 0.8;
+  }
+}
+
+.qr__explain--caution {
+  margin-top: 0.7143rem;
+  color: rgb(255, 255, 255);
+  font-weight: normal;
+  font-size: 0.9286rem;
+  line-height: 1.7143rem;
+  opacity: 0.5;
+}

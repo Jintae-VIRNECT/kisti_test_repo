@@ -1,5 +1,6 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
+
 const ServiceComponent = () =>
   import(/* webpackChunkName: "service" */ 'components/service/ServiceLayout')
 const WorkspaceComponent = () =>
@@ -8,6 +9,10 @@ const WorkspaceComponent = () =>
   )
 const GuestComponent = () =>
   import(/* webpackChunkName: "guest" */ 'components/guest/GuestLayout')
+
+const QRComponent = () =>
+  import(/* webpackChunkName: "qr" */ 'components/qr/QrLayout')
+
 import SpotRouter from './spot'
 
 Vue.use(VueRouter)
@@ -30,6 +35,11 @@ export default new VueRouter({
       path: '/home',
       name: 'workspace',
       component: WorkspaceComponent,
+    },
+    {
+      path: '/qr',
+      name: 'qr',
+      component: QRComponent,
     },
     {
       path: '/connectioninfo',

@@ -132,6 +132,21 @@ router.get('/connectioninfo', (req, res) => {
   res.redirect('/connectioninfo')
 })
 
+//@TODO - seat url에 맞춰 라우터 수정
+router.get('/qr', function(req, res) {
+  if (IsAllowBrowser(req)) {
+    if (IsMobileBrowser(req)) {
+      RouteSupportOrIE(req, res)
+    } else {
+      const lang = acceptLang(req)
+      res.send(remote[lang])
+    }
+  } else {
+    RouteSupportOrIE(req, res)
+    return
+  }
+})
+
 router.get('/support', function(req, res) {
   // res.sendFile(path.join(__dirname, '/dist/extra/index.html'))
   const lang = acceptLang(req)
