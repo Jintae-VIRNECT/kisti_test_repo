@@ -77,7 +77,7 @@ export default {
             },
           )
         } else {
-          this.doJoin(room, role)
+          return this.doJoin(room, role)
         }
       } catch (err) {
         this.clicked = false
