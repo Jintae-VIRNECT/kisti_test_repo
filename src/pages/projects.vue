@@ -146,12 +146,6 @@ import {
   filter as contentsFilter,
   sort as contentsSort,
 } from '@/models/content/Content'
-// import {
-//   targetTypes,
-//   modeTypes,
-//   sharedTypes,
-//   editTypes,
-// } from '@/models/project/Project'
 
 export default {
   mixins: [searchMixin, columnsMixin, utils],
@@ -210,10 +204,6 @@ export default {
         return false
       }
       try {
-        // const selectedContents = this.$refs.table.selection.map(
-        //   content => content.contentUUID,
-        // )
-        // await contentService.deleteContent(selectedContents)
         this.$message.success({
           message: this.$t('projects.info.message.deleteSuccess'),
           duration: 2000,
