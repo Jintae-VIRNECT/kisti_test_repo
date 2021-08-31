@@ -13,7 +13,10 @@
             :label="$t(type.label)"
           />
         </el-select>
-        <el-button type="is-disabled">
+        <el-button
+          type="is-disabled"
+          @click="$emit('update:updateProjectAuth', propsKey)"
+        >
           {{ $t('common.apply') }}
         </el-button>
       </dd>
@@ -48,7 +51,10 @@
           </el-option>
         </el-select>
 
-        <el-button type="is-disabled">
+        <el-button
+          type="is-disabled"
+          @click="$emit('update:updateProjectMember', propsKey)"
+        >
           {{ $t('common.apply') }}
         </el-button>
 
