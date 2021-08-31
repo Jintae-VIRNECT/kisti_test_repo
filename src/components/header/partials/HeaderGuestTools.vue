@@ -8,6 +8,7 @@
       :class="{
         'workspace-select-tools': !hasWorkspace,
       }"
+      :isGuest="true"
     >
       ></profile
     >
