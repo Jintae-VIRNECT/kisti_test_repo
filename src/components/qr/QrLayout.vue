@@ -74,14 +74,16 @@ export default {
   },
 
   async mounted() {
-    console.log(this.$route.query)
+    const workspaceId = this.$route.query.workspaceId
+    const sessionId = this.$route.query.sessionId
+
     const qr_canvas = this.$refs['qr-code']
 
     const generateQR = async url => {
       try {
         QRCode.toCanvas(
           qr_canvas,
-          'https://remote.virnect.com',
+          JSON.stringify({ workspaceId: workspaceId, sessionId: sessionId }),
 
           function(error) {
             if (error) console.error(error)
