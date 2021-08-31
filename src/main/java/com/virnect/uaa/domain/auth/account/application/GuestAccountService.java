@@ -81,6 +81,9 @@ public class GuestAccountService {
 			allocatableUser, refreshTokenJwtId, accessTokenJwtId, clientGeoIPInfo);
 
 		GuestAccountInfoResponse guestAccountInfoResponse = new GuestAccountInfoResponse();
+		guestAccountInfoResponse.setName(allocatableUser.getName());
+		guestAccountInfoResponse.setNickname(allocatableUser.getNickname());
+		guestAccountInfoResponse.setUuid(allocatableUser.getUuid());
 		guestAccountInfoResponse.setAccessToken(accessToken);
 		guestAccountInfoResponse.setRefreshToken(refreshToken);
 		guestAccountInfoResponse.setExpireIn(jwtProvider.getAccessTokenExpire());
