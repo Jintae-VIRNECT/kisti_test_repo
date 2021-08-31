@@ -28,9 +28,15 @@ import GuestWelcome from './section/GuestWelcome'
 import GuestTab from './section/GuestTab'
 import { getCompanyInfo } from 'api/http/account'
 
+import { getGuestInfo } from 'api/http/guest'
+
 import { getConfigs } from 'utils/auth'
 
 import { mapActions } from 'vuex'
+
+import { getWorkspaceInfo } from 'api/http/workspace'
+
+import Cookies from 'js-cookie'
 export default {
   name: 'GuestLayout',
   async beforeRouteEnter(to, from, next) {
@@ -52,21 +58,38 @@ export default {
   data() {
     return {
       url: '',
-      workspaceId: 'test-workspaceId',
-      sessionId: 'test-sessionId',
-      userId: 'test-userId',
+      workspaceId: '',
+      sessionId: '',
+      uuid: '',
     }
   },
   methods: {
-    ...mapActions(['setCompanyInfo']),
+    ...mapActions(['setCompanyInfo', 'updateAccount', 'changeWorkspace']),
     handleMaxScroll(event) {
       this.$eventBus.$emit('scroll:end', event)
     },
-    async checkCompany(workspaceId) {
-      //@TODO:workspaceId, 및 userId 적용
+    async initGuestMember() {
+      const guestInfo = await getGuestInfo({ workspaceId: this.workspaceId })
+
+      this.updateAccount({
+        ...guestInfo,
+      })
+
+      //토큰 설정
+      const accessToken = guestInfo.accessToken
+      const refreshToken = guestInfo.refreshToken
+
+      this.setToken(accessToken, refreshToken)
+
+      const wsInfo = await getWorkspaceInfo({ workspaceId: this.workspaceId })
+
+      this.changeWorkspace(wsInfo)
+
+      this.checkCompany(guestInfo.uuid, this.workspaceId)
+    },
+    async checkCompany(uuid, workspaceId) {
       const res = await getCompanyInfo({
-        // userId: this.account.uuid,
-        userId: this.userId,
+        userId: uuid,
         workspaceId,
       })
 
@@ -91,14 +114,34 @@ export default {
         timeout: res.timeout !== undefined ? res.timeout : 60, //협업 연장 질의 팝업 싸이클을 정하는 값. 분 단위
       })
     },
+    setToken(accessToken, refreshToken) {
+      const cookieOption = {
+        expires: 1,
+        domain:
+          location.hostname.split('.').length === 3
+            ? location.hostname.replace(/.*?\./, '')
+            : location.hostname,
+      }
+
+      Cookies.set('accessToken', accessToken, cookieOption)
+      Cookies.set('refreshToken', refreshToken, cookieOption)
+    },
   },
 
   async mounted() {
-    //@TODO:seat member의 uuid 넣기
-    window.myStorage = new MyStorage('testuserid')
-    console.log(this.$route.query)
+    this.workspaceId = this.$route.query.workspaceId
+    this.sessionId = this.$route.query.sessionId
 
-    this.checkCompany(this.workspaceId)
+    window.myStorage = new MyStorage(this.workspaceId)
+
+    await this.initGuestMember()
+
+    //앱 테스트 코드
+    const relatedApps = await navigator.getInstalledRelatedApps()
+    console.log(relatedApps)
+    relatedApps.forEach(app => {
+      console.log(app.id, app.platform, app.url)
+    })
   },
   beforeDestroy() {},
 }

@@ -5,30 +5,30 @@
       <div class="guest-welcome__name">
         {{ $t('guest.guest_join_description_2') }}
       </div>
-      <button class="btn join" @click="join" v-html="joinText"></button>
+      <button class="btn join" @click="joinAsGuest" v-html="joinText"></button>
     </div>
   </section>
 </template>
 <script>
-import { joinOpenRoomAsGuest } from 'api/http/guest'
+import { joinOpenRoomAsGuest, getGuestRoomInfo } from 'api/http/guest'
 import roomMixin from 'mixins/room'
+import { ROLE } from 'configs/remote.config'
+import { DEVICE } from 'configs/device.config'
+
 export default {
   name: 'GuestWelcome',
   mixins: [roomMixin],
   components: {},
   data() {
     return {
-      seatMemberName: '테스트 guest member user',
       remainTime: 120,
       timerId: null,
     }
   },
-  props: {
-    type: String,
-  },
+
   computed: {
     welcomeText() {
-      return `<em>[${this.seatMemberName}]</em> ${this.$t(
+      return `<em>[${this.account.nickname}]</em> ${this.$t(
         'guest.guest_join_description_1',
       )}`
     },
@@ -48,18 +48,32 @@ export default {
     },
   },
   methods: {
-    async join() {
-      // const room = await joinOpenRoomAsGuest({
-      //   joinRoomRequest: '',
-      //   workspaceId: '',
-      //   userId: '',
-      // })
+    async joinAsGuest() {
+      const sessionId = this.$route.query.sessionId
+
+      const roomInfo = await getGuestRoomInfo({
+        sessionId: sessionId,
+        workspaceId: this.workspace.uuid,
+      })
+
+      const leader = roomInfo.memberList.find(member => {
+        member.role === ROLE.LEADER
+      })
+
+      const room = await joinOpenRoomAsGuest({
+        uuid: this.account.uuid,
+        memberType: 'UNKNOWN', //근데 이거 왜 언노운이에요?
+        deviceType: DEVICE.WEB,
+        sessionId: sessionId,
+        workspaceId: this.workspace.uuid,
+      })
+
       //@TODO : 통화 화면으로 이동하기
       //leader 정보 find
-      // const res = await this.join({
-      // ...room,
-      // leaderId: user ? user.uuid : null,
-      // })
+      const joinResult = await this.join({
+        ...room,
+        leaderId: leader ? leader.uuid : null,
+      })
     },
     timer() {
       this.timerId = setInterval(() => {

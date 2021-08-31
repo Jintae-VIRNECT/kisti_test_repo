@@ -137,11 +137,10 @@ export default {
 
   /* guest(seat) 멤버 초대 관련 API */
   JOIN_AS_GUEST: ['POST', '/remote/guest/room/{workspaceId}/{sessionId}/join'],
-  GUEST_INVITE_URL: ['GET', '/remote/guest/url/{workspaceId}/{sessionId}'],
-  GUEST_ROOM_INFO: [
-    'GET',
-    '/remote/invitation/guest/{workspaceId}/{sessionId}',
-  ],
+
+  GUEST_INFO: ['GET', '/remote/invitation/guest/{workspaceId}'],
+  GUEST_ROOM_INFO: ['GET', '/remote/guest/room/{workspaceId}/{sessionId}'],
+  WORKSPACE_INFO: ['GET', '/workspaces/{workspaceId}/info'],
 
   /* MAIL */
   SEND_MAIL: ['POST', '/messages/mail'],
