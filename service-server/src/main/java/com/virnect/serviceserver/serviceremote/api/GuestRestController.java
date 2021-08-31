@@ -19,12 +19,13 @@ import lombok.extern.slf4j.Slf4j;
 
 import com.virnect.data.dto.request.room.JoinRoomRequest;
 import com.virnect.data.dto.response.guest.GuestInfoResponse;
-import com.virnect.data.dto.response.guest.GuestInviteUrlResponse;
+import com.virnect.data.dto.response.room.RoomInfoResponse;
 import com.virnect.data.dto.response.room.RoomResponse;
 import com.virnect.data.error.ErrorCode;
 import com.virnect.data.error.exception.RestServiceException;
 import com.virnect.data.global.common.ApiResponse;
 import com.virnect.data.infra.utils.LogMessage;
+import com.virnect.serviceserver.serviceremote.application.GuestService;
 import com.virnect.serviceserver.serviceremote.application.RoomService;
 
 @Slf4j
@@ -37,8 +38,9 @@ public class GuestRestController {
 	private static final String REST_PATH = "/remote/guest";
 
 	private final RoomService roomService;
+	private final GuestService guestService;
 
-	@ApiOperation(value = "Create Guest invite URL", notes = "Guest 멤버를 초대하는 URL을 생성합니다")
+	/*@ApiOperation(value = "Create Guest invite URL", notes = "Guest 멤버를 초대하는 URL을 생성합니다")
 	@GetMapping(value = "guest/url/{workspaceId}/{sessionId}")
 	ResponseEntity<ApiResponse<GuestInviteUrlResponse>> createGuestInviteUrl(
 		@PathVariable("workspaceId") String workspaceId,
@@ -52,16 +54,32 @@ public class GuestRestController {
 				+ sessionId,
 			"createGuestInviteUrl"
 		);
-		ApiResponse<GuestInviteUrlResponse> responseData = roomService.createGuestInviteUrl(workspaceId, sessionId);
+		ApiResponse<GuestInviteUrlResponse> responseData = guestService.createGuestInviteUrl(workspaceId, sessionId);
+		return ResponseEntity.ok(responseData);
+	}*/
+
+	@ApiOperation(value = "Get Guest member info", notes = "Guest 정보를 반환합니다")
+	@GetMapping(value = "invitation/guest/{workspaceId}")
+	ResponseEntity<ApiResponse<GuestInfoResponse>> getGuestMemberInfo(
+		@PathVariable("workspaceId") String workspaceId,
+		HttpServletRequest request
+	) {
+		LogMessage.formedInfo(
+			TAG,
+			"REST API: GET "
+				+ REST_PATH
+				+ workspaceId,
+			"getGuestMemberInfo"
+		);
+		ApiResponse<GuestInfoResponse> responseData = guestService.getGuestInfo(workspaceId, request);
 		return ResponseEntity.ok(responseData);
 	}
 
-	@ApiOperation(value = "Get Guest and open room info", notes = "Guest 정보 및 Open room 정보를 반환합니다")
-	@GetMapping(value = "invitation/guest/{workspaceId}/{sessionId}")
-	ResponseEntity<ApiResponse<GuestInfoResponse>> createGuestAndRoomInfo(
+	@ApiOperation(value = "Get open room info", notes = "Guest가 참여할 Open room 정보를 반환합니다")
+	@GetMapping(value = "guest/room/{workspaceId}/{sessionId}")
+	ResponseEntity<ApiResponse<RoomInfoResponse>> getOpenRoomInfo(
 		@PathVariable("workspaceId") String workspaceId,
-		@PathVariable("sessionId") String sessionId,
-		HttpServletRequest request
+		@PathVariable("sessionId") String sessionId
 	) {
 		LogMessage.formedInfo(
 			TAG,
@@ -69,9 +87,9 @@ public class GuestRestController {
 				+ REST_PATH
 				+ workspaceId + "/"
 				+ sessionId,
-			"createGuestAndRoomInfo"
+			"getOpenRoomInfo"
 		);
-		ApiResponse<GuestInfoResponse> responseData = roomService.getGuestAndRoomInfoResponse(workspaceId, sessionId, request);
+		ApiResponse<RoomInfoResponse> responseData = guestService.getOpenRoomInfo(workspaceId, sessionId);
 		return ResponseEntity.ok(responseData);
 	}
 

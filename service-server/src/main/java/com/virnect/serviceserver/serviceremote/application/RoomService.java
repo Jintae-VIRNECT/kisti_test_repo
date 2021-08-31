@@ -8,8 +8,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import javax.servlet.http.HttpServletRequest;
-
 import org.apache.commons.lang.StringUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -23,7 +21,6 @@ import com.google.gson.JsonObject;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import com.virnect.data.application.account.AccountRestService;
 import com.virnect.data.application.workspace.WorkspaceRestService;
 import com.virnect.data.dao.member.MemberRepository;
 import com.virnect.data.dao.room.RoomRepository;
@@ -47,8 +44,6 @@ import com.virnect.data.dto.request.room.KickRoomRequest;
 import com.virnect.data.dto.request.room.ModifyRoomInfoRequest;
 import com.virnect.data.dto.request.room.RoomRequest;
 import com.virnect.data.dto.response.ResultResponse;
-import com.virnect.data.dto.response.guest.GuestInfoResponse;
-import com.virnect.data.dto.response.guest.GuestInviteUrlResponse;
 import com.virnect.data.dto.response.member.MemberInfoResponse;
 import com.virnect.data.dto.response.room.CoturnResponse;
 import com.virnect.data.dto.response.room.InviteRoomResponse;
@@ -58,7 +53,6 @@ import com.virnect.data.dto.response.room.RoomDetailInfoResponse;
 import com.virnect.data.dto.response.room.RoomInfoListResponse;
 import com.virnect.data.dto.response.room.RoomInfoResponse;
 import com.virnect.data.dto.response.room.RoomResponse;
-import com.virnect.data.dto.rest.GuestAccountInfoResponse;
 import com.virnect.data.dto.rest.WorkspaceMemberInfoListResponse;
 import com.virnect.data.dto.rest.WorkspaceMemberInfoResponse;
 import com.virnect.data.error.ErrorCode;
@@ -92,7 +86,6 @@ public class RoomService {
 	private final MemberRepository memberRepository;
 
 	private final WorkspaceRestService workspaceRestService;
-	private final AccountRestService accountRestService;
 
 	private final ServiceSessionManager serviceSessionManager;
 
@@ -595,6 +588,21 @@ public class RoomService {
 			.map(memberMapper::toDto)
 			.collect(Collectors.toList());
 
+		mapperWorkspaceMemberToMember(memberInfo, memberInfoList);
+
+		// Redis 내 멤버 접속상태 확인
+		for (MemberInfoResponse memberInfoResponse : memberInfoList) {
+			memberInfoResponse.setAccessType(loadAccessType(workspaceId, memberInfoResponse.getUuid()));
+		}
+
+		roomDetailInfoResponse.setMemberList(setLeader(memberInfoList));
+		return new ApiResponse<>(roomDetailInfoResponse);
+	}
+
+	static void mapperWorkspaceMemberToMember(
+		ApiResponse<WorkspaceMemberInfoListResponse> memberInfo,
+		List<MemberInfoResponse> memberInfoList
+	) {
 		for (MemberInfoResponse memberInfoResponse : memberInfoList) {
 			for (WorkspaceMemberInfoResponse workspaceMemberInfo : memberInfo.getData().getMemberInfoList()) {
 				if (memberInfoResponse.getUuid().equals(workspaceMemberInfo.getUuid())) {
@@ -606,14 +614,6 @@ public class RoomService {
 				}
 			}
 		}
-
-		// Redis 내 멤버 접속상태 확인
-		for (MemberInfoResponse memberInfoResponse : memberInfoList) {
-			memberInfoResponse.setAccessType(loadAccessType(workspaceId, memberInfoResponse.getUuid()));
-		}
-
-		roomDetailInfoResponse.setMemberList(setLeader(memberInfoList));
-		return new ApiResponse<>(roomDetailInfoResponse);
 	}
 
 	public RoomInfoListResponse getRoomList(
@@ -628,7 +628,7 @@ public class RoomService {
 			return new RoomInfoListResponse(new ArrayList<>(), PagingUtils.emptyPagingBuilder());
 		}
 
-		List<RoomInfoResponse> roomInfoResponses = makeRoomInfoResponse(workspaceId, roomPage);
+		List<RoomInfoResponse> roomInfoResponses = makeRoomsInfo(workspaceId, roomPage);
 		PageMetadataResponse pageMeta = PagingUtils.pagingBuilder(
 			paging,
 			pageable,
@@ -669,7 +669,7 @@ public class RoomService {
 			return new RoomInfoListResponse(new ArrayList<>(), PageMetadataResponse.builder().build());
 		}
 
-		List<RoomInfoResponse> roomInfoResponses = makeRoomInfoResponse(workspaceId, roomPage);
+		List<RoomInfoResponse> roomInfoResponses = makeRoomsInfo(workspaceId, roomPage);
 
 		PageMetadataResponse pageMeta = PagingUtils.pagingBuilder(
 			true,
@@ -849,13 +849,44 @@ public class RoomService {
 		return new ApiResponse<>(new RoomDeleteResponse(sessionId, true, LocalDateTime.now()));
 	}
 
-	private List<RoomInfoResponse> makeRoomInfoResponse(
+	public RoomInfoResponse makeRoomInfo(
+		String workspaceId,
+		Room room
+	) {
+		// Make uuid array
+		List<String> userList = new ArrayList<>();
+		for (Member member : room.getMembers()) {
+			if (!(StringUtils.isBlank(member.getUuid()))) {
+				userList.add(member.getUuid());
+			}
+		}
+
+		// Receive User list from Workspace
+		ApiResponse<WorkspaceMemberInfoListResponse> memberInfo = workspaceRestService.getWorkspaceMembersExcludeUserIds(
+			workspaceId,
+			userList.stream().distinct().toArray(String[]::new)
+		);
+
+		// Make Response data
+		RoomInfoResponse roomInfoResponse = roomInfoMapper.toDto(room);
+		roomInfoResponse.setSessionType(room.getSessionProperty().getSessionType());
+
+		// Mapping Member List Data to Member Information List
+		List<MemberInfoResponse> memberInfoList = room.getMembers().stream()
+			.map(memberMapper::toDto)
+			.collect(Collectors.toList());
+
+		if (!CollectionUtils.isEmpty(memberInfo.getData().getMemberInfoList())) {
+			mapperWorkspaceMemberToMember(memberInfo, memberInfoList);
+		}
+		roomInfoResponse.setMemberList(setLeader(memberInfoList));
+		return roomInfoResponse;
+	}
+
+	private List<RoomInfoResponse> makeRoomsInfo(
 		String workspaceId,
 		Page<Room> roomPage
 	) {
-
-		List<RoomInfoResponse> roomInfoResponses = new ArrayList<>();
-
 		// Make uuid array
 		List<String> userList = new ArrayList<>();
 		for (Room room : roomPage) {
@@ -873,6 +904,7 @@ public class RoomService {
 		);
 
 		// Make Response data
+		List<RoomInfoResponse> roomInfoResponses = new ArrayList<>();
 		for (Room room : roomPage.getContent()) {
 			RoomInfoResponse roomInfoResponse = roomInfoMapper.toDto(room);
 			roomInfoResponse.setSessionType(room.getSessionProperty().getSessionType());
@@ -883,17 +915,7 @@ public class RoomService {
 				.collect(Collectors.toList());
 
 			if (!CollectionUtils.isEmpty(memberInfo.getData().getMemberInfoList())) {
-				for (MemberInfoResponse memberInfoResponse : memberInfoList) {
-					for (WorkspaceMemberInfoResponse workspaceMemberInfo : memberInfo.getData().getMemberInfoList()) {
-						if (memberInfoResponse.getUuid().equals(workspaceMemberInfo.getUuid())) {
-							memberInfoResponse.setRole(workspaceMemberInfo.getRole());
-							memberInfoResponse.setEmail(workspaceMemberInfo.getEmail());
-							memberInfoResponse.setName(workspaceMemberInfo.getName());
-							memberInfoResponse.setNickName(workspaceMemberInfo.getNickName());
-							memberInfoResponse.setProfile(workspaceMemberInfo.getProfile());
-						}
-					}
-				}
+				mapperWorkspaceMemberToMember(memberInfo, memberInfoList);
 			}
 			roomInfoResponse.setMemberList(setLeader(memberInfoList));
 			roomInfoResponses.add(roomInfoResponse);
@@ -916,73 +938,4 @@ public class RoomService {
 		}
 		return result;
 	}
-
-	public ApiResponse<GuestInviteUrlResponse> createGuestInviteUrl(String workspaceId, String sessionId) {
-
-		Room room = roomRepository.findRoomByGuest(workspaceId, sessionId).orElse(null);
-		if (ObjectUtils.isEmpty(room)) {
-			return new ApiResponse<>(ErrorCode.ERR_ROOM_NOT_FOUND);
-		}
-
-		return new ApiResponse<>(GuestInviteUrlResponse.builder()
-			.workspaceId(workspaceId)
-			.sessionId(sessionId)
-			.url(config.remoteServiceProperties.getRemoteServicePublicUrl() + "/remote/invitation/guest/" + workspaceId + "/" + sessionId)
-			.build());
-	}
-
-	public ApiResponse<GuestInfoResponse> getGuestAndRoomInfoResponse(
-		String workspaceId,
-		String sessionId,
-		HttpServletRequest request
-	) {
-		// Guest 계정 정보
-		ApiResponse<GuestAccountInfoResponse> guestAccount = accountRestService.getGuestAccountInfo(
-			"remote",
-			workspaceId,
-			request.getHeader("user-agent"),
-			extractIpFromRequest(request)
-		);
-
-		log.info("guest account toString : " + guestAccount.getData().toString());
-
-		if (guestAccount.getCode() != ErrorCode.ERR_SUCCESS.getCode()) {
-			return new ApiResponse<>(ErrorCode.ERR_GUEST_ACCOUNT_INFO);
-		}
-		if (guestAccount.getData().getSeatUserStat().getTotalSeatUser() == guestAccount.getData().getSeatUserStat().getAllocateSeatUserTotal()) {
-			return new ApiResponse<>(ErrorCode.ERR_GUEST_ACCOUNT_ALLOCATE);
-		}
-
-		// Guest Open Room 정보
-		ApiResponse<RoomDetailInfoResponse> openRoom = getRoomDetailBySessionId(workspaceId, sessionId);
-		if (openRoom.getCode() != ErrorCode.ERR_SUCCESS.getCode()) {
-			return new ApiResponse<>(openRoom.getCode(), openRoom.getMessage());
-		}
-
-		GuestInfoResponse guestInfoResponse = GuestInfoResponse.builder()
-			.workspaceId(workspaceId)
-			.accessToken(guestAccount.getData().getAccessToken())
-			.refreshToken(guestAccount.getData().getRefreshToken())
-			.expireIn(guestAccount.getData().getExpireIn())
-			.roomInfoResponse(openRoom.getData())
-			.build();
-
-		return new ApiResponse<>(guestInfoResponse);
-	}
-
-	private String extractIpFromRequest(HttpServletRequest request) {
-		String clientIp;
-		String clientXForwardedForIp = request.getHeader("x-forwarded-for");
-		if (StringUtils.isBlank(clientXForwardedForIp)) {
-			clientIp = parseXForwardedHeader(clientXForwardedForIp);
-		} else {
-			clientIp = request.getRemoteAddr();
-		}
-		return clientIp;
-	}
-
-	private String parseXForwardedHeader(String header)	{
-		return header.split(" *,*")[0];
-	}
-
 }

@@ -97,7 +97,7 @@ public class DashboardFileService {
 				file.setNickName(workspaceMemberInfo.getData().getNickName());
 			}
 		} catch (Exception exception) {
-			throw new RestServiceException(ErrorCode.ERR_ATTACHED_FILE_FOUND);
+			throw new RestServiceException(ErrorCode.ERR_FILE_GET_SIGNED_EXCEPTION);
 		}
 		return new FileInfoListResponse(fileInfoList);
 	}
@@ -125,7 +125,7 @@ public class DashboardFileService {
 			}
 			fileDetailInfoList.stream().sorted(Comparator.comparing(FileDetailInfoResponse::getCreatedDate));
 		} catch (Exception exception) {
-			throw new RestServiceException(ErrorCode.ERR_FILE_FIND_LIST_FAILED);
+			throw new RestServiceException(ErrorCode.ERR_FILE_NOT_FOUND);
 		}
 		return new FileDetailInfoListResponse(fileDetailInfoList);
 	}
@@ -144,7 +144,7 @@ public class DashboardFileService {
 		try {
 			responseData = recordRestService.getServerRecordFileList(workspaceId, userId, sessionId, order).getData();
 		} catch (Exception exception) {
-			throw new RestServiceException(ErrorCode.ERR_SERVER_RECORD_FILE_EXCEPTION);
+			throw new RestServiceException(ErrorCode.ERR_FILE_GET_SIGNED_EXCEPTION);
 		}
 		return responseData;
 	}
@@ -226,7 +226,7 @@ public class DashboardFileService {
 		try {
 			responseUrl = recordRestService.getServerRecordFileDownloadUrl(workspaceId, userId, id).getData();
 		} catch (Exception exception) {
-			throw new RestServiceException(ErrorCode.ERR_SERVER_RECORD_URL_FOUND);
+			throw new RestServiceException(ErrorCode.ERR_FILE_GET_SIGNED_EXCEPTION);
 		}
 		return responseUrl;
 	}
@@ -242,7 +242,7 @@ public class DashboardFileService {
 	) {
 		File file = fileRepository.findByWorkspaceIdAndSessionIdAndObjectName(workspaceId, sessionId, objectName).orElse(null);
 		if (ObjectUtils.isEmpty(file)) {
-			throw new RestServiceException(ErrorCode.ERR_FILE_NOT_FOUND);
+			throw new RestServiceException(ErrorCode.ERR_FILE_GET_SIGNED_EXCEPTION);
 		}
 		try {
 			fileRepository.delete(file);
@@ -314,7 +314,7 @@ public class DashboardFileService {
 				id
 			).getData();
 		} catch (Exception exception) {
-			throw new RestServiceException(ErrorCode.ERR_SERVER_RECORD_DELETE);
+			throw new RestServiceException(ErrorCode.ERR_FILE_DELETE_EXCEPTION);
 		}
 		return responseData;
 	}

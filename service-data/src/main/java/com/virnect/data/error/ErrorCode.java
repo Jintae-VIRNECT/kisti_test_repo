@@ -55,14 +55,18 @@ public enum ErrorCode {
 	ERR_ROOM_MEMBER_NOT_EVICTED(4023, "This member need to force disconnect."),
 	ERR_ROOM_CLOSE_FAIL(4024, "Current Room was not removed beforehand."),
 	ERR_ROOM_MEMBER_EVICTED_STATUS(4025, "This member is evicted status"),
+
+	// Group 관련 에러
 	ERR_GROUP_NOT_FOUND(4026, "remote group can not found"),
 	ERR_GROUP_COUNT_OVER(4027, "remote group over count"),
 	ERR_GROUP_MEMBER_COUNT_OVER(4027, "remote group member over count"),
-	ERR_GUEST_ACCOUNT_ALLOCATE(4028, "Allocated accounts are not usable."),
-	ERR_GUEST_ACCOUNT_INFO(4029, "Guest account Info Error"),
 	ERR_GROUP_MEMBER_ALREADY_JOINED(4030, "There are already joined member"),
 	ERR_MEMBER_INVALID(4031, "This member uuid is invalid"),
 
+	// Guest 관련 에러
+	ERR_GUEST_ACCOUNT_ALLOCATE(4028, "Allocated accounts are not usable."),
+	ERR_GUEST_ACCOUNT_INFO(4029, "Guest account Info Error"),
+	
 	// error code for service validation
 	ERR_LICENSE_NOT_VALIDITY(5001, "License has no validity"),
 	ERR_LICENSE_TYPE_VALIDITY(5002, "License is not the license type"),
@@ -70,7 +74,7 @@ public enum ErrorCode {
 	ERR_LICENSE_UNEXPECTED_TYPE(5004, "This license is not unexpected type"),
 
 	// error code for remote session history
-	//ERR_HISTORY_NOT_VALIDITY(6001, "License has no validity"),
+	ERR_HISTORY_NOT_VALIDITY(6001, "License has no validity"),
 	ERR_HISTORY_ROOM_NOT_FOUND(6001, "Room History can not found"),
 	ERR_HISTORY_ROOM_MEMBER_NOT_FOUND(6002, "Room History member not found"),
 	ERR_HISTORY_TYPE_VALIDITY(6003, "License is not the license type"),
@@ -89,36 +93,20 @@ public enum ErrorCode {
 	ERR_FILE_GET_SIGNED_EXCEPTION(7009, "Get Pre signed url has an exception"),
 	ERR_FILE_DOWNLOAD_EXCEPTION(7010, "File download has an exception"),
 	ERR_FILE_COVERT_FAILED(7011, "File converting is failed"),
-	ERR_STORAGE_NOT_SUPPORTED(7012, "Storage service is not supported. Please check storage server url."),
 	ERR_FILE_NOT_FOUND(7013, "This file can not found."),
 	ERR_PROFILE_UPLOAD_FAILED(7015, "Profile upload has failed"),
+
+	// 스토리지 에러,
+	ERR_STORAGE_NOT_SUPPORTED(7012, "Storage service is not supported. Please check storage server url."),
 	ERR_STORAGE_LIMIT_REACHED(7016, "The storage limit is about to be reached"),
 	ERR_STORAGE_CAPACITY_FULL(7017, "The storage capacity is full"),
-	ERR_PASSWORD_PDF(7018, "The pdf file is locked"),
+	
+	ERR_PDF_PASSWORD(7018, "The pdf file is locked"),
 	ERR_MAKE_THUMBNAIL(7019, "Failed to convert the thumbnail file"),
 
-	ERR_ROOM_HISTORY_FOUND(3101, "Room History can not found"),
-	ERR_ROOM_HISTORY_HANDLE(3102, "Room History handling fail"),
-	ERR_ROOM_HISTORY_STATS_IN_DATE(3105, "Room History stats error in date"),
-	ERR_ROOM_HISTORY_STATS_ON_MONTH(3106, "Room History stats error on month"),
-	ERR_ROOM_MAPPER(4104, "Room mapper fail"),
-	ERR_ROOM_HISTORY_MAPPER(4103, "Room history mapper fail"),
-	// error code for file upload and download
-	ERR_ATTACHED_FILE_FOUND(7101, "Attached file can not found"),
-	ERR_LOCAL_RECORD_FILE_FOUND(7102, "Local record file can not found"),
-	ERR_SERVER_RECORD_FILE_EXCEPTION(7103, "Get Server record file exception"),
-	ERR_SERVER_RECORD_URL_FOUND(7104, "Server record file can not found"),
-	ERR_SERVER_RECORD_DELETE(7105, "Server record file can not delete"),
-	ERR_FILE_FIND_LIST_FAILED(7114, "This file list can not found."),
-
-    /*ERR_PASSWORD_INIT_CODE_NOT_FOUND(4007, "User password initialize info not found"),
-    ERR_USER_PASSWORD_CHANGE(4008, "User Password Change Error"),
-    ERR_USER_PASSWORD_CHANGE_DUPLICATE(4009, "Password is duplicated with previous password"),
-    ERR_USER_LEAVE_SERVICE(4008, "User Info Not Matched"),*/
-
-	// common error code
+	// 공통 에러
 	ERR_INVALID_REQUEST_PARAMETER(8001, "Invalid request parameter cause api errors"),
-	ERR_API_AUTHENTICATION(8003, "Authentication Error"),
+	ERR_ACCESS_AUTHORITY(8003, "Access authority Error"),
 	ERR_INVALID_VALUE(8004, "Invalid Value"),
 	ERR_AUTHORIZATION_EXPIRED(8005, "Authorization token is expired"),
 	ERR_UNSUPPORTED_DATA_TYPE_EXCEPTION(8006, "Unsupported DataType Exception occured"),

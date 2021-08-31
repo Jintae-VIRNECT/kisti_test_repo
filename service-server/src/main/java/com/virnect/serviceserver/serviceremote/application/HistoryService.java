@@ -157,17 +157,7 @@ public class HistoryService {
 			.map(memberHistoryMapper::toDto)
 			.collect(Collectors.toList());
 
-		for (MemberInfoResponse memberInfoResponse : memberInfoList) {
-			for (WorkspaceMemberInfoResponse workspaceMemberInfo : memberInfo.getData().getMemberInfoList()) {
-				if (memberInfoResponse.getUuid().equals(workspaceMemberInfo.getUuid())) {
-					memberInfoResponse.setRole(workspaceMemberInfo.getRole());
-					memberInfoResponse.setEmail(workspaceMemberInfo.getEmail());
-					memberInfoResponse.setName(workspaceMemberInfo.getName());
-					memberInfoResponse.setNickName(workspaceMemberInfo.getNickName());
-					memberInfoResponse.setProfile(workspaceMemberInfo.getProfile());
-				}
-			}
-		}
+		RoomService.mapperWorkspaceMemberToMember(memberInfo, memberInfoList);
 		resultResponse.setMemberList(setLeader(memberInfoList));
 
 		return new ApiResponse<>(resultResponse);
@@ -277,17 +267,7 @@ public class HistoryService {
 				.collect(Collectors.toList());
 
 			// find and get extra information from use-server using uuid
-			for (MemberInfoResponse memberInfoResponse : memberInfoList) {
-				for (WorkspaceMemberInfoResponse workspaceMemberInfo : memberInfo.getData().getMemberInfoList()) {
-					if (memberInfoResponse.getUuid().equals(workspaceMemberInfo.getUuid())) {
-						memberInfoResponse.setRole(workspaceMemberInfo.getRole());
-						memberInfoResponse.setEmail(workspaceMemberInfo.getEmail());
-						memberInfoResponse.setName(workspaceMemberInfo.getName());
-						memberInfoResponse.setNickName(workspaceMemberInfo.getNickName());
-						memberInfoResponse.setProfile(workspaceMemberInfo.getProfile());
-					}
-				}
-			}
+			RoomService.mapperWorkspaceMemberToMember(memberInfo, memberInfoList);
 
 			// Set Member List to Room Information Response
 			roomHistoryInfoResponse.setMemberList(setLeader(memberInfoList));

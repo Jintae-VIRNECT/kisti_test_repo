@@ -728,11 +728,11 @@ public class ServiceSessionManager {
 			forceLogoutRequest.getWorkspaceId(), forceLogoutRequest.getUserId()).getData();
 		if (StringUtils.isBlank(masterUserInfo.getUuid())) {
 			log.info("Master uuid is null");
-			return new ApiResponse<>(ErrorCode.ERR_API_AUTHENTICATION);
+			return new ApiResponse<>(ErrorCode.ERR_ACCESS_AUTHORITY);
 		}
 		if (!("MASTER".equals(masterUserInfo.getRole()))) {
 			log.info("This user is not Master");
-			return new ApiResponse<>(ErrorCode.ERR_API_AUTHENTICATION);
+			return new ApiResponse<>(ErrorCode.ERR_ACCESS_AUTHORITY);
 		}
 
 		// 로그아웃 및 협업 중인 멤버 필터링

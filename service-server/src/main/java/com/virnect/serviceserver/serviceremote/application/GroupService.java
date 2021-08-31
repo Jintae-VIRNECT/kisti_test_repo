@@ -67,7 +67,7 @@ public class GroupService {
 		GroupRequest groupRequest
 	) {
 		if (!checkMasterAuth(workspaceId, userId)) {
-			return new ApiResponse<>(ErrorCode.ERR_API_AUTHENTICATION);
+			return new ApiResponse<>(ErrorCode.ERR_ACCESS_AUTHORITY);
 		}
 		if (!checkUuidValidation(workspaceId, groupRequest.getMemberList())) {
 			return new ApiResponse<>(ErrorCode.ERR_MEMBER_INVALID);
@@ -179,7 +179,7 @@ public class GroupService {
 		GroupRequest groupRequest
 	) {
 		if (!checkMasterAuth(workspaceId, userId)) {
-			return new ApiResponse<>(ErrorCode.ERR_API_AUTHENTICATION);
+			return new ApiResponse<>(ErrorCode.ERR_ACCESS_AUTHORITY);
 		}
 		if (!checkUuidValidation(workspaceId, groupRequest.getMemberList())) {
 			return new ApiResponse<>(ErrorCode.ERR_MEMBER_INVALID);
@@ -213,7 +213,7 @@ public class GroupService {
 		String groupId
 	) {
 		if (!checkMasterAuth(workspaceId, userId)) {
-			return new ApiResponse<>(ErrorCode.ERR_API_AUTHENTICATION);
+			return new ApiResponse<>(ErrorCode.ERR_ACCESS_AUTHORITY);
 		}
 
 		RemoteGroup targetGroup = groupRepository.findByWorkspaceIdAndGroupId(workspaceId, groupId);

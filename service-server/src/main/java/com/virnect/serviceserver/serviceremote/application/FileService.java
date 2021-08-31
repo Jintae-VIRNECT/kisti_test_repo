@@ -567,7 +567,7 @@ public class FileService {
 			} catch (Exception e) {
 				log.info("This PDF File is locked");
 				return FileUploadResult.builder()
-					.errorCode(ErrorCode.ERR_PASSWORD_PDF)
+					.errorCode(ErrorCode.ERR_PDF_PASSWORD)
 					.build();
 			}
 		}
