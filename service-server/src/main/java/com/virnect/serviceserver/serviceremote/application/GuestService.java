@@ -53,11 +53,12 @@ public class GuestService {
 			extractIpFromRequest(request)
 		);
 		if (guestAccount.getCode() != ErrorCode.ERR_SUCCESS.getCode()) {
-			log.info("ACCOUNT ERROR : " + guestAccount.getMessage() + "(" + guestAccount.getCode() + ")");
-			if (guestAccount.getCode() == 5001) {
-				return new ApiResponse<>(ErrorCode.ERR_GUEST_ACCOUNT_ALLOCATE);
+			log.info("ACCOUNT SERVER ERROR : " + guestAccount.getCode() + "(" + guestAccount.getMessage() + ")");
+			if (guestAccount.getCode() == 5000)	{
+				return new ApiResponse<>(ErrorCode.ERR_GUEST_USER_NOT_FOUND);
+			} else if (guestAccount.getCode() == 5001) {
+				return new ApiResponse<>(ErrorCode.ERR_GUEST_USER_NOT_ENOUGH);
 			}
-			return new ApiResponse<>(ErrorCode.ERR_GUEST_ACCOUNT_INFO);
 		}
 		log.info("guest account toString : " + guestAccount.getData().toString());
 

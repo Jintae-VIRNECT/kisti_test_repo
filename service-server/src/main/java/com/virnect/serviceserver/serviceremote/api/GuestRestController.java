@@ -17,6 +17,7 @@ import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import com.virnect.data.domain.member.MemberType;
 import com.virnect.data.dto.request.room.JoinRoomRequest;
 import com.virnect.data.dto.response.guest.GuestInfoResponse;
 import com.virnect.data.dto.response.room.RoomInfoResponse;
@@ -113,6 +114,7 @@ public class GuestRestController {
 		if (result.hasErrors() || Strings.isBlank(workspaceId) || Strings.isBlank(sessionId)) {
 			throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
 		}
+		joinRoomRequest.setMemberType(MemberType.GUEST);
 		ApiResponse<RoomResponse> responseData = roomService.joinRoomById(
 			workspaceId,
 			sessionId,

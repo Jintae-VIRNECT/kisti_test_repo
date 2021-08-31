@@ -286,7 +286,6 @@ public class RoomService {
 		 * 2. Kurento Media server 간 세션 처리
 		 * 3. Create Response Data
 		 */
-
 		// 생성 전 DB를 통한 데이트 체크
 		ApiResponse<Boolean> dataProcess = this.sessionDataRepository.prepareJoinRoom(
 			workspaceId,
