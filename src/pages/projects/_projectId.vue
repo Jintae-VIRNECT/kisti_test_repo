@@ -112,15 +112,11 @@
           <projectMemberSelect
             v-for="form in forms"
             :key="form.key"
-            :propsKey="form.key"
-            :selectLabel="form.name"
-            :selectTypes="form.selectTypes"
-            :propMemberType="form.memberType"
-            :propMembers="form.members"
+            :selectLabel.sync="form.name"
+            :selectTypes.sync="form.selectTypes"
+            :memberType.sync="form.memberType"
+            :members.sync="form.members"
             :options="options"
-            @update:memberType="setMemberType"
-            @update:members="setMembers"
-            @deleteFirstUser="deleteFirstUser"
             @update:updateProjectAuth="updateProjectAuth"
             @update:updateProjectMember="updateProjectMember"
           ></projectMemberSelect>
@@ -463,22 +459,6 @@ export default {
       } else if (this.activeTab === 'activity') {
         // this.tasks = (await taskService.searchTasks({ size: 4 })).list
       }
-    },
-    // 선택한 지정 멤버 리스트에서, 첫 번째 인덱스 멤버를 삭제한다. 라벨의 X 버튼 클릭시 실행.
-    deleteFirstUser({ key, members }) {
-      if (!members.length) {
-        return null
-      }
-      // key 값을 통해, 공유 / 편집 members 를 구분.
-      this.forms.filter(form => form.key == key)[0].members.shift()
-    },
-    // 자식 컴포넌트에서 forms.memberType data 변경시 실행하는 메소드.
-    setMemberType({ key, value }) {
-      this.forms.filter(form => form.key == key)[0].memberType = value
-    },
-    // 자식 컴포넌트에서 forms.members data 변경시 실행하는 메소드.
-    setMembers({ key, value }) {
-      this.forms.filter(form => form.key == key)[0].members = value
     },
     // 유저의 활동 타입에 따라, 맞는 label 값 반환.
     activityLabel(activity) {
