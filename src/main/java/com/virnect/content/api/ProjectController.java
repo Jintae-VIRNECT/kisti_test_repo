@@ -34,6 +34,7 @@ import com.virnect.content.dto.request.ProjectUploadRequest;
 import com.virnect.content.dto.response.ProjectDeleteResponse;
 import com.virnect.content.dto.response.ProjectInfoListResponse;
 import com.virnect.content.dto.response.ProjectInfoResponse;
+import com.virnect.content.dto.response.ProjectUpdateResponse;
 import com.virnect.content.exception.ProjectServiceException;
 import com.virnect.content.global.common.ApiResponse;
 import com.virnect.content.global.common.PageRequest;
@@ -55,7 +56,8 @@ public class ProjectController {
 
 	@ApiOperation(value = "프로젝트 업로드", notes = "프로젝트를 업로드합니다.")
 	@ApiImplicitParams({
-		@ApiImplicitParam(name = "project", value = "업로드 프로젝트 파일", dataType = "__file", paramType = "form", required = true)})
+		@ApiImplicitParam(name = "project", value = "업로드 프로젝트 파일", dataType = "__file", paramType = "form", required = true),
+		@ApiImplicitParam(name = "targetFile", value = "업데이트 프로젝트 타겟 파일", dataType = "__file", paramType = "form", required = false)})
 	@PostMapping
 	public ResponseEntity<ApiResponse<ProjectInfoResponse>> uploadProject(
 		@ModelAttribute @Valid ProjectUploadRequest projectUploadRequest, BindingResult bindingResult
@@ -71,16 +73,36 @@ public class ProjectController {
 		return ResponseEntity.ok(new ApiResponse<>(responseMessage));
 	}
 
+	@ApiOperation(value = "프로젝트 정보 수정 - 업데이트", notes = "프로젝트 상세정보를 수정합니다. 공유/편집 권한이 모두 있는 사용자만 수정할 수 있습니다.")
+	@ApiImplicitParams({
+		@ApiImplicitParam(name = "projectUUID", value = "업데이트 할 프로젝트 식별자", dataType = "string", paramType = "path", required = true, example = "25e76918-e31a-420f-bd69-86a775c4a9ac"),
+		@ApiImplicitParam(name = "project", value = "업데이트 프로젝트 파일", dataType = "__file", paramType = "form", required = false),
+		@ApiImplicitParam(name = "targetFile", value = "업데이트 프로젝트 타겟 파일", dataType = "__file", paramType = "form", required = false)
+	})
+	@PutMapping("/{projectUUID}")
+	public ResponseEntity<ApiResponse<ProjectUpdateResponse>> updateProjectInfo(
+		@PathVariable("projectUUID") String projectUUID,
+		@ModelAttribute @Valid ProjectUpdateRequest projectUpdateRequest, BindingResult bindingResult
+	) {
+		if (bindingResult.hasErrors() || !StringUtils.hasText(projectUUID)) {
+			log.error(
+				"[FIELD ERROR] => [{}] [{}]", bindingResult.getFieldError().getField(),
+				bindingResult.getFieldError().getDefaultMessage()
+			);
+			throw new ProjectServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
+		}
+		ProjectUpdateResponse responseMessage = projectService.updateProject(projectUUID, projectUpdateRequest);
+		return ResponseEntity.ok(new ApiResponse<>(responseMessage));
+	}
+
 	@ApiOperation(value = "프로젝트 다운로드", notes = "프로젝트를 다운로드합니다. 공유 권한이 있는 사용자만 다운로드할 수 있습니다. \n 프로젝트 식별자로 다운로드 혹은 타겟 데이터로 다운로드할 수 있습니다.", hidden = true)
 	@ApiImplicitParams({
 		@ApiImplicitParam(name = "projectUUID", value = "프로젝트 식별자", dataType = "string", paramType = "query", required = false, example = ""),
-		@ApiImplicitParam(name = "targetData", value = "타겟 데이터", dataType = "string", paramType = "query", required = false, example = ""),
 		@ApiImplicitParam(name = "userUUID", value = "다운로드 요청 유저 식별자", dataType = "string", paramType = "query", required = true, example = ""),
 	})
 	@GetMapping("/download")
 	public ResponseEntity<ApiResponse> downloadProjectByUUID(
-		@RequestParam("projectUUID") String projectUUID, @RequestParam("targetData") String targetData,
-		@RequestParam("userUUID") String userUUID
+		@RequestParam("projectUUID") String projectUUID, @RequestParam("userUUID") String userUUID
 	) {
 		return ResponseEntity.ok(new ApiResponse<>());
 	}
@@ -113,7 +135,7 @@ public class ProjectController {
 			throw new ProjectServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
 		}
 		ProjectInfoListResponse responseMessage = projectService.getProjectList(
-			workspaceUUID, userUUID, sharePermissionList, editPermissionList, modeList, targetTypeList,search,
+			workspaceUUID, userUUID, sharePermissionList, editPermissionList, modeList, targetTypeList, search,
 			pageRequest.of()
 		);
 		return ResponseEntity.ok(new ApiResponse<>(responseMessage));
@@ -133,19 +155,6 @@ public class ProjectController {
 		}
 		ProjectInfoResponse responseMessage = projectService.getProjectInfo(projectUUID, userUUID);
 		return ResponseEntity.ok(new ApiResponse<>(responseMessage));
-	}
-
-	@ApiOperation(value = "프로젝트 정보 수정 - 업데이트 또는 덮어쓰기", notes = "프로젝트 상세정보를 수정합니다. 편집 권한이 있는 사용자만 수정할 수 있습니다.", hidden = true)
-	@ApiImplicitParams({
-		@ApiImplicitParam(name = "projectUUID", value = "프로젝트 식별자", dataType = "string", paramType = "path", required = true),
-		@ApiImplicitParam(name = "userUUID", value = "목록 조회 요청 유저 식별자", dataType = "string", paramType = "query", required = true),
-	})
-	@PutMapping("/{projectUUID}")
-	public ResponseEntity<ApiResponse> updateProjectInfo(
-		@PathVariable("projectUUID") String proejctUUID, @RequestParam("userUUID") String userUUID,
-		@ModelAttribute ProjectUpdateRequest projectUpdateRequest
-	) {
-		return ResponseEntity.ok(new ApiResponse<>());
 	}
 
 	@ApiOperation(value = "프로젝트 삭제", notes = "프로젝트를 삭제합니다.")

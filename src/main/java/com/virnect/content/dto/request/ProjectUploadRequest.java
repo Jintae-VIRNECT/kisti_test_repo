@@ -5,6 +5,7 @@ import java.util.List;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
+import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import io.swagger.annotations.ApiModel;
@@ -40,8 +41,9 @@ public class ProjectUploadRequest {
 	private String name;
 	@ApiModelProperty(value = "프로젝트 파일", example = "", position = 3, required = true, dataType = "__file")
 	private MultipartFile project;
-	@ApiModelProperty(value = "프로젝트 속성", example = "{\"propertyName\":\"프로젝트 이름\",\"propertyObjectList\":[{\"objectName\":\"1-depth 첫번째 씬그룹\",\"objectType\":\"SceneGroup\",\"objectChildList\":[{\"objectName\":\"2-depth 씬\",\"objectType\":\"Scene\",\"objectChildList\":[{\"objectName\":\"3-depth 오브젝트111\",\"objectType\":\"Text\"}]}]}]}", position = 4, required = true)
-	@PropertyValidated
+	@ApiModelProperty(value = "프로젝트 속성", example = "{\"propertyName\":\"프로젝트 이름\",\"propertyObjectList\":[{\"objectName\":\"1-depth 첫번째 씬그룹\",\"objectType\":\"SceneGroup\",\"objectChildList\":[{\"objectName\":\"2-depth 씬\",\"objectType\":\"Scene\",\"objectChildList\":[{\"objectName\":\"3-depth 오브젝트111\",\"objectType\":\"Text\"}]}]}]}", position = 4, required = false)
+	@NotNull
+	@PropertyValidated(message = "프로젝트 속성정보가 유효하지 않습니다.")
 	private String properties;
 	@ApiModelProperty(value = "타겟 타입", example = "VTarget", position = 5, required = true)
 	@NotNull
@@ -69,6 +71,16 @@ public class ProjectUploadRequest {
 	private EditPermission editPermission;
 	@ApiModelProperty(value = "편집 권한 대상 특정 유저 목록", example = "[\"4ea61b4ad1dab12fb2ce8a14b02b7460\"]", position = 14, required = false)
 	private List<String> editUserList;
+
+	public boolean validateTarget() {
+		if (targetType == TargetType.Image && targetFile == null) {
+			return false;
+		}
+		if (targetType == TargetType.QR && !StringUtils.hasText(targetData)) {
+			return false;
+		}
+		return true;
+	}
 
 	@Override
 	public String toString() {

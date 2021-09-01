@@ -57,7 +57,7 @@ public class Project extends BaseTimeEntity {
 	private String path;
 
 	@Column(name = "size", nullable = false)
-	private Long size;
+	private Long size; //byte
 
 	@Column(name = "share_permission", nullable = false)
 	@Enumerated(EnumType.STRING)

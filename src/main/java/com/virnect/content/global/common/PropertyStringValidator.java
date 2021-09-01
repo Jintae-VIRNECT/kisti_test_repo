@@ -29,6 +29,9 @@ public class PropertyStringValidator implements ConstraintValidator<PropertyVali
 	@Override
 	public boolean isValid(String properties, ConstraintValidatorContext context) {
 		try {
+			if (!StringUtils.hasText(properties)) {//프로젝트 업데이트의 경우 properties가 null일 수 있음.
+				return true;
+			}
 			JsonParser jsonParser = new JsonParser();
 			//1. json 파싱 검사
 			jsonParser.parse(properties);

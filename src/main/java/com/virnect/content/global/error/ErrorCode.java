@@ -60,6 +60,8 @@ public enum ErrorCode {
 		5031, "Project update fail. Because user have invalid project share permission."),
 	ERR_PROJECT_UPDATE_INVALID_EDIT_PERMISSION(
 		5032, "Project update fail. Because user have invalid project edit permission."),
+	ERR_PROJECT_UPDATE_MAX_STORAGE(5033, "Project update fail. Because maximum uploadable storage is exceeded."),
+	ERR_PROJECT_UPDATE_INVALID_LICENSE(5034, "Project update fail. Because user have no uploadable product license."),
 
 	//프로젝트 다운로드
 	ERR_PROJECT_DOWNLOAD(5040, "Project download fail."),
