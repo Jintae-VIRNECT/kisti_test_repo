@@ -14,13 +14,16 @@ import { getGuestRoomInfo } from 'api/http/guest'
 import roomMixin from 'mixins/room'
 import { ROLE } from 'configs/remote.config'
 
+// const EXPIRE_TIMER = 120 //120초
+const EXPIRE_TIMER = 5 //120초
+
 export default {
   name: 'GuestWelcome',
   mixins: [roomMixin],
   components: {},
   data() {
     return {
-      remainTime: 120,
+      remainTime: EXPIRE_TIMER,
       timerId: null,
     }
   },
@@ -47,9 +50,18 @@ export default {
     },
   },
   methods: {
+    initGuestMember() {
+      this.$eventBus.$emit('initGuestMember')
+    },
+    resetTimer() {
+      this.remainTime = EXPIRE_TIMER
+    },
     async joinAsGuest() {
       if (this.remainTime <= 0) {
-        //멤버 재할당
+        this.resetTimer()
+        this.initGuestMember()
+        this.startTimer()
+        return
       }
 
       const sessionId = this.$route.query.sessionId
@@ -69,14 +81,14 @@ export default {
         isGuest: true,
       })
     },
-    timer() {
+    startTimer() {
       this.timerId = setInterval(() => {
         this.remainTime--
       }, 1000)
     },
   },
   mounted() {
-    this.timer()
+    this.startTimer()
   },
 }
 </script>

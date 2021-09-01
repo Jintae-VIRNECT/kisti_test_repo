@@ -129,6 +129,8 @@ export default {
   },
 
   async mounted() {
+    this.$eventBus.$on('initGuestMember', this.initGuestMember)
+
     this.workspaceId = this.$route.query.workspaceId
     this.sessionId = this.$route.query.sessionId
 
@@ -143,7 +145,9 @@ export default {
       console.log(app.id, app.platform, app.url)
     })
   },
-  beforeDestroy() {},
+  beforeDestroy() {
+    this.$eventBus.$off('initGuestMember', this.initGuestMember)
+  },
 }
 </script>
 
