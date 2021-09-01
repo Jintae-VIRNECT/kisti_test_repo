@@ -77,7 +77,7 @@ export default {
             },
           )
         } else {
-          return this.doJoin(room, role)
+          return await this.doJoin(room, role)
         }
       } catch (err) {
         this.clicked = false
@@ -119,7 +119,6 @@ export default {
       }
     },
     async doJoin(room, role) {
-      console.error(room)
       this.$eventBus.$emit('roomloading:show', {
         toggle: true,
         isOpenRoom: room.sessionType === 'OPEN' ? true : false,
