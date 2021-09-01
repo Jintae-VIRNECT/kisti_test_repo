@@ -78,7 +78,7 @@
     <section class="seat-pane__footer">
       <el-button type="primary" @click="submit" :disabled="!numOfSeat">
         {{ $t('members.seat.submit') }}
-        <span class="number" v-if="numOfSeat !== ''">{{ numOfSeat }}</span>
+        <span class="number" v-if="numOfSeat !== 0">{{ numOfSeat }}</span>
       </el-button>
     </section>
   </article>
@@ -88,14 +88,19 @@
 import plans from '@/models/workspace/plans'
 import workspaceService from '@/services/workspace'
 import { mapGetters } from 'vuex'
+
+import validationMixin from '@/mixins/validation'
+import messageMixin from '@/mixins/message'
+
 export default {
+  mixins: [validationMixin, messageMixin],
   props: ['membersTotal', 'maximum'],
   data() {
     return {
       plans,
       seatTabName: 'remote',
       availablePlans: { remote: 0, make: 0, view: 0 },
-      numOfSeat: '',
+      numOfSeat: 0,
     }
   },
   methods: {
@@ -119,7 +124,7 @@ export default {
         await this.$store.dispatch('plan/getPlansInfo')
       }
       this.initAvailablePlans()
-      this.numOfSeat = ''
+      this.numOfSeat = 0
     },
     async submit() {
       const form = {}
@@ -140,7 +145,7 @@ export default {
         this.$emit('updated')
         this.reset()
       } catch (e) {
-        const errCode = e.toString().match(/^Error: ([0-9]+)/)[1]
+        const errCode = this.errCode(e)
         // 결제센터로
         if (errCode === 2003) {
           this.$confirm(this.$t('members.add.message.noHavePlans'), {
@@ -149,28 +154,16 @@ export default {
           }).then(() => {
             window.open(`${this.$url.pay}`)
           })
-        }
-        // 일반에러
-        else {
-          const errMsg = {
-            1002: this.$t('members.add.message.memberAlready'),
-            1007: this.$t('members.add.message.notHaveAnyPlan'),
-            1008: this.$t('members.add.message.memberOverflow'),
-            1018: this.$t('members.add.message.memberWithdrawal'),
-          }[errCode]
-          this.$message.error({
-            message: errMsg
-              ? errMsg
-              : this.$t('members.add.message.inviteFail') + `\n(${e})`,
-            duration: 4000,
-            showClose: true,
-          })
+        } else {
+          // 일반에러
+          this.errorMessage(e)
         }
       }
     },
   },
   mounted() {
     this.reset()
+    console.log(this.activeWorkspace)
   },
   computed: {
     ...mapGetters({
