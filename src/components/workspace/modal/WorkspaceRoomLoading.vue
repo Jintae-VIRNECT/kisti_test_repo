@@ -16,7 +16,7 @@
     />
     <!-- @TODO:다국어 추가 -->
     <p class="room-loading__text">
-      {{ $t('workspace.loading_prepare_remote') }}
+      {{ roomLoadingText }}
     </p>
     <p class="room-loading__text opacity">
       {{ $t('workspace.loading_checking_device') }}
@@ -42,6 +42,14 @@ export default {
       type: Boolean,
       default: false,
     },
+    isOpenRoom: {
+      type: Boolean,
+      default: false,
+    },
+    isJoin: {
+      type: Boolean,
+      default: false,
+    },
   },
   watch: {
     visible(flag) {
@@ -56,6 +64,16 @@ export default {
     responsiveHeight() {
       if (this.isMobileSize) return '24.6rem'
       else return '22.8571em'
+    },
+    roomLoadingText() {
+      if (this.isOpenRoom) {
+        if (this.isJoin)
+          return this.$t('workspace.loading_prepare_join_remote_open')
+        else return this.$t('workspace.loading_prepare_remote_open')
+      } else {
+        if (this.isJoin) return this.$t('workspace.loading_prepare_join_remote')
+        else return this.$t('workspace.loading_prepare_remote')
+      }
     },
   },
   methods: {

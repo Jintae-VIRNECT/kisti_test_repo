@@ -173,6 +173,9 @@
     "go_workspace_member": "Move to Workspace member list",
 
     "loading_prepare_remote":"Preparing to create a Collabo room",
+    "loading_prepare_join_remote":"Preparing to join a Collabo room",
+    "loading_prepare_remote_open":"Preparing to create a Open room",
+    "loading_prepare_join_remote_open":"Preparing to join a Open room",
     "loading_checking_device":"Checking device connection status...",
 
     "cookie": "We use cookies and usage statistics to improve our service and customer experience. To learn more, <br>please check out our <a href='https://virnect.com/policy#10' target='_blank'>policy</a>. By clicking \"OK\" or continuing the use of site, you consent to the collection of cookies and usage statistics.",

@@ -81,7 +81,7 @@ export default {
         }
       } catch (err) {
         this.clicked = false
-        this.$eventBus.$emit('roomloading:show', false)
+        this.$eventBus.$emit('roomloading:show', { toggle: false })
         this.roomClear()
         if (this['init'] && typeof this['init'] === 'function') {
           this.init()
@@ -119,7 +119,12 @@ export default {
       }
     },
     async doJoin(room, role) {
-      this.$eventBus.$emit('roomloading:show', true)
+      console.error(room)
+      this.$eventBus.$emit('roomloading:show', {
+        toggle: true,
+        isOpenRoom: room.sessionType === 'OPEN' ? true : false,
+        isJoin: true,
+      })
 
       const options = await this.getDeviceId()
       const mediaStream = await this.$call.getStream(options)
@@ -180,7 +185,7 @@ export default {
         this.clicked = true
 
         //loading ui 표사
-        this.$eventBus.$emit('roomloading:show', true)
+        this.$eventBus.$emit('roomloading:show', { toggle: true, isOpenRoom })
 
         const options = await this.getDeviceId() //callMixin
         const mediaStream = await this.$call.getStream(options)
@@ -292,7 +297,7 @@ export default {
         }
       } catch (err) {
         this.clicked = false
-        this.$eventBus.$emit('roomloading:show', false)
+        this.$eventBus.$emit('roomloading:show', { toggle: false })
         this.roomClear() //vuex action
         if (typeof err === 'string') {
           console.error(err)
