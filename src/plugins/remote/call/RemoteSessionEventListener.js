@@ -1,6 +1,8 @@
 import Store from 'stores/remote/store'
 import _, { addSubscriber, removeSubscriber } from './Remote'
 
+import { URLS } from 'configs/env.config'
+
 import {
   SIGNAL,
   CONTROL,
@@ -9,7 +11,6 @@ import {
   ROLE,
   VIDEO,
   FILE,
-  LINKFLOW,
   DRAWING,
 } from 'configs/remote.config'
 import { CAMERA as CAMERA_STATUS } from 'configs/device.config'
@@ -73,6 +74,7 @@ const streamDestroyed = event => {
 
 /** session closed */
 const sessionDisconnected = event => {
+  const isGuest = _.account.roleType === ROLE.SEAT
   if (event.reason === 'sessionClosedByServer') {
     logger('room', 'participant disconnect')
     _.clear()
@@ -89,7 +91,12 @@ const sessionDisconnected = event => {
         },
       },
     )
-    window.vue.$router.push({ name: 'workspace' })
+
+    if (isGuest) {
+      location.href = `${URLS['console']}/?continue=${location.href}`
+    } else {
+      window.vue.$router.push({ name: 'workspace' })
+    }
   } else if (event.reason === 'forceDisconnectByUser') {
     logger('room', 'participant disconnect')
     _.clear()
@@ -106,7 +113,12 @@ const sessionDisconnected = event => {
         },
       },
     )
-    window.vue.$router.push({ name: 'workspace' })
+
+    if (isGuest) {
+      location.href = `${URLS['console']}/?continue=${location.href}`
+    } else {
+      window.vue.$router.push({ name: 'workspace' })
+    }
   } else if (event.reason === 'networkDisconnect') {
     logger('network', 'disconnect')
   }

@@ -14,8 +14,7 @@ import { getGuestRoomInfo } from 'api/http/guest'
 import roomMixin from 'mixins/room'
 import { ROLE } from 'configs/remote.config'
 
-// const EXPIRE_TIMER = 120 //120초
-const EXPIRE_TIMER = 5 //120초
+const EXPIRE_TIMER = 120 //120초
 
 export default {
   name: 'GuestWelcome',

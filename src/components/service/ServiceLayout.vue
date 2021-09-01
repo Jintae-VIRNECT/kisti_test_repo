@@ -71,6 +71,7 @@ import UserList from './participants/ParticipantList'
 import { ROLE } from 'configs/remote.config'
 import { CAMERA } from 'configs/device.config'
 import { VIEW } from 'configs/view.config'
+import { URLS } from 'configs/env.config'
 import localRecorderMixin from 'mixins/localRecorder'
 import serverRecordMixin from 'mixins/serverRecorder'
 import Store from 'stores/remote/store'
@@ -240,7 +241,12 @@ export default {
     },
     reconnect(event) {
       if (event.reason === 'networkDisconnect') {
-        this.connectVisible = true
+        if (this.account.roleType === ROLE.SEAT) {
+          location.href = `${URLS['console']}/?continue=${location.href}`
+          return
+        } else {
+          this.connectVisible = true
+        }
       }
     },
     setVideoLoaded(flag) {

@@ -47,15 +47,21 @@ export default {
         if (this.clicked === true) return
         this.clicked = true
 
+        //@TODO - ROLE.SEAT 재정의
         let role
         if (room.sessionType === ROOM_STATUS.PRIVATE) {
-          let myInfo = room.memberList.find(
+          const myInfo = room.memberList.find(
             member => member.uuid === this.account.uuid,
           )
           if (myInfo === undefined) throw Error('not allow to participant')
           role = myInfo.memberType === ROLE.LEADER ? ROLE.LEADER : ROLE.EXPERT
         } else {
-          role = room.leaderId === this.account.uuid ? ROLE.LEADER : ROLE.EXPERT
+          if (this.account.roleType === ROLE.SEAT) {
+            role = ROLE.SEAT
+          } else {
+            role =
+              room.leaderId === this.account.uuid ? ROLE.LEADER : ROLE.EXPERT
+          }
         }
 
         room.videoRestrictedMode = await this.checkVideoStrictMode(room)

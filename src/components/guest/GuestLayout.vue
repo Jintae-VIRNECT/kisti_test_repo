@@ -37,6 +37,8 @@ import { mapActions } from 'vuex'
 import { getWorkspaceInfo } from 'api/http/workspace'
 
 import Cookies from 'js-cookie'
+
+import { ROLE } from 'configs/remote.config'
 export default {
   name: 'GuestLayout',
   async beforeRouteEnter(to, from, next) {
@@ -73,6 +75,7 @@ export default {
 
       this.updateAccount({
         ...guestInfo,
+        roleType: ROLE.SEAT,
       })
 
       //토큰 설정
