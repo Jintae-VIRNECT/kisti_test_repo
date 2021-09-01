@@ -18,6 +18,8 @@ import confirmMixin from 'mixins/confirm'
 import { isRegisted } from 'utils/auth'
 import { mapActions, mapGetters } from 'vuex'
 
+import { joinOpenRoomAsGuest } from 'api/http/guest'
+
 export default {
   mixins: [toastMixin, callMixin, errorMsgMixin, confirmMixin],
   data() {
@@ -32,9 +34,12 @@ export default {
     ...mapActions(['roomClear', 'setRoomInfo']),
     async join(room, showRestrictAgreeModal = true) {
       this.logger('>>> JOIN ROOM')
+
       try {
         //멤버 상태 등록 안된 경우 협업방 입장 불가
-        if (!isRegisted) {
+        //그러나 guest 멤버는 체크하지 않음.
+
+        if (!isRegisted && !room.isGuest) {
           this.toastDefault(this.$t('workspace.auth_status_failed'))
           return
         }
@@ -124,13 +129,24 @@ export default {
       const options = await this.getDeviceId()
       const mediaStream = await this.$call.getStream(options)
 
-      const res = await joinRoom({
-        uuid: this.account.uuid,
-        memberType: role,
-        deviceType: DEVICE.WEB,
-        sessionId: room.sessionId,
-        workspaceId: this.workspace.uuid,
-      })
+      let res = null
+      if (room.isGuest) {
+        res = await joinOpenRoomAsGuest({
+          uuid: this.account.uuid,
+          memberType: 'UNKNOWN', //근데 이거 왜 언노운이에요?
+          deviceType: DEVICE.WEB,
+          sessionId: room.sessionId,
+          workspaceId: this.workspace.uuid,
+        })
+      } else {
+        res = await joinRoom({
+          uuid: this.account.uuid,
+          memberType: role,
+          deviceType: DEVICE.WEB,
+          sessionId: room.sessionId,
+          workspaceId: this.workspace.uuid,
+        })
+      }
 
       this.setRoomInfo({
         ...room,

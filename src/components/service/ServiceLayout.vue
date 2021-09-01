@@ -82,7 +82,7 @@ import { mapGetters, mapActions } from 'vuex'
 export default {
   name: 'ServiceLayout',
   beforeRouteEnter(to, from, next) {
-    if (from.name !== 'workspace') {
+    if (from.name !== 'workspace' && from.name !== 'connectioninfo') {
       next({ name: 'workspace' })
     }
     next()

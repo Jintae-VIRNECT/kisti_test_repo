@@ -10,10 +10,9 @@
   </section>
 </template>
 <script>
-import { joinOpenRoomAsGuest, getGuestRoomInfo } from 'api/http/guest'
+import { getGuestRoomInfo } from 'api/http/guest'
 import roomMixin from 'mixins/room'
 import { ROLE } from 'configs/remote.config'
-import { DEVICE } from 'configs/device.config'
 
 export default {
   name: 'GuestWelcome',
@@ -49,6 +48,10 @@ export default {
   },
   methods: {
     async joinAsGuest() {
+      if (this.remainTime <= 0) {
+        //멤버 재할당
+      }
+
       const sessionId = this.$route.query.sessionId
 
       const roomInfo = await getGuestRoomInfo({
@@ -57,22 +60,13 @@ export default {
       })
 
       const leader = roomInfo.memberList.find(member => {
-        member.role === ROLE.LEADER
+        member.memberType === ROLE.LEADER
       })
 
-      const room = await joinOpenRoomAsGuest({
-        uuid: this.account.uuid,
-        memberType: 'UNKNOWN', //근데 이거 왜 언노운이에요?
-        deviceType: DEVICE.WEB,
-        sessionId: sessionId,
-        workspaceId: this.workspace.uuid,
-      })
-
-      //@TODO : 통화 화면으로 이동하기
-      //leader 정보 find
-      const joinResult = await this.join({
-        ...room,
+      await this.join({
+        ...roomInfo,
         leaderId: leader ? leader.uuid : null,
+        isGuest: true,
       })
     },
     timer() {
