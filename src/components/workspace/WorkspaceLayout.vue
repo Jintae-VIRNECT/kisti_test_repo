@@ -37,10 +37,10 @@
       :isJoin="isJoin"
     ></room-loading>
     <collabo-float-button
-      v-if="workspace && workspace.uuid"
+      v-if="workspace && workspace.uuid && tabName !== 'setting'"
     ></collabo-float-button>
     <openroom-float-button
-      v-if="workspace && workspace.uuid"
+      v-if="workspace && workspace.uuid && tabName !== 'setting'"
     ></openroom-float-button>
   </section>
 </template>
@@ -116,6 +116,7 @@ export default {
       isOpenRoom: false,
       isJoin: false,
       inited: false,
+      tabName: 'remote',
     }
   },
   watch: {
@@ -253,8 +254,9 @@ export default {
       this.$refs['wrapperScroller'].scrollToY(0)
       this.tabFix = false
     },
-    tabChange() {
+    tabChange(tabName) {
       this.scrollTop()
+      this.tabName = tabName
     },
     toggleList() {
       this.showList = true
