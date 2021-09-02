@@ -90,6 +90,10 @@ public class ProjectService {
 	private final WorkspaceRestService workspaceRestService;
 	private final UserRestService userRestService;
 
+	private static final String PROJECT_DIRECTORY = "project";
+	private static final String REPORT_DIRECTORY = "report";
+	private static final String REPORT_FILE_EXTENSION = ".png";
+
 	/**
 	 * 프로젝트 업로드
 	 * @param projectUploadRequest - 업로드 요청 정보
@@ -115,7 +119,8 @@ public class ProjectService {
 
 		//2. 프로젝트 저장
 		String projectUUID = UUID.randomUUID().toString();
-		String projectPath = fileUploadService.uploadByFileInputStream(projectUploadRequest.getProject(), projectUUID);
+		String projectPath = fileUploadService.uploadByFileInputStream(
+			projectUploadRequest.getProject(), PROJECT_DIRECTORY, projectUUID);
 		Project project = Project.builder()
 			.uuid(projectUUID)
 			.name(projectUploadRequest.getName())
@@ -157,7 +162,11 @@ public class ProjectService {
 		String targetPath = "";
 		if (projectUploadRequest.getTargetType() == TargetType.QR) {
 			String qrString = generateQRString(projectUploadRequest.getTargetData());
-			targetPath = fileUploadService.base64ImageUpload(qrString);
+			String randomFileName = String.format(
+				"%s_%s%s", LocalDate.now().toString(), RandomStringUtils.randomAlphanumeric(10).toLowerCase(),
+				REPORT_FILE_EXTENSION
+			);
+			targetPath = fileUploadService.uploadByBase64Image(qrString, REPORT_DIRECTORY, randomFileName);
 		}
 		if (projectUploadRequest.getTargetType() == TargetType.VTarget) {
 			targetPath = fileDownloadService.getFilePath("workspace/report/", "virnect_target.png");
@@ -168,7 +177,7 @@ public class ProjectService {
 				FilenameUtils.getExtension(projectUploadRequest.getTargetFile().getName())
 			);
 			targetPath = fileUploadService.uploadByFileInputStream(
-				projectUploadRequest.getTargetFile(), randomFileName);
+				projectUploadRequest.getTargetFile(), REPORT_DIRECTORY, randomFileName);
 		}
 		if (projectUploadRequest.getTargetType() == TargetType.VR) {
 			targetPath = null;
@@ -540,8 +549,8 @@ public class ProjectService {
 				}
 			}
 			String projectPath = fileUploadService.uploadByFileInputStream(
-				projectUpdateRequest.getProject(),  projectUUID);
-			fileUploadService.delete(project.getPath());
+				projectUpdateRequest.getProject(), PROJECT_DIRECTORY, projectUUID);
+			fileUploadService.deleteByFileName(project.getPath());
 			project.setPath(projectPath);
 		}
 
@@ -605,8 +614,12 @@ public class ProjectService {
 		ProjectTarget projectTarget = project.getProjectTarget();
 
 		//프로젝트 타겟 타입 정보 변경
-		//todo: 기존 프로젝트 타겟 삭제
 		if (projectUpdateRequest.getTargetType() != null) {
+			//기존 타겟 삭제
+			if (projectTarget.getType() == TargetType.Image || projectTarget.getType() == TargetType.QR) {
+				fileUploadService.deleteByFileName(projectTarget.getPath());
+			}
+			//새로운 타겟 타입 등록
 			projectTarget.setType(projectUpdateRequest.getTargetType());
 			if (projectUpdateRequest.getTargetType() == TargetType.VR) {
 				projectTarget.setPath(null);
@@ -615,24 +628,26 @@ public class ProjectService {
 				String vrTargetPath = fileDownloadService.getFilePath("workspace/report/", "virnect_target.png");
 				projectTarget.setPath(vrTargetPath);
 			}
-		}
-
-		//프로젝트 타겟 데이터 변경
-		if (StringUtils.hasText(projectUpdateRequest.getTargetData())) {
-			String qrString = generateQRString(projectUpdateRequest.getTargetData());
-			String qrImagePath = fileUploadService.base64ImageUpload(qrString);
-			projectTarget.setPath(qrImagePath);
-		}
-
-		//프로젝트 타겟 파일 변경
-		if (projectUpdateRequest.getTargetFile() != null) {
-			String randomFileName = String.format(
-				"%s_%s%s", LocalDate.now().toString(), RandomStringUtils.randomAlphanumeric(10).toLowerCase(),
-				FilenameUtils.getExtension(projectUpdateRequest.getTargetFile().getName())
-			);
-			String imagePath = fileUploadService.uploadByFileInputStream(projectUpdateRequest.getTargetFile(),
-				randomFileName);
-			projectTarget.setPath(imagePath);
+			if (projectUpdateRequest.getTargetType() == TargetType.QR) {
+				String qrString = generateQRString(projectUpdateRequest.getTargetData());
+				String randomFileName = String.format(
+					"%s_%s%s", LocalDate.now().toString(), RandomStringUtils.randomAlphanumeric(10).toLowerCase(),
+					REPORT_FILE_EXTENSION
+				);
+				String qrImagePath = fileUploadService.uploadByBase64Image(qrString, REPORT_DIRECTORY, randomFileName);
+				projectTarget.setPath(qrImagePath);
+			}
+			if (projectUpdateRequest.getTargetType() == TargetType.Image) {
+				String randomFileName = String.format(
+					"%s_%s%s", LocalDate.now().toString(), RandomStringUtils.randomAlphanumeric(10).toLowerCase(),
+					FilenameUtils.getExtension(projectUpdateRequest.getTargetFile().getName())
+				);
+				String imagePath = fileUploadService.uploadByFileInputStream(projectUpdateRequest.getTargetFile(),
+					REPORT_DIRECTORY
+					, randomFileName
+				);
+				projectTarget.setPath(imagePath);
+			}
 		}
 
 		//프로젝트 타겟 너비 변경

@@ -12,6 +12,7 @@ import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Base64;
@@ -28,6 +29,7 @@ import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.disk.DiskFileItem;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
@@ -127,15 +129,13 @@ public class ContentService {
 	private final MetadataService metadataService;
 	private final ModelMapper modelMapper;
 	private final ProjectRepository projectRepository;
-	/*@Value("${upload.dir}")
-	private String uploadPath;*/
 	@Value("${file.upload-path}")
 	private String fileUploadPath;
 
-	//@Value("${file.url}")
-	//private String fileUploadUrl;
-
-	private String defaultVTarget = "virnect_target.png";
+	private static final String V_TARGET_DEFAULT_NAME = "virnect_target.png";
+	private static final String CONTENT_DIRECTORY = "contents";
+	private static final String REPORT_DIRECTORY = "report";
+	private static final String REPORT_FILE_EXTENSION = ".png";
 
 	/**
 	 * 콘텐츠 업로드
@@ -170,8 +170,8 @@ public class ContentService {
 		log.info("CONTENT UPLOAD - contentUUID : {}, request : {}", contentUUID, uploadRequest.toString());
 
 		// 파일명은 컨텐츠 식별자(contentUUID)와 동일
-		String fileUploadPath = this.fileUploadService.uploadByFileInputStream(
-			uploadRequest.getContent(), contentUUID + "");
+		String uploadPath = this.fileUploadService.uploadByFileInputStream(
+			uploadRequest.getContent(), CONTENT_DIRECTORY, contentUUID);
 
 		// 2-1. 프로퍼티로 메타데이터 생성
 		//MetadataInfo metadataInfo = metadataService.convertMetadata(uploadRequest.getProperties(), uploadRequest.getUserUUID(), uploadRequest.getName());
@@ -190,7 +190,7 @@ public class ContentService {
 			.converted(INIT_IS_CONVERTED)
 			.deleted(INIT_IS_DELETED)
 			.size(uploadRequest.getContent().getSize())
-			.path(fileUploadPath)
+			.path(uploadPath)
 			.build();
 
 		// 3. 컨텐츠 씬그룹 관련 정보 파싱 및 컨텐츠 정보에 추가
@@ -259,7 +259,7 @@ public class ContentService {
 			}
 			if (targetType.equals(TargetType.VTarget)) {
 				//imgPath = fileUploadUrl + fileUploadPath + defaultVTarget;defaultVTarget
-				imgPath = fileDownloadService.getFilePath(fileUploadPath, defaultVTarget);
+				imgPath = fileDownloadService.getFilePath(fileUploadPath, V_TARGET_DEFAULT_NAME);
 			}
 		}
 
@@ -330,13 +330,13 @@ public class ContentService {
 		checkLicenseStorage(targetContent.getWorkspaceUUID(), calSize, updateRequest.getUserUUID());
 
 		// 2. 기존 컨텐츠 파일 삭제
-		fileUploadService.delete(targetContent.getPath());
+		fileUploadService.deleteByFileName(targetContent.getPath());
 
 		//3. 수정 컨텐츠 업로드
-		String fileUploadPath = fileUploadService.uploadByFileInputStream(
-			updateRequest.getContent(), targetContent.getUuid());
+		String uploadPath = fileUploadService.uploadByFileInputStream(
+			updateRequest.getContent(), CONTENT_DIRECTORY, targetContent.getUuid());
 		// 3 수정 컨텐츠 경로 반영
-		targetContent.setPath(fileUploadPath);
+		targetContent.setPath(uploadPath);
 
 		// 5. 컨텐츠 소유자 변경
 		targetContent.setUserUUID(updateRequest.getUserUUID());
@@ -376,12 +376,12 @@ public class ContentService {
 			|| updateRequest.getTargetType() != target.getType()) {
 			if (updateRequest.getTargetType().equals(TargetType.QR)) {
 				String uploadImgPath = decodeData(updateRequest.getTargetData());
-				fileUploadService.delete(target.getImgPath());
+				fileUploadService.deleteByFileName(target.getImgPath());
 				target.setImgPath(uploadImgPath);
 			}
 			if (updateRequest.getTargetType().equals(TargetType.VTarget)) {
-				String uploadImgPath = fileDownloadService.getFilePath(fileUploadPath, defaultVTarget);
-				fileUploadService.delete(target.getImgPath());
+				String uploadImgPath = fileDownloadService.getFilePath(fileUploadPath, V_TARGET_DEFAULT_NAME);
+				fileUploadService.deleteByFileName(target.getImgPath());
 				target.setImgPath(uploadImgPath);
 			}
 		}
@@ -522,7 +522,7 @@ public class ContentService {
 				log.info("content.getPath() = {}", content.getPath());
 
 				// NULL 체크
-				fileUploadService.delete(content.getPath());
+				fileUploadService.deleteByFileName(content.getPath());
                 /*if (this.fileUploadService.getFile(content.getPath()) != null) {
 
                     if (this.fileUploadService.getFile(content.getPath()).exists()) {
@@ -880,9 +880,9 @@ public class ContentService {
 		log.info("CONTENT UPLOAD - contentUUID : {}", newContentUUID);
 		//3. 새로 생성하는 컨텐츠의 ares (기존 ares와 내용은 같다.), 파일명은 컨텐츠 식별자(contentUUID)와 동일
 		//String fileUploadPath = this.fileUploadService.uploadByFileInputStream(originFile, newContentUUID + "");
-		String fileUploadPath = this.fileUploadService.copyByFileObject(
+		String uploadPath = this.fileUploadService.copyByFileObject(
 			FilenameUtils.getName(oldContents.getPath()), newContentUUID.concat(ARES_FILE_EXTENSION));
-		log.info("CONTENT UPLOAD - file upload path : {}", fileUploadPath);
+		log.info("CONTENT UPLOAD - file upload path : {}", uploadPath);
 
 		Content newContent = Content.builder()
 			// TODO : 유효한 워크스페이스 인지 검증 필요.
@@ -896,7 +896,7 @@ public class ContentService {
 			.converted(YesOrNo.YES)
 			.deleted(INIT_IS_DELETED)
 			.size(oldContents.getSize())
-			.path(fileUploadPath)
+			.path(uploadPath)
 			.build();
 
 		// 3. 컨텐츠 씬그룹 관련 정보 파싱 및 컨텐츠 정보에 추가
@@ -1108,7 +1108,11 @@ public class ContentService {
 			ImageIO.write(qrImage, "png", os);
 
 			String qrString = Base64.getEncoder().encodeToString(os.toByteArray());
-			return fileUploadService.base64ImageUpload(qrString);
+			String randomFileName = String.format(
+				"%s_%s%s", LocalDate.now().toString(), RandomStringUtils.randomAlphanumeric(10).toLowerCase(),
+				REPORT_FILE_EXTENSION
+			);
+			return fileUploadService.uploadByBase64Image(qrString, REPORT_DIRECTORY, randomFileName);
 		} catch (Exception e) {
 			log.error(e.getMessage());
 			throw new ContentServiceException(ErrorCode.ERR_CONTENT_UPLOAD);
@@ -1197,7 +1201,8 @@ public class ContentService {
 		targetRepository.deleteAllTargetInfoByContent(contentList);
 
 		// 4. Content File 삭제
-		contentList.parallelStream().forEach(content -> fileUploadService.delete(content.getPath()));
+		contentList.parallelStream()
+			.forEach(content -> fileUploadService.deleteByFileName(content.getPath()));
 
 		// 4. Content 삭제
 		contentRepository.deleteAllContentByWorkspaceUUID(workspaceUUID);

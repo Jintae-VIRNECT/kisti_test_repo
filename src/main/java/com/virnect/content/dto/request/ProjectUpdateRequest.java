@@ -4,6 +4,7 @@ import java.util.List;
 
 import javax.validation.constraints.NotBlank;
 
+import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import io.swagger.annotations.ApiModelProperty;
@@ -56,4 +57,34 @@ public class ProjectUpdateRequest {
 	private EditPermission editPermission;
 	@ApiModelProperty(value = "편집 권한 대상 특정 유저 목록", example = "", position = 14)
 	private List<String> editUserList;
+
+	public boolean validateTargetType() {
+		if (targetType == TargetType.QR && !StringUtils.hasText(targetData)) {
+			return false;
+		}
+		if (targetType == TargetType.Image && targetFile == null) {
+			return false;
+		}
+		return true;
+	}
+
+	@Override
+	public String toString() {
+		return "ProjectUpdateRequest{" +
+			"userUUID='" + userUUID + '\'' +
+			", name='" + name + '\'' +
+			", project=" + project +
+			//", properties='" + properties + '\'' +
+			", targetType=" + targetType +
+			", targetData='" + targetData + '\'' +
+			", targetWidth=" + targetWidth +
+			", targetLength=" + targetLength +
+			", targetFile=" + targetFile +
+			", modeList=" + modeList +
+			", sharePermission=" + sharePermission +
+			", sharedUserList=" + sharedUserList +
+			", editPermission=" + editPermission +
+			", editUserList=" + editUserList +
+			'}';
+	}
 }
