@@ -10,12 +10,6 @@
             스마트 글라스에서 QR코드로 간편하게 로그인 하세요.
           </p>
           <canvas class="qr__main--code" ref="qr-code"></canvas>
-          <p class="qr__main--time">
-            남은 시간
-            <time> {{ expireTime | timeFilter }}</time>
-          </p>
-
-          <button class="qr__main--refresh btn">QR 코드 갱신!</button>
         </article>
         <figcaption class="qr__desc">
           <p class="qr__desc--title">QR 로그인 방법</p>
