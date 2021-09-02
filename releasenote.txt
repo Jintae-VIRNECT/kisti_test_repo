@@ -1,10 +1,7 @@
-RELEASE v1.3.8.3
-
-New Features
+RELEASE v1.3.8.5
 
 Bug Fixes
-# remote Hololens2의 Microsoft Store URL 링크추가
-# view와 remote의 스토어 이동 URL이 어플리케이션에 맞게 바뀌도록 로직변경
+# track download url 업데이트. url에 버저닝 추가.
 
 Limitation
 
