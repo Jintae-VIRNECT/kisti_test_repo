@@ -2,13 +2,7 @@ package com.virnect.uaa.domain.auth.account.domain;
 
 import java.util.List;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Table;
-import javax.persistence.Transient;
+import javax.persistence.*;
 
 import org.hibernate.envers.Audited;
 
@@ -19,7 +13,13 @@ import lombok.Setter;
 @Entity
 @Getter
 @Setter
-@Table(name = "user_otp")
+@Table(name = "user_otp",
+	indexes = {
+		@Index(
+			name = "index_email",
+			columnList="email"
+		)
+	})
 @NoArgsConstructor
 @Audited
 public class UserOTP {
