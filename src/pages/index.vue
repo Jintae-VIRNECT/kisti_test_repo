@@ -54,7 +54,8 @@ export default {
         view: [],
         track: [],
       },
-      trackDownloadUrl: 'http://track.virnect.com/download/download/',
+      // TODO: 추후 Track 버전을 서버에서 전달받아 URL에 넣어주기.
+      trackDownloadUrl: 'http://track.virnect.com/1.2.0/download/download/',
     }
   },
   watch: {
