@@ -246,8 +246,8 @@
 
 
     "guest_invite_url":"Connection URL",
-    "guest_invite_with_url":"URL 초대하기",
-    "guest_invite_send_email":"E-mail 전송하기",
+    "guest_invite_with_url":"",
+    "guest_invite_send_email":"",
     "guest_invite_description":"接続URLを介してコラボ参加時、非会員権に参加します。​",
     "guest_invite_url_copied":"接続URLをコピーしました。",
     "guest_invite_email_transport_succeed":"接続URLをメールで送信しました。​",
