@@ -1621,7 +1621,12 @@
     stylelint-prettier "^1.1.2"
     stylelint-scss "^3.18.0"
 
-"@virnect/ui-assets@^1.1.20", "@virnect/ui-assets@^1.8.0":
+"@virnect/ui-assets@1.8.1":
+  version "1.8.1"
+  resolved "http://192.168.6.3:4873/@virnect%2fui-assets/-/ui-assets-1.8.1.tgz#7d4daa045429c37abaff8b6a15c38ff141a7c67e"
+  integrity sha512-G4ESXROUhFZtrS56FXPe2GD7QNlATy2Ocb+f00cRAdhOgVQhout+Ayj3TotLY8uP1AJvbZSyAu9/MMY95xmbHQ==
+
+"@virnect/ui-assets@^1.1.20":
   version "1.8.0"
   resolved "http://192.168.6.3:4873/@virnect%2fui-assets/-/ui-assets-1.8.0.tgz#721585058481b9ea7fcffb3155a4ae4c246daae0"
   integrity sha512-2voFSGMG9S9uUUTvcNZ1t1AEIkGU5R/8IrE8zuYK9PuxWhW+p3Xux+N1pIjzqIyuxlZL7dfNgrWr6BSQPZ/bEQ==
