@@ -122,7 +122,7 @@ export default {
       this.$eventBus.$emit('popover:close')
       this.$nextTick(() => {
         this.component = tabName
-        this.$emit('tabChange')
+        this.$emit('tabChange', tabName)
       })
     },
     createRoom() {

@@ -42,7 +42,7 @@
     :listCount="groupList.length"
     :showMemberButton="true"
     :showAddGroupButton="true"
-    :loading="loading"
+    :loading="groupLoading"
     :showSubHeader="true"
     @showmember="toggleMode"
     @addgroup="showGroup"
@@ -53,6 +53,7 @@
         :key="'group_' + group.groupId"
         :index="index + 1"
         :group="group"
+        :isOverflow="isOverflow"
         @deletegroup="deleteGroup"
         @updategroup="updategroup"
       ></member-group>
@@ -130,6 +131,8 @@ export default {
 
       groupList: [],
       groupMemberList: [],
+
+      isOverflow: false,
     }
   },
   computed: {
@@ -238,7 +241,7 @@ export default {
       await this.getList()
 
       const { uuid } = targetUserinfo
-      const nickNameTag = this.isMobile
+      const nickNameTag = this.isMobileSize
         ? `${targetUserinfo.nickName}\n`
         : `<span style="color:#6bb4f9">${targetUserinfo.nickName}</span> `
 
@@ -297,6 +300,8 @@ export default {
       this.memberGroupModalFlag = true
     },
     async updategroup(groupId) {
+      this.$eventBus.$emit('popover:close')
+
       const group = await getMemberGroupItem({
         workspaceId: this.workspace.uuid,
         groupId: groupId,
@@ -321,6 +326,8 @@ export default {
      * @param {String} 삭제할 그룹 id
      */
     async deleteGroup(groupId) {
+      this.$eventBus.$emit('popover:close')
+
       try {
         await deletePrivateMemberGroup({
           workspaceId: this.workspace.uuid,
@@ -374,6 +381,18 @@ export default {
         this.groupLoading = false
       }
     },
+
+    checkIsOverflow() {
+      if (
+        matchMedia(
+          'only screen and (min-width: 1025px) and (max-width: 1372px)',
+        ).matches
+      )
+        this.isOverflow = true
+      else if (matchMedia('screen and (max-width: 920px)').matches)
+        this.isOverflow = true
+      else this.isOverflow = false
+    },
   },
 
   /* Lifecycles */
@@ -381,7 +400,13 @@ export default {
     this.setMobileDefaultEmptyImage(defaultEmptyImage, mobileEmptyImage)
     this.getList()
   },
-  beforeDestroy() {},
+  mounted() {
+    this.checkIsOverflow()
+    window.addEventListener('resize', this.checkIsOverflow)
+  },
+  beforeDestroy() {
+    window.removeEventListener('resize', this.checkIsOverflow)
+  },
 }
 </script>
 

@@ -58,7 +58,7 @@ export default {
         this.getInfo()
       }
     },
-    isMobile: {
+    isMobileSize: {
       immediate: true,
       handler: function(newVal) {
         if (newVal) this.beforeClose()

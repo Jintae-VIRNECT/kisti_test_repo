@@ -215,6 +215,20 @@ $color_positivie: #66aaff;
     > img {
       content: url(~assets/image/workspace/img_noworkspace_new.svg);
     }
+    &.expire {
+      > img {
+        content: url(~assets/image/workspace/img_licenseexpire_new.svg);
+      }
+      .workspace-license__description--purchase.btn {
+        width: 19.2rem;
+        height: 5rem;
+        margin-top: 1.2rem;
+        color: $new_color_text_main;
+        @include fontLevel(150);
+        background-color: $new_color_bg_button_primary;
+        border-radius: 0.4rem;
+      }
+    }
   }
 
   .workspace-license__description--title {

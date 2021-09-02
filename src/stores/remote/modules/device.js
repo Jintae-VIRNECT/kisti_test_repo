@@ -1,20 +1,29 @@
-import { SET_DEVICE, SET_IS_MOBILE } from '../mutation-types'
+import {
+  SET_DEVICE,
+  SET_IS_MOBILE_SIZE,
+  SET_IS_TABLET_SIZE,
+} from '../mutation-types'
 
 const state = {
   type: '', // desktop, tablet, mobile
-  isMobile: false,
+  isMobileSize: false,
+  isTabletSize: false,
 }
 
 const getters = {
-  isMobile: state => state.isMobile,
+  isMobileSize: state => state.isMobileSize,
+  isTabletSize: state => state.isTabletSize,
 }
 
 const mutations = {
   [SET_DEVICE](state, type) {
     state.type = type
   },
-  [SET_IS_MOBILE](state, isMobile) {
-    state.isMobile = isMobile
+  [SET_IS_MOBILE_SIZE](state, isMobileSize) {
+    state.isMobileSize = isMobileSize
+  },
+  [SET_IS_TABLET_SIZE](state, isTabletSize) {
+    state.isTabletSize = isTabletSize
   },
 }
 

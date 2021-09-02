@@ -1,45 +1,63 @@
 <template>
-  <modal
-    :title="$t('workspace.workspace_add_and_update_member_group')"
-    width="50.8571rem"
-    height="60.8571rem"
-    :showClose="true"
-    :visible.sync="visibleFlag"
-    :beforeClose="beforeClose"
-    class="member-group-modal"
-  >
-    <div class="member-group">
-      <input-row
-        :title="$t('workspace.workspace_member_group_name')"
-        :placeholder="$t('workspace.workspace_member_group_name')"
-        :value.sync="groupNameInput"
-        :valid.sync="groupNameInValid"
-        validate="validName"
-        :validMessage="groupNameInvalidMessage"
-        type="text"
-        :count="20"
-        showCount
-        countPosition="mid-right"
-        titlePosition="bottom"
-      ></input-row>
+  <div>
+    <modal
+      :title="$t('workspace.workspace_add_and_update_member_group')"
+      width="50.8571rem"
+      height="60.8571rem"
+      :showClose="true"
+      :visible.sync="visiblePcFlag"
+      :beforeClose="beforeClose"
+      class="member-group-modal"
+    >
+      <div class="member-group">
+        <input-row
+          :title="$t('workspace.workspace_member_group_name')"
+          :placeholder="$t('workspace.workspace_member_group_name')"
+          :value.sync="groupNameInput"
+          :valid.sync="groupNameInValid"
+          validate="validName"
+          :validMessage="groupNameInvalidMessage"
+          type="text"
+          :count="20"
+          showCount
+          countPosition="mid-right"
+          titlePosition="bottom"
+        ></input-row>
 
-      <room-invite
-        :users="users"
-        :selection="selection"
-        :total="users.length"
-        :loading="loading"
-        @userSelect="selectUser"
-        @inviteRefresh="refreshUser"
-      ></room-invite>
-      <button
-        class="btn save-group"
-        :disabled="selection.length === 0 || groupNameInValid"
-        @click="save"
-      >
-        {{ $t('button.confirm') }} {{ selection.length }}/{{ this.maxSelect }}
-      </button>
-    </div>
-  </modal>
+        <room-invite
+          :users="users"
+          :selection="selection"
+          :total="users.length"
+          :loading="loading"
+          @userSelect="selectUser"
+          @inviteRefresh="refreshUser"
+        ></room-invite>
+        <button
+          class="btn save-group"
+          :disabled="selection.length === 0 || groupNameInValid"
+          @click="save"
+        >
+          {{ $t('button.confirm') }} {{ selection.length }}/{{ this.maxSelect }}
+        </button>
+      </div>
+    </modal>
+    <workspace-mobile-member-group
+      :visible.sync="visibleMobileFlag"
+      :beforeClose="beforeClose"
+      :value.sync="groupNameInput"
+      :users="users"
+      :selection="selection"
+      :loading="loading"
+      :maxSelect="maxSelect"
+      :groupId="groupId"
+      :groupName="groupName"
+      :groupNameInvalidMessage="groupNameInvalidMessage"
+      validate="validName"
+      @userSelect="selectUser"
+      @inviteRefresh="refreshUser"
+      @save="save"
+    ></workspace-mobile-member-group>
+  </div>
 </template>
 
 <script>
@@ -53,15 +71,18 @@ import {
 } from 'api/http/member'
 
 import toastMixin from 'mixins/toast'
+import responsiveModalVisibleMixin from 'mixins/responsiveModalVisible'
+
 import { maxParticipants } from 'utils/callOptions'
 
 export default {
   name: 'WorkspaceMemberGroup',
-  mixins: [toastMixin],
+  mixins: [toastMixin, responsiveModalVisibleMixin],
   components: {
     Modal,
     RoomInvite,
     InputRow,
+    WorkspaceMobileMemberGroup: () => import('./WorkspaceMobileMemberGroup'),
   },
   props: {
     groupId: {
@@ -91,7 +112,7 @@ export default {
   },
   data() {
     return {
-      visibleFlag: false,
+      //visibleFlag: false,
       loading: false,
       selection: [],
       maxSelect: maxParticipants - 1,
@@ -117,7 +138,6 @@ export default {
   },
   watch: {
     visible(flag) {
-      this.visibleFlag = flag
       if (flag) {
         if (this.groupId) {
           this.groupNameInput = this.groupName
@@ -127,6 +147,7 @@ export default {
         this.selection = []
         this.groupNameInput = ''
       }
+      this.setVisiblePcOrMobileFlag(flag)
     },
     groupNameInput() {
       if (this.groupNameInput.length < 2) {
@@ -208,7 +229,6 @@ export default {
       }
     },
   },
-  async mounted() {},
 }
 </script>
 

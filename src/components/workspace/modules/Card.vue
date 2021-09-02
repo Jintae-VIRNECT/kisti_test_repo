@@ -1,5 +1,9 @@
 <template>
-  <div class="card" :style="{ width: cardWidth, height: cardHeight }">
+  <div
+    class="card"
+    :style="{ width: cardWidth, height: cardHeight }"
+    @click="onMobileJoin"
+  >
     <popover
       v-if="menu"
       trigger="click"
@@ -62,6 +66,11 @@ export default {
       } else {
         return this.height + 'px'
       }
+    },
+  },
+  methods: {
+    onMobileJoin() {
+      if (this.isMobileSize) this.$emit('mobileJoin')
     },
   },
 }

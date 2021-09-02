@@ -85,7 +85,7 @@ export default {
         this.$refs['contentScrollbar'].reset()
       }
     },
-    isMobile() {
+    isMobileSize() {
       this.responsiveReset()
     },
   },

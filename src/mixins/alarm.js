@@ -165,6 +165,7 @@ export default {
       })
     },
     /**
+     * 미사용
      * TODO
      */
     alarmMessage(nickName, text) {
@@ -176,6 +177,7 @@ export default {
       })
     },
     /**
+     * 미사용
      * TODO
      */
     alarmFail() {
@@ -186,6 +188,7 @@ export default {
       })
     },
     /**
+     * 미사용
      * TODO
      */
     alarmFile(nickName) {

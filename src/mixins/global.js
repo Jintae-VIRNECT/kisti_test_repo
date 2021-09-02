@@ -40,7 +40,8 @@ export default {
       'workspace',
       'deviceType',
       'hasLicense',
-      'isMobile',
+      'isMobileSize',
+      'isTabletSize',
     ]),
     isSafari() {
       const userAgent = navigator.userAgent || ''
@@ -79,7 +80,7 @@ export default {
     },
   },
   methods: {
-    ...mapMutations(['SET_IS_MOBILE']),
+    ...mapMutations(['SET_IS_MOBILE_SIZE', 'SET_IS_TABLET_SIZE']),
     onImageError(event) {
       // console.log(event.target)
       // event.target.src = require('assets/image/img_user_profile.svg')
@@ -91,9 +92,20 @@ export default {
       event.target.style.display = 'none'
     },
     responsiveGlobal() {
-      if (matchMedia('screen and (max-width: 767px)').matches)
-        this.SET_IS_MOBILE(true)
-      else this.SET_IS_MOBILE(false)
+      if (matchMedia('screen and (max-width: 767px)').matches) {
+        this.SET_IS_MOBILE_SIZE(true)
+        this.SET_IS_TABLET_SIZE(false)
+      } else if (
+        matchMedia(
+          'only screen and (min-device-width: 768px) and (max-width: 1023px)',
+        ).matches
+      ) {
+        this.SET_IS_MOBILE_SIZE(false)
+        this.SET_IS_TABLET_SIZE(true)
+      } else {
+        this.SET_IS_MOBILE_SIZE(false)
+        this.SET_IS_TABLET_SIZE(false)
+      }
     },
   },
   mounted() {

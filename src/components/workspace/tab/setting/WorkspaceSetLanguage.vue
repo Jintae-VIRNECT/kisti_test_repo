@@ -1,6 +1,6 @@
 <template>
-  <section class="setting-section">
-    <div class="setting-section__title">
+  <section class="setting-section language">
+    <div class="setting-section__title main">
       {{ $t('workspace.setting_language_choice') }}
     </div>
     <div class="radio-custom">
@@ -65,6 +65,7 @@ export default {
 
 <style lang="scss">
 @import '~assets/style/vars';
+@import '~assets/style/mixin';
 .radio-custom {
   max-width: 28.571rem;
   padding: 0.714rem 1.429rem;
@@ -76,6 +77,32 @@ export default {
     // border-bottom: transparent;
     &:last-child {
       border-bottom: none;
+    }
+  }
+}
+
+@include responsive-mobile {
+  .radio-custom {
+    .radio-option {
+      display: flex;
+      align-items: center;
+      height: 5.6rem;
+      @include fontLevel(100);
+      color: $new_color_text_sub;
+      border-bottom: 1.5px solid $new_color_sub_border;
+
+      &.active {
+        color: $new_color_text_main;
+      }
+
+      .radio-option__input {
+        width: 2.4rem;
+        height: 2.4rem;
+        &.active::before {
+          width: 1.4rem;
+          height: 1.4rem;
+        }
+      }
     }
   }
 }

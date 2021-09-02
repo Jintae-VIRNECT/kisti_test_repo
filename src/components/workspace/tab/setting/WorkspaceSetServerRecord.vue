@@ -1,6 +1,6 @@
 <template>
   <section class="setting-section">
-    <div class="setting-section__title">
+    <div v-if="!isMobileSize" class="setting-section__title">
       {{ $t('workspace.setting_server_record') }}
     </div>
     <div class="setting-section__body horizon">
@@ -16,7 +16,11 @@
           :selectedValue.sync="recordTime"
         >
         </r-select>
+        <p v-if="isMobileSize" class="setting__label dot">
+          {{ $t('workspace.setting_record_setting_description') }}
+        </p>
       </figure>
+
       <figure class="setting__figure">
         <div class="setting__figure--wrapper">
           <p class="setting__label">
@@ -32,12 +36,12 @@
         >
         </r-select>
       </figure>
-      <p class="setting__label dot">
+      <p v-if="!isMobileSize" class="setting__label dot">
         {{ $t('workspace.setting_record_setting_description') }}
       </p>
     </div>
 
-    <div class="setting-section__body">
+    <div v-if="!isMobileSize" class="setting-section__body">
       <figure class="setting__figure">
         <p class="setting__label">
           {{ $t('workspace.setting_auto_server_record') }}
@@ -126,3 +130,18 @@ export default {
   },
 }
 </script>
+<style lang="scss" scoped>
+@import '~assets/style/mixin';
+
+@include responsive-mobile {
+  .setting-section {
+    padding-bottom: 2.4rem;
+  }
+
+  .setting__figure .setting__label.dot {
+    @include fontLevel(50);
+    margin-top: 0.8rem;
+    color: $new_color_text_sub_description;
+  }
+}
+</style>
