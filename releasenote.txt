@@ -1,7 +1,7 @@
-RELEASE v1.3.8.5
+RELEASE v1.3.8.6
 
 Bug Fixes
-# track download url 업데이트. url에 버저닝 추가.
+# ui-assets 라이브러리 버전업으로 인한 보더 이슈. 버전 v1.8.1로 고정처리
 
 Limitation
 
