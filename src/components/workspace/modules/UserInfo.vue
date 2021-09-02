@@ -25,12 +25,12 @@
         class="btn line userinfo__button"
         :class="{ me: account.uuid === user.uuid }"
         @click="$emit('kickout')"
-        v-if="isLeader && !isMobile"
+        v-if="isLeader && !isMobileSize"
       >
         {{ $t('button.kickout') }}
       </button>
       <popover
-        v-if="isLeader && isMobile && account.uuid !== user.uuid"
+        v-if="isLeader && isMobileSize && account.uuid !== user.uuid"
         trigger="click"
         popperClass="kickout-menu"
         placement="left-start"

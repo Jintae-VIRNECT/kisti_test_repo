@@ -7,6 +7,7 @@
     :height="height"
     :placement="placement"
     popoverClass="group-menu"
+    @mobileJoin="join"
   >
     <div class="groupcard-body">
       <span class="groupcard__leader" v-if="isLeader">Leader</span>
@@ -263,18 +264,5 @@ export default {
   .group-menu {
     @include responsive-popover;
   }
-  // .popover.group-menu {
-  //   background-color: #606a77; //@추가 color
-  //   border: none; //@추가 color
-  // }
-  // .groupcard-popover {
-  //   .group-pop__button {
-  //     @include fontLevel(100);
-  //     width: 12.1rem;
-  //     height: 4rem;
-  //     padding: 0;
-  //     padding-left: 2rem;
-  //   }
-  // }
 }
 </style>

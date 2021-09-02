@@ -43,6 +43,7 @@
 
         <!-- 즐겨 찾기 -->
         <icon-button
+          class="favourite"
           v-if="showManageGroupButton"
           :imgSrc="require('assets/image/workspace/ic_manage_member_group.svg')"
           :text="$t('button.member_group_bookmark')"
@@ -51,6 +52,7 @@
 
         <!-- 멤버 화면으로 가는 버튼 -->
         <icon-button
+          class="member"
           v-if="showMemberButton"
           :imgSrc="require('assets/image/workspace/ic_member.svg')"
           :text="$t('button.member')"
@@ -59,6 +61,7 @@
 
         <!-- 그룹 추가 버튼 -->
         <icon-button
+          class="add-group"
           v-if="showAddGroupButton"
           :imgSrc="require('assets/image/workspace/ic_add_member_group_.svg')"
           :text="$t('button.add_group_bookmark')"

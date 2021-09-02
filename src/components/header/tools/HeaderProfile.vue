@@ -123,7 +123,7 @@ export default {
     },
   },
   watch: {
-    isMobile: {
+    isMobileSize: {
       immediate: true,
       handler: function(newVal) {
         if (newVal) this.setResponsiveMobile()

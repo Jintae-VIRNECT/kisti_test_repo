@@ -7,7 +7,7 @@ export default {
     }
   },
   watch: {
-    isMobile(newVal) {
+    isMobileSize(newVal) {
       if (newVal) this.setMobileEmptyImage()
       else this.setDefaultEmptyImage()
     },
@@ -23,12 +23,12 @@ export default {
     setDefaultEmptyImage() {
       this.emptyImage = this._defaultEmptyImage
     },
-    responsiveEmptyImage(isMobile) {
-      if (isMobile) this.setMobileEmptyImage()
+    responsiveEmptyImage(isMobileSize) {
+      if (isMobileSize) this.setMobileEmptyImage()
       else this.setDefaultEmptyImage()
     },
   },
   mounted() {
-    this.responsiveEmptyImage(this.isMobile)
+    this.responsiveEmptyImage(this.isMobileSize)
   },
 }

@@ -3,8 +3,8 @@
     :showClose="false"
     :visible.sync="visibleFlag"
     customClass="modal-room-loading"
-    width="33em"
-    height="22.8571em"
+    :width="responsiveWidth"
+    :height="responsiveHeight"
     :beforeClose="beforeClose"
     :dimClose="false"
     :class="{ modalless: true }"
@@ -16,7 +16,7 @@
     />
     <!-- @TODO:다국어 추가 -->
     <p class="room-loading__text">
-      {{ $t('workspace.loading_prepare_remote') }}
+      {{ roomLoadingText }}
     </p>
     <p class="room-loading__text opacity">
       {{ $t('workspace.loading_checking_device') }}
@@ -42,10 +42,38 @@ export default {
       type: Boolean,
       default: false,
     },
+    isOpenRoom: {
+      type: Boolean,
+      default: false,
+    },
+    isJoin: {
+      type: Boolean,
+      default: false,
+    },
   },
   watch: {
     visible(flag) {
       this.visibleFlag = flag
+    },
+  },
+  computed: {
+    responsiveWidth() {
+      if (this.isMobileSize) return '21.4rem'
+      else return '33em'
+    },
+    responsiveHeight() {
+      if (this.isMobileSize) return '24.6rem'
+      else return '22.8571em'
+    },
+    roomLoadingText() {
+      if (this.isOpenRoom) {
+        if (this.isJoin)
+          return this.$t('workspace.loading_prepare_join_remote_open')
+        else return this.$t('workspace.loading_prepare_remote_open')
+      } else {
+        if (this.isJoin) return this.$t('workspace.loading_prepare_join_remote')
+        else return this.$t('workspace.loading_prepare_remote')
+      }
     },
   },
   methods: {
@@ -97,6 +125,25 @@ export default {
   }
   &.modalless {
     background-color: unset;
+  }
+}
+
+@include responsive-mobile {
+  .modal.modal-room-loading {
+    .modal--inner {
+      background-color: rgba(#000000, 0.86);
+      border: 1.5px solid #757b8c;
+    }
+    .room-loading__img {
+      margin-bottom: 1.5rem;
+    }
+    .room-loading__text {
+      @include fontLevel(150);
+      color: $new_color_text_sub;
+      &.opacity {
+        color: $new_color_text_main;
+      }
+    }
   }
 }
 </style>

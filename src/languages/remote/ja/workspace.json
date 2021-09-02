@@ -66,6 +66,7 @@
     "setting_mic_test": "マイクテスト",
     "setting_mic_test_description": "マイクに問題がありますか？ テストをスタートし、話しかけてください。 音声を繰り返します。",
     "setting_inout_device": "入出力装置",
+    "setting_video_device_choice": "映像装置設定",
     "setting_input_device": "入力装置",
     "setting_output_device": "出力装置",
     "setting_language_choice": "言語選択",
@@ -173,6 +174,9 @@
     "go_workspace_member": "ワークスペースメンバーリスト移動",
 
     "loading_prepare_remote":"コラボルームを作成する準備",
+    "loading_prepare_join_remote":"コラボルームに参加する準備",
+    "loading_prepare_remote_open":"オープンルームを作成する準備",
+    "loading_prepare_join_remote_open":"オープンルームに参加する準備",
     "loading_checking_device":"デバイスの接続状態を確認し中...",
 
     "cookie": "VIRNECT はVIRNECT のサービスを運営し、改善のためクッキーおよび利用統計を使用しています。 詳細を調べるには、<br> 当社の <a href='https://virnect.com/policy#10' target='_blank'>取扱方針</a>をご確認ください。 「確認」をクリック、サイトの使用を継続することはクッキーおよび利用統計収集に同意することになります。",

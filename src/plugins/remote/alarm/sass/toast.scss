@@ -628,6 +628,11 @@
 }
 
 @include responsive-mobile {
+  .toasted-container.top-center {
+    min-width: 92%;
+    max-width: 92%;
+  }
+
   //top-right 위치의 알람을 모바일에서는 중앙으로 배치한다.
   .toasted-container.fit-to-screen.top-right {
     top: 2.4rem;

@@ -1,7 +1,7 @@
 <template>
   <div>
     <section class="setting-section list">
-      <div class="setting-section__title">
+      <div class="setting-section__title main">
         {{ $t('workspace.setting_translate') }}
       </div>
       <div class="setting-section__body horizon">
@@ -16,20 +16,27 @@
         </figure>
         <figure class="setting__figure">
           <div class="setting__figure--wrapper">
-            <p class="setting__label">
+            <p class="setting__label" :class="{ disabled: !useTranslate }">
               {{ $t('workspace.setting_translate_language') }}
             </p>
             <tooltip
-              customClass="tooltip-guide"
+              :customClass="['tooltip-guide', { disabled: !useTranslate }]"
               :content="$t('workspace.setting_translate_language_tooltip')"
               :placement="isTablet ? 'bottom' : 'right'"
-              effect="blue"
+              :effect="isMobileSize ? '' : 'blue'"
               :guide="true"
+              @hide="helpIconActive = false"
+              @active="helpIconActive = true"
             >
               <img
                 slot="body"
                 class="setting__tooltip--icon"
-                src="~assets/image/ic_tool_tip.svg"
+                :class="{ active: helpIconActive }"
+                :src="
+                  isMobileSize
+                    ? require('assets/image/ic_tool_tip_new.svg')
+                    : require('assets/image/ic_tool_tip.svg')
+                "
               />
             </tooltip>
           </div>
@@ -114,6 +121,7 @@ export default {
       transMultiple: true,
       sttSync: true,
       ttsAllow: false,
+      helpIconActive: false,
     }
   },
   computed: {
@@ -175,7 +183,7 @@ export default {
 </script>
 
 <style lang="scss">
-@import '~assets/style/vars';
+@import '~assets/style/mixin';
 .radio-custom {
   max-width: 28.571rem;
   padding: 0.714rem 1.429rem;
@@ -184,6 +192,49 @@ export default {
 
   .radio-option:first-of-type {
     border-bottom: solid 1px rgba(#3d3d3d, 0.5);
+  }
+}
+
+@include responsive-mobile {
+  .setting__figure--wrapper {
+    .setting__label {
+      margin-right: 0.3rem;
+    }
+    .tooltip.tooltip-guide {
+      margin-top: 0;
+      margin-bottom: 1.1rem;
+
+      &.disabled {
+        opacity: 0.2;
+        pointer-events: none;
+      }
+
+      .setting__tooltip--icon {
+        width: 2rem;
+        max-width: unset;
+        height: 2rem;
+        opacity: 0.5;
+        transition: opacity 0.3s;
+        &.active {
+          opacity: 1;
+        }
+      }
+
+      .tooltiptext {
+        top: 160% !important;
+        left: -9rem !important;
+        display: flex;
+        align-items: center;
+        width: calc(100vw - 6.4rem) !important;
+        height: 4.8rem;
+        color: $new_color_text_main;
+        background-color: $new_color_bg_active;
+        @include fontLevel(75);
+        .arrow {
+          display: none;
+        }
+      }
+    }
   }
 }
 </style>

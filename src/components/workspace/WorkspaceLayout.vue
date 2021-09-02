@@ -31,12 +31,16 @@
       <device-denied :visible.sync="showDenied"></device-denied>
     </vue2-scrollbar>
     <plan-overflow :visible.sync="showPlanOverflow"></plan-overflow>
-    <room-loading :visible.sync="showLoading"></room-loading>
+    <room-loading
+      :visible.sync="showLoading"
+      :isOpenRoom="isOpenRoom"
+      :isJoin="isJoin"
+    ></room-loading>
     <collabo-float-button
-      v-if="workspace && workspace.uuid"
+      v-if="workspace && workspace.uuid && tabName !== 'setting'"
     ></collabo-float-button>
     <openroom-float-button
-      v-if="workspace && workspace.uuid"
+      v-if="workspace && workspace.uuid && tabName !== 'setting'"
     ></openroom-float-button>
   </section>
 </template>
@@ -109,7 +113,10 @@ export default {
       showDenied: false,
       showPlanOverflow: false,
       showLoading: false,
+      isOpenRoom: false,
+      isJoin: false,
       inited: false,
+      tabName: 'remote',
     }
   },
   watch: {
@@ -247,8 +254,9 @@ export default {
       this.$refs['wrapperScroller'].scrollToY(0)
       this.tabFix = false
     },
-    tabChange() {
+    tabChange(tabName) {
       this.scrollTop()
+      this.tabName = tabName
     },
     toggleList() {
       this.showList = true
@@ -322,8 +330,12 @@ export default {
         timeout: res.timeout !== undefined ? res.timeout : 60, //협업 연장 질의 팝업 싸이클을 정하는 값. 분 단위
       })
     },
-    showRoomLoading(toggle) {
+    showRoomLoading({ toggle, isOpenRoom = false, isJoin = false }) {
       this.showLoading = toggle
+      if (this.showLoading) {
+        this.isOpenRoom = isOpenRoom
+        this.isJoin = isJoin
+      }
     },
     setTabTop() {
       this.tabTop = this.$refs['tabSection'].$el.offsetTop

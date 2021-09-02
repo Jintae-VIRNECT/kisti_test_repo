@@ -5,7 +5,7 @@
     </p>
     <div class="roominfo-view__body">
       <template v-if="isLeader">
-        <div v-if="isMobile" class="roominfo-profile-mobile">
+        <div v-if="isMobileSize" class="roominfo-profile-mobile">
           <div class="profile-mobile-container">
             <profile-image
               :image.sync="imageURL"
@@ -48,7 +48,7 @@
           :placeholder="$t('workspace.create_remote_description_input')"
         ></input-row>
         <input-row
-          v-if="!isMobile"
+          v-if="!isMobileSize"
           type="buttons"
           :title="$t('button.image_regist')"
         >

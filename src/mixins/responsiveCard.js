@@ -42,17 +42,17 @@ export default {
 
       if (this.mobilePlacement) this.placement = defaultPlacement
     },
-    responsiveCard(isMobile) {
-      if (isMobile) this.responsiveMobile()
+    responsiveCard(isMobileSize) {
+      if (isMobileSize) this.responsiveMobile()
       else this.responsiveDefault()
     },
   },
   watch: {
-    isMobile(newVal) {
+    isMobileSize(newVal) {
       this.responsiveCard(newVal)
     },
   },
   mounted() {
-    this.responsiveCard(this.isMobile)
+    this.responsiveCard(this.isMobileSize)
   },
 }
