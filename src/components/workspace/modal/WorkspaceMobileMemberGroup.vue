@@ -12,8 +12,13 @@
         type="text"
         :count="20"
         showCount
+        :validate="validate"
+        :valid.sync="groupNameInValid"
         required
       ></input-row>
+      <p class="validate-message">
+        {{ groupNameInValid ? groupNameInvalidMessage : ' ' }}
+      </p>
 
       <room-invite
         :users="users"
@@ -25,7 +30,11 @@
       ></room-invite>
       <button
         class="btn save-group"
-        :disabled="selection.length === 0 || groupNameInput.length === 0"
+        :disabled="
+          selection.length === 0 ||
+            groupNameInput.length === 0 ||
+            groupNameInValid
+        "
         @click="save"
       >
         {{ $t('button.confirm') }} {{ selection.length }}/{{ this.maxSelect }}
@@ -38,6 +47,7 @@
 import FullScreenModal from 'FullScreenModal'
 import RoomInvite from 'components/workspace/partials/ModalCreateRoomInvite'
 import InputRow from 'InputRow'
+
 export default {
   components: { FullScreenModal, RoomInvite, InputRow },
   props: {
@@ -51,12 +61,13 @@ export default {
     value: {
       type: String,
     },
-    // valid: {
-    //   type: Boolean,
-    // },
-    // groupNameInvalidMessage: {
-    //   type: String,
-    // },
+    validate: {
+      type: String,
+      default: null,
+    },
+    groupNameInvalidMessage: {
+      type: String,
+    },
     users: {
       type: Array,
     },
@@ -69,20 +80,34 @@ export default {
     maxSelect: {
       type: Number,
     },
+    groupId: {
+      type: String,
+      default: null,
+    },
+    groupName: {
+      type: String,
+      default: '',
+    },
   },
   data() {
     return {
       groupNameInput: this.value,
-      // groupNameInValid: this.valid,
+      groupNameInValid: true,
     }
   },
   watch: {
+    visible(flag) {
+      if (flag) {
+        if (this.groupId) {
+          this.groupNameInput = this.groupName
+        }
+      } else {
+        this.groupNameInput = ''
+      }
+    },
     groupNameInput(newVal) {
       this.$emit('update:value', newVal)
     },
-    // groupNameInValid(newVal) {
-    //   this.$emit('update:valid', newVal)
-    // },
   },
   methods: {
     close() {
@@ -118,6 +143,13 @@ export default {
     .inputrow-title {
       margin-bottom: 1.1rem;
       color: $new_color_text_sub;
+      &.valid.required {
+        color: $new_color_text_sub;
+        text-indent: initial;
+        &::after {
+          display: block;
+        }
+      }
     }
 
     .inputrow-input {
@@ -140,8 +172,16 @@ export default {
     }
   }
 
+  .member-group > .validate-message {
+    height: 1.6rem;
+    padding-left: 1.6rem;
+    @include fontLevel(50);
+    color: #ff757b;
+  }
+
   .member-group > .createroom-user {
     height: 100%;
+    margin-top: -0.9rem;
   }
 
   .member-group > .btn.save-group {
