@@ -33,7 +33,7 @@ export default {
     },
     /**
      * 메세지 리턴 함수
-     * @param {*} e
+     * @param {Error} e
      * @returns {string} 메시지
      */
     getMessage(e) {
