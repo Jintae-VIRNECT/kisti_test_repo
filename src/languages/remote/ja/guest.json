@@ -1,6 +1,11 @@
 {
   "guest":{
     "guest_join_description_1": "に接続します。",
-    "guest_join_description_2": "制限時間内に接続してください。​​"
+    "guest_join_description_2": "制限時間内に接続してください。​​",
+
+
+    "guest_time_expired_description": "制限時間が終了しました。\n接続の準備をするには、再要求を選択してください。",
+    "guest_license_expired":"接続ワークスペースに非会員の接続用プランが割り当てられていないか、または両方を使用しています。​",
+    "guest_install_mobile_app_description":"VIRNECT Remote Appをインストールしてください。\nAppインストールした後、再度接続URLを選択してください。​"
   }
 }

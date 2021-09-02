@@ -47,7 +47,8 @@
     "copy_url":"Copy URL",
     "send_email":"Send email",
     "join_sec":"Connect ({time} sec)",
-    "request_again":"Request"
+    "request_again":"Request",
+    "connect_web":"Connect to the web"
   },
   "date": {
     "lastday": "[Yesterday]",

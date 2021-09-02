@@ -11,7 +11,7 @@
     <div class="guest-invite">
       <div class="guest-invite__header">
         <img src="~assets/image/call/ic_link.svg" alt="link" />
-        <p>{{ $t('URL 초대하기') }}</p>
+        <p>{{ $t('service.guest_invite_with_url') }}</p>
       </div>
 
       <figure class="guest-invite__input-url border-bottom">
@@ -39,7 +39,9 @@
           class="input"
           ref="emailAddress"
           aria-label="emailAddress"
-          :placeholder="$t('메일 주소를 입력해주세요.')"
+          :placeholder="
+            $t('service.guest_invite_email_please_input_email_address')
+          "
         />
 
         <a

@@ -47,7 +47,8 @@
     "copy_url":"URLをコピー​",
     "send_email":"メール転送​",
     "join_sec":"接続 ({time} 秒)",
-    "request_again":"再要求"
+    "request_again":"再要求",
+    "connect_web":"Web接続​"
   },
   "date": {
     "lastday": "[昨日] A",

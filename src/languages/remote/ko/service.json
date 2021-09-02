@@ -250,7 +250,8 @@
     "guest_invite_description":"접속 URL을 통해 협업 참여시, 비회원 권한으로 참가합니다.",
     "guest_invite_url_copied":"접속 URL을 복사했습니다.",
     "guest_invite_email_transport_succeed":"접속 URL을 이메일로 전송하였습니다.",
-    "guest_invite_email_transport_failed":"이메일 전송에 실패하였습니다."
+    "guest_invite_email_transport_failed":"이메일 전송에 실패하였습니다.",
+    "guest_invite_email_please_input_email_address":"메일 주소를 입력해주세요."
     
   }
 }

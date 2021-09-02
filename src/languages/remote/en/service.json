@@ -250,6 +250,7 @@
     "guest_invite_description":"When collabo participation via the connection URL, and participate in non-authority.​",
     "guest_invite_url_copied":"Successfully copied connection URL.​",
     "guest_invite_email_transport_succeed":"The connection URL has been sent to you by e-mail.​​",
-    "guest_invite_email_transport_failed":"Failed to send email.​"
+    "guest_invite_email_transport_failed":"Failed to send email.​",
+    "guest_invite_email_please_input_email_address":""
   }
 }
