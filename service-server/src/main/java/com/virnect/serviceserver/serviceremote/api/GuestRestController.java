@@ -27,7 +27,6 @@ import com.virnect.data.error.exception.RestServiceException;
 import com.virnect.data.global.common.ApiResponse;
 import com.virnect.data.infra.utils.LogMessage;
 import com.virnect.serviceserver.serviceremote.application.GuestService;
-import com.virnect.serviceserver.serviceremote.application.RoomService;
 
 @Slf4j
 @RestController
@@ -38,7 +37,6 @@ public class GuestRestController {
 	private static final String TAG = GuestRestController.class.getSimpleName();
 	private static final String REST_PATH = "/remote/guest";
 
-	private final RoomService roomService;
 	private final GuestService guestService;
 
 	/*@ApiOperation(value = "Create Guest invite URL", notes = "Guest 멤버를 초대하는 URL을 생성합니다")
@@ -115,7 +113,7 @@ public class GuestRestController {
 			throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
 		}
 		joinRoomRequest.setMemberType(MemberType.GUEST);
-		ApiResponse<RoomResponse> responseData = roomService.joinRoomById(
+		ApiResponse<RoomResponse> responseData = guestService.joinRoomOnlyGuest(
 			workspaceId,
 			sessionId,
 			joinRoomRequest

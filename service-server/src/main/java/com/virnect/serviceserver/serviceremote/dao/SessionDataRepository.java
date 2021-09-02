@@ -33,7 +33,6 @@ import com.virnect.data.domain.room.Room;
 import com.virnect.data.domain.roomhistory.RoomHistory;
 import com.virnect.data.domain.session.SessionProperty;
 import com.virnect.data.domain.session.SessionPropertyHistory;
-import com.virnect.data.domain.session.SessionType;
 import com.virnect.data.dto.constraint.LicenseItem;
 import com.virnect.data.dto.request.room.InviteRoomRequest;
 import com.virnect.data.dto.request.room.JoinRoomRequest;
@@ -417,7 +416,6 @@ public class SessionDataRepository {
             sessionId,
             clientMetaData.getClientData()
         ).orElse(null);
-
 
         if (member.getMemberStatus().equals(MemberStatus.LOAD)) {
             return ErrorCode.ERR_ROOM_MEMBER_STATUS_INVALID; //Code.EXISTING_USER_IN_ROOM_ERROR_CODE
@@ -906,6 +904,60 @@ public class SessionDataRepository {
         return new ApiResponse<>(result, errorCode);
     }
 
+    /**
+     * Prepare to join the room the user is....
+     */
+    public ApiResponse<Boolean> prepareJoinRoomOnlyGuest(String workspaceId, String sessionId, String userId) {
+
+        Room room = roomRepository.findOpenRoomByGuest(workspaceId, sessionId).orElse(null);
+        if (ObjectUtils.isEmpty(room)) {
+            return new ApiResponse<>(false, ErrorCode.ERR_ROOM_NOT_FOUND);
+        }
+
+        if (!room.getMembers().isEmpty()) {
+            long memberCount = room.getMembers().stream().filter(
+                member -> !(member.getMemberStatus() == MemberStatus.UNLOAD || member.getMemberStatus() == MemberStatus.EVICTED)
+            ).count();
+            if (memberCount >= ROOM_MEMBER_LIMIT) {
+                return new ApiResponse<>(false, ErrorCode.ERR_ROOM_MEMBER_MAX_COUNT);
+            }
+        }
+
+        Member member = null;
+        for (Member m : room.getMembers()) {
+            if (m.getUuid().equals(userId)) {
+                member = m;
+            }
+        }
+
+        boolean result = false;
+        ErrorCode errorCode = ErrorCode.ERR_SUCCESS;
+        if (!ObjectUtils.isEmpty(member)) {
+            MemberStatus memberStatus = member.getMemberStatus();
+            if (memberStatus.equals(MemberStatus.UNLOAD) || memberStatus.equals(MemberStatus.EVICTED))
+            {
+                member.setMemberStatus(MemberStatus.LOADING);
+                sessionService.setMember(member);
+                result = true;
+            } else {
+                errorCode = ErrorCode.ERR_ROOM_MEMBER_STATUS_INVALID;
+            }
+        } else {
+            Member roomMember = Member.builder()
+                .room(room)
+                .memberType(MemberType.GUEST)
+                .uuid(userId)
+                .workspaceId(workspaceId)
+                .sessionId(sessionId)
+                .build();
+            roomMember.setMemberStatus(MemberStatus.LOADING);
+            room.getMembers().add(roomMember);
+            sessionService.updateRoom(room);
+            result = true;
+        }
+        return new ApiResponse<>(result, errorCode);
+    }
+
     public ApiResponse<RoomResponse> joinRoom(
         String workspaceId,
         String sessionId,
@@ -913,7 +965,12 @@ public class SessionDataRepository {
         JoinRoomRequest joinRoomRequest
     ) {
 
-        Room room = roomRepository.findRoomByWorkspaceIdAndSessionIdForWrite(workspaceId, sessionId).orElse(null);
+        Room room;
+        if (joinRoomRequest.getMemberType() == MemberType.GUEST) {
+            room = roomRepository.findOpenRoomByGuest(workspaceId, sessionId).orElse(null);
+        } else {
+            room = roomRepository.findRoomByWorkspaceIdAndSessionIdForWrite(workspaceId, sessionId).orElse(null);
+        }
         if (ObjectUtils.isEmpty(room)) {
             return new ApiResponse<>(new RoomResponse(), ErrorCode.ERR_ROOM_NOT_FOUND);
         }
@@ -959,6 +1016,7 @@ public class SessionDataRepository {
 
         return new ApiResponse<>(roomResponse);
     }
+
 
     public ApiResponse<KickRoomResponse> kickFromRoom(
         String workspaceId,

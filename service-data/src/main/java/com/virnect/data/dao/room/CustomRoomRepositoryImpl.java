@@ -208,7 +208,7 @@ public class CustomRoomRepositoryImpl extends QuerydslRepositorySupport implemen
 	}
 
 	@Override
-	public Optional<Room> findRoomByGuest(String workspaceId, String sessionId) {
+	public Optional<Room> findOpenRoomByGuest(String workspaceId, String sessionId) {
 		return Optional.ofNullable(
 			query.selectFrom(room)
 				.leftJoin(room.members, member).fetchJoin()
