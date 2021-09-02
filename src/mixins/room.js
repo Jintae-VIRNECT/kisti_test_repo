@@ -9,6 +9,7 @@ import { ROLE } from 'configs/remote.config'
 import { DEVICE } from 'configs/device.config'
 import { ROOM_STATUS } from 'configs/status.config'
 import { ERROR } from 'configs/error.config'
+import { URLS } from 'configs/env.config'
 
 import toastMixin from 'mixins/toast'
 import callMixin from 'mixins/call'
@@ -118,12 +119,25 @@ export default {
             this.showErrorToast(err.code)
             return false
           } else if (err.code === 4021) {
-            this.toastError(
-              this.$t('workspace.remote_access_overflow', {
-                num: room.maxUserCount,
-              }),
-            )
+            if (room.isGuest) {
+              this.confirmDefault(this.$t('alarm.invite_fail_maxuser'), {
+                action: () => {
+                  location.href = `${URLS['console']}/?continue=${location.href}`
+                },
+              })
+            } else {
+              this.toastError(
+                this.$t('workspace.remote_access_overflow', {
+                  num: room.maxUserCount,
+                }),
+              )
+            }
+
             return false
+          } else if (err.code === ERROR.ASSIGNED_GUEST_USER_IS_NOT_ENOUGH) {
+            this.showGuestExpiredAlarm()
+          } else if (err.code === ERROR.GUEST_USER_NOT_FOUND) {
+            this.showGuestExpiredAlarm()
           }
         }
         this.toastError(this.$t('workspace.remote_invite_impossible'))
@@ -143,7 +157,7 @@ export default {
       if (room.isGuest) {
         res = await joinOpenRoomAsGuest({
           uuid: this.account.uuid,
-          memberType: ROLE.GUEST, //근데 이거 왜 언노운이에요?
+          memberType: ROLE.GUEST,
           deviceType: DEVICE.WEB,
           sessionId: room.sessionId,
           workspaceId: this.workspace.uuid,
@@ -343,6 +357,13 @@ export default {
           this.toastError(this.$t('confirm.network_error'))
         }
       }
+    },
+    showGuestExpiredAlarm() {
+      this.confirmDefault(this.$t('guest.guest_license_expired'), {
+        action: () => {
+          location.href = `${URLS['console']}/?continue=${location.href}`
+        },
+      })
     },
   },
 }
