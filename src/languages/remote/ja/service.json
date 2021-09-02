@@ -245,7 +245,7 @@
     "encrypted_file_unsupport" : "暗号化されたファイルはサポートできません。",
 
 
-    "guest_invite_url":"Connection URL",
+    "guest_invite_url":"接続URL",
     "guest_invite_with_url":"",
     "guest_invite_send_email":"",
     "guest_invite_description":"接続URLを介してコラボ参加時、非会員権に参加します。​",
