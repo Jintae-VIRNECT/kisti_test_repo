@@ -241,7 +241,7 @@ export default {
     },
     reconnect(event) {
       if (event.reason === 'networkDisconnect') {
-        if (this.account.roleType === ROLE.SEAT) {
+        if (this.account.roleType === ROLE.GUEST) {
           location.href = `${URLS['console']}/?continue=${location.href}`
           return
         } else {

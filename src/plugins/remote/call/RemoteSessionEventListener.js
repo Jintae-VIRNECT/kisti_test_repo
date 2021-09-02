@@ -74,7 +74,7 @@ const streamDestroyed = event => {
 
 /** session closed */
 const sessionDisconnected = event => {
-  const isGuest = _.account.roleType === ROLE.SEAT
+  const isGuest = _.account.roleType === ROLE.GUEST
   if (event.reason === 'sessionClosedByServer') {
     logger('room', 'participant disconnect')
     _.clear()

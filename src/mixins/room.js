@@ -47,7 +47,7 @@ export default {
         if (this.clicked === true) return
         this.clicked = true
 
-        //@TODO - ROLE.SEAT 재정의
+        //@TODO - ROLE.GUEST 재정의
         let role
         if (room.sessionType === ROOM_STATUS.PRIVATE) {
           const myInfo = room.memberList.find(
@@ -56,8 +56,8 @@ export default {
           if (myInfo === undefined) throw Error('not allow to participant')
           role = myInfo.memberType === ROLE.LEADER ? ROLE.LEADER : ROLE.EXPERT
         } else {
-          if (this.account.roleType === ROLE.SEAT) {
-            role = ROLE.SEAT
+          if (this.account.roleType === ROLE.GUEST) {
+            role = ROLE.GUEST
           } else {
             role =
               room.leaderId === this.account.uuid ? ROLE.LEADER : ROLE.EXPERT
@@ -139,7 +139,7 @@ export default {
       if (room.isGuest) {
         res = await joinOpenRoomAsGuest({
           uuid: this.account.uuid,
-          memberType: 'UNKNOWN', //근데 이거 왜 언노운이에요?
+          memberType: ROLE.GUEST, //근데 이거 왜 언노운이에요?
           deviceType: DEVICE.WEB,
           sessionId: room.sessionId,
           workspaceId: this.workspace.uuid,

@@ -75,7 +75,7 @@ export default {
 
       this.updateAccount({
         ...guestInfo,
-        roleType: ROLE.SEAT,
+        roleType: ROLE.GUEST,
       })
 
       //토큰 설정

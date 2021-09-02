@@ -75,13 +75,13 @@ export default {
       try {
         this.$call.leave()
 
-        if (this.account.roleType === ROLE.SEAT) {
+        if (this.account.roleType === ROLE.GUEST) {
           window.history.back()
         } else {
           this.$router.push({ name: 'workspace' })
         }
       } catch (err) {
-        if (this.account.roleType === ROLE.SEAT) {
+        if (this.account.roleType === ROLE.GUEST) {
           window.history.back()
         } else {
           this.$router.push({ name: 'workspace' })
