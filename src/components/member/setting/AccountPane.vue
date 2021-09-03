@@ -53,7 +53,7 @@
           </ValidationProvider>
         </el-form-item>
         <el-form-item
-          v-if="userTypeIsSeat(member.userType)"
+          v-if="isUserTypeSeat(member.userType)"
           :label="$t('members.setting.seat.id')"
         >
           <el-input disabled :placeholder="member.userId" />
@@ -62,7 +62,7 @@
           <el-input disabled :placeholder="member.email" />
         </el-form-item>
         <el-form-item
-          v-if="userTypeIsWorkspaceOnlyUser(member.userType)"
+          v-if="isUserTypeWorkspaceOnly(member.userType)"
           :label="$t('members.setting.password.title')"
           class="horizon"
         >
@@ -156,7 +156,7 @@ export default {
       return false
     },
     deleteEnabled() {
-      if (this.roleIsManager(this.member.role)) {
+      if (this.isRoleManager(this.member.role)) {
         return false
       } else if (this.canEdit(this.member.userType, this.member.role)) {
         return true
@@ -165,7 +165,7 @@ export default {
     },
     deleteTitle() {
       let title = ''
-      if (this.userTypeIsSeat(this.member.userType)) {
+      if (this.isUserTypeSeat(this.member.userType)) {
         title = this.$t('members.setting.delete.seat')
       } else {
         title = this.$t('members.setting.delete.account')
@@ -237,7 +237,7 @@ export default {
     },
     async deleteMember() {
       try {
-        if (this.userTypeIsSeat(this.member.userType)) {
+        if (this.isUserTypeSeat(this.member.userType)) {
           await workspaceService.deleteSeatMember(this.member.userId)
         } else {
           await workspaceService.deleteMember(this.member.userId)
@@ -268,7 +268,7 @@ export default {
     canEdit(type, role) {
       if (this.canManage(role)) {
         // 일반 계정 일 때 수정 불가
-        if (this.userTypeIsUser(type)) return false
+        if (this.isUserTypeUser(type)) return false
         else return true
       }
       return false

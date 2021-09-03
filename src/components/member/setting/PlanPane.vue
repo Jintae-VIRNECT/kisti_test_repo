@@ -58,7 +58,7 @@ export default {
   },
   computed: {
     isSeat() {
-      return this.roleIsSeat(this.member.role)
+      return this.isRoleSeat(this.member.role)
     },
     editEnabled() {
       if (this.canManage(this.member.userType, this.member.role)) {

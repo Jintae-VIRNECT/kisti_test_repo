@@ -42,10 +42,10 @@ export default {
       return false
     },
     kickEnabled() {
-      return this.userTypeIsUser(this.member.userType)
+      return this.isUserTypeUser(this.member.userType)
     },
     isNotSeat() {
-      return !this.roleIsSeat(this.member.role)
+      return !this.isRoleSeat(this.member.role)
     },
   },
   methods: {

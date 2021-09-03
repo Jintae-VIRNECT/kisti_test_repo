@@ -18,22 +18,22 @@ export default {
       } else if (this.activeWorkspace.role === 'MASTER') return true
       else return false
     },
-    roleIsMaster(role) {
+    isRoleMaster(role) {
       return role === 'MASTER'
     },
-    roleIsManager(role) {
+    isRoleManager(role) {
       return role === 'MANAGER'
     },
-    roleIsSeat(role) {
+    isRoleSeat(role) {
       return role === 'SEAT'
     },
-    userTypeIsUser(type) {
+    isUserTypeUser(type) {
       return type === 'USER'
     },
-    userTypeIsSeat(type) {
+    isUserTypeSeat(type) {
       return type === 'SEAT_USER'
     },
-    userTypeIsWorkspaceOnlyUser(type) {
+    isUserTypeWorkspaceOnly(type) {
       return type === 'WORKSPACE_ONLY_USER'
     },
   },
