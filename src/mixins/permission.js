@@ -18,14 +18,6 @@ export default {
       } else if (this.activeWorkspace.role === 'MASTER') return true
       else return false
     },
-    canEdit(type, role) {
-      if (this.canManage(role)) {
-        // 일반 계정 일 때 수정 불가
-        if (this.userTypeIsUser(type)) return false
-        else return true
-      }
-      return false
-    },
     canKick(type, role) {
       if (this.canManage(role)) {
         // 일반 계정 일 때 내보내기
