@@ -265,6 +265,14 @@ export default {
         }
       }
     },
+    canEdit(type, role) {
+      if (this.canManage(role)) {
+        // 일반 계정 일 때 수정 불가
+        if (this.userTypeIsUser(type)) return false
+        else return true
+      }
+      return false
+    },
     async updateNickname() {
       const form = {
         userId: this.member.userId,
