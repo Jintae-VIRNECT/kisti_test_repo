@@ -145,7 +145,7 @@ export default {
         this.$emit('updated')
         this.reset()
       } catch (e) {
-        const errCode = this.errCode(e)
+        const errCode = this.errorCode(e)
         // 결제센터로
         if (errCode === 2003) {
           this.$confirm(this.$t('members.add.message.noHavePlans'), {
