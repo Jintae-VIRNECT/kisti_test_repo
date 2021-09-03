@@ -538,6 +538,7 @@ export default {
     height: 60px;
     color: #0d2a58;
     font-size: 16px;
+    border: 0;
     opacity: 0.6;
     &.active {
       opacity: 1;
