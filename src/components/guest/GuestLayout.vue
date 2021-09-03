@@ -15,34 +15,33 @@
 </template>
 
 <script>
+import Cookies from 'js-cookie'
+
 import HeaderSection from 'components/header/Header'
+import GuestWelcome from './section/GuestWelcome'
+import GuestTab from './section/GuestTab'
 
 import confirmMixin from 'mixins/confirm'
 import langMixin from 'mixins/language'
 import toastMixin from 'mixins/toast'
-
 import errorMsgMixin from 'mixins/errorMsg'
+
 import { MyStorage } from 'utils/storage'
-
-import GuestWelcome from './section/GuestWelcome'
-import GuestTab from './section/GuestTab'
-import { getCompanyInfo } from 'api/http/account'
-
-import { getGuestInfo } from 'api/http/guest'
-
 import { getConfigs } from 'utils/auth'
 
-import { mapActions } from 'vuex'
-
+import { getCompanyInfo } from 'api/http/account'
+import { getGuestInfo } from 'api/http/guest'
 import { getWorkspaceInfo } from 'api/http/workspace'
 
-import Cookies from 'js-cookie'
+import { mapActions, mapGetters } from 'vuex'
 
 import { ROLE } from 'configs/remote.config'
+
 export default {
   name: 'GuestLayout',
   async beforeRouteEnter(to, from, next) {
     await getConfigs()
+
     next()
   },
   // async beforeRouteEnter(to, from, next) {
@@ -64,6 +63,9 @@ export default {
       sessionId: '',
       uuid: '',
     }
+  },
+  computed: {
+    ...mapGetters(['isMobileSize']),
   },
   methods: {
     ...mapActions(['setCompanyInfo', 'updateAccount', 'changeWorkspace']),
@@ -130,7 +132,10 @@ export default {
       Cookies.set('refreshToken', refreshToken, cookieOption)
     },
   },
-
+  created() {
+    console.log('this.isMobileSize::', this.isMobileSize)
+    //redirect moblie router
+  },
   async mounted() {
     this.$eventBus.$on('initGuestMember', this.initGuestMember)
 

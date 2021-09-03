@@ -53,6 +53,11 @@ function IsAllowBrowser(req) {
   return ((isChrome || isEdge || isChromeMobile) && !isSamsung) || isSafari
 }
 
+/**
+ * 사용할 수 없는 모바일 기기를 체크
+ * @param {Object} req
+ * @returns {Boolean} 사용할 수 없는 모바일 기기 여부
+ */
 function IsMobileBrowser(req) {
   const userAgent = req.headers['user-agent'] || ''
   const isMobile =
@@ -127,12 +132,6 @@ router.get('/connectioninfo', function(req, res) {
   }
 })
 
-//guest 로그인 페이지(라우팅은 임시적임)
-router.get('/connectioninfo', (req, res) => {
-  res.redirect('/connectioninfo')
-})
-
-//@TODO - seat url에 맞춰 라우터 수정
 router.get('/qr', function(req, res) {
   if (IsAllowBrowser(req)) {
     if (IsMobileBrowser(req)) {

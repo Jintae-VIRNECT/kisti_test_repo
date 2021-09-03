@@ -1,11 +1,11 @@
 {
   "qr":{
-    "qr_login":"",
-    "qr_login_description":"",
-    "qr_login_how_to":"",
-    "qr_login_how_to_description_1":"",
-    "qr_login_how_to_description_2":"",
-    "qr_login_how_to_description_3":"",
-    "qr_login_how_to_description_4":""
+    "qr_login":"QR 로그인",
+    "qr_login_description":"스마트 글라스에서 QR코드로 간편하게 로그인 하세요.",
+    "qr_login_how_to":"QR 로그인 방법",
+    "qr_login_how_to_description_1":"1. 사용하실 스마트글라스 또는 스마트폰에서 VIRNECT Remote를 실행하세요.",
+    "qr_login_how_to_description_2":"2. 로그인 화면 하단의 [QR 스캐너]를 선택하세요.",
+    "qr_login_how_to_description_3":"3. 현재 화면 상의 QR코드를 비춰주세요. QR코드 인식 후 기기가 로그인 됩니다.",
+    "qr_login_how_to_description_4":"*QR코드 지원 기기만 가능"
   }
 }

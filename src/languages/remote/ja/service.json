@@ -246,8 +246,8 @@
 
 
     "guest_invite_url":"接続URL",
-    "guest_invite_with_url":"",
-    "guest_invite_send_email":"",
+    "guest_invite_with_url":"E-mail転送",
+    "guest_invite_send_email":"メールアドレスを入力してください。",
     "guest_invite_description":"接続URLを介してコラボ参加時、非会員権に参加します。​",
     "guest_invite_url_copied":"接続URLをコピーしました。",
     "guest_invite_email_transport_succeed":"接続URLをメールで送信しました。​",
