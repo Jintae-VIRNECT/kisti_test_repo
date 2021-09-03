@@ -42,7 +42,7 @@ export default {
       return false
     },
     kickEnabled() {
-      return this.canKick(this.member.userType, this.member.role)
+      return this.userTypeIsUser(this.member.userType)
     },
     isNotSeat() {
       return !this.roleIsSeat(this.member.role)
