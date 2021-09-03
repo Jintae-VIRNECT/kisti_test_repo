@@ -49,7 +49,8 @@
       "all": "All",
       "qr": "QR Target",
       "vtarget": "V Target",
-      "imageTarget": "Image Target"
+      "imageTarget": "Image Target",
+      "vr": "VR Target"
     },
     "info": {
       "title": "Project Info",

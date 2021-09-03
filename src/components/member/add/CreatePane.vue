@@ -1,14 +1,13 @@
 <template>
-  <article class="invite-pane">
-    <section class="invite-pane__title">
-      <h6>개인 계정 초대</h6>
+  <article class="create-pane">
+    <section class="create-pane__title">
+      <h6>{{ $t('members.create.workspaceMemberTitle') }}</h6>
       <p>
-        다른 사용자와 함께 버넥트 제품과 서비스를 이용하고 싶으신가요?<br />
-        이메일 계정 사용자를 워크스페이스 멤버로 초대하세요.
+        {{ $t('members.create.workspaceMemberDesc') }}
       </p>
-      <div class="invite-pane__sub-title">
-        <p>개인 계정 초대 목록</p>
-        <div class="invite-pane__usage">
+      <div class="create-pane__sub-title">
+        <p>{{ $t('members.create.workspaceMemberList') }}</p>
+        <div class="create-pane__usage">
           <img src="~assets/images/icon/ic-person.svg" />
           <strong>{{ availableMember }}/{{ maximum }}</strong>
           <el-tooltip
@@ -20,7 +19,7 @@
         </div>
       </div>
     </section>
-    <section class="invite-pane__content">
+    <section class="create-pane__content">
       <el-form
         ref="form"
         v-for="(form, index) in userInfoList"
@@ -31,19 +30,38 @@
       >
         <h6>
           <img src="~assets/images/icon/ic-person.svg" />
-          <span>{{ `${$t('members.add.addUser')} ${index + 1}` }}</span>
+          <span>{{ `${$t('members.create.createMember')} ${index + 1}` }}</span>
           <button @click.prevent="clearMember(index)">
             <i class="el-icon-close" />
           </button>
         </h6>
-        <el-form-item class="horizon" prop="email" required>
+        <el-form-item class="horizon" prop="id" required>
           <template slot="label">
-            <span>{{ $t('members.add.email') }}</span>
+            <span>{{ $t('members.create.id') }}</span>
           </template>
           <el-input
-            class="full"
-            v-model="form.email"
-            :placeholder="$t('members.add.emailPlaceholder')"
+            v-model="form.id"
+            class="check"
+            maxlength="20"
+            :placeholder="$t('members.create.idPlaceholder')"
+          />
+          <el-button
+            type="primary"
+            @click="checkMembersId(form)"
+            :disabled="form.duplicateCheck"
+            >{{ $t('members.create.idCheck') }}</el-button
+          >
+        </el-form-item>
+        <el-form-item class="horizon" prop="password" required>
+          <template slot="label">
+            <span>{{ $t('members.create.password') }}</span>
+          </template>
+          <el-input
+            v-model="form.password"
+            class="full passowrd"
+            show-password
+            maxlength="20"
+            :placeholder="$t('members.create.passwordPlaceholder')"
           />
         </el-form-item>
         <el-row>
@@ -96,7 +114,7 @@
         </el-row>
       </el-form>
     </section>
-    <section class="invite-pane__footer">
+    <section class="create-pane__footer">
       <el-button @click="addMember">
         {{ $t('members.add.addMember') }}
       </el-button>
@@ -105,7 +123,7 @@
         @click="submit"
         :disabled="userInfoList.length < 1"
       >
-        {{ $t('members.add.submit') }}
+        {{ $t('members.create.submit') }}
         <span class="number">{{ userInfoList.length }}</span>
       </el-button>
     </section>
@@ -113,34 +131,49 @@
 </template>
 
 <script>
-import InviteMember from '@/models/workspace/InviteMember'
+import CreateMember from '@/models/workspace/CreateMember'
 import plans from '@/models/workspace/plans'
 import workspaceService from '@/services/workspace'
 import { mapGetters } from 'vuex'
+
+import messageMixin from '@/mixins/message'
+import validationMixin from '@/mixins/validation'
 export default {
+  mixins: [messageMixin, validationMixin],
   props: ['membersTotal', 'maximum'],
   data() {
     return {
       plans,
-      userInfoList: [new InviteMember()],
+      userInfoList: [new CreateMember()],
       availablePlans: { remote: 0, make: 0, view: 0 },
-      rules: {
-        email: [
-          {
-            required: true,
-            message: this.$t('invalid.required', [
-              this.$t('members.add.email'),
-            ]),
-          },
-          {
-            type: 'email',
-            message: this.$t('invalid.format', [this.$t('members.add.email')]),
-          },
-        ],
-      },
     }
   },
   methods: {
+    async checkMembersId(member) {
+      // 처리 로직 생성 , 정현님 휴가 돌아오면 추가하기
+      member.duplicateCheck = true
+      try {
+        const data = await workspaceService.checkMembersId(member.id)
+
+        if (data.result) {
+          console.log('처리 로직 생성 , 정현님 휴가 돌아오면 추가하기 ')
+        }
+      } catch (e) {
+        const errCode = this.errorCode(e)
+        // 결제센터로
+        if (errCode === 2003) {
+          this.$confirm(this.$t('members.add.message.noHavePlans'), {
+            confirmButtonText: this.$t('common.paymentCenter'),
+            customClass: 'no-title',
+          }).then(() => {
+            window.open(`${this.$url.pay}`)
+          })
+        } else {
+          // 일반에러
+          this.errorMessage(e)
+        }
+      }
+    },
     initAvailablePlans() {
       this.plansInfo.products.forEach(product => {
         this.availablePlans[product.value.toLowerCase()] = product.unUsedAmount
@@ -156,14 +189,9 @@ export default {
     },
     addMember() {
       if (this.availableMember >= this.maximum) {
-        this.$message.error({
-          dangerouslyUseHTMLString: true,
-          message: this.$t('members.add.message.memberOverflow'),
-          duration: 3000,
-          showClose: true,
-        })
+        this.errorMessage('Error: 900')
       } else {
-        this.userInfoList.push(new InviteMember())
+        this.userInfoList.push(new CreateMember())
       }
     },
     clearMember(index) {
@@ -171,7 +199,7 @@ export default {
       this.choosePlan()
     },
     async reset() {
-      this.userInfoList = [new InviteMember()]
+      this.userInfoList = [new CreateMember()]
       if (this.$refs.from) {
         this.$refs.form.forEach(form => form.resetFields())
       }
@@ -188,11 +216,22 @@ export default {
       } catch (e) {
         return false
       }
+
+      // 계정 중복 체크 확인
+      if (this.userInfoList.some(user => user.duplicateCheck === false)) {
+        this.$message.error({
+          message: this.$t('members.create.message.notCheckId'),
+          duration: 4000,
+          showClose: true,
+        })
+        return false
+      }
+
       // api 요청
       try {
-        await workspaceService.inviteMembers(this.userInfoList)
+        await workspaceService.createMembers(this.userInfoList)
         this.$message.success({
-          message: this.$t('members.add.message.inviteSuccess'),
+          message: this.$t('members.create.message.successContent'),
           duration: 2000,
           showClose: true,
         })
@@ -211,19 +250,7 @@ export default {
         }
         // 일반에러
         else {
-          const errMsg = {
-            1002: this.$t('members.add.message.memberAlready'),
-            1007: this.$t('members.add.message.notHaveAnyPlan'),
-            1008: this.$t('members.add.message.memberOverflow'),
-            1018: this.$t('members.add.message.memberWithdrawal'),
-          }[errCode]
-          this.$message.error({
-            message: errMsg
-              ? errMsg
-              : this.$t('members.add.message.inviteFail') + `\n(${e})`,
-            duration: 4000,
-            showClose: true,
-          })
+          this.errorMessage(e)
         }
       }
     },
@@ -248,7 +275,7 @@ export default {
 </script>
 
 <style lang="scss">
-#__nuxt .invite-pane {
+#__nuxt .create-pane {
   section {
     padding: 24px;
   }
@@ -276,8 +303,9 @@ export default {
         font-size: 1.1em;
       }
     }
+
     .el-form-item {
-      margin-bottom: 20px;
+      margin-bottom: 30px;
     }
     .el-input {
       width: 168px;
@@ -289,7 +317,8 @@ export default {
       }
     }
   }
-  .invite-pane__title {
+
+  .create-pane__title {
     h6 {
       @include fontLevel(100);
       color: #0b1f48;
@@ -301,9 +330,9 @@ export default {
       margin-bottom: 16px;
     }
   }
-  .invite-pane__content {
+  .create-pane__content {
     overflow-y: scroll;
-    max-height: 455px;
+    max-height: 498px;
     padding: 0 5px 0 24px;
     width: 610px;
     .el-tabs .el-tabs__item {
@@ -312,7 +341,7 @@ export default {
       padding: 0 14px;
     }
   }
-  .invite-pane__sub-title {
+  .create-pane__sub-title {
     display: flex;
     justify-content: space-between;
     border-bottom: 1px solid #eaedf3;
@@ -328,14 +357,14 @@ export default {
       border-bottom: 0;
     }
   }
-  .invite-pane__usage {
+  .create-pane__usage {
     display: flex;
     margin-bottom: 8px;
     strong {
       margin-right: 7px;
     }
   }
-  .invite-pane__footer {
+  .create-pane__footer {
     display: flex;
     padding: 24px;
     justify-content: space-between;
