@@ -26,11 +26,11 @@ import lombok.extern.slf4j.Slf4j;
 
 import com.virnect.uaa.domain.auth.security.rememberme.CustomRememberMeAuthenticationFilter;
 import com.virnect.uaa.domain.auth.security.rememberme.RememberMeCookieProperty;
-import com.virnect.uaa.global.security.CommonAuthenticationDetailsSource;
-import com.virnect.uaa.global.security.user.LoginFailureHandler;
-import com.virnect.uaa.global.security.user.LoginSuccessHandler;
-import com.virnect.uaa.global.security.user.LogoutSuccessHandler;
-import com.virnect.uaa.global.security.user.UserDetailsServiceImpl;
+import com.virnect.uaa.domain.auth.security.CommonAuthenticationDetailsSource;
+import com.virnect.uaa.domain.auth.security.handler.LoginFailureHandler;
+import com.virnect.uaa.domain.auth.security.handler.LoginSuccessHandler;
+import com.virnect.uaa.domain.auth.security.handler.LogoutSuccessHandler;
+import com.virnect.uaa.domain.auth.security.UserDetailsServiceImpl;
 
 @Slf4j
 @Order(1)

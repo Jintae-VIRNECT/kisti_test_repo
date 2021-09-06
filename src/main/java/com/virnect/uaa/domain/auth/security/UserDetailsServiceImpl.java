@@ -1,4 +1,4 @@
-package com.virnect.uaa.global.security.user;
+package com.virnect.uaa.domain.auth.security;
 
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;

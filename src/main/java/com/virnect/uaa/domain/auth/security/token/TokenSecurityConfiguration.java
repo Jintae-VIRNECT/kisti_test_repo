@@ -11,7 +11,7 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import com.virnect.uaa.global.security.RestAuthenticationEntryPoint;
+import com.virnect.uaa.domain.auth.security.RestAuthenticationEntryPoint;
 
 /**
  * @author jeonghyeon.chang (johnmark)

@@ -1,4 +1,4 @@
-package com.virnect.uaa.global.security.session;
+package com.virnect.uaa.domain.auth.security.session;
 
 import java.util.Comparator;
 import java.util.List;

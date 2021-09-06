@@ -32,7 +32,6 @@ import lombok.extern.slf4j.Slf4j;
 
 import com.virnect.security.UserAuthenticationDetails;
 import com.virnect.security.UserAuthenticationDetailsMixin;
-import com.virnect.uaa.global.security.session.CustomSessionControlAuthenticationStrategy;
 
 @Slf4j
 @Configuration

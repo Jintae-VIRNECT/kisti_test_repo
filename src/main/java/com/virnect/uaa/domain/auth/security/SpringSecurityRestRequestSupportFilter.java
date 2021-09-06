@@ -1,4 +1,4 @@
-package com.virnect.uaa.global.security;
+package com.virnect.uaa.domain.auth.security;
 
 import java.io.IOException;
 
@@ -8,6 +8,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.HttpMethod;
 
+import com.virnect.uaa.domain.auth.security.JsonRequestToFormRequestWrapper;
 import org.apache.http.entity.ContentType;
 import org.springframework.web.filter.OncePerRequestFilter;
 

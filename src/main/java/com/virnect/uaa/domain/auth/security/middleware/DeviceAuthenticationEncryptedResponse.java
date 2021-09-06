@@ -1,4 +1,4 @@
-package com.virnect.uaa.global.middleware;
+package com.virnect.uaa.domain.auth.security.middleware;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;

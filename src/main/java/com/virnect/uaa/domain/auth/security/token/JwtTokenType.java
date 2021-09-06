@@ -1,4 +1,4 @@
-package com.virnect.uaa.global.security.token;
+package com.virnect.uaa.domain.auth.security.token;
 
 /**
  * @project: PF-Auth

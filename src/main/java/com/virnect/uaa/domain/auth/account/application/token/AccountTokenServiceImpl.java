@@ -26,8 +26,8 @@ import com.virnect.uaa.domain.auth.common.exception.UserAuthenticationServiceExc
 import com.virnect.uaa.domain.user.dao.user.UserRepository;
 import com.virnect.uaa.domain.user.domain.User;
 import com.virnect.uaa.global.common.ClientUserAgentInformationParser;
-import com.virnect.uaa.global.security.token.JwtPayload;
-import com.virnect.uaa.global.security.token.JwtProvider;
+import com.virnect.uaa.domain.auth.security.token.JwtPayload;
+import com.virnect.uaa.domain.auth.security.token.JwtProvider;
 
 @Slf4j
 @Service

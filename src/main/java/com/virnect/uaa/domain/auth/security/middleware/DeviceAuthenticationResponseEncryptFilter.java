@@ -1,4 +1,4 @@
-package com.virnect.uaa.global.middleware;
+package com.virnect.uaa.domain.auth.security.middleware;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;

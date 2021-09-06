@@ -11,7 +11,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import com.virnect.uaa.domain.auth.account.dao.RememberMeTokenRepository;
-import com.virnect.uaa.global.security.user.UserDetailsServiceImpl;
+import com.virnect.uaa.domain.auth.security.UserDetailsServiceImpl;
 
 /**
  * Project: PF-Auth

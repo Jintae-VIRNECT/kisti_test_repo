@@ -1,4 +1,4 @@
-package com.virnect.uaa.global.security;
+package com.virnect.uaa.domain.auth.security.handler;
 
 import java.io.IOException;
 

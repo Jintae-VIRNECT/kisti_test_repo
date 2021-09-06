@@ -1,4 +1,4 @@
-package com.virnect.uaa.global.security.token;
+package com.virnect.uaa.domain.auth.security.token;
 
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -24,7 +24,6 @@ import com.virnect.uaa.domain.auth.account.dto.ClientGeoIPInfo;
 import com.virnect.uaa.domain.user.domain.Permission;
 import com.virnect.uaa.domain.user.domain.User;
 import com.virnect.uaa.domain.user.domain.UserPermission;
-import com.virnect.uaa.domain.auth.security.token.TokenProperty;
 
 /**
  * @project: PF-Auth

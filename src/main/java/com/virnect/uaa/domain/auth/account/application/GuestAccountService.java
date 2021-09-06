@@ -22,7 +22,7 @@ import com.virnect.uaa.domain.user.dao.user.UserRepository;
 import com.virnect.uaa.domain.user.domain.User;
 import com.virnect.uaa.global.common.ApiResponse;
 import com.virnect.uaa.global.common.ClientUserAgentInformationParser;
-import com.virnect.uaa.global.security.token.JwtProvider;
+import com.virnect.uaa.domain.auth.security.token.JwtProvider;
 import com.virnect.uaa.infra.rest.license.LicenseRestService;
 import com.virnect.uaa.infra.rest.license.dto.UserLicenseInfo;
 import com.virnect.uaa.infra.rest.license.dto.UserLicenseInfoResponse;
