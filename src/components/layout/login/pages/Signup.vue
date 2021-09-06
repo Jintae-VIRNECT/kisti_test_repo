@@ -278,18 +278,6 @@ export default {
     }
   },
   computed: {
-    joinInfoComp() {
-      if (this.signup.joinInfo === '') {
-        this.signup.joinInfo = this.joinInfo
-        return this.joinInfo
-      } else return this.signup.joinInfo
-    },
-    serviceInfoComp() {
-      if (this.signup.serviceInfo == '') {
-        this.signup.serviceInfo = this.serviceInfo
-        return this.serviceInfo
-      } else return this.signup.serviceInfo
-    },
     nextBtn() {
       let val = true
       if (!this.check.isEmail) return (val = false)
@@ -298,7 +286,7 @@ export default {
         this.passwordConfirm !== ''
       )
         return (val = false)
-      if (this.signup.lastName == '' || this.signup.firstName == '')
+      if (this.signup.lastName === '' || this.signup.firstName === '')
         return (val = false)
 
       if (
@@ -308,13 +296,14 @@ export default {
         return (val = false)
 
       if (
-        this.birth.year == '' ||
-        this.birth.month == '' ||
-        this.birth.date == ''
+        this.birth.year === '' ||
+        this.birth.month === '' ||
+        this.birth.date === ''
       )
         return (val = false)
-      if (this.joinInfoComp == '') return (val = false)
-      if (this.serviceInfoComp == '') return (val = false)
+      if (this.signup.joinInfo === '') return (val = false)
+
+      if (this.signup.serviceInfo === '') return (val = false)
       return val
     },
   },
@@ -416,7 +405,7 @@ export default {
         const mailAuth = await AuthService.emailAuth(params)
 
         // console.log(mailAuth)
-        if (mailAuth.code == 200) {
+        if (mailAuth.code === 200) {
           this.authLoading = true
           this.isVeritication = true
           this.delayResend()
@@ -492,11 +481,19 @@ export default {
       }
       this.delayResend()
     },
-    resetJoinInfo() {
-      this.signup.joinInfo = ''
+    resetJoinInfo(val) {
+      if (val === this.$t('signup.route.other')) {
+        this.signup.joinInfo = ''
+      } else {
+        this.signup.joinInfo = val
+      }
     },
-    resetServiceInfo() {
-      this.signup.serviceInfo = ''
+    resetServiceInfo(val) {
+      if (val === this.$t('signup.serviceInfo.other')) {
+        this.signup.serviceInfo = ''
+      } else {
+        this.signup.serviceInfo = val
+      }
     },
     delayResend() {
       this.setCount = false
