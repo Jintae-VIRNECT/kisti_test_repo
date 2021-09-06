@@ -28,4 +28,12 @@ public class EditPermissionRequest {
 	private EditPermission permission;
 	@ApiModelProperty(value = "지정 멤버 목록", example = "[]", position = 1, required = false)
 	private List<String> userList;
+
+	@Override
+	public String toString() {
+		return "EditPermissionRequest{" +
+			"permission=" + permission +
+			", userList=" + userList +
+			'}';
+	}
 }

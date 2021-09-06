@@ -101,9 +101,6 @@ public class ProjectService {
 	 */
 	@Transactional
 	public ProjectInfoResponse uploadProject(ProjectUploadRequest projectUploadRequest) {
-		//1. 파라미터 체크
-		log.info("[PROJECT UPLOAD] REQ : {}", projectUploadRequest.toString());
-
 		//1-1. 프로젝트 파일 체크
 		String fileName = projectUploadRequest.getProject()
 			.substring(projectUploadRequest.getProject().lastIndexOf("/") + 1);
@@ -192,6 +189,7 @@ public class ProjectService {
 		//2-5. 타겟 저장
 		ProjectTarget projectTarget = ProjectTarget.builder()
 			.type(projectUploadRequest.getTarget().getType())
+			.data(projectUploadRequest.getTarget().getData())
 			.path(targetPath)
 			.width(projectUploadRequest.getTarget().getWidth())
 			.length(projectUploadRequest.getTarget().getLength())
@@ -513,7 +511,6 @@ public class ProjectService {
 	}
 
 	public ProjectUpdateResponse updateProject(String projectUUID, ProjectUpdateRequest projectUpdateRequest) {
-		log.info("[PROJECT UPDATE] project uuid : {}, REQ : {}", projectUUID, projectUpdateRequest.toString());
 		//프로젝트 유효성 검증
 		Project project = projectRepository.findByUuid(projectUUID)
 			.orElseThrow(() -> new ProjectServiceException(ErrorCode.ERR_PROJECT_NOT_FOUND));
@@ -537,29 +534,38 @@ public class ProjectService {
 		}
 
 		//프로젝트 파일 변경
-		if (projectUpdateRequest.getProject() != null) {
+		if (StringUtils.hasText(projectUpdateRequest.getProject())) {
 			//업로드 사용자의 MAKE 라이선스 체크
 			if (!checkUserHaveMAKELicense(projectUpdateRequest.getUserUUID(), project.getWorkspaceUUID())) {
 				throw new ProjectServiceException(ErrorCode.ERR_PROJECT_UPDATE_INVALID_LICENSE);
 			}
-			//기존 프로젝트 파일보다 큰 경우에만 워크스페이스의 최대 업로드 사용량 체크
-			/*if (projectUpdateRequest.getProject().getSize() > project.getSize()) {
-				if (!checkWorkspaceMaxStorage(
-					projectUpdateRequest.getUserUUID(),
-					projectUpdateRequest.getProject().getSize() - project.getSize()
-				)) {
-					throw new ProjectServiceException(ErrorCode.ERR_PROJECT_UPLOAD_MAX_STORAGE);
-				}
+			//최대 업로드 사용량 체크
+			String fileName = projectUpdateRequest.getProject()
+				.substring(projectUpdateRequest.getProject().lastIndexOf("/") + 1);
+			long projectFileSize = fileDownloadService.getFileSize(PROJECT_DIRECTORY, fileName);
+			if (!checkWorkspaceMaxStorage(
+				projectUpdateRequest.getUserUUID(), projectFileSize - project.getSize()
+			)) {
+				throw new ProjectServiceException(ErrorCode.ERR_PROJECT_UPLOAD_MAX_STORAGE);
 			}
-			String projectPath = fileUploadService.uploadByFileInputStream(
-				projectUpdateRequest.getProject(), PROJECT_DIRECTORY, projectUUID);*/
+			String newProjectPath = fileUploadService.copyByFileObject(
+				projectUpdateRequest.getProject(), PROJECT_DIRECTORY, projectUUID);
+			fileUploadService.deleteByFileUrl(projectUpdateRequest.getProject());//원본파일 삭제
 			fileUploadService.deleteByFileUrl(project.getPath());
-			project.setPath("");
+			project.setPath(newProjectPath);
 		}
 
 		//프로젝트 구성정보 변경
-		if (StringUtils.hasText(projectUpdateRequest.getProperties())) {
-			project.setProperties(projectUpdateRequest.getProperties());
+		if (projectUpdateRequest.getProperties() != null) {
+			String properties = "";
+			ObjectMapper objectMapper = new ObjectMapper();
+			try {
+				properties = objectMapper.writeValueAsString(projectUpdateRequest.getProperties());
+			} catch (JsonProcessingException e) {
+				log.error(e.getMessage());
+				throw new ContentServiceException(ErrorCode.ERR_UNEXPECTED_SERVER_ERROR);
+			}
+			project.setProperties(properties);
 		}
 
 		//프로젝트 모드정보 변경
@@ -574,18 +580,18 @@ public class ProjectService {
 		}
 
 		//프로젝트 공유정보 변경
-		if (projectUpdateRequest.getSharePermission() != null) {
-			project.setSharePermission(projectUpdateRequest.getSharePermission());
+		if (projectUpdateRequest.getShare() != null) {
+			project.setSharePermission(projectUpdateRequest.getShare().getPermission());
 			if (project.getSharePermission() == SharePermission.SPECIFIC_MEMBER
-				&& projectUpdateRequest.getSharePermission() != SharePermission.SPECIFIC_MEMBER) {
+				&& projectUpdateRequest.getShare().getPermission() != SharePermission.SPECIFIC_MEMBER) {
 				List<ProjectShareUser> oldProjectShareUserList = project.getProjectShareUserList();
 				projectShareUerRepository.deleteAll(oldProjectShareUserList);
 			}
 		}
 
 		//프로젝트 공유 멤버 정보 변경
-		if (!CollectionUtils.isEmpty(projectUpdateRequest.getSharedUserList())) {
-			List<ProjectShareUser> newProjectShareUserList = projectUpdateRequest.getSharedUserList()
+		if (projectUpdateRequest.isShareUsersUpdate()) {
+			List<ProjectShareUser> newProjectShareUserList = projectUpdateRequest.getShare().getUserList()
 				.stream()
 				.map(userUUID -> ProjectShareUser.builder()
 					.userUUID(userUUID)
@@ -596,18 +602,18 @@ public class ProjectService {
 		}
 
 		//프로젝트 편집 정보 변경
-		if (projectUpdateRequest.getEditPermission() != null) {
-			project.setEditPermission(projectUpdateRequest.getEditPermission());
+		if (projectUpdateRequest.getEdit() != null) {
+			project.setEditPermission(projectUpdateRequest.getEdit().getPermission());
 			if (project.getEditPermission() == EditPermission.SPECIFIC_MEMBER
-				&& projectUpdateRequest.getEditPermission() != EditPermission.SPECIFIC_MEMBER) {
+				&& projectUpdateRequest.getEdit().getPermission() != EditPermission.SPECIFIC_MEMBER) {
 				List<ProjectEditUser> oldProjectEditUserList = project.getProjectEditUserList();
 				projectEditUserRepository.deleteAll(oldProjectEditUserList);
 			}
 		}
 
 		//프로젝트 편집 멤버 정보 변경
-		if (!CollectionUtils.isEmpty(projectUpdateRequest.getEditUserList())) {
-			List<ProjectEditUser> newProjectEditUserList = projectUpdateRequest.getEditUserList()
+		if (projectUpdateRequest.isEditUsersUpdate()) {
+			List<ProjectEditUser> newProjectEditUserList = projectUpdateRequest.getEdit().getUserList()
 				.stream()
 				.map(userUUID -> ProjectEditUser.builder().userUUID(userUUID).project(project).build())
 				.collect(Collectors.toList());
@@ -617,49 +623,42 @@ public class ProjectService {
 		ProjectTarget projectTarget = project.getProjectTarget();
 
 		//프로젝트 타겟 타입 정보 변경
-		if (projectUpdateRequest.getTargetType() != null) {
+		if (projectUpdateRequest.getTarget() != null) {
 			//기존 타겟 삭제
 			if (projectTarget.getType() == TargetType.Image || projectTarget.getType() == TargetType.QR) {
 				fileUploadService.deleteByFileUrl(projectTarget.getPath());
 			}
 			//새로운 타겟 타입 등록
-			projectTarget.setType(projectUpdateRequest.getTargetType());
-			if (projectUpdateRequest.getTargetType() == TargetType.VR) {
+			projectTarget.setType(projectUpdateRequest.getTarget().getType());
+			if (projectUpdateRequest.getTarget().getType() == TargetType.VR) {
 				projectTarget.setPath(null);
 			}
-			if (projectUpdateRequest.getTargetType() == TargetType.VTarget) {
-				String vrTargetPath = fileDownloadService.getFilePath("workspace/report/", "virnect_target.png");
-				projectTarget.setPath(vrTargetPath);
+			if (projectUpdateRequest.getTarget().getType() == TargetType.VTarget) {
+				String targetPath = fileDownloadService.getFilePath("workspace/report/", "virnect_target.png");
+				projectTarget.setPath(targetPath);
 			}
-			if (projectUpdateRequest.getTargetType() == TargetType.QR) {
-				String qrString = generateQRString(projectUpdateRequest.getTargetData());
+			if (projectUpdateRequest.getTarget().getType() == TargetType.QR) {
+				String qrString = generateQRString(projectUpdateRequest.getTarget().getData());
 				String randomFileName = String.format(
 					"%s_%s%s", LocalDate.now().toString(), RandomStringUtils.randomAlphanumeric(10).toLowerCase(),
 					REPORT_FILE_EXTENSION
 				);
-				String qrImagePath = fileUploadService.uploadByBase64Image(qrString, REPORT_DIRECTORY, randomFileName);
-				projectTarget.setPath(qrImagePath);
+				String targetPath = fileUploadService.uploadByBase64Image(qrString, REPORT_DIRECTORY, randomFileName);
+				projectTarget.setPath(targetPath);
 			}
-			/*if (projectUpdateRequest.getTargetType() == TargetType.Image) {
-				String randomFileName = String.format(
-					"%s_%s%s", LocalDate.now().toString(), RandomStringUtils.randomAlphanumeric(10).toLowerCase(), FilenameUtils.getExtension(projectUpdateRequest.getTargetFile().getName())
-				);
-				String imagePath = fileUploadService.uploadByFileInputStream(projectUpdateRequest.getTargetFile(),
-					REPORT_DIRECTORY
-					, randomFileName
-				);
-				projectTarget.setPath(imagePath);
-			}*/
+			if (projectUpdateRequest.getTarget().getType() == TargetType.Image) {
+				projectTarget.setPath(projectUpdateRequest.getTarget().getFile());
+			}
 		}
 
 		//프로젝트 타겟 너비 변경
-		if (projectUpdateRequest.getTargetWidth() > 0) {
-			projectTarget.setWidth(projectUpdateRequest.getTargetWidth());
+		if (projectUpdateRequest.isTargetWidthUpdate()) {
+			projectTarget.setWidth(projectUpdateRequest.getTarget().getWidth());
 		}
 
 		//프로젝트 타겟 길이 변경
-		if (projectUpdateRequest.getTargetLength() > 0) {
-			projectTarget.setLength(projectUpdateRequest.getTargetLength());
+		if (projectUpdateRequest.isTargetLengthUpdate()) {
+			projectTarget.setLength(projectUpdateRequest.getTarget().getLength());
 		}
 		projectTargetRepository.save(projectTarget);
 

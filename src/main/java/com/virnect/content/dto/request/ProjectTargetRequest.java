@@ -33,4 +33,15 @@ public class ProjectTargetRequest {
 	private long length;
 	@ApiModelProperty(value = "이미지 타겟 파일 업로드 URL", example = "https://192.168.6.3:2838/virnect-platform/workspace/report/2021-08-31_fg8nvnjzwv.png", position = 4, required = false)
 	private String file;
+
+	@Override
+	public String toString() {
+		return "ProjectTargetRequest{" +
+			"type=" + type +
+			", data='" + data + '\'' +
+			", width=" + width +
+			", length=" + length +
+			", file='" + file + '\'' +
+			'}';
+	}
 }

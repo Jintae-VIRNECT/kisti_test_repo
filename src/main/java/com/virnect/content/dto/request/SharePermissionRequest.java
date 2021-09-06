@@ -28,4 +28,12 @@ public class SharePermissionRequest {
 	private SharePermission permission;
 	@ApiModelProperty(value = "지정 멤버 목록", example = "[]", position = 1, required = false)
 	private List<String> userList;
+
+	@Override
+	public String toString() {
+		return "SharePermissionRequest{" +
+			"permission=" + permission +
+			", userList=" + userList +
+			'}';
+	}
 }

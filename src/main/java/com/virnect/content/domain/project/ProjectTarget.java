@@ -45,6 +45,9 @@ public class ProjectTarget extends BaseTimeEntity {
 	@Enumerated(EnumType.STRING)
 	private TargetType type;
 
+	@Column(name = "data", nullable = false)
+	private String data;
+
 	@Column(name = "path", nullable = true)
 	private String path;
 
@@ -60,9 +63,10 @@ public class ProjectTarget extends BaseTimeEntity {
 
 	@Builder
 	public ProjectTarget(
-		TargetType type, String path, Long width, Long length, Project project
+		TargetType type, String data, String path, Long width, Long length, Project project
 	) {
 		this.type = type;
+		this.data = data;
 		this.path = path;
 		this.width = width;
 		this.length = length;

@@ -59,6 +59,7 @@ public class ProjectController {
 	public ResponseEntity<ApiResponse<ProjectInfoResponse>> uploadProject(
 		@RequestBody @Valid ProjectUploadRequest projectUploadRequest, BindingResult bindingResult
 	) {
+		log.info("[PROJECT UPLOAD] REQ : {}", projectUploadRequest.toString());
 		if (bindingResult.hasErrors()) {
 			log.error(
 				"[FIELD ERROR] => [{}] [{}]", bindingResult.getFieldError().getField(),
@@ -70,22 +71,14 @@ public class ProjectController {
 		return ResponseEntity.ok(new ApiResponse<>(responseMessage));
 	}
 
-	@ApiOperation(value = "프로젝트 정보 수정 - 업데이트", notes = "프로젝트 상세정보를 수정합니다. 공유/편집 권한이 모두 있는 사용자만 수정할 수 있습니다.")
-	@ApiImplicitParams({
-		@ApiImplicitParam(name = "projectUUID", value = "업데이트 할 프로젝트 식별자", dataType = "string", paramType = "path", required = true, example = "25e76918-e31a-420f-bd69-86a775c4a9ac"),
-		@ApiImplicitParam(name = "project", value = "업데이트 프로젝트 파일", dataType = "__file", paramType = "form", required = false),
-		@ApiImplicitParam(name = "targetFile", value = "업데이트 프로젝트 타겟 파일", dataType = "__file", paramType = "form", required = false)
-	})
+	@ApiOperation(value = "프로젝트 정보 수정", notes = "프로젝트 상세정보를 수정합니다. 공유/편집 권한이 모두 있는 사용자만 수정할 수 있습니다.")
 	@PutMapping("/{projectUUID}")
 	public ResponseEntity<ApiResponse<ProjectUpdateResponse>> updateProjectInfo(
 		@PathVariable("projectUUID") String projectUUID,
-		@RequestBody @Valid ProjectUpdateRequest projectUpdateRequest, BindingResult bindingResult
+		@RequestBody ProjectUpdateRequest projectUpdateRequest
 	) {
-		if (bindingResult.hasErrors() || !StringUtils.hasText(projectUUID)) {
-			log.error(
-				"[FIELD ERROR] => [{}] [{}]", bindingResult.getFieldError().getField(),
-				bindingResult.getFieldError().getDefaultMessage()
-			);
+		log.info("[PROJECT UPDATE] project uuid : {}, REQ : {}", projectUUID, projectUpdateRequest.toString());
+		if (!StringUtils.hasText(projectUUID) || !StringUtils.hasText(projectUpdateRequest.getUserUUID())) {
 			throw new ProjectServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
 		}
 		ProjectUpdateResponse responseMessage = projectService.updateProject(projectUUID, projectUpdateRequest);
