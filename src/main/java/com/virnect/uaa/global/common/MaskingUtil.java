@@ -10,7 +10,6 @@ public class MaskingUtil {
 	 * @return - 마스킹처리된 이메일 정보
 	 */
 	public static String emailMasking(final String email, int maskingLength) {
-		StringBuilder sb = new StringBuilder();
 		String[] splitByAtSign = email.split("@");
 		String emailID = splitByAtSign[0];
 		String emailDomain = splitByAtSign[1];
@@ -19,10 +18,8 @@ public class MaskingUtil {
 		int emailDomainMaskingLength =
 			emailDomain.length() > maskingLength ? maskingLength : emailDomain.length() / 2;
 
-		sb.append(masking(emailID, emailIDMaskingLength));
-		sb.append("@");
-		sb.append(masking(emailDomain, emailDomainMaskingLength));
-		return sb.toString();
+		String maskedEmail = masking(emailID, emailIDMaskingLength) + "@" + masking(emailDomain, emailDomainMaskingLength);
+		return maskedEmail;
 	}
 
 	/**
