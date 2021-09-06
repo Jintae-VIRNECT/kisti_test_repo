@@ -64,8 +64,8 @@ public enum ErrorCode {
 	ERR_MEMBER_INVALID(4031, "This member uuid is invalid"),
 
 	// Guest 관련 에러
-	ERR_GUEST_ACCOUNT_ALLOCATE(4028, "Allocated accounts are not usable."),
-	ERR_GUEST_ACCOUNT_INFO(4029, "Guest account Info Error"),
+	ERR_GUEST_USER_NOT_ENOUGH(4028, "Not enough unassigned guest users"),
+	ERR_GUEST_USER_NOT_FOUND(4029, " Guest user not found"),
 	
 	// error code for service validation
 	ERR_LICENSE_NOT_VALIDITY(5001, "License has no validity"),

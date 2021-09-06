@@ -75,7 +75,7 @@ import com.virnect.serviceserver.serviceremote.dto.mapper.room.RoomInfoMapper;
 @RequiredArgsConstructor
 public class RoomService {
 
-	private static final String TAG = SessionRestController.class.getSimpleName();
+	private static final String TAG = RoomService.class.getSimpleName();
 	private static final String REST_PATH = "/remote/room";
 
 	private final RemoteServiceConfig config;
@@ -286,7 +286,6 @@ public class RoomService {
 		 * 2. Kurento Media server 간 세션 처리
 		 * 3. Create Response Data
 		 */
-
 		// 생성 전 DB를 통한 데이트 체크
 		ApiResponse<Boolean> dataProcess = this.sessionDataRepository.prepareJoinRoom(
 			workspaceId,
@@ -506,7 +505,7 @@ public class RoomService {
 		return coturnResponse;
 	}*/
 
-	private List<CoturnResponse> setCoturnListResponse(SessionType sessionType) {
+	public List<CoturnResponse> setCoturnListResponse(SessionType sessionType) {
 		List<CoturnResponse> coturnList = new ArrayList<>();
 		switch (sessionType) {
 			case OPEN: {
