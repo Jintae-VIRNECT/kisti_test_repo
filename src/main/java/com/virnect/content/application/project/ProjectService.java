@@ -12,7 +12,6 @@ import java.util.stream.Collectors;
 
 import javax.imageio.ImageIO;
 
-import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -57,6 +56,7 @@ import com.virnect.content.dto.rest.LicenseInfoResponse;
 import com.virnect.content.dto.rest.MemberInfoDTO;
 import com.virnect.content.dto.rest.MyLicenseInfoListResponse;
 import com.virnect.content.dto.rest.UserInfoResponse;
+import com.virnect.content.exception.ContentServiceException;
 import com.virnect.content.exception.ProjectServiceException;
 import com.virnect.content.global.common.ApiResponse;
 import com.virnect.content.global.common.PageMetadataResponse;
@@ -103,34 +103,46 @@ public class ProjectService {
 	public ProjectInfoResponse uploadProject(ProjectUploadRequest projectUploadRequest) {
 		//1. 파라미터 체크
 		log.info("[PROJECT UPLOAD] REQ : {}", projectUploadRequest.toString());
-		if (!projectUploadRequest.validateTarget()) {
-			throw new ProjectServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
-		}
 
-		//1-1. 업로드 사용자의 MAKE 라이선스 체크
+		//1-1. 프로젝트 파일 체크
+		String fileName = projectUploadRequest.getProject()
+			.substring(projectUploadRequest.getProject().lastIndexOf("/") + 1);
+		long projectFileSize = fileDownloadService.getFileSize(PROJECT_DIRECTORY, fileName);
+		//1-2. 업로드 사용자의 MAKE 라이선스 체크
 		if (!checkUserHaveMAKELicense(projectUploadRequest.getUserUUID(), projectUploadRequest.getWorkspaceUUID())) {
 			throw new ProjectServiceException(ErrorCode.ERR_PROJECT_UPLOAD_INVALID_LICENSE);
 		}
-		//1-2. 워크스페이스의 최대 업로드 사용량 체크
-		if (!checkWorkspaceMaxStorage(
-			projectUploadRequest.getWorkspaceUUID(), projectUploadRequest.getProject().getSize())) {
+		//1-3. 워크스페이스의 최대 업로드 사용량 체크
+		if (!checkWorkspaceMaxStorage(projectUploadRequest.getWorkspaceUUID(), projectFileSize)) {
 			throw new ProjectServiceException(ErrorCode.ERR_PROJECT_UPLOAD_MAX_STORAGE);
 		}
 
 		//2. 프로젝트 저장
 		String projectUUID = UUID.randomUUID().toString();
-		String projectPath = fileUploadService.uploadByFileInputStream(
+		String projectPath = fileUploadService.copyByFileObject(
 			projectUploadRequest.getProject(), PROJECT_DIRECTORY, projectUUID);
+		fileUploadService.deleteByFileUrl(projectUploadRequest.getProject());//원본파일 삭제
+
+		String properties = "";
+		ObjectMapper objectMapper = new ObjectMapper();
+		try {
+			properties = objectMapper.writeValueAsString(projectUploadRequest.getProperties());
+		} catch (JsonProcessingException e) {
+			log.error(e.getMessage());
+			throw new ContentServiceException(ErrorCode.ERR_UNEXPECTED_SERVER_ERROR);
+		}
+
 		Project project = Project.builder()
 			.uuid(projectUUID)
 			.name(projectUploadRequest.getName())
 			.path(projectPath)
-			.size(projectUploadRequest.getProject().getSize())
+			.size(projectFileSize)
+			.size(0L)
 			.userUUID(projectUploadRequest.getUserUUID())
 			.workspaceUUID(projectUploadRequest.getWorkspaceUUID())
-			.properties(projectUploadRequest.getProperties())
-			.editPermission(projectUploadRequest.getEditPermission())
-			.sharePermission(projectUploadRequest.getSharePermission())
+			.properties(properties)
+			.editPermission(projectUploadRequest.getEdit().getPermission())
+			.sharePermission(projectUploadRequest.getShare().getPermission())
 			.build();
 		projectRepository.save(project);
 
@@ -141,8 +153,8 @@ public class ProjectService {
 		}
 
 		//2-2. 공유 정보 저장
-		if (projectUploadRequest.getSharePermission() == SharePermission.SPECIFIC_MEMBER) {
-			for (String sharedUser : projectUploadRequest.getSharedUserList()) {
+		if (projectUploadRequest.getShare().getPermission() == SharePermission.SPECIFIC_MEMBER) {
+			for (String sharedUser : projectUploadRequest.getShare().getUserList()) {
 				ProjectShareUser projectShareUser = ProjectShareUser.builder()
 					.userUUID(sharedUser)
 					.project(project)
@@ -151,8 +163,8 @@ public class ProjectService {
 			}
 		}
 		//2-3. 편집 정보 저장
-		if (projectUploadRequest.getEditPermission() == EditPermission.SPECIFIC_MEMBER) {
-			for (String editUser : projectUploadRequest.getEditUserList()) {
+		if (projectUploadRequest.getEdit().getPermission() == EditPermission.SPECIFIC_MEMBER) {
+			for (String editUser : projectUploadRequest.getEdit().getUserList()) {
 				ProjectEditUser projectEditUser = ProjectEditUser.builder().userUUID(editUser).project(project).build();
 				projectEditUserRepository.save(projectEditUser);
 			}
@@ -160,34 +172,29 @@ public class ProjectService {
 
 		//2-4. 타겟 이미지 저장
 		String targetPath = "";
-		if (projectUploadRequest.getTargetType() == TargetType.QR) {
-			String qrString = generateQRString(projectUploadRequest.getTargetData());
+		if (projectUploadRequest.getTarget().getType() == TargetType.QR) {
+			String qrString = generateQRString(projectUploadRequest.getTarget().getData());
 			String randomFileName = String.format(
 				"%s_%s%s", LocalDate.now().toString(), RandomStringUtils.randomAlphanumeric(10).toLowerCase(),
 				REPORT_FILE_EXTENSION
 			);
 			targetPath = fileUploadService.uploadByBase64Image(qrString, REPORT_DIRECTORY, randomFileName);
 		}
-		if (projectUploadRequest.getTargetType() == TargetType.VTarget) {
+		if (projectUploadRequest.getTarget().getType() == TargetType.VTarget) {
 			targetPath = fileDownloadService.getFilePath("workspace/report/", "virnect_target.png");
 		}
-		if (projectUploadRequest.getTargetType() == TargetType.Image) {
-			String randomFileName = String.format(
-				"%s_%s%s", LocalDate.now().toString(), RandomStringUtils.randomAlphanumeric(10).toLowerCase(),
-				FilenameUtils.getExtension(projectUploadRequest.getTargetFile().getName())
-			);
-			targetPath = fileUploadService.uploadByFileInputStream(
-				projectUploadRequest.getTargetFile(), REPORT_DIRECTORY, randomFileName);
+		if (projectUploadRequest.getTarget().getType() == TargetType.Image) {
+			targetPath = projectUploadRequest.getTarget().getFile();
 		}
-		if (projectUploadRequest.getTargetType() == TargetType.VR) {
+		if (projectUploadRequest.getTarget().getType() == TargetType.VR) {
 			targetPath = null;
 		}
 		//2-5. 타겟 저장
 		ProjectTarget projectTarget = ProjectTarget.builder()
-			.type(projectUploadRequest.getTargetType())
+			.type(projectUploadRequest.getTarget().getType())
 			.path(targetPath)
-			.width(projectUploadRequest.getTargetWidth())
-			.length(projectUploadRequest.getTargetLength())
+			.width(projectUploadRequest.getTarget().getWidth())
+			.length(projectUploadRequest.getTarget().getLength())
 			.project(project)
 			.build();
 		projectTargetRepository.save(projectTarget);
@@ -405,24 +412,20 @@ public class ProjectService {
 		projectInfoResponse.setTargetInfo(projectTargetInfoResponse);
 
 		//프로퍼티
-		ObjectMapper mapper = new ObjectMapper();
-
-		PropertyInfoDTO propertyInfo = new PropertyInfoDTO();
+		projectInfoResponse.setProperty(project.getProperties());
+		ObjectMapper objectMapper = new ObjectMapper();
+		PropertyInfoDTO propertyInfo = null;
 		try {
-			propertyInfo = mapper.readValue(project.getProperties(), PropertyInfoDTO.class);
+			propertyInfo = objectMapper.readValue(project.getProperties(), PropertyInfoDTO.class);
 		} catch (JsonProcessingException e) {
-			e.printStackTrace();
+			log.error(e.getMessage());
+			throw new ContentServiceException(ErrorCode.ERR_UNEXPECTED_SERVER_ERROR);
 		}
-		projectInfoResponse.setProperty(propertyInfo);
-		//properties 씬 갯수 파싱
 		projectInfoResponse.setPropertySceneGroupTotal(propertyInfo.getPropertyObjectList().size());
-
-		//properties 씬 그룹 갯수 파싱
-		int sceneTotal = propertyInfo.getSceneCount(propertyInfo.getPropertyObjectList(), 0);
-		//properties 오브젝트 갯수 파싱
-		int objectTotal = propertyInfo.getObjectCount(propertyInfo.getPropertyObjectList(), 0);
-		projectInfoResponse.setPropertySceneTotal(sceneTotal);
-		projectInfoResponse.setPropertyObjectTotal(objectTotal);
+		projectInfoResponse.setPropertySceneTotal(
+			propertyInfo.getSceneCount(propertyInfo.getPropertyObjectList(), 0));
+		projectInfoResponse.setPropertyObjectTotal(
+			propertyInfo.getObjectCount(propertyInfo.getPropertyObjectList(), 0));
 
 		//업로더 네임, 프로필 정보
 		UserInfoResponse userInfoResponse = getUserInfoResponse(project.getUserUUID());
@@ -540,7 +543,7 @@ public class ProjectService {
 				throw new ProjectServiceException(ErrorCode.ERR_PROJECT_UPDATE_INVALID_LICENSE);
 			}
 			//기존 프로젝트 파일보다 큰 경우에만 워크스페이스의 최대 업로드 사용량 체크
-			if (projectUpdateRequest.getProject().getSize() > project.getSize()) {
+			/*if (projectUpdateRequest.getProject().getSize() > project.getSize()) {
 				if (!checkWorkspaceMaxStorage(
 					projectUpdateRequest.getUserUUID(),
 					projectUpdateRequest.getProject().getSize() - project.getSize()
@@ -549,9 +552,9 @@ public class ProjectService {
 				}
 			}
 			String projectPath = fileUploadService.uploadByFileInputStream(
-				projectUpdateRequest.getProject(), PROJECT_DIRECTORY, projectUUID);
-			fileUploadService.deleteByFileName(project.getPath());
-			project.setPath(projectPath);
+				projectUpdateRequest.getProject(), PROJECT_DIRECTORY, projectUUID);*/
+			fileUploadService.deleteByFileUrl(project.getPath());
+			project.setPath("");
 		}
 
 		//프로젝트 구성정보 변경
@@ -617,7 +620,7 @@ public class ProjectService {
 		if (projectUpdateRequest.getTargetType() != null) {
 			//기존 타겟 삭제
 			if (projectTarget.getType() == TargetType.Image || projectTarget.getType() == TargetType.QR) {
-				fileUploadService.deleteByFileName(projectTarget.getPath());
+				fileUploadService.deleteByFileUrl(projectTarget.getPath());
 			}
 			//새로운 타겟 타입 등록
 			projectTarget.setType(projectUpdateRequest.getTargetType());
@@ -637,17 +640,16 @@ public class ProjectService {
 				String qrImagePath = fileUploadService.uploadByBase64Image(qrString, REPORT_DIRECTORY, randomFileName);
 				projectTarget.setPath(qrImagePath);
 			}
-			if (projectUpdateRequest.getTargetType() == TargetType.Image) {
+			/*if (projectUpdateRequest.getTargetType() == TargetType.Image) {
 				String randomFileName = String.format(
-					"%s_%s%s", LocalDate.now().toString(), RandomStringUtils.randomAlphanumeric(10).toLowerCase(),
-					FilenameUtils.getExtension(projectUpdateRequest.getTargetFile().getName())
+					"%s_%s%s", LocalDate.now().toString(), RandomStringUtils.randomAlphanumeric(10).toLowerCase(), FilenameUtils.getExtension(projectUpdateRequest.getTargetFile().getName())
 				);
 				String imagePath = fileUploadService.uploadByFileInputStream(projectUpdateRequest.getTargetFile(),
 					REPORT_DIRECTORY
 					, randomFileName
 				);
 				projectTarget.setPath(imagePath);
-			}
+			}*/
 		}
 
 		//프로젝트 타겟 너비 변경
@@ -679,6 +681,16 @@ public class ProjectService {
 		}
 	}
 
+	/**
+	 * 프로젝트 편집 권한 체크
+	 * MEMBER - 체크하지 않음.
+	 * SPECIFIC_MEMBER - 지정 멤버인지, 업로더인지, 마스터인지, 매니저인지 체크
+	 * UPLOADER - 업로더인지, 마스터인지, 매니저인지 체크
+	 * MANAGER - 마스터인지, 매니저인지 체크
+	 * @param project - 체크 대상 프로젝트 식별자
+	 * @param userUUID - 요청 유저 식별자
+	 * @param userRole - 요청 유저 워크스페이스 내 권한
+	 */
 	private boolean checkUserProjectEditPermission(Project project, String userUUID, String userRole) {
 		if (project.getEditPermission() == EditPermission.SPECIFIC_MEMBER) {
 			if (!userRole.equals("MASTER") && !userRole.equals("MANAGER")

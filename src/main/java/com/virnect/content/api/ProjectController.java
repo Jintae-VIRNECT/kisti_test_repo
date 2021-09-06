@@ -2,7 +2,6 @@ package com.virnect.content.api;
 
 import java.util.List;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
 import org.springframework.http.ResponseEntity;
@@ -11,7 +10,6 @@ import org.springframework.util.StringUtils;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -57,12 +55,9 @@ public class ProjectController {
 	private final ProjectService projectService;
 
 	@ApiOperation(value = "프로젝트 업로드", notes = "프로젝트를 업로드합니다.")
-	@ApiImplicitParams({
-		@ApiImplicitParam(name = "project", value = "업로드 프로젝트 파일", dataType = "__file", paramType = "form", required = true),
-		@ApiImplicitParam(name = "targetFile", value = "업데이트 프로젝트 타겟 파일", dataType = "__file", paramType = "form", required = false)})
 	@PostMapping
 	public ResponseEntity<ApiResponse<ProjectInfoResponse>> uploadProject(
-		@ModelAttribute @Valid ProjectUploadRequest projectUploadRequest, BindingResult bindingResult
+		@RequestBody @Valid ProjectUploadRequest projectUploadRequest, BindingResult bindingResult
 	) {
 		if (bindingResult.hasErrors()) {
 			log.error(
@@ -84,7 +79,7 @@ public class ProjectController {
 	@PutMapping("/{projectUUID}")
 	public ResponseEntity<ApiResponse<ProjectUpdateResponse>> updateProjectInfo(
 		@PathVariable("projectUUID") String projectUUID,
-		@ModelAttribute @Valid ProjectUpdateRequest projectUpdateRequest, BindingResult bindingResult
+		@RequestBody @Valid ProjectUpdateRequest projectUpdateRequest, BindingResult bindingResult
 	) {
 		if (bindingResult.hasErrors() || !StringUtils.hasText(projectUUID)) {
 			log.error(

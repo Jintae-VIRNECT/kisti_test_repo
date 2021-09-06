@@ -105,8 +105,8 @@ dependencies {
 
 test {
     useJUnitPlatform()
-    systemProperty("spring.active.profiles", "test")
-    systemProperty("VIRNECT_ENV", "test")
+    systemProperty("spring.active.profiles", "local")
+    systemProperty("VIRNECT_ENV", "local")
 }
 
 

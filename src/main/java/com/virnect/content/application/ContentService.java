@@ -27,7 +27,6 @@ import javax.imageio.ImageIO;
 
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.disk.DiskFileItem;
-import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.modelmapper.ModelMapper;
@@ -330,7 +329,7 @@ public class ContentService {
 		checkLicenseStorage(targetContent.getWorkspaceUUID(), calSize, updateRequest.getUserUUID());
 
 		// 2. 기존 컨텐츠 파일 삭제
-		fileUploadService.deleteByFileName(targetContent.getPath());
+		fileUploadService.deleteByFileUrl(targetContent.getPath());
 
 		//3. 수정 컨텐츠 업로드
 		String uploadPath = fileUploadService.uploadByFileInputStream(
@@ -376,12 +375,12 @@ public class ContentService {
 			|| updateRequest.getTargetType() != target.getType()) {
 			if (updateRequest.getTargetType().equals(TargetType.QR)) {
 				String uploadImgPath = decodeData(updateRequest.getTargetData());
-				fileUploadService.deleteByFileName(target.getImgPath());
+				fileUploadService.deleteByFileUrl(target.getImgPath());
 				target.setImgPath(uploadImgPath);
 			}
 			if (updateRequest.getTargetType().equals(TargetType.VTarget)) {
 				String uploadImgPath = fileDownloadService.getFilePath(fileUploadPath, V_TARGET_DEFAULT_NAME);
-				fileUploadService.deleteByFileName(target.getImgPath());
+				fileUploadService.deleteByFileUrl(target.getImgPath());
 				target.setImgPath(uploadImgPath);
 			}
 		}
@@ -522,7 +521,7 @@ public class ContentService {
 				log.info("content.getPath() = {}", content.getPath());
 
 				// NULL 체크
-				fileUploadService.deleteByFileName(content.getPath());
+				fileUploadService.deleteByFileUrl(content.getPath());
                 /*if (this.fileUploadService.getFile(content.getPath()) != null) {
 
                     if (this.fileUploadService.getFile(content.getPath()).exists()) {
@@ -880,8 +879,7 @@ public class ContentService {
 		log.info("CONTENT UPLOAD - contentUUID : {}", newContentUUID);
 		//3. 새로 생성하는 컨텐츠의 ares (기존 ares와 내용은 같다.), 파일명은 컨텐츠 식별자(contentUUID)와 동일
 		//String fileUploadPath = this.fileUploadService.uploadByFileInputStream(originFile, newContentUUID + "");
-		String uploadPath = this.fileUploadService.copyByFileObject(
-			FilenameUtils.getName(oldContents.getPath()), newContentUUID.concat(ARES_FILE_EXTENSION));
+		String uploadPath = this.fileUploadService.copyByFileObject(oldContents.getPath(), CONTENT_DIRECTORY, newContentUUID);
 		log.info("CONTENT UPLOAD - file upload path : {}", uploadPath);
 
 		Content newContent = Content.builder()
@@ -1202,7 +1200,7 @@ public class ContentService {
 
 		// 4. Content File 삭제
 		contentList.parallelStream()
-			.forEach(content -> fileUploadService.deleteByFileName(content.getPath()));
+			.forEach(content -> fileUploadService.deleteByFileUrl(content.getPath()));
 
 		// 4. Content 삭제
 		contentRepository.deleteAllContentByWorkspaceUUID(workspaceUUID);

@@ -65,7 +65,7 @@ public class MinioUploadService implements FileUploadService {
 	private String minioServer;
 
 	@Override
-	public void deleteByFileName(String fileUrl) {
+	public void deleteByFileUrl(String fileUrl) {
 		log.info("[MINIO FILE DELETE] DELETE BEGIN. URL : {}", fileUrl);
 		String[] fileSplit = fileUrl.split("/");
 		String fileDir = fileSplit[fileSplit.length - 2];
@@ -125,8 +125,8 @@ public class MinioUploadService implements FileUploadService {
 	}
 
 	@Override
-	public String uploadByFileInputStream(MultipartFile file, String fileDir, String fileName) {
-		log.info("[MINIO FILE UPLOAD] UPLOAD BEGIN. DIR : {}, NAME : {}", fileDir, fileName);
+	public String uploadByFileInputStream(MultipartFile file, String fileDir, String fileNameWithoutExtension) {
+		log.info("[MINIO FILE UPLOAD] UPLOAD BEGIN. DIR : {}, NAME : {}", fileDir, fileNameWithoutExtension);
 
 		// 1. 파일 크기 확인
 		log.info("[MINIO FILE UPLOAD] UPLOAD FILE SIZE : {} (byte)", file.getSize());
@@ -135,8 +135,7 @@ public class MinioUploadService implements FileUploadService {
 		}
 
 		// 2. 파일 확장자 확인
-		String fileExtension = String.format(
-			".%s", Files.getFileExtension(Objects.requireNonNull(file.getOriginalFilename())));
+		String fileExtension = String.format(".%s", Files.getFileExtension(Objects.requireNonNull(file.getOriginalFilename())));
 		if (fileDir.equals(CONTENT_DIRECTORY) || fileDir.equals(PROJECT_DIRECTORY)) {
 			if (!allowedExtension.contains(fileExtension)) {
 				log.info("[MINIO FILE UPLOAD] UNSUPPORTED FILE. NAME : {}", file.getOriginalFilename());
@@ -144,7 +143,8 @@ public class MinioUploadService implements FileUploadService {
 			}
 		}
 
-		String objectName = String.format("%s%s/%s%s", bucketResource, fileDir, fileName, fileExtension);
+		String objectName = String.format(
+			"%s%s/%s%s", bucketResource, fileDir, fileNameWithoutExtension, fileExtension);
 		try {
 			PutObjectArgs putObjectArgs = PutObjectArgs.builder()
 				.bucket(bucketName)
@@ -168,10 +168,23 @@ public class MinioUploadService implements FileUploadService {
 	}
 
 	@Override
-	public String copyByFileObject(String sourceFileName, String destinationFileName) {
-		String sourceObjectName = String.format("%s%s/%s", bucketResource, CONTENT_DIRECTORY, sourceFileName);
-		String destinationObjectName = String.format("%s%s/%s", bucketResource, CONTENT_DIRECTORY, destinationFileName);
-		log.info("[COPY FILE REQUEST] SOURCE : {}, DESTINATION : {}", sourceObjectName, destinationObjectName);
+	public String copyByFileObject(
+		String sourceFileUrl, String destinationFileDir, String destinationFileNameWithoutExtension
+	) {
+		log.info(
+			"[MINIO FILE COPY] COPY BEGIN. URL : {}, DESTINATION DIR : {}, DESTINATION NAME : {}", sourceFileUrl,
+			destinationFileDir, destinationFileNameWithoutExtension
+		);
+
+		String[] fileSplit = sourceFileUrl.split("/");
+		String sourceFileDir = fileSplit[fileSplit.length - 2];//contents
+		String sourceFileName = fileSplit[fileSplit.length - 1]; //UUID
+		String sourceFileExtension = sourceFileUrl.substring(sourceFileUrl.lastIndexOf(".") + 1); //Ares
+
+		String sourceObjectName = String.format("%s%s/%s", bucketResource, sourceFileDir, sourceFileName);
+		String destinationObjectName = String.format(
+			"%s%s/%s.%s", bucketResource, destinationFileDir, destinationFileNameWithoutExtension, sourceFileExtension);
+
 		CopySource copySource = CopySource.builder()
 			.bucket(bucketName)
 			.object(sourceObjectName)
@@ -181,9 +194,15 @@ public class MinioUploadService implements FileUploadService {
 			.object(destinationObjectName)
 			.source(copySource)
 			.build();
+		log.info("[MINIO FILE COPY] COPY REQUEST. BUCKET : {}, SOURCE KEY : {}, DESTINATION KEY : {}", bucketName,
+			sourceObjectName, destinationObjectName
+		);
 		try {
 			minioClient.copyObject(copyObjectArgs);
-			return minioServer + "/" + bucketName + "/" + destinationObjectName;
+			log.info("[MINIO FILE COPY] COPY SUCCESS.");
+			String url = minioServer + "/" + bucketName + "/" + destinationObjectName;
+			log.info("[MINIO FILE COPY] COPIED URL : {}", url);
+			return url;
 		} catch (ErrorResponseException | InsufficientDataException | InternalException | InvalidKeyException | InvalidResponseException | NoSuchAlgorithmException | ServerException | XmlParserException | IOException exception) {
 			log.error(exception.getMessage());
 			throw new ContentServiceException(ErrorCode.ERR_CONTENT_UPLOAD);

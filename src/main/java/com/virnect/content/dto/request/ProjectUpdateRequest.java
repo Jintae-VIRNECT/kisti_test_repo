@@ -33,7 +33,7 @@ public class ProjectUpdateRequest {
 	@ApiModelProperty(value = "프로젝트 이름", example = "", position = 2)
 	private String name;
 	@ApiModelProperty(value = "프로젝트 파일", example = "", position = 3)
-	private MultipartFile project;
+	private String project;
 	@ApiModelProperty(value = "프로젝트 속성", example = "", position = 4)
 	@PropertyValidated(message = "프로젝트 속성정보가 유효하지 않습니다.")
 	private String properties;
@@ -46,7 +46,7 @@ public class ProjectUpdateRequest {
 	@ApiModelProperty(value = "타겟 세로 사이즈", example = "", position = 8)
 	private long targetLength = 0L;
 	@ApiModelProperty(value = "타겟 파일", example = "", position = 9)
-	private MultipartFile targetFile;
+	private String targetFile;
 	@ApiModelProperty(value = "모드 정보", example = "", position = 10)
 	private List<Mode> modeList;
 	@ApiModelProperty(value = "공유 정보", example = "", position = 11)

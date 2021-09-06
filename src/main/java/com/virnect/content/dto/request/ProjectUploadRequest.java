@@ -5,19 +5,12 @@ import java.util.List;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
-import org.springframework.util.StringUtils;
-import org.springframework.web.multipart.MultipartFile;
-
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
 import lombok.Setter;
 
-import com.virnect.content.domain.EditPermission;
 import com.virnect.content.domain.Mode;
-import com.virnect.content.domain.SharePermission;
-import com.virnect.content.domain.TargetType;
-import com.virnect.content.global.common.PropertyValidated;
 
 /**
  * Project: PF-ContentManagement
@@ -39,48 +32,24 @@ public class ProjectUploadRequest {
 	@ApiModelProperty(value = "프로젝트 이름", example = "프로젝트", position = 2, required = true)
 	@NotBlank
 	private String name;
-	@ApiModelProperty(value = "프로젝트 파일", example = "", position = 3, required = true, dataType = "__file")
-	private MultipartFile project;
-	@ApiModelProperty(value = "프로젝트 속성", example = "{\"propertyName\":\"프로젝트 이름\",\"propertyObjectList\":[{\"objectName\":\"1-depth 첫번째 씬그룹\",\"objectType\":\"SceneGroup\",\"objectChildList\":[{\"objectName\":\"2-depth 씬\",\"objectType\":\"Scene\",\"objectChildList\":[{\"objectName\":\"3-depth 오브젝트111\",\"objectType\":\"Text\"}]}]}]}", position = 4, required = false)
+	@ApiModelProperty(value = "프로젝트 파일", example = "https://192.168.6.3:2838/virnect-platform/workspace/project/36658ce4-9570-40e0-9be6-653a3bbc6373.Ares", position = 3, required = true)
+	@NotBlank
+	private String project;
+	@ApiModelProperty(value = "프로젝트 속성", example = "{\"propertyName\":\"프로젝트 이름\",\"propertyObjectList\":[{\"objectName\":\"1-depth 첫번째 씬그룹\",\"objectType\":\"SceneGroup\",\"objectChildList\":[{\"objectName\":\"2-depth 씬\",\"objectType\":\"Scene\",\"objectChildList\":[{\"objectName\":\"3-depth 오브젝트111\",\"objectType\":\"Text\"}]}]}]}", position = 4, required = true)
 	@NotNull
-	@PropertyValidated(message = "프로젝트 속성정보가 유효하지 않습니다.")
-	private String properties;
-	@ApiModelProperty(value = "타겟 타입", example = "VTarget", position = 5, required = true)
+	private PropertyInfoDTO properties;
+	@ApiModelProperty(value = "타겟 정보", position = 5, required = true)
 	@NotNull
-	private TargetType targetType;
-	@ApiModelProperty(value = "타겟 데이터", example = "0f518d23-9226-4c8d-a488-c6581ef90456", position = 6, required = false)
-	private String targetData;
-	@ApiModelProperty(value = "타겟 가로 사이즈", example = "10", position = 7, required = true)
-	@NotNull
-	private Long targetWidth;
-	@ApiModelProperty(value = "타겟 세로 사이즈", example = "10", position = 8, required = true)
-	@NotNull
-	private Long targetLength;
-	@ApiModelProperty(value = "타겟 파일", example = "", position = 9, required = false)
-	private MultipartFile targetFile;
-	@ApiModelProperty(value = "모드 정보", example = "[\"TWO_DIMENSINAL\", \"THREE_DIMENSINAL\", \"TWO_OR_THREE_DIMENSINAL\"]", position = 10, required = true)
+	private ProjectTargetRequest target;
+	@ApiModelProperty(value = "모드 정보", example = "[\"TWO_DIMENSINAL\", \"THREE_DIMENSINAL\", \"TWO_OR_THREE_DIMENSINAL\"]", position = 6, required = true)
 	@NotNull
 	private List<Mode> modeList;
-	@ApiModelProperty(value = "공유 정보", example = "MEMBER", position = 11, required = true)
+	@ApiModelProperty(value = "공유 정보", position = 7, required = true)
 	@NotNull
-	private SharePermission sharePermission;
-	@ApiModelProperty(value = "공유 권한 대상 특정 유저 목록", example = "[\"4ea61b4ad1dab12fb2ce8a14b02b7460\"]", position = 12, required = false)
-	private List<String> sharedUserList;
-	@ApiModelProperty(value = "편집 정보", example = "MEMBER", position = 13, required = true)
+	private SharePermissionRequest share;
+	@ApiModelProperty(value = "모드 정보", position = 8, required = true)
 	@NotNull
-	private EditPermission editPermission;
-	@ApiModelProperty(value = "편집 권한 대상 특정 유저 목록", example = "[\"4ea61b4ad1dab12fb2ce8a14b02b7460\"]", position = 14, required = false)
-	private List<String> editUserList;
-
-	public boolean validateTarget() {
-		if (targetType == TargetType.Image && targetFile == null) {
-			return false;
-		}
-		if (targetType == TargetType.QR && !StringUtils.hasText(targetData)) {
-			return false;
-		}
-		return true;
-	}
+	private EditPermissionRequest edit;
 
 	@Override
 	public String toString() {
@@ -88,18 +57,12 @@ public class ProjectUploadRequest {
 			"workspaceUUID='" + workspaceUUID + '\'' +
 			", userUUID='" + userUUID + '\'' +
 			", name='" + name + '\'' +
-			", project=" + project +
-			", properties='" + properties + '\'' +
-			", targetType=" + targetType +
-			", targetData='" + targetData + '\'' +
-			", targetWidth=" + targetWidth +
-			", targetLength=" + targetLength +
-			", targetFile=" + targetFile +
+			", project='" + project + '\'' +
+			", properties=" + properties +
+			", target=" + target +
 			", modeList=" + modeList +
-			", sharePermission=" + sharePermission +
-			", sharedUserList=" + sharedUserList +
-			", editPermission=" + editPermission +
-			", editUserList=" + editUserList +
+			", share=" + share +
+			", edit=" + edit +
 			'}';
 	}
 }

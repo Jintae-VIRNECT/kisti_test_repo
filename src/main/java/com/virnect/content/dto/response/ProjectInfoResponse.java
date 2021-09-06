@@ -12,7 +12,6 @@ import com.virnect.content.domain.EditPermission;
 import com.virnect.content.domain.Mode;
 import com.virnect.content.domain.SharePermission;
 import com.virnect.content.dto.request.PropertyInfoDTO;
-import com.virnect.content.dto.request.PropertyInfoRequest;
 
 /**
  * Project: PF-ContentManagement
@@ -33,7 +32,7 @@ public class ProjectInfoResponse {
 	@ApiModelProperty(value = "프로젝트 파일 크기", position = 3, example = "0")
 	private long size = 0L;
 	@ApiModelProperty(value = "프로젝트 구성 정보", position = 4, example = "")
-	private PropertyInfoDTO property;
+	private String property;
 	@ApiModelProperty(value = "프로젝트 업로더 식별자", position = 5, example = "")
 	private String uploaderUUID = "";
 	@ApiModelProperty(value = "프로젝트 업로더 유저 닉네임", position = 6, example = "")

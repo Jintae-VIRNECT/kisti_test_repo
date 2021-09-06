@@ -22,13 +22,6 @@ public class PropertyInfoDTO {
 	private String propertyName;
 	private List<ObjectChild> propertyObjectList;
 
-	@Override
-	public String toString() {
-		return "PropertyInfo{" +
-			"propertyName='" + propertyName + '\'' +
-			", propertyObjectList=" + propertyObjectList +
-			'}';
-	}
 
 	@Getter
 	@Setter
@@ -36,15 +29,6 @@ public class PropertyInfoDTO {
 		private String objectName;
 		private PropertyObjectType objectType;
 		private List<ObjectChild> objectChildList;
-
-		@Override
-		public String toString() {
-			return "ObjectChild{" +
-				"objectName='" + objectName + '\'' +
-				", objectType='" + objectType + '\'' +
-				", objectChildList=" + objectChildList +
-				'}';
-		}
 	}
 	public int getObjectCount(List<PropertyInfoDTO.ObjectChild> propertyObjectList, int count) {
 		for (int i = 0; i < propertyObjectList.size(); i++) {

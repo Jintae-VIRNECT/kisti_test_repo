@@ -11,11 +11,11 @@ import org.springframework.web.multipart.MultipartFile;
  */
 public interface FileUploadService {
 
-	void deleteByFileName(String fileUrl);
+	void deleteByFileUrl(String fileUrl);
 
 	String uploadByBase64Image(String base64Image, String fileDir, String fileName);
 
-	String uploadByFileInputStream(MultipartFile file, String fileDir, String fileName);
+	String uploadByFileInputStream(MultipartFile file, String fileDir, String fileNameWithoutExtension);
 
-	String copyByFileObject(String sourceFileName, String destinationFileName);
+	String copyByFileObject(String sourceFileUrl, String destinationFileDir, String destinationFileNameWithoutExtension);
 }

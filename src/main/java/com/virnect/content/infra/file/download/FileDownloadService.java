@@ -19,4 +19,6 @@ public interface FileDownloadService {
     String getFilePath(String bucketResource, String fileName);
 
     MultipartFile getMultipartfile(String fileName);
+
+    long getFileSize(String fileDir, String fileName);
 }

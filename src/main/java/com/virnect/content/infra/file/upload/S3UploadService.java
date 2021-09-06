@@ -58,7 +58,7 @@ public class S3UploadService implements FileUploadService {
 	private List<String> allowedExtension;
 
 	@Override
-	public void deleteByFileName(String fileUrl) {
+	public void deleteByFileUrl(String fileUrl) {
 		log.info("[AWS S3 FILE DELETE] DELETE BEGIN. URL : {}", fileUrl);
 		String[] fileSplit = fileUrl.split("/");
 		String fileDir = fileSplit[fileSplit.length - 2];
@@ -110,8 +110,8 @@ public class S3UploadService implements FileUploadService {
 	}
 
 	@Override
-	public String uploadByFileInputStream(MultipartFile file, String fileDir, String fileName) {
-		log.info("[AWS S3 FILE UPLOAD] UPLOAD BEGIN. DIR : {}, NAME : {}", fileDir, fileName);
+	public String uploadByFileInputStream(MultipartFile file, String fileDir, String fileNameWithoutExtension) {
+		log.info("[AWS S3 FILE UPLOAD] UPLOAD BEGIN. DIR : {}, NAME : {}", fileDir, fileNameWithoutExtension);
 
 		// 1. 파일 크기 확인
 		log.info("[AWS S3 FILE UPLOAD] UPLOAD FILE SIZE : {} (byte)", file.getSize());
@@ -134,10 +134,12 @@ public class S3UploadService implements FileUploadService {
 		ObjectMetadata objectMetadata = new ObjectMetadata();
 		objectMetadata.setContentType(file.getContentType());
 		objectMetadata.setContentLength(file.getSize());
-		objectMetadata.setHeader("filename", fileName + fileExtension);
-		objectMetadata.setContentDisposition(String.format("attachment; filename=\"%s\"", fileName + fileExtension));
+		objectMetadata.setHeader("filename", fileNameWithoutExtension + fileExtension);
+		objectMetadata.setContentDisposition(
+			String.format("attachment; filename=\"%s\"", fileNameWithoutExtension + fileExtension));
 
-		String objectName = String.format("%s%s/%s%s", bucketResource, fileDir, fileName, fileExtension);
+		String objectName = String.format(
+			"%s%s/%s%s", bucketResource, fileDir, fileNameWithoutExtension, fileExtension);
 		// 4. 스트림으로 aws s3에 업로드
 		try {
 			PutObjectRequest putObjectRequest = new PutObjectRequest(
@@ -204,15 +206,32 @@ public class S3UploadService implements FileUploadService {
 	}
 
 	@Override
-	public String copyByFileObject(String sourceFileName, String destinationFileName) {
-		String sourceObjectName = String.format("%s%s/%s", bucketResource, CONTENT_DIRECTORY, sourceFileName);
-		String destinationObjectName = String.format("%s%s/%s", bucketResource, CONTENT_DIRECTORY, destinationFileName);
-		log.info("[COPY FILE REQUEST] SOURCE : {}, DESTINATION : {}", sourceObjectName, destinationObjectName);
+	public String copyByFileObject(
+		String sourceFileUrl, String destinationFileDir, String destinationFileNameWithoutExtension
+	) {
+		log.info(
+			"[MINIO FILE COPY] COPY BEGIN. URL : {}, DESTINATION DIR : {}, DESTINATION NAME : {}", sourceFileUrl,
+			destinationFileDir, destinationFileNameWithoutExtension
+		);
+		String[] fileSplit = sourceFileUrl.split("/");
+		String sourceFileDir = fileSplit[fileSplit.length - 2];//contents
+		String sourceFileName = fileSplit[fileSplit.length - 1]; //UUID
+		String sourceFileExtension = sourceFileUrl.substring(sourceFileUrl.lastIndexOf(".") + 1); //Ares
+
+		String sourceObjectName = String.format("%s%s/%s", bucketResource, sourceFileDir, sourceFileName);
+		String destinationObjectName = String.format(
+			"%s%s/%s.%s", bucketResource, destinationFileDir, destinationFileNameWithoutExtension, sourceFileExtension);
 
 		CopyObjectRequest copyObjRequest = new CopyObjectRequest(
 			bucketName, sourceObjectName, bucketName, destinationObjectName);
-		amazonS3Client.copyObject(copyObjRequest);
+		log.info("[MINIO FILE COPY] COPY REQUEST. BUCKET : {}, SOURCE KEY : {}, DESTINATION KEY : {}", bucketName,
+			sourceObjectName, destinationObjectName
+		);
 
-		return amazonS3Client.getUrl(bucketName, destinationObjectName).toString();
+		amazonS3Client.copyObject(copyObjRequest);
+		log.info("[MINIO FILE COPY] COPY SUCCESS.");
+		String url = amazonS3Client.getUrl(bucketName, destinationObjectName).toString();
+		log.info("[MINIO FILE COPY] COPIED URL : {}", url);
+		return url;
 	}
 }
