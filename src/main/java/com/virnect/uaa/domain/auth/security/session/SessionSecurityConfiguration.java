@@ -1,4 +1,4 @@
-package com.virnect.uaa.global.config.session;
+package com.virnect.uaa.domain.auth.security.session;
 
 import javax.annotation.PostConstruct;
 
@@ -24,8 +24,8 @@ import org.springframework.session.security.SpringSessionBackedSessionRegistry;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import com.virnect.uaa.global.config.rememberme.CustomRememberMeAuthenticationFilter;
-import com.virnect.uaa.global.config.rememberme.RememberMeCookieProperty;
+import com.virnect.uaa.domain.auth.security.rememberme.CustomRememberMeAuthenticationFilter;
+import com.virnect.uaa.domain.auth.security.rememberme.RememberMeCookieProperty;
 import com.virnect.uaa.global.security.CommonAuthenticationDetailsSource;
 import com.virnect.uaa.global.security.user.LoginFailureHandler;
 import com.virnect.uaa.global.security.user.LoginSuccessHandler;

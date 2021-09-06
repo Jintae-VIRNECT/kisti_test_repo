@@ -1,4 +1,4 @@
-package com.virnect.uaa.global.config.rememberme;
+package com.virnect.uaa.domain.auth.security.rememberme;
 
 import javax.annotation.PostConstruct;
 

@@ -1,4 +1,4 @@
-package com.virnect.uaa.global.config.session;
+package com.virnect.uaa.domain.auth.security.session;
 
 import java.util.ArrayList;
 import java.util.List;

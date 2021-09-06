@@ -1,4 +1,4 @@
-package com.virnect.uaa.global.config.token;
+package com.virnect.uaa.domain.auth.security.token;
 
 import javax.annotation.PostConstruct;
 

@@ -1,4 +1,4 @@
-package com.virnect.uaa.global.config.session;
+package com.virnect.uaa.domain.auth.security.session;
 
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.ConfigurationProperties;
