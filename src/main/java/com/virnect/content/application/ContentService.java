@@ -71,7 +71,6 @@ import com.virnect.content.dto.response.ContentDeleteResponse;
 import com.virnect.content.dto.response.ContentInfoListResponse;
 import com.virnect.content.dto.response.ContentInfoResponse;
 import com.virnect.content.dto.response.ContentPropertiesResponse;
-import com.virnect.content.dto.response.ContentResourceUsageInfoResponse;
 import com.virnect.content.dto.response.ContentSecessionResponse;
 import com.virnect.content.dto.response.ContentStatisticResponse;
 import com.virnect.content.dto.response.ContentTargetResponse;
@@ -1149,34 +1148,6 @@ public class ContentService {
 		}
 
 		return encodedData;
-	}
-
-	@Transactional(readOnly = true)
-	public ApiResponse<ContentResourceUsageInfoResponse> getContentResourceUsageInfo(
-		String workspaceId, LocalDateTime startDate, LocalDateTime endDate
-	) {
-		long contentStorageUsage = contentRepository.calculateTotalStorageAmountByWorkspaceId(workspaceId);
-		long contentDownloadHit = contentDownloadLogRepository.calculateResourceUsageAmountByWorkspaceIdAndStartDateAndEndDate(
-			workspaceId, startDate, endDate);
-
-		long projectStorageUsage = projectRepository.calculateTotalStorageAmountByWorkspaceId(workspaceId);
-		long projectDownloadHit = contentDownloadLogRepository.calculateResourceUsageAmountByWorkspaceIdAndStartDateAndEndDate(
-			workspaceId, startDate, endDate);
-
-		long storageUsage = contentStorageUsage + projectStorageUsage;
-		long downloadHit = contentDownloadHit + projectDownloadHit;
-
-		ContentResourceUsageInfoResponse contentResourceUsageInfoResponse = new ContentResourceUsageInfoResponse();
-		contentResourceUsageInfoResponse.setWorkspaceId(workspaceId);
-		contentResourceUsageInfoResponse.setStorageUsage(storageUsage);
-		contentResourceUsageInfoResponse.setTotalHit(downloadHit);
-		contentResourceUsageInfoResponse.setContentStorageUsage(contentStorageUsage);
-		contentResourceUsageInfoResponse.setContentTotalHit(contentDownloadHit);
-		contentResourceUsageInfoResponse.setProjectStorageUsage(projectStorageUsage);
-		contentResourceUsageInfoResponse.setProjectTotalHit(projectDownloadHit);
-		contentResourceUsageInfoResponse.setUsageReportDate(LocalDateTime.now());
-
-		return new ApiResponse<>(contentResourceUsageInfoResponse);
 	}
 
 	/**

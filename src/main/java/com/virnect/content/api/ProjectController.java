@@ -26,7 +26,6 @@ import springfox.documentation.annotations.ApiIgnore;
 
 import com.virnect.content.application.project.ProjectService;
 import com.virnect.content.domain.EditPermission;
-import com.virnect.content.domain.Mode;
 import com.virnect.content.domain.SharePermission;
 import com.virnect.content.domain.TargetType;
 import com.virnect.content.dto.request.ProjectUpdateRequest;
@@ -35,7 +34,7 @@ import com.virnect.content.dto.response.ProjectDeleteResponse;
 import com.virnect.content.dto.response.ProjectInfoListResponse;
 import com.virnect.content.dto.response.ProjectInfoResponse;
 import com.virnect.content.dto.response.ProjectUpdateResponse;
-import com.virnect.content.exception.ProjectServiceException;
+import com.virnect.content.exception.ContentServiceException;
 import com.virnect.content.global.common.ApiResponse;
 import com.virnect.content.global.common.PageRequest;
 import com.virnect.content.global.error.ErrorCode;
@@ -65,7 +64,7 @@ public class ProjectController {
 				"[FIELD ERROR] => [{}] [{}]", bindingResult.getFieldError().getField(),
 				bindingResult.getFieldError().getDefaultMessage()
 			);
-			throw new ProjectServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
+			throw new ContentServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
 		}
 		ProjectInfoResponse responseMessage = projectService.uploadProject(projectUploadRequest);
 		return ResponseEntity.ok(new ApiResponse<>(responseMessage));
@@ -79,7 +78,7 @@ public class ProjectController {
 	) {
 		log.info("[PROJECT UPDATE] project uuid : {}, REQ : {}", projectUUID, projectUpdateRequest.toString());
 		if (!StringUtils.hasText(projectUUID) || !StringUtils.hasText(projectUpdateRequest.getUserUUID())) {
-			throw new ProjectServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
+			throw new ContentServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
 		}
 		ProjectUpdateResponse responseMessage = projectService.updateProject(projectUUID, projectUpdateRequest);
 		return ResponseEntity.ok(new ApiResponse<>(responseMessage));
@@ -101,10 +100,10 @@ public class ProjectController {
 	@ApiImplicitParams({
 		@ApiImplicitParam(name = "workspaceUUID", value = "워크스페이스 식별자", dataType = "string", paramType = "query", required = true, example = "4d6eab0860969a50acbfa4599fbb5ae8"),
 		@ApiImplicitParam(name = "userUUID", value = "목록 조회 요청 유저 식별자", dataType = "string", paramType = "query", required = true, example = "498b1839dc29ed7bb2ee90ad6985c608"),
-		@ApiImplicitParam(name = "sharePermission", value = "공유 권한 정보", dataType = "string", paramType = "query", allowMultiple = true),
-		@ApiImplicitParam(name = "editPermission", value = "편집 권한 정보", dataType = "string", paramType = "query", allowMultiple = true),
-		@ApiImplicitParam(name = "mode", value = "모드 정보", dataType = "string", paramType = "query", allowMultiple = true),
-		@ApiImplicitParam(name = "targetType", value = "타겟 타입 정보", dataType = "string", paramType = "query", allowMultiple = true),
+		@ApiImplicitParam(name = "share", value = "필터 - 공유 권한 정보", example = "[\"MEMBER\",\"SPECIFIC_MEMBER\",\"UPLOADER\",\"MANAGER\"]", dataType = "string", paramType = "query", allowMultiple = true, allowEmptyValue = true),
+		@ApiImplicitParam(name = "edit", value = "필터 - 편집 권한 정보", example = "[\"MEMBER\",\"SPECIFIC_MEMBER\",\"UPLOADER\",\"MANAGER\"]", dataType = "string", paramType = "query", allowMultiple = true, allowEmptyValue = true),
+		@ApiImplicitParam(name = "mode", value = "필터 - 모드 정보", example = "[\"2D\", \"2D\", \"2D3D\"]", paramType = "query", allowMultiple = true, allowEmptyValue = true),
+		@ApiImplicitParam(name = "target", value = "필터 - 타겟 타입 정보", example = "[\"QR\",\"VTarget\",\"Image\",\"VR\"]", paramType = "query", allowMultiple = true, allowEmptyValue = true),
 		@ApiImplicitParam(name = "size", value = "페이징 사이즈", dataType = "number", paramType = "query", defaultValue = "10"),
 		@ApiImplicitParam(name = "page", value = "size 대로 나눠진 페이지를 조회할 번호(1부터 시작)", paramType = "query", defaultValue = "1"),
 		@ApiImplicitParam(name = "sort", value = "정렬 옵션 ", paramType = "query", defaultValue = "createdDate,desc"),
@@ -114,15 +113,15 @@ public class ProjectController {
 	public ResponseEntity<ApiResponse<ProjectInfoListResponse>> getProjectList(
 		@RequestParam(value = "workspaceUUID", required = true) String workspaceUUID,
 		@RequestParam(value = "userUUID", required = true) String userUUID,
-		@RequestParam(value = "sharePermission", required = false) List<SharePermission> sharePermissionList,
-		@RequestParam(value = "editPermission", required = false) List<EditPermission> editPermissionList,
-		@RequestParam(value = "mode", required = false) List<Mode> modeList,
-		@RequestParam(value = "targetType", required = false) List<TargetType> targetTypeList,
+		@RequestParam(value = "share", required = false) List<SharePermission> sharePermissionList,
+		@RequestParam(value = "edit", required = false) List<EditPermission> editPermissionList,
+		@RequestParam(value = "mode", required = false) List<String> modeList,
+		@RequestParam(value = "target", required = false) List<TargetType> targetTypeList,
 		@RequestParam(value = "search", required = false) String search,
 		@ApiIgnore PageRequest pageRequest
 	) {
 		if (!StringUtils.hasText(workspaceUUID) || !StringUtils.hasText(userUUID)) {
-			throw new ProjectServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
+			throw new ContentServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
 		}
 		ProjectInfoListResponse responseMessage = projectService.getProjectList(
 			workspaceUUID, userUUID, sharePermissionList, editPermissionList, modeList, targetTypeList, search,
@@ -141,7 +140,7 @@ public class ProjectController {
 		@PathVariable("projectUUID") String projectUUID, @RequestParam("userUUID") String userUUID
 	) {
 		if (!StringUtils.hasText(projectUUID) || !StringUtils.hasText(userUUID)) {
-			throw new ProjectServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
+			throw new ContentServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
 		}
 		ProjectInfoResponse responseMessage = projectService.getProjectInfo(projectUUID, userUUID);
 		return ResponseEntity.ok(new ApiResponse<>(responseMessage));
@@ -156,7 +155,7 @@ public class ProjectController {
 		@PathVariable("projectUUID") String projectUUID
 	) {
 		if (!StringUtils.hasText(projectUUID)) {
-			throw new ProjectServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
+			throw new ContentServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
 		}
 		ProjectDeleteResponse responseMessage = projectService.deleteProject(projectUUID);
 		return ResponseEntity.ok(new ApiResponse<>(responseMessage));

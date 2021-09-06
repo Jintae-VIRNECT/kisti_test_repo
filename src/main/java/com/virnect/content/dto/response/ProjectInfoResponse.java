@@ -12,6 +12,7 @@ import com.virnect.content.domain.EditPermission;
 import com.virnect.content.domain.Mode;
 import com.virnect.content.domain.SharePermission;
 import com.virnect.content.dto.request.PropertyInfoDTO;
+import com.virnect.content.global.common.PropertyValidated;
 
 /**
  * Project: PF-ContentManagement
@@ -32,15 +33,19 @@ public class ProjectInfoResponse {
 	@ApiModelProperty(value = "프로젝트 파일 크기", position = 3, example = "0")
 	private long size = 0L;
 	@ApiModelProperty(value = "프로젝트 구성 정보", position = 4, example = "")
-	private String property;
+	private PropertyInfoDTO property;
 	@ApiModelProperty(value = "프로젝트 업로더 식별자", position = 5, example = "")
 	private String uploaderUUID = "";
 	@ApiModelProperty(value = "프로젝트 업로더 유저 닉네임", position = 6, example = "")
 	private String uploaderName = "";
 	@ApiModelProperty(value = "프로젝트 업로더 유저 프로필 이미지", position = 7, example = "")
 	private String uploaderProfile = "";
-	@ApiModelProperty(value = "프로젝트 모드 정보", position = 8, example = "")
-	private List<Mode> modeList = new ArrayList<>();
+	@ApiModelProperty(value = "프로젝트 2D 모드 활성화 여부", position = 8, example = "")
+	private boolean mode2D;
+	@ApiModelProperty(value = "프로젝트 3D 모드 활성화 여부", position = 8, example = "")
+	private boolean mode3D;
+	@ApiModelProperty(value = "프로젝트 2D +3D 모드 활성화 여부", position = 8, example = "")
+	private boolean mode2D3D;
 	@ApiModelProperty(value = "프로젝트 편집 권한", position = 9, example = "")
 	private EditPermission editPermission;
 	@ApiModelProperty(value = "프로젝트 편집 권한 멤버 목록", position = 10, example = "")

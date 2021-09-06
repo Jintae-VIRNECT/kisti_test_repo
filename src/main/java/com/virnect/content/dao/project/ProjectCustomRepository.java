@@ -23,7 +23,7 @@ public interface ProjectCustomRepository {
 
 	Page<Project> getFilteredProjectPage(
 		String workspaceUUID, List<SharePermission> sharePermissionList, List<EditPermission> editPermissionList,
-		List<Mode> modeList, List<TargetType> targetTypeList, String search,  Pageable pageable
+		List<String> modeList, List<TargetType> targetTypeList, String search,  Pageable pageable
 	);
 
 	Page<Project> getProjectPageByProjectList(List<Project> projectList, Pageable pageable);

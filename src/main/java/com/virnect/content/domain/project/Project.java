@@ -77,6 +77,12 @@ public class Project extends BaseTimeEntity {
 	@Column(name = "properties", nullable = false)
 	private String properties;
 
+	@Column(name = "mode_2D", nullable = false)
+	private boolean mode2D;
+
+	@Column(name = "mode_3D", nullable = false)
+	private boolean mode3D;
+
 	@NotAudited
 	@OneToMany(mappedBy = "project")
 	List<ProjectShareUser> projectShareUserList = new ArrayList<>();
@@ -86,21 +92,18 @@ public class Project extends BaseTimeEntity {
 	List<ProjectEditUser> projectEditUserList = new ArrayList<>();
 
 	@NotAudited
-	@OneToMany(mappedBy = "project")
-	List<ProjectMode> projectModeList = new ArrayList<>();
-
-	@NotAudited
 	@OneToOne(mappedBy = "project")
 	ProjectTarget projectTarget;
 
 	@Builder
 	public Project(
-		String uuid, String name, String path, Long size,
-		SharePermission sharePermission,
+		String uuid, String name, String path, Long size, SharePermission sharePermission,
 		EditPermission editPermission,
 		String userUUID,
 		String workspaceUUID,
-		String properties
+		String properties,
+		boolean mode2D,
+		boolean mode3D
 	) {
 		this.uuid = uuid;
 		this.name = name;
@@ -111,5 +114,7 @@ public class Project extends BaseTimeEntity {
 		this.userUUID = userUUID;
 		this.workspaceUUID = workspaceUUID;
 		this.properties = properties;
+		this.mode2D = mode2D;
+		this.mode3D = mode3D;
 	}
 }

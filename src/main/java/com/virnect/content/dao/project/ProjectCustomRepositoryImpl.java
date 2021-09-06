@@ -14,12 +14,10 @@ import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.JPQLQuery;
 
 import com.virnect.content.domain.EditPermission;
-import com.virnect.content.domain.Mode;
 import com.virnect.content.domain.SharePermission;
 import com.virnect.content.domain.TargetType;
 import com.virnect.content.domain.project.Project;
 import com.virnect.content.domain.project.QProject;
-import com.virnect.content.domain.project.QProjectMode;
 import com.virnect.content.domain.project.QProjectTarget;
 
 /**
@@ -47,7 +45,7 @@ public class ProjectCustomRepositoryImpl extends QuerydslRepositorySupport imple
 	@Override
 	public Page<Project> getFilteredProjectPage(
 		String workspaceUUID,
-		List<SharePermission> sharePermissionList, List<EditPermission> editPermissionList, List<Mode> modeList,
+		List<SharePermission> sharePermissionList, List<EditPermission> editPermissionList, List<String> modeList,
 		List<TargetType> targetTypeList, String search, Pageable pageable
 	) {
 		QProject qProject = QProject.project;
@@ -55,13 +53,8 @@ public class ProjectCustomRepositoryImpl extends QuerydslRepositorySupport imple
 			.select(qProject)
 			.where(
 				qProject.workspaceUUID.eq(workspaceUUID), eqSharePermission(sharePermissionList),
-				eqEditPermission(editPermissionList), eqSearch(search)
+				eqEditPermission(editPermissionList), eqSearch(search), eqMode(modeList)
 			);
-
-		if (!CollectionUtils.isEmpty(modeList)) {
-			QProjectMode qProjectMode = QProjectMode.projectMode;
-			query = query.join(qProject.projectModeList, qProjectMode).where(qProjectMode.mode.in(modeList));
-		}
 
 		if (!CollectionUtils.isEmpty(targetTypeList)) {
 			QProjectTarget qProjectTarget = QProjectTarget.projectTarget;
@@ -71,6 +64,21 @@ public class ProjectCustomRepositoryImpl extends QuerydslRepositorySupport imple
 		List<Project> resultProjectList = getQuerydsl().applyPagination(pageable, query).fetch();
 
 		return new PageImpl<>(resultProjectList, pageable, query.fetchCount());
+	}
+
+	private BooleanExpression eqMode(List<String> modeList) {
+		if (!CollectionUtils.isEmpty(modeList)) {
+			if (modeList.contains("2D")) {
+				return QProject.project.mode2D.eq(true).and(QProject.project.mode3D.eq(false));
+			}
+			if (modeList.contains("3D")) {
+				return QProject.project.mode2D.eq(false).and(QProject.project.mode3D.eq(true));
+			}
+			if (modeList.contains("2D3D")) {
+				return QProject.project.mode2D.eq(true).and(QProject.project.mode3D.eq(true));
+			}
+		}
+		return null;
 	}
 
 	private BooleanExpression eqSearch(String search) {

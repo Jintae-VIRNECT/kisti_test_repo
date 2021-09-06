@@ -1,7 +1,5 @@
 package com.virnect.content.dto.request;
 
-import java.util.List;
-
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
@@ -9,8 +7,6 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
 import lombok.Setter;
-
-import com.virnect.content.domain.Mode;
 
 /**
  * Project: PF-ContentManagement
@@ -41,9 +37,12 @@ public class ProjectUploadRequest {
 	@ApiModelProperty(value = "타겟 정보", position = 5, required = true)
 	@NotNull
 	private ProjectTargetRequest target;
-	@ApiModelProperty(value = "모드 정보", example = "[\"TWO_DIMENSINAL\", \"THREE_DIMENSINAL\", \"TWO_OR_THREE_DIMENSINAL\"]", position = 6, required = true)
+	@ApiModelProperty(value = "2D 모드 활성화 여부", example = "true", position = 6, required = true)
 	@NotNull
-	private List<Mode> modeList;
+	private boolean mode2D;
+	@ApiModelProperty(value = "3D 모드 활성화 여부", example = "true", position = 6, required = true)
+	@NotNull
+	private boolean mode3D;
 	@ApiModelProperty(value = "공유 정보", position = 7, required = true)
 	@NotNull
 	private SharePermissionRequest share;
@@ -60,7 +59,8 @@ public class ProjectUploadRequest {
 			", project='" + project + '\'' +
 			", properties=" + properties +
 			", target=" + target +
-			", modeList=" + modeList +
+			", mode2D=" + mode2D +
+			", mode3D=" + mode3D +
 			", share=" + share +
 			", edit=" + edit +
 			'}';

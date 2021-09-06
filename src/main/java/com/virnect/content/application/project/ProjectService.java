@@ -36,12 +36,10 @@ import com.virnect.content.dao.project.ProjectRepository;
 import com.virnect.content.dao.project.ProjectShareUerRepository;
 import com.virnect.content.dao.project.ProjectTargetRepository;
 import com.virnect.content.domain.EditPermission;
-import com.virnect.content.domain.Mode;
 import com.virnect.content.domain.SharePermission;
 import com.virnect.content.domain.TargetType;
 import com.virnect.content.domain.project.Project;
 import com.virnect.content.domain.project.ProjectEditUser;
-import com.virnect.content.domain.project.ProjectMode;
 import com.virnect.content.domain.project.ProjectShareUser;
 import com.virnect.content.domain.project.ProjectTarget;
 import com.virnect.content.dto.request.ProjectUpdateRequest;
@@ -57,7 +55,6 @@ import com.virnect.content.dto.rest.MemberInfoDTO;
 import com.virnect.content.dto.rest.MyLicenseInfoListResponse;
 import com.virnect.content.dto.rest.UserInfoResponse;
 import com.virnect.content.exception.ContentServiceException;
-import com.virnect.content.exception.ProjectServiceException;
 import com.virnect.content.global.common.ApiResponse;
 import com.virnect.content.global.common.PageMetadataResponse;
 import com.virnect.content.global.common.ProjectResponseMapper;
@@ -107,11 +104,11 @@ public class ProjectService {
 		long projectFileSize = fileDownloadService.getFileSize(PROJECT_DIRECTORY, fileName);
 		//1-2. 업로드 사용자의 MAKE 라이선스 체크
 		if (!checkUserHaveMAKELicense(projectUploadRequest.getUserUUID(), projectUploadRequest.getWorkspaceUUID())) {
-			throw new ProjectServiceException(ErrorCode.ERR_PROJECT_UPLOAD_INVALID_LICENSE);
+			throw new ContentServiceException(ErrorCode.ERR_PROJECT_UPLOAD_INVALID_LICENSE);
 		}
 		//1-3. 워크스페이스의 최대 업로드 사용량 체크
 		if (!checkWorkspaceMaxStorage(projectUploadRequest.getWorkspaceUUID(), projectFileSize)) {
-			throw new ProjectServiceException(ErrorCode.ERR_PROJECT_UPLOAD_MAX_STORAGE);
+			throw new ContentServiceException(ErrorCode.ERR_PROJECT_UPLOAD_MAX_STORAGE);
 		}
 
 		//2. 프로젝트 저장
@@ -134,20 +131,16 @@ public class ProjectService {
 			.name(projectUploadRequest.getName())
 			.path(projectPath)
 			.size(projectFileSize)
-			.size(0L)
+			.size(projectFileSize)
 			.userUUID(projectUploadRequest.getUserUUID())
 			.workspaceUUID(projectUploadRequest.getWorkspaceUUID())
 			.properties(properties)
+			.mode2D(projectUploadRequest.isMode2D())
+			.mode3D(projectUploadRequest.isMode3D())
 			.editPermission(projectUploadRequest.getEdit().getPermission())
 			.sharePermission(projectUploadRequest.getShare().getPermission())
 			.build();
 		projectRepository.save(project);
-
-		//2-1. 모드 정보 저장
-		for (Mode mode : projectUploadRequest.getModeList()) {
-			ProjectMode projectMode = ProjectMode.builder().mode(mode).project(project).build();
-			projectModeRepository.save(projectMode);
-		}
 
 		//2-2. 공유 정보 저장
 		if (projectUploadRequest.getShare().getPermission() == SharePermission.SPECIFIC_MEMBER) {
@@ -199,7 +192,6 @@ public class ProjectService {
 
 		//3. 응답
 		ProjectInfoResponse projectInfoResponse = generateProjectResponse(project);
-		projectInfoResponse.setModeList(projectUploadRequest.getModeList());
 		ProjectTargetInfoResponse projectTargetInfoResponse = projectResponseMapper.projectTargetToTargetInfoResponse(
 			projectTarget);
 		projectInfoResponse.setTargetInfo(projectTargetInfoResponse);
@@ -306,7 +298,7 @@ public class ProjectService {
 				"[REQ - LICENSE SERVER][GET MY LICENSE INFO] request user uuid : {}, request workspace uuid : {}, response code : {}, response message : {}",
 				userUUID, workspaceUUID, apiResponse.getCode(), apiResponse.getMessage()
 			);
-			throw new ProjectServiceException(ErrorCode.ERR_UNEXPECTED_SERVER_ERROR);
+			throw new ContentServiceException(ErrorCode.ERR_UNEXPECTED_SERVER_ERROR);
 		}
 		return apiResponse.getData();
 	}
@@ -324,7 +316,7 @@ public class ProjectService {
 	 */
 	public ProjectInfoListResponse getProjectList(
 		String workspaceUUID, String userUUID, List<SharePermission> sharePermissionList,
-		List<EditPermission> editPermissionList, List<Mode> modeList, List<TargetType> targetTypeList, String search,
+		List<EditPermission> editPermissionList, List<String> modeList, List<TargetType> targetTypeList, String search,
 		Pageable pageable
 	) {
 		//1. 필터링 요청에 따른 프로젝트 목록 select
@@ -387,8 +379,8 @@ public class ProjectService {
 	private ProjectInfoResponse generateProjectResponse(Project project) {
 		ProjectInfoResponse projectInfoResponse = projectResponseMapper.projectToProjectInfoResponse(project);
 		//모드 정보
-		projectInfoResponse.setModeList(
-			project.getProjectModeList().stream().map(ProjectMode::getMode).collect(Collectors.toList()));
+		if (project.isMode2D() && project.isMode3D())
+			projectInfoResponse.setMode2D3D(true);
 
 		//공유 권한 정보
 		if (project.getSharePermission() == SharePermission.SPECIFIC_MEMBER) {
@@ -410,7 +402,7 @@ public class ProjectService {
 		projectInfoResponse.setTargetInfo(projectTargetInfoResponse);
 
 		//프로퍼티
-		projectInfoResponse.setProperty(project.getProperties());
+
 		ObjectMapper objectMapper = new ObjectMapper();
 		PropertyInfoDTO propertyInfo = null;
 		try {
@@ -419,6 +411,7 @@ public class ProjectService {
 			log.error(e.getMessage());
 			throw new ContentServiceException(ErrorCode.ERR_UNEXPECTED_SERVER_ERROR);
 		}
+		projectInfoResponse.setProperty(propertyInfo);
 		projectInfoResponse.setPropertySceneGroupTotal(propertyInfo.getPropertyObjectList().size());
 		projectInfoResponse.setPropertySceneTotal(
 			propertyInfo.getSceneCount(propertyInfo.getPropertyObjectList(), 0));
@@ -445,7 +438,7 @@ public class ProjectService {
 				"[REQ - USER SERVER][GET USER INFO] request user uuid : {},  response code : {}, response message : {}",
 				userUUID, apiResponse.getCode(), apiResponse.getMessage()
 			);
-			throw new ProjectServiceException(ErrorCode.ERR_UNEXPECTED_SERVER_ERROR);
+			throw new ContentServiceException(ErrorCode.ERR_UNEXPECTED_SERVER_ERROR);
 		}
 		return apiResponse.getData();
 	}
@@ -464,7 +457,7 @@ public class ProjectService {
 				"[REQ - WORKSPACE SERVER][GET WORKSPACE USER INFO] request user uuid : {}, request workspace uuid : {}, response code : {}, response message : {}",
 				userUUID, workspaceUUID, apiResponse.getCode(), apiResponse.getMessage()
 			);
-			throw new ProjectServiceException(ErrorCode.ERR_UNEXPECTED_SERVER_ERROR);
+			throw new ContentServiceException(ErrorCode.ERR_UNEXPECTED_SERVER_ERROR);
 		}
 		return apiResponse.getData();
 	}
@@ -478,12 +471,12 @@ public class ProjectService {
 	public ProjectInfoResponse getProjectInfo(String projectUUID, String userUUID) {
 		//1. 프로젝트 조회
 		Project project = projectRepository.findByUuid(projectUUID)
-			.orElseThrow(() -> new ProjectServiceException(ErrorCode.ERR_PROJECT_NOT_FOUND));
+			.orElseThrow(() -> new ContentServiceException(ErrorCode.ERR_PROJECT_NOT_FOUND));
 
 		//2. 프로젝트 공유 권한 체크
 		MemberInfoDTO memberInfoResponse = getMemberInfoResponse(project.getWorkspaceUUID(), userUUID);
 		if (!checkUserProjectSharePermission(project, userUUID, memberInfoResponse.getRole())) {
-			throw new ProjectServiceException(ErrorCode.ERR_PROJECT_ACCESS_INVALID_SHARE_PERMISSION);
+			throw new ContentServiceException(ErrorCode.ERR_PROJECT_ACCESS_INVALID_SHARE_PERMISSION);
 		}
 
 		//3. 응답
@@ -492,9 +485,7 @@ public class ProjectService {
 
 	public ProjectDeleteResponse deleteProject(String projectUUID) {
 		Project project = projectRepository.findByUuid(projectUUID)
-			.orElseThrow(() -> new ProjectServiceException(ErrorCode.ERR_PROJECT_NOT_FOUND));
-		//모드 정보 삭제
-		projectModeRepository.deleteAll(project.getProjectModeList());
+			.orElseThrow(() -> new ContentServiceException(ErrorCode.ERR_PROJECT_NOT_FOUND));
 		//공유 정보 삭제
 		if (!CollectionUtils.isEmpty(project.getProjectShareUserList())) {
 			projectShareUerRepository.deleteAll(project.getProjectShareUserList());
@@ -510,22 +501,23 @@ public class ProjectService {
 		return new ProjectDeleteResponse(true, LocalDateTime.now());
 	}
 
+	@Transactional
 	public ProjectUpdateResponse updateProject(String projectUUID, ProjectUpdateRequest projectUpdateRequest) {
 		//프로젝트 유효성 검증
 		Project project = projectRepository.findByUuid(projectUUID)
-			.orElseThrow(() -> new ProjectServiceException(ErrorCode.ERR_PROJECT_NOT_FOUND));
+			.orElseThrow(() -> new ContentServiceException(ErrorCode.ERR_PROJECT_NOT_FOUND));
 
 		MemberInfoDTO memberInfoResponse = getMemberInfoResponse(
 			project.getWorkspaceUUID(), projectUpdateRequest.getUserUUID());
 		//업데이트 요청 사용자 공유 권한 체크
 		if (!checkUserProjectSharePermission(
 			project, projectUpdateRequest.getUserUUID(), memberInfoResponse.getRole())) {
-			throw new ProjectServiceException(ErrorCode.ERR_PROJECT_UPDATE_INVALID_SHARE_PERMISSION);
+			throw new ContentServiceException(ErrorCode.ERR_PROJECT_UPDATE_INVALID_SHARE_PERMISSION);
 		}
 		//업데이트 요청 사용자 편집 권한 체크
 		if (!checkUserProjectEditPermission(
 			project, projectUpdateRequest.getUserUUID(), memberInfoResponse.getRole())) {
-			throw new ProjectServiceException(ErrorCode.ERR_PROJECT_UPDATE_INVALID_EDIT_PERMISSION);
+			throw new ContentServiceException(ErrorCode.ERR_PROJECT_UPDATE_INVALID_EDIT_PERMISSION);
 		}
 
 		//프로젝트 이름 변경
@@ -537,7 +529,7 @@ public class ProjectService {
 		if (StringUtils.hasText(projectUpdateRequest.getProject())) {
 			//업로드 사용자의 MAKE 라이선스 체크
 			if (!checkUserHaveMAKELicense(projectUpdateRequest.getUserUUID(), project.getWorkspaceUUID())) {
-				throw new ProjectServiceException(ErrorCode.ERR_PROJECT_UPDATE_INVALID_LICENSE);
+				throw new ContentServiceException(ErrorCode.ERR_PROJECT_UPDATE_INVALID_LICENSE);
 			}
 			//최대 업로드 사용량 체크
 			String fileName = projectUpdateRequest.getProject()
@@ -546,7 +538,7 @@ public class ProjectService {
 			if (!checkWorkspaceMaxStorage(
 				projectUpdateRequest.getUserUUID(), projectFileSize - project.getSize()
 			)) {
-				throw new ProjectServiceException(ErrorCode.ERR_PROJECT_UPLOAD_MAX_STORAGE);
+				throw new ContentServiceException(ErrorCode.ERR_PROJECT_UPLOAD_MAX_STORAGE);
 			}
 			String newProjectPath = fileUploadService.copyByFileObject(
 				projectUpdateRequest.getProject(), PROJECT_DIRECTORY, projectUUID);
@@ -569,14 +561,11 @@ public class ProjectService {
 		}
 
 		//프로젝트 모드정보 변경
-		if (!CollectionUtils.isEmpty(projectUpdateRequest.getModeList())) {
-			List<ProjectMode> oldProjectModeList = project.getProjectModeList();
-			projectModeRepository.deleteAll(oldProjectModeList);
-			List<ProjectMode> newProjectModeList = projectUpdateRequest.getModeList()
-				.stream()
-				.map(mode -> ProjectMode.builder().mode(mode).project(project).build())
-				.collect(Collectors.toList());
-			projectModeRepository.saveAll(newProjectModeList);
+		if (projectUpdateRequest.getMode2D() != null) {
+			project.setMode2D(projectUpdateRequest.getMode2D());
+		}
+		if (projectUpdateRequest.getMode3D() != null) {
+			project.setMode2D(projectUpdateRequest.getMode3D());
 		}
 
 		//프로젝트 공유정보 변경
@@ -676,7 +665,7 @@ public class ProjectService {
 			return Base64.getEncoder().encodeToString(os.toByteArray());
 		} catch (Exception e) {
 			log.error(e.getMessage());
-			throw new ProjectServiceException(ErrorCode.ERR_PROJECT_UPLOAD);
+			throw new ContentServiceException(ErrorCode.ERR_PROJECT_UPLOAD);
 		}
 	}
 

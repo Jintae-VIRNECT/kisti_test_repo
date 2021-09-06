@@ -22,7 +22,6 @@ public class PropertyInfoDTO {
 	private String propertyName;
 	private List<ObjectChild> propertyObjectList;
 
-
 	@Getter
 	@Setter
 	public static class ObjectChild {
@@ -30,9 +29,10 @@ public class PropertyInfoDTO {
 		private PropertyObjectType objectType;
 		private List<ObjectChild> objectChildList;
 	}
-	public int getObjectCount(List<PropertyInfoDTO.ObjectChild> propertyObjectList, int count) {
+
+	public int getObjectCount(List<ObjectChild> propertyObjectList, int count) {
 		for (int i = 0; i < propertyObjectList.size(); i++) {
-			PropertyInfoDTO.ObjectChild propertyObject = propertyObjectList.get(i);
+			ObjectChild propertyObject = propertyObjectList.get(i);
 			if (propertyObject.getObjectType() != PropertyObjectType.Scene
 				&& propertyObject.getObjectType() != PropertyObjectType.SceneGroup) {
 				count++;
@@ -44,9 +44,9 @@ public class PropertyInfoDTO {
 		return count;
 	}
 
-	public int getSceneCount(List<PropertyInfoDTO.ObjectChild> propertyObjectList, int count) {
+	public int getSceneCount(List<ObjectChild> propertyObjectList, int count) {
 		for (int i = 0; i < propertyObjectList.size(); i++) {
-			PropertyInfoDTO.ObjectChild propertyObject = propertyObjectList.get(i);
+			ObjectChild propertyObject = propertyObjectList.get(i);
 			if (propertyObject.getObjectType() == PropertyObjectType.Scene) {
 				count++;
 			}
