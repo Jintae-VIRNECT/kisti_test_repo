@@ -14,30 +14,19 @@
       <!-- 검색 영역 -->
       <el-row class="searchbar">
         <el-col class="left">
-          <span>{{ $t('searchbar.filter.target') }}:</span>
-          <SearchbarFilter
-            ref="filter"
-            :value.sync="contentsFilter.value"
-            :options="contentsFilter.options"
-          />
-          <span>{{ $t('searchbar.filter.mode') }}:</span>
-          <SearchbarFilter
-            ref="filter"
-            :value.sync="contentsFilter.value"
-            :options="contentsFilter.options"
-          />
-          <span>{{ $t('searchbar.filter.share') }}:</span>
-          <SearchbarFilter
-            ref="filter"
-            :value.sync="contentsFilter.value"
-            :options="contentsFilter.options"
-          />
-          <span>{{ $t('searchbar.filter.edit') }}:</span>
-          <SearchbarFilter
-            ref="filter"
-            :value.sync="contentsFilter.value"
-            :options="contentsFilter.options"
-          />
+          <el-col
+            v-for="filter in projectFilterList"
+            class="filter"
+            :key="filter.id"
+          >
+            <span>{{ $t(`${filter.label}`) }}:</span>
+            <SearchbarFilter
+              ref="filter"
+              :key="filter.id"
+              :value.sync="filter.type.value"
+              :options="filter.type.options"
+            />
+          </el-col>
         </el-col>
         <el-col class="right">
           <el-button-group>
@@ -54,7 +43,7 @@
           </el-button-group>
           <SearchbarKeyword
             ref="keyword"
-            :value.sync="contentsSearch"
+            :value.sync="projectsSearch"
             placeholder="contentTitle"
           />
         </el-col>
@@ -64,7 +53,7 @@
           <el-table
             class="clickable"
             ref="table"
-            :data="contentsList"
+            :data="projectsList"
             v-loading="loading"
             @row-click="rowClick"
             @selection-change="selectionChanged"
@@ -72,26 +61,21 @@
             <el-table-column type="selection" width="55" />
             <ColumnDefault
               :label="$t('projects.allprojects.column.name')"
-              prop="contentName"
+              prop="name"
               sortable="custom"
             />
             <ColumnDefault
               :label="$t('projects.allprojects.column.tracking')"
               prop="targetType"
-              customFilter="targetType2label"
+              customFilter="targetType2label4project"
               sortable="custom"
               :width="120"
             />
-            <el-table-column
+            <ProjectMode
               :label="$t('projects.allprojects.column.mode')"
+              prop="modeList"
               :width="290"
-            >
-              <div class="column-modes">
-                <span>3D+2D</span>
-                <span>3D</span>
-                <span>2D</span>
-              </div>
-            </el-table-column>
+            />
             <ColumnUser
               :label="$t('projects.allprojects.column.uploader')"
               prop="uploaderUUID"
@@ -101,7 +85,7 @@
             />
             <ColumnBoolean
               :label="$t('projects.allprojects.column.sharedStatus')"
-              prop="shared"
+              prop="sharePermission"
               :trueText="$t('projects.sharedStatus.shared')"
               :falseText="$t('projects.sharedStatus.noShared')"
               sortable="custom"
@@ -109,7 +93,7 @@
             />
             <ColumnFileSize
               :label="$t('projects.allprojects.column.Size')"
-              prop="contentSize"
+              prop="size"
               sortable="custom"
               :width="130"
             />
@@ -128,8 +112,8 @@
       </el-row>
       <SearchbarPage
         ref="page"
-        :value.sync="contentsPage"
-        :total="contentsTotal"
+        :value.sync="projectsPage"
+        :total="projectsTotal"
       />
     </div>
     <nuxt-child @updated="emitChangedSearchParams" />
@@ -138,34 +122,31 @@
 
 <script>
 import workspaceService from '@/services/workspace'
-import contentService from '@/services/content'
+import projectService from '@/services/project'
+import { mapGetters } from 'vuex'
 import searchMixin from '@/mixins/search'
 import columnsMixin from '@/mixins/columns'
 import utils from '@/mixins/utils'
-import {
-  filter as contentsFilter,
-  sort as contentsSort,
-} from '@/models/content/Content'
+import { projectFilterList, memberRoleFilter } from '@/models/project/Project'
 
 export default {
   mixins: [searchMixin, columnsMixin, utils],
   async asyncData({ query }) {
-    const contentsSearch = query.search || ''
-    const { list, total } = await contentService.searchContents({
-      search: contentsSearch,
+    const projectsSearch = query.search || ''
+    const { list, total } = await projectService.searchProjects({
+      search: projectsSearch,
     })
     return {
-      contentsList: list,
-      contentsTotal: total,
-      contentsSearch,
+      projectsList: list,
+      projectsTotal: total,
+      projectsSearch,
     }
   },
   data() {
     return {
       loading: false,
-      contentsFilter,
-      contentsSort,
-      contentsPage: 1,
+      projectFilterList,
+      projectsPage: 1,
       canRemove: false,
     }
   },
@@ -174,18 +155,18 @@ export default {
      * searchMixin에서 emitChangedSearchParams 실행시 changedSearchParams 사용
      */
     changedSearchParams() {
-      this.searchContents()
+      this.searchProjects()
     },
-    async searchContents() {
+    async searchProjects() {
       // this.searchParams 는 searchMixin에서 가져와 사용
-      const { list, total } = await contentService.searchContents(
-        this.searchParams,
+      const { list, total } = await projectService.searchProjects(
+        Object.assign({}, this.searchParams),
       )
-      this.contentsList = list
-      this.contentsTotal = total
+      this.projectsList = list
+      this.projectsTotal = total
     },
     rowClick(row) {
-      this.$router.push(`/projects/${row.contentUUID}`)
+      this.$router.push(`/projects/${row.projectUUID}`)
     },
     selectionChanged(selection) {
       this.canRemove = selection.length ? true : false
@@ -226,20 +207,45 @@ export default {
     },
     /**
      * @description 데이터 조회 조건 초기화
-     * @author YongHo Kim <yhkim@virnect.com>
      */
     refreshParams() {
-      this.contentsSort.value = 'createdDate,desc'
-      this.contentsFilter.value = ['ALL']
-      this.contentsSearch = ''
-      this.contentsPage = 1
+      this.projectFilterList.map(filter => (filter.type.value = ['ALL']))
+      this.projectsSearch = ''
+      this.projectsPage = 1
 
       this.searchParams.mine = false
+
+      this.changeMemberFilerOptions()
     },
+    /**
+     * @description 유저권한별 공유/편집 드롭다운메뉴 필터링 메소드
+     */
+    changeMemberFilerOptions() {
+      this.projectFilterList.map(filter => {
+        if (filter.id == 'sharedTypes' && filter.id == 'editTypes') {
+          filter.type.options = this.checkMemberRole()
+        }
+      })
+    },
+    /**
+     * @description 멤버권한인 유저는 '매니저' 드롭메뉴가 뜨지않도록, filter Array를 반환한다.
+     * @returns {Array} filter options
+     */
+    checkMemberRole() {
+      return this.activeWorkspace.role == 'MEMBER'
+        ? memberRoleFilter.options.filter(type => type.value != 'MANAGER')
+        : memberRoleFilter.options
+    },
+  },
+  computed: {
+    ...mapGetters({
+      activeWorkspace: 'auth/activeWorkspace',
+    }),
   },
   beforeMount() {
     // searchMixin.js: emitChangedSearchParams 실행 > 현재 페이지의 changedSearchParams 실행
     this.emitChangedSearchParams()
+    this.changeMemberFilerOptions()
     workspaceService.watchActiveWorkspace(this, () => {
       this.refreshParams()
       this.emitChangedSearchParams()
@@ -256,7 +262,7 @@ export default {
       position: absolute;
       right: 0;
       bottom: 0;
-      width: 190px;
+      width: 220px;
       height: 34px;
       margin-bottom: 7px;
     }
@@ -269,6 +275,9 @@ export default {
     }
     .el-button-group {
       margin-right: 20px;
+    }
+    .filter {
+      width: 25%;
     }
   }
 }
