@@ -112,6 +112,13 @@ export default {
   TROUBLES_LIST: ['GET', '/tasks/troubleMemos'],
   // 트러블 메모 상세 조회
   TROUBLE_INFO: ['GET', '/tasks/troubleMemo/{troubleMemoId}'],
+  /**
+   * Projects
+   */
+  // 프로젝트 목록 조회
+  PROJECTS_LIST: ['GET', '/contents/projects'],
+  // 프로젝트 상세 정보 조회
+  PROJECT_INFO: ['GET', '/contents/projects/{projectUUID}'],
 
   /**
    * onpremise
