@@ -44,6 +44,7 @@ public class CustomFavoriteGroupRepositoryImpl extends QuerydslRepositorySupport
 			.innerJoin(favoriteGroup.favoriteGroupMembers, favoriteGroupMember).fetchJoin()
 			.where(
 				favoriteGroup.workspaceId.eq(workspaceId),
+				favoriteGroup.uuid.eq(userId),
 				includeOneself(userId, includeOneself)
 			)
 			.orderBy(favoriteGroup.groupName.asc())
