@@ -1,0 +1,211 @@
+<template>
+  <div class="guest-mobile">
+    <section class="guest-mobile__logo">
+      <img
+        class="guest-mobile__logo--img"
+        src="~assets/image/img_remote_logo.svg"
+        alt="remote_logo"
+      />
+
+      <img
+        class="guest-mobile__logo--type"
+        src="~assets/image/img_logo_type.svg"
+        alt="Remote"
+      />
+      <p
+        class="guest-mobile__logo--text"
+        v-html="$t('guest.guest_install_mobile_app_description')"
+      ></p>
+    </section>
+    <main class="guest-mobile__buttons">
+      <button
+        class="guest-mobile__buttons--runapp"
+        @click="runApp"
+        v-if="isOnpremise"
+      >
+        {{ $t('button.run_app') }}
+      </button>
+      <button
+        class="guest-mobile__buttons--playstore"
+        @click="openPlayStore"
+        v-else
+      >
+        <img
+          src="~assets/image/img_google_app_store.svg"
+          alt="app_store_logo"
+        />
+      </button>
+      <!-- <button class="guest-mobile__buttons--runapp" @click="runApp">
+        {{ $t('button.run_app') }}
+      </button> -->
+
+      <button class="guest-mobile__buttons--download" @click="downloadApp">
+        {{ $t('button.download') }}
+      </button>
+      <button class="guest-mobile__buttons--linkweb" @click="accessWeb">
+        {{ $t('button.connect_web') }}
+      </button>
+    </main>
+  </div>
+</template>
+
+<script>
+import confirmMixin from 'mixins/confirm'
+import { getAllAppList, getLatestAppInfo } from 'api/http/download'
+export default {
+  name: 'GuestMobile',
+  mixins: [confirmMixin],
+  data() {
+    return {
+      packageName: null,
+      appUrl: null,
+    }
+  },
+  methods: {
+    openPlayStore() {
+      const isOpend = window.open(
+        'https://play.google.com/store/apps/details?id=com.virnect.remote.mobile2',
+      )
+      if (!isOpend) {
+        this.confirmDefault(this.$t('confirm.please_allow_popup'))
+      }
+    },
+    runApp() {
+      window.open(
+        `intent://remote?workspace=${this.workspace.uuid}&sessionId=${this.$route.query.sessionId}#$d#Intent;scheme=virnect;action=android.intent.action.VIEW;category=android.intent.category.BROWSABLE;package=${this.packageName};end`,
+      )
+    },
+    async downloadApp() {
+      window.open(this.appUrl)
+    },
+    accessWeb() {},
+  },
+  async mounted() {
+    const appInfo = await getLatestAppInfo({ productName: 'remote' })
+    const aosAppInfo = appInfo.appInfoList.find(info => {
+      return info.deviceType === 'Mobile'
+    })
+
+    const appList = await getAllAppList()
+    const aosApp = appList.appInfoList.find(app => {
+      return app.uuid === aosAppInfo.uuid
+    })
+
+    this.packageName = aosApp.packageName
+    this.appUrl = aosApp.appUrl
+  },
+}
+</script>
+
+<style lang="scss">
+.guest-mobile {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    -180deg,
+    rgb(77, 86, 100) 0%,
+    rgb(28, 32, 36) 100%
+  );
+  border-radius: 0px;
+}
+.guest-mobile__logo {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 8.3571rem;
+}
+
+.guest-mobile__logo--img {
+  width: 7.1429rem;
+  height: 7.1429rem;
+  margin-bottom: 6px;
+  padding: 12px;
+  background: linear-gradient(
+    -225deg,
+    rgb(255, 255, 255) 0%,
+    rgb(188, 188, 188) 100%
+  );
+
+  border-radius: 27.2px;
+  box-shadow: 0px 12px 15px 0px rgba(0, 0, 1, 0.4);
+}
+
+.guest-mobile__logo--type {
+  width: 9rem;
+  height: 2.8286rem;
+  margin-bottom: 1.2429rem;
+}
+.guest-mobile__logo--text {
+  color: rgb(174, 182, 194);
+  font-weight: 500;
+  font-size: 1rem;
+  line-height: 20px;
+  letter-spacing: 0px;
+  white-space: pre-line;
+  text-align: center;
+}
+
+.guest-mobile__buttons {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+
+  a,
+  button {
+    width: 15.7143rem;
+    height: 3.4286rem;
+
+    margin-bottom: 1.1429rem;
+    border-radius: 6px;
+    box-shadow: 0px 6px 14px 0px rgba(0, 0, 0, 0.2);
+  }
+}
+
+.guest-mobile__buttons--playstore {
+  padding-top: 0.3571rem;
+  background: rgb(255, 255, 255);
+  border-radius: 6px;
+  box-shadow: 0px 6px 14px 0px rgba(0, 0, 0, 0.2);
+  > img {
+    width: 7.7857rem;
+    height: 1.9286rem;
+  }
+}
+
+.guest-mobile__buttons--runapp {
+  width: 15.7143rem;
+  height: 3.4286rem;
+  color: rgb(255, 255, 255);
+
+  font-weight: 500;
+  font-size: 1.0714rem;
+  letter-spacing: 0px;
+  text-align: center;
+  background: rgb(59, 146, 243);
+  border-radius: 6px;
+}
+
+.guest-mobile__buttons--download {
+  color: rgb(255, 255, 255);
+
+  font-weight: 500;
+  font-size: 1.0714rem;
+  letter-spacing: 0px;
+  background: rgb(62, 69, 79);
+}
+
+.guest-mobile__buttons--linkweb {
+  color: rgb(255, 255, 255);
+
+  font-weight: 500;
+  font-size: 1.0714rem;
+  letter-spacing: 0px;
+  background: #616872;
+  border-radius: 6px;
+}
+</style>

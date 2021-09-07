@@ -1,25 +1,12 @@
 <template>
   <section class="remote-layout">
-    <header-section></header-section>
-    <vue2-scrollbar
-      classes="remote-wrapper"
-      ref="wrapperScroller"
-      :onMaxScroll="handleMaxScroll"
-    >
-      <div class="workspace-wrapper">
-        <guest-welcome></guest-welcome>
-        <guest-tab ref="tabSection"></guest-tab>
-      </div>
-    </vue2-scrollbar>
+    <guest-web v-if="serviceMode === 'web'"></guest-web>
+    <guest-mobile v-else-if="serviceMode === 'mobile'"></guest-mobile>
   </section>
 </template>
 
 <script>
 import Cookies from 'js-cookie'
-
-import HeaderSection from 'components/header/Header'
-import GuestWelcome from './section/GuestWelcome'
-import GuestTab from './section/GuestTab'
 
 import confirmMixin from 'mixins/confirm'
 import langMixin from 'mixins/language'
@@ -37,6 +24,9 @@ import { mapActions, mapGetters } from 'vuex'
 
 import { ROLE } from 'configs/remote.config'
 
+import GuestWeb from './GuestWeb'
+import GuestMobile from './GuestMobile'
+
 export default {
   name: 'GuestLayout',
   async beforeRouteEnter(to, from, next) {
@@ -44,17 +34,11 @@ export default {
 
     next()
   },
-  // async beforeRouteEnter(to, from, next) {
-  //   console.log(to)
-  //   console.log(from)
-  //   console.log(next)
-  //   next()
-  // },
+
   mixins: [confirmMixin, langMixin, toastMixin, errorMsgMixin],
   components: {
-    HeaderSection,
-    GuestWelcome,
-    GuestTab,
+    GuestWeb,
+    GuestMobile,
   },
   data() {
     return {
@@ -62,6 +46,7 @@ export default {
       workspaceId: '',
       sessionId: '',
       uuid: '',
+      serviceMode: '', //web, mobile
     }
   },
   computed: {
@@ -69,9 +54,7 @@ export default {
   },
   methods: {
     ...mapActions(['setCompanyInfo', 'updateAccount', 'changeWorkspace']),
-    handleMaxScroll(event) {
-      this.$eventBus.$emit('scroll:end', event)
-    },
+
     async initGuestMember() {
       const guestInfo = await getGuestInfo({ workspaceId: this.workspaceId })
 
@@ -132,10 +115,7 @@ export default {
       Cookies.set('refreshToken', refreshToken, cookieOption)
     },
   },
-  created() {
-    console.log('this.isMobileSize::', this.isMobileSize)
-    //redirect moblie router
-  },
+
   async mounted() {
     this.$eventBus.$on('initGuestMember', this.initGuestMember)
 
@@ -145,6 +125,8 @@ export default {
     window.myStorage = new MyStorage(this.workspaceId)
 
     await this.initGuestMember()
+
+    this.serviceMode = this.isMobileSize ? 'mobile' : 'web'
 
     //앱 테스트 코드
     const relatedApps = await navigator.getInstalledRelatedApps()
