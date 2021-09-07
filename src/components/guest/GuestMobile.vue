@@ -71,14 +71,16 @@ export default {
       }
     },
     runApp() {
-      window.open(
-        `intent://remote?workspace=${this.workspace.uuid}&sessionId=${this.$route.query.sessionId}#$d#Intent;scheme=virnect;action=android.intent.action.VIEW;category=android.intent.category.BROWSABLE;package=${this.packageName};end`,
-      )
+      const intentLink = `intent://remote?workspace=${this.workspace.uuid}&sessionId=${this.$route.query.sessionId}#$d#Intent;scheme=virnect;action=android.intent.action.VIEW;category=android.intent.category.BROWSABLE;package=${this.packageName};end`
+      console.log(intentLink)
+      window.open(intentLink)
     },
     async downloadApp() {
       window.open(this.appUrl)
     },
-    accessWeb() {},
+    accessWeb() {
+      this.$eventBus.$emit('updateServiceMode', 'web')
+    },
   },
   async mounted() {
     const appInfo = await getLatestAppInfo({ productName: 'remote' })

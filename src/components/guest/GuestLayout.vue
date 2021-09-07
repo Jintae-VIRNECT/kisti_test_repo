@@ -123,12 +123,16 @@ export default {
         },
       })
     },
+    updateServiceMode(mode) {
+      this.serviceMode = mode
+    },
   },
 
   async mounted() {
     try {
       this.serviceMode = this.isMobileSize ? 'mobile' : 'web'
       this.$eventBus.$on('initGuestMember', this.initGuestMember)
+      this.$eventBus.$on('updateServiceMode', this.updateServiceMode)
 
       this.workspaceId = this.$route.query.workspaceId
       this.sessionId = this.$route.query.sessionId
@@ -155,6 +159,7 @@ export default {
   },
   beforeDestroy() {
     this.$eventBus.$off('initGuestMember', this.initGuestMember)
+    this.$eventBus.$off('updateServiceMode', this.updateServiceMode)
   },
 }
 </script>
