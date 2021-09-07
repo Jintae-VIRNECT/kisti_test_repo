@@ -29,9 +29,13 @@ export default {
 
   computed: {
     welcomeText() {
-      return `<em>[${this.account.nickname}]</em> ${this.$t(
-        'guest.guest_join_description_1',
-      )}`
+      if (this.account.nickname) {
+        return `<em>[${this.account.nickname}]</em> ${this.$t(
+          'guest.guest_join_description_1',
+        )}`
+      } else {
+        return ''
+      }
     },
     joinText() {
       if (this.remainTime <= 0) {

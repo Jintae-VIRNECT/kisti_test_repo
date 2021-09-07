@@ -134,10 +134,6 @@ export default {
             }
 
             return false
-          } else if (err.code === ERROR.ASSIGNED_GUEST_USER_IS_NOT_ENOUGH) {
-            this.showGuestExpiredAlarm()
-          } else if (err.code === ERROR.GUEST_USER_NOT_FOUND) {
-            this.showGuestExpiredAlarm()
           }
         }
         this.toastError(this.$t('workspace.remote_invite_impossible'))
@@ -357,13 +353,6 @@ export default {
           this.toastError(this.$t('confirm.network_error'))
         }
       }
-    },
-    showGuestExpiredAlarm() {
-      this.confirmDefault(this.$t('guest.guest_license_expired'), {
-        action: () => {
-          location.href = `${URLS['console']}/?continue=${location.href}`
-        },
-      })
     },
   },
 }

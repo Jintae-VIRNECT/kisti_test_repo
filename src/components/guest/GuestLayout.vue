@@ -23,6 +23,8 @@ import { getWorkspaceInfo } from 'api/http/workspace'
 import { mapActions, mapGetters } from 'vuex'
 
 import { ROLE } from 'configs/remote.config'
+import { ERROR } from 'configs/error.config'
+import { URLS } from 'configs/env.config'
 
 import GuestWeb from './GuestWeb'
 import GuestMobile from './GuestMobile'
@@ -114,26 +116,42 @@ export default {
       Cookies.set('accessToken', accessToken, cookieOption)
       Cookies.set('refreshToken', refreshToken, cookieOption)
     },
+    showGuestExpiredAlarm() {
+      this.confirmDefault(this.$t('guest.guest_license_expired'), {
+        action: () => {
+          location.href = `${URLS['console']}/?continue=${location.href}`
+        },
+      })
+    },
   },
 
   async mounted() {
-    this.$eventBus.$on('initGuestMember', this.initGuestMember)
+    try {
+      this.serviceMode = this.isMobileSize ? 'mobile' : 'web'
+      this.$eventBus.$on('initGuestMember', this.initGuestMember)
 
-    this.workspaceId = this.$route.query.workspaceId
-    this.sessionId = this.$route.query.sessionId
+      this.workspaceId = this.$route.query.workspaceId
+      this.sessionId = this.$route.query.sessionId
 
-    window.myStorage = new MyStorage(this.workspaceId)
+      window.myStorage = new MyStorage(this.workspaceId)
 
-    await this.initGuestMember()
+      await this.initGuestMember()
 
-    this.serviceMode = this.isMobileSize ? 'mobile' : 'web'
-
-    //앱 테스트 코드
-    const relatedApps = await navigator.getInstalledRelatedApps()
-    console.log(relatedApps)
-    relatedApps.forEach(app => {
-      console.log(app.id, app.platform, app.url)
-    })
+      //앱 테스트 코드
+      const relatedApps = await navigator.getInstalledRelatedApps()
+      console.log(relatedApps)
+      relatedApps.forEach(app => {
+        console.log(app.id, app.platform, app.url)
+      })
+    } catch (err) {
+      if (err.code === ERROR.ASSIGNED_GUEST_USER_IS_NOT_ENOUGH) {
+        this.showGuestExpiredAlarm()
+      } else if (err.code === ERROR.GUEST_USER_NOT_FOUND) {
+        this.showGuestExpiredAlarm()
+      } else {
+        console.error(err)
+      }
+    }
   },
   beforeDestroy() {
     this.$eventBus.$off('initGuestMember', this.initGuestMember)
