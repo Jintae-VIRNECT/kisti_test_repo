@@ -51,12 +51,15 @@ export default {
   },
   /**
    * @description 프로젝트 상세정보 조회 service
-   * @param {String} projectId
-   * @returns {Object} Project
+   * @param {Object} params
+   * @returns {Object} project
    */
-  async getProjectInfo(projectUUID) {
+  async getProjectInfo(projectUUID, userUUID) {
     const data = await api('PROJECT_INFO', {
       route: { projectUUID },
+      params: {
+        userUUID,
+      },
     })
     return new Project(data)
   },
