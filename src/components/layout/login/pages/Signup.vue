@@ -541,7 +541,6 @@ export default {
           value: Number(i),
         })
       }
-      console.log(arr)
       return arr
     },
   },
