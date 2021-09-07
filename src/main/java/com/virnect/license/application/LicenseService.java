@@ -164,12 +164,22 @@ public class LicenseService {
 		);
 		workspaceLicensePlanInfoResponse.setMasterUserUUID(licensePlanInfo.get().getUserId());
 		workspaceLicensePlanInfoResponse.setLicenseProductInfoList(new ArrayList<>(licenseProductInfoMap.values()));
-		// current used resource
 
+
+		// current used  total resource
 		workspaceLicensePlanInfoResponse.setCurrentUsageDownloadHit(workspaceCurrentResourceUsageInfo.getTotalHit());
 		workspaceLicensePlanInfoResponse.setCurrentUsageStorage(
 			workspaceCurrentResourceUsageInfo.getStorageUsage() + fileStorageInfoResponse.getTotalRemoteUseStorageSize()
 		);
+		workspaceLicensePlanInfoResponse.setCurrentUsageCallTime(0L);
+
+		// current used storage resource detail info
+		workspaceLicensePlanInfoResponse.setCurrentContentStorageUsage(workspaceCurrentResourceUsageInfo.getContentStorageUsage());
+		workspaceLicensePlanInfoResponse.setCurrentProjectStorageUsage(workspaceCurrentResourceUsageInfo.getProjectStorageUsage());
+
+		// current download hit detail info
+		workspaceLicensePlanInfoResponse.setCurrentContentDownloadHit(workspaceCurrentResourceUsageInfo.getContentTotalHit());
+		workspaceLicensePlanInfoResponse.setCurrentProjectDownloadHit(workspaceCurrentResourceUsageInfo.getProjectTotalHit());
 
 		// add service product resource
 		workspaceLicensePlanInfoResponse.setAddCallTime(serviceProductResource.getTotalCallTime());
