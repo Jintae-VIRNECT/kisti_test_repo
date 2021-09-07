@@ -175,7 +175,7 @@
         </el-select>
         <el-input
           :placeholder="$t('signup.route.placeholder')"
-          v-if="joinInfo === $t('signup.route.other')"
+          v-if="joinInfo === subscriptionPath.length - 1"
           v-model="signup.joinInfo"
           type="text"
           name="email"
@@ -202,7 +202,7 @@
         </el-select>
         <el-input
           :placeholder="$t('signup.serviceInfo.placeholder')"
-          v-if="serviceInfo === $t('signup.serviceInfo.other')"
+          v-if="serviceInfo === serviceInfoLists.length - 1"
           v-model="signup.serviceInfo"
           type="text"
           name="email"
@@ -299,6 +299,20 @@ export default {
     },
   },
   watch: {
+    '$i18n.locale'() {
+      // 언어 변경에 따라 값을 변경해야 한다.
+      const info = this.subscriptionPath[this.joinInfo]
+      this.signup.joinInfo =
+        this.joinInfo === this.subscriptionPath.length - 1
+          ? ''
+          : this.$t(info.label)
+
+      const service = this.serviceInfoLists[this.serviceInfo]
+      this.signup.serviceInfo =
+        this.serviceInfo === this.serviceInfoLists.length - 1
+          ? ''
+          : this.$t(service.label)
+    },
     'birth.mobile'(newTime) {
       this.birth.year = newTime
       this.birth.month = newTime
@@ -473,17 +487,19 @@ export default {
       this.delayResend()
     },
     resetJoinInfo(val) {
-      if (val === this.$t('signup.route.other')) {
+      if (val === this.subscriptionPath.length - 1) {
         this.signup.joinInfo = ''
       } else {
-        this.signup.joinInfo = val
+        const info = this.subscriptionPath[val]
+        this.signup.joinInfo = this.$t(info.label)
       }
     },
     resetServiceInfo(val) {
-      if (val === this.$t('signup.serviceInfo.other')) {
+      if (val === this.serviceInfoLists.length - 1) {
         this.signup.serviceInfo = ''
       } else {
-        this.signup.serviceInfo = val
+        const info = this.serviceInfoLists[val]
+        this.signup.serviceInfo = this.$t(info.label)
       }
     },
     delayResend() {
@@ -523,7 +539,7 @@ export default {
       for (let i = 0; i < length; ++i) {
         arr.push({
           label: `${i18nArrayKey}[${i}]`,
-          value: this.$t(`${i18nArrayKey}[${i}]`),
+          value: i,
         })
       }
       return arr
