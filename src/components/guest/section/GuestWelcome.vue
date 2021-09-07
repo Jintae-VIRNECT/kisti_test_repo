@@ -13,6 +13,8 @@
 import { getGuestRoomInfo } from 'api/http/guest'
 import roomMixin from 'mixins/room'
 import { ROLE } from 'configs/remote.config'
+import { ERROR } from 'configs/error.config'
+import { URLS } from 'configs/env.config'
 
 const EXPIRE_TIMER = 120 //120초
 
@@ -69,20 +71,32 @@ export default {
 
       const sessionId = this.$route.query.sessionId
 
-      const roomInfo = await getGuestRoomInfo({
-        sessionId: sessionId,
-        workspaceId: this.workspace.uuid,
-      })
+      try {
+        const roomInfo = await getGuestRoomInfo({
+          sessionId: sessionId,
+          workspaceId: this.workspace.uuid,
+        })
 
-      const leader = roomInfo.memberList.find(member => {
-        member.memberType === ROLE.LEADER
-      })
+        const leader = roomInfo.memberList.find(member => {
+          member.memberType === ROLE.LEADER
+        })
 
-      await this.join({
-        ...roomInfo,
-        leaderId: leader ? leader.uuid : null,
-        isGuest: true,
-      })
+        await this.join({
+          ...roomInfo,
+          leaderId: leader ? leader.uuid : null,
+          isGuest: true,
+        })
+      } catch (err) {
+        if (err.code === ERROR.REMOTE_ALREADY_REMOVED) {
+          this.confirmDefault(this.$t('workspace.remote_already_removed'), {
+            action: () => {
+              location.href = `${URLS['console']}/?continue=${location.href}`
+            },
+          })
+        } else {
+          console.error(err)
+        }
+      }
     },
     startTimer() {
       this.timerId = setInterval(() => {
