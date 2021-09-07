@@ -5,27 +5,27 @@
     <div class="qr-wrapper">
       <div class="qr">
         <article class="qr__main">
-          <p class="qr__main--title">QR 로그인</p>
+          <p class="qr__main--title">{{ $t('qr.qr_login') }}</p>
           <p class="qr__main--sub-title">
-            스마트 글라스에서 QR코드로 간편하게 로그인 하세요.
+            {{ $t('qr.qr_login_description') }}
           </p>
           <canvas class="qr__main--code" ref="qr-code"></canvas>
         </article>
         <figcaption class="qr__desc">
-          <p class="qr__desc--title">QR 로그인 방법</p>
+          <p class="qr__desc--title">{{ $t('qr.qr_login_how_to') }}</p>
           <div class="qr__explain">
             <ol class="qr__explain--list">
               <li>
-                1. 사용하실 스마트글라스 또는 스마트폰에서 VIRNECT Remote를
-                실행하세요.
+                {{ $t('qr.qr_login_how_to_description_1') }}
               </li>
-              <li>2. 로그인 화면 하단의 [QR 스캐너]를 선택하세요.</li>
+              <li>{{ $t('qr.qr_login_how_to_description_2') }}</li>
               <li>
-                3. 현재 화면 상의 QR코드를 비춰주세요. QR코드 인식 후 기기가
-                로그인 됩니다.
+                {{ $t('qr.qr_login_how_to_description_3') }}
               </li>
             </ol>
-            <p class="qr__explain--caution">*QR코드 지원 기기만 가능</p>
+            <p class="qr__explain--caution">
+              {{ $t('qr.qr_login_how_to_description_4') }}
+            </p>
           </div>
         </figcaption>
       </div>
