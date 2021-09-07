@@ -537,10 +537,11 @@ export default {
       const arr = []
       for (let i in this.$t(i18nArrayKey)) {
         arr.push({
-          label: `${i18nArrayKey}[${i}]`,
-          value: i,
+          label: `${i18nArrayKey}[${Number(i)}]`,
+          value: Number(i),
         })
       }
+      console.log(arr)
       return arr
     },
   },
