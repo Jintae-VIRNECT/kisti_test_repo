@@ -1,17 +1,9 @@
 <template>
-  <el-table-column :prop="prop" :label="label" :width="width">
-    <template slot-scope="scope">
-      <div class="column-modes">
-        <span
-          v-for="mode in scope.row[prop]"
-          :key="mode"
-          :class="modeClass(mode)"
-        >
-          {{ $t(`${modeText(mode)}`) }}
-        </span>
-      </div>
-    </template>
-  </el-table-column>
+  <div class="column-modes">
+    <span v-for="mode in modeList" :key="mode" :class="modeClass(mode)">
+      {{ $t(`${modeText(mode)}`) }}
+    </span>
+  </div>
 </template>
 
 <script>
@@ -19,9 +11,7 @@ import { modeFilter } from '@/models/project/Project'
 
 export default {
   props: {
-    prop: String,
-    label: String,
-    width: Number,
+    modeList: Array,
   },
   methods: {
     // 모드의 value 값을 className에 맞게 변경합니다. ex) TWO_DIMENSINAL -> two-dimensinal
@@ -30,7 +20,7 @@ export default {
     },
     // 모드의 label 값을 가져옵니다.
     modeText(mode) {
-      return modeFilter.options.filter(v => v.value == mode)[0].label
+      return modeFilter.options.find(v => v.value == mode).label
     },
   },
 }

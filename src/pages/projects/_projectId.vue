@@ -67,11 +67,7 @@
             <dd>{{ content.targetType }}</dd>
             <dt>{{ $t('projects.info.project.mode') }}</dt>
             <dd>
-              <div class="column-modes">
-                <span>3D+2D</span>
-                <span>3D</span>
-                <span>2D</span>
-              </div>
+              <ProjectMode :modeList="project.modeList" />
             </dd>
           </dl>
           <!-- 프로젝트 씬 정보 -->

@@ -71,11 +71,15 @@
               sortable="custom"
               :width="120"
             />
-            <ProjectMode
-              :label="$t('projects.allprojects.column.mode')"
+            <el-table-column
               prop="modeList"
+              :label="$t('projects.allprojects.column.mode')"
               :width="290"
-            />
+            >
+              <template slot-scope="scope">
+                <ProjectMode :modeList="scope.row['modeList']" />
+              </template>
+            </el-table-column>
             <ColumnUser
               :label="$t('projects.allprojects.column.uploader')"
               prop="uploaderUUID"
