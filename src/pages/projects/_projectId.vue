@@ -62,7 +62,7 @@
         <el-row v-show="activeTab === 'project'">
           <dl>
             <dt>{{ $t('projects.info.project.name') }}</dt>
-            <dd class="content-uuid">{{ content.contentUUID }}</dd>
+            <dd class="project-uuid">{{ content.contentUUID }}</dd>
             <dt>{{ $t('projects.info.project.tracking') }}</dt>
             <dd>{{ content.targetType }}</dd>
             <dt>{{ $t('projects.info.project.mode') }}</dt>
