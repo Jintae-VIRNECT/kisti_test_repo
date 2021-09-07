@@ -1,11 +1,21 @@
 <template>
   <section class="remote-layout">
-    <guest-web v-if="serviceMode === 'web'"></guest-web>
+    <template v-if="serviceMode === 'web'">
+      <header-section></header-section>
+      <vue2-scrollbar
+        classes="remote-wrapper"
+        ref="wrapperScroller"
+        :onMaxScroll="handleMaxScroll"
+      >
+        <guest-web></guest-web>
+      </vue2-scrollbar>
+    </template>
     <guest-mobile v-else-if="serviceMode === 'mobile'"></guest-mobile>
   </section>
 </template>
 
 <script>
+import HeaderSection from 'components/header/Header'
 import Cookies from 'js-cookie'
 
 import confirmMixin from 'mixins/confirm'
@@ -41,6 +51,7 @@ export default {
   components: {
     GuestWeb,
     GuestMobile,
+    HeaderSection,
   },
   data() {
     return {
