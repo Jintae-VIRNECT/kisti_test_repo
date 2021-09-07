@@ -535,8 +535,7 @@ export default {
      */
     createI18nArray(i18nArrayKey) {
       const arr = []
-      const length = this.$t(i18nArrayKey).length
-      for (let i = 0; i < length; ++i) {
+      for (let i in this.$t(i18nArrayKey)) {
         arr.push({
           label: `${i18nArrayKey}[${i}]`,
           value: i,
