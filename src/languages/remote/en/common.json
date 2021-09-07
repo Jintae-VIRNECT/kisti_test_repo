@@ -48,7 +48,8 @@
     "send_email":"Send email",
     "join_sec":"Connect ({time} sec)",
     "request_again":"Request",
-    "connect_web":"Connect to the web"
+    "connect_web":"Connect to the web",
+    "run_app":"App runs"
   },
   "date": {
     "lastday": "[Yesterday]",
