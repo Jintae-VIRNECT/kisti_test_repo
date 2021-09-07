@@ -40,12 +40,8 @@ public class ProjectInfoResponse {
 	private String uploaderName = "";
 	@ApiModelProperty(value = "프로젝트 업로더 유저 프로필 이미지", position = 7, example = "")
 	private String uploaderProfile = "";
-	@ApiModelProperty(value = "프로젝트 2D 모드 활성화 여부", position = 8, example = "")
-	private boolean mode2D;
-	@ApiModelProperty(value = "프로젝트 3D 모드 활성화 여부", position = 8, example = "")
-	private boolean mode3D;
-	@ApiModelProperty(value = "프로젝트 2D +3D 모드 활성화 여부", position = 8, example = "")
-	private boolean mode2D3D;
+	@ApiModelProperty(value = "프로젝트 모드 정보", position = 8, example = "")
+	private List<Mode> modeList = new ArrayList<>();
 	@ApiModelProperty(value = "프로젝트 편집 권한", position = 9, example = "")
 	private EditPermission editPermission;
 	@ApiModelProperty(value = "프로젝트 편집 권한 멤버 목록", position = 10, example = "")

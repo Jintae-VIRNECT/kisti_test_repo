@@ -26,6 +26,7 @@ import springfox.documentation.annotations.ApiIgnore;
 
 import com.virnect.content.application.project.ProjectService;
 import com.virnect.content.domain.EditPermission;
+import com.virnect.content.domain.Mode;
 import com.virnect.content.domain.SharePermission;
 import com.virnect.content.domain.TargetType;
 import com.virnect.content.dto.request.ProjectUpdateRequest;
@@ -102,7 +103,7 @@ public class ProjectController {
 		@ApiImplicitParam(name = "userUUID", value = "목록 조회 요청 유저 식별자", dataType = "string", paramType = "query", required = true, example = "498b1839dc29ed7bb2ee90ad6985c608"),
 		@ApiImplicitParam(name = "share", value = "필터 - 공유 권한 정보(MEMBER, SPECIFIC_MEMBER, UPLOADER, MANAGER)", dataType = "string", paramType = "query", allowMultiple = true, allowEmptyValue = true),
 		@ApiImplicitParam(name = "edit", value = "필터 - 편집 권한 정보(MEMBER, SPECIFIC_MEMBER, UPLOADER, MANAGER)", dataType = "string", paramType = "query", allowMultiple = true, allowEmptyValue = true),
-		@ApiImplicitParam(name = "mode", value = "필터 - 모드 정보(2D, 3D, 2D3D)", paramType = "query", allowMultiple = true, allowEmptyValue = true),
+		@ApiImplicitParam(name = "mode", value = "필터 - 모드 정보(TWO_DIMENSINAL, THREE_DIMENSINAL, TWO_OR_THREE_DIMENSINAL)", paramType = "query", allowMultiple = true, allowEmptyValue = true),
 		@ApiImplicitParam(name = "target", value = "필터 - 타겟 타입 정보(QR, VTarget, Image, VR)", paramType = "query", allowMultiple = true, allowEmptyValue = true),
 		@ApiImplicitParam(name = "size", value = "페이징 사이즈", dataType = "number", paramType = "query", defaultValue = "10"),
 		@ApiImplicitParam(name = "page", value = "size 대로 나눠진 페이지를 조회할 번호(1부터 시작)", paramType = "query", defaultValue = "1"),
@@ -115,7 +116,7 @@ public class ProjectController {
 		@RequestParam(value = "userUUID", required = true) String userUUID,
 		@RequestParam(value = "share", required = false) List<SharePermission> sharePermissionList,
 		@RequestParam(value = "edit", required = false) List<EditPermission> editPermissionList,
-		@RequestParam(value = "mode", required = false) List<String> modeList,
+		@RequestParam(value = "mode", required = false) List<Mode> modeList,
 		@RequestParam(value = "target", required = false) List<TargetType> targetTypeList,
 		@RequestParam(value = "search", required = false) String search,
 		@ApiIgnore PageRequest pageRequest

@@ -77,11 +77,9 @@ public class Project extends BaseTimeEntity {
 	@Column(name = "properties", nullable = false)
 	private String properties;
 
-	@Column(name = "mode_2D", nullable = false)
-	private boolean mode2D;
-
-	@Column(name = "mode_3D", nullable = false)
-	private boolean mode3D;
+	@NotAudited
+	@OneToMany(mappedBy = "project")
+	List<ProjectMode> projectModeList = new ArrayList<>();
 
 	@NotAudited
 	@OneToMany(mappedBy = "project")
@@ -101,9 +99,7 @@ public class Project extends BaseTimeEntity {
 		EditPermission editPermission,
 		String userUUID,
 		String workspaceUUID,
-		String properties,
-		boolean mode2D,
-		boolean mode3D
+		String properties
 	) {
 		this.uuid = uuid;
 		this.name = name;
@@ -114,7 +110,5 @@ public class Project extends BaseTimeEntity {
 		this.userUUID = userUUID;
 		this.workspaceUUID = workspaceUUID;
 		this.properties = properties;
-		this.mode2D = mode2D;
-		this.mode3D = mode3D;
 	}
 }

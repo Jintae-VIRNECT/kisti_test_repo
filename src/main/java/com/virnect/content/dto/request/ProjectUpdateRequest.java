@@ -1,5 +1,7 @@
 package com.virnect.content.dto.request;
 
+import java.util.List;
+
 import javax.validation.constraints.NotBlank;
 
 import org.springframework.util.CollectionUtils;
@@ -7,6 +9,8 @@ import org.springframework.util.CollectionUtils;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
 import lombok.Setter;
+
+import com.virnect.content.domain.Mode;
 
 /**
  * Project: PF-ContentManagement
@@ -29,10 +33,8 @@ public class ProjectUpdateRequest {
 	private PropertyInfoDTO properties;
 	@ApiModelProperty(value = "타겟 정보", position = 5)
 	private ProjectTargetRequest target;
-	@ApiModelProperty(value = "2D 모드 활성화 여부", example = "", position = 6, required = true)
-	private Boolean mode2D;
-	@ApiModelProperty(value = "3D 모드 활성화 여부", example = "", position = 6, required = true)
-	private Boolean mode3D;
+	@ApiModelProperty(value = "모드 정보", example = "", position = 6)
+	private List<Mode> modeList;
 	@ApiModelProperty(value = "공유 정보", position = 7)
 	private SharePermissionRequest share;
 	@ApiModelProperty(value = "모드 정보", position = 8)
@@ -46,8 +48,7 @@ public class ProjectUpdateRequest {
 			", project='" + project + '\'' +
 			", properties=" + properties +
 			", target=" + target +
-			", mode2D=" + mode2D +
-			", mode3D=" + mode3D +
+			", modeList=" + modeList +
 			", share=" + share +
 			", edit=" + edit +
 			'}';

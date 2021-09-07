@@ -17,7 +17,6 @@ import com.virnect.content.dto.response.ProjectTargetInfoResponse;
  */
 @Mapper(componentModel = "spring")
 public interface ProjectResponseMapper {
-	@Mapping(target = "mode2D", source = "mode2D")
 	ProjectInfoResponse projectToProjectInfoResponse(Project project);
 
 	ProjectTargetInfoResponse projectTargetToTargetInfoResponse(ProjectTarget projectTarget);

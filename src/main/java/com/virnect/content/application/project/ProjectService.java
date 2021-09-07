@@ -36,10 +36,12 @@ import com.virnect.content.dao.project.ProjectRepository;
 import com.virnect.content.dao.project.ProjectShareUerRepository;
 import com.virnect.content.dao.project.ProjectTargetRepository;
 import com.virnect.content.domain.EditPermission;
+import com.virnect.content.domain.Mode;
 import com.virnect.content.domain.SharePermission;
 import com.virnect.content.domain.TargetType;
 import com.virnect.content.domain.project.Project;
 import com.virnect.content.domain.project.ProjectEditUser;
+import com.virnect.content.domain.project.ProjectMode;
 import com.virnect.content.domain.project.ProjectShareUser;
 import com.virnect.content.domain.project.ProjectTarget;
 import com.virnect.content.dto.request.ProjectUpdateRequest;
@@ -135,12 +137,16 @@ public class ProjectService {
 			.userUUID(projectUploadRequest.getUserUUID())
 			.workspaceUUID(projectUploadRequest.getWorkspaceUUID())
 			.properties(properties)
-			.mode2D(projectUploadRequest.isMode2D())
-			.mode3D(projectUploadRequest.isMode3D())
 			.editPermission(projectUploadRequest.getEdit().getPermission())
 			.sharePermission(projectUploadRequest.getShare().getPermission())
 			.build();
 		projectRepository.save(project);
+
+		//2-1. 모드 정보 저장
+		for (Mode mode : projectUploadRequest.getModeList()) {
+			ProjectMode projectMode = ProjectMode.builder().mode(mode).project(project).build();
+			projectModeRepository.save(projectMode);
+		}
 
 		//2-2. 공유 정보 저장
 		if (projectUploadRequest.getShare().getPermission() == SharePermission.SPECIFIC_MEMBER) {
@@ -192,6 +198,7 @@ public class ProjectService {
 
 		//3. 응답
 		ProjectInfoResponse projectInfoResponse = generateProjectResponse(project);
+		projectInfoResponse.setModeList(projectUploadRequest.getModeList());
 		ProjectTargetInfoResponse projectTargetInfoResponse = projectResponseMapper.projectTargetToTargetInfoResponse(
 			projectTarget);
 		projectInfoResponse.setTargetInfo(projectTargetInfoResponse);
@@ -316,7 +323,7 @@ public class ProjectService {
 	 */
 	public ProjectInfoListResponse getProjectList(
 		String workspaceUUID, String userUUID, List<SharePermission> sharePermissionList,
-		List<EditPermission> editPermissionList, List<String> modeList, List<TargetType> targetTypeList, String search,
+		List<EditPermission> editPermissionList, List<Mode> modeList, List<TargetType> targetTypeList, String search,
 		Pageable pageable
 	) {
 		//1. 필터링 요청에 따른 프로젝트 목록 select
@@ -379,8 +386,8 @@ public class ProjectService {
 	private ProjectInfoResponse generateProjectResponse(Project project) {
 		ProjectInfoResponse projectInfoResponse = projectResponseMapper.projectToProjectInfoResponse(project);
 		//모드 정보
-		if (project.isMode2D() && project.isMode3D())
-			projectInfoResponse.setMode2D3D(true);
+		projectInfoResponse.setModeList(
+			project.getProjectModeList().stream().map(ProjectMode::getMode).collect(Collectors.toList()));
 
 		//공유 권한 정보
 		if (project.getSharePermission() == SharePermission.SPECIFIC_MEMBER) {
@@ -402,7 +409,6 @@ public class ProjectService {
 		projectInfoResponse.setTargetInfo(projectTargetInfoResponse);
 
 		//프로퍼티
-
 		ObjectMapper objectMapper = new ObjectMapper();
 		PropertyInfoDTO propertyInfo = null;
 		try {
@@ -561,11 +567,14 @@ public class ProjectService {
 		}
 
 		//프로젝트 모드정보 변경
-		if (projectUpdateRequest.getMode2D() != null) {
-			project.setMode2D(projectUpdateRequest.getMode2D());
-		}
-		if (projectUpdateRequest.getMode3D() != null) {
-			project.setMode3D(projectUpdateRequest.getMode3D());
+		if (!CollectionUtils.isEmpty(projectUpdateRequest.getModeList())) {
+			List<ProjectMode> oldProjectModeList = project.getProjectModeList();
+			projectModeRepository.deleteAll(oldProjectModeList);
+			List<ProjectMode> newProjectModeList = projectUpdateRequest.getModeList()
+				.stream()
+				.map(mode -> ProjectMode.builder().mode(mode).project(project).build())
+				.collect(Collectors.toList());
+			projectModeRepository.saveAll(newProjectModeList);
 		}
 
 		//프로젝트 공유정보 변경
