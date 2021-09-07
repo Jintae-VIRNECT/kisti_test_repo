@@ -538,7 +538,7 @@ export default {
       for (let i in this.$t(i18nArrayKey)) {
         arr.push({
           label: `${i18nArrayKey}[${i}]`,
-          value: i,
+          value: Number(i),
         })
       }
       return arr
