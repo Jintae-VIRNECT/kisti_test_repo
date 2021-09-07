@@ -166,10 +166,10 @@
           @change="resetJoinInfo"
         >
           <el-option
-            v-for="item in $t('signup.subscriptionPathLists')"
-            :key="item"
-            :label="item"
-            :value="item"
+            v-for="(item, index) in subscriptionPath"
+            :key="index"
+            :label="$t(item.label)"
+            :value="item.value"
           >
           </el-option>
         </el-select>
@@ -193,10 +193,10 @@
           @change="resetServiceInfo"
         >
           <el-option
-            v-for="item in $t('signup.serviceInfoLists')"
-            :key="item"
-            :label="item"
-            :value="item"
+            v-for="(item, index) in serviceInfoLists"
+            :key="index"
+            :label="$t(item.label)"
+            :value="item.value"
           >
           </el-option>
         </el-select>
@@ -225,7 +225,7 @@
 import AuthService from 'service/auth-service'
 import mixin from 'mixins/mixin'
 import dayjs from 'dayjs'
-
+import Signup from 'model/signup'
 export default {
   name: 'signup',
   mixins: [mixin],
@@ -238,18 +238,9 @@ export default {
       authLoading: false,
       isVeritication: false,
       verificationText: this.$t('signup.authentication.verification'),
-      signup: {
-        email: '',
-        password: '',
-        firstName: '',
-        lastName: '',
-        birth: '',
-        marketInfoReceive: false,
-        joinInfo: '',
-        serviceInfo: '',
-        sessionCode: '',
-        inviteSession: '',
-      },
+      signup: new Signup(),
+      subscriptionPath: this.createI18nArray('signup.subscriptionPathLists'),
+      serviceInfoLists: this.createI18nArray('signup.serviceInfoLists'),
       passwordConfirm: '',
       birth: {
         year: '',
@@ -520,6 +511,22 @@ export default {
         this.signup.email = email
         this.signup.inviteSession = inviteSession
       }
+    },
+    /**
+     * i18n의 배열키 값을 가져와 label과 value로 구성된 객체 배열을 리턴
+     * @param {string} i18nArrayKey i18n의 배열키 값
+     * @returns {Array.<{label: string, value: string}>} label과 value로 구성된 객체 배열
+     */
+    createI18nArray(i18nArrayKey) {
+      const arr = []
+      const length = this.$t(i18nArrayKey).length
+      for (let i = 0; i < length; ++i) {
+        arr.push({
+          label: `${i18nArrayKey}[${i}]`,
+          value: this.$t(`${i18nArrayKey}[${i}]`),
+        })
+      }
+      return arr
     },
   },
   created() {
