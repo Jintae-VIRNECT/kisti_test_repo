@@ -565,7 +565,7 @@ public class ProjectService {
 			project.setMode2D(projectUpdateRequest.getMode2D());
 		}
 		if (projectUpdateRequest.getMode3D() != null) {
-			project.setMode2D(projectUpdateRequest.getMode3D());
+			project.setMode3D(projectUpdateRequest.getMode3D());
 		}
 
 		//프로젝트 공유정보 변경

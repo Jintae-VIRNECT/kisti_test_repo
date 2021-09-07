@@ -14,6 +14,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import com.virnect.content.dao.content.ContentRepository;
 import com.virnect.content.dao.contentdonwloadlog.ContentDownloadLogRepository;
+import com.virnect.content.dao.project.ProjectDownloadLogRepository;
 import com.virnect.content.dao.project.ProjectRepository;
 import com.virnect.content.dto.request.FileResourceUploadRequest;
 import com.virnect.content.dto.response.ContentResourceUsageInfoResponse;
@@ -39,6 +40,7 @@ public class ResourceService {
 	private final ContentRepository contentRepository;
 	private final ProjectRepository projectRepository;
 	private final ContentDownloadLogRepository contentDownloadLogRepository;
+	private final ProjectDownloadLogRepository projectDownloadLogRepository;
 	private static final String PROJECT_DIRECTORY = "project";
 	private static final String CONTENT_DIRECTORY = "contents";
 	private static final String REPORT_DIRECTORY = "report";
@@ -77,7 +79,7 @@ public class ResourceService {
 			workspaceId, startDate, endDate);
 
 		long projectStorageUsage = projectRepository.calculateTotalStorageAmountByWorkspaceId(workspaceId);
-		long projectDownloadHit = contentDownloadLogRepository.calculateResourceUsageAmountByWorkspaceIdAndStartDateAndEndDate(
+		long projectDownloadHit = projectDownloadLogRepository.calculateResourceUsageAmountByWorkspaceIdAndStartDateAndEndDate(
 			workspaceId, startDate, endDate);
 
 		long storageUsage = contentStorageUsage + projectStorageUsage;
