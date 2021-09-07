@@ -9,7 +9,7 @@ import org.springframework.data.redis.core.TimeToLive;
 import lombok.Getter;
 import lombok.Setter;
 
-import com.virnect.uaa.global.security.token.JwtPayload;
+import com.virnect.uaa.domain.auth.security.token.JwtPayload;
 
 /**
  * @author jeonghyeon.chang (johnmark)

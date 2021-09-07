@@ -39,8 +39,8 @@ import com.virnect.uaa.domain.user.exception.UserServiceException;
 import com.virnect.uaa.domain.user.mapper.UserAccessDeviceInfoMapper;
 import com.virnect.uaa.domain.user.mapper.UserInfoMapper;
 import com.virnect.uaa.global.common.ApiResponse;
-import com.virnect.uaa.global.security.token.JwtPayload;
-import com.virnect.uaa.global.security.token.JwtProvider;
+import com.virnect.uaa.domain.auth.security.token.JwtPayload;
+import com.virnect.uaa.domain.auth.security.token.JwtProvider;
 import com.virnect.uaa.infra.rest.workspace.WorkspaceRestService;
 import com.virnect.uaa.infra.rest.workspace.dto.WorkspaceInfoListResponse;
 

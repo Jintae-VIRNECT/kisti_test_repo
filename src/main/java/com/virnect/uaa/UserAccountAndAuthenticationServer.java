@@ -1,5 +1,8 @@
 package com.virnect.uaa;
 
+import com.virnect.uaa.domain.auth.security.rememberme.RememberMeCookieProperty;
+import com.virnect.uaa.domain.auth.security.session.SessionCookieProperty;
+import com.virnect.uaa.domain.auth.security.token.TokenProperty;
 import org.apache.tomcat.util.http.LegacyCookieProcessor;
 import org.modelmapper.ModelMapper;
 import org.springframework.boot.SpringApplication;
@@ -12,39 +15,32 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.client.RestTemplate;
 
-import lombok.extern.slf4j.Slf4j;
-
-import com.virnect.uaa.global.config.rememberme.RememberMeCookieProperty;
-import com.virnect.uaa.global.config.session.SessionCookieProperty;
-import com.virnect.uaa.global.config.token.TokenProperty;
-
-@Slf4j
 @SpringBootApplication
 @EnableConfigurationProperties({TokenProperty.class, SessionCookieProperty.class, RememberMeCookieProperty.class})
 public class UserAccountAndAuthenticationServer {
 
-	public static void main(String[] args) {
-		SpringApplication.run(UserAccountAndAuthenticationServer.class, args);
-	}
+    public static void main(String[] args) {
+        SpringApplication.run(UserAccountAndAuthenticationServer.class, args);
+    }
 
-	@Bean
-	public RestTemplate restTemplate() {
-		return new RestTemplate();
-	}
+    @Bean
+    public RestTemplate restTemplate() {
+        return new RestTemplate();
+    }
 
-	@Bean
-	public ModelMapper modelMapper() {
-		return new ModelMapper();
-	}
+    @Bean
+    public ModelMapper modelMapper() {
+        return new ModelMapper();
+    }
 
-	@Bean
-	public PasswordEncoder passwordEncoder() {
-		return new BCryptPasswordEncoder();
-	}
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
 
-	@Bean
-	public WebServerFactoryCustomizer<TomcatServletWebServerFactory> cookieProcessorCustomizer() {
-		return (factory -> factory.addContextCustomizers(
-			(context -> context.setCookieProcessor(new LegacyCookieProcessor()))));
-	}
+    @Bean
+    public WebServerFactoryCustomizer<TomcatServletWebServerFactory> cookieProcessorCustomizer() {
+        return (factory -> factory.addContextCustomizers(
+                (context -> context.setCookieProcessor(new LegacyCookieProcessor()))));
+    }
 }

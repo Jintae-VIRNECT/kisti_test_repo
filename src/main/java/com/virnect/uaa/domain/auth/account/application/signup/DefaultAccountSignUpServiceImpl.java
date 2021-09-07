@@ -15,7 +15,7 @@ import com.virnect.uaa.domain.auth.common.exception.UserAuthenticationServiceExc
 import com.virnect.uaa.domain.user.dao.secession.SecessionUserRepository;
 import com.virnect.uaa.domain.user.dao.user.UserRepository;
 import com.virnect.uaa.domain.user.domain.User;
-import com.virnect.uaa.global.security.token.JwtProvider;
+import com.virnect.uaa.domain.auth.security.token.JwtProvider;
 import com.virnect.uaa.infra.email.EmailService;
 import com.virnect.uaa.infra.email.context.MailMessageContext;
 import com.virnect.uaa.infra.file.Default;
