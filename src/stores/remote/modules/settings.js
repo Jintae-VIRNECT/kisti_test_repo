@@ -2,6 +2,7 @@
 import {
   SETTINGS,
   TOGGLE_CHAT,
+  SET_CHAT_ACTIVE,
   ALLOW_RESET,
   SET_SPOT_FULLSCREEN,
 } from '../mutation-types'
@@ -51,6 +52,7 @@ const state = {
   serverRecordStatus: 'STOP', // 'WAIT', 'START', 'STOP', 'PREPARE'
 
   chatBox: false,
+  chatActive: false,
 
   isSpotFullscreen: false,
   autoServerRecord: false,
@@ -118,6 +120,10 @@ const mutations = {
     state.chatBox = flag
   },
 
+  [SET_CHAT_ACTIVE](state, active) {
+    state.chatActive = active
+  },
+
   [SET_SPOT_FULLSCREEN](state, isFullscreen) {
     state.isSpotFullscreen = isFullscreen
   },
@@ -153,6 +159,7 @@ const getters = {
   },
 
   chatBox: state => state.chatBox,
+  chatActive: state => state.chatActive,
 
   isSpotFullscreen: state => state.isSpotFullscreen,
 

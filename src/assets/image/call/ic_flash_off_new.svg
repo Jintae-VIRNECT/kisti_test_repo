@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="24px" height="24px" viewBox="0 0 24 24" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>FF82C2EE-4C4B-4179-899B-A4EEDEDE5CFF@1x</title>
+    <defs>
+        <linearGradient x1="50%" y1="5.37275204%" x2="50%" y2="122.44866%" id="linearGradient-1">
+            <stop stop-color="#000000" stop-opacity="0" offset="0%"></stop>
+            <stop stop-color="#000000" offset="100%"></stop>
+        </linearGradient>
+    </defs>
+    <g id="Remote_collabo_Mobile" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="RMS_0201_접속-화면-실시간-공유_영상-없음(리더)" transform="translate(-248.000000, -570.000000)">
+            <rect fill="#FFFFFF" x="0" y="0" width="360" height="640"></rect>
+            <g id="vidieo_frame" fill="#272B30">
+                <rect id="main_bg" x="0" y="0" width="360" height="640"></rect>
+            </g>
+            <g id="btn_navigation" transform="translate(0.000000, 479.000000)">
+                <rect id="dim_grad_screen" fill-opacity="0.3" fill="url(#linearGradient-1)" x="0" y="0" width="360" height="161"></rect>
+                <g id="btn_flash" transform="translate(230.000000, 73.000000)">
+                    <rect id="btn_circlebg" opacity="0.174409412" x="0" y="0" width="60" height="60"></rect>
+                    <circle id="circle" fill="#E9ECF0" cx="30" cy="30" r="30"></circle>
+                    <g id="ic_flash_off" transform="translate(18.000000, 18.000000)">
+                        <rect id="tr" x="0" y="0" width="24" height="24"></rect>
+                        <path d="M18,10 L14.39,10 L16.67,12.28 L18,10 Z M18,2 L8,2 L8,3.61 L14.13,9.74 L18,2 Z M4.41,2.86 L3,4.27 L8,9.27 L8,13 L11,13 L11,22 L14.58,15.85 L18.73,20 L20.14,18.59 L4.41,2.86 Z" id="Mask" fill="#32373F"></path>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

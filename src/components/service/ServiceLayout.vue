@@ -35,7 +35,7 @@
         </transition>
       </main>
 
-      <user-list :class="userListClass"></user-list>
+      <user-list v-if="!isMobileSize" :class="userListClass"></user-list>
       <!-- <div v-else>
         <figure
           v-for="participant of participants"
@@ -52,6 +52,7 @@
       </div> -->
       <!-- <component :is="viewComponent"></component> -->
     </div>
+    <mobile-footer v-if="isMobileSize"></mobile-footer>
     <reconnect-modal :visible.sync="connectVisible"></reconnect-modal>
     <setting-modal></setting-modal>
     <record-list v-if="useLocalRecording"></record-list>
@@ -77,7 +78,7 @@ import { checkInput } from 'utils/deviceCheck'
 import ReconnectModal from './modal/ReconnectModal'
 import { MyStorage } from 'utils/storage'
 
-import { mapGetters, mapActions } from 'vuex'
+import { mapGetters, mapActions, mapMutations } from 'vuex'
 export default {
   name: 'ServiceLayout',
   beforeRouteEnter(to, from, next) {
@@ -105,6 +106,7 @@ export default {
     RecordList: () => import('LocalRecordList'),
     SettingModal: () => import('./modal/SettingModal'),
     MapModal: () => import('./modal/PositionMapModal'),
+    MobileFooter: () => import('./tools/MobileFooter'),
   },
   data() {
     return {
@@ -150,8 +152,16 @@ export default {
       }
     },
   },
-
+  watch: {
+    //채팅창이 보이게 되는 경우 chat아이콘의 notice 제거
+    isScreenDesktop(newVal) {
+      if (newVal) {
+        this.SET_CHAT_ACTIVE(false)
+      }
+    },
+  },
   methods: {
+    ...mapMutations(['SET_CHAT_ACTIVE']),
     ...mapActions(['useStt', 'setTool']),
     changeOrientation(event) {
       if (!this.myInfo || !this.myInfo.stream) return

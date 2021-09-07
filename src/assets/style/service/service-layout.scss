@@ -66,3 +66,15 @@
   &.screen {
   }
 }
+
+@include responsive-mobile {
+  .service-wrapper {
+    height: 100%;
+    margin-top: 0;
+  }
+
+  .main-wrapper {
+    height: 100%;
+    margin-bottom: 0;
+  }
+}

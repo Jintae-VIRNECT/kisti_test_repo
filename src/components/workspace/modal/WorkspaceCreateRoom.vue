@@ -102,7 +102,6 @@ export default {
       this.visibleFlag = flag
     },
   },
-  
   methods: {
     reset() {
       this.selection = []

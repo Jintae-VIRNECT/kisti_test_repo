@@ -65,6 +65,7 @@
         </template>
         <transition name="opacity">
           <fullscreen
+            v-if="!isMobileSize"
             :hide.sync="hideFullBtn"
             v-show="!hideFullBtn"
           ></fullscreen>
@@ -75,21 +76,22 @@
       <transition name="opacity">
         <!-- 영상이 없을 경우 -->
         <div class="main-video__empty-inner" v-if="resolutions.length === 0">
-          <img src="~assets/image/img_novideo.svg" />
+          <img :src="noVideoSrc" />
           <p>{{ $t('service.stream_no_video') }}</p>
           <p class="inner-discription">
             {{ $t('service.stream_no_worker') }}
           </p>
         </div>
         <div class="main-video__empty-inner" v-else>
-          <img src="~assets/image/call/img_select_video.svg" />
+          <img :src="selectVideoSrc" />
           <p v-html="$t('service.stream_choice')"></p>
         </div>
       </transition>
       <!-- 영상 초기화 로딩 -->
       <transition name="opacity">
         <div class="main-video__empty-inner loading" v-if="initing">
-          <img src="~assets/image/gif_loading.svg" />
+          <img :src="videoLoadingSrc" />
+          <p v-if="isMobileSize" v-html="$t('service.stream_connecting')"></p>
         </div>
       </transition>
     </div>
@@ -98,7 +100,7 @@
         <transition name="opacity">
           <!-- 영상 백그라운드 및 정지 표출 -->
           <div class="main-video__empty-inner" v-if="mainView.me !== true">
-            <img src="~assets/image/img_video_stop.svg" />
+            <img :src="videoStopSrc" />
             <p>{{ $t('service.stream_stop') }}</p>
             <p
               class="inner-discription"
@@ -109,8 +111,9 @@
               {{ $t('service.stream_stoped') }}
             </p>
           </div>
+          <!-- 영상이 없을 경우 -->
           <div class="main-video__empty-inner" v-else>
-            <img src="~assets/image/img_novideo.svg" />
+            <img :src="noVideoSrc" />
             <p>{{ $t('service.stream_off') }}</p>
           </div>
         </transition>
@@ -172,6 +175,26 @@ export default {
       view: 'view',
       screenSharing: 'screenSharing',
     }),
+    noVideoSrc() {
+      return this.isMobileSize
+        ? require('assets/image/call/img_novideo_new.svg')
+        : require('assets/image/call/img_novideo.svg')
+    },
+    selectVideoSrc() {
+      return this.isMobileSize
+        ? require('assets/image/call/img_select_video_new.svg')
+        : require('assets/image/call/img_select_video.svg')
+    },
+    videoStopSrc() {
+      return this.isMobileSize
+        ? require('assets/image/img_video_stop_new.svg')
+        : require('assets/image/img_video_stop.svg')
+    },
+    videoLoadingSrc() {
+      return this.isMobileSize
+        ? require('assets/image/call/mdpi_image_videolink_new.svg')
+        : require('assets/image/gif_loading.svg')
+    },
     isLeader() {
       return this.account.roleType === ROLE.LEADER
     },

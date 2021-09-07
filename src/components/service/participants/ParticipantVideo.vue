@@ -162,6 +162,7 @@ export default {
       'view',
       'initing',
       'restrictedRoom',
+      'participants',
     ]),
     profileUrl() {
       if (!this.participant.path) {
@@ -370,9 +371,15 @@ export default {
   beforeDestroy() {
     if (this.backInterval) clearInterval(this.backInterval)
     if (!this.initing && !this.participant.me && this.$call.session) {
-      this.toastDefault(
-        this.$t('service.chat_leave', { name: this.participant.nickname }),
+      const found = this.participants.findIndex(
+        participant => participant.id === this.participant.id,
       )
+      //실제 참가자가 나간 경우에 토스트 메시지 표시.
+      //모바일의 경우에는 이 component를 사용하지 않아 토스트가 뜨지 않을 것이므로 수정 필요한 부분
+      if (found < 0)
+        this.toastDefault(
+          this.$t('service.chat_leave', { name: this.participant.nickname }),
+        )
     }
   },
 }

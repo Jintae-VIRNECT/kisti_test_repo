@@ -1,6 +1,6 @@
 <template>
-  <header class="header">
-    <div class="header-service">
+  <header class="header service">
+    <div v-if="!isMobileSize" class="header-service">
       <img
         v-if="logo !== false"
         @error="logoError"
@@ -12,6 +12,7 @@
 
       <header-tools></header-tools>
     </div>
+    <service-mobile-header v-else></service-mobile-header>
   </header>
 </template>
 
@@ -19,11 +20,14 @@
 import { WHITE_LOGO, DEFAULT_LOGO } from 'configs/env.config'
 import HeaderLnb from './partials/HeaderServiceLnb'
 import HeaderTools from './partials/HeaderServiceTools'
+import ServiceMobileHeader from './ServiceMobileHeader'
+
 export default {
   name: 'ServiceHeader',
   components: {
     HeaderLnb,
     HeaderTools,
+    ServiceMobileHeader,
   },
   data() {
     return {

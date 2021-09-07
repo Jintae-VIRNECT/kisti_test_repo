@@ -28,6 +28,16 @@
   .header {
     height: $header_m_height;
     background-color: $new_color_bg; //@color 수정 필요
+
+    &.service {
+      z-index: 2;
+      height: 7.4rem;
+      background: linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0));
+      pointer-events: none;
+      &::after {
+        display: none;
+      }
+    }
   }
 
   //workspace 선택 화면 이외에는 header의 아래 border선 제거

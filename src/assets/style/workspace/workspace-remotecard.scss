@@ -147,6 +147,7 @@
     background-color: $new_color_bg;
     border: 0.15rem solid $new_color_line_border;
     border-radius: 0.6rem;
+    cursor: pointer;
 
     &.open {
       background-color: #283434; //@추가 color

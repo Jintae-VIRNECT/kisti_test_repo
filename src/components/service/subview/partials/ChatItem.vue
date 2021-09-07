@@ -4,6 +4,7 @@
       class="chat-item__profile"
       v-if="!hideProfile"
       :image="chat.profile"
+      :thumbStyle="profileThumbStyle"
     ></profile>
     <div class="chat-item__body" :class="[chat.type, { hidden: hideProfile }]">
       <div class="chat-item__body--chatbox">
@@ -98,6 +99,10 @@ export default {
   },
   computed: {
     ...mapGetters(['roomInfo', 'translate']),
+    profileThumbStyle() {
+      if (this.isMobileSize) return { width: '3rem', height: '3rem' }
+      else return { width: '2.143rem', height: '2.143rem' }
+    },
     isTranslate() {
       if (
         this.translateText.length > 0 &&
