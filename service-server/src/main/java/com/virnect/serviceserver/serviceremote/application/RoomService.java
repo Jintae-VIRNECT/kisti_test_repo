@@ -56,6 +56,7 @@ import com.virnect.data.dto.response.room.RoomResponse;
 import com.virnect.data.dto.rest.WorkspaceMemberInfoListResponse;
 import com.virnect.data.dto.rest.WorkspaceMemberInfoResponse;
 import com.virnect.data.error.ErrorCode;
+import com.virnect.data.error.exception.RestServiceException;
 import com.virnect.data.global.common.ApiResponse;
 import com.virnect.data.global.util.paging.PagingUtils;
 import com.virnect.data.infra.utils.LogMessage;
@@ -95,8 +96,7 @@ public class RoomService {
 	private final RoomInfoMapper roomInfoMapper;
 	private final RoomDetailMapper roomDetailMapper;
 	private final MemberMapper memberMapper;
-
-
+	
 	@Override
 	protected Object clone() throws CloneNotSupportedException {
 		return super.clone();

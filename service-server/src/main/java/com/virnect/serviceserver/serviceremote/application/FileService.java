@@ -1078,7 +1078,7 @@ public class FileService {
 			.build();
 	}
 
-	private File buildShareFile(FileUploadRequest fileUploadRequest, String objectName, int height, int width) {
+	private File buildShareFile(FileUploadRequest fileUploadRequest, String objectName, int width, int height) {
 		return File.builder()
 			.workspaceId(fileUploadRequest.getWorkspaceId())
 			.sessionId(fileUploadRequest.getSessionId())
