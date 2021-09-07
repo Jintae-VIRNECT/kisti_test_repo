@@ -12,7 +12,7 @@
 
     <speaker></speaker>
 
-    <notice></notice>
+    <notice v-if="isNotGuest"></notice>
 
     <call-time></call-time>
 
@@ -68,6 +68,9 @@ export default {
     },
     isLeader() {
       return this.account.roleType === ROLE.LEADER
+    },
+    isNotGuest() {
+      return this.account.roleType !== ROLE.GUEST
     },
   },
   methods: {
