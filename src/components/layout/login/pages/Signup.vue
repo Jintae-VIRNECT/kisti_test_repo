@@ -166,16 +166,16 @@
           @change="resetJoinInfo"
         >
           <el-option
-            v-for="item in $t('signup.subscriptionPathLists')"
-            :key="item"
-            :label="item"
-            :value="item"
+            v-for="(item, index) in subscriptionPath"
+            :key="index"
+            :label="$t(item.label)"
+            :value="item.value"
           >
           </el-option>
         </el-select>
         <el-input
           :placeholder="$t('signup.route.placeholder')"
-          v-if="joinInfo === $t('signup.route.other')"
+          v-if="joinInfo === subscriptionPath.length - 1"
           v-model="signup.joinInfo"
           type="text"
           name="email"
@@ -193,16 +193,16 @@
           @change="resetServiceInfo"
         >
           <el-option
-            v-for="item in $t('signup.serviceInfoLists')"
-            :key="item"
-            :label="item"
-            :value="item"
+            v-for="(item, index) in serviceInfoLists"
+            :key="index"
+            :label="$t(item.label)"
+            :value="item.value"
           >
           </el-option>
         </el-select>
         <el-input
           :placeholder="$t('signup.serviceInfo.placeholder')"
-          v-if="serviceInfo === $t('signup.serviceInfo.other')"
+          v-if="serviceInfo === serviceInfoLists.length - 1"
           v-model="signup.serviceInfo"
           type="text"
           name="email"
@@ -225,7 +225,7 @@
 import AuthService from 'service/auth-service'
 import mixin from 'mixins/mixin'
 import dayjs from 'dayjs'
-
+import Signup from 'model/signup'
 export default {
   name: 'signup',
   mixins: [mixin],
@@ -238,18 +238,9 @@ export default {
       authLoading: false,
       isVeritication: false,
       verificationText: this.$t('signup.authentication.verification'),
-      signup: {
-        email: '',
-        password: '',
-        firstName: '',
-        lastName: '',
-        birth: '',
-        marketInfoReceive: false,
-        joinInfo: '',
-        serviceInfo: '',
-        sessionCode: '',
-        inviteSession: '',
-      },
+      signup: new Signup(),
+      subscriptionPath: this.createI18nArray('signup.subscriptionPathLists'),
+      serviceInfoLists: this.createI18nArray('signup.serviceInfoLists'),
       passwordConfirm: '',
       birth: {
         year: '',
@@ -308,6 +299,20 @@ export default {
     },
   },
   watch: {
+    '$i18n.locale'() {
+      // 언어 변경에 따라 값을 변경해야 한다.
+      const info = this.subscriptionPath[this.joinInfo]
+      this.signup.joinInfo =
+        this.joinInfo === this.subscriptionPath.length - 1
+          ? ''
+          : this.$t(info.label)
+
+      const service = this.serviceInfoLists[this.serviceInfo]
+      this.signup.serviceInfo =
+        this.serviceInfo === this.serviceInfoLists.length - 1
+          ? ''
+          : this.$t(service.label)
+    },
     'birth.mobile'(newTime) {
       this.birth.year = newTime
       this.birth.month = newTime
@@ -482,17 +487,19 @@ export default {
       this.delayResend()
     },
     resetJoinInfo(val) {
-      if (val === this.$t('signup.route.other')) {
+      if (val === this.subscriptionPath.length - 1) {
         this.signup.joinInfo = ''
       } else {
-        this.signup.joinInfo = val
+        const info = this.subscriptionPath[val]
+        this.signup.joinInfo = this.$t(info.label)
       }
     },
     resetServiceInfo(val) {
-      if (val === this.$t('signup.serviceInfo.other')) {
+      if (val === this.serviceInfoLists.length - 1) {
         this.signup.serviceInfo = ''
       } else {
-        this.signup.serviceInfo = val
+        const info = this.serviceInfoLists[val]
+        this.signup.serviceInfo = this.$t(info.label)
       }
     },
     delayResend() {
@@ -520,6 +527,22 @@ export default {
         this.signup.email = email
         this.signup.inviteSession = inviteSession
       }
+    },
+    /**
+     * i18n의 배열키 값을 가져와 label과 value로 구성된 객체 배열을 리턴
+     * @param {string} i18nArrayKey i18n의 배열키 값
+     * @returns {Array.<{label: string, value: string}>} label과 value로 구성된 객체 배열
+     */
+    createI18nArray(i18nArrayKey) {
+      const arr = []
+      for (let i in this.$t(i18nArrayKey)) {
+        arr.push({
+          label: `${i18nArrayKey}[${Number(i)}]`,
+          value: Number(i),
+        })
+      }
+      console.log(arr)
+      return arr
     },
   },
   created() {
