@@ -39,37 +39,5 @@ export default {
 <style lang="scss">
 #projects .el-card--table .el-card__body .el-table .cell .column-modes {
   display: flex;
-  flex-direction: row-reverse;
-  justify-content: flex-end;
-
-  @mixin border($color) {
-    & {
-      border: solid 1.2px $color;
-      color: $color;
-      display: inline-block;
-      text-align: center;
-      width: 68px;
-      height: 28px;
-      margin-right: 8px;
-      padding: 3px 12px 5px;
-      border-radius: 3px;
-      font-size: 13px;
-      line-height: 20px;
-      background-color: rgba(32, 102, 243, 0.02);
-    }
-  }
-
-  overflow: visible;
-  > .two-or-three-dimensinal {
-    @include border(#2066f3);
-  }
-
-  > .three-dimensinal {
-    @include border(#237ffe);
-  }
-
-  > .two-dimensinal {
-    @include border(#0091ff);
-  }
 }
 </style>
