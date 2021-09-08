@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang.StringUtils;
@@ -69,7 +70,7 @@ public class GroupService {
 		if (!checkMasterAuth(workspaceId, userId)) {
 			return new ApiResponse<>(ErrorCode.ERR_ACCESS_AUTHORITY);
 		}
-		if (!checkUuidValidation(workspaceId, groupRequest.getMemberList())) {
+		if (!isUserIdsIncludeOfWorkspace(workspaceId, groupRequest.getMemberList())) {
 			return new ApiResponse<>(ErrorCode.ERR_MEMBER_INVALID);
 		}
 
@@ -181,7 +182,7 @@ public class GroupService {
 		if (!checkMasterAuth(workspaceId, userId)) {
 			return new ApiResponse<>(ErrorCode.ERR_ACCESS_AUTHORITY);
 		}
-		if (!checkUuidValidation(workspaceId, groupRequest.getMemberList())) {
+		if (!isUserIdsIncludeOfWorkspace(workspaceId, groupRequest.getMemberList())) {
 			return new ApiResponse<>(ErrorCode.ERR_MEMBER_INVALID);
 		}
 		RemoteGroup targetGroup = groupRepository.findByWorkspaceIdAndGroupId(workspaceId, groupId);
@@ -234,7 +235,7 @@ public class GroupService {
 		String userId,
 		GroupRequest groupRequest
 	) {
-		if (!checkUuidValidation(workspaceId, groupRequest.getMemberList())) {
+		if (!isUserIdsIncludeOfWorkspace(workspaceId, groupRequest.getMemberList())) {
 			return new ApiResponse<>(ErrorCode.ERR_MEMBER_INVALID);
 		}
 
@@ -343,7 +344,7 @@ public class GroupService {
 		String groupId,
 		GroupRequest groupRequest
 	) {
-		if (!checkUuidValidation(workspaceId, groupRequest.getMemberList())) {
+		if (!isUserIdsIncludeOfWorkspace(workspaceId, groupRequest.getMemberList())) {
 			return new ApiResponse<>(ErrorCode.ERR_MEMBER_INVALID);
 		}
 
@@ -493,20 +494,16 @@ public class GroupService {
 		return remoteGroupMemberResponses;
 	}
 
-	private boolean checkUuidValidation(String workspaceId, List<String> userIds) {
-		boolean checkResult;
-		int count = 0;
-
-		List<WorkspaceMemberInfoResponse> workspaceMemberAll = getWorkspaceMembers(workspaceId);
-		for (WorkspaceMemberInfoResponse workspaceMember : workspaceMemberAll) {
-			for (String userId : userIds) {
-				if (workspaceMember.getUuid().equals(userId)) {
-					count++;
-				}
+	private boolean isUserIdsIncludeOfWorkspace(String workspaceId, List<String> userIds) {
+		Set<String> uuidSet = getWorkspaceMembers(workspaceId).stream()
+			.map(WorkspaceMemberInfoResponse::getUuid)
+			.collect(Collectors.toSet());
+		for (String userId : userIds) {
+			if (!uuidSet.contains(userId)) {
+				return false;
 			}
 		}
-		checkResult = userIds.size() == count;
-		return checkResult;
+		return true;
 	}
 
 	private RemoteGroup buildRemoteGroup(String workspaceId, String groupName) {
