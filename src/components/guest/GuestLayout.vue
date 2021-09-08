@@ -19,6 +19,7 @@ import HeaderSection from 'components/header/Header'
 import Cookies from 'js-cookie'
 
 import confirmMixin from 'mixins/confirm'
+import { getAllAppList, getLatestAppInfo } from 'api/http/download'
 import langMixin from 'mixins/language'
 import toastMixin from 'mixins/toast'
 import errorMsgMixin from 'mixins/errorMsg'
@@ -60,6 +61,7 @@ export default {
       sessionId: '',
       uuid: '',
       serviceMode: '', //web, mobile
+      packageName: '',
     }
   },
   computed: {
@@ -137,6 +139,36 @@ export default {
     updateServiceMode(mode) {
       this.serviceMode = mode
     },
+    async checkAppInstalled() {
+      const appInfo = await getLatestAppInfo({ productName: 'remote' })
+      const aosAppInfo = appInfo.appInfoList.find(info => {
+        return info.deviceType === 'Mobile'
+      })
+
+      const appList = await getAllAppList()
+      const aosApp = appList.appInfoList.find(app => {
+        return app.uuid === aosAppInfo.uuid
+      })
+
+      this.packageName = aosApp.packageName
+
+      const relatedApps = await navigator.getInstalledRelatedApps()
+      console.log(relatedApps)
+      const relatedApp = relatedApps.find(app => {
+        console.log(app.id, app.platform, app.url)
+        return app.url === this.packageName
+      })
+
+      return relatedApp ? true : false
+    },
+    runApp() {
+      const intentLink = `intent://remote?workspace=${this.workspaceId}&sessionId=${this.$route.query.sessionId}#$d#Intent;scheme=virnect;action=android.intent.action.VIEW;category=android.intent.category.BROWSABLE;package=${this.packageName};end`
+      console.log(intentLink)
+      window.open(intentLink)
+    },
+    handleMaxScroll(event) {
+      this.$eventBus.$emit('scroll:end', event)
+    },
   },
 
   async mounted() {
@@ -152,12 +184,11 @@ export default {
 
       await this.initGuestMember()
 
-      //앱 테스트 코드
-      const relatedApps = await navigator.getInstalledRelatedApps()
-      console.log(relatedApps)
-      relatedApps.forEach(app => {
-        console.log(app.id, app.platform, app.url)
-      })
+      const isAppInstalled = await this.checkAppInstalled()
+
+      if (isAppInstalled) {
+        this.runApp()
+      }
     } catch (err) {
       if (err.code === ERROR.ASSIGNED_GUEST_USER_IS_NOT_ENOUGH) {
         this.showGuestExpiredAlarm()
