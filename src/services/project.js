@@ -20,10 +20,10 @@ export default {
   async searchProjects(params = {}) {
     // 4개의 필터 값을 가져와, API 전달할 파라미터 값으로 작업 후 filter 프로퍼티 삭제.
     if (params.filter) {
-      params.targetType = params.filter.targetFilter
+      params.target = params.filter.targetFilter
       params.mode = params.filter.modeFilter
-      params.sharePermission = params.filter.sharedTypes
-      params.editPermission = params.filter.editTypes
+      params.share = params.filter.sharedTypes
+      params.edit = params.filter.editTypes
       delete params.filter
     }
 
