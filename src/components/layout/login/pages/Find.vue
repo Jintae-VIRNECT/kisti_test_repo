@@ -27,23 +27,29 @@
               <el-radio v-model="tabCategory" label="1">{{
                 $t('find.number')
               }}</el-radio>
-              <template v-if="tabCategory == '1'">
+              <div v-show="tabCategory == '1'">
                 <p class="input-title">{{ $t('find.name.title') }}</p>
                 <el-input
                   class="lastname-input"
                   :placeholder="$t('find.name.lastName')"
                   clearable
-                  name="lastname"
-                  v-validate="'required'"
+                  name="tab-category-1-lastname"
+                  v-validate.immediate="'required'"
                   v-model="fullName.lastName"
+                  :class="{
+                    'input-danger': errors.has('tab-category-1-lastname'),
+                  }"
                 ></el-input>
                 <el-input
                   class="firstname-input"
                   :placeholder="$t('find.name.firstName')"
                   clearable
-                  name="firstname"
-                  v-validate="'required'"
+                  name="tab-category-1-firstname"
+                  v-validate.immediate="'required'"
                   v-model="fullName.firstName"
+                  :class="{
+                    'input-danger': errors.has('tab-category-1-firstname'),
+                  }"
                 ></el-input>
                 <p class="input-title">{{ $t('find.mobile.title') }}</p>
                 <el-select
@@ -66,44 +72,53 @@
                   class="phonenumber-input"
                   clearable
                   name="phoneNumber"
-                  v-validate="'required'"
+                  v-validate.immediate="'required'"
                   v-model="findEmail.phoneNumber"
+                  :class="{ 'input-danger': errors.has('phoneNumber') }"
                 ></el-input>
-              </template>
+              </div>
 
               <el-radio v-model="tabCategory" label="2">{{
                 $t('find.recoveryMail')
               }}</el-radio>
 
-              <template v-if="tabCategory == '2'">
+              <div v-show="tabCategory == '2'">
                 <p class="input-title">{{ $t('find.name.title') }}</p>
                 <el-input
                   class="lastname-input"
                   :placeholder="$t('find.name.lastName')"
                   clearable
-                  name="lastname"
-                  v-validate="'required'"
+                  name="tab-category-2-lastname"
+                  v-validate.immediate="'required'"
                   v-model="fullName.lastName"
+                  :class="{
+                    'input-danger': errors.has('tab-category-2-lastname'),
+                  }"
                 ></el-input>
                 <el-input
                   class="firstname-input"
                   :placeholder="$t('find.name.firstName')"
                   clearable
-                  name="firstname"
-                  v-validate="'required'"
+                  name="tab-category-2-firstname"
+                  v-validate.immediate="'required'"
                   v-model="fullName.firstName"
+                  :class="{
+                    'input-danger': errors.has('tab-category-2-firstname'),
+                  }"
                 ></el-input>
                 <p class="input-title">
                   {{ $t('user.recoveryEmail.title') }}
                 </p>
                 <el-input
+                  type="email"
                   :placeholder="$t('user.recoveryEmail.placeHolder')"
                   clearable
                   name="recoveryEmail"
-                  v-validate="'required|email|max:50'"
+                  v-validate.immediate="'required|email|max:50'"
                   v-model="findEmail.recoveryEmail"
+                  :class="{ 'input-danger': errors.has('recoveryEmail') }"
                 ></el-input>
-              </template>
+              </div>
               <el-button
                 class="next-btn block-btn"
                 type="primary"
@@ -287,17 +302,17 @@ export default {
     emailFindActive() {
       if (this.tabCategory == 1) {
         if (
-          this.fullName.firstName == '' ||
-          this.fullName.lastName == '' ||
-          this.findEmail.phoneNumber == ''
+          this.$validator.errors.has('tab-category-1-firstname') ||
+          this.$validator.errors.has('tab-category-1-lastName') ||
+          this.$validator.errors.has('phoneNumber')
         )
           return true
         else return false
       } else {
         if (
-          this.fullName.firstName == '' ||
-          this.fullName.lastName == '' ||
-          this.findEmail.recoveryEmail == ''
+          this.$validator.errors.has('tab-category-2-firstname') ||
+          this.$validator.errors.has('tab-category-2-lastName') ||
+          this.$validator.errors.has('recoveryEmail')
         )
           return true
         else return false
@@ -523,6 +538,7 @@ export default {
     height: 60px;
     color: #0d2a58;
     font-size: 16px;
+    border: 0;
     opacity: 0.6;
     &.active {
       opacity: 1;
