@@ -17,11 +17,7 @@ export default {
     GuestWelcome,
     GuestTab,
   },
-  methods: {
-    handleMaxScroll(event) {
-      this.$eventBus.$emit('scroll:end', event)
-    },
-  },
+  methods: {},
 }
 </script>
 
