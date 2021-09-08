@@ -170,7 +170,7 @@ export default {
       this.projectsTotal = total
     },
     rowClick(row) {
-      this.$router.push(`/projects/${row.projectUUID}`)
+      this.$router.push(`/projects/${row.uuid}`)
     },
     selectionChanged(selection) {
       this.canRemove = selection.length ? true : false
