@@ -40,7 +40,7 @@
           class="block-btn"
           type="info"
           :disabled="this.verificationCode.length !== 6 || !isVeritication"
-          v-show="authLoading"
+          v-if="authLoading"
           @click="checkVerificationCode()"
         >
           <span>{{ $t(verificationText) }}</span>
