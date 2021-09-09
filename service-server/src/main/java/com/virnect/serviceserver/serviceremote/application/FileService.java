@@ -628,7 +628,7 @@ public class FileService {
 		FileUploadRequest fileUploadRequest, HttpServletRequest httpServletRequest
 	) throws Exception {
 
-		/*// Check Extension
+		// Check Extension
 		if (!checkShareFileExtension(fileUploadRequest.getFile())) {
 			return new ApiResponse<>(ErrorCode.ERR_FILE_UNSUPPORTED_EXTENSION);
 		}
@@ -637,17 +637,17 @@ public class FileService {
 		FileStorageCheckResponse storageCheckResult = checkStorageCapacity(fileUploadRequest.getWorkspaceId());
 		if (storageCheckResult.getErrorCode() != ErrorCode.ERR_SUCCESS) {
 			return new ApiResponse<>(storageCheckResult.getErrorCode());
-		}*/
+		}
 
 		// Check File Orientation (Only AOS)
 		boolean checkAos = false;
-		/*if ("mobile".equalsIgnoreCase(httpServletRequest.getHeader("client"))
+		if ("mobile".equalsIgnoreCase(httpServletRequest.getHeader("client"))
 			&& !Objects.equals(fileUploadRequest.getFile().getContentType(), "application/pdf")
-		) {*/
+		) {
 			MultipartFile orientationAppliedFile = fileOrientation(fileUploadRequest);
 			fileUploadRequest.setFile(orientationAppliedFile);
 			checkAos = true;
-		//}
+		}
 
 		// Save upload file
 		FileUploadResult fileUploadResult = saveShareFile(fileUploadRequest);
