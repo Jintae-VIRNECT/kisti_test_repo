@@ -119,12 +119,12 @@ export default {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  margin-bottom: 8.3571rem;
+  margin-bottom: 116.9994px;
 }
 
 .guest-mobile__logo--img {
-  width: 7.1429rem;
-  height: 7.1429rem;
+  width: 100.0006px;
+  height: 100.0006px;
   margin-bottom: 6px;
   padding: 12px;
   background: linear-gradient(
@@ -138,14 +138,14 @@ export default {
 }
 
 .guest-mobile__logo--type {
-  width: 9rem;
-  height: 2.8286rem;
-  margin-bottom: 1.2429rem;
+  width: 126px;
+  height: 39.6004px;
+  margin-bottom: 17.4006px;
 }
 .guest-mobile__logo--text {
   color: rgb(174, 182, 194);
   font-weight: 500;
-  font-size: 1rem;
+  font-size: 14px;
   line-height: 20px;
   letter-spacing: 0px;
   white-space: pre-line;
@@ -159,33 +159,33 @@ export default {
 
   a,
   button {
-    width: 15.7143rem;
-    height: 3.4286rem;
+    width: 220.0002px;
+    height: 48.0004px;
 
-    margin-bottom: 1.1429rem;
+    margin-bottom: 16.0006px;
     border-radius: 6px;
     box-shadow: 0px 6px 14px 0px rgba(0, 0, 0, 0.2);
   }
 }
 
 .guest-mobile__buttons--playstore {
-  padding-top: 0.3571rem;
+  padding-top: 4.9994px;
   background: rgb(255, 255, 255);
   border-radius: 6px;
   box-shadow: 0px 6px 14px 0px rgba(0, 0, 0, 0.2);
   > img {
-    width: 7.7857rem;
-    height: 1.9286rem;
+    width: 108.9998px;
+    height: 27.0004px;
   }
 }
 
 .guest-mobile__buttons--runapp {
-  width: 15.7143rem;
-  height: 3.4286rem;
+  width: 220.0002px;
+  height: 48.0004px;
   color: rgb(255, 255, 255);
 
   font-weight: 500;
-  font-size: 1.0714rem;
+  font-size: 14.9996px;
   letter-spacing: 0px;
   text-align: center;
   background: rgb(59, 146, 243);
@@ -196,7 +196,7 @@ export default {
   color: rgb(255, 255, 255);
 
   font-weight: 500;
-  font-size: 1.0714rem;
+  font-size: 14.9996px;
   letter-spacing: 0px;
   background: rgb(62, 69, 79);
 }
@@ -205,7 +205,7 @@ export default {
   color: rgb(255, 255, 255);
 
   font-weight: 500;
-  font-size: 1.0714rem;
+  font-size: 14.9996px;
   letter-spacing: 0px;
   background: #616872;
   border-radius: 6px;
