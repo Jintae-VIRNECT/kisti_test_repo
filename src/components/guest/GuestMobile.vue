@@ -1,11 +1,9 @@
 <template>
   <div class="guest-mobile">
     <section class="guest-mobile__logo">
-      <img
-        class="guest-mobile__logo--img"
-        src="~assets/image/img_remote_logo.svg"
-        alt="remote_logo"
-      />
+      <div class="guest-mobile__logo--img">
+        <img src="~assets/image/img_remote_logo.svg" alt="remote_logo" />
+      </div>
 
       <img
         class="guest-mobile__logo--type"
@@ -123,15 +121,22 @@ export default {
 }
 
 .guest-mobile__logo--img {
+  display: flex;
+  align-items: center;
+  justify-content: center;
   width: 100.0006px;
   height: 100.0006px;
   margin-bottom: 6px;
-  padding: 12px;
-  background: linear-gradient(
-    -225deg,
-    rgb(255, 255, 255) 0%,
-    rgb(188, 188, 188) 100%
-  );
+  background-image: linear-gradient(
+      -225deg,
+      rgb(255, 255, 255) 0%,
+      rgb(188, 188, 188) 100%
+    ),
+    radial-gradient(circle at top left, #ffffff, #84bbe2);
+  background-clip: content-box, border-box;
+  background-origin: border-box;
+
+  border: solid 0.8px transparent;
 
   border-radius: 27.2px;
   box-shadow: 0px 12px 15px 0px rgba(0, 0, 1, 0.4);
@@ -142,6 +147,7 @@ export default {
   height: 39.6004px;
   margin-bottom: 17.4006px;
 }
+
 .guest-mobile__logo--text {
   color: rgb(174, 182, 194);
   font-weight: 500;
