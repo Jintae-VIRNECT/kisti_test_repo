@@ -59,7 +59,6 @@ export default {
   },
   methods: {
     onSelect(menu) {
-      console.error(menu)
       if (menu.name === MENU.CAMERA_CONTROL) this.$emit('selectCameraControl')
     },
   },
