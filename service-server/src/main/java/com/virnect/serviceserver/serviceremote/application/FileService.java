@@ -628,7 +628,7 @@ public class FileService {
 		FileUploadRequest fileUploadRequest, HttpServletRequest httpServletRequest
 	) throws Exception {
 
-		// Check Extension
+		/*// Check Extension
 		if (!checkShareFileExtension(fileUploadRequest.getFile())) {
 			return new ApiResponse<>(ErrorCode.ERR_FILE_UNSUPPORTED_EXTENSION);
 		}
@@ -637,17 +637,17 @@ public class FileService {
 		FileStorageCheckResponse storageCheckResult = checkStorageCapacity(fileUploadRequest.getWorkspaceId());
 		if (storageCheckResult.getErrorCode() != ErrorCode.ERR_SUCCESS) {
 			return new ApiResponse<>(storageCheckResult.getErrorCode());
-		}
+		}*/
 
 		// Check File Orientation (Only AOS)
 		boolean checkAos = false;
-		if ("mobile".equalsIgnoreCase(httpServletRequest.getHeader("client"))
+		/*if ("mobile".equalsIgnoreCase(httpServletRequest.getHeader("client"))
 			&& !Objects.equals(fileUploadRequest.getFile().getContentType(), "application/pdf")
-		) {
+		) {*/
 			MultipartFile orientationAppliedFile = fileOrientation(fileUploadRequest);
 			fileUploadRequest.setFile(orientationAppliedFile);
 			checkAos = true;
-		}
+		//}
 
 		// Save upload file
 		FileUploadResult fileUploadResult = saveShareFile(fileUploadRequest);
@@ -672,7 +672,7 @@ public class FileService {
 		ShareFileUploadResponse fileUploadResponse = shareUploadFileMapper.toDto(fileUploadResult.getFile());
 		fileUploadResponse.setThumbnailDownloadUrl(downloadThumbnailFileUrl(thumbnailUploadResult.getFile()).getData());
 		fileUploadResponse.setDeleted(fileUploadResult.getFile().isDeleted());
-		fileUploadResponse.setUsedStoragePer(storageCheckResult.getUsedStoragePer());
+		//fileUploadResponse.setUsedStoragePer(storageCheckResult.getUsedStoragePer());
 		return new ApiResponse<>(fileUploadResponse);
 	}
 
@@ -1133,7 +1133,7 @@ public class FileService {
 	private MultipartFile fileOrientation(FileUploadRequest fileUploadRequest) throws Exception {
 		java.io.File fileData = convertMultiFileToFile(fileUploadRequest.getFile());
 		BufferedImage bufferedImage = applyImageOrientation(fileUploadRequest.getFile(), getOrientation(fileData));
-		ImageIO.write(bufferedImage,"jpg", fileData);
+		ImageIO.write(bufferedImage,"png", fileData);
 		return convertBufferImgToMultipartFile(fileUploadRequest, bufferedImage);
 	}
 
@@ -1142,7 +1142,8 @@ public class FileService {
 		if (orientation == 1) { // 정위치
 			return bufferedImage;
 		} else if (orientation == 6) {
-			return rotateImage(bufferedImage, 90);
+			return rotateImage(bufferedImage
+				, 90);
 		} else if (orientation == 3) {
 			return rotateImage(bufferedImage, 180);
 		} else if (orientation == 8) {
