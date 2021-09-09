@@ -7,6 +7,8 @@
         </div>
       </div>
 
+      <button class="chat-header__close" @click="closeChatBox"></button>
+
       <ul class="chat-header__menu" v-if="useStorage">
         <li class="chat-header__selector" :class="{ active: showChat }">
           <button
@@ -139,9 +141,12 @@ export default {
     },
   },
   methods: {
-    ...mapActions(['addChat']),
+    ...mapActions(['addChat', 'toggleChat']),
     toggleMenu(menu) {
       this.show = menu
+    },
+    closeChatBox() {
+      this.toggleChat(false)
     },
   },
 

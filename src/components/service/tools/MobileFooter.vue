@@ -12,18 +12,26 @@
       </button>
     </div>
     <div class="footer-button-container">
-      <button class="more-btn"></button>
-      <button class="capture-btn"></button>
-      <button class="flash-btn"></button>
+      <mobile-more-button></mobile-more-button>
+      <mobile-capture-button></mobile-capture-button>
+      <mobile-flash-button></mobile-flash-button>
     </div>
   </footer>
 </template>
 
 <script>
 import tabChangeMixin from 'mixins/tabChange'
+import MobileMoreButton from './partials/MobileMoreButton.vue'
+import MobileCaptureButton from './partials/MobileCaptureButton.vue'
+import MobileFlashButton from './partials/MobileFlashButton.vue'
 
 export default {
   mixins: [tabChangeMixin],
+  components: {
+    MobileMoreButton,
+    MobileCaptureButton,
+    MobileFlashButton,
+  },
 }
 </script>
 
@@ -70,29 +78,7 @@ export default {
   }
 
   .footer-button-container {
-    //width: 24rem;
-    > button {
-      width: 6rem;
-      height: 6rem;
-      margin: 0 1rem;
-      border-radius: 50%;
-
-      &.more-btn {
-        background: url(~assets/image/call/mdpi_icon_more_new.svg) center/2.4rem
-          no-repeat;
-        background-color: $new_color_bg_button_primary;
-      }
-      &.capture-btn {
-        background: url(~assets/image/call/mdpi_icon_capture_new.svg)
-          center/2.4rem no-repeat;
-        background-color: $new_color_bg_button_sub2;
-      }
-      &.flash-btn {
-        background: url(~assets/image/call/ic_flash_off_new.svg) center/2.4rem
-          no-repeat;
-        background-color: $new_color_bg_button_sub2;
-      }
-    }
+    display: flex;
   }
 }
 </style>

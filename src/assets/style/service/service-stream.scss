@@ -190,5 +190,15 @@
       color: $new_color_text_main;
       opacity: 0.5;
     }
+
+    &.loading {
+      img {
+        margin: 0;
+      }
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background-color: $new_color_bg;
+    }
   }
 }

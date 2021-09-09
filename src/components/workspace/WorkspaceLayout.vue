@@ -2,7 +2,7 @@
   <section class="remote-layout">
     <header-section></header-section>
     <vue2-scrollbar
-      classes="remote-wrapper"
+      classes="remote-wrapper workspace-wrapper"
       ref="wrapperScroller"
       @onScroll="onScroll"
       :onMaxScroll="handleMaxScroll"

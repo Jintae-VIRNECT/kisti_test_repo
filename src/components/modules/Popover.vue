@@ -43,7 +43,7 @@ function calcOffset(element) {
 }
 
 const RIGHT_TOLERANCE = 10 //우측 여유 영역
-const TOP_TOLERANCE = 10 //bottom-end 일때 useTopMargin이 true이면 top에 10px 여유추가
+//const TOP_TOLERANCE = 10 //bottom-end 일때 useTopMargin이 true이면 top에 10px 여유추가
 
 export default {
   name: 'Popover',
@@ -109,8 +109,8 @@ export default {
       default: '.remote-layout',
     },
     useTopMargin: {
-      type: Boolean,
-      default: false,
+      type: Number,
+      default: 0,
     },
   },
   data() {
@@ -241,9 +241,10 @@ export default {
         }
       }
       //true시 10px를 추가함.
-      if (this.useTopMargin) {
-        top = top + TOP_TOLERANCE
-      }
+      // if (this.useTopMargin) {
+      //   top = top + this.useTopMargin
+      // }
+      top = top + this.useTopMargin
 
       this.$set(this.style, 'top', top + 'px')
       this.$set(this.style, 'left', left + 'px')

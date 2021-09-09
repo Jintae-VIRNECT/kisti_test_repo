@@ -68,7 +68,7 @@
 }
 
 @include responsive-mobile {
-  .service-wrapper {
+  .service-wrapper.remote-wrapper {
     height: 100%;
     margin-top: 0;
   }

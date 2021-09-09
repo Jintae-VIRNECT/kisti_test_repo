@@ -238,6 +238,7 @@
     "map_cannot_use_gps":"This device does not support the location information function.",
     "map_timeout":"Unable to verify GPS information. Please check whether the GPS function is used by the requested participant.",
 
+    "spot_control": "Spot control",
     "spot_networ_error" : "The Spot connection was terminated due to a network/server problem.​\nWould you like to reconnect?​",
     "spot_connecting" : "Connecting to Spot…",
     "spot_reconnecting" : "Spot reconnecting…",

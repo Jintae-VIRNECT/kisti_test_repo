@@ -43,7 +43,7 @@
   .remote-layout {
     background-color: $new_color_bg_sub; //@color 수정 필요
   }
-  .remote-wrapper {
+  .remote-wrapper.workspace-wrapper {
     height: calc(100% - #{$header_m_height});
     margin-top: $header_m_height;
     padding-right: 0;

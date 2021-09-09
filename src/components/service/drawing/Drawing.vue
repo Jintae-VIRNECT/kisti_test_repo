@@ -117,19 +117,20 @@ export default {
         target,
       )
     },
-    refreshCanvas() {
-      const imgId = parseInt(
-        Date.now()
-          .toString()
-          .substr(-9),
-      )
-      this.addHistory({
-        id: imgId,
-        fileName: this.shareFile.fileName,
-        oriName: this.shareFile.oriName,
-        img: this.shareFile.img,
-      })
-    },
+    //미사용 함수
+    // refreshCanvas() {
+    //   const imgId = parseInt(
+    //     Date.now()
+    //       .toString()
+    //       .substr(-9),
+    //   )
+    //   this.addHistory({
+    //     id: imgId,
+    //     fileName: this.shareFile.fileName,
+    //     oriName: this.shareFile.oriName,
+    //     img: this.shareFile.img,
+    //   })
+    // },
     addFile() {
       this.$eventBus.$emit('addFile')
     },

@@ -48,3 +48,9 @@
   background: url(~assets/image/call/chat_img_no_video_stream.svg) center
     no-repeat;
 }
+
+@include responsive-mobile {
+  .subview-wrapper {
+    width: 100%;
+  }
+}

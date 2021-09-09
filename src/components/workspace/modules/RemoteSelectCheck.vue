@@ -8,7 +8,7 @@
     :disabled="disabled"
     @visible="visible => (show = visible)"
     :targetElement="targetElement"
-    :useTopMargin="true"
+    :useTopMargin="10"
     :scrollHide="true"
     width="22.2143rem"
   >

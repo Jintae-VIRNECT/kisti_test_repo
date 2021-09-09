@@ -52,6 +52,10 @@
   text-overflow: ellipsis;
 }
 
+.chat-header__close {
+  display: none;
+}
+
 .chat-header__menu {
   display: flex;
   height: 100%;
@@ -772,5 +776,17 @@
   transition: background-color 0.2s;
   &:disabled {
     color: rgba($color_text_sub, 0.5);
+  }
+}
+
+@include responsive-mobile {
+  .chat-header__close {
+    position: absolute;
+    top: 1.5rem;
+    right: 1.6rem;
+    display: block;
+    width: 2.4rem;
+    height: 2.4rem;
+    background: url(~assets/image/ic_close_24.svg) 50% no-repeat;
   }
 }
