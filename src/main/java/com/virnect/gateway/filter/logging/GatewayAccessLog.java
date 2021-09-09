@@ -26,6 +26,7 @@ final class GatewayAccessLog {
 	CharSequence status;
 	String contentType = MISSING;
 	String userAgent = MISSING;
+	String referrer = MISSING;
 	long contentLength;
 	long startTime = System.currentTimeMillis();
 
@@ -75,6 +76,11 @@ final class GatewayAccessLog {
 
 	GatewayAccessLog userAgent(String userAgent) {
 		this.userAgent = userAgent;
+		return this;
+	}
+
+	GatewayAccessLog referrer(String referrer){
+		this.referrer = referrer;
 		return this;
 	}
 

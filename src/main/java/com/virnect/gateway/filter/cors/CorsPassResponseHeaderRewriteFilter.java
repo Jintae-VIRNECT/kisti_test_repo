@@ -37,14 +37,14 @@ public class CorsPassResponseHeaderRewriteFilter implements GlobalFilter {
 	protected void rewriteHeaders(ServerWebExchange exchange) {
 		final HttpHeaders responseHeaders = exchange.getResponse().getHeaders();
 		final String origin = exchange.getRequest().getHeaders().getOrigin();
-		final String host = fetchAddressFromRequest(exchange.getRequest());
+//		final String host = fetchAddressFromRequest(exchange.getRequest());
 		responseHeaders.setAccessControlAllowOrigin(origin);
 		responseHeaders.setAccessControlExposeHeaders(Collections.singletonList(HttpHeaders.SET_COOKIE));
 		responseHeaders.setAccessControlAllowHeaders(ALL);
 		responseHeaders.setAccessControlAllowMethods(Arrays.asList(HttpMethod.values()));
 		responseHeaders.setAccessControlAllowCredentials(true);
 
-		log.info("responseHeader Rewrite : " + responseHeaders.values());
+//		log.info("responseHeader Rewrite : " + responseHeaders.values());
 	}
 
 	protected String fetchAddressFromRequest(ServerHttpRequest request) {
