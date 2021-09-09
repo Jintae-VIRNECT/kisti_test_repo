@@ -16,7 +16,7 @@
       ></p>
     </section>
     <main class="guest-mobile__buttons">
-      <button
+      <!-- <button
         class="guest-mobile__buttons--runapp"
         @click="runApp"
         v-if="isOnpremise"
@@ -32,10 +32,10 @@
           src="~assets/image/img_google_app_store.svg"
           alt="app_store_logo"
         />
-      </button>
-      <!-- <button class="guest-mobile__buttons--runapp" @click="runApp">
-        {{ $t('button.run_app') }}
       </button> -->
+      <button class="guest-mobile__buttons--runapp" @click="runApp">
+        {{ $t('button.run_app') }}
+      </button>
 
       <button class="guest-mobile__buttons--download" @click="downloadApp">
         {{ $t('button.download') }}
