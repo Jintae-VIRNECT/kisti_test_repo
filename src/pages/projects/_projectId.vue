@@ -9,7 +9,7 @@
     @close="closed"
   >
     <el-row type="flex">
-      <!-- 전체 구성 정보 -->
+      <!-- 왼쪽 Tabs 시작 -->
       <el-col :span="15">
         <el-row class="actionbar">
           <el-button type="text" :disabled="!true">
@@ -20,7 +20,7 @@
           </el-button>
           <el-divider direction="vertical"></el-divider>
           <el-button
-            @click="download(content.target.imgPath, content.contentName)"
+            @click="download(project.targetInfo.path, project.name)"
             type="text"
           >
             <img src="~assets/images/icon/ic-file-download.svg" />
@@ -35,19 +35,21 @@
             :data="properties"
             :props="propertiesProps"
             node-key="id"
-            :default-expanded-keys="[content.contentUUID]"
+            :default-expanded-keys="[1]"
           />
         </el-row>
+        <!-- 프로젝트 타겟 이미지 -->
         <el-row class="properties" v-show="activeTab == 'target'">
-          <div class="qr" v-show="content.target.imgPath">
-            <img :src="content.target.imgPath" />
+          <div class="qr" v-show="project.targetInfo.path">
+            <img :src="project.targetInfo.path" />
           </div>
-          <div class="no-target" v-show="!content.target.imgPath">
+          <div class="no-target" v-show="!project.targetInfo.path">
             <span>{{ $t('projects.info.target.noImage') }}</span>
           </div>
         </el-row>
       </el-col>
-      <!-- 오른쪽 Tabs -->
+      <!-- 왼쪽 Tabs 끝 -->
+      <!-- 오른쪽 Tabs 시작 -->
       <el-col :span="9" class="infos">
         <el-tabs v-model="activeTab">
           <el-tab-pane
@@ -59,163 +61,56 @@
           </el-tab-pane>
         </el-tabs>
         <!-- 프로젝트 정보 -->
-        <el-row v-show="activeTab === 'project'">
-          <dl>
-            <dt>{{ $t('projects.info.project.name') }}</dt>
-            <dd class="project-uuid">{{ content.contentUUID }}</dd>
-            <dt>{{ $t('projects.info.project.tracking') }}</dt>
-            <dd>{{ content.targetType }}</dd>
-            <dt>{{ $t('projects.info.project.mode') }}</dt>
-            <dd>
-              <ProjectMode :modeList="project.modeList" />
-            </dd>
-          </dl>
-          <!-- 프로젝트 씬 정보 -->
-          <dl class="gray-row-project">
-            <div>
-              <dt>{{ $t('projects.info.project.sceneGroup') }}</dt>
-              <dd>243</dd>
-            </div>
-            <div>
-              <dt>{{ $t('projects.info.project.scene') }}</dt>
-              <dd>89</dd>
-            </div>
-            <div>
-              <dt>{{ $t('projects.info.project.object') }}</dt>
-              <dd>24</dd>
-            </div>
-            <div>
-              <dt>{{ $t('projects.info.project.asset') }}</dt>
-              <dd>12</dd>
-            </div>
-          </dl>
-          <!-- 프로젝트 파일 크기 정보 -->
-          <dl class="row">
-            <div>
-              <dt>{{ $t('projects.info.project.filesize') }}</dt>
-              <dd>{{ content.contentSize | byte2mb }}</dd>
-              <!-- <dt>{{ $t('contents.info.type') }}</dt>
-            <dd></dd> -->
-            </div>
-            <div>
-              <dt>{{ $t('projects.info.project.update') }}</dt>
-              <dd>{{ content.createdDate | localTimeFormat }}</dd>
-              <!-- <dt>{{ $t('contents.info.device') }}</dt>
-            <dd></dd> -->
-            </div>
-          </dl>
-          <!-- 프로젝트 공유/편집 정보 -->
-          <projectMemberSelect
-            v-for="form in forms"
-            :key="form.key"
-            :selectLabel.sync="form.name"
-            :selectTypes.sync="form.selectTypes"
-            :memberType.sync="form.memberType"
-            :members.sync="form.members"
-            :options="options"
-            @update:updateProjectAuth="updateProjectAuth"
-            @update:updateProjectMember="updateProjectMember"
-          ></projectMemberSelect>
-        </el-row>
+        <ProjectModalInfoPane
+          v-show="activeTab === 'project'"
+          :project="project"
+          :forms="forms"
+          :members="members"
+        />
         <!-- 타겟 정보 -->
-        <el-row v-show="activeTab === 'target' && content.target.imgPath">
-          <dl>
-            <dt>{{ $t('projects.info.target.targetType') }}</dt>
-            <dd>
-              <span>{{ targetType2label(content.targetType) }}</span>
-              <img
-                v-if="content.target.imgPath"
-                src="~assets/images/icon/ic-print.svg"
-                @click="print(content.target.imgPath, content.targetSize)"
-              />
-              <img
-                v-if="content.target.imgPath"
-                src="~assets/images/icon/ic-file-download.svg"
-                @click="download(content.target.imgPath, content.contentName)"
-              />
-            </dd>
-          </dl>
-
-          <dt>{{ $t('projects.info.target.targetSize') }}</dt>
-          <dd>
-            <!-- 타겟 이미지 정보 -->
-            <dl class="gray-row-target">
-              <div>
-                <dt>{{ $t('projects.info.target.width') }}:</dt>
-                <dd>{{ content.targetSize }} cm</dd>
-              </div>
-              <div>
-                <dt>{{ $t('projects.info.target.height') }}:</dt>
-                <dd>{{ content.targetSize }} cm</dd>
-              </div>
-            </dl>
-          </dd>
-        </el-row>
+        <ProjectModalTargetPane
+          v-show="activeTab === 'target' && project.targetInfo.path"
+          :project="project"
+        />
         <!-- 활동 정보 -->
-        <el-row v-show="activeTab === 'activity'">
-          <div
-            class="activity"
-            v-for="(activity, index) in activityList"
-            :key="index"
-          >
-            <el-col :span="4">
-              <VirnectThumbnail :size="36" :image="activity.img" />
-            </el-col>
-            <el-col :span="21">
-              <dl>
-                <dt>
-                  {{
-                    $t('projects.info.activity.nickname', {
-                      nickname: activity.nickname,
-                    })
-                  }}
-                </dt>
-                <dd>
-                  {{
-                    $t(`${activityLabel(activity)}`, {
-                      member: activity.member,
-                    })
-                  }}
-                </dd>
-                <span>
-                  {{ activity.updated | localTimeFormat }}
-                </span>
-              </dl>
-              <el-divider />
-            </el-col>
-          </div>
-          <div v-if="!activityList.length">
-            <img src="~assets/images/empty/img-content-empty.jpg" />
-            <p>{{ $t('projects.info.activity.empty') }}</p>
-          </div>
-        </el-row>
+        <ProjectModalActivityPane
+          v-show="activeTab === 'activity'"
+          :activityList="activityList"
+        />
       </el-col>
+      <!-- 오른쪽 Tabs 끝 -->
     </el-row>
   </el-dialog>
 </template>
 
 <script>
-import contentService from '@/services/content'
-import { memberRoleFilter, activityTypes } from '@/models/project/Project'
+import projectService from '@/services/project'
+import workspaceService from '@/services/workspace'
+import { memberRoleFilter } from '@/models/project/Project'
 import filters from '@/mixins/filters'
-import utils from '@/mixins/utils'
 
 export default {
-  mixins: [filters, utils],
+  mixins: [filters],
   async asyncData({ params, store }) {
-    console.log('params.projectId', params.projectId)
-    console.log('storeuuid', store.getters['auth/myProfile'].uuid)
+    // 해당 모달창에서 보여줄 프로젝트 정보를 불러옵니다.
+    const project = await projectService.getProjectInfo(
+      params.projectId,
+      store.getters['auth/myProfile'].uuid,
+    )
 
-    const promise = {
-      content: contentService.getContentInfo(params.projectId),
-      properties: contentService.getContentProperties(
-        params.projectId,
-        store.getters['auth/myProfile'].uuid,
-      ),
-    }
+    // 지정 멤버 드롭다운 메뉴에 들어갈 멤버 리스트를 불러옵니다.
+    const { list } = await workspaceService.searchMembers({ role: 'MEMBER' })
+
     return {
-      content: await promise.content,
-      properties: await promise.properties,
+      project: project,
+      properties: project.property,
+      members: list.map(({ profile, nickname, uuid }) => {
+        return {
+          img: profile,
+          value: uuid,
+          label: nickname,
+        }
+      }),
     }
   },
   data() {
@@ -238,59 +133,31 @@ export default {
         },
       ],
       showMe: true,
+      // 프로젝트 정보
+      project: {},
       // 공유/편집 드롭메뉴
       memberRoleFilter,
-      // 프로젝트의 공유, 편집 관련된 info.
-      activityTypes,
-      // ex) selectTypes: 멤버, 지정멤버.. 등 드롭메뉴, members: [선택한 지정 멤버 유저 리스트]
+      // ex) selectOptions: 멤버, 지정멤버.. 등 드롭메뉴 옵션 리스트, memberPermission:드롭메뉴에서 선택한 권한, selectMembers: [선택한 지정 멤버 유저 리스트]
       forms: [
         {
           key: 'shared',
           name: 'projects.info.project.shared',
-          selectTypes: [],
-          memberType: null,
-          members: [],
+          selectOptions: [],
+          memberPermission: null,
+          selectMembers: [],
         },
         {
           key: 'edited',
           name: 'projects.info.project.edit',
-          selectTypes: [],
-          memberType: null,
-          members: [],
+          selectOptions: [],
+          memberPermission: null,
+          selectMembers: [],
         },
       ],
       propertiesProps: {
         label: 'label',
         childern: 'childern',
       },
-      // 지정 멤버 리스트에 들어갈 유저 목록.
-      options: [
-        {
-          img: 'https://192.168.6.3:2838/virnect-platform/profile/2021-06-15_VByqxZGplpVkdlGpucmL.jpg',
-          value: 'value',
-          label: 'User1',
-        },
-        {
-          img: 'https://192.168.6.3:2838/virnect-platform/profile/2021-06-15_VByqxZGplpVkdlGpucmL.jpg',
-          value: '버넥트',
-          label: 'User2',
-        },
-        {
-          img: 'https://192.168.6.3:2838/virnect-platform/profile/2021-06-15_VByqxZGplpVkdlGpucmL.jpg',
-          value: '버넥트짱짱짱짱짱짱짱짱짱짱짱짱',
-          label: 'User3',
-        },
-        {
-          img: 'https://192.168.6.3:2838/virnect-platform/profile/2021-06-15_VByqxZGplpVkdlGpucmL.jpg',
-          value: 'Option4',
-          label: 'User4',
-        },
-        {
-          img: 'https://192.168.6.3:2838/virnect-platform/profile/2021-06-15_VByqxZGplpVkdlGpucmL.jpg',
-          value: 'Option5',
-          label: 'User5',
-        },
-      ],
       // 활동 탭의 활동 리스트 데이터.
       activityList: [
         {
@@ -346,16 +213,6 @@ export default {
       ],
     }
   },
-  watch: {
-    async activeTab() {
-      this.searchTabItems()
-    },
-  },
-  computed: {
-    isDirty() {
-      return this.form.shared !== this.content.shared
-    },
-  },
   methods: {
     closed() {
       this.showMe = false
@@ -375,7 +232,6 @@ export default {
         return false
       }
       try {
-        // await contentService.deleteContent([this.content.contentUUID])
         this.$message.success({
           message: this.$t('projects.info.message.deleteSuccess'),
           duration: 2000,
@@ -392,86 +248,33 @@ export default {
         })
       }
     },
-    // 공유/편집 Auth 상태변경하는 함수
-    async updateProjectAuth(designationType) {
-      const succuessMsg = {
-        shared: this.$t('projects.info.message.updateShareSuccess'),
-        edited: this.$t('projects.info.message.updateEditSuccess'),
-      }[designationType]
-      const errMsg = {
-        shared: this.$t('projects.info.message.updateShareFail'),
-        edited: this.$t('projects.info.message.updateEditFail'),
-      }[designationType]
-      try {
-        // TODO 프로젝트 공유/편집 Auth 상태변경 서비스 연동
-
-        this.$message.success({
-          message: succuessMsg,
-          duration: 2000,
-          showClose: true,
-        })
-        this.$emit('updated')
-      } catch (e) {
-        this.$message.error({
-          message: errMsg + `\n(${e})`,
-          duration: 2000,
-          showClose: true,
-        })
-      }
-    },
-    // 공유/편집 지정멤버 상태변경하는 함수
-    async updateProjectMember(designationType) {
-      const succuessMsg = {
-        shared: this.$t('projects.info.message.updateShareMemberSuccess'),
-        edited: this.$t('projects.info.message.updateEditMemberSuccess'),
-      }[designationType]
-      const errMsg = {
-        shared: this.$t('projects.info.message.updateShareMemberFail'),
-        edited: this.$t('projects.info.message.updateEditMemberFail'),
-      }[designationType]
-      try {
-        // TODO 프로젝트 공유/편집 지정멤버 변경 서비스 연동
-        this.$message.success({
-          message: succuessMsg,
-          duration: 2000,
-          showClose: true,
-        })
-        this.$emit('updated')
-      } catch (e) {
-        this.$message.error({
-          message: errMsg + `\n(${e})`,
-          duration: 2000,
-          showClose: true,
-        })
-      }
-    },
-    async searchTabItems() {
-      if (this.activeTab === 'project') {
-        // this.contents = (await contentService.searchContents({ size: 4 })).list
-      } else if (this.activeTab === 'target') {
-        // this.tasks = (await taskService.searchTasks({ size: 4 })).list
-      } else if (this.activeTab === 'activity') {
-        // this.tasks = (await taskService.searchTasks({ size: 4 })).list
-      }
-    },
-    // 유저의 활동 타입에 따라, 맞는 label 값 반환.
-    activityLabel(activity) {
-      return activityTypes.find(a => {
-        return a.value == activity.value
-      }).label
-    },
   },
   beforeMount() {
-    this.$store.commit('auth/SET_ACTIVE_WORKSPACE', this.content.workspaceUUID)
-  },
-  mounted() {
-    this.activeTab = 'project'
-  },
-  created() {
+    // TODO: 모달창에 들어온 유저의 워크스페이스 설정을 해주자
+    // this.$store.commit('auth/SET_ACTIVE_WORKSPACE', this.project.workspaceUUID)
+
     let types = this.memberRoleFilter.options.filter(
       type => type.value != 'ALL',
     )
-    this.forms.map(form => (form.selectTypes = types))
+
+    // 공유/편집의 정보를 지정합니다. 공유/편집의 옵션메뉴. 지정 멤버 리스트.
+    this.forms.map(form => {
+      form.selectOptions = types
+
+      const isMemberSpecitic = form.key === 'shared'
+      form.memberPermission = isMemberSpecitic
+        ? this.project.sharePermission
+        : this.project.editPermission
+
+      if (form.memberPermission === 'SPECIFIC_MEMBER') {
+        form.selectMembers = isMemberSpecitic
+          ? this.project.sharedUserList
+          : this.project.editUserList
+      }
+    })
+  },
+  mounted() {
+    this.activeTab = 'project'
   },
 }
 </script>
