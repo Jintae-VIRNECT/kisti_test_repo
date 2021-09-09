@@ -1,0 +1,10 @@
+{
+  "guest":{
+    "guest_join_description_1": "으로 접속합니다.",
+    "guest_join_description_2": "제한시간 내로 접속해 주세요.​",
+
+    "guest_time_expired_description": "제한시간이 완료되었습니다.\n접속 준비를 하시려면 재요청을 선택해주세요.​",
+    "guest_license_expired":"접속할 워크스페이스에 비회원 접속용 플랜이 할당되어 있지 않거나 모두 사용 중입니다.",
+    "guest_install_mobile_app_description":"VIRNECT Remote App을 설치해주세요. \n App 설치 후, 다시 URL을 선택해주세요."
+  }
+}

@@ -64,7 +64,7 @@
           :initValue="videoFPS"
         ></range-slider>
 
-        <p class="fps-value-mobile">
+        <p v-if="isMobileSize" class="fps-value-mobile">
           {{ videoFPS }}
         </p>
       </figure>

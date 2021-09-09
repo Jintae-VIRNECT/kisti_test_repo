@@ -61,7 +61,7 @@
     <template v-slot:modal>
       <member-group-modal
         :visible.sync="memberGroupModalFlag"
-        :users="memberList"
+        :users="filteredMemberList"
         :groupMembers="groupMemberList"
         :groupId="selectedGroupId"
         :groupName="selectedGroupName"
@@ -91,6 +91,7 @@ import confirmMixin from 'mixins/confirm'
 import toastMixin from 'mixins/toast'
 import { forceLogout } from 'api/http/message'
 import responsiveEmptyImageMixin from 'mixins/responsiveEmptyImage'
+import { ROLE } from 'configs/remote.config'
 
 const defaultEmptyImage = require('assets/image/img_user_empty.svg')
 const mobileEmptyImage = require('assets/image/img_user_empty_new.svg')
@@ -160,6 +161,11 @@ export default {
         return this.$t('workspace.user_empty_description')
       }
     },
+    filteredMemberList() {
+      return this.memberList.filter(member => {
+        return member.role !== ROLE.GUEST
+      })
+    },
   },
   watch: {
     async workspace(val, oldVal) {
@@ -168,7 +174,6 @@ export default {
         await this.getMemberGroups()
       }
     },
-    // 'list.length': 'scrollReset',
     //멤버목록이 갱신되면, 검색 결과 목록도 업데이트 (검색 결과 목록 상태인 경우)
     memberList: {
       deep: true,
@@ -178,9 +183,8 @@ export default {
     },
 
     async memberGroupModalFlag(flag) {
-      await this.getMemberGroups()
-
       if (!flag) {
+        await this.getMemberGroups()
         this.groupMemberList = []
         this.selectedGroupId = null
         this.selectedGroupName = ''
@@ -206,11 +210,9 @@ export default {
       })
       this.searchText = text
     },
-    async getList(reason) {
+    async getList() {
       try {
-        if (reason !== 'data_loading') {
-          this.loading = true
-        }
+        this.loading = true
 
         const params = {
           workspaceId: this.workspace.uuid,
@@ -221,9 +223,7 @@ export default {
         this.memberList = datas.memberList
         this.memberList.sort(memberSort)
 
-        if (reason !== 'data_loading') {
-          this.loading = false
-        }
+        this.loading = false
       } catch (err) {
         this.loading = false
         console.error(err)
@@ -359,7 +359,7 @@ export default {
         this.selectedGroupId = groupId
         this.selectedGroupName = group.groupName
       } else {
-        this.getList('data_loading')
+        this.getList()
       }
     },
     /**

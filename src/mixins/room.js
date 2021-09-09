@@ -9,6 +9,7 @@ import { ROLE } from 'configs/remote.config'
 import { DEVICE } from 'configs/device.config'
 import { ROOM_STATUS } from 'configs/status.config'
 import { ERROR } from 'configs/error.config'
+import { URLS } from 'configs/env.config'
 
 import toastMixin from 'mixins/toast'
 import callMixin from 'mixins/call'
@@ -17,6 +18,8 @@ import confirmMixin from 'mixins/confirm'
 
 import { isRegisted } from 'utils/auth'
 import { mapActions, mapGetters } from 'vuex'
+
+import { joinOpenRoomAsGuest } from 'api/http/guest'
 
 export default {
   mixins: [toastMixin, callMixin, errorMsgMixin, confirmMixin],
@@ -32,9 +35,12 @@ export default {
     ...mapActions(['roomClear', 'setRoomInfo']),
     async join(room, showRestrictAgreeModal = true) {
       this.logger('>>> JOIN ROOM')
+
       try {
         //멤버 상태 등록 안된 경우 협업방 입장 불가
-        if (!isRegisted) {
+        //그러나 guest 멤버는 체크하지 않음.
+
+        if (!isRegisted && !room.isGuest) {
           this.toastDefault(this.$t('workspace.auth_status_failed'))
           return
         }
@@ -42,15 +48,21 @@ export default {
         if (this.clicked === true) return
         this.clicked = true
 
+        //@TODO - ROLE.GUEST 재정의
         let role
         if (room.sessionType === ROOM_STATUS.PRIVATE) {
-          let myInfo = room.memberList.find(
+          const myInfo = room.memberList.find(
             member => member.uuid === this.account.uuid,
           )
           if (myInfo === undefined) throw Error('not allow to participant')
           role = myInfo.memberType === ROLE.LEADER ? ROLE.LEADER : ROLE.EXPERT
         } else {
-          role = room.leaderId === this.account.uuid ? ROLE.LEADER : ROLE.EXPERT
+          if (this.account.roleType === ROLE.GUEST) {
+            role = ROLE.GUEST
+          } else {
+            role =
+              room.leaderId === this.account.uuid ? ROLE.LEADER : ROLE.EXPERT
+          }
         }
 
         room.videoRestrictedMode = await this.checkVideoStrictMode(room)
@@ -107,11 +119,20 @@ export default {
             this.showErrorToast(err.code)
             return false
           } else if (err.code === 4021) {
-            this.toastError(
-              this.$t('workspace.remote_access_overflow', {
-                num: room.maxUserCount,
-              }),
-            )
+            if (room.isGuest) {
+              this.confirmDefault(this.$t('alarm.invite_fail_maxuser'), {
+                action: () => {
+                  location.href = `${URLS['console']}/?continue=${location.href}`
+                },
+              })
+            } else {
+              this.toastError(
+                this.$t('workspace.remote_access_overflow', {
+                  num: room.maxUserCount,
+                }),
+              )
+            }
+
             return false
           }
         }
@@ -128,13 +149,24 @@ export default {
       const options = await this.getDeviceId()
       const mediaStream = await this.$call.getStream(options)
 
-      const res = await joinRoom({
-        uuid: this.account.uuid,
-        memberType: role,
-        deviceType: DEVICE.WEB,
-        sessionId: room.sessionId,
-        workspaceId: this.workspace.uuid,
-      })
+      let res = null
+      if (room.isGuest) {
+        res = await joinOpenRoomAsGuest({
+          uuid: this.account.uuid,
+          memberType: ROLE.UNKNOWN,
+          deviceType: DEVICE.WEB,
+          sessionId: room.sessionId,
+          workspaceId: this.workspace.uuid,
+        })
+      } else {
+        res = await joinRoom({
+          uuid: this.account.uuid,
+          memberType: role,
+          deviceType: DEVICE.WEB,
+          sessionId: room.sessionId,
+          workspaceId: this.workspace.uuid,
+        })
+      }
 
       this.setRoomInfo({
         ...room,

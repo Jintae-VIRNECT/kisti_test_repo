@@ -45,6 +45,7 @@ export default {
         size: 50,
         workspaceId: this.workspace.uuid,
         userId: this.account.uuid,
+        includeGuest: false,
       })
       this.users = inviteList.memberList
       this.users.sort(memberSort)

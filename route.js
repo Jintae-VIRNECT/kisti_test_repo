@@ -53,6 +53,11 @@ function IsAllowBrowser(req) {
   return ((isChrome || isEdge || isChromeMobile) && !isSamsung) || isSafari
 }
 
+/**
+ * 사용할 수 없는 모바일 기기를 체크
+ * @param {Object} req
+ * @returns {Boolean} 사용할 수 없는 모바일 기기 여부
+ */
 function IsMobileBrowser(req) {
   const userAgent = req.headers['user-agent'] || ''
   const isMobile =
@@ -113,7 +118,21 @@ router.get('/home', function(req, res) {
   }
 })
 
-router.get('/service', function(req, res) {
+router.get('/connectioninfo', function(req, res) {
+  if (IsAllowBrowser(req)) {
+    if (IsMobileBrowser(req)) {
+      RouteSupportOrIE(req, res)
+    } else {
+      const lang = acceptLang(req)
+      res.send(remote[lang])
+    }
+  } else {
+    RouteSupportOrIE(req, res)
+    return
+  }
+})
+
+router.get('/qr', function(req, res) {
   if (IsAllowBrowser(req)) {
     if (IsMobileBrowser(req)) {
       RouteSupportOrIE(req, res)

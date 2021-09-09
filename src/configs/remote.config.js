@@ -176,6 +176,7 @@ export const ROLE = {
   WORKER: 'WORKER', //작업자
   UNKNOWN: 'UNKNOWN', //알수없음
   SECESSION: 'SECESSION', //탈퇴
+  GUEST: 'GUEST',
 }
 
 /**

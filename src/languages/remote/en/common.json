@@ -43,7 +43,13 @@
     "member_group_bookmark":"Favorites",
     "connect":"Connect",
     "modify":"Modify",
-    "delete":"Delete"
+    "delete":"Delete",
+    "copy_url":"Copy URL",
+    "send_email":"Send email",
+    "join_sec":"Connect ({time} sec)",
+    "request_again":"Request",
+    "connect_web":"Connect to the web",
+    "run_app":"App runs"
   },
   "date": {
     "lastday": "[Yesterday]",

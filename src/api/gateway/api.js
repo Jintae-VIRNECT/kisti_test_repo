@@ -134,6 +134,21 @@ export default {
 
   /* MESSAGE FORCE LOGOUT */
   FORCE_LOGOUT: ['POST', '/remote/message/push/forced-logout'],
+
+  /* guest(seat) 멤버 초대 관련 API */
+  JOIN_AS_GUEST: ['POST', '/remote/guest/room/{workspaceId}/{sessionId}/join'],
+
+  GUEST_INFO: ['GET', '/remote/invitation/guest/{workspaceId}'],
+  GUEST_ROOM_INFO: ['GET', '/remote/guest/room/{workspaceId}/{sessionId}'],
+  WORKSPACE_INFO: ['GET', '/workspaces/{workspaceId}/info'],
+
+  /* MAIL */
+  SEND_MAIL: ['POST', '/messages/mail'],
+
+  /* 다운로드 서버 */
+  LATEST_APP_INFO: ['GET', '/download/list/{productName}'],
+  DOWNLOAD_APP: ['GET', '/download/app/{uuid}'],
+  ALL_APP_LIST: ['GET', '/download/app/list'],
 }
 
 export const wsUri = {
