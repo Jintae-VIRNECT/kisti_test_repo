@@ -50,12 +50,6 @@ import QRCode from 'qrcode'
 
 export default {
   name: 'QrLayout',
-  // async beforeRouteEnter(to, from, next) {
-  //   console.log(to)
-  //   console.log(from)
-  //   console.log(next)
-  //   next()
-  // },
   mixins: [confirmMixin, langMixin, toastMixin, errorMsgMixin],
   components: {
     HeaderSection,
