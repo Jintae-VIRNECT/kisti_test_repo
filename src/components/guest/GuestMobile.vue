@@ -69,7 +69,7 @@ export default {
       }
     },
     runApp() {
-      const intentLink = `intent://remote?workspace=${this.workspace.uuid}&sessionId=${this.$route.query.sessionId}#$d#Intent;scheme=virnect;action=android.intent.action.VIEW;category=android.intent.category.BROWSABLE;package=${this.packageName};end`
+      const intentLink = `intent://remote?workspaceId=${this.workspace.uuid}&sessionId=${this.$route.query.sessionId}#$d#Intent;scheme=virnect;action=android.intent.action.VIEW;category=android.intent.category.BROWSABLE;package=${this.packageName};end`
       console.log(intentLink)
       window.open(intentLink)
     },
