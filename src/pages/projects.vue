@@ -44,7 +44,7 @@
           <SearchbarKeyword
             ref="keyword"
             :value.sync="projectsSearch"
-            placeholder="contentTitle"
+            placeholder="projectTitle"
           />
         </el-col>
       </el-row>
