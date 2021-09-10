@@ -18,8 +18,8 @@ import com.virnect.uaa.domain.user.domain.User;
 import com.virnect.uaa.domain.user.dto.request.MemberDeleteRequest;
 import com.virnect.uaa.domain.user.dto.request.MemberPasswordUpdateRequest;
 import com.virnect.uaa.domain.user.dto.request.MemberRegistrationRequest;
-import com.virnect.uaa.domain.user.dto.request.SeatMemberDeleteRequest;
-import com.virnect.uaa.domain.user.dto.request.SeatMemberRegistrationRequest;
+import com.virnect.uaa.domain.user.dto.request.GuestMemberDeleteRequest;
+import com.virnect.uaa.domain.user.dto.request.GuestMemberRegistrationRequest;
 import com.virnect.uaa.domain.user.dto.request.UserIdentityCheckRequest;
 import com.virnect.uaa.domain.user.dto.response.MemberPasswordUpdateResponse;
 import com.virnect.uaa.domain.user.dto.response.UserDeleteResponse;
@@ -151,20 +151,20 @@ public class MemberUserInformationService {
 	}
 
 	/**
-	 * 시트 사용자 계정 등록 요청 처리
-	 * @param seatMemberRegistrationRequest - seat 사용자 등록 요청  정보
-	 * @return - seat 사용자 정보
+	 * Guest 사용자 계정 등록 요청 처리
+	 * @param guestMemberRegistrationRequest - Guest 사용자 등록 요청  정보
+	 * @return - Guest 사용자 정보
 	 */
-	public UserInfoResponse registerNewSeatMember(SeatMemberRegistrationRequest seatMemberRegistrationRequest) {
-		User masterUser = userRepository.findByUuid(seatMemberRegistrationRequest.getMasterUserUUID())
+	public UserInfoResponse registerGuestMember(GuestMemberRegistrationRequest guestMemberRegistrationRequest) {
+		User masterUser = userRepository.findByUuid(guestMemberRegistrationRequest.getMasterUserUUID())
 			.orElseThrow(
 				() -> new UserServiceException(UserAccountErrorCode.ERR_REGISTER_SEAT_MEMBER_MASTER_PERMISSION_DENIED)
 			);
-		String seatUserPassword = masterUser.getUuid() + "_" + seatMemberRegistrationRequest.getWorkspaceUUID();
-		int currentSeatUserCount = (int)userRepository.countCurrentSeatUserNumber(masterUser);
+		String seatUserPassword = masterUser.getUuid() + "_" + guestMemberRegistrationRequest.getWorkspaceUUID();
+		int currentSeatUserCount = (int)userRepository.countCurrentGuestUserNumber(masterUser);
 
-		User seatUser = User.ByRegisterSeatMemberUserBuilder()
-			.workspaceUUID(seatMemberRegistrationRequest.getWorkspaceUUID())
+		User seatUser = User.ByRegisterGuestMemberUserBuilder()
+			.workspaceUUID(guestMemberRegistrationRequest.getWorkspaceUUID())
 			.masterUser(masterUser)
 			.encodedPassword(passwordEncoder.encode(seatUserPassword))
 			.seatUserSequence(currentSeatUserCount + 1)
@@ -176,25 +176,25 @@ public class MemberUserInformationService {
 	}
 
 	/**
-	 * 시트 사용자 계정 삭제 요청 처리
-	 * @param seatMemberDeleteRequest - 시트 사용자 계정 삭제 요청
+	 * Guest 사용자 계정 삭제 요청 처리
+	 * @param guestMemberDeleteRequest - 시트 사용자 계정 삭제 요청
 	 * @return - 삭제 처리 결과
 	 */
-	@CacheEvict(value = "userInfo", key = "#seatMemberDeleteRequest.seatUserUUID")
-	public UserDeleteResponse deleteSeatMember(SeatMemberDeleteRequest seatMemberDeleteRequest) {
-		User masterUser = userRepository.findByUuid(seatMemberDeleteRequest.getMasterUUID())
+	@CacheEvict(value = "userInfo", key = "#guestMemberDeleteRequest.guestUserUUID")
+	public UserDeleteResponse deleteGuestMember(GuestMemberDeleteRequest guestMemberDeleteRequest) {
+		User masterUser = userRepository.findByUuid(guestMemberDeleteRequest.getMasterUUID())
 			.orElseThrow(
 				() -> new UserServiceException(UserAccountErrorCode.ERR_DELETE_SEAT_MEMBER_MASTER_PERMISSION_DENIED)
 			);
 
-		User seatUser = userRepository.findSeatUserByMasterAndSeatUserUUID(
+		User guestUser = userRepository.findSeatUserByMasterAndSeatUserUUID(
 			masterUser,
-			seatMemberDeleteRequest.getSeatUserUUID()
+			guestMemberDeleteRequest.getGuestUserUUID()
 		).orElseThrow(() -> new UserServiceException(UserAccountErrorCode.ERR_USER_NOT_FOUND));
 
-		deleteMemberInformation(seatUser);
+		deleteMemberInformation(guestUser);
 
-		return new UserDeleteResponse(seatUser.getUuid(), LocalDateTime.now());
+		return new UserDeleteResponse(guestUser.getUuid(), LocalDateTime.now());
 	}
 
 	private void deleteMemberInformation(User deleteUser) {

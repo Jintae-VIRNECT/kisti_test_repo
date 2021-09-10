@@ -10,7 +10,7 @@ import lombok.Setter;
 @ApiModel
 @Getter
 @Setter
-public class SeatMemberRegistrationRequest {
+public class GuestMemberRegistrationRequest {
 	@NotBlank(message = "워크스페이스 마스터 사용자 식별정보는 반드시 있어야 합니다.")
 	@ApiModelProperty(value = "마스터 사용자 식별자 정보", example = "498b1839dc29ed7bb2ee90ad6985c608")
 	private String masterUserUUID;
@@ -20,9 +20,9 @@ public class SeatMemberRegistrationRequest {
 
 	@Override
 	public String toString() {
-		return "SeatMemberRegistrationRequest{" +
-			"masterUserUUID='" + masterUserUUID + '\'' +
-			", workspaceUUID='" + workspaceUUID + '\'' +
-			'}';
+		return "GuestMemberRegistrationRequest{" +
+				"masterUserUUID='" + masterUserUUID + '\'' +
+				", workspaceUUID='" + workspaceUUID + '\'' +
+				'}';
 	}
 }

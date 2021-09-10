@@ -27,8 +27,8 @@ import com.virnect.uaa.domain.user.application.MemberUserInformationService;
 import com.virnect.uaa.domain.user.dto.request.MemberDeleteRequest;
 import com.virnect.uaa.domain.user.dto.request.MemberPasswordUpdateRequest;
 import com.virnect.uaa.domain.user.dto.request.MemberRegistrationRequest;
-import com.virnect.uaa.domain.user.dto.request.SeatMemberDeleteRequest;
-import com.virnect.uaa.domain.user.dto.request.SeatMemberRegistrationRequest;
+import com.virnect.uaa.domain.user.dto.request.GuestMemberDeleteRequest;
+import com.virnect.uaa.domain.user.dto.request.GuestMemberRegistrationRequest;
 import com.virnect.uaa.domain.user.dto.request.UserIdentityCheckRequest;
 import com.virnect.uaa.domain.user.dto.response.MemberPasswordUpdateResponse;
 import com.virnect.uaa.domain.user.dto.response.UserDeleteResponse;
@@ -82,13 +82,13 @@ public class MemberUserInfoController {
 		return ResponseEntity.ok(new ApiResponse<>(userDeleteResponse));
 	}
 
-	@ApiOperation(value = "워크스페이스 시트 계정 등록 API (워크스페이스 전용)")
+	@ApiOperation(value = "워크스페이스 Guest 계정 등록 API (워크스페이스 전용)")
 	@ApiImplicitParams(
 		@ApiImplicitParam(name = "serviceID", value = "요청 서버 명", paramType = "header", example = "workspace-server")
 	)
-	@PostMapping(value = "/members/seat")
+	@PostMapping(value = "/members/guest")
 	public ResponseEntity<ApiResponse<UserInfoResponse>> registerSeatUserHandler(
-		@RequestBody @Valid SeatMemberRegistrationRequest seatMemberRegistrationRequest,
+		@RequestBody @Valid GuestMemberRegistrationRequest guestMemberRegistrationRequest,
 		@RequestHeader("serviceID") String serviceID, BindingResult result
 	) {
 		if (result.hasErrors() || StringUtils.isEmpty(serviceID) || !serviceID.equals("workspace-server")) {
@@ -96,18 +96,18 @@ public class MemberUserInfoController {
 			result.getAllErrors().forEach(message -> log.error(PARAMETER_LOG_MESSAGE, message));
 			throw new UserServiceException(UserAccountErrorCode.ERR_INVALID_REQUEST_PARAMETER);
 		}
-		UserInfoResponse seatUserInfoResponse = memberUserInformationService.registerNewSeatMember(
-			seatMemberRegistrationRequest);
+		UserInfoResponse seatUserInfoResponse = memberUserInformationService.registerGuestMember(
+				guestMemberRegistrationRequest);
 		return ResponseEntity.ok(new ApiResponse<>(seatUserInfoResponse));
 	}
 
-	@ApiOperation(value = "워크스페이스 시트 계정 삭제 API (워크스페이스 전용)")
+	@ApiOperation(value = "워크스페이스 Guest 계정 삭제 API (워크스페이스 전용)")
 	@ApiImplicitParams(
 		@ApiImplicitParam(name = "serviceID", value = "요청 서버 명", paramType = "header", example = "workspace-server")
 	)
-	@DeleteMapping(value = "/members/seat")
+	@DeleteMapping(value = "/members/guest")
 	public ResponseEntity<ApiResponse<UserDeleteResponse>> seatUserDeleteRequest(
-		@RequestBody @Valid SeatMemberDeleteRequest seatMemberDeleteRequest,
+		@RequestBody @Valid GuestMemberDeleteRequest guestMemberDeleteRequest,
 		@RequestHeader("serviceID") String serviceID, BindingResult result
 	) {
 		if (result.hasErrors() || StringUtils.isEmpty(serviceID) || !serviceID.equals("workspace-server")) {
@@ -115,7 +115,7 @@ public class MemberUserInfoController {
 			result.getAllErrors().forEach(message -> log.error(PARAMETER_LOG_MESSAGE, message));
 			throw new UserServiceException(UserAccountErrorCode.ERR_INVALID_REQUEST_PARAMETER);
 		}
-		UserDeleteResponse userDeleteResponse = memberUserInformationService.deleteSeatMember(seatMemberDeleteRequest);
+		UserDeleteResponse userDeleteResponse = memberUserInformationService.deleteGuestMember(guestMemberDeleteRequest);
 		return ResponseEntity.ok(new ApiResponse<>(userDeleteResponse));
 	}
 

@@ -150,13 +150,13 @@ public class User extends BaseTimeEntity {
 	private List<UserPermission> userPermissionList = new ArrayList<>();
 
 	/**
-	 * Seat 계정 생성
-	 * @param masterUser - Seat 계정 마스터 사용자 계정 정보
-	 * @param workspaceUUID - Seat 계정 워크스페이스 식별자 정보
-	 * @param encodedPassword - Seat 계정 비밀번호 정보
-	 * @param seatUserSequence - Seat 계정 번호 정보(1..N)
+	 * Guest 계정 생성
+	 * @param masterUser - Guest 계정 마스터 사용자 계정 정보
+	 * @param workspaceUUID - Guest 계정 워크스페이스 식별자 정보
+	 * @param encodedPassword - Guest 계정 비밀번호 정보
+	 * @param seatUserSequence - Guest 계정 번호 정보(1..N)
 	 */
-	@Builder(builderClassName = "ByRegisterSeatMemberUserBuilder", builderMethodName = "ByRegisterSeatMemberUserBuilder")
+	@Builder(builderClassName = "ByRegisterGuestMemberUserBuilder", builderMethodName = "ByRegisterGuestMemberUserBuilder")
 	public User(
 		User masterUser,
 		String workspaceUUID,
@@ -164,7 +164,7 @@ public class User extends BaseTimeEntity {
 		int seatUserSequence
 	) {
 		String uuid = RandomStringUtils.randomAlphanumeric(13);
-		String seatUserNickName = String.format("SeatUser-%d", seatUserSequence);
+		String seatUserNickName = String.format("GuestUser-%d", seatUserSequence);
 		this.master = masterUser;
 		this.uuid = uuid;
 		// seat user email format is seatUserUUID@workspaceUUID.com
@@ -178,8 +178,8 @@ public class User extends BaseTimeEntity {
 		this.userType = UserType.GUEST_USER;
 		this.birth = LocalDate.now();
 		this.loginLock = LoginStatus.INACTIVE;
-		this.joinInfo = "워크스페이스 Seat 계정 등록";
-		this.serviceInfo = "워크스페이스 Seat 계정 등록";
+		this.joinInfo = "워크스페이스 Guest 계정 등록";
+		this.serviceInfo = "워크스페이스 Guest 계정 등록";
 		this.language = Language.KO;
 		this.marketInfoReceive = AcceptOrReject.REJECT;
 		this.accountPasswordInitialized = false;
