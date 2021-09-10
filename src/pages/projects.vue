@@ -222,7 +222,7 @@ export default {
      */
     changeMemberFilerOptions() {
       this.projectFilterList.map(filter => {
-        if (filter.id == 'sharedTypes' && filter.id == 'editTypes') {
+        if (filter.id === 'sharedTypes' || filter.id === 'editTypes') {
           filter.type.options = this.checkMemberRole()
         }
       })
@@ -232,8 +232,8 @@ export default {
      * @returns {Array} filter options
      */
     checkMemberRole() {
-      return this.activeWorkspace.role == 'MEMBER'
-        ? memberRoleFilter.options.filter(type => type.value != 'MANAGER')
+      return this.activeWorkspace.role === 'MEMBER'
+        ? memberRoleFilter.options.filter(type => type.value !== 'MANAGER')
         : memberRoleFilter.options
     },
   },
