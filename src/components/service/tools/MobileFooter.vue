@@ -13,7 +13,7 @@
     </div>
     <div class="footer-button-container">
       <mobile-more-button></mobile-more-button>
-      <mobile-capture-button></mobile-capture-button>
+      <mobile-capture-button :disabled="!isMainViewOn"></mobile-capture-button>
       <mobile-flash-button></mobile-flash-button>
     </div>
   </footer>
@@ -24,6 +24,7 @@ import tabChangeMixin from 'mixins/tabChange'
 import MobileMoreButton from './partials/MobileMoreButton.vue'
 import MobileCaptureButton from './partials/MobileCaptureButton.vue'
 import MobileFlashButton from './partials/MobileFlashButton.vue'
+import { mapGetters } from 'vuex'
 
 export default {
   mixins: [tabChangeMixin],
@@ -31,6 +32,12 @@ export default {
     MobileMoreButton,
     MobileCaptureButton,
     MobileFlashButton,
+  },
+  computed: {
+    ...mapGetters(['mainView']),
+    isMainViewOn() {
+      return this.mainView && this.mainView.id && this.mainView.video
+    },
   },
 }
 </script>
@@ -79,6 +86,7 @@ export default {
 
   .footer-button-container {
     display: flex;
+    height: 6rem;
   }
 }
 </style>

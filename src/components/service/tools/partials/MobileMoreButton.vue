@@ -14,12 +14,11 @@
       :class="{ visible }"
     ></button>
     <div>
-      <!-- <button>이전</button> -->
       <div class="popover-more__tools">
         <stream size="3.6rem"></stream>
         <mobile-self-flash-button></mobile-self-flash-button>
         <mic size="3.6rem"></mic>
-        <mobile-setting-button></mobile-setting-button>
+        <mobile-setting-button v-if="isSettingVisible"></mobile-setting-button>
       </div>
 
       <div class="popover-more__back"></div>
@@ -45,6 +44,8 @@ import MobileSelfFlashButton from './MobileSelfFlashButton'
 import MobileSettingButton from './MobileSettingButton'
 import MoreMenuMain from '../MoreMenuMain'
 import MoreMenuCamera from '../MoreMenuCamera'
+import { mapGetters } from 'vuex'
+import { ROLE } from 'configs/remote.config'
 
 export default {
   components: {
@@ -61,6 +62,20 @@ export default {
       visible: false,
       isCameraMenu: false,
     }
+  },
+  computed: {
+    ...mapGetters(['useTranslate']),
+    isLeader() {
+      return this.account.roleType === ROLE.LEADER
+    },
+    isSettingVisible() {
+      if (this.isSafari && !this.isLeader && !this.useTranslate) {
+        return false
+        //safari에서는 로컬녹화 설정이 지원되지 않음. 따라서 사파리 브라우저에서 리더가 아니고 번역기능을 사용하지 않으면 세팅창이 필요가 없으므로 visible false
+      } else {
+        return true
+      }
+    },
   },
   methods: {
     setVisible(visible) {
@@ -140,6 +155,7 @@ export default {
     transition: transform 0.3s;
 
     &.swipe {
+      min-height: 18.2rem;
       transform: translateX(0px);
     }
 
