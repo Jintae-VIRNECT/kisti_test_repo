@@ -16,20 +16,20 @@ public class GuestAccountInfoResponse {
 	private String scope;
 	private long expireIn;
 	private String tokenType;
-	private SeatUserStat seatUserStat;
+	private GuestUserStat guestUserStat;
 
 	@Override
 	public String toString() {
 		return "GuestAccountInfoResponse{" +
-			"name='" + name + '\'' +
-			", nickname='" + nickname + '\'' +
-			", uuid='" + uuid + '\'' +
-			", accessToken='" + accessToken + '\'' +
-			", refreshToken='" + refreshToken + '\'' +
-			", scope='" + scope + '\'' +
-			", expireIn=" + expireIn +
-			", tokenType='" + tokenType + '\'' +
-			", seatUserStat=" + seatUserStat +
-			'}';
+				"name='" + name + '\'' +
+				", nickname='" + nickname + '\'' +
+				", uuid='" + uuid + '\'' +
+				", accessToken='" + accessToken + '\'' +
+				", refreshToken='" + refreshToken + '\'' +
+				", scope='" + scope + '\'' +
+				", expireIn=" + expireIn +
+				", tokenType='" + tokenType + '\'' +
+				", guestUserStat=" + guestUserStat +
+				'}';
 	}
 }

@@ -13,7 +13,7 @@ import lombok.extern.slf4j.Slf4j;
 import com.virnect.uaa.domain.auth.account.dto.ClientGeoIPInfo;
 import com.virnect.uaa.domain.auth.account.dto.request.GuestAccountAllocateRequest;
 import com.virnect.uaa.domain.auth.account.dto.response.GuestAccountInfoResponse;
-import com.virnect.uaa.domain.auth.account.dto.response.SeatUserStat;
+import com.virnect.uaa.domain.auth.account.dto.response.GuestUserStat;
 import com.virnect.uaa.domain.auth.common.error.AuthenticationErrorCode;
 import com.virnect.uaa.domain.auth.common.exception.UserAuthenticationServiceException;
 import com.virnect.uaa.domain.auth.websocket.ClientSessionInfo;
@@ -47,26 +47,26 @@ public class GuestAccountService {
 		List<User> licensedSeatUsers = filteredProductLicenseAllocateUser(
 			accountAllocateRequest.getWorkspaceId(), accountAllocateRequest.getProduct()
 		);
-		int seatUserTotal = licensedSeatUsers.size();
-		int currentAllocatedSeatUserTotal = 0;
-		int currentDeallocatedSeatUserTotal = 0;
+		int guestUserTotal = licensedSeatUsers.size();
+		int currentAllocatedGuestUserTotal = 0;
+		int currentDeallocatedGuestUserTotal = 0;
 		User allocatableUser = null;
 
-		for (User seatUser : licensedSeatUsers) {
+		for (User guestUser : licensedSeatUsers) {
 			// 해당 사용자가 웹소켓 세션을 갖고 있는지 확인 -> 있다면 통화 중이거나 사용중
-			String userSessionKey = String.format("%s_%s", accountAllocateRequest.getWorkspaceId(), seatUser.getUuid());
+			String userSessionKey = String.format("%s_%s", accountAllocateRequest.getWorkspaceId(), guestUser.getUuid());
 			if (sessionManager.hasExistUserSessionId(userSessionKey)) {
-				currentAllocatedSeatUserTotal++;
+				currentAllocatedGuestUserTotal++;
 				continue;
 			}
-			currentDeallocatedSeatUserTotal++;
+			currentDeallocatedGuestUserTotal++;
 			if (allocatableUser == null) {
-				allocatableUser = seatUser;
+				allocatableUser = guestUser;
 			}
 		}
 
 		// 모든 게스트 사용자가 할당(통화) 상태
-		if (currentAllocatedSeatUserTotal == seatUserTotal || allocatableUser == null) {
+		if (currentAllocatedGuestUserTotal == guestUserTotal || allocatableUser == null) {
 			throw new UserAuthenticationServiceException(AuthenticationErrorCode.ERR_GUEST_USER_NOT_ENOUGH);
 		}
 
@@ -90,11 +90,11 @@ public class GuestAccountService {
 		guestAccountInfoResponse.setScope("read,write");
 		guestAccountInfoResponse.setTokenType("Bearer");
 
-		SeatUserStat seatUserStat = new SeatUserStat();
-		seatUserStat.setTotalSeatUser(seatUserTotal);
-		seatUserStat.setAllocateSeatUserTotal(currentAllocatedSeatUserTotal);
-		seatUserStat.setDeallocateSeatUserTotal(currentDeallocatedSeatUserTotal);
-		guestAccountInfoResponse.setSeatUserStat(seatUserStat);
+		GuestUserStat guestUserStat = new GuestUserStat();
+		guestUserStat.setTotalGuestUser(guestUserTotal);
+		guestUserStat.setAllocateGuestUserTotal(currentAllocatedGuestUserTotal);
+		guestUserStat.setDeallocateGuestUserTotal(currentDeallocatedGuestUserTotal);
+		guestAccountInfoResponse.setGuestUserStat(guestUserStat);
 
 		return guestAccountInfoResponse;
 	}
