@@ -8,20 +8,20 @@ import lombok.Setter;
 @Getter
 @Setter
 @ApiModel
-public class SeatUserStat {
+public class GuestUserStat {
 	@ApiModelProperty(value = "전체 시트 계정 수", example = "10")
-	int totalSeatUser;
+	int totalGuestUser;
 	@ApiModelProperty(value = "할당된 시트 계정 수", position = 1, example = "5")
-	int allocateSeatUserTotal;
+	int allocateGuestUserTotal;
 	@ApiModelProperty(value = "할당 안된 시트 계정 수", position = 2, example = "5")
-	int deallocateSeatUserTotal;
+	int deallocateGuestUserTotal;
 
 	@Override
 	public String toString() {
-		return "SeatUserStat{" +
-			"totalSeatUser=" + totalSeatUser +
-			", allocateSeatUserTotal=" + allocateSeatUserTotal +
-			", deallocateSeatUserTotal=" + deallocateSeatUserTotal +
+		return "GuestUserStat{" +
+			"totalGuestUser=" + totalGuestUser +
+			", allocateGuestUserTotal=" + allocateGuestUserTotal +
+			", deallocateGuestUserTotal=" + deallocateGuestUserTotal +
 			'}';
 	}
 }

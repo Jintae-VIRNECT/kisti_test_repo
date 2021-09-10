@@ -17,7 +17,7 @@ public class GuestAccountInfoResponse {
 	private String scope;
 	private long expireIn;
 	private String tokenType;
-	private SeatUserStat seatUserStat;
+	private GuestUserStat guestUserStat;
 
 	@Override
 	public String toString() {
@@ -30,7 +30,7 @@ public class GuestAccountInfoResponse {
 			", scope='" + scope + '\'' +
 			", expireIn=" + expireIn +
 			", tokenType='" + tokenType + '\'' +
-			", seatUserStat=" + seatUserStat +
+			", guestUserStat=" + guestUserStat +
 			'}';
 	}
 }
