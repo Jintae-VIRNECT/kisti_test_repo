@@ -683,10 +683,11 @@ public class FileService {
 		String leaderUserId,
 		String objectName
 	) {
-		Member leaderInfo = memberRepository.findRoomLeaderBySessionId(workspaceId, sessionId);
-		if (!leaderUserId.equals(leaderInfo.getUuid())) {
+		Member leaderInfo = memberRepository.findRoomLeaderBySessionId(workspaceId, sessionId).orElse(null);
+		if (!ObjectUtils.isEmpty(leaderInfo) && !leaderUserId.equals(leaderInfo.getUuid())) {
 			return new ApiResponse<>(ErrorCode.ERR_ROOM_MEMBER_STATUS_INVALID);
 		}
+
 
 		File file = fileRepository.findByWorkspaceIdAndSessionIdAndObjectName(workspaceId, sessionId, objectName).orElse(null);
 		if (ObjectUtils.isEmpty(file)) {
@@ -728,8 +729,8 @@ public class FileService {
 		FileType fileType
 	) {
 		// Leader id check
-		Member leaderInfo = memberRepository.findRoomLeaderBySessionId(workspaceId, sessionId);
-		if (!leaderUserId.equals(leaderInfo.getUuid())) {
+		Member leaderInfo = memberRepository.findRoomLeaderBySessionId(workspaceId, sessionId).orElse(null);
+		if (!ObjectUtils.isEmpty(leaderInfo) && !leaderUserId.equals(leaderInfo.getUuid())) {
 			return new ApiResponse<>(ErrorCode.ERR_ROOM_MEMBER_STATUS_INVALID);
 		}
 

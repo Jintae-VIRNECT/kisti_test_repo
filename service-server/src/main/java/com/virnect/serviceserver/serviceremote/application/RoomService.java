@@ -5,7 +5,9 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang.StringUtils;
@@ -56,7 +58,6 @@ import com.virnect.data.dto.response.room.RoomResponse;
 import com.virnect.data.dto.rest.WorkspaceMemberInfoListResponse;
 import com.virnect.data.dto.rest.WorkspaceMemberInfoResponse;
 import com.virnect.data.error.ErrorCode;
-import com.virnect.data.error.exception.RestServiceException;
 import com.virnect.data.global.common.ApiResponse;
 import com.virnect.data.global.util.paging.PagingUtils;
 import com.virnect.data.infra.utils.LogMessage;
@@ -64,7 +65,6 @@ import com.virnect.data.redis.application.AccessStatusService;
 import com.virnect.data.redis.domain.AccessStatus;
 import com.virnect.data.redis.domain.AccessType;
 import com.virnect.serviceserver.global.config.RemoteServiceConfig;
-import com.virnect.serviceserver.serviceremote.api.SessionRestController;
 import com.virnect.serviceserver.serviceremote.dao.SessionDataRepository;
 import com.virnect.serviceserver.serviceremote.dto.constraint.PushConstants;
 import com.virnect.serviceserver.serviceremote.dto.mapper.member.MemberMapper;
@@ -96,7 +96,7 @@ public class RoomService {
 	private final RoomInfoMapper roomInfoMapper;
 	private final RoomDetailMapper roomDetailMapper;
 	private final MemberMapper memberMapper;
-	
+
 	@Override
 	protected Object clone() throws CloneNotSupportedException {
 		return super.clone();
@@ -111,7 +111,7 @@ public class RoomService {
 		return members;
 	}
 
-	private boolean IsValidUserCapacity(RoomRequest roomRequest, LicenseItem licenseItem) {
+	private boolean isValidUserCapacity(RoomRequest roomRequest, LicenseItem licenseItem) {
 		// check room request member count is over
 		return roomRequest.getParticipantIds().size() + 1 <= licenseItem.getUserCapacity();
 	}
@@ -209,7 +209,7 @@ public class RoomService {
 		}
 		// 오픈방이 아닐 경우 인원수 체크
 		if (roomRequest.getSessionType() != SessionType.OPEN) {
-			if (!IsValidUserCapacity(roomRequest, licenseItem)) {
+			if (!isValidUserCapacity(roomRequest, licenseItem)) {
 				return new ApiResponse<>(ErrorCode.ERR_ROOM_MEMBER_IS_OVER);
 			}
 		}
@@ -253,7 +253,7 @@ public class RoomService {
 
 		// 오픈방이 아닐 경우 정원 인원수 확인
 		if (!(roomRequest.getSessionType() == SessionType.OPEN)) {
-			if (!IsValidUserCapacity(roomRequest, licenseItem)) {
+			if (!isValidUserCapacity(roomRequest, licenseItem)) {
 				return new ApiResponse<>(ErrorCode.ERR_ROOM_MEMBER_IS_OVER );
 			}
 		}
@@ -560,23 +560,23 @@ public class RoomService {
 		if(ObjectUtils.isEmpty(room)) {
 			return new ApiResponse<>(ErrorCode.ERR_ROOM_NOT_FOUND);
 		}
-
 		if (room.getRoomStatus() != RoomStatus.ACTIVE) {
 			return new ApiResponse<>(ErrorCode.ERR_ROOM_STATUS_NOT_ACTIVE);
 		}
 
 		// Make uuid array
-		List<String> userList = new ArrayList<>();
+		/*List<String> userList = new ArrayList<>();
 		for (Member member : room.getMembers()) {
 			if (!(member.getUuid() == null || member.getUuid().isEmpty())) {
 				userList.add(member.getUuid());
 			}
-		}
+		}*/
 
 		// Receive User list from Workspace
 		ApiResponse<WorkspaceMemberInfoListResponse> memberInfo = workspaceRestService.getWorkspaceMembersExcludeUserIds(
 			workspaceId,
-			userList.stream().distinct().toArray(String[]::new)
+			room.getMembers().stream().map(Member::getUuid).filter(String::isEmpty).distinct().toArray(String[]::new)
+			//userList.stream().distinct().toArray(String[]::new)
 		);
 
 		// mapping data
@@ -646,24 +646,32 @@ public class RoomService {
 		PageRequest pageable
 	) {
 
-		List<WorkspaceMemberInfoResponse> members = workspaceRestService.getWorkspaceMembers(
+		List<WorkspaceMemberInfoResponse> workspaceMembers = workspaceRestService.getWorkspaceMembers(
 			workspaceId,
 			"remote",
 			search,
 			Integer.MAX_VALUE
 		).getData().getMemberInfoList();
 
-		List<String> userIds = new ArrayList<>();
-		for (WorkspaceMemberInfoResponse memberInfo : members) {
+		Set<String> userIds = workspaceMembers.stream().map(WorkspaceMemberInfoResponse::getUuid).filter(String::isEmpty).collect(Collectors.toSet());
+
+		//List<String> userIds = new ArrayList<>();
+		/*for (WorkspaceMemberInfoResponse memberInfo : workspaceMembers) {
 			if (StringUtils.isBlank(memberInfo.getUuid())) {
 				//if memberInfo is empty
 				log.info("loadFromDatabase::searchRoomHistoryPageList:: some member dose not have uuid");
 			} else {
 				userIds.add(memberInfo.getUuid());
 			}
-		}
+		}*/
 
-		Page<Room> roomPage = roomRepository.findMyRoomSpecificUserIdBySearch(workspaceId, userId, userIds, search, pageable);
+		Page<Room> roomPage = roomRepository.findMyRoomSpecificUserIdBySearch(
+			workspaceId,
+			userId,
+			new ArrayList<>(userIds),
+			search,
+			pageable
+		);
 		if (roomPage.getContent().isEmpty()) {
 			return new RoomInfoListResponse(new ArrayList<>(), PageMetadataResponse.builder().build());
 		}
@@ -852,18 +860,17 @@ public class RoomService {
 		String workspaceId,
 		Room room
 	) {
-		// Make uuid array
+		/*// Make uuid array
 		List<String> userList = new ArrayList<>();
 		for (Member member : room.getMembers()) {
 			if (!(StringUtils.isBlank(member.getUuid()))) {
 				userList.add(member.getUuid());
 			}
-		}
-
+		}*/
 		// Receive User list from Workspace
 		ApiResponse<WorkspaceMemberInfoListResponse> memberInfo = workspaceRestService.getWorkspaceMembersExcludeUserIds(
 			workspaceId,
-			userList.stream().distinct().toArray(String[]::new)
+			room.getMembers().stream().map(Member::getUuid).distinct().toArray(String[]::new)
 		);
 
 		// Make Response data
@@ -886,20 +893,19 @@ public class RoomService {
 		String workspaceId,
 		Page<Room> roomPage
 	) {
-		// Make uuid array
-		List<String> userList = new ArrayList<>();
+		// Make uuid set
+		Set<String> memberUserIdsOfRooms = new HashSet<>();
 		for (Room room : roomPage) {
-			for (Member member : room.getMembers()) {
-				if (!(StringUtils.isBlank(member.getUuid()))) {
-					userList.add(member.getUuid());
-				}
-			}
+			memberUserIdsOfRooms.addAll(room.getMembers().stream()
+				.map(Member::getUuid)
+				.filter(String::isEmpty)
+				.collect(Collectors.toSet()));
 		}
 
 		// Receive User list from Workspace
 		ApiResponse<WorkspaceMemberInfoListResponse> memberInfo = workspaceRestService.getWorkspaceMembersExcludeUserIds(
 			workspaceId,
-			userList.stream().distinct().toArray(String[]::new)
+			memberUserIdsOfRooms.toArray(new String[0])
 		);
 
 		// Make Response data

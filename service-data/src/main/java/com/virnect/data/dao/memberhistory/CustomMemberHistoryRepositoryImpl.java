@@ -50,8 +50,7 @@ public class CustomMemberHistoryRepositoryImpl extends QuerydslRepositorySupport
 				memberHistory.sessionId.eq(sessionId),
 				memberHistory.uuid.eq(uuid)
 			)
-			.distinct()
-			.fetchOne());
+			.fetchFirst());
 	}
 
 	@Override

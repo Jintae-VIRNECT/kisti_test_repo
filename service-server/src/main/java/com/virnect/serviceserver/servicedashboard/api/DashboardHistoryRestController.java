@@ -37,17 +37,6 @@ public class DashboardHistoryRestController {
 
 	private final DashboardHistoryService historyService;
 
-	/*
-	 *  1. 워크스페이스 내의 모든 협업 기록을 반환하는 API
-	 *	4. 워크스페이스의 지정일 내에서 발생한 시간별 개인 & 전체 협업 수
-	 *	5. 워크스페이스의 지정 월 내에서 발생한 일별 개인 & 전체 협업 수
-	 *	10.워크스페이스 내에 본인이 참여한 협업 목록 반환하는 API
-	 *  14.협업 상세정보를 반환하는 API
-	 */
-
-	/**
-	 * 1. 워크스페이스 내의 모든 협업 기록을 반환하는 API
-	 */
 	@ApiOperation(value = "[워크스페이스] 내의 모든 협업 기록을 반환하는 API")
 	@ApiImplicitParams({
 		@ApiImplicitParam(name = "workspaceId", value = "워크스페이스 ID", defaultValue = "4bfcfbfa4375b2f5a85fbfbb277612ff", required = true),
@@ -93,9 +82,6 @@ public class DashboardHistoryRestController {
 		return ResponseEntity.ok(historyService.getRoomHistory(workspaceId, null, option));
 	}
 
-	/**
-	 * 4. 워크스페이스의 지정일 내에서 발생한 시간별 개인 & 전체 협업 수
-	 */
 	@ApiOperation(value = "[워크스페이스] 내의 지정 '일' 내에서 발생한 시간별 개인 & 전체 협업 수를 반환하는 API")
 	@ApiImplicitParams({
 		@ApiImplicitParam(name = "workspaceId", value = "워크스페이스 ID", defaultValue = "4bfcfbfa4375b2f5a85fbfbb277612ff", required = true),
@@ -126,9 +112,6 @@ public class DashboardHistoryRestController {
 		);
 	}
 
-	/**
-	 * 5. 워크스페이스의 지정 월 내에서 발생한 일별 개인 & 전체 협업 수
-	 */
 	@ApiOperation(value = "[특정 워크스페이스] 내의 지정 '월' 내에서 발생한 시간별 개인 & 전체 협업 수를 반환하는 API")
 	@ApiImplicitParams({
 		@ApiImplicitParam(name = "workspaceId", value = "워크스페이스 ID", defaultValue = "4bfcfbfa4375b2f5a85fbfbb277612ff", required = true),
@@ -160,9 +143,6 @@ public class DashboardHistoryRestController {
 		);
 	}
 
-	/**
-	 * 10. 워크스페이스 내에 본인이 참여한 협업 목록 반환하는 API
-	 */
 	@ApiOperation(value = "[워크스페이스] 내에 본인이 참여한 협업 목록 반환")
 	@ApiImplicitParams({
 		@ApiImplicitParam(name = "workspaceId", value = "워크스페이스 ID", defaultValue = "4bfcfbfa4375b2f5a85fbfbb277612ff", required = true),
@@ -200,9 +180,6 @@ public class DashboardHistoryRestController {
 		return ResponseEntity.ok(historyService.getRoomHistory(workspaceId, userId, option));
 	}
 
-	/**
-	 * 14. 협업 상세정보를 반환하는 API
-	 */
 	@ApiOperation(value = "특정 원격협업 방 최근 기록 상세 정보를 조회하는 API 입니다.")
 	@GetMapping(value = "history/{workspaceId}/{sessionId}")
 	ResponseEntity<ApiResponse<RoomHistoryDetailInfoResponse>> getRoomHistoryDetailRequestHandler(

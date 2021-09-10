@@ -97,8 +97,8 @@ public class SessionDataRepository {
             String uuid;
             clientMetaData = objectMapper.readValue(jsonObject.toString(), ClientMetaData.class);
             uuid = clientMetaData.getClientData();
-            Member member = memberRepository.findBySessionIdAndUuid(sessionId, uuid);
-            if (member != null) {
+            Member member = memberRepository.findBySessionIdAndUuid(sessionId, uuid).orElse(null);
+            if (!ObjectUtils.isEmpty(member)) {
                 workspaceId = member.getWorkspaceId();
                 accessStatusService.saveAccessStatus(workspaceId + "_" + uuid, accessType, uuid);
             } else {

@@ -29,9 +29,6 @@ public class DashboardSessionRestController {
 
 	private final DashboardHistoryService historyService;
 
-	/**
-	 * 현재 진행 중입 협업 상세 정보 가져오는 API
-	 */
 	@ApiOperation(value = "특정 원격협업 방 상세 정보를 조회하는 API 입니다.")
 	@GetMapping(value = "room/{workspaceId}/{sessionId}")
 	ResponseEntity<ApiResponse<RoomDetailInfoResponse>> getRoomDetailInfoRequestHandler(

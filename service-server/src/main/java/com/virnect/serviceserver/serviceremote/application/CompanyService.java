@@ -301,6 +301,7 @@ public class CompanyService {
 
 	private List<LanguageCode> combineLanguageCode(Language language) {
 		List<LanguageCode> languageCodes = new ArrayList<>();
+
 		if (language.isTransKoKr()) {
 			LanguageCode languageCode = new LanguageCode(TranslationItem.LANGUAGE_KR);
 			languageCodes.add(languageCode);

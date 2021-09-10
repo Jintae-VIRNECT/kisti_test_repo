@@ -3,6 +3,7 @@ package com.virnect.data.dao.member;
 import static com.virnect.data.domain.member.QMember.*;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.jpa.repository.support.QuerydslRepositorySupport;
 
@@ -22,28 +23,28 @@ public class CustomMemberRepositoryImpl  extends QuerydslRepositorySupport imple
 	}
 
 	@Override
-	public Member findRoomLeaderBySessionId(String workspaceId, String sessionId) {
-		return query
+	public Optional<Member> findRoomLeaderBySessionId(String workspaceId, String sessionId) {
+		return Optional.ofNullable(
+			query
 			.selectFrom(member)
 			.where(
 				member.workspaceId.eq(workspaceId),
 				member.sessionId.eq(sessionId),
 				member.memberType.eq(MemberType.LEADER)
 			)
-			.distinct()
-			.fetchOne();
+			.fetchFirst());
 	}
 
 	@Override
-	public Member findBySessionIdAndUuid(String sessionId, String uuid) {
-		return query
+	public Optional<Member> findBySessionIdAndUuid(String sessionId, String uuid) {
+		return Optional.ofNullable(
+			query
 			.selectFrom(member)
 			.where(
 				member.sessionId.eq(sessionId),
 				member.uuid.eq(uuid)
 			)
-			.distinct()
-			.fetchOne();
+			.fetchFirst());
 	}
 
 	@Override

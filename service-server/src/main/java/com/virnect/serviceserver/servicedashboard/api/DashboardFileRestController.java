@@ -36,21 +36,7 @@ public class DashboardFileRestController {
 	private static final String REST_PATH = "/remote/dashboard/file";
 
 	private final DashboardFileService fileService;
-	/*
-	 *	2. 협업에서 업로드된 첨부파일 목록을 반환하는 API
-	 *	3. 로컬 녹화 파일 목록을 반환하는 API
-	 *	6. 서버녹화 파일목록을 반환하는 API
-	 *	7. 서버녹화 파일 삭제
-	 *	8. 로컬녹화 파일 삭제
-	 *	9. 첨부파일 삭제
-	 *  11.첨부파일 다운로드 링크를 반환하는 API
-	 *  12.서버 녹화 파일 다운로드 링크를 반환하는 API
-	 *  13.로컬 녹화 파일 다운로드 링크를 반환하는 API
-	 */
 
-	/**
-	 * 2. 협업에서 업로드된 첨부파일 목록을 반환하는 API
-	 */
 	@ApiOperation(value = "[협업]에서 업로드된 첨부파일 목록을 반환하는 API")
 	@ApiImplicitParams({
 		@ApiImplicitParam(name = "workspaceId", value = "워크스페이스 ID", defaultValue = "47cfc8b44fad3d0bbdc96d5307c6370a", required = true),
@@ -81,9 +67,6 @@ public class DashboardFileRestController {
 		);
 	}
 
-	/**
-	 * 3. 로컬 녹화 파일 목록을 반환하는 API
-	 */
 	@ApiOperation(value = "[REMOTE WEB]에서 업로드된 로컬 녹화 파일 목록을 반환하는 API")
 	@ApiImplicitParams({
 		@ApiImplicitParam(name = "workspaceId", value = "워크스페이스 ID", defaultValue = "47cfc8b44fad3d0bbdc96d5307c6370a", required = true),
@@ -114,9 +97,6 @@ public class DashboardFileRestController {
 		);
 	}
 
-	/**
-	 * 6. 서버녹화 파일목록을 반환하는 API
-	 */
 	@ApiOperation(value = "서버녹화 파일 목록을 반환하는 API")
 	@ApiImplicitParams({
 		@ApiImplicitParam(name = "workspaceId", value = "워크스페이스 ID", defaultValue = "47cfc8b44fad3d0bbdc96d5307c6370a", required = true),
@@ -147,9 +127,6 @@ public class DashboardFileRestController {
 		);
 	}
 
-	/**
-	 * 7. 서버녹화 파일 삭제
-	 */
 	@ApiOperation(value = "서버 녹화 파일 삭제")
 	@ApiImplicitParams({
 		@ApiImplicitParam(name = "workspaceId", value = "워크스페이스 ID", defaultValue = "40f9bbee9d85dca7a34a0dd205aae718", required = true),
@@ -177,9 +154,6 @@ public class DashboardFileRestController {
 		);
 	}
 
-	/**
-	 * 8. 로컬녹화 파일 삭제
-	 */
 	@ApiOperation(value = "[Remote web]에서 업로드된 로컬 녹화 파일 삭제")
 	@ApiImplicitParams({
 		@ApiImplicitParam(name = "workspaceId", value = "workspaceId", required = true),
@@ -210,9 +184,6 @@ public class DashboardFileRestController {
 		);
 	}
 
-	/**
-	 * 9. 협업 중 첨부파일 삭제
-	 */
 	@ApiOperation(value = "협업 중 첨부된 파일 삭제")
 	@ApiImplicitParams({
 		@ApiImplicitParam(name = "workspaceId", value = "workspaceId", required = true),
@@ -243,9 +214,6 @@ public class DashboardFileRestController {
 		);
 	}
 
-	/**
-	 * 11. 협업중 업로드된 첨부파일을 다운로드 링크를 반환하는 API
-	 */
 	@ApiOperation(value = "파일 다운로드 URL을 받습니다.")
 	@ApiImplicitParams({
 		@ApiImplicitParam(name = "workspaceId", value = "워크스페이스 식별자", dataType = "string", paramType = "path", defaultValue = "47cfc8b44fad3d0bbdc96d5307c6370a", required = true),
@@ -276,9 +244,6 @@ public class DashboardFileRestController {
 		);
 	}
 
-	/**
-	 * 12. 서버 녹화 파일 다운로드 링크를 반환하는 API
-	 */
 	@ApiOperation(value = "서버 녹화 파일 다운로드 URL을 받습니다")
 	@ApiImplicitParams({
 		@ApiImplicitParam(name = "workspaceId", defaultValue = "47cfc8b44fad3d0bbdc96d5307c6370a", dataType = "string", paramType = "path", required = true),
@@ -308,9 +273,6 @@ public class DashboardFileRestController {
 		);
 	}
 
-	/**
-	 * 13. 로컬 녹화 파일 다운로드 링크를 반환하는 API
-	 */
 	@ApiOperation(value = "로컬 녹화 파일 다운로드 URL을 받습니다.")
 	@ApiImplicitParams({
 		@ApiImplicitParam(name = "workspaceId", value = "워크스페이스 식별자", dataType = "string", paramType = "path", defaultValue = "47cfc8b44fad3d0bbdc96d5307c6370a", required = true),

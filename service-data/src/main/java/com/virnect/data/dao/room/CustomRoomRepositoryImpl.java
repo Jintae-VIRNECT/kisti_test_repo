@@ -105,8 +105,7 @@ public class CustomRoomRepositoryImpl extends QuerydslRepositorySupport implemen
 				.where(
 					room.sessionId.eq(sessionId)
 				)
-				.distinct()
-				.fetchOne());
+				.fetchFirst());
 	}
 
 	/**
@@ -127,8 +126,7 @@ public class CustomRoomRepositoryImpl extends QuerydslRepositorySupport implemen
 				room.workspaceId.eq(workspaceId),
 				room.sessionId.eq(sessionId)
 			)
-			.distinct()
-			.fetchOne());
+			.fetchFirst());
 	}
 
 	/**
@@ -150,8 +148,7 @@ public class CustomRoomRepositoryImpl extends QuerydslRepositorySupport implemen
 					room.sessionId.eq(sessionId),
 					member.memberStatus.ne(MemberStatus.EVICTED)
 				)
-				.distinct()
-				.fetchOne());
+				.fetchFirst());
 	}
 
 	@Override
@@ -218,8 +215,7 @@ public class CustomRoomRepositoryImpl extends QuerydslRepositorySupport implemen
 					room.sessionId.eq(sessionId),
 					room.sessionProperty.sessionType.eq(SessionType.OPEN)
 				)
-				.distinct()
-				.fetchOne());
+				.fetchFirst());
 	}
 
 	/**

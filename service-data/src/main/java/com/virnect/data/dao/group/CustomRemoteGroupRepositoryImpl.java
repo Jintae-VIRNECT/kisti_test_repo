@@ -4,6 +4,7 @@ import static com.virnect.data.domain.group.QRemoteGroup.*;
 import static com.virnect.data.domain.group.QRemoteGroupMember.*;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.jpa.repository.support.QuerydslRepositorySupport;
 import org.springframework.util.StringUtils;
@@ -68,28 +69,30 @@ public class CustomRemoteGroupRepositoryImpl extends QuerydslRepositorySupport i
 	}
 
 	@Override
-	public RemoteGroup findByWorkspaceIdAndGroupId(
+	public Optional<RemoteGroup> findByWorkspaceIdAndGroupId(
 		String workspaceId,
 		String groupId
 	) {
-		return query
+		return
+			Optional.ofNullable(
+			query
 			.selectFrom(remoteGroup)
 			.innerJoin(remoteGroup.groupMembers, remoteGroupMember).fetchJoin()
 			.where(
 				remoteGroup.workspaceId.eq(workspaceId),
 				remoteGroup.groupId.eq(groupId)
 			)
-			.distinct()
-			.fetchOne();
+			.fetchFirst());
 	}
 
 	@Override
-	public RemoteGroup findByWorkspaceIdAndGroupIdAndUserId(
+	public Optional<RemoteGroup> findByWorkspaceIdAndGroupIdAndUserId(
 		String workspaceId,
 		String groupId,
 		String userId
 	) {
-		return query
+		return Optional.ofNullable(
+			query
 			.selectFrom(remoteGroup)
 			.innerJoin(remoteGroup.groupMembers, remoteGroupMember).fetchJoin()
 			.where(
@@ -97,15 +100,15 @@ public class CustomRemoteGroupRepositoryImpl extends QuerydslRepositorySupport i
 				remoteGroup.groupId.eq(groupId),
 				remoteGroupMember.uuid.notIn(userId)
 			)
-			.distinct()
-			.fetchOne();
+			.fetchFirst());
 	}
 
 	@Override
-	public RemoteGroup findByWorkspaceIdAndGroupIdAndUserIdAndIncludeOneself(
+	public Optional<RemoteGroup> findByWorkspaceIdAndGroupIdAndUserIdAndIncludeOneself(
 		String workspaceId, String groupId, String userId, boolean includeOneself
 	) {
-		return query
+		return Optional.ofNullable(
+			query
 			.selectFrom(remoteGroup)
 			.innerJoin(remoteGroup.groupMembers, remoteGroupMember).fetchJoin()
 			.where(
@@ -113,8 +116,7 @@ public class CustomRemoteGroupRepositoryImpl extends QuerydslRepositorySupport i
 				remoteGroup.groupId.eq(groupId),
 				includeOneself(userId, includeOneself)
 			)
-			.distinct()
-			.fetchOne();
+			.fetchFirst());
 	}
 
 	private BooleanExpression includeOneself(String userId, boolean includeOneself) {

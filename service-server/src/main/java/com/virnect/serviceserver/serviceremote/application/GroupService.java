@@ -67,7 +67,7 @@ public class GroupService {
 		String userId,
 		GroupRequest groupRequest
 	) {
-		if (!checkMasterAuth(workspaceId, userId)) {
+		if (!isMasterOfWorkspace(workspaceId, userId)) {
 			return new ApiResponse<>(ErrorCode.ERR_ACCESS_AUTHORITY);
 		}
 		if (!isUserIdsIncludeOfWorkspace(workspaceId, groupRequest.getMemberList())) {
@@ -151,7 +151,7 @@ public class GroupService {
 			return new ApiResponse<>(makeEtcGroup(workspaceId, remoteGroups, workspaceMembers));
 		}
 
-		RemoteGroup remoteGroup = groupRepository.findByWorkspaceIdAndGroupIdAndUserIdAndIncludeOneself(workspaceId, groupId, userId, includeOneself);
+		RemoteGroup remoteGroup = groupRepository.findByWorkspaceIdAndGroupIdAndUserIdAndIncludeOneself(workspaceId, groupId, userId, includeOneself).orElse(null);
 		if (ObjectUtils.isEmpty(remoteGroup)) {
 			return new ApiResponse<>(ErrorCode.ERR_GROUP_NOT_FOUND);
 		}
@@ -179,13 +179,13 @@ public class GroupService {
 		String groupId,
 		GroupRequest groupRequest
 	) {
-		if (!checkMasterAuth(workspaceId, userId)) {
+		if (!isMasterOfWorkspace(workspaceId, userId)) {
 			return new ApiResponse<>(ErrorCode.ERR_ACCESS_AUTHORITY);
 		}
 		if (!isUserIdsIncludeOfWorkspace(workspaceId, groupRequest.getMemberList())) {
 			return new ApiResponse<>(ErrorCode.ERR_MEMBER_INVALID);
 		}
-		RemoteGroup targetGroup = groupRepository.findByWorkspaceIdAndGroupId(workspaceId, groupId);
+		RemoteGroup targetGroup = groupRepository.findByWorkspaceIdAndGroupId(workspaceId, groupId).orElse(null);
 		if (ObjectUtils.isEmpty(targetGroup)) {
 			return new ApiResponse<>(ErrorCode.ERR_GROUP_NOT_FOUND);
 		}
@@ -213,11 +213,11 @@ public class GroupService {
 		String userId,
 		String groupId
 	) {
-		if (!checkMasterAuth(workspaceId, userId)) {
+		if (!isMasterOfWorkspace(workspaceId, userId)) {
 			return new ApiResponse<>(ErrorCode.ERR_ACCESS_AUTHORITY);
 		}
 
-		RemoteGroup targetGroup = groupRepository.findByWorkspaceIdAndGroupId(workspaceId, groupId);
+		RemoteGroup targetGroup = groupRepository.findByWorkspaceIdAndGroupId(workspaceId, groupId).orElse(null);
 		if (ObjectUtils.isEmpty(targetGroup)) {
 			return new ApiResponse<>(ErrorCode.ERR_GROUP_NOT_FOUND);
 		}
@@ -312,7 +312,7 @@ public class GroupService {
 		boolean includeOneself,
 		boolean accessTypeFilter
 	) {
-		FavoriteGroup favoriteGroup = favoriteGroupRepository.findByWorkspaceIdAndUserIdAndGroupIdAndIncludeOneself(workspaceId, groupId, userId, includeOneself);
+		FavoriteGroup favoriteGroup = favoriteGroupRepository.findByWorkspaceIdAndUserIdAndGroupIdAndIncludeOneself(workspaceId, groupId, userId, includeOneself).orElse(null);
 		if (ObjectUtils.isEmpty(favoriteGroup)) {
 			return new ApiResponse<>(ErrorCode.ERR_GROUP_NOT_FOUND);
 		}
@@ -328,8 +328,7 @@ public class GroupService {
 
 		if (accessTypeFilter) {
 			for(Iterator<FavoriteGroupMemberResponse> groupMemberIterator = favoriteGroupMembers.iterator(); groupMemberIterator.hasNext();){
-				AccessStatus targetUser = accessStatusService.getAccessStatus(
-					workspaceId + "_" + groupMemberIterator.next().getUuid());
+				AccessStatus targetUser = accessStatusService.getAccessStatus(workspaceId + "_" + groupMemberIterator.next().getUuid());
 				if (ObjectUtils.isEmpty(targetUser) || targetUser.getAccessType() != AccessType.LOGIN) {
 					groupMemberIterator.remove();
 				}
@@ -352,7 +351,7 @@ public class GroupService {
 			return new ApiResponse<>(ErrorCode.ERR_GROUP_MEMBER_COUNT_OVER);
 		}
 
-		FavoriteGroup targetGroup = favoriteGroupRepository.findByWorkspaceIdAndUserIdAndGroupId(workspaceId, userId, groupId);
+		FavoriteGroup targetGroup = favoriteGroupRepository.findByWorkspaceIdAndUserIdAndGroupId(workspaceId, userId, groupId).orElse(null);
 		if (ObjectUtils.isEmpty(targetGroup)) {
 			return new ApiResponse<>(ErrorCode.ERR_GROUP_NOT_FOUND);
 		}
@@ -387,7 +386,7 @@ public class GroupService {
 		String userId,
 		String groupId
 	) {
-		FavoriteGroup targetGroup = favoriteGroupRepository.findByWorkspaceIdAndUserIdAndGroupId(workspaceId, userId, groupId);
+		FavoriteGroup targetGroup = favoriteGroupRepository.findByWorkspaceIdAndUserIdAndGroupId(workspaceId, userId, groupId).orElse(null);
 		if (ObjectUtils.isEmpty(targetGroup)) {
 			return new ApiResponse<>(ErrorCode.ERR_GROUP_NOT_FOUND);
 		}
@@ -399,7 +398,7 @@ public class GroupService {
 		return new ApiResponse<>(deleteResult);
 	}
 
-	private boolean checkMasterAuth(String workspaceId, String userId) {
+	private boolean isMasterOfWorkspace(String workspaceId, String userId) {
 		WorkspaceMemberInfoResponse masterUserInfo = workspaceRestService.getWorkspaceMember(workspaceId, userId).getData();
 		return Role.MASTER == masterUserInfo.getRole();
 	}
@@ -428,14 +427,11 @@ public class GroupService {
 		List<RemoteGroupMemberResponse> remoteGroupMembers = workspaceMembers.stream()
 			.map(workspaceToRemoteGroupMemberMapper::toDto)
 			.collect(Collectors.toList());
-		// Make uuid array
-		List<String> userIds = new ArrayList<>();
+
+		// Make uuid set
+		Set<String> userIds = new HashSet<>();
 		for (RemoteGroup remoteGroup : remoteGroups) {
-			for (RemoteGroupMember groupMember : remoteGroup.getGroupMembers()) {
-				if (!(StringUtils.isBlank(groupMember.getUuid()))) {
-					userIds.add(groupMember.getUuid());
-				}
-			}
+			userIds.addAll(remoteGroup.getGroupMembers().stream().map(RemoteGroupMember::getUuid).collect(Collectors.toSet()));
 		}
 
 		// Make Etc group

@@ -4,6 +4,7 @@ import static com.virnect.data.domain.group.QFavoriteGroup.*;
 import static com.virnect.data.domain.group.QFavoriteGroupMember.*;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.apache.commons.lang.StringUtils;
 import org.springframework.data.jpa.repository.support.QuerydslRepositorySupport;
@@ -53,8 +54,9 @@ public class CustomFavoriteGroupRepositoryImpl extends QuerydslRepositorySupport
 	}
 
 	@Override
-	public FavoriteGroup findByWorkspaceIdAndUserIdAndGroupId(String workspaceId, String userId, String groupId) {
-		return query
+	public Optional<FavoriteGroup> findByWorkspaceIdAndUserIdAndGroupId(String workspaceId, String userId, String groupId) {
+		return Optional.ofNullable(
+			query
 			.selectFrom(favoriteGroup)
 			.innerJoin(favoriteGroup.favoriteGroupMembers, favoriteGroupMember).fetchJoin()
 			.where(
@@ -62,18 +64,18 @@ public class CustomFavoriteGroupRepositoryImpl extends QuerydslRepositorySupport
 				favoriteGroup.uuid.eq(userId),
 				favoriteGroup.groupId.eq(groupId)
 			)
-			.distinct()
-			.fetchOne();
+			.fetchFirst());
 	}
 
 	@Override
-	public FavoriteGroup findByWorkspaceIdAndUserIdAndGroupIdAndIncludeOneself(
+	public Optional<FavoriteGroup> findByWorkspaceIdAndUserIdAndGroupIdAndIncludeOneself(
 		String workspaceId,
 		String groupId,
 		String userId,
 		boolean includeOneself
 	) {
-		return query
+		return Optional.ofNullable(
+			query
 			.selectFrom(favoriteGroup)
 			.innerJoin(favoriteGroup.favoriteGroupMembers, favoriteGroupMember).fetchJoin()
 			.where(
@@ -82,8 +84,7 @@ public class CustomFavoriteGroupRepositoryImpl extends QuerydslRepositorySupport
 				favoriteGroup.groupId.eq(groupId),
 				includeOneself(userId, includeOneself)
 			)
-			.distinct()
-			.fetchOne();
+			.fetchFirst());
 	}
 
 	private BooleanExpression includeUserId(String userId) {

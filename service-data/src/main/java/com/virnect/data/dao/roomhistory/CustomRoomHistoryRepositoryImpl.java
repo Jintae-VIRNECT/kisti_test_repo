@@ -73,8 +73,7 @@ public class CustomRoomHistoryRepositoryImpl extends QuerydslRepositorySupport i
 				roomHistory.workspaceId.eq(workspaceId),
 				roomHistory.sessionId.eq(sessionId)
 			)
-			.distinct()
-			.fetchOne());
+			.fetchFirst());
 	}
 
 	@Override
@@ -86,7 +85,6 @@ public class CustomRoomHistoryRepositoryImpl extends QuerydslRepositorySupport i
 				roomHistory.workspaceId.eq(workspaceId),
 				roomHistory.sessionId.eq(sessionId)
 			)
-			.distinct()
 			.fetchFirst();
 		return fetchOne != null;
 	}
@@ -119,7 +117,6 @@ public class CustomRoomHistoryRepositoryImpl extends QuerydslRepositorySupport i
 			.select(memberHistory.roomHistory.id)
 			.where(memberHistory.uuid.eq(userId))
 			.fetch();
-
 		return roomHistory.id.in(roomHistoryIdList);
 	}
 

@@ -97,12 +97,6 @@ public class DashboardHistoryService {
 	private final DashboardRecordFileDetailMapper dashboardRecordFileDetailMapper;
 	private final OngoingRoomInfoMapper ongoingRoomInfoMapper;
 
-	/**
-	 * 협업 히스토리 요청 처리
-	 *
-	 * @param request - 파일 요청 데이터
-	 * @return - 로컬 녹화 파일  URL 정보
-	 */
 	public ApiResponse<RoomHistoryInfoListResponse> getRoomHistory(
 		String workspaceId, String userId, RoomHistoryListRequest request
 	) {
@@ -122,15 +116,6 @@ public class DashboardHistoryService {
 		return handleData(workspaceId, userId, request, roomHistories);
 	}
 
-	/**
-	 * 선택 일(Date)의 협업 히스토리 통계 요청 처리
-	 * @param workspaceId - 협업이 진행중인 워크스페이스 고유 식별자
-	 * @param userId - 유저 고유 uuid
-	 * @param selectedDate - 선택 월
-	 * @param timeDifference - 시간 차이 (DB 관련)
-	 * @return - 본인 및 전체 히스토리 횟수 및 시간 통계
-	 * @return - 본인 및 전체 히스토리 횟수 및 시간 통계
-	 */
 	public HistoryCountResponse getRoomHistoryStatsInDate(
 		String workspaceId,
 		String userId,
@@ -194,14 +179,6 @@ public class DashboardHistoryService {
 		return new HistoryCountResponse(myHistory, entireHistory, myDuration, entireDuration);
 	}
 
-	/**
-	 * 선택 월(Month)의 협업 히스토리 통계 요청 처리
-	 * @param workspaceId - 협업이 진행중인 워크스페이스 고유 식별자
-	 * @param userId - 유저 고유 uuid
-	 * @param selectedMonth - 선택 월
-	 * @param timeDifference - 시간 차이 (DB 관련)
-	 * @return - 본인 및 전체 히스토리 횟수 및 시간 통계
-	 */
 	public HistoryCountResponse getRoomHistoryStatsOnMonth(
 		String workspaceId,
 		String userId,
@@ -276,12 +253,6 @@ public class DashboardHistoryService {
 		return new HistoryCountResponse(myHistory, entireHistory, myDuration, entireDuration);
 	}
 
-	/**
-	 * 진행중인 협업 상세정보 요청 처리
-	 * @param workspaceId - 협업이 진행중인 워크스페이스 고유 식별자
-	 * @param sessionId - 진행중인 협업의 세션 식별자
-	 * @return - 협업 상세 정보
-	 */
 	public RoomDetailInfoResponse getOngoingRoomDetail(String workspaceId, String sessionId) {
 
 		Room ongoingRoom = roomRepository.findRoomByWorkspaceIdAndSessionIdForWrite(workspaceId, sessionId).orElseThrow(()
@@ -316,13 +287,6 @@ public class DashboardHistoryService {
 		return roomDetailInfoResponse;
 	}
 
-	/**
-	 * 종료된 협업 상세정보 요청 처리
-	 *
-	 * @param workspaceId - 협업이 진행중인 워크스페이스 고유 식별자
-	 * @param sessionId - 진행중인 협업의 세션 식별자
-	 * @return - 종료된 협업 상세 정보
-	 */
 	public RoomHistoryDetailInfoResponse getEndRoomDetail(
 		String workspaceId,
 		String sessionId
@@ -361,12 +325,6 @@ public class DashboardHistoryService {
 		return roomHistoryDetailInfoResponse;
 	}
 
-	/**
-	 * 협업 히스토리 데이터 핸들링 처리
-	 * @param request - Request 옵션(workspaceId, sessionId ..) 
-	 * @param roomHistories - 대상 데이터
-	 * @return - 핸들링 된 협업 히스토리
-	 */
 	public ApiResponse<RoomHistoryInfoListResponse> handleData(
 		String workspaceId,
 		String userId,
@@ -485,12 +443,6 @@ public class DashboardHistoryService {
 		);
 	}
 
-	/**
-	 * 로컬 첨부파일 목록 요청 처리
-	 * @param workspaceId - 대상 Workspace Id
-	 * @param deleted - 삭제 유무
-	 * @return - 로컬 첨부파일 목록
-	 */
 	public List<FileInfoResponse> getAttachedFileList(
 		String workspaceId,
 		boolean deleted
@@ -509,12 +461,6 @@ public class DashboardHistoryService {
 		return fileInfoResponses;
 	}
 
-	/**
-	 * 로컬 녹화파일 목록 요청 처리
-	 * @param workspaceId - 대상 Workspace Id
-	 * @param deleted - 삭제 유무
-	 * @return - 로컬 녹화파일 목록
-	 */
 	public List<FileDetailInfoResponse> getLocalRecordFileList(
 		String workspaceId,
 		boolean deleted
@@ -542,13 +488,6 @@ public class DashboardHistoryService {
 		return fileDetailInfoResponses;
 	}
 
-	/**
-	 * 정렬, 글 번호 설정
-	 * @param roomHistoryInfoList - 대상 데이터
-	 * @param sortProperties - 정렬 속성
-	 * @param sortOrder - 차순
-	 * @return - Sorted Data
-	 */
 	public List<RoomHistoryInfoResponse> sortingAndSetNumber(
 		List<RoomHistoryInfoResponse> roomHistoryInfoList,
 		RoomHistorySortType sortProperties,
@@ -735,14 +674,6 @@ public class DashboardHistoryService {
 		return roomHistoryInfoList;
 	}
 
-	/**
-	 * 정렬에 데이터 비교
-	 * @param sortOrder - 검색 시작 일자
-	 * @param result - 차순
-	 * @param count1 - 비교 대상 1
-	 * @param count2 - 비교 대상 2
-	 * @return - 비교 결과
-	 */
 	private int getCountOrderResult(
 		OrderType sortOrder,
 		int result,
@@ -767,13 +698,6 @@ public class DashboardHistoryService {
 		return result;
 	}
 
-	/**
-	 * 현재 진행중인 내 협업 내역 정보 조회
-	 * @param option - 협업 내역 정보 조회 조건
-	 * @param workspaceId - 협업 대상 워크스페이스
-	 * @param userId - 내 계정 고유 식별자 정보
-	 * @return - 현재 진행중인 내 협업 내역 정보
-	 */
 	public List<RoomHistoryInfoResponse> getMyOnGoingRoomHistory(
 		RoomHistoryListRequest option, String workspaceId, String userId
 	) {
@@ -800,13 +724,6 @@ public class DashboardHistoryService {
 		}).collect(Collectors.toList());
 	}
 
-	/**
-	 * 종료된 내 협업 내역 정보 조회
-	 * @param option - 협업 내역 정보 조회 조건
-	 * @param workspaceId - 협업 대상 워크스페이스
-	 * @param userId - 내 계정 고유 식별자 정보
-	 * @return - 종료된 내 협업 내역 정보
-	 */
 	public List<RoomHistoryInfoResponse> getMyEndRoomHistory(
 		RoomHistoryListRequest option, String workspaceId, String userId
 	) {
@@ -830,11 +747,6 @@ public class DashboardHistoryService {
 		}).collect(Collectors.toList());
 	}
 
-	/**
-	 * 멤버 표출 순위 설정(Leader가 1번째)
-	 * @param members - 대상 멤버 리스트
-	 * @return - Leader가 1번째로 변경된 멤버 목록
-	 */
 	private List<MemberInfoResponse> setLeader(List<MemberInfoResponse> members) {
 		members.sort((t1, t2) -> {
 			if (t1.getMemberType().equals(MemberType.LEADER)) {

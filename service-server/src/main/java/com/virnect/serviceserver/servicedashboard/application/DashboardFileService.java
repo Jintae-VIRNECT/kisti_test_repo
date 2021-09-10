@@ -74,10 +74,6 @@ public class DashboardFileService {
 		return stringBuilder.toString();
 	}
 
-	/**
-	 * 첨부파일 목록 요청 처리
-	 * @return - 첨부파일 목록
-	 */
 	public FileInfoListResponse getAttachedFileList(
 		String workspaceId,
 		String sessionId,
@@ -102,10 +98,6 @@ public class DashboardFileService {
 		return new FileInfoListResponse(fileInfoList);
 	}
 
-	/**
-	 * 로컬 녹화 파일 목록 요청 처리
-	 * @return - 로컬 녹화 파일 목록
-	 */
 	public FileDetailInfoListResponse getLocalRecordFileList(
 		String workspaceId,
 		String sessionId,
@@ -130,10 +122,6 @@ public class DashboardFileService {
 		return new FileDetailInfoListResponse(fileDetailInfoList);
 	}
 
-	/**
-	 * 로컬 녹화 파일 목록 요청 처리
-	 * @return - 로컬 녹화 파일 목록
-	 */
 	public ListRecordingFilesResponse getServerRecordFileList(
 		String workspaceId,
 		String sessionId,
@@ -149,10 +137,6 @@ public class DashboardFileService {
 		return responseData;
 	}
 
-	/**
-	 * 첨부파일 URL 요청 처리
-	 * @return - 첨부파일 URL 정보
-	 */
 	public FilePreSignedResponse getAttachedFileUrl(
 		String workspaceId,
 		String sessionId,
@@ -180,10 +164,6 @@ public class DashboardFileService {
 		return filePreSignedResponse;
 	}
 
-	/**
-	 * 로컬 녹화 파일 다운로드 URL 요청 처리
-	 * @return - 로컬 녹화 파일  URL 정보
-	 */
 	public FilePreSignedResponse getLocalRecordFileUrl(
 		String workspaceId,
 		String sessionId,
@@ -213,10 +193,6 @@ public class DashboardFileService {
 		return filePreSignedResponse;
 	}
 
-	/**
-	 * 서버 녹화 파일 다운로드 URL 요청 처리
-	 * @return - 서버 녹화 파일  URL 정보
-	 */
 	public String getServerRecordFileUrl(
 		String workspaceId,
 		String userId,
@@ -231,10 +207,6 @@ public class DashboardFileService {
 		return responseUrl;
 	}
 
-	/**
-	 * 첨부파일 삭제 요청 처리
-	 * @return - 첨부파일 삭제 결과
-	 */
 	public FileDeleteResponse deleteAttachedFile(
 		String workspaceId,
 		String sessionId,
@@ -264,10 +236,6 @@ public class DashboardFileService {
 			.build();
 	}
 
-	/**
-	 * 로컬 녹화 파일 삭제 요청 처리
-	 * @return - 삭제 결과
-	 */
 	public FileDeleteResponse deleteLocalRecordFileUrl(
 		String workspaceId,
 		String sessionId,
@@ -297,10 +265,6 @@ public class DashboardFileService {
 			.build();
 	}
 
-	/**
-	 * 서버 녹화 파일 삭제 요청 처리
-	 * @return - 삭제 결과
-	 */
 	public Object deleteServerRecordFileUrl(
 		String workspaceId,
 		String userId,
