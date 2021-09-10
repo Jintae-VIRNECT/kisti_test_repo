@@ -1,11 +1,15 @@
 RELEASE
 
 New Features
-v1.3.8.0
-footer update
+-
 
 Bug Fixes
 -
+v1.3.8.1
+https://virtualconnection.atlassian.net/browse/DPLA-3446
+https://virtualconnection.atlassian.net/browse/DPLA-3473
+https://virtualconnection.atlassian.net/browse/DPLA-3475
+https://virtualconnection.atlassian.net/browse/DPLA-3472
 
 
 Copyright (C) 2020, VIRNECT CO., LTD. - All Rights Reserved
