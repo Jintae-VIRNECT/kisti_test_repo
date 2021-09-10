@@ -2,6 +2,7 @@ package com.virnect.content.application.project;
 
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -9,12 +10,19 @@ import java.util.Base64;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 import javax.imageio.ImageIO;
 
 import org.apache.commons.lang3.RandomStringUtils;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
@@ -56,6 +64,7 @@ import com.virnect.content.dto.rest.LicenseInfoResponse;
 import com.virnect.content.dto.rest.MemberInfoDTO;
 import com.virnect.content.dto.rest.MyLicenseInfoListResponse;
 import com.virnect.content.dto.rest.UserInfoResponse;
+import com.virnect.content.event.ProjectDownloadHitEvent;
 import com.virnect.content.exception.ContentServiceException;
 import com.virnect.content.global.common.ApiResponse;
 import com.virnect.content.global.common.PageMetadataResponse;
@@ -88,6 +97,7 @@ public class ProjectService {
 	private final ProjectResponseMapper projectResponseMapper;
 	private final WorkspaceRestService workspaceRestService;
 	private final UserRestService userRestService;
+	private final ApplicationEventPublisher applicationEventPublisher;
 
 	private static final String PROJECT_DIRECTORY = "project";
 	private static final String REPORT_DIRECTORY = "report";
@@ -746,5 +756,58 @@ public class ProjectService {
 			}
 		}
 		return true;
+	}
+
+	public ResponseEntity<byte[]> downloadProjectByUUIDList(
+		List<String> projectUUIDList, String userUUID, String workspaceUUID
+	) {
+		MemberInfoDTO memberInfoResponse = getMemberInfoResponse(workspaceUUID, userUUID);
+		//다운로드 권한 체크
+		List<Project> projectList = new ArrayList<>();
+		for (String projectUUID : projectUUIDList) {
+			Project project = projectRepository.findByUuid(projectUUID)
+				.orElseThrow(() -> new ContentServiceException(ErrorCode.ERR_PROJECT_NOT_FOUND));
+			if (!checkUserProjectSharePermission(project, userUUID, memberInfoResponse.getRole())) {
+				throw new ContentServiceException(ErrorCode.ERR_PROJECT_DOWNLOAD_INVALID_SHARE_PERMISSION);
+			}
+			projectList.add(project);
+		}
+
+		//단일 파일이면 그대로 리턴.
+		if (projectUUIDList.size() == 1) {
+			return fileDownloadService.fileDownload(projectList.get(0).getPath(), null);
+		}
+
+		//복수개의 파일이면 zip
+		byte[] bytes = new byte[0];
+		try (ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+			 ZipOutputStream zipOutputStream = new ZipOutputStream(byteArrayOutputStream)) {
+			for (Project project : projectList) {
+				String[] fileSplit = project.getPath().split("/");
+				String fileName = fileSplit[fileSplit.length - 1];
+				byte[] fileStream = fileDownloadService.getFileStreamBytes(project.getPath());
+				zipOutputStream.putNextEntry(new ZipEntry(fileName));
+				zipOutputStream.write(fileStream);
+				zipOutputStream.closeEntry();
+
+			}
+			zipOutputStream.finish();
+			bytes = byteArrayOutputStream.toByteArray();
+		} catch (IOException e) {
+			log.error(e.getMessage());
+			throw new ContentServiceException(ErrorCode.ERR_PROJECT_DOWNLOAD);
+		}
+
+		//다운로드 기록 이벤트
+		for (Project project : projectList) {
+			applicationEventPublisher.publishEvent(new ProjectDownloadHitEvent(project, userUUID));
+		}
+
+		String zipFileName = String.format("%s_%s", LocalDate.now().toString(), "projects.zip");
+		HttpHeaders httpHeaders = new HttpHeaders();
+		httpHeaders.setContentType(MediaType.parseMediaType("application/octet-stream"));
+		httpHeaders.setContentDispositionFormData("attachment", zipFileName);
+		httpHeaders.setContentLength(bytes.length);
+		return new ResponseEntity<>(bytes, httpHeaders, HttpStatus.OK);
 	}
 }

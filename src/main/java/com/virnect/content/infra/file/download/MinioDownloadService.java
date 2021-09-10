@@ -269,4 +269,23 @@ public class MinioDownloadService implements FileDownloadService {
 		log.info("[MINIO GET FILE SIZE] GET SIZE SUCCESS. FILE SIZE : {} (byte)", contentLength);
 		return contentLength;
 	}
+
+	@Override
+	public byte[] getFileStreamBytes(String fileUrl) {
+		String[] fileSplit = fileUrl.split("/");
+		String fileDir = fileSplit[fileSplit.length - 2];
+		String fileName = fileSplit[fileSplit.length - 1];
+		String objectName = bucketResource + fileDir + "/" + fileName;
+		GetObjectArgs getObjectArgs = GetObjectArgs.builder()
+			.bucket(bucketName)
+			.object(objectName)
+			.build();
+		try (GetObjectResponse objectResponse = minioClient.getObject(getObjectArgs)) {
+			return IOUtils.toByteArray((InputStream)objectResponse);
+		} catch (ErrorResponseException | InsufficientDataException | InternalException | InvalidKeyException | InvalidResponseException | NoSuchAlgorithmException | ServerException | XmlParserException | IOException exception) {
+			log.error(exception.getMessage());
+			throw new ContentServiceException(ErrorCode.ERR_CONTENT_DOWNLOAD);
+		}
+	}
+
 }

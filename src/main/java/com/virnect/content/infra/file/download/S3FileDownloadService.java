@@ -210,4 +210,21 @@ public class S3FileDownloadService implements FileDownloadService {
 		log.info("[AWS S3 GET FILE SIZE] GET SIZE SUCCESS. FILE SIZE : {} (byte)", contentLength);
 		return contentLength;
 	}
+
+	@Override
+	public byte[] getFileStreamBytes(String fileUrl) {
+		String[] fileSplit = fileUrl.split("/");
+		String fileDir = fileSplit[fileSplit.length - 2];
+		String fileName = fileSplit[fileSplit.length - 1];
+		String objectName = bucketResource + fileDir + "/" + fileName;
+
+		GetObjectRequest getObjectRequest = new GetObjectRequest(bucketName, objectName);
+		try (S3Object s3Object = amazonS3Client.getObject(getObjectRequest);
+			 S3ObjectInputStream objectInputStream = s3Object.getObjectContent()) {
+			return IOUtils.toByteArray(objectInputStream);
+		} catch (AmazonS3Exception | IOException e) {
+			log.error("Error Message:     {}", e.getMessage());
+			throw new ContentServiceException(ErrorCode.ERR_CONTENT_DOWNLOAD);
+		}
+	}
 }

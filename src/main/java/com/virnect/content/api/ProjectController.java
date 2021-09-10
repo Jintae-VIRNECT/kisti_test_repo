@@ -1,11 +1,13 @@
 package com.virnect.content.api;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.validation.Valid;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -85,16 +87,26 @@ public class ProjectController {
 		return ResponseEntity.ok(new ApiResponse<>(responseMessage));
 	}
 
-	@ApiOperation(value = "프로젝트 다운로드", notes = "프로젝트를 다운로드합니다. 공유 권한이 있는 사용자만 다운로드할 수 있습니다. \n 프로젝트 식별자로 다운로드 혹은 타겟 데이터로 다운로드할 수 있습니다.", hidden = true)
+	@ApiOperation(value = "프로젝트 다운로드", notes = "프로젝트를 다운로드합니다. 공유 권한이 있는 사용자만 다운로드할 수 있습니다. \n 프로젝트 식별자로 다운로드 할 수 있습니다.")
 	@ApiImplicitParams({
-		@ApiImplicitParam(name = "projectUUID", value = "프로젝트 식별자", dataType = "string", paramType = "query", required = false, example = ""),
-		@ApiImplicitParam(name = "userUUID", value = "다운로드 요청 유저 식별자", dataType = "string", paramType = "query", required = true, example = ""),
+		@ApiImplicitParam(name = "projectUUIDList", value = "프로젝트 식별자 목록", dataType = "string", paramType = "query", required = true, example = "", allowMultiple = true),
+		@ApiImplicitParam(name = "userUUID", value = "다운로드 요청 유저 식별자", dataType = "string", paramType = "query", required = true, example = "498b1839dc29ed7bb2ee90ad6985c608"),
+		@ApiImplicitParam(name = "workspaceUUID", value = "다운로드 요청 워크스페이스 식별자", dataType = "string", paramType = "query", required = true, example = "4d6eab0860969a50acbfa4599fbb5ae8"),
 	})
 	@GetMapping("/download")
-	public ResponseEntity<ApiResponse> downloadProjectByUUID(
-		@RequestParam("projectUUID") String projectUUID, @RequestParam("userUUID") String userUUID
+	public ResponseEntity<byte[]> downloadProjectByUUIDList(
+		@RequestParam("projectUUIDList") List<String> projectUUIDList, @RequestParam("userUUID") String userUUID,
+		@RequestParam("workspaceUUID") String workspaceUUID
 	) {
-		return ResponseEntity.ok(new ApiResponse<>());
+		log.info(
+			"[PROJECT DOWNLOAD] REQ projectUUIDList : {}, userUUID : {}, workspaceUUID : {}",
+			String.join(",", projectUUIDList), userUUID, workspaceUUID
+		);
+		if (CollectionUtils.isEmpty(projectUUIDList) || !StringUtils.hasText(userUUID) || !StringUtils.hasText(
+			workspaceUUID)) {
+			throw new ContentServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
+		}
+		return projectService.downloadProjectByUUIDList(projectUUIDList, userUUID, workspaceUUID);
 	}
 
 	@ApiOperation(value = "프로젝트 목록 조회", notes = "프로젝트 목록을 조회합니다. 공유 권한이 있는 프로젝트만 확인할 수 있습니다.")
