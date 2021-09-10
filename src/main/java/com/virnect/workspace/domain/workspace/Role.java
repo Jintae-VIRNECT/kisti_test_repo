@@ -11,7 +11,7 @@ public enum Role {
     MASTER,
     MANAGER,
     MEMBER,
-    SEAT;
+    GUEST;
 
     /*public static boolean anyMatchMasterManagerMember(Role requestRole) {
         return requestRole == MASTER || requestRole == MANAGER || requestRole == MEMBER;

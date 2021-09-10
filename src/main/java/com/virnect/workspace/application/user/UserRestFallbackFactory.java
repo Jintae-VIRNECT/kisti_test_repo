@@ -90,12 +90,12 @@ public class UserRestFallbackFactory implements FallbackFactory<UserRestService>
             }
 
             @Override
-            public ApiResponse<UserInfoRestResponse> seatMemberRegistrationRequest(SeatMemberRegistrationRequest seatMemberRegistrationRequest, String serviceID) {
+            public ApiResponse<UserInfoRestResponse> guestMemberRegistrationRequest(GuestMemberRegistrationRequest guestMemberRegistrationRequest, String serviceID) {
                 return null;
             }
 
             @Override
-            public ApiResponse<UserDeleteRestResponse> seatMemberDeleteRequest(SeatMemberDeleteRequest seatMemberDeleteRequest, String serviceID) {
+            public ApiResponse<UserDeleteRestResponse> guestMemberDeleteRequest(GuestMemberDeleteRequest guestMemberDeleteRequest, String serviceID) {
                 return null;
             }
         };

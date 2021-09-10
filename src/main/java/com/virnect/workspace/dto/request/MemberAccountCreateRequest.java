@@ -27,7 +27,7 @@ public class MemberAccountCreateRequest {
 
     //시트 권한으로 전용 계정을 생성 할 수 없음
     public boolean existSeatRoleUser() {
-        return memberAccountCreateRequest.stream().anyMatch(memberAccountCreateInfo -> memberAccountCreateInfo.getRole().equals(Role.SEAT.name()));
+        return memberAccountCreateRequest.stream().anyMatch(memberAccountCreateInfo -> memberAccountCreateInfo.getRole().equals(Role.GUEST.name()));
     }
 
     //마스터 권한으로 전용 계정을 생성할 수 없음.

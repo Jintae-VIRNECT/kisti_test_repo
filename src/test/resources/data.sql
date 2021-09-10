@@ -8,7 +8,7 @@ VALUES
     (1, '2020-01-14 11:29:30', '2020-01-14 11:29:30', 'MASTER','MASTER')
     ,(2, '2020-01-14 11:29:30', '2020-01-14 11:29:30', 'MANAGER','MANAGER')
     ,(3, '2020-01-14 11:29:30', '2020-01-14 11:29:30', 'MEMBER','MEMBER')
-    ,(4, '2020-01-14 11:29:30', '2020-01-14 11:29:30', 'SEAT','SEAT');
+    ,(4, '2020-01-14 11:29:30', '2020-01-14 11:29:30', 'GUEST','GUEST');
 
 INSERT INTO `workspace_permission`
 (`workspace_permission_id`, `created_at`, `updated_at`, `description`, `permission`)

@@ -15,7 +15,7 @@ import javax.validation.constraints.NotBlank;
  */
 @Getter
 @Setter
-public class MemberSeatDeleteRequest {
+public class MemberGuestDeleteRequest {
     @ApiModelProperty(value = "요청 유저 식별자", required = true, example = "498b1839dc29ed7bb2ee90ad6985c608", position = 0)
     @NotBlank
     private String requestUserId;

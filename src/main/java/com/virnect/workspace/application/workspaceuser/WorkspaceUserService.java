@@ -71,7 +71,7 @@ public abstract class WorkspaceUserService {
 
     private static final String ANY_LICENSE_PRODUCT = ".*(?i)REMOTE.*|.*(?i)MAKE.*|.*(?i)VIEW.*";
     private static final int MAX_WORKSPACE_USER_AMOUNT = 50;//워크스페이스 최대 멤버 수(마스터 본인 포함)
-    private static final String ANY_WORKSPACE_ROLE = ".*(?i)MASTER.*|.*(?i)MANAGER.*|.*(?i)MEMBER.*|.*(?i)SEAT.*";
+    private static final String ANY_WORKSPACE_ROLE = ".*(?i)MASTER.*|.*(?i)MANAGER.*|.*(?i)MEMBER.*|.*(?i)GUEST.*";
 
     /**
      * 멤버 조회
@@ -374,7 +374,7 @@ public abstract class WorkspaceUserService {
         if (StringUtils.hasText(memberUpdateRequest.getRole())) {
             log.info("[REVISE MEMBER INFO] Revise User Role Info. Current User Role >> [{}], Updated User Role >> [{}].", updateUserPermission.getWorkspaceRole().getRole(), memberUpdateRequest.getRole());
             //3-1. 유저 타입 확인
-            if (updateUser.getUserType().equals("SEAT_USER")) {
+            if (updateUser.getUserType().equals("GUEST_USER")) {
                 throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_USER_INFO_UPDATE_USER_TYPE);
             }
 
@@ -411,7 +411,7 @@ public abstract class WorkspaceUserService {
         if (memberUpdateRequest.existLicenseUpdate()) {
             log.info("[REVISE MEMBER INFO] Revise License Info. Current License Product Info >> [{}], ", org.apache.commons.lang.StringUtils.join(currentProductList, ","));
             //4-1. 유저 타입 체크
-            if (updateUser.getUserType().equals("SEAT_USER") || updateUserPermission.getWorkspaceRole().getRole() == Role.SEAT) {
+            if (updateUser.getUserType().equals("GUEST_USER") || updateUserPermission.getWorkspaceRole().getRole() == Role.GUEST) {
                 throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_USER_INFO_UPDATE_USER_TYPE);
             }
             //4-2. 요청 유저 권한 체크
@@ -734,7 +734,7 @@ public abstract class WorkspaceUserService {
             log.error("[GET USER INFO BY USER UUID] request user uuid : {}, response code : {}, response message : {}", memberKickOutRequest.getKickedUserId(), apiResponse.getCode(), apiResponse.getMessage());
             throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_USER_NOT_FOUND);
         }
-        if (apiResponse.getData().getUserType().equals("WORKSPACE_ONLY_USER") || apiResponse.getData().getUserType().equals("SEAT_USER")) {
+        if (apiResponse.getData().getUserType().equals("WORKSPACE_ONLY_USER") || apiResponse.getData().getUserType().equals("GUEST_USER")) {
             throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_INVALID_PERMISSION);
         }
         WorkspaceUserPermission workspaceUserPermission = workspaceUserPermissionRepository.findByWorkspaceUser_WorkspaceAndWorkspaceUser_UserId(
@@ -1174,40 +1174,40 @@ public abstract class WorkspaceUserService {
     /**
      * 워크스페이스 시트 계정 생성
      *
-     * @param workspaceId             - 요청 워크스페이스 식별자
-     * @param memberSeatCreateRequest - 시트 계정 생성 요청 정보
+     * @param workspaceId              - 요청 워크스페이스 식별자
+     * @param memberGuestCreateRequest - 시트 계정 생성 요청 정보
      * @return - 생성된 시트 계정 목록
      */
     @Transactional
-    public WorkspaceMemberInfoListResponse createWorkspaceMemberSeat(String
-                                                                             workspaceId, MemberSeatCreateRequest
-                                                                             memberSeatCreateRequest) {
+    public WorkspaceMemberInfoListResponse createWorkspaceMemberGuest(String
+                                                                              workspaceId, MemberGuestCreateRequest
+                                                                              memberGuestCreateRequest) {
         //1-1. 요청한 사람의 권한 체크
         Workspace workspace = workspaceRepository.findByUuid(workspaceId).orElseThrow(() -> new WorkspaceException(ErrorCode.ERR_WORKSPACE_NOT_FOUND));
-        checkSeatMemberManagementPermission(workspace, memberSeatCreateRequest.getUserId());
+        checkGuestMemberManagementPermission(workspace, memberGuestCreateRequest.getUserId());
 
         //1-2. 라이선스 갯수 유효성 체크
         WorkspaceLicensePlanInfoResponse workspaceLicensePlanInfoResponse = getWorkspaceLicensesByWorkspaceId(workspaceId);
-        checkSeatMemberCreateLicense(memberSeatCreateRequest, workspaceLicensePlanInfoResponse);
+        checkGuestMemberCreateLicense(memberGuestCreateRequest, workspaceLicensePlanInfoResponse);
 
         //1-3. 워크스페이스 멤버 제한 수 체크
-        int requestSeatUserAmount = memberSeatCreateRequest.getPlanRemoteAndView() + memberSeatCreateRequest.getPlanRemote() + memberSeatCreateRequest.getPlanView();
-        checkWorkspaceMaxUserAmount(workspaceId, requestSeatUserAmount, workspaceLicensePlanInfoResponse);
+        int requestGuestUserAmount = memberGuestCreateRequest.getPlanRemoteAndView() + memberGuestCreateRequest.getPlanRemote() + memberGuestCreateRequest.getPlanView();
+        checkWorkspaceMaxUserAmount(workspaceId, requestGuestUserAmount, workspaceLicensePlanInfoResponse);
 
         //3. 시트 계정 생성
         List<WorkspaceUserInfoResponse> workspaceMemberInfoList = new ArrayList<>();
-        SeatMemberRegistrationRequest seatMemberRegistrationRequest = new SeatMemberRegistrationRequest();
-        seatMemberRegistrationRequest.setMasterUserUUID(workspace.getUserId());
-        seatMemberRegistrationRequest.setWorkspaceUUID(workspaceId);
-        for (int i = 0; i < memberSeatCreateRequest.getPlanRemoteAndView(); i++) {
+        GuestMemberRegistrationRequest guestMemberRegistrationRequest = new GuestMemberRegistrationRequest();
+        guestMemberRegistrationRequest.setMasterUserUUID(workspace.getUserId());
+        guestMemberRegistrationRequest.setWorkspaceUUID(workspaceId);
+        for (int i = 0; i < memberGuestCreateRequest.getPlanRemoteAndView(); i++) {
             //게정 생성
-            UserInfoRestResponse userInfoRestResponse = seatMemberRegistrationRequest(seatMemberRegistrationRequest);
+            UserInfoRestResponse userInfoRestResponse = guestMemberRegistrationRequest(guestMemberRegistrationRequest);
             //라이선스 할당
             grantWorkspaceLicenseToUser(workspaceId, userInfoRestResponse.getUuid(), "REMOTE");
             grantWorkspaceLicenseToUser(workspaceId, userInfoRestResponse.getUuid(), "VIEW");
             //시트 멤버 저장
             WorkspaceUser workspaceUser = WorkspaceUser.builder().userId(userInfoRestResponse.getUuid()).workspace(workspace).build();
-            WorkspaceRole workspaceRole = workspaceRoleRepository.findByRole(Role.SEAT).orElseThrow(() -> new WorkspaceException(ErrorCode.ERR_WORKSPACE_ROLE_NOT_FOUND));
+            WorkspaceRole workspaceRole = workspaceRoleRepository.findByRole(Role.GUEST).orElseThrow(() -> new WorkspaceException(ErrorCode.ERR_WORKSPACE_ROLE_NOT_FOUND));
             WorkspacePermission workspacePermission = workspacePermissionRepository.findById(Permission.ALL.getValue()).orElseThrow(() -> new WorkspaceException(ErrorCode.ERR_WORKSPACE_PERMISSION_NOT_FOUND));
             WorkspaceUserPermission workspaceUserPermission = WorkspaceUserPermission.builder().workspaceUser(workspaceUser).workspaceRole(workspaceRole).workspacePermission(workspacePermission).build();
             workspaceUserRepository.save(workspaceUser);
@@ -1220,14 +1220,14 @@ public abstract class WorkspaceUserService {
             workspaceUserInfoResponse.setLicenseProducts(new String[]{"REMOTE", "VIEW"});
             workspaceMemberInfoList.add(workspaceUserInfoResponse);
         }
-        for (int i = 0; i < memberSeatCreateRequest.getPlanRemote(); i++) {
+        for (int i = 0; i < memberGuestCreateRequest.getPlanRemote(); i++) {
             //게정 생성
-            UserInfoRestResponse userInfoRestResponse = seatMemberRegistrationRequest(seatMemberRegistrationRequest);
+            UserInfoRestResponse userInfoRestResponse = guestMemberRegistrationRequest(guestMemberRegistrationRequest);
             //라이선스 할당
             grantWorkspaceLicenseToUser(workspaceId, userInfoRestResponse.getUuid(), "REMOTE");
             //시트 멤버 저장
             WorkspaceUser workspaceUser = WorkspaceUser.builder().userId(userInfoRestResponse.getUuid()).workspace(workspace).build();
-            WorkspaceRole workspaceRole = workspaceRoleRepository.findByRole(Role.SEAT).orElseThrow(() -> new WorkspaceException(ErrorCode.ERR_WORKSPACE_ROLE_NOT_FOUND));
+            WorkspaceRole workspaceRole = workspaceRoleRepository.findByRole(Role.GUEST).orElseThrow(() -> new WorkspaceException(ErrorCode.ERR_WORKSPACE_ROLE_NOT_FOUND));
             WorkspacePermission workspacePermission = workspacePermissionRepository.findById(Permission.ALL.getValue()).orElseThrow(() -> new WorkspaceException(ErrorCode.ERR_WORKSPACE_PERMISSION_NOT_FOUND));
             WorkspaceUserPermission workspaceUserPermission = WorkspaceUserPermission.builder().workspaceUser(workspaceUser).workspaceRole(workspaceRole).workspacePermission(workspacePermission).build();
             workspaceUserRepository.save(workspaceUser);
@@ -1240,14 +1240,14 @@ public abstract class WorkspaceUserService {
             workspaceUserInfoResponse.setLicenseProducts(new String[]{"REMOTE"});
             workspaceMemberInfoList.add(workspaceUserInfoResponse);
         }
-        for (int i = 0; i < memberSeatCreateRequest.getPlanView(); i++) {
+        for (int i = 0; i < memberGuestCreateRequest.getPlanView(); i++) {
             //게정 생성
-            UserInfoRestResponse userInfoRestResponse = seatMemberRegistrationRequest(seatMemberRegistrationRequest);
+            UserInfoRestResponse userInfoRestResponse = guestMemberRegistrationRequest(guestMemberRegistrationRequest);
             //라이선스 할당
             grantWorkspaceLicenseToUser(workspaceId, userInfoRestResponse.getUuid(), "VIEW");
             //시트 멤버 저장
             WorkspaceUser workspaceUser = WorkspaceUser.builder().userId(userInfoRestResponse.getUuid()).workspace(workspace).build();
-            WorkspaceRole workspaceRole = workspaceRoleRepository.findByRole(Role.SEAT).orElseThrow(() -> new WorkspaceException(ErrorCode.ERR_WORKSPACE_ROLE_NOT_FOUND));
+            WorkspaceRole workspaceRole = workspaceRoleRepository.findByRole(Role.GUEST).orElseThrow(() -> new WorkspaceException(ErrorCode.ERR_WORKSPACE_ROLE_NOT_FOUND));
             WorkspacePermission workspacePermission = workspacePermissionRepository.findById(Permission.ALL.getValue()).orElseThrow(() -> new WorkspaceException(ErrorCode.ERR_WORKSPACE_PERMISSION_NOT_FOUND));
             WorkspaceUserPermission workspaceUserPermission = WorkspaceUserPermission.builder().workspaceUser(workspaceUser).workspaceRole(workspaceRole).workspacePermission(workspacePermission).build();
             workspaceUserRepository.save(workspaceUser);
@@ -1264,11 +1264,11 @@ public abstract class WorkspaceUserService {
         return new WorkspaceMemberInfoListResponse(workspaceMemberInfoList);
     }
 
-    private UserInfoRestResponse seatMemberRegistrationRequest(SeatMemberRegistrationRequest seatMemberRegistrationRequest) {
-        ApiResponse<UserInfoRestResponse> apiResponse = userRestService.seatMemberRegistrationRequest(seatMemberRegistrationRequest, "workspace-server");
+    private UserInfoRestResponse guestMemberRegistrationRequest(GuestMemberRegistrationRequest guestMemberRegistrationRequest) {
+        ApiResponse<UserInfoRestResponse> apiResponse = userRestService.guestMemberRegistrationRequest(guestMemberRegistrationRequest, "workspace-server");
         if (apiResponse.getCode() != 200 || apiResponse.getData() == null || !StringUtils.hasText(apiResponse.getData().getUuid())) {
-            log.error("[REGISTRATION WORKSPACE SEAT USER] Seat user creat fail. worksapce uuid : {}, master uuid : {}, response code : {}, response message : {}", seatMemberRegistrationRequest.getWorkspaceUUID(), seatMemberRegistrationRequest.getMasterUserUUID(), apiResponse.getCode(), apiResponse.getMessage());
-            throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_SEAT_USER_CREATE);
+            log.error("[REGISTRATION WORKSPACE GUEST USER] Seat user creat fail. workspace uuid : {}, master uuid : {}, response code : {}, response message : {}", guestMemberRegistrationRequest.getWorkspaceUUID(), guestMemberRegistrationRequest.getMasterUserUUID(), apiResponse.getCode(), apiResponse.getMessage());
+            throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_GUEST_USER_CREATE);
         }
         return apiResponse.getData();
     }
@@ -1276,26 +1276,26 @@ public abstract class WorkspaceUserService {
     /**
      * 시트 계정 생성 시 라이선스 갯수 검증
      *
-     * @param memberSeatCreateRequest          - 시트 계정 생성 요청 정보
+     * @param memberGuestCreateRequest         - 시트 계정 생성 요청 정보
      * @param workspaceLicensePlanInfoResponse - 워크스페이스 라이선스 정보
      */
-    private void checkSeatMemberCreateLicense(MemberSeatCreateRequest
-                                                      memberSeatCreateRequest, WorkspaceLicensePlanInfoResponse workspaceLicensePlanInfoResponse) {
+    private void checkGuestMemberCreateLicense(MemberGuestCreateRequest
+                                                       memberGuestCreateRequest, WorkspaceLicensePlanInfoResponse workspaceLicensePlanInfoResponse) {
         Optional<Integer> optionalRemote = workspaceLicensePlanInfoResponse.getLicenseProductInfoList().stream().filter(licenseProductInfoResponse -> licenseProductInfoResponse.getProductName().equals("REMOTE")).map(WorkspaceLicensePlanInfoResponse.LicenseProductInfoResponse::getUnUseLicenseAmount).findFirst();
         Optional<Integer> optionalView = workspaceLicensePlanInfoResponse.getLicenseProductInfoList().stream().filter(licenseProductInfoResponse -> licenseProductInfoResponse.getProductName().equals("VIEW")).map(WorkspaceLicensePlanInfoResponse.LicenseProductInfoResponse::getUnUseLicenseAmount).findFirst();
-        if (memberSeatCreateRequest.getPlanRemoteAndView() > 0) {
-            if (!optionalRemote.isPresent() || !optionalView.isPresent() || memberSeatCreateRequest.getPlanRemoteAndView() > optionalRemote.get() || memberSeatCreateRequest.getPlanRemoteAndView() > optionalView.get()) {
-                throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_SEAT_USER_CREATE_LACK_LICENSE);
+        if (memberGuestCreateRequest.getPlanRemoteAndView() > 0) {
+            if (!optionalRemote.isPresent() || !optionalView.isPresent() || memberGuestCreateRequest.getPlanRemoteAndView() > optionalRemote.get() || memberGuestCreateRequest.getPlanRemoteAndView() > optionalView.get()) {
+                throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_GUEST_USER_CREATE_LACK_LICENSE);
             }
         }
-        if (memberSeatCreateRequest.getPlanRemote() > 0) {
-            if (!optionalRemote.isPresent() || memberSeatCreateRequest.getPlanRemote() > optionalRemote.get()) {
-                throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_SEAT_USER_CREATE_LACK_LICENSE);
+        if (memberGuestCreateRequest.getPlanRemote() > 0) {
+            if (!optionalRemote.isPresent() || memberGuestCreateRequest.getPlanRemote() > optionalRemote.get()) {
+                throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_GUEST_USER_CREATE_LACK_LICENSE);
             }
         }
-        if (memberSeatCreateRequest.getPlanView() > 0) {
-            if (!optionalView.isPresent() || memberSeatCreateRequest.getPlanView() > optionalView.get()) {
-                throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_SEAT_USER_CREATE_LACK_LICENSE);
+        if (memberGuestCreateRequest.getPlanView() > 0) {
+            if (!optionalView.isPresent() || memberGuestCreateRequest.getPlanView() > optionalView.get()) {
+                throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_GUEST_USER_CREATE_LACK_LICENSE);
             }
         }
     }
@@ -1306,9 +1306,9 @@ public abstract class WorkspaceUserService {
      * @param workspace     - 검증 대상 워크스페이스 정보
      * @param requestUserId - 계정 생성 요청 유저 식별자
      */
-    private void checkSeatMemberManagementPermission(Workspace workspace, String requestUserId) {
+    private void checkGuestMemberManagementPermission(Workspace workspace, String requestUserId) {
         WorkspaceUserPermission requestUserPermission = workspaceUserPermissionRepository.findByWorkspaceUser_WorkspaceAndWorkspaceUser_UserId(workspace, requestUserId).orElseThrow(() -> new WorkspaceException(ErrorCode.ERR_WORKSPACE_USER_NOT_FOUND));
-        Optional<WorkspaceCustomSetting> workspaceCustomSettingOptional = workspaceCustomSettingRepository.findByWorkspace_UuidAndSetting_Name(workspace.getUuid(), SettingName.SEAT_MANAGEMENT_ROLE_SETTING);
+        Optional<WorkspaceCustomSetting> workspaceCustomSettingOptional = workspaceCustomSettingRepository.findByWorkspace_UuidAndSetting_Name(workspace.getUuid(), SettingName.GUEST_MANAGEMENT_ROLE_SETTING);
         Role requestUserRole = requestUserPermission.getWorkspaceRole().getRole();
         if (!workspaceCustomSettingOptional.isPresent() || workspaceCustomSettingOptional.get().getValue() == SettingValue.UNUSED || workspaceCustomSettingOptional.get().getValue() == SettingValue.MASTER_OR_MANAGER) {
             if (requestUserRole != Role.MASTER && requestUserRole != Role.MANAGER) {
@@ -1373,53 +1373,53 @@ public abstract class WorkspaceUserService {
      * 워크스페이스 시트 계정 삭제 및 워크스페이스에서 내보내기
      *
      * @param workspaceId             - 삭제 대상 워크스페이스 식별자
-     * @param memberSeatDeleteRequest - 삭제 대상 유저 및 삭제 요청 유저 정보
+     * @param memberGuestDeleteRequest - 삭제 대상 유저 및 삭제 요청 유저 정보
      * @return - 삭제 결과
      */
-    public MemberSeatDeleteResponse deleteWorkspaceMemberSeat(String workspaceId, MemberSeatDeleteRequest
-            memberSeatDeleteRequest) {
+    public MemberSeatDeleteResponse deleteWorkspaceMemberSeat(String workspaceId, MemberGuestDeleteRequest
+            memberGuestDeleteRequest) {
         //1-1. 요청한 사람의 권한 체크
         Workspace workspace = workspaceRepository.findByUuid(workspaceId).orElseThrow(() -> new WorkspaceException(ErrorCode.ERR_WORKSPACE_NOT_FOUND));
-        checkSeatMemberManagementPermission(workspace, memberSeatDeleteRequest.getRequestUserId());
+        checkGuestMemberManagementPermission(workspace, memberGuestDeleteRequest.getRequestUserId());
 
         //1-2. 요청받은 유저가 시트유저인지 체크
-        WorkspaceUserPermission deleteUserPermission = workspaceUserPermissionRepository.findByWorkspaceUser_WorkspaceAndWorkspaceUser_UserId(workspace, memberSeatDeleteRequest.getUserId()).orElseThrow(() -> new WorkspaceException(ErrorCode.ERR_WORKSPACE_USER_NOT_FOUND));
-        if (deleteUserPermission.getWorkspaceRole().getRole() != Role.SEAT) {
-            throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_SEAT_USER_DELETE);
+        WorkspaceUserPermission deleteUserPermission = workspaceUserPermissionRepository.findByWorkspaceUser_WorkspaceAndWorkspaceUser_UserId(workspace, memberGuestDeleteRequest.getUserId()).orElseThrow(() -> new WorkspaceException(ErrorCode.ERR_WORKSPACE_USER_NOT_FOUND));
+        if (deleteUserPermission.getWorkspaceRole().getRole() != Role.GUEST) {
+            throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_GUEST_USER_DELETE);
         }
-        UserInfoRestResponse userInfoRestResponse = getUserInfoRequest(memberSeatDeleteRequest.getUserId());
-        if (!userInfoRestResponse.getUserType().equals("SEAT_USER")) {
-            throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_SEAT_USER_DELETE);
+        UserInfoRestResponse userInfoRestResponse = getUserInfoRequest(memberGuestDeleteRequest.getUserId());
+        if (!userInfoRestResponse.getUserType().equals("GUEST_USER")) {
+            throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_GUEST_USER_DELETE);
         }
 
         //2. 라이선스 해제 요청
-        MyLicenseInfoListResponse myLicenseInfoListResponse = getMyLicenseInfoRequestHandler(workspaceId, memberSeatDeleteRequest.getUserId());
+        MyLicenseInfoListResponse myLicenseInfoListResponse = getMyLicenseInfoRequestHandler(workspaceId, memberGuestDeleteRequest.getUserId());
         if (!myLicenseInfoListResponse.getLicenseInfoList().isEmpty()) {
             List<String> productList = myLicenseInfoListResponse.getLicenseInfoList().stream().map(MyLicenseInfoResponse::getProductName).collect(Collectors.toList());
-            productList.forEach(productName -> revokeWorkspaceLicenseToUser(workspaceId, memberSeatDeleteRequest.getUserId(), productName));
+            productList.forEach(productName -> revokeWorkspaceLicenseToUser(workspaceId, memberGuestDeleteRequest.getUserId(), productName));
         }
 
         //3. 시트 유저 삭제 요청
-        SeatMemberDeleteRequest seatMemberDeleteRequest = new SeatMemberDeleteRequest();
-        seatMemberDeleteRequest.setMasterUUID(workspace.getUserId());
-        seatMemberDeleteRequest.setSeatUserUUID(deleteUserPermission.getWorkspaceUser().getUserId());
-        UserDeleteRestResponse userDeleteRestResponse = seatMemberDeleteRequest(seatMemberDeleteRequest);
+        GuestMemberDeleteRequest guestMemberDeleteRequest = new GuestMemberDeleteRequest();
+        guestMemberDeleteRequest.setMasterUUID(workspace.getUserId());
+        guestMemberDeleteRequest.setGuestUserUUID(deleteUserPermission.getWorkspaceUser().getUserId());
+        UserDeleteRestResponse userDeleteRestResponse = guestMemberDeleteRequest(guestMemberDeleteRequest);
 
         //4. 웤스 서버에서 삭제
         WorkspaceUser workspaceUser = deleteUserPermission.getWorkspaceUser();
         workspaceUserPermissionRepository.delete(deleteUserPermission);
         workspaceUserRepository.delete(workspaceUser);
 
-        return new MemberSeatDeleteResponse(true, memberSeatDeleteRequest.getUserId(), LocalDateTime.now());
+        return new MemberSeatDeleteResponse(true, memberGuestDeleteRequest.getUserId(), LocalDateTime.now());
     }
 
-    private UserDeleteRestResponse seatMemberDeleteRequest(SeatMemberDeleteRequest seatMemberDeleteRequest) {
-        ApiResponse<UserDeleteRestResponse> apiResponse = userRestService.seatMemberDeleteRequest(seatMemberDeleteRequest, "workspace-server");
+    private UserDeleteRestResponse guestMemberDeleteRequest(GuestMemberDeleteRequest guestMemberDeleteRequest) {
+        ApiResponse<UserDeleteRestResponse> apiResponse = userRestService.guestMemberDeleteRequest(guestMemberDeleteRequest, "workspace-server");
         if (apiResponse.getCode() != 200 || apiResponse.getData() == null) {
-            log.error("[DELETE WORKSPACE SEAT USER] Delete user fail. seat uuid : {}, master uuid : {}, response code : {}, response message : {}", seatMemberDeleteRequest.getSeatUserUUID(), seatMemberDeleteRequest.getMasterUUID(), apiResponse.getCode(), apiResponse.getMessage());
-            throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_SEAT_USER_DELETE);
+            log.error("[DELETE WORKSPACE GUEST USER] Delete user fail. guest uuid : {}, master uuid : {}, response code : {}, response message : {}", guestMemberDeleteRequest.getGuestUserUUID(), guestMemberDeleteRequest.getMasterUUID(), apiResponse.getCode(), apiResponse.getMessage());
+            throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_GUEST_USER_DELETE);
         } else {
-            log.info("[DELETE WORKSPACE SEAT USER] Delete user success. seat uuid : {}, master uuid : {}, response user uuid : {}, response deletedDate : {}", seatMemberDeleteRequest.getSeatUserUUID(), seatMemberDeleteRequest.getMasterUUID(), apiResponse.getData().getUserUUID(), apiResponse.getData().getDeletedDate());
+            log.info("[DELETE WORKSPACE GUEST USER] Delete user success. guest uuid : {}, master uuid : {}, response user uuid : {}, response deletedDate : {}", guestMemberDeleteRequest.getGuestUserUUID(), guestMemberDeleteRequest.getMasterUUID(), apiResponse.getData().getUserUUID(), apiResponse.getData().getDeletedDate());
             return apiResponse.getData();
         }
     }
@@ -1477,12 +1477,12 @@ public abstract class WorkspaceUserService {
                 }
             }
         }
-        if (userInfo.getUserType().equals("SEAT_USER")) {
+        if (userInfo.getUserType().equals("GUEST_USER")) {
             // 본인 정보 수정은 권한체크하지 않는다.
             if (memberProfileUpdateRequest.getRequestUserId().equals(memberProfileUpdateRequest.getUserId())) {
                 return null;
             }
-            Optional<WorkspaceCustomSetting> workspaceCustomSettingOptional = workspaceCustomSettingRepository.findByWorkspace_UuidAndSetting_Name(workspaceId, SettingName.SEAT_MANAGEMENT_ROLE_SETTING);
+            Optional<WorkspaceCustomSetting> workspaceCustomSettingOptional = workspaceCustomSettingRepository.findByWorkspace_UuidAndSetting_Name(workspaceId, SettingName.GUEST_MANAGEMENT_ROLE_SETTING);
             if (!workspaceCustomSettingOptional.isPresent() || workspaceCustomSettingOptional.get().getValue() == SettingValue.UNUSED || workspaceCustomSettingOptional.get().getValue() == SettingValue.MASTER_OR_MANAGER) {
                 // 요청한 사람이 마스터 또는 매니저여야 한다.
                 if (requestUserPermission.getWorkspaceRole().getRole() != Role.MASTER && requestUserPermission.getWorkspaceRole().getRole() != Role.MANAGER) {

@@ -73,11 +73,11 @@ public interface UserRestService {
     ApiResponse<UserProfileUpdateResponse> modifyUserProfileRequest(@PathVariable("userId") String userId, @RequestPart("profile") MultipartFile profile, @RequestParam("updateAsDefaultImage") Boolean updateAsDefaultImage);
 
     //워크스페이스 시트 계정 등록
-    @PostMapping("/users/members/seat")
-    ApiResponse<UserInfoRestResponse> seatMemberRegistrationRequest(@RequestBody SeatMemberRegistrationRequest seatMemberRegistrationRequest, @RequestHeader("serviceID") String serviceID);
+    @PostMapping("/users/members/guest")
+    ApiResponse<UserInfoRestResponse> guestMemberRegistrationRequest(@RequestBody GuestMemberRegistrationRequest guestMemberRegistrationRequest, @RequestHeader("serviceID") String serviceID);
 
     //워크스페이스 시트 계정 삭제
-    @DeleteMapping("/users/members/seat")
-    ApiResponse<UserDeleteRestResponse> seatMemberDeleteRequest(@RequestBody SeatMemberDeleteRequest seatMemberDeleteRequest, @RequestHeader("serviceID") String serviceID);
+    @DeleteMapping("/users/members/guest")
+    ApiResponse<UserDeleteRestResponse> guestMemberDeleteRequest(@RequestBody GuestMemberDeleteRequest guestMemberDeleteRequest, @RequestHeader("serviceID") String serviceID);
 }
 

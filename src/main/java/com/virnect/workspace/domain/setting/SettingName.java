@@ -14,7 +14,7 @@ public enum SettingName {
     //전용 계정 생성, 삭제, 정보 편집
     PRIVATE_USER_MANAGEMENT_ROLE_SETTING(Product.WORKSTATION, SettingValue.MASTER_OR_MANAGER, new SettingValue[]{SettingValue.MASTER_OR_MANAGER, SettingValue.MASTER, SettingValue.MASTER_OR_MANAGER_OR_MEMBER}),
     //시트 추가, 삭제, 정보 편집
-    SEAT_MANAGEMENT_ROLE_SETTING(Product.WORKSTATION, SettingValue.MASTER_OR_MANAGER, new SettingValue[]{SettingValue.MASTER_OR_MANAGER, SettingValue.MASTER, SettingValue.MASTER_OR_MANAGER_OR_MEMBER}),
+    GUEST_MANAGEMENT_ROLE_SETTING(Product.WORKSTATION, SettingValue.MASTER_OR_MANAGER, new SettingValue[]{SettingValue.MASTER_OR_MANAGER, SettingValue.MASTER, SettingValue.MASTER_OR_MANAGER_OR_MEMBER}),
     //플랜 할당, 편집
     USER_PLAN_MANAGEMENT_ROLE_SETTING(Product.WORKSTATION, SettingValue.MASTER_OR_MANAGER, new SettingValue[]{SettingValue.MASTER_OR_MANAGER, SettingValue.MASTER, SettingValue.MASTER_OR_MANAGER_OR_MEMBER}),
     USER_ROLE_MANAGEMENT_ROLE_SETTING(Product.WORKSTATION, SettingValue.MASTER, new SettingValue[]{SettingValue.MASTER, SettingValue.MASTER_OR_MANAGER, SettingValue.MASTER_OR_MANAGER_OR_MEMBER}),

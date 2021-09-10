@@ -12,15 +12,15 @@ import lombok.Setter;
  */
 @Getter
 @Setter
-public class SeatMemberDeleteRequest {
-    private String masterUUID;
-    private String seatUserUUID;
+public class GuestMemberRegistrationRequest {
+    private String masterUserUUID;
+    private String workspaceUUID;
 
     @Override
     public String toString() {
-        return "SeatMemberDeleteRequest{" +
-                "masterUUID='" + masterUUID + '\'' +
-                ", seatUserUUID='" + seatUserUUID + '\'' +
+        return "GuestMemberRegistrationRequest{" +
+                "masterUserUUID='" + masterUserUUID + '\'' +
+                ", workspaceUUID='" + workspaceUUID + '\'' +
                 '}';
     }
 }

@@ -49,8 +49,8 @@ public class WorkspaceUserController {
             @ApiImplicitParam(name = "workspaceId", value = "워크스페이스 식별자", defaultValue = "45ea004001c56a3380d48168b9db0492", required = true),
             @ApiImplicitParam(name = "search", value = "검색어(닉네임, 이메일)", dataType = "string", allowEmptyValue = true, defaultValue = ""),
             @ApiImplicitParam(name = "filter", value = "사용자 필터(MASTER, MANAGER, MEMBER) 또는 (REMOTE, MAKE, VIEW)", dataType = "string", allowEmptyValue = true, defaultValue = ""),
-            @ApiImplicitParam(name = "role", value = "워크스페이스 역할 필터(MASTER, MANAGER, MEMBER, SEAT)", dataType = "string", allowEmptyValue = true, paramType = "query", allowMultiple = true),
-            @ApiImplicitParam(name = "userType", value = "사용자 계정 타입 필터(USER, WORKSPACE_ONLY_USER, SEAT_USER)", dataType = "string", allowEmptyValue = true, defaultValue = ""),
+            @ApiImplicitParam(name = "role", value = "워크스페이스 역할 필터(MASTER, MANAGER, MEMBER, GUEST)", dataType = "string", allowEmptyValue = true, paramType = "query", allowMultiple = true),
+            @ApiImplicitParam(name = "userType", value = "사용자 계정 타입 필터(USER, WORKSPACE_ONLY_USER, GUEST_USER)", dataType = "string", allowEmptyValue = true, defaultValue = ""),
             @ApiImplicitParam(name = "plan", value = "제품 라이선스 플랜 필터(REMOTE, MAKE, VIEW)", dataType = "string", allowEmptyValue = true, defaultValue = ""),
             @ApiImplicitParam(name = "page", value = "size 대로 나눠진 페이지를 조회할 번호", paramType = "query", defaultValue = "0"),
             @ApiImplicitParam(name = "size", value = "페이징 사이즈", dataType = "number", paramType = "query", defaultValue = "20"),
@@ -351,40 +351,40 @@ public class WorkspaceUserController {
 
     @ApiOperation(value = "워크스페이스 시트 계정 생성")
     @ApiImplicitParam(name = "workspaceId", value = "워크스페이스 식별자", dataType = "string", defaultValue = "4d6eab0860969a50acbfa4599fbb5ae8", paramType = "path", required = true)
-    @PostMapping("/{workspaceId}/members/seat")
+    @PostMapping("/{workspaceId}/members/guest")
     public ResponseEntity<ApiResponse<WorkspaceMemberInfoListResponse>> createWorkspaceMemberAccount(
             @PathVariable("workspaceId") String workspaceId,
-            @RequestBody @Valid MemberSeatCreateRequest memberSeatCreateRequest, BindingResult bindingResult
+            @RequestBody @Valid MemberGuestCreateRequest memberGuestCreateRequest, BindingResult bindingResult
     ) {
         if (bindingResult.hasErrors()) {
             bindingResult.getAllErrors()
                     .forEach(
-                            objectError -> log.error("[CREATE WORKSPACE SEAT MEMBER] Error message : [{}]", objectError));
+                            objectError -> log.error("[CREATE WORKSPACE GUEST MEMBER] Error message : [{}]", objectError));
             throw new WorkspaceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
-        WorkspaceMemberInfoListResponse response = workspaceUserService.createWorkspaceMemberSeat(
+        WorkspaceMemberInfoListResponse response = workspaceUserService.createWorkspaceMemberGuest(
                 workspaceId,
-                memberSeatCreateRequest
+                memberGuestCreateRequest
         );
         return ResponseEntity.ok(new ApiResponse<>(response));
     }
 
-    @ApiOperation(value = "워크스페이스 시트 계정 삭제 및 내보내기")
+    @ApiOperation(value = "워크스페이스 게스트 계정 삭제 및 내보내기")
     @ApiImplicitParam(name = "workspaceId", value = "워크스페이스 식별자", dataType = "string", defaultValue = "4d6eab0860969a50acbfa4599fbb5ae8", paramType = "path", required = true)
-    @DeleteMapping("/{workspaceId}/members/seat")
+    @DeleteMapping("/{workspaceId}/members/guest")
     public ResponseEntity<ApiResponse<MemberSeatDeleteResponse>> deleteWorkspaceMemberAccount(
             @PathVariable("workspaceId") String workspaceId,
-            @RequestBody @Valid MemberSeatDeleteRequest memberSeatDeleteRequest, BindingResult bindingResult
+            @RequestBody @Valid MemberGuestDeleteRequest memberGuestDeleteRequest, BindingResult bindingResult
     ) {
         if (bindingResult.hasErrors()) {
             bindingResult.getAllErrors()
                     .forEach(
-                            objectError -> log.error("[DELETE WORKSPACE SEAT MEMBER] Error message : [{}]", objectError));
+                            objectError -> log.error("[DELETE WORKSPACE GUEST MEMBER] Error message : [{}]", objectError));
             throw new WorkspaceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
         MemberSeatDeleteResponse response = workspaceUserService.deleteWorkspaceMemberSeat(
                 workspaceId,
-                memberSeatDeleteRequest
+                memberGuestDeleteRequest
         );
         return ResponseEntity.ok(new ApiResponse<>(response));
     }
