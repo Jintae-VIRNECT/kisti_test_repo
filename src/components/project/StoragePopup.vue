@@ -1,67 +1,103 @@
 <template>
   <el-popover
-    class="project-storage-popup"
+    popper-class="project-storage-popup"
     placement="bottom-end"
     :title="$t('projects.storage.info.title')"
     trigger="click"
     visible-arrow="false"
     width="312"
   >
-    <el-progress :percentage="30" :show-text="false" :stroke-width="12" />
+    <el-progress
+      ref="storagePopup"
+      :percentage="ProjectUseVolume"
+      :show-text="false"
+      :stroke-width="12"
+    />
     <ProjectPopupItem
       :title="$t('projects.storage.info.allVolume')"
-      byte="214748364800"
+      :byte="plansInfo.storage.max"
       color="#e6e9ee"
     />
     <ProjectPopupItem
       :title="$t('projects.storage.info.allUseVolume')"
-      byte="150860726272"
+      :byte="plansInfo.storage.current"
       color="#ffb854"
     />
     <ProjectPopupItem
       :title="$t('projects.storage.info.projectUseVolume')"
-      byte="52291226828.8"
+      :byte="30"
       color="#007cfe"
     />
     <el-button type="primary" slot="reference">
       {{ $t('projects.storage.info.freeVolume') }} :
-      {{ 150555500000 | formatBytes }}
+      {{ plansInfo.storage.remain }} GB
     </el-button>
   </el-popover>
 </template>
 
 <script>
 import filters from '@/mixins/filters'
+import { mapGetters } from 'vuex'
 
 export default {
   mixins: [filters],
-  props: {
-    data: Object,
-  },
   data() {
     return {
-      showMe: true,
+      progressInnerProjectUse: null,
+      progressInnerAllUse: null,
+      progressInnerAllVolume: null,
+      ProjectUseVolume: 0,
     }
   },
+  computed: {
+    ...mapGetters({
+      plansInfo: 'plan/plansInfo',
+    }),
+  },
+  methods: {
+    rate(now, max) {
+      const rate = now / max
+      if (isNaN(rate)) return 0
+      else if (rate === Infinity) return 100
+      else return rate * 100
+    },
+    // 스토리지 el-progress의 inner Bar 엘레먼트를 2개 추가생성합니다.
+    innerProgressBarCreate() {
+      const [progressBar] = this.$refs.storagePopup.$el.children
+      const [progressOuter] = progressBar.children
+
+      // 프로젝트 사용량 inner bar
+      this.progressInnerProjectUse = progressOuter.children[0]
+      // 총 사용량 inner bar
+      this.progressInnerAllUse = this.progressInnerProjectUse.cloneNode(true)
+      // 전체 용량 inner bar
+      this.progressInnerAllVolume = this.progressInnerProjectUse.cloneNode(true)
+
+      progressOuter.appendChild(this.progressInnerAllUse)
+      progressOuter.appendChild(this.progressInnerAllVolume)
+
+      // 엘레먼트 생성 후, inner bar들의 width 길이설정 함수 실행.
+      this.$nextTick(() => {
+        this.setInnerProgressbar()
+      })
+    },
+    // progressBar의 각 용량별 width를 지정해줍니다.
+    setInnerProgressbar() {
+      // TODO: 추후 프로젝트 스토리지 정보를 받아서 아래의 width값을 변경해주자. -> plan.js DAO에서 퍼센티지 반환필요.
+      this.ProjectUseVolume = 30
+      this.progressInnerAllUse.style.width = '60%'
+      this.progressInnerAllVolume.style.width = '100%'
+    },
+  },
   mounted() {
-    const progressOuter = document.getElementsByClassName(
-      'el-progress-bar__outer',
-    )[0]
-    const progressInnerAll = document.getElementsByClassName(
-      'el-progress-bar__inner',
-    )[0]
-    const progressInnerAllUse = progressInnerAll.cloneNode(true)
-    progressInnerAllUse.style.width = '60%'
-    const progressInnerUseProject = progressInnerAll.cloneNode(true)
-    progressInnerUseProject.style.width = '100%'
-    progressOuter.appendChild(progressInnerAllUse)
-    progressOuter.appendChild(progressInnerUseProject)
+    this.$store.dispatch('plan/getPlansInfo')
+    this.innerProgressBarCreate()
   },
 }
 </script>
 
 <style lang="scss">
-body .el-popover {
+.project-storage-popup {
   padding: 14px 20px 20px;
 
   .el-popover__title {

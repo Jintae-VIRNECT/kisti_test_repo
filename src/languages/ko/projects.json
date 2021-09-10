@@ -28,8 +28,10 @@
     },
     "targetTypes": {
       "all": "전체",
-      "content": "콘텐츠",
-      "task": "작업"
+      "qr": "QR 타겟",
+      "vtarget": "V 타겟",
+      "imageTarget": "이미지 타겟",
+      "vr": "VR 타겟"
     },
     "sharedTypes": {
       "all": "전체",
@@ -47,10 +49,9 @@
     },
     "modeTypes": {
       "all": "전체",
-      "qr": "QR 타겟",
-      "vtarget": "V 타겟",
-      "imageTarget": "이미지 타겟",
-      "vr": "VR 타겟"
+      "twoDimensinal": "2D",
+      "threeDimensinal": "3D",
+      "twoOrThreeDimensinal": "3D+2D"
     },
     "info": {
       "title": "프로젝트 정보",

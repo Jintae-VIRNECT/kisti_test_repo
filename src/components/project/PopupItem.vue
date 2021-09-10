@@ -5,7 +5,7 @@
       <span class="count"> {{ title }} </span>
     </div>
     <div class="remain">
-      <span> {{ byte | formatBytes }} </span>
+      <span> {{ byte }} GB</span>
     </div>
   </div>
 </template>
@@ -17,7 +17,7 @@ export default {
   mixins: [filters],
   props: {
     title: String,
-    byte: String,
+    byte: Number,
     color: String,
   },
   computed: {

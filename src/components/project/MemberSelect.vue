@@ -125,7 +125,7 @@ export default {
       if (choiceMembers.length) {
         // 선택된 유저 리스트에서 첫 유저의 프로필 사진을 대표 라벨 이미지로 보여주기
         this.labelImg = this.options.filter(
-          a => a.value == choiceMembers[0],
+          a => a.value === choiceMembers[0],
         )[0].img
       }
     },
@@ -141,7 +141,7 @@ export default {
   watch: {
     memberTypes(v) {
       this.$emit('update:memberType', v)
-      if (v == 'SELECTMEMBER') {
+      if (v === 'SELECTMEMBER') {
         this.disabledSelect = false
       } else {
         this.disabledSelect = true

@@ -200,7 +200,7 @@
 
 <script>
 import contentService from '@/services/content'
-import { sharedTypes, editTypes, activityTypes } from '@/models/project/Project'
+import { memberRoleFilter, activityTypes } from '@/models/project/Project'
 import filters from '@/mixins/filters'
 import utils from '@/mixins/utils'
 
@@ -242,10 +242,8 @@ export default {
         },
       ],
       showMe: true,
-      // 공유 드롭메뉴
-      sharedTypes,
-      // 편집 드롭메뉴
-      editTypes,
+      // 공유/편집 드롭메뉴
+      memberRoleFilter,
       // 프로젝트의 공유, 편집 관련된 info.
       activityTypes,
       // ex) selectTypes: 멤버, 지정멤버.. 등 드롭메뉴, members: [선택한 지정 멤버 유저 리스트]
@@ -474,8 +472,9 @@ export default {
     this.activeTab = 'project'
   },
   created() {
-    // 공유 sharedType 에서 'ALL' value 를 가진 항목을 없앤 후, 드롭 메뉴 데이터인 forms.selectTypes 에 sharedTypes을 대입한다.
-    let types = this.sharedTypes.filter(type => type.value != 'ALL')
+    let types = this.memberRoleFilter.options.filter(
+      type => type.value != 'ALL',
+    )
     this.forms.map(form => (form.selectTypes = types))
   },
 }

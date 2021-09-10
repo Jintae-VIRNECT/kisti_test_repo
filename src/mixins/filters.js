@@ -1,5 +1,6 @@
 import { filters as dayjsFilters } from '@/plugins/dayjs'
 import { targetTypes } from '@/models/content/Content'
+import { targetFilter } from '@/models/project/Project'
 import { app } from '@/plugins/context'
 
 export default {
@@ -42,6 +43,14 @@ export default {
     targetType2label(targetType) {
       if (!targetType) return '-'
       const targetInfo = targetTypes.find(({ value }) => value === targetType)
+      return app.i18n.t(targetInfo.label)
+    },
+    // project의 targetType에 따른 라벨 반환.
+    targetType2label4project(targetType) {
+      if (!targetType) return '-'
+      const targetInfo = targetFilter.options.find(
+        ({ value }) => value === targetType,
+      )
       return app.i18n.t(targetInfo.label)
     },
     /**
