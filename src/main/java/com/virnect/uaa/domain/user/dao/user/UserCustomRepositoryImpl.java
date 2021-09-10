@@ -104,7 +104,7 @@ public class UserCustomRepositoryImpl extends QuerydslRepositorySupport implemen
 
 	@Override
 	public long countCurrentSeatUserNumber(User masterUser) {
-		return query.selectFrom(user).where(user.master.eq(masterUser).and(user.userType.eq(SEAT_USER))).fetchCount();
+		return query.selectFrom(user).where(user.master.eq(masterUser).and(user.userType.eq(GUEST_USER))).fetchCount();
 	}
 
 	@Override
@@ -112,7 +112,7 @@ public class UserCustomRepositoryImpl extends QuerydslRepositorySupport implemen
 		User seatUser = query.selectFrom(QUser.user)
 			.where(
 				user.master.eq(masterUser),
-				user.userType.eq(SEAT_USER),
+				user.userType.eq(GUEST_USER),
 				user.uuid.eq(uuid)
 			)
 			.fetchOne();

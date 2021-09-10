@@ -109,7 +109,7 @@ public abstract class UserInfoMapper {
 
 	@AfterMapping
 	protected void seatUserInformationConvert(User user, @MappingTarget UserInfoResponse userInfoResponse) {
-		if (user.getUserType() == SEAT_USER) {
+		if (user.getUserType() == GUEST_USER) {
 			userInfoResponse.setEmail("");
 		}
 	}

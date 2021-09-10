@@ -10,7 +10,7 @@ package com.virnect.uaa.domain.user.domain;
 public enum UserType {
 	USER,
 	WORKSPACE_ONLY_USER,
-	SEAT_USER,
+	GUEST_USER,
 	// MEMBER_USER,
 	VIRNECT_USER,
 	SECESSION_USER

@@ -175,7 +175,7 @@ public class User extends BaseTimeEntity {
 		this.name = this.lastName + this.firstName;
 		this.nickname = seatUserNickName;
 		this.profile = Default.USER_PROFILE.getValue();
-		this.userType = UserType.SEAT_USER;
+		this.userType = UserType.GUEST_USER;
 		this.birth = LocalDate.now();
 		this.loginLock = LoginStatus.INACTIVE;
 		this.joinInfo = "워크스페이스 Seat 계정 등록";
