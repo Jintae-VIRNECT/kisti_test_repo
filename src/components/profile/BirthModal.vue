@@ -84,9 +84,7 @@ export default {
       const newYear = dayjs(newDate).year()
       const newMonth = dayjs(newDate).month()
       this.month = dayjs(this.month).year(newYear)
-      this.day = dayjs(this.day)
-        .year(newYear)
-        .month(newMonth)
+      this.day = dayjs(this.day).year(newYear).month(newMonth)
     },
     month(newDate) {
       const newMonth = dayjs(newDate).month()
@@ -94,11 +92,29 @@ export default {
     },
   },
   methods: {
+    async isAgeFourteen(birth) {
+      const today = dayjs()
+      const userAge = dayjs(birth)
+      const age = (await today.format('YYYY')) - userAge.format('YYYY')
+      console.log(age)
+      if (age <= 14) {
+        this.$notify.error({
+          message: this.$t('profile.birthChangeModal.ageLimit'),
+          position: 'bottom-left',
+          duration: 2000,
+        })
+        return true
+      }
+      return false
+    },
     async submit() {
       const birth = dayjs()
         .year(dayjs(this.year).year())
         .month(dayjs(this.month).month())
         .date(dayjs(this.day).date())
+
+      if (await this.isAgeFourteen(birth)) return
+
       const form = {
         birth: filters.fullYearDateFormat(birth).replace(/\./g, '-'),
       }
