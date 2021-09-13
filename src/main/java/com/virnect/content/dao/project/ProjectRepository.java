@@ -1,5 +1,6 @@
 package com.virnect.content.dao.project;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -17,4 +18,5 @@ import com.virnect.content.domain.project.Project;
 @Repository
 public interface ProjectRepository extends JpaRepository<Project, Long>, ProjectCustomRepository{
 	Optional<Project> findByUuid(String uuid);
+	List<Project> findByUuidIn(List<String> uuidList);
 }

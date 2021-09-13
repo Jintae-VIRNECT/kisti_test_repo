@@ -1,7 +1,6 @@
 package com.virnect.content.api;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 import javax.validation.Valid;
 
@@ -161,16 +160,18 @@ public class ProjectController {
 
 	@ApiOperation(value = "프로젝트 삭제", notes = "프로젝트를 삭제합니다.")
 	@ApiImplicitParams({
-		@ApiImplicitParam(name = "projectUUID", value = "프로젝트 식별자", dataType = "string", paramType = "path")
+		@ApiImplicitParam(name = "projectUUIDList", value = "프로젝트 식별자 목록", dataType = "string", paramType = "query", required = true, example = "", allowMultiple = true),
 	})
-	@DeleteMapping("/{projectUUID}")
+	@DeleteMapping
 	public ResponseEntity<ApiResponse<ProjectDeleteResponse>> deleteProject(
-		@PathVariable("projectUUID") String projectUUID
+		@RequestParam("projectUUIDList") List<String> projectUUIDList
 	) {
-		if (!StringUtils.hasText(projectUUID)) {
+		log.info(
+			"[PROJECT DELETE] REQ projectUUIDList : {}", String.join(",", projectUUIDList));
+		if (CollectionUtils.isEmpty(projectUUIDList)) {
 			throw new ContentServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
 		}
-		ProjectDeleteResponse responseMessage = projectService.deleteProject(projectUUID);
+		ProjectDeleteResponse responseMessage = projectService.deleteProject(projectUUIDList);
 		return ResponseEntity.ok(new ApiResponse<>(responseMessage));
 	}
 
