@@ -571,11 +571,10 @@ public class RoomService {
 				userList.add(member.getUuid());
 			}
 		}*/
-
 		// Receive User list from Workspace
 		ApiResponse<WorkspaceMemberInfoListResponse> memberInfo = workspaceRestService.getWorkspaceMembersExcludeUserIds(
 			workspaceId,
-			room.getMembers().stream().map(Member::getUuid).filter(String::isEmpty).distinct().toArray(String[]::new)
+			room.getMembers().stream().map(Member::getUuid).distinct().toArray(String[]::new)
 			//userList.stream().distinct().toArray(String[]::new)
 		);
 
@@ -653,7 +652,7 @@ public class RoomService {
 			Integer.MAX_VALUE
 		).getData().getMemberInfoList();
 
-		Set<String> userIds = workspaceMembers.stream().map(WorkspaceMemberInfoResponse::getUuid).filter(String::isEmpty).collect(Collectors.toSet());
+		Set<String> userIds = workspaceMembers.stream().map(WorkspaceMemberInfoResponse::getUuid).collect(Collectors.toSet());
 
 		//List<String> userIds = new ArrayList<>();
 		/*for (WorkspaceMemberInfoResponse memberInfo : workspaceMembers) {
@@ -898,7 +897,6 @@ public class RoomService {
 		for (Room room : roomPage) {
 			memberUserIdsOfRooms.addAll(room.getMembers().stream()
 				.map(Member::getUuid)
-				.filter(String::isEmpty)
 				.collect(Collectors.toSet()));
 		}
 
