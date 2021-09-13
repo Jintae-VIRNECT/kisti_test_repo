@@ -96,7 +96,6 @@ export default {
       const today = dayjs()
       const userAge = dayjs(birth)
       const age = (await today.format('YYYY')) - userAge.format('YYYY')
-      console.log(age)
       if (age <= 14) {
         this.$notify.error({
           message: this.$t('profile.birthChangeModal.ageLimit'),
