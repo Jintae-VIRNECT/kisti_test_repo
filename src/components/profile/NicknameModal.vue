@@ -31,7 +31,11 @@
     </div>
 
     <div slot="footer" class="dialog-footer">
-      <el-button type="primary" @click="submit" :disabled="!confirmNickname">
+      <el-button
+        type="primary"
+        @click="submit"
+        :disabled="!form.confirmNickname"
+      >
         {{ $t('profile.nicknameChangeModal.submit') }}
       </el-button>
     </div>
@@ -58,21 +62,21 @@ export default {
           {
             validator: (rule, value, callback) => {
               if (value.length < 1 || value.length > 20) {
-                this.confirmNickname = false
+                this.form.confirmNickname = false
                 callback(
                   new Error(
                     this.$t('profile.nicknameChangeModal.message.caution'),
                   ),
                 )
               } else if (/[<>]/.test(value)) {
-                this.confirmNickname = false
+                this.form.confirmNickname = false
                 callback(
                   new Error(
                     this.$t('profile.nicknameChangeModal.message.caution'),
                   ),
                 )
               } else {
-                this.confirmNickname = true
+                this.form.confirmNickname = true
                 callback()
               }
             },
