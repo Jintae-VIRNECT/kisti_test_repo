@@ -192,5 +192,5 @@ export const LOCATION = {
 }
 
 export const USER_TYPE = {
-  GUEST: 'GUEST_USER',
+  GUEST_USER: 'GUEST_USER',
 }

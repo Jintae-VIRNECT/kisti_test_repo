@@ -50,7 +50,7 @@
 <script>
 import confirmMixin from 'mixins/confirm'
 import toastMixin from 'mixins/toast'
-import { getLatestRemoteAosAppInfo } from 'utils/appCheck'
+import { getLatestRemoteAosAppInfo, getIntentLink } from 'utils/appCheck'
 export default {
   name: 'GuestMobile',
   mixins: [confirmMixin, toastMixin],
@@ -71,7 +71,12 @@ export default {
     },
     runApp() {
       if (this.isValid()) {
-        const intentLink = `intent://remote?workspaceId=${this.workspace.uuid}&sessionId=${this.$route.query.sessionId}#$d#Intent;scheme=virnect;action=android.intent.action.VIEW;category=android.intent.category.BROWSABLE;package=${this.packageName};end`
+        const intentLink = getIntentLink({
+          workspaceId: this.workspace.uuid,
+          sessionId: this.$route.query.sessionId,
+          packageName: this.packageName,
+        })
+
         window.open(intentLink)
       } else {
         return false

@@ -21,3 +21,13 @@ export const getLatestRemoteAosAppInfo = async () => {
     return false
   }
 }
+
+/**
+ * Android 앱 구동을 위한 intent 링크 반환
+ * @param {Object} info {workspaceId, sessionId, packageName}
+ * @returns {String} intent link string
+ */
+export const getIntentLink = async info => {
+  const intentLink = `intent://remote?workspaceId=${info.workspaceId}&sessionId=${info.sessionId}#$d#Intent;scheme=virnect;action=android.intent.action.VIEW;category=android.intent.category.BROWSABLE;package=${info.packageName};end`
+  return intentLink
+}

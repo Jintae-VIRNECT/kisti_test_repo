@@ -19,7 +19,7 @@ import HeaderSection from 'components/header/Header'
 
 import confirmMixin from 'mixins/confirm'
 
-import { getLatestRemoteAosAppInfo } from 'utils/appCheck'
+import { getLatestRemoteAosAppInfo, getIntentLink } from 'utils/appCheck'
 import langMixin from 'mixins/language'
 import toastMixin from 'mixins/toast'
 import errorMsgMixin from 'mixins/errorMsg'
@@ -159,7 +159,12 @@ export default {
       return relatedApp ? true : false
     },
     runApp() {
-      const intentLink = `intent://remote?workspaceId=${this.workspaceId}&sessionId=${this.$route.query.sessionId}#$d#Intent;scheme=virnect;action=android.intent.action.VIEW;category=android.intent.category.BROWSABLE;package=${this.packageName};end`
+      const intentLink = getIntentLink({
+        workspaceId: this.workspaceId,
+        sessionId: this.$route.query.sessionId,
+        packageName: this.packageName,
+      })
+
       window.open(intentLink)
     },
     handleMaxScroll(event) {
