@@ -37,6 +37,7 @@
       "directInput": "직접 입력",
       "kick": "내보내기",
       "submit": "변경",
+      "guestRoleDesc": "게스트는 관리자 역할을 할 수 없습니다.",
       "image": {
         "title": "프로필 이미지",
         "edit": "프로필 이미지 변경",

@@ -19,7 +19,7 @@
         </el-form-item>
       </el-col>
       <el-col :span="18" v-else>
-        <el-form-item label="시트는 관리자 역할을 할 수 없습니다." />
+        <el-form-item :label="$t('members.setting.guestRoleDesc')" />
       </el-col>
     </el-form>
   </section>

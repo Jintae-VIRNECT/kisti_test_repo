@@ -37,6 +37,7 @@
       "directInput": "Direct Input",
       "kick": "Remove",
       "submit": "Edit",
+      "guestRoleDesc": "Guests cannot act as administrators.",
       "image": {
         "title": "Profile Image",
         "edit": "Edit Profile Image",
