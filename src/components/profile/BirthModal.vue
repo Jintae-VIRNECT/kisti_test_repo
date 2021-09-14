@@ -112,7 +112,7 @@ export default {
         .month(dayjs(this.month).month())
         .date(dayjs(this.day).date())
 
-      if (await this.isAgeFourteen(birth)) return
+      if (this.isAgeFourteen(birth)) return
 
       const form = {
         birth: filters.fullYearDateFormat(birth).replace(/\./g, '-'),
