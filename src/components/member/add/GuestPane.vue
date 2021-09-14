@@ -1,6 +1,6 @@
 <template>
-  <article class="seat-pane">
-    <section class="seat-pane__title">
+  <article class="guest-pane">
+    <section class="guest-pane__title">
       <h6>{{ $t('members.guest.title') }}</h6>
       <p v-html="$t('members.guest.desc')" />
       <ul>
@@ -17,9 +17,9 @@
           </dl>
         </li>
       </ul>
-      <div class="seat-pane__sub-title">
+      <div class="guest-pane__sub-title">
         <p>{{ $t('members.guest.settings') }}</p>
-        <div class="seat-pane__usage">
+        <div class="guest-pane__usage">
           <img src="~assets/images/icon/ic-person.svg" />
           <strong>{{ currentMember }}/{{ maximum }}</strong>
           <el-tooltip
@@ -31,8 +31,8 @@
         </div>
       </div>
     </section>
-    <section class="seat-pane__content">
-      <el-tabs v-model="seatTabName" @tab-click="tabClick">
+    <section class="guest-pane__content">
+      <el-tabs v-model="tabName" @tab-click="tabClick">
         <el-tab-pane :label="$t('members.guest.remoteTabName')" name="remote">
           <el-form class="virnect-workstation-form">
             <h6>{{ $t('members.guest.remoteTab.title') }}</h6>
@@ -45,7 +45,7 @@
                   <MemberSeatSelect
                     :label="plans.remote.label"
                     :amount="availablePlans.remote"
-                    :numOfSeat="numOfSeat"
+                    :numOfGuest="numOfGuest"
                     @change="choosePlan"
                   />
                 </el-form-item>
@@ -65,7 +65,7 @@
                   <MemberSeatSelect
                     :label="plans.view.label"
                     :amount="availablePlans.view"
-                    :numOfSeat="numOfSeat"
+                    :numOfGuest="numOfGuest"
                     @change="choosePlan"
                   />
                 </el-form-item>
@@ -75,10 +75,10 @@
         </el-tab-pane>
       </el-tabs>
     </section>
-    <section class="seat-pane__footer">
-      <el-button type="primary" @click="submit" :disabled="!numOfSeat">
+    <section class="guest-pane__footer">
+      <el-button type="primary" @click="submit" :disabled="!numOfGuest">
         {{ $t('members.guest.submit') }}
-        <span class="number" v-if="numOfSeat !== 0">{{ numOfSeat }}</span>
+        <span class="number" v-if="numOfGuest !== 0">{{ numOfGuest }}</span>
       </el-button>
     </section>
   </article>
@@ -98,9 +98,9 @@ export default {
   data() {
     return {
       plans,
-      seatTabName: 'remote',
+      tabName: 'remote',
       availablePlans: { remote: 0, make: 0, view: 0 },
-      numOfSeat: 0,
+      numOfGuest: 0,
     }
   },
   methods: {
@@ -117,19 +117,19 @@ export default {
     // 플랜 선택 이벤트
     choosePlan(plan) {
       this.initAvailablePlans()
-      this.numOfSeat = plan.amount
+      this.numOfGuest = plan.amount
     },
     async reset() {
       if (!this.plansInfo.planStatus) {
         await this.$store.dispatch('plan/getPlansInfo')
       }
       this.initAvailablePlans()
-      this.numOfSeat = 0
+      this.numOfGuest = 0
     },
     async submit() {
       const form = {}
-      if (this.seatTabName === 'remote') form.planRemote = this.numOfSeat
-      else if (this.seatTabName === 'view') form.planView = this.numOfSeat
+      if (this.tabName === 'remote') form.planRemote = this.numOfGuest
+      else if (this.tabName === 'view') form.planView = this.numOfGuest
 
       // api 요청
       try {
@@ -137,7 +137,7 @@ export default {
         this.$message.success({
           message: this.$tc(
             'members.add.message.createSuccess',
-            this.numOfSeat,
+            this.numOfGuest,
           ),
           duration: 2000,
           showClose: true,
@@ -174,14 +174,14 @@ export default {
       return this.activeWorkspace.role === 'MASTER'
     },
     currentMember() {
-      return this.membersTotal + this.numOfSeat
+      return this.membersTotal + this.numOfGuest
     },
   },
 }
 </script>
 
 <style lang="scss">
-#__nuxt .seat-pane {
+#__nuxt .guest-pane {
   section {
     padding: 24px;
   }
@@ -222,7 +222,7 @@ export default {
       }
     }
   }
-  .seat-pane__title {
+  .guest-pane__title {
     h6 {
       @include fontLevel(100);
       color: #0b1f48;
@@ -258,7 +258,7 @@ export default {
       line-height: 1.67;
     }
   }
-  .seat-pane__content {
+  .guest-pane__content {
     overflow-y: scroll;
     max-height: 455px;
     padding: 0 5px 0 24px;
@@ -269,7 +269,7 @@ export default {
       padding: 0 14px;
     }
   }
-  .seat-pane__sub-title {
+  .guest-pane__sub-title {
     display: flex;
     justify-content: space-between;
     border-bottom: 0;
@@ -282,14 +282,14 @@ export default {
       margin: 8px 0 16px 0;
     }
   }
-  .seat-pane__usage {
+  .guest-pane__usage {
     display: flex;
     margin-bottom: 8px;
     strong {
       margin-right: 7px;
     }
   }
-  .seat-pane__footer {
+  .guest-pane__footer {
     display: flex;
     padding: 24px;
     justify-content: flex-end;
