@@ -172,6 +172,7 @@ public class MessageEncryptDecryptFilter extends AbstractGatewayFilterFactory<Me
 				}
 			};
 		} catch (JsonProcessingException e) {
+			DataBufferUtils.release(dataBuffer); // release data buffer memory
 			logger.error("EncodingMessage JSON Parsing Error", e);
 			throw new GatewaySecurityException(ErrorCode.ERR_MESSAGE_ENCRYPT_DECRYPT);
 		}
