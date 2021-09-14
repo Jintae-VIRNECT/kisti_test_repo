@@ -45,6 +45,7 @@
   }
   .remote-wrapper.workspace-wrapper {
     height: calc(100% - #{$header_m_height});
+    min-height: calc(100% - #{$header_m_height});
     margin-top: $header_m_height;
     padding-right: 0;
 

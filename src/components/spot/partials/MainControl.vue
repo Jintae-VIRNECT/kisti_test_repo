@@ -11,9 +11,12 @@
       :class="{
         active: motorBtn && !motorHighlight && estopHighlight && estopBtn,
         inactive: motorBtn && motorHighlight && estopHighlight && !estopBtn,
+        pressed: estopClicked,
       }"
       :imgSrc="require('assets/image/spot/ic_estop.svg')"
       @click="estopClick"
+      @touchstart="estopClicked = true"
+      @touchend="estopClick"
     ></control-btn>
     <control-btn
       :disabled="!motorPossible"
@@ -23,14 +26,18 @@
         possible: motorBtn,
         active: motorBtn && motorHighlight && !isSpotStand,
         'active-disabled': motorBtn && motorHighlight && isSpotStand,
+        pressed: motorClicked,
       }"
       :imgSrc="require('assets/image/spot/ic_motor.svg')"
       @click="motorClick"
+      @touchstart="motorClicked = true"
+      @touchend="motorClick"
     ></control-btn>
     <control-btn
       class="fullscreen"
       :imgSrc="require('assets/image/spot/mdpi_icn_Fullscreen_on.svg')"
       @click="setSpotFullscreen"
+      @touchend="setSpotFullscreen"
     ></control-btn>
   </section>
 </template>
@@ -76,10 +83,14 @@ export default {
     },
   },
   data() {
-    return {}
+    return {
+      estopClicked: false,
+      motorClicked: false,
+    }
   },
   methods: {
     estopClick() {
+      this.estopClicked = false
       //운행 중 비상정지로 로봇이 다치는 것을 막기 위함
       if (
         this.estop === ESTOP_STATE.NOT_ESTOPPED &&
@@ -91,6 +102,7 @@ export default {
       spotControl.estop()
     },
     motorClick() {
+      this.motorClicked = false
       if (this.power === MOTOR_POWER.ON) {
         this.logger('[SPOT] motor power off')
         spotControl.powerOff()
@@ -144,6 +156,10 @@ export default {
       opacity: 0.4;
     }
   }
+
+  &.pressed > .back {
+    background-color: rgba(white, 0.3);
+  }
 }
 
 .motor {
@@ -167,6 +183,10 @@ export default {
     .icon {
       opacity: 1;
     }
+  }
+
+  &.pressed > .back {
+    background-color: rgba(white, 0.3);
   }
 
   &.active-disabled {

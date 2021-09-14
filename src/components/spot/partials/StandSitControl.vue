@@ -79,7 +79,7 @@ export default {
 
     &.active {
       color: white;
-      background-color: #74747a;
+      background-color: rgba(white, 0.3);
       border: 1px solid #979797;
       border-radius: 4px;
     }

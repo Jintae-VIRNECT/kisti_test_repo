@@ -19,8 +19,8 @@
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  width: 100vw; //62vw;  //1202px
-  height: 100vh;
+  width: 100%; //62vw;  //1202px
+  height: 100%;
 
   .front-camera-row {
     display: flex;

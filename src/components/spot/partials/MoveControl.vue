@@ -178,7 +178,7 @@ export default {
     }
 
     &.pressed > .back {
-      background-color: #74747a; //opacity로 필요
+      background-color: rgba(white, 0.3);
     }
   }
 }
