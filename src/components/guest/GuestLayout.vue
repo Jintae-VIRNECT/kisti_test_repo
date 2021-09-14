@@ -80,19 +80,9 @@ export default {
     ...mapActions(['setCompanyInfo', 'updateAccount', 'changeWorkspace']),
 
     async initGuestMember() {
+      await auth.logout(false)
+
       const guestInfo = await getGuestInfo({ workspaceId: this.workspaceId })
-
-      // auth.initAuthConnection(
-      //   this.workspaceId,
-      //   this.onDuplicatedRegistration,
-      //   this.onRemoteExitReceived,
-      //   this.onForceLogoutReceived,
-      //   this.onWorkspaceDuplicated,
-      //   this.onRegistrationFail,
-      // )
-
-      // const authInfo = await auth.init()
-      // console.log('authInfo::', authInfo)
 
       this.updateAccount({
         ...guestInfo,
@@ -110,6 +100,17 @@ export default {
       this.changeWorkspace(wsInfo)
 
       this.checkCompany(guestInfo.uuid, this.workspaceId)
+
+      await auth.init()
+
+      auth.initAuthConnection(
+        this.workspaceId,
+        this.onDuplicatedRegistration,
+        this.onRemoteExitReceived,
+        this.onForceLogoutReceived,
+        this.onWorkspaceDuplicated,
+        this.onRegistrationFail,
+      )
     },
     async checkCompany(uuid, workspaceId) {
       const res = await getCompanyInfo({
@@ -192,19 +193,20 @@ export default {
     },
   },
 
+  async created() {
+    this.workspaceId = this.$route.query.workspaceId
+    this.sessionId = this.$route.query.sessionId
+    window.myStorage = new MyStorage(this.workspaceId)
+  },
+
   async mounted() {
     try {
-      this.workspaceId = this.$route.query.workspaceId
-      this.sessionId = this.$route.query.sessionId
-
       //파라미터 유효성 체크
       if (this.workspaceId === undefined || this.sessionId === undefined) {
         location.href = `${URLS['console']}/?continue=${location.href}`
         console.error('invalid params')
         return
       }
-
-      window.myStorage = new MyStorage(this.workspaceId)
 
       this.$eventBus.$on('initGuestMember', this.initGuestMember)
       this.$eventBus.$on('updateServiceMode', this.updateServiceMode)
