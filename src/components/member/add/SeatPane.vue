@@ -1,24 +1,24 @@
 <template>
   <article class="seat-pane">
     <section class="seat-pane__title">
-      <h6>{{ $t('members.seat.title') }}</h6>
-      <p v-html="$t('members.seat.desc')" />
+      <h6>{{ $t('members.guest.title') }}</h6>
+      <p v-html="$t('members.guest.desc')" />
       <ul>
         <li>
           <dl>
             <dt><img :src="plans.remote.logo" />Remote</dt>
-            <dd>{{ $t('members.seat.removeDesc') }}</dd>
+            <dd>{{ $t('members.guest.removeDesc') }}</dd>
           </dl>
         </li>
         <li>
           <dl>
             <dt><img :src="plans.view.logo" />View</dt>
-            <dd>{{ $t('members.seat.viewDesc') }}</dd>
+            <dd>{{ $t('members.guest.viewDesc') }}</dd>
           </dl>
         </li>
       </ul>
       <div class="seat-pane__sub-title">
-        <p>{{ $t('members.seat.settings') }}</p>
+        <p>{{ $t('members.guest.settings') }}</p>
         <div class="seat-pane__usage">
           <img src="~assets/images/icon/ic-person.svg" />
           <strong>{{ currentMember }}/{{ maximum }}</strong>
@@ -33,14 +33,14 @@
     </section>
     <section class="seat-pane__content">
       <el-tabs v-model="seatTabName" @tab-click="tabClick">
-        <el-tab-pane :label="$t('members.seat.remoteTabName')" name="remote">
+        <el-tab-pane :label="$t('members.guest.remoteTabName')" name="remote">
           <el-form class="virnect-workstation-form">
-            <h6>{{ $t('members.seat.remoteTab.title') }}</h6>
+            <h6>{{ $t('members.guest.remoteTab.title') }}</h6>
             <el-row>
               <el-col :span="13">
                 <el-form-item
                   class="horizon"
-                  :label="$t('members.seat.numberOfSeat')"
+                  :label="$t('members.guest.numberOfGuest')"
                 >
                   <MemberSeatSelect
                     :label="plans.remote.label"
@@ -53,14 +53,14 @@
             </el-row>
           </el-form>
         </el-tab-pane>
-        <el-tab-pane :label="$t('members.seat.viewTabName')" name="view">
+        <el-tab-pane :label="$t('members.guest.viewTabName')" name="view">
           <el-form class="virnect-workstation-form">
-            <h6>{{ $t('members.seat.viewTab.title') }}</h6>
+            <h6>{{ $t('members.guest.viewTab.title') }}</h6>
             <el-row>
               <el-col :span="13">
                 <el-form-item
                   class="horizon"
-                  :label="$t('members.seat.numberOfSeat')"
+                  :label="$t('members.guest.numberOfGuest')"
                 >
                   <MemberSeatSelect
                     :label="plans.view.label"
@@ -77,7 +77,7 @@
     </section>
     <section class="seat-pane__footer">
       <el-button type="primary" @click="submit" :disabled="!numOfSeat">
-        {{ $t('members.seat.submit') }}
+        {{ $t('members.guest.submit') }}
         <span class="number" v-if="numOfSeat !== 0">{{ numOfSeat }}</span>
       </el-button>
     </section>

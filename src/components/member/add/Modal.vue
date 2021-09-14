@@ -38,7 +38,7 @@
           }"
         >
           <img src="~assets/images/icon/ic-member-sheet-registration.svg" />
-          <span>{{ $t('members.add.tab.seat') }}</span>
+          <span>{{ $t('members.add.tab.guest') }}</span>
         </button>
       </div>
       <div class="member-add-modal--right">
