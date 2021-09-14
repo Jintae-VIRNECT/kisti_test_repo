@@ -15,7 +15,7 @@ final class GatewayAccessLog {
 	static final DateTimeFormatter DATE_TIME_FORMATTER =
 		DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss z");
 	static final String COMMON_LOG_FORMAT =
-		"[{}] - {} - [{}] - [{}] - \"{} {} [{}] [{}]\" - [{}] - [{} ms] - [{}]";
+		"[{}] - {} - [{}] - \"{} {} [{}] [{}]\" - [{}] - [{} ms] - [{}]";
 	static final String MISSING = "-";
 	final String zonedDateTime;
 	String address = MISSING;
@@ -26,7 +26,6 @@ final class GatewayAccessLog {
 	CharSequence status;
 	String contentType = MISSING;
 	String userAgent = MISSING;
-	String referrer = MISSING;
 	long contentLength;
 	long startTime = System.currentTimeMillis();
 
@@ -79,17 +78,13 @@ final class GatewayAccessLog {
 		return this;
 	}
 
-	GatewayAccessLog referrer(String referrer){
-		this.referrer = referrer;
-		return this;
-	}
 
 	long duration() {
 		return System.currentTimeMillis() - startTime;
 	}
 
 	void log() {
-		LOGGER.info(COMMON_LOG_FORMAT, zonedDateTime, user, address, referrer, method, uri, contentType, status,
+		LOGGER.info(COMMON_LOG_FORMAT, zonedDateTime, user, address, method, uri, contentType, status,
 			(contentLength > -1 ? contentLength : MISSING), duration(), userAgent
 		);
 	}

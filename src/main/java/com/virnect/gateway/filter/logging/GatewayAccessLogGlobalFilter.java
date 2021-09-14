@@ -59,10 +59,6 @@ public class GatewayAccessLogGlobalFilter implements GlobalFilter, Ordered {
                 gatewayAccessLog.userAgent(request.getHeaders().get("user-agent").get(0));
             }
 
-            if (request.getHeaders().get("Referer") != null) {
-                gatewayAccessLog.referrer(String.join(",", request.getHeaders().get("Referer")));
-            }
-
             return chain.filter(exchange).then(Mono.fromRunnable(() -> {
                 String responseStatus = String.format("%d %s", response.getRawStatusCode(),
                         HttpStatus.valueOf(response.getRawStatusCode()).name()
