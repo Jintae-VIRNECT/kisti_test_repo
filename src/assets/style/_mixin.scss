@@ -419,3 +419,15 @@ root div에 theme 설정
     @content;
   }
 }
+
+@mixin responsive-tablet {
+  @media screen and (min-width: $responsive_tab_min) and (max-width: $responsive_tab_max) {
+    @content;
+  }
+}
+
+@mixin responsive-tablet-mobile {
+  @media screen and (max-width: $responsive_tab_max) {
+    @content;
+  }
+}

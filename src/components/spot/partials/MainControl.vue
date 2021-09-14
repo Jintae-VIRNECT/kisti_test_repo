@@ -109,6 +109,8 @@ export default {
 </script>
 
 <style lang="scss">
+@import '~assets/style/mixin';
+
 .main-control-group {
   position: absolute;
   top: 5.5vh;
@@ -179,5 +181,45 @@ export default {
 .fullscreen {
   background-color: #3c3c3f;
   border-color: #979797;
+}
+
+@include responsive-tablet-mobile {
+  .main-control-group .spot-control-btn {
+    border-radius: 3px;
+  }
+}
+
+@include responsive-tablet {
+  .main-control-group {
+    top: 2.9vw;
+    left: 50%;
+    transform: translateX(-50%);
+
+    .fullscreen {
+      display: none;
+    }
+
+    .spot-control-btn {
+      width: 56px;
+      height: 56px;
+    }
+  }
+}
+
+@include responsive-mobile {
+  .main-control-group {
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+
+    .fullscreen {
+      display: none;
+    }
+
+    .spot-control-btn {
+      width: 4.8rem;
+      height: 4.8rem;
+    }
+  }
 }
 </style>

@@ -1,9 +1,10 @@
-@import "_vars";
+@import "_mixin";
+@import "common";
 
 .spot-control-layout {
   position: relative;
-  width: 100vw;
-  height: 100vh;
+  width: 100%;
+  height: 100%;
   overflow: hidden;
   background: url(~assets/image/spot/img_bg_spot.svg) no-repeat center;
   background-size: cover;
@@ -50,6 +51,9 @@
 
 .spot-camera-block {
   position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   background: #1c1c1c;
   border: 2px solid rgb(255, 255, 255);
   border-radius: 3px;
@@ -81,24 +85,26 @@
   }
 
   &.potrait {
-    height: 32.4vh; //350px; //auto;
-    transition: 0.7s height;
     //width: 18.857rem; //264px;
-    aspect-ratio: 0.75/1;
+    //aspect-ratio: 0.75/1;
+    width: calc(32.4vh * 0.75);
+    height: 32.4vh; //350px; //auto;
+    transition: height 0.7s;
 
     img {
       -webkit-transform: rotate(90deg);
       -moz-transform: rotate(90deg);
       -o-transform: rotate(90deg);
       -ms-transform: rotate(90deg);
-      transform: rotate(90deg) scale(1.33) translateX(22%);
+      transform: rotate(90deg) scale(1.335);
     }
   }
 
   &.landscape {
-    height: 25vh; //270px; //auto;
     //width: 25.714rem; //360px;
-    aspect-ratio: 1/0.75;
+    //aspect-ratio: 1/0.75;
+    width: calc(25vh / 0.75);
+    height: 25vh; //270px; //auto;
   }
 }
 
@@ -141,5 +147,144 @@
     &:active > .back {
       background-color: initial;
     }
+  }
+}
+
+@include responsive-tablet {
+  .spot-control-layout {
+    background: url(~assets/image/spot/img_bg_tablet.svg);
+  }
+
+  .spot-camera-layer {
+    top: 12.5%;
+    .spot-camera-block {
+      &.potrait {
+        width: 35.4vw;
+        //height: auto;
+        height: calc(35.4vw / 0.75);
+        margin: 0 5.5px 12px 5.5px;
+        .camera-title {
+          top: -29px;
+        }
+      }
+      &.landscape {
+        width: 23.1vw;
+        //height: auto;
+        height: calc(23.1vw * 0.75);
+        margin: 0 6px;
+        .camera-title {
+          top: unset;
+          bottom: -32px;
+        }
+      }
+      .camera-title {
+        @include fontLevel(100);
+      }
+    }
+
+    .spot-center-icon {
+      width: 56px;
+      height: 56px;
+    }
+  }
+}
+
+@include responsive-mobile {
+  .spot-control-layout {
+    background: url(~assets/image/spot/img_bg_mobile.svg) no-repeat center;
+    background-size: cover;
+
+    .control-back-layer {
+      position: absolute;
+      bottom: 0;
+
+      left: 0;
+      width: 100%;
+      height: 16.6rem;
+      background-color: #2b2b2b;
+      border: 1px solid #3f3f3f;
+      border-radius: 31px 31px 0 0;
+    }
+  }
+
+  .spot-camera-layer {
+    top: 116px;
+    .mobile-front-camera-row {
+      .spot-center-icon {
+        width: 3.6rem;
+        height: 3.6rem;
+        background-size: contain !important;
+      }
+    }
+  }
+  .spot-camera-block {
+    background-size: 3.2rem;
+    border-width: 1.2px;
+    &.potrait {
+      width: 44.7vw;
+      //height: auto;
+      height: calc(44.7vw / 0.75);
+      margin: 0 0.3rem 0.6rem 0.3rem;
+      .camera-title {
+        top: -23px;
+      }
+    }
+    &.landscape {
+      width: 29.1vw;
+      //height: auto;
+      height: calc(29.1vw * 0.75);
+      margin: 0 0.3rem;
+      .camera-title {
+        bottom: -21px;
+      }
+    }
+    .camera-title {
+      @include fontLevel(50);
+      width: 9rem;
+    }
+  }
+}
+
+@include responsive-tablet-mobile {
+  .spot-camera-layer {
+    position: relative;
+    align-items: center;
+    justify-content: start;
+
+    .mobile-front-camera-row {
+      position: relative;
+      display: flex;
+      .spot-center-icon {
+        position: absolute;
+        top: unset;
+        bottom: 0;
+        left: 50%;
+        z-index: 3;
+        background: url(~assets/image/spot/icon_point.svg);
+        background-color: rgba(#000000, 0.69);
+        border-radius: 50%;
+        transform: translate(-50%, 35%);
+      }
+    }
+
+    .mobile-side-back-camera-row {
+      display: flex;
+    }
+  }
+
+  .spot-camera-block {
+    .camera-title {
+      top: unset;
+      left: 50%;
+      padding: 0;
+      color: #c0c0c0;
+      text-align: center;
+      background-color: unset;
+      transform: translateX(-50%);
+    }
+  }
+
+  .spot-control-btn {
+    border-radius: 4px;
   }
 }

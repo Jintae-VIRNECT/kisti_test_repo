@@ -103,7 +103,14 @@ export default {
   },
   methods: {
     onSelect(menu) {
-      if (menu.name === MENU.CAMERA_CONTROL) this.$emit('selectCameraControl')
+      switch (menu) {
+        case MENU.CAMERA_CONTROL:
+          this.$emit('selectCameraControl')
+          break
+        case MENU.SPOT_CONTROL:
+          window.open('/spot-control')
+          break
+      }
     },
   },
 }
