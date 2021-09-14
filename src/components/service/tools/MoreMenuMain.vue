@@ -103,7 +103,7 @@ export default {
   },
   methods: {
     onSelect(menu) {
-      switch (menu) {
+      switch (menu.name) {
         case MENU.CAMERA_CONTROL:
           this.$emit('selectCameraControl')
           break
