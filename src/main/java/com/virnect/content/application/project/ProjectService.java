@@ -499,21 +499,38 @@ public class ProjectService {
 		return generateProjectResponse(project);
 	}
 
-	public ProjectDeleteResponse deleteProject(String projectUUID) {
-		Project project = projectRepository.findByUuid(projectUUID)
-			.orElseThrow(() -> new ContentServiceException(ErrorCode.ERR_PROJECT_NOT_FOUND));
-		//공유 정보 삭제
-		if (!CollectionUtils.isEmpty(project.getProjectShareUserList())) {
+
+	@Transactional
+	public ProjectDeleteResponse deleteProject(List<String> projectUUIDList) {
+		List<Project> projectList = projectRepository.findByUuidIn(projectUUIDList);
+
+		for (Project project : projectList) {
+			//project 리소스 삭제
+			String projectPath = project.getPath();
+			fileUploadService.deleteByFileUrl(projectPath);
+
+			//target 리소스 삭제
+			ProjectTarget projectTarget = project.getProjectTarget();
+			String targetPath = projectTarget.getPath();
+			if (projectTarget.getType() == TargetType.Image || projectTarget.getType() == TargetType.QR) {
+				fileUploadService.deleteByFileUrl(targetPath);
+			}
+
+			//target 정보 삭제
+			projectTargetRepository.delete(projectTarget);
+
+			//mode 정보 삭제
+			projectModeRepository.deleteAll(project.getProjectModeList());
+
+			//공유 유저 정보 삭제
 			projectShareUerRepository.deleteAll(project.getProjectShareUserList());
-		}
-		//편집 정보 삭제
-		if (!CollectionUtils.isEmpty(project.getProjectEditUserList())) {
+
+			//편집 유저 정보 삭제
 			projectEditUserRepository.deleteAll(project.getProjectEditUserList());
+
+			//project 정보 삭제
+			projectRepository.delete(project);
 		}
-		//타겟 정보 삭제
-		projectTargetRepository.delete(project.getProjectTarget());
-		//프로젝트 삭제
-		projectRepository.delete(project);
 		return new ProjectDeleteResponse(true, LocalDateTime.now());
 	}
 
