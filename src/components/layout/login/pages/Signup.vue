@@ -63,16 +63,12 @@
           name="password"
           v-validate="'required|password'"
           v-model="signup.password"
-          @keyup.native="blockHangul($event, 1)"
-          @blur="initPassword($event, 1)"
           :class="{ 'input-danger': errors.has('password') }"
         >
         </el-input>
         <el-input
           :placeholder="$t('signup.password.reComfirm')"
           v-model="passwordConfirm"
-          @keyup.native="blockHangul($event, 2)"
-          @blur="initPassword($event, 2)"
           show-password
           name="passwordConfirm"
           v-validate="'required|password'"
@@ -304,6 +300,12 @@ export default {
     },
   },
   watch: {
+    'signup.password'(v) {
+      this.signup.password = this.removeHangul(v)
+    },
+    passwordConfirm(v) {
+      this.passwordConfirm = this.removeHangul(v)
+    },
     '$i18n.locale'() {
       // 언어 변경에 따라 값을 변경해야 한다.
       const info = this.subscriptionPath[this.joinInfo]
@@ -349,17 +351,8 @@ export default {
     },
   },
   methods: {
-    initPassword(event, id) {
-      const value = event.target.value
-      if (this.hangulExp.test(value)) {
-        if (id === 1) this.signup.password = ''
-        else this.passwordConfirm = ''
-      }
-    },
-    blockHangul(event, id) {
-      const value = event.target.value
-      if (id === 1) this.signup.password = value.replace(this.hangulExp, '')
-      else this.passwordConfirm = value.replace(this.hangulExp, '')
+    removeHangul(v) {
+      return v.replace(this.hangulExp, '')
     },
     validBirth() {
       return (
