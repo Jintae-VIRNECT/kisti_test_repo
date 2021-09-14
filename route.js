@@ -188,6 +188,10 @@ router.get('/sw.js', function(req, res) {
   res.sendFile(path.join(__dirname, '/static/js/sw.js'))
 })
 
+router.get('/manifest.json', function(req, res) {
+  res.sendFile(path.join(__dirname, '/static/manifest.json'))
+})
+
 router.get('/record', function(req, res) {
   const parsedURL = url.parse(req.url, true)
   const query = parsedURL.query

@@ -162,7 +162,7 @@ export default {
       return relatedApp ? true : false
     },
     runApp() {
-      const intentLink = `intent://remote?workspace=${this.workspaceId}&sessionId=${this.$route.query.sessionId}#$d#Intent;scheme=virnect;action=android.intent.action.VIEW;category=android.intent.category.BROWSABLE;package=${this.packageName};end`
+      const intentLink = `intent://remote?workspaceId=${this.workspaceId}&sessionId=${this.$route.query.sessionId}#$d#Intent;scheme=virnect;action=android.intent.action.VIEW;category=android.intent.category.BROWSABLE;package=${this.packageName};end`
       console.log(intentLink)
       window.open(intentLink)
     },
@@ -173,22 +173,31 @@ export default {
 
   async mounted() {
     try {
-      this.serviceMode = this.isMobileSize ? 'mobile' : 'web'
-      this.$eventBus.$on('initGuestMember', this.initGuestMember)
-      this.$eventBus.$on('updateServiceMode', this.updateServiceMode)
-
       this.workspaceId = this.$route.query.workspaceId
       this.sessionId = this.$route.query.sessionId
 
-      window.myStorage = new MyStorage(this.workspaceId)
+      //파라미터 유효성 체크
+      if (this.workspaceId === undefined || this.sessionId === undefined) {
+        location.href = `${URLS['console']}/?continue=${location.href}`
+        console.error('invalid params')
+        return
+      }
+
+      this.$eventBus.$on('initGuestMember', this.initGuestMember)
+      this.$eventBus.$on('updateServiceMode', this.updateServiceMode)
+
+      this.serviceMode = this.isMobileSize ? 'mobile' : 'web'
+
+      if (this.serviceMode === 'mobile') {
+        const isAppInstalled = await this.checkAppInstalled()
+
+        if (isAppInstalled) {
+          this.runApp()
+        }
+      }
 
       await this.initGuestMember()
-
-      const isAppInstalled = await this.checkAppInstalled()
-
-      if (isAppInstalled) {
-        this.runApp()
-      }
+      window.myStorage = new MyStorage(this.workspaceId)
     } catch (err) {
       if (err.code === ERROR.ASSIGNED_GUEST_USER_IS_NOT_ENOUGH) {
         this.showGuestExpiredAlarm()
