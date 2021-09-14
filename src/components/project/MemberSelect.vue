@@ -5,9 +5,9 @@
     <dl class="select" ref="form">
       <dt>{{ $t(selectLabel) }}</dt>
       <dd class="virnect-workstation-form">
-        <el-select v-model="memberTypes">
+        <el-select v-model="memberPermissions">
           <el-option
-            v-for="type in selectTypes"
+            v-for="type in selectOptions"
             :key="type.value"
             :value="type.value"
             :label="$t(type.label)"
@@ -31,23 +31,23 @@
           ref="memberSelect"
           class="select-member"
           popper-class="select-member__list"
-          v-model="memberArray"
+          v-model="selectMemberArray"
           name="input"
           multiple
           collapse-tags
           placeholder=""
-          @change="selectChange(memberArray)"
+          @change="selectChange()"
           :disabled="disabledSelect"
         >
           <el-option
-            v-for="item in options"
+            v-for="item in members"
             :key="item.value"
             :label="item.label"
             :value="item.value"
           >
             <!-- 유저 프로필 유저 닉네임 -->
             <VirnectThumbnail :size="22" :image="item.img" />
-            <span>{{ item.value }}</span>
+            <span>{{ item.label }}</span>
           </el-option>
         </el-select>
 
@@ -59,10 +59,10 @@
         </el-button>
 
         <!-- 지정 유저 라벨 -->
-        <div v-if="members.length > 0" class="label-user">
+        <div v-if="selectMemberArray.length > 0" class="label-user">
           <el-tooltip
             effect="dark"
-            :content="members[0]"
+            :content="getLabelName"
             placement="right-start"
           >
             <div>
@@ -70,7 +70,7 @@
                 :image="labelImg"
                 :defaultImage="$defaultUserProfile"
               />
-              <span>{{ members[0] }}</span>
+              <span>{{ getLabelName }}</span>
               <img
                 @click="deleteFirstUser"
                 class="delete"
@@ -79,7 +79,9 @@
             </div>
           </el-tooltip>
 
-          <div v-if="members.length > 1">+ {{ members.length - 1 }}</div>
+          <div v-if="selectMemberArray.length > 1">
+            + {{ selectMemberArray.length - 1 }}
+          </div>
         </div>
       </dd>
     </dl>
@@ -90,10 +92,10 @@
 export default {
   props: {
     selectLabel: String,
-    selectTypes: [Array],
-    memberType: String,
+    selectOptions: [Array],
+    memberPermission: String,
+    selectMembers: [Array],
     members: [Array],
-    options: [Array],
   },
   data() {
     return {
@@ -104,12 +106,11 @@ export default {
       // 지정멤버 드롭다운 활성화 유무
       disabledSelect: true,
       // 공유 / 편집 멤버 타입. ex) 멤버, 지정멤버, 매니저 ...
-      memberTypes: this.memberType,
+      memberPermissions: this.memberPermission,
       // 지정 멤버로 선택한 유저 리스트
-      memberArray: this.members,
+      selectMemberArray: this.selectMembers,
     }
   },
-
   computed: {
     cssVars() {
       return {
@@ -117,39 +118,56 @@ export default {
         '--pointer': this.disabledSelect ? 'all' : 'none',
       }
     },
+    disableState() {
+      return this.memberPermissions !== 'SPECIFIC_MEMBER'
+    },
+    getLabelName() {
+      return this.members.filter(
+        member => member.value === this.selectMemberArray[0],
+      )[0].label
+    },
   },
   methods: {
     // 지정 멤버 드롭다운 메뉴에서 유저 선택시, 실행하는 메소드
-    selectChange(choiceMembers) {
-      // 선택한 유저 수가 0명 이상일 때,
-      if (choiceMembers.length) {
-        // 선택된 유저 리스트에서 첫 유저의 프로필 사진을 대표 라벨 이미지로 보여주기
-        this.labelImg = this.options.filter(
-          a => a.value === choiceMembers[0],
-        )[0].img
-      }
+    selectChange() {
+      this.setLabelImage()
     },
     // 선택한 지정 멤버 리스트에서, 첫 번째 인덱스 멤버를 삭제한다. 라벨의 X 버튼 클릭시 실행.
     deleteFirstUser() {
-      if (!this.memberArray.length) {
-        return null
+      if (this.selectMemberArray.length) {
+        this.selectMemberArray.shift()
+        this.setLabelImage()
       }
-      // key 값을 통해, 공유 / 편집 members 를 구분.
-      this.memberArray.shift()
+    },
+    setLabelImage() {
+      // 선택한 유저 수가 0명 이상일 때,
+      if (this.selectMemberArray.length) {
+        // 선택된 유저 리스트에서 첫 유저의 프로필 사진을 대표 라벨 이미지로 보여주기
+        this.labelImg = this.members.filter(
+          member => member.value === this.selectMemberArray[0],
+        )[0].img
+      }
     },
   },
   watch: {
-    memberTypes(v) {
-      this.$emit('update:memberType', v)
-      if (v === 'SELECTMEMBER') {
+    memberPermissions(v) {
+      this.$emit('update:memberPermission', v)
+
+      if (v === 'SPECIFIC_MEMBER') {
         this.disabledSelect = false
       } else {
         this.disabledSelect = true
+        // 지정 멤버를 제외한 메뉴 선택시, 지정 멤버 리스트를 비웁니다.
+        this.selectMemberArray = []
       }
     },
-    memberArray(v) {
-      this.$emit('update:members', v)
+    selectMemberArray(v) {
+      this.$emit('update:selectMembers', v)
     },
+  },
+  mounted() {
+    this.disabledSelect = this.disableState
+    this.setLabelImage()
   },
 }
 </script>

@@ -1,5 +1,5 @@
 .project-info-modal .el-dialog__body {
-  height: 800px;
+  height: 815px;
   max-height: 870px;
   padding: 16px 0 28px 24px;
   margin-right: 6px;
@@ -189,7 +189,7 @@
     white-space: nowrap;
     text-overflow: ellipsis;
 
-    &.content-uuid {
+    &.project-uuid {
       overflow: visible;
     }
     & > img {

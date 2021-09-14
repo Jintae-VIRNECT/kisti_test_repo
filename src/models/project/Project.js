@@ -1,4 +1,5 @@
 import Model from '@/models/Model'
+import Properties from '@/models/project/Properties'
 
 export default class Project extends Model {
   /**
@@ -11,7 +12,13 @@ export default class Project extends Model {
     this.name = json.name
     this.path = json.path
     this.size = json.size
-    this.property = json.property
+    this.property = [
+      {
+        id: 1,
+        label: json.property.propertyName,
+        children: new Properties(json.property).tree(),
+      },
+    ]
     this.uploaderUUID = json.uploaderUUID
     this.uploaderName = json.uploaderName
     this.uploaderProfile =
