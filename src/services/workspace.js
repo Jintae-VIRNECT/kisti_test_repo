@@ -225,11 +225,11 @@ export default {
     store.dispatch('plan/getPlansInfo')
   },
   /**
-   * 시트계정 생성
+   * 게스트 생성
    * @param {object} form
    */
   async createSeat(form) {
-    await api('MEMBER_SEAT_CREATE', {
+    await api('MEMBER_GUEST_CREATE', {
       route: { workspaceId: activeWorkspaceGetter().uuid },
       params: {
         ...form,
@@ -286,7 +286,7 @@ export default {
     return data
   },
   /**
-   * Seat 멤버 삭제
+   * 게스트 멤버 삭제
    * @param {string} uuid
    * @param {string} password
    */
@@ -296,7 +296,7 @@ export default {
       userId: uuid,
     }
 
-    const data = await api('MEMBER_SEAT_DELETE', {
+    const data = await api('MEMBER_GUEST_DELETE', {
       route: { workspaceId: activeWorkspaceGetter().uuid },
       params: {
         ...params,
