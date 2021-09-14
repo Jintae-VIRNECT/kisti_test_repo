@@ -16,7 +16,6 @@
 
 <script>
 import HeaderSection from 'components/header/Header'
-import Cookies from 'js-cookie'
 
 import confirmMixin from 'mixins/confirm'
 
@@ -42,7 +41,7 @@ import { URLS } from 'configs/env.config'
 import GuestWeb from './GuestWeb'
 import GuestMobile from './GuestMobile'
 
-import auth from 'utils/auth'
+import auth, { setTokensToCookies } from 'utils/auth'
 
 export default {
   name: 'GuestLayout',
@@ -90,11 +89,7 @@ export default {
         roleType: ROLE.GUEST,
       })
 
-      //토큰 설정
-      const accessToken = guestInfo.accessToken
-      const refreshToken = guestInfo.refreshToken
-
-      this.setToken(accessToken, refreshToken)
+      setTokensToCookies(guestInfo)
 
       const wsInfo = await getWorkspaceInfo({ workspaceId: this.workspaceId })
 
@@ -140,18 +135,6 @@ export default {
         timeout: res.timeout !== undefined ? res.timeout : 60, //협업 연장 질의 팝업 싸이클을 정하는 값. 분 단위
       })
     },
-    setToken(accessToken, refreshToken) {
-      const cookieOption = {
-        expires: 1,
-        domain:
-          location.hostname.split('.').length === 3
-            ? location.hostname.replace(/.*?\./, '')
-            : location.hostname,
-      }
-
-      Cookies.set('accessToken', accessToken, cookieOption)
-      Cookies.set('refreshToken', refreshToken, cookieOption)
-    },
     showGuestExpiredAlarm() {
       this.confirmDefault(this.$t('guest.guest_license_expired'), {
         action: () => {
@@ -177,7 +160,6 @@ export default {
     },
     runApp() {
       const intentLink = `intent://remote?workspaceId=${this.workspaceId}&sessionId=${this.$route.query.sessionId}#$d#Intent;scheme=virnect;action=android.intent.action.VIEW;category=android.intent.category.BROWSABLE;package=${this.packageName};end`
-      console.log(intentLink)
       window.open(intentLink)
     },
     handleMaxScroll(event) {

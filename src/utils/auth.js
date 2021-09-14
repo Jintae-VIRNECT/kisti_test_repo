@@ -40,7 +40,7 @@ let changingWorkspaceId //변경 요청 중인 workspaceId 변경 완료 응답 
 /**
  * 메소드
  */
-function setTokensToCookies(response) {
+export function setTokensToCookies(response) {
   const cookieOption = {
     expires: response.expireIn / 3600000,
     domain:
