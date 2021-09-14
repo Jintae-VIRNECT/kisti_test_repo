@@ -388,7 +388,7 @@ public class WebSocketHandler extends TextWebSocketHandler {
 	private void statusMessageValidation(StatusMessage statusMessage) throws StatusMessageNotValidException {
 		if (StringUtils.isEmpty(statusMessage.getUserId())
 			|| StringUtils.isEmpty(statusMessage.getNickname())
-			|| StringUtils.isEmpty(statusMessage.getEmail())
+//			|| StringUtils.isEmpty(statusMessage.getEmail())
 			|| StringUtils.isEmpty(statusMessage.getWorkspaceId())
 		) {
 			throw new StatusMessageNotValidException("상태값이 올바르지 않습니다: " + statusMessage);
