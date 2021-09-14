@@ -67,6 +67,7 @@ import { mapActions, mapGetters } from 'vuex'
 import { PLAN_STATUS } from 'configs/status.config'
 import { ERROR } from 'configs/error.config'
 import { URLS } from 'configs/env.config'
+import { USER_TYPE } from 'configs/remote.config'
 
 import { MyStorage } from 'utils/storage'
 import { initAudio } from 'plugins/remote/tts/audio'
@@ -342,7 +343,7 @@ export default {
       this.tabTop = this.$refs['tabSection'].$el.offsetTop
     },
     logoutGuest() {
-      if (this.account.userType === 'SEAT_USER') {
+      if (this.account.userType === USER_TYPE.GUEST_USER) {
         location.href = `${URLS['console']}/?continue=${location.href}`
       }
     },

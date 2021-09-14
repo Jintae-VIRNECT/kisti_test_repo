@@ -153,7 +153,7 @@ export default {
       if (room.isGuest) {
         res = await joinOpenRoomAsGuest({
           uuid: this.account.uuid,
-          memberType: ROLE.UNKNOWN,
+          memberType: ROLE.GUEST,
           deviceType: DEVICE.WEB,
           sessionId: room.sessionId,
           workspaceId: this.workspace.uuid,

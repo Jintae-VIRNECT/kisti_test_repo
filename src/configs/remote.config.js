@@ -190,3 +190,7 @@ export const LOCATION = {
 
   STOPPED: 'stopped', //GPS 기능 off or 전체 화면 공유로 인한 위치 정보 공유 중단
 }
+
+export const USER_TYPE = {
+  GUEST: 'GUEST_USER',
+}
