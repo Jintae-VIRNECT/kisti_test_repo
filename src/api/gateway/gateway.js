@@ -127,7 +127,13 @@ const sender = async function(constant, params, headers = {}, custom) {
         err.message.toLowerCase().includes('timeout of')
       ) {
         window.vue.$toasted.error(window.vue.$t('confirm.network_error'), {
-          position: 'bottom-center',
+          position:
+            window.vue.isMobileSize || window.vue.$route.name === 'service'
+              ? 'top-center'
+              : 'bottom-center',
+          className: window.vue.isMobileSize
+            ? ['remote-toast', 'mobile']
+            : ['remote-toast'],
           duration: 5000,
           action: {
             icon: 'close',
