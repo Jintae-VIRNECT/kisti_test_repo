@@ -55,7 +55,7 @@ export default {
     // 유저의 활동 타입에 따라, 맞는 label 값 반환.
     activityLabel(activity) {
       return activityTypes.find(a => {
-        return a.value == activity.value
+        return a.value === activity.value
       }).label
     },
   },

@@ -20,7 +20,7 @@ export default {
     },
     // 모드의 label 값을 가져옵니다.
     modeText(mode) {
-      return modeFilter.options.find(v => v.value == mode).label
+      return modeFilter.options.find(v => v.value === mode).label
     },
   },
 }

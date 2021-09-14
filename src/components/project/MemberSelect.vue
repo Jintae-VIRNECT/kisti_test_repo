@@ -123,7 +123,7 @@ export default {
     },
     getLabelName() {
       return this.members.filter(
-        member => member.value == this.selectMemberArray[0],
+        member => member.value === this.selectMemberArray[0],
       )[0].label
     },
   },
@@ -144,7 +144,7 @@ export default {
       if (this.selectMemberArray.length) {
         // 선택된 유저 리스트에서 첫 유저의 프로필 사진을 대표 라벨 이미지로 보여주기
         this.labelImg = this.members.filter(
-          member => member.value == this.selectMemberArray[0],
+          member => member.value === this.selectMemberArray[0],
         )[0].img
       }
     },
