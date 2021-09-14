@@ -228,7 +228,7 @@ export default {
    * 게스트 생성
    * @param {object} form
    */
-  async createSeat(form) {
+  async createGuest(form) {
     await api('MEMBER_GUEST_CREATE', {
       route: { workspaceId: activeWorkspaceGetter().uuid },
       params: {
@@ -290,7 +290,7 @@ export default {
    * @param {string} uuid
    * @param {string} password
    */
-  async deleteSeatMember(uuid) {
+  async deleteGuestMember(uuid) {
     const params = {
       requestUserId: myProfileGetter().uuid,
       userId: uuid,

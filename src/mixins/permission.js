@@ -30,7 +30,7 @@ export default {
     isUserTypeUser(type) {
       return type === 'USER'
     },
-    isUserTypeSeat(type) {
+    isUserTypeGuest(type) {
       return type === 'GUEST_USER'
     },
     isUserTypeWorkspaceOnly(type) {

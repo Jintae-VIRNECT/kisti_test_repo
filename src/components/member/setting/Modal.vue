@@ -44,7 +44,7 @@
           :member="form"
           :profile.sync="data.profile"
           :nickname.sync="data.nickname"
-          @deleteSeat="$emit('deleteSeat')"
+          @deleteGuest="$emit('deleteGuest')"
         />
         <MemberSettingPlanPane
           v-show="tabName === 'plan'"

@@ -13,7 +13,7 @@
           <el-tag :class="myInfo.role">{{ myInfo.role }}</el-tag>
         </div>
         <span class="name">{{ myInfo.nickname }}</span>
-        <span class="email" v-if="myInfo.role === 'SEAT'">{{
+        <span class="email" v-if="myInfo.role === 'GUEST'">{{
           myInfo.uuid
         }}</span>
         <span class="email" v-else>{{ myInfo.email }}</span>
@@ -56,7 +56,7 @@
       :visible.sync="showMemberSettingModal"
       v-else
       @updated="updated"
-      @deleteSeat="deleteSeat"
+      @deleteGuest="deleteGuest"
       @delete="deleteAccount"
       @kick="kick"
       @change-password="showMemberPasswordModal = true"
@@ -139,7 +139,7 @@ export default {
         this.showMemberKickModal = true
       }
     },
-    deleteSeat() {
+    deleteGuest() {
       this.showMemberDeleteModal = false
       this.showMemberSettingModal = false
       this.$emit('refresh')

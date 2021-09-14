@@ -42,7 +42,7 @@
                   class="horizon"
                   :label="$t('members.guest.numberOfGuest')"
                 >
-                  <MemberSeatSelect
+                  <MemberGuestSelect
                     :label="plans.remote.label"
                     :amount="availablePlans.remote"
                     :numOfGuest="numOfGuest"
@@ -62,7 +62,7 @@
                   class="horizon"
                   :label="$t('members.guest.numberOfGuest')"
                 >
-                  <MemberSeatSelect
+                  <MemberGuestSelect
                     :label="plans.view.label"
                     :amount="availablePlans.view"
                     :numOfGuest="numOfGuest"
@@ -133,7 +133,7 @@ export default {
 
       // api 요청
       try {
-        await workspaceService.createSeat(form)
+        await workspaceService.createGuest(form)
         this.$message.success({
           message: this.$tc(
             'members.add.message.createSuccess',
