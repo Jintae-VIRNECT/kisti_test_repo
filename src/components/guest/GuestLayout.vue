@@ -23,6 +23,7 @@ import { getAllAppList, getLatestAppInfo } from 'api/http/download'
 import langMixin from 'mixins/language'
 import toastMixin from 'mixins/toast'
 import errorMsgMixin from 'mixins/errorMsg'
+import authStatusCallbackMixin from 'mixins/authStatusCallback'
 
 import { MyStorage } from 'utils/storage'
 import { getConfigs } from 'utils/auth'
@@ -40,6 +41,8 @@ import { URLS } from 'configs/env.config'
 import GuestWeb from './GuestWeb'
 import GuestMobile from './GuestMobile'
 
+import auth from 'utils/auth'
+
 export default {
   name: 'GuestLayout',
   async beforeRouteEnter(to, from, next) {
@@ -48,7 +51,13 @@ export default {
     next()
   },
 
-  mixins: [confirmMixin, langMixin, toastMixin, errorMsgMixin],
+  mixins: [
+    confirmMixin,
+    langMixin,
+    toastMixin,
+    errorMsgMixin,
+    authStatusCallbackMixin,
+  ],
   components: {
     GuestWeb,
     GuestMobile,
@@ -72,6 +81,18 @@ export default {
 
     async initGuestMember() {
       const guestInfo = await getGuestInfo({ workspaceId: this.workspaceId })
+
+      // auth.initAuthConnection(
+      //   this.workspaceId,
+      //   this.onDuplicatedRegistration,
+      //   this.onRemoteExitReceived,
+      //   this.onForceLogoutReceived,
+      //   this.onWorkspaceDuplicated,
+      //   this.onRegistrationFail,
+      // )
+
+      // const authInfo = await auth.init()
+      // console.log('authInfo::', authInfo)
 
       this.updateAccount({
         ...guestInfo,
@@ -183,6 +204,8 @@ export default {
         return
       }
 
+      window.myStorage = new MyStorage(this.workspaceId)
+
       this.$eventBus.$on('initGuestMember', this.initGuestMember)
       this.$eventBus.$on('updateServiceMode', this.updateServiceMode)
 
@@ -197,7 +220,6 @@ export default {
       }
 
       await this.initGuestMember()
-      window.myStorage = new MyStorage(this.workspaceId)
     } catch (err) {
       if (err.code === ERROR.ASSIGNED_GUEST_USER_IS_NOT_ENOUGH) {
         this.showGuestExpiredAlarm()
