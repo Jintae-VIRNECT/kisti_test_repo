@@ -19,7 +19,8 @@ import HeaderSection from 'components/header/Header'
 import Cookies from 'js-cookie'
 
 import confirmMixin from 'mixins/confirm'
-import { getAllAppList, getLatestAppInfo } from 'api/http/download'
+
+import { getLatestRemoteAosAppInfo } from 'utils/appCheck'
 import langMixin from 'mixins/language'
 import toastMixin from 'mixins/toast'
 import errorMsgMixin from 'mixins/errorMsg'
@@ -162,22 +163,13 @@ export default {
       this.serviceMode = mode
     },
     async checkAppInstalled() {
-      const appInfo = await getLatestAppInfo({ productName: 'remote' })
-      const aosAppInfo = appInfo.appInfoList.find(info => {
-        return info.deviceType === 'Mobile'
-      })
-
-      const appList = await getAllAppList()
-      const aosApp = appList.appInfoList.find(app => {
-        return app.uuid === aosAppInfo.uuid
-      })
+      const aosApp = await getLatestRemoteAosAppInfo()
+      if (!aosApp) return false
 
       this.packageName = aosApp.packageName
 
       const relatedApps = await navigator.getInstalledRelatedApps()
-      console.log(relatedApps)
       const relatedApp = relatedApps.find(app => {
-        console.log(app.id, app.platform, app.url)
         return app.url === this.packageName
       })
 

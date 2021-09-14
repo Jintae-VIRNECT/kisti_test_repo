@@ -16,7 +16,7 @@
       ></p>
     </section>
     <main class="guest-mobile__buttons">
-      <!-- <button
+      <button
         class="guest-mobile__buttons--runapp"
         @click="runApp"
         v-if="isOnpremise"
@@ -32,10 +32,10 @@
           src="~assets/image/img_google_app_store.svg"
           alt="app_store_logo"
         />
-      </button> -->
-      <button class="guest-mobile__buttons--runapp" @click="runApp">
-        {{ $t('button.run_app') }}
       </button>
+      <!-- <button class="guest-mobile__buttons--runapp" @click="runApp">
+        {{ $t('button.run_app') }}
+      </button> -->
 
       <button class="guest-mobile__buttons--download" @click="downloadApp">
         {{ $t('button.download') }}
@@ -49,10 +49,11 @@
 
 <script>
 import confirmMixin from 'mixins/confirm'
-import { getAllAppList, getLatestAppInfo } from 'api/http/download'
+import toastMixin from 'mixins/toast'
+import { getLatestRemoteAosAppInfo } from 'utils/appCheck'
 export default {
   name: 'GuestMobile',
-  mixins: [confirmMixin],
+  mixins: [confirmMixin, toastMixin],
   data() {
     return {
       packageName: null,
@@ -69,30 +70,43 @@ export default {
       }
     },
     runApp() {
-      const intentLink = `intent://remote?workspaceId=${this.workspace.uuid}&sessionId=${this.$route.query.sessionId}#$d#Intent;scheme=virnect;action=android.intent.action.VIEW;category=android.intent.category.BROWSABLE;package=${this.packageName};end`
-      console.log(intentLink)
-      window.open(intentLink)
+      if (this.isValid()) {
+        const intentLink = `intent://remote?workspaceId=${this.workspace.uuid}&sessionId=${this.$route.query.sessionId}#$d#Intent;scheme=virnect;action=android.intent.action.VIEW;category=android.intent.category.BROWSABLE;package=${this.packageName};end`
+        window.open(intentLink)
+      } else {
+        return false
+      }
     },
     async downloadApp() {
-      window.open(this.appUrl)
+      if (this.isValid()) {
+        window.open(this.appUrl)
+      } else {
+        return false
+      }
     },
     accessWeb() {
       this.$eventBus.$emit('updateServiceMode', 'web')
     },
+    isValid() {
+      if (this.packageName === null || this.appUrl === null) {
+        this.confirmDefault(this.$t('confirm.network_error'))
+        return false
+      }
+      return true
+    },
+    async setAppInfo() {
+      const aosApp = await getLatestRemoteAosAppInfo()
+
+      if (aosApp) {
+        this.packageName = aosApp.packageName
+        this.appUrl = aosApp.appUrl
+      } else {
+        this.confirmDefault(this.$t('confirm.network_error'))
+      }
+    },
   },
   async mounted() {
-    const appInfo = await getLatestAppInfo({ productName: 'remote' })
-    const aosAppInfo = appInfo.appInfoList.find(info => {
-      return info.deviceType === 'Mobile'
-    })
-
-    const appList = await getAllAppList()
-    const aosApp = appList.appInfoList.find(app => {
-      return app.uuid === aosAppInfo.uuid
-    })
-
-    this.packageName = aosApp.packageName
-    this.appUrl = aosApp.appUrl
+    await this.setAppInfo()
   },
 }
 </script>
