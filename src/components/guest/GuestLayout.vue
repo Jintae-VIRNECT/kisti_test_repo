@@ -65,10 +65,9 @@ export default {
   },
   data() {
     return {
-      url: '',
       workspaceId: '',
       sessionId: '',
-      uuid: '',
+
       serviceMode: '', //web, mobile
       packageName: '',
     }
@@ -83,6 +82,10 @@ export default {
       await auth.logout(false)
 
       const guestInfo = await getGuestInfo({ workspaceId: this.workspaceId })
+
+      if (guestInfo.uuid === null) {
+        throw { code: ERROR.GUEST_USER_NOT_FOUND }
+      }
 
       this.updateAccount({
         ...guestInfo,
