@@ -181,7 +181,8 @@ export default {
         auth.login()
         return
       } else {
-        this.savedStorageDatas(authInfo.account.uuid)
+        this.initMyStorage(authInfo.account.uuid)
+        this.getSavedStorageDatas()
         const res = await getLicense({ userId: authInfo.account.uuid })
         const myPlans = res.myPlanInfoList.filter(
           plan => plan.planProduct === 'REMOTE',
@@ -262,37 +263,26 @@ export default {
     toggleList() {
       this.showList = true
     },
-    savedStorageDatas(uuid) {
+    initMyStorage(uuid) {
       window.myStorage = new MyStorage(uuid)
-      const deviceInfo = window.myStorage.getItem('deviceInfo')
-      if (deviceInfo) {
-        this.setDevices(deviceInfo)
-      }
-      const recordInfo = window.myStorage.getItem('recordInfo')
-      if (recordInfo) {
-        this.setRecord(recordInfo)
-      }
-      // const allow = this.$localStorage.getItem('allow')
-      // if (allow) {
-      //   this.setAllow(allow)
-      // }
-      const translateInfo = window.myStorage.getItem('translate')
-      if (translateInfo) {
-        this.setTranslate(translateInfo)
-      }
-      const serverRecordInfo = window.myStorage.getItem('serverRecordInfo')
-      if (serverRecordInfo) {
-        this.setServerRecord(serverRecordInfo)
-      }
-      const screenStrict = window.myStorage.getItem('screenStrict')
-      if (screenStrict) {
-        this.setScreenStrict(screenStrict)
+    },
+    getSavedStorageDatas() {
+      const settingMap = {
+        deviceInfo: this.setDevices,
+        recordInfo: this.setRecord,
+        translate: this.setTranslate,
+        serverRecordInfo: this.setServerRecord,
+        screenStrict: this.setScreenStrict,
+        autoServerRecord: this.setAutoServerRecord,
       }
 
-      const autoServerRecord = window.myStorage.getItem('autoServerRecord')
-      if (autoServerRecord) {
-        this.setAutoServerRecord(autoServerRecord)
-      }
+      Object.keys(settingMap).forEach(key => {
+        const setting = window.myStorage.getItem(key)
+        if (setting) {
+          const setFunc = settingMap[key]
+          setFunc(setting)
+        }
+      })
     },
     showDeviceDenied() {
       this.showDenied = true
