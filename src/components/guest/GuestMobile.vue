@@ -40,9 +40,10 @@
       <button class="guest-mobile__buttons--download" @click="downloadApp">
         {{ $t('button.download') }}
       </button>
-      <button class="guest-mobile__buttons--linkweb" @click="accessWeb">
+      <!-- @TODO ykmo 2021-09-15 모바일 반응형 정식 릴리즈 전까지 숨김 처리 -->
+      <!-- <button class="guest-mobile__buttons--linkweb" @click="accessWeb">
         {{ $t('button.connect_web') }}
-      </button>
+      </button> -->
     </main>
   </div>
 </template>
