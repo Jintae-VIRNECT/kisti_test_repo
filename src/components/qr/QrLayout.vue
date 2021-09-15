@@ -1,39 +1,45 @@
 <template>
   <section class="remote-layout">
     <header-section></header-section>
-    <!-- <vue2-scrollbar classes="remote-wrapper" ref="wrapperScroller"> -->
-    <div class="qr-wrapper">
-      <div class="qr">
-        <article class="qr__main">
-          <p class="qr__main--title">{{ $t('qr.qr_login') }}</p>
-          <p class="qr__main--sub-title">
-            {{ $t('qr.qr_login_description') }}
-          </p>
-          <canvas class="qr__main--code" ref="qr-code"></canvas>
-        </article>
-        <figcaption class="qr__desc">
-          <p class="qr__desc--title">{{ $t('qr.qr_login_how_to') }}</p>
-          <div class="qr__explain">
-            <ol class="qr__explain--list">
-              <li>
-                {{ $t('qr.qr_login_how_to_description_1') }}
-              </li>
-              <li>{{ $t('qr.qr_login_how_to_description_2') }}</li>
-              <li>
-                {{ $t('qr.qr_login_how_to_description_3') }}
-              </li>
-            </ol>
-            <p class="qr__explain--caution">
-              {{ $t('qr.qr_login_how_to_description_4') }}
-            </p>
+    <vue2-scrollbar
+      classes="remote-wrapper"
+      ref="wrapperScroller"
+      :onMaxScroll="handleMaxScroll"
+    >
+      <div class="workspace-wrapper">
+        <div class="qr-wrapper">
+          <div class="qr">
+            <article class="qr__main">
+              <p class="qr__main--title">{{ $t('qr.qr_login') }}</p>
+              <p class="qr__main--sub-title">
+                {{ $t('qr.qr_login_description') }}
+              </p>
+              <canvas class="qr__main--code" ref="qr-code"></canvas>
+            </article>
+            <figcaption class="qr__desc">
+              <p class="qr__desc--title">{{ $t('qr.qr_login_how_to') }}</p>
+              <div class="qr__explain">
+                <ol class="qr__explain--list">
+                  <li>
+                    {{ $t('qr.qr_login_how_to_description_1') }}
+                  </li>
+                  <li>{{ $t('qr.qr_login_how_to_description_2') }}</li>
+                  <li>
+                    {{ $t('qr.qr_login_how_to_description_3') }}
+                  </li>
+                </ol>
+                <p class="qr__explain--caution">
+                  {{ $t('qr.qr_login_how_to_description_4') }}
+                </p>
+              </div>
+            </figcaption>
           </div>
-        </figcaption>
+          <footer class="qr-footer">
+            ©VIRNECT CO., LTD. All rights reserved.
+          </footer>
+        </div>
       </div>
-      <footer class="qr-footer">
-        ©VIRNECT CO., LTD. All rights reserved.
-      </footer>
-    </div>
-    <!-- </vue2-scrollbar> -->
+    </vue2-scrollbar>
   </section>
 </template>
 
@@ -59,6 +65,11 @@ export default {
       url: '',
       expireTime: 30000,
     }
+  },
+  methods: {
+    handleMaxScroll(event) {
+      this.$eventBus.$emit('scroll:end', event)
+    },
   },
 
   async mounted() {
