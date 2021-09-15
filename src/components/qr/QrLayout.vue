@@ -60,12 +60,7 @@ export default {
   components: {
     HeaderSection,
   },
-  data() {
-    return {
-      url: '',
-      expireTime: 30000,
-    }
-  },
+
   methods: {
     handleMaxScroll(event) {
       this.$eventBus.$emit('scroll:end', event)
