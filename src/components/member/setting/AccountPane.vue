@@ -53,8 +53,8 @@
           </ValidationProvider>
         </el-form-item>
         <el-form-item
-          v-if="isUserTypeSeat(member.userType)"
-          :label="$t('members.setting.seat.id')"
+          v-if="isUserTypeGuest(member.userType)"
+          :label="$t('members.setting.guest.id')"
         >
           <el-input disabled :placeholder="member.userId" />
         </el-form-item>
@@ -165,8 +165,8 @@ export default {
     },
     deleteTitle() {
       let title = ''
-      if (this.isUserTypeSeat(this.member.userType)) {
-        title = this.$t('members.setting.delete.seat')
+      if (this.isUserTypeGuest(this.member.userType)) {
+        title = this.$t('members.setting.delete.guest')
       } else {
         title = this.$t('members.setting.delete.account')
       }
@@ -175,8 +175,8 @@ export default {
     accountTitle() {
       let title = ''
       switch (this.member.userType) {
-        case 'SEAT_USER':
-          title = this.$t('members.setting.seat.title')
+        case 'GUEST_USER':
+          title = this.$t('members.setting.guest.title')
           break
         case 'USER':
           title = this.$t('members.setting.personalAccount')
@@ -237,8 +237,8 @@ export default {
     },
     async deleteMember() {
       try {
-        if (this.isUserTypeSeat(this.member.userType)) {
-          await workspaceService.deleteSeatMember(this.member.userId)
+        if (this.isUserTypeGuest(this.member.userType)) {
+          await workspaceService.deleteGuestMember(this.member.userId)
         } else {
           await workspaceService.deleteMember(this.member.userId)
         }
@@ -248,7 +248,7 @@ export default {
           this.$t('members.delete.message.successTitle'),
           {
             confirmButtonText: this.$t('common.confirm'),
-            callback: () => this.$emit('deleteSeat'),
+            callback: () => this.$emit('deleteGuest'),
           },
         )
       } catch (e) {

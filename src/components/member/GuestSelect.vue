@@ -1,8 +1,8 @@
 <template>
   <el-select
-    class="member-seat-select"
+    class="member-guest-select"
     v-model="value"
-    popper-class="member-seat-select__dropdown"
+    popper-class="member-guest-select__dropdown"
     filterable
     collapse-tags
     :placeholder="$t('members.setting.directInput')"
@@ -26,7 +26,7 @@ export default {
   props: {
     label: String,
     amount: Number,
-    numOfSeat: Number,
+    numOfGuest: Number,
   },
   computed: {
     ...mapGetters({
@@ -34,7 +34,7 @@ export default {
     }),
   },
   watch: {
-    numOfSeat(v) {
+    numOfGuest(v) {
       this.value = v
     },
   },
@@ -52,10 +52,10 @@ export default {
 </script>
 
 <style lang="scss">
-#__nuxt .seat-pane .el-form .el-input {
+#__nuxt .guest-pane .el-form .el-input {
   width: 100%;
 }
-.member-seat-select {
+.member-guest-select {
   .el-select__tags {
     pointer-events: none;
   }
@@ -72,7 +72,7 @@ export default {
     height: 40px;
   }
 }
-body .member-seat-select__dropdown {
+body .member-guest-select__dropdown {
   @media screen and (max-width: $mobile) {
     .el-select-dropdown__item {
       padding-right: 4px;

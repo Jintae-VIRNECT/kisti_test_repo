@@ -31,14 +31,14 @@ export default {
   MEMBER_ID_CHECK: ['GET', '/users/members/exist'],
   // 워크스페이스 사용자 정보 설정 (플랜, 닉네임, 역할 )
   MEMBER_INFO_UPDATE: ['POST', '/workspaces/{workspaceId}/members/info'],
-  // 워크스페이스 전용계정/시트계정 프로필 이미지 변경
+  // 워크스페이스 전용계정/게스트계정 프로필 이미지 변경
   MEMBER_PROFILE_UPDATE: ['POST', '/workspaces/{workspaceId}/members/profile'],
   // 워크스페이스 사용자 - 멤버 내보내기
   MEMBER_KICK: ['DELETE', '/workspaces/{workspaceId}/members/info'],
-  // 워크세페이스 시트계정 삭제
-  MEMBER_SEAT_DELETE: ['DELETE', '/workspaces/{workspaceId}/members/seat'],
-  // 워크스페이스 시트 사용자 생성
-  MEMBER_SEAT_CREATE: ['POST', '/workspaces/{workspaceId}/members/seat'],
+  // 워크세페이스 게스트 삭제
+  MEMBER_GUEST_DELETE: ['DELETE', '/workspaces/{workspaceId}/members/guest'],
+  // 워크스페이스 게스트 생성
+  MEMBER_GUEST_CREATE: ['POST', '/workspaces/{workspaceId}/members/guest'],
   // 워크스페이스 사용자 - 멤버 초대하기
   MEMBERS_INVITE: ['POST', '/workspaces/{workspaceId}/invite'],
   // 워크스페이스 사용자 활동 조회

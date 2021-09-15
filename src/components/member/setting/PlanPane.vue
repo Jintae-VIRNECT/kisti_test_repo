@@ -8,7 +8,7 @@
             v-model="member.licenseRemote"
             :label="plans.remote.label"
             :amount="remote"
-            :isSeat="isSeat"
+            :isGuest="isGuest"
           />
         </el-form-item>
         <el-form-item class="horizon" :label="plans.make.label">
@@ -16,7 +16,7 @@
             v-model="member.licenseMake"
             :label="plans.make.label"
             :amount="make"
-            :isSeat="isSeat"
+            :isGuest="isGuest"
           />
         </el-form-item>
         <el-form-item class="horizon" :label="plans.view.label">
@@ -24,7 +24,7 @@
             v-model="member.licenseView"
             :label="plans.view.label"
             :amount="view"
-            :isSeat="isSeat"
+            :isGuest="isGuest"
           />
         </el-form-item>
         <el-form-item class="footer" v-if="editEnabled">
@@ -57,12 +57,12 @@ export default {
     view: Number,
   },
   computed: {
-    isSeat() {
-      return this.isRoleSeat(this.member.role)
+    isGuest() {
+      return this.isRoleGuest(this.member.role)
     },
     editEnabled() {
       if (this.canManage(this.member.userType, this.member.role)) {
-        if (this.isSeat) {
+        if (this.isGuest) {
           return false
         } else return true
       }

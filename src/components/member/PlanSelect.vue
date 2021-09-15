@@ -5,7 +5,7 @@
     popper-class="member-plan-select__dropdown"
     multiple
     collapse-tags
-    :disabled="activeWorkspace.role === 'MEMBER' || isSeat"
+    :disabled="activeWorkspace.role === 'MEMBER' || isGuest"
     @change="change"
   >
     <el-option :value="false" :label="$t('members.setting.givePlansEmpty')" />
@@ -30,7 +30,7 @@ export default {
     label: String,
     amount: Number,
     role: String,
-    isSeat: {
+    isGuest: {
       type: Boolean,
       default: false,
     },

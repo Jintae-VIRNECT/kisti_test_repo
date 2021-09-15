@@ -31,14 +31,14 @@
           <span>{{ $t('members.add.tab.create') }}</span>
         </button>
         <button
-          @click="showTab('seat')"
+          @click="showTab('guest')"
           class="member-add-modal__tab-button"
           :class="{
-            'member-add-modal__tab-button--clicked': tabName === 'seat',
+            'member-add-modal__tab-button--clicked': tabName === 'guest',
           }"
         >
           <img src="~assets/images/icon/ic-member-sheet-registration.svg" />
-          <span>{{ $t('members.add.tab.seat') }}</span>
+          <span>{{ $t('members.add.tab.guest') }}</span>
         </button>
       </div>
       <div class="member-add-modal--right">
@@ -54,8 +54,8 @@
           :maximum.sync="maximum"
           @updated="updated"
         />
-        <MemberAddSeatPane
-          v-show="tabName === 'seat'"
+        <MemberAddGuestPane
+          v-show="tabName === 'guest'"
           :membersTotal.sync="membersTotal"
           :maximum.sync="maximum"
           @updated="updated"

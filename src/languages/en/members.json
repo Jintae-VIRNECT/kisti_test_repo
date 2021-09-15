@@ -37,6 +37,7 @@
       "directInput": "Direct Input",
       "kick": "Remove",
       "submit": "Edit",
+      "guestRoleDesc": "Guests cannot act as administrators.",
       "image": {
         "title": "Profile Image",
         "edit": "Edit Profile Image",
@@ -51,9 +52,9 @@
         "success": "Successfully updated your nickname",
         "fail": "Failed to edit your nickname please try again later"
       },
-      "seat": {
-        "title": "Seat",
-        "id": "Seat ID"
+      "guest": {
+        "title": "Guest",
+        "id": "Guest ID"
       },
       "password": {
         "title": "Password",
@@ -65,7 +66,7 @@
       "delete": {
         "title": "Delete",
         "account": "Delete Account",
-        "seat": "Delete Seat",
+        "guest": "Delete Guest",
         "placeholder": "Enter confirmation phrase",
         "desc": "Please enter a 'Delete Account'."
       },
@@ -74,35 +75,6 @@
         "updateFail": "Failed to update member details from the Workspace please try again later.",
         "updateSuccess": "Succesfully updated selected member details.",
         "notChangeMasterPlan": "Master's plan can only be changed by the master."
-      },
-      "nicknameCaution": "Please enter 20 characters or less. You can use Korean English special characters (excluding (>), (<)) and spaces.",
-      "account": "Account",
-      "seatAccount": "Seat",
-      "seatId": "Seat ID",
-      "personalAccount": "Persnal Account",
-      "workspaceAccount": "Workstation Dedicated Account",
-      "delete": "Delete",
-      "deletePlaceholder": "Enter confirmation text",
-      "deleteDesc": "Enter 'Delete Account'.",
-      "deleteAccount": "Delete Account",
-      "deleteSeat": "Delete Seat",
-      "password": "Password",
-      "passwordPlaceholder": "Please enter a new password",
-      "passwordCaution": "Your password must be between 8 and 20 characters long. Your password needs to be included with at least 3 of following character types. <br>- Uppercase letter <br>- Lowercase letter<br>- Number <br>- Special character ( . ! @ # $ % ). <br>Also your password must not contain consecutive numbers and more than four of same characters.",
-      "workspaceRole": "Role",
-      "workspaceRoleDesc": "Workspace Role",
-      "submit": "Edit",
-      "image": {
-        "image": "Profile Image",
-        "edit": "Edit Profile Image",
-        "success": "Successfully uploaded image",
-        "fail": "Failed to upload image file",
-        "notAllowFileExtension": "Unsupported file type",
-        "notAllowFileSize": "Unsupported file size"
-      },
-      "seat": {
-        "title": "Seat",
-        "seatId": "Seat ID"
       }
     },
     "kick": {
@@ -151,11 +123,11 @@
       "tab": {
         "invitation": "Account Invitation",
         "create": "Account creation",
-        "seat": "Seat registration"
+        "guest": "Guest registration"
       },
       "message": {
         "inviteFail": "Failed to invite a member to Workspace please try again later.",
-        "createSuccess": "{n} sheets have been registered.",
+        "createSuccess": "{n} guests have been registered.",
         "inviteSuccess": "The invitation email has been sent. The member is added when this member accepts your invitation.",
         "notHaveAnyPlan": "At least one plan must be allocated when inviting new Workspace members.",
         "enoughPlan": "No plans available to assign to Workspace members please purchase plans and invite them again.",
@@ -205,21 +177,21 @@
         "fail": "Failed to add a member, please try again later. If a same problem occurs, please contact a network adminitrator."
       }
     },
-    "seat": {
-      "title": "Add Workspace Seat",
-      "desc": "Seat is an arbitrary member who can use the product by assigning a plan like a member. <br> Anyone can use the service below through the seat. ",
-      "removeDesc": "Users who are not logged in to an open room will access it via the Join link. A Remote Plan is required to add seat.",
+    "guest": {
+      "title": "Add Workspace Guest",
+      "desc": "Guest is an arbitrary member who can use the product by assigning a plan like a member. <br> Anyone can use the service below through the guest. ",
+      "removeDesc": "Users who are not logged in to an open room will access it via the Join link. A Remote Plan is required to add guest.",
       "viewDesc": "Open content is downloaded and experienced by non-login users.",
-      "settings": "Seat settings",
+      "settings": "Guest settings",
       "remoteTabName": "Remote Plan",
       "viewTabName": "View Plan",
       "remoteTab": {
-        "title": "Add Remote plan assignment seat"
+        "title": "Add Remote plan assignment guest"
       },
       "viewTab": {
-        "title": "Add View plan assignment seat"
+        "title": "Add View plan assignment guest"
       },
-      "numberOfSeat": "Number of additional seat",
+      "numberOfGuest": "Number of additional guest",
       "submit": "Registration"
     },
     "activity": {

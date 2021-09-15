@@ -24,14 +24,14 @@ export default {
     isRoleManager(role) {
       return role === 'MANAGER'
     },
-    isRoleSeat(role) {
-      return role === 'SEAT'
+    isRoleGuest(role) {
+      return role === 'GUEST'
     },
     isUserTypeUser(type) {
       return type === 'USER'
     },
-    isUserTypeSeat(type) {
-      return type === 'SEAT_USER'
+    isUserTypeGuest(type) {
+      return type === 'GUEST_USER'
     },
     isUserTypeWorkspaceOnly(type) {
       return type === 'WORKSPACE_ONLY_USER'

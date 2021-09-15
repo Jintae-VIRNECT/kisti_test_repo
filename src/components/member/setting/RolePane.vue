@@ -2,7 +2,7 @@
   <section class="member-setting-role-pane">
     <h6>{{ $t('members.setting.workspaceRole') }}</h6>
     <el-form class="virnect-workstation-form" ref="form" :model="member">
-      <el-col :span="18" v-if="isNotSeat">
+      <el-col :span="18" v-if="isNotGuest">
         <el-form-item class="horizon">
           <template slot="label">
             <span>{{ $t('members.setting.workspaceRoleDesc') }}</span>
@@ -19,7 +19,7 @@
         </el-form-item>
       </el-col>
       <el-col :span="18" v-else>
-        <el-form-item label="시트는 관리자 역할을 할 수 없습니다." />
+        <el-form-item :label="$t('members.setting.guestRoleDesc')" />
       </el-col>
     </el-form>
   </section>
@@ -44,8 +44,8 @@ export default {
     kickEnabled() {
       return this.isUserTypeUser(this.member.userType)
     },
-    isNotSeat() {
-      return !this.isRoleSeat(this.member.role)
+    isNotGuest() {
+      return !this.isRoleGuest(this.member.role)
     },
   },
   methods: {
