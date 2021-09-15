@@ -780,6 +780,76 @@
 }
 
 @include responsive-mobile {
+  .chat {
+    background-color: $new_color_bg_sub;
+  }
+
+  .chat-header {
+    height: 9.6rem;
+    background-color: $new_color_bg;
+  }
+
+  .chat-header__title {
+    align-items: center;
+    min-height: 5.4rem;
+    color: $new_color_text_main;
+    @include fontLevel(200);
+  }
+
+  .chat-header__menu {
+    border-bottom: 1px solid $new_color_line_border;
+    .chat-header__selector {
+      position: relative;
+      height: 100%;
+      opacity: 1;
+
+      .chat-header__selector--text {
+        color: $new_color_text_sub_description;
+        @include fontLevel(75);
+
+        img {
+          width: 2rem;
+          height: 2rem;
+          margin-right: 0.6rem;
+          background-color: $new_color_text_sub_description;
+        }
+        img.selector-chat {
+          mask-image: url(~assets/image/call/chat_ic_chat_w.svg);
+        }
+        img.selector-file {
+          mask-image: url(~assets/image/call/chat_ic_folder_w.svg);
+        }
+      }
+
+      &.active .chat-header__selector--text {
+        color: $new_color_text_main;
+        img {
+          background-color: $new_color_text_main;
+        }
+      }
+
+      &::after {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 0;
+        height: 3px;
+        background-color: white;
+        transition: width 0.3s;
+        content: "";
+      }
+
+      &.active {
+        background-color: transparent;
+        opacity: 1;
+      }
+
+      &.active::after {
+        width: 100%;
+      }
+    }
+  }
+
   .chat-header__close {
     position: absolute;
     top: 1.5rem;
@@ -788,5 +858,41 @@
     width: 2.4rem;
     height: 2.4rem;
     background: url(~assets/image/ic_close_24.svg) 50% no-repeat;
+  }
+
+  .chat-msglist {
+    padding: 0.9rem 1.6rem;
+  }
+
+  .chat-item {
+    margin: 0.9rem 0;
+
+    .chat-item__body--time {
+      @include fontLevel(50);
+      color: $new_color_text_sub_descriptio;
+    }
+
+    .chat-item__body .chat-item__body--text {
+      @include fontLevel(75);
+    }
+
+    &.system.create .chat-item__body .chat-item__body--text {
+      @include fontLevel(100);
+    }
+
+    &.date {
+      margin-bottom: 1.6rem;
+      p {
+        @include fontLevel(50);
+        color: $new_color_text_sub;
+
+        &::after,
+        &::before {
+          width: 28.8vw;
+          margin-right: 1.3rem;
+          margin-left: 1.3rem;
+        }
+      }
+    }
   }
 }

@@ -25,7 +25,7 @@
           </p>
         </button>
       </div>
-      <button class="capture-share" @click="share">
+      <button v-if="isLeader" class="capture-share" @click="share">
         <p>
           <img src="~assets/image/call/ic_share.svg" />
           {{ $t('service.capture_image_share') }}
@@ -418,6 +418,11 @@ export default {
     }
 
     .capture-share {
+      width: calc(100% - 3.2rem);
+      margin: 1.4rem 1.6rem 1.6rem 1.6rem;
+      color: $new_color_text_main;
+      background-color: $new_color_bg_button_sub;
+      border-radius: 4px;
       p {
         align-items: center;
         @include fontLevel(75);
@@ -427,9 +432,6 @@ export default {
           margin-right: 0.8rem;
         }
       }
-      height: 4rem;
-      color: $new_color_text_main;
-      background-color: $new_color_bg_button_sub;
     }
   }
 }

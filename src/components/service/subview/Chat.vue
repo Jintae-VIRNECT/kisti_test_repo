@@ -16,7 +16,7 @@
             @click="toggleMenu('chat')"
           >
             <p class="chat-header__selector--text">
-              <img src="~assets/image/call/chat_ic_chat_w.svg" />
+              <img class="selector-chat" :src="chatIconSrc" />
               {{ $t('service.chat') }}
             </p>
           </button>
@@ -27,7 +27,7 @@
             @click="toggleMenu('file')"
           >
             <p class="chat-header__selector--text">
-              <img src="~assets/image/call/chat_ic_folder_w.svg" />
+              <img class="selector-file" :src="fileIconSrc" />
               {{ $t('service.file') }}
             </p>
           </button>
@@ -76,6 +76,14 @@ export default {
     ]),
     showChat() {
       return this.show === 'chat'
+    },
+    chatIconSrc() {
+      if (this.isMobileSize) return null
+      else return require('assets/image/call/chat_ic_chat_w.svg')
+    },
+    fileIconSrc() {
+      if (this.isMobileSize) return null
+      else return require('assets/image/call/chat_ic_folder_w.svg')
     },
   },
   watch: {
