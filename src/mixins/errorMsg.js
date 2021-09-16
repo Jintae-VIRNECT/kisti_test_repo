@@ -38,6 +38,11 @@ export default {
         case ERROR.FILE_ENCRYPTED:
           this.toastError(this.$t('service.encrypted_file_unsupport'))
           break
+        case ERROR.WORKSPACE_MEMBER_GROUP_MAX_OVER:
+          this.toastDefault(
+            this.$t('workspace.workspace_member_group_max_description'),
+          )
+          break
       }
     },
   },
