@@ -186,12 +186,18 @@ export default {
       this.$emit('update:visible', false)
     },
     async update(params) {
+      const isUpdate =
+        'image' in params &&
+        params['image'] !== null &&
+        params['image'] !== 'default'
+
+      const isDelete =
+        'image' in params &&
+        this.room.profile !== 'default' &&
+        (params['image'] === 'default' || !params['image'])
+
       try {
-        if (
-          'image' in params &&
-          params['image'] !== null &&
-          params['image'] !== 'default'
-        ) {
+        if (isUpdate) {
           const profile = await updateRoomProfile({
             profile: params.image,
             sessionId: params.sessionId,
@@ -205,11 +211,7 @@ export default {
 
           delete params['image']
           this.$emit('updatedInfo', profile)
-        } else if (
-          'image' in params &&
-          this.room.profile !== 'default' &&
-          (params['image'] === 'default' || !params['image'])
-        ) {
+        } else if (isDelete) {
           await removeRoomProfile({
             sessionId: params.sessionId,
             workspaceId: this.workspace.uuid,
