@@ -59,17 +59,19 @@
         </p>
         <el-input
           :placeholder="$t('signup.password.comfirm')"
-          show-password
+          v-model="signup.password"
+          type="password"
+          clearable
           name="password"
           v-validate="'required|password'"
-          v-model="signup.password"
           :class="{ 'input-danger': errors.has('password') }"
         >
         </el-input>
         <el-input
           :placeholder="$t('signup.password.reComfirm')"
           v-model="passwordConfirm"
-          show-password
+          type="password"
+          clearable
           name="passwordConfirm"
           v-validate="'required|password'"
           :class="{
@@ -262,7 +264,6 @@ export default {
       isValidEmail: false,
       verificationCode: '',
       message: '',
-      hangulExp: /[ㄱ-ㅎ|ㅏ-ㅣ|가-힣]/g,
       check: {
         isEmail: false,
       },
@@ -300,12 +301,6 @@ export default {
     },
   },
   watch: {
-    'signup.password'(v) {
-      this.signup.password = this.removeHangul(v)
-    },
-    passwordConfirm(v) {
-      this.passwordConfirm = this.removeHangul(v)
-    },
     '$i18n.locale'() {
       // 언어 변경에 따라 값을 변경해야 한다.
       const info = this.subscriptionPath[this.joinInfo]
@@ -351,9 +346,6 @@ export default {
     },
   },
   methods: {
-    removeHangul(v) {
-      return v.replace(this.hangulExp, '')
-    },
     validBirth() {
       return (
         this.birth.year &&

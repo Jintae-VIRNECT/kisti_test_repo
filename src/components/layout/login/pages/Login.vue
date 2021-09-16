@@ -26,7 +26,8 @@
         <el-input
           :placeholder="$t('login.passwordPlaceholder')"
           v-model="login.password"
-          show-password
+          type="password"
+          clearable
           name="password"
           :class="{ 'input-danger': message }"
           v-validate="'required'"
@@ -35,7 +36,7 @@
 
         <p class="warning-msg danger-color" v-if="message">{{ message }}</p>
 
-        <div class="checkbox-wrap">
+        <div class="checkbox-wrap" v-if="$env !== 'onpremise'">
           <el-checkbox
             v-model="login.rememberMe"
             @change="emailRemember(login.email, login.rememberMe)"
@@ -59,7 +60,7 @@
           :disabled="isDisable"
           >{{ $t('login.title') }}</el-button
         >
-        <div class="find-wrap">
+        <div class="find-wrap" v-if="$env !== 'onpremise'">
           <router-link
             :to="{ name: 'findTab', params: { findCategory: 'email' } }"
             v-if="$env !== 'onpremise'"

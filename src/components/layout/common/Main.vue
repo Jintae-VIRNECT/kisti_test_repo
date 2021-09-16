@@ -27,9 +27,10 @@ export default {
     return {
       auth,
       showStatus: {
-        login: true,
+        login: false,
         profile: false,
         language: true,
+        portal: false,
       },
     }
   },
