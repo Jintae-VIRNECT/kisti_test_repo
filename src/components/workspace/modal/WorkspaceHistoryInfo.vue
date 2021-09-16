@@ -35,15 +35,6 @@
             >
               {{ $t('workspace.info_remote_member') }}
             </button>
-            <!-- <button
-            v-if="isOnpremise"
-            class="roominfo-nav__menu"
-            :class="{ active: tabview === 'download' }"
-            :data-text="$t('button.download')"
-            @click="tabChange('download')"
-          >
-            {{ $t('button.download') }}
-          </button> -->
           </div>
         </section>
         <room-info
@@ -56,11 +47,6 @@
           :participants="participants"
           :sessionId="sessionId"
         ></participants-info>
-
-        <!-- <room-download
-        v-else-if="isOnpremise"
-        :sessionId="sessionId"
-      ></room-download> -->
       </div>
     </modal>
 
@@ -84,7 +70,6 @@ import Modal from 'Modal'
 import { getHistorySingleItem } from 'api/http/history'
 import RoomInfo from '../partials/ModalHistoryRoomInfo'
 import ParticipantsInfo from '../partials/ModalParticipantsInfo'
-// import RoomDownload from '../partials/ModalRoomDownload'
 import Profile from 'Profile'
 import responsiveModalVisibleMixin from 'mixins/responsiveModalVisible'
 
@@ -96,7 +81,6 @@ export default {
     RoomInfo,
     ParticipantsInfo,
     WorkspaceMobileRoomInfo: () => import('./WorkspaceMobileRoomInfo'),
-    // RoomDownload,
   },
   mixins: [responsiveModalVisibleMixin],
   data() {
