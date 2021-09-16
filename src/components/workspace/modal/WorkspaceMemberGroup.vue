@@ -199,20 +199,9 @@ export default {
         const userIds = this.selection.map(member => member.uuid)
         userIds.push(this.account.uuid)
         if (this.groupId) {
-          await updatePrivateMemberGroup({
-            workspaceId: this.workspace.uuid,
-            userId: this.account.uuid,
-            groupId: this.groupId,
-            groupName: this.groupNameInput,
-            memberList: userIds,
-          })
+          await this.updatePrivateMemberGroup(userIds)
         } else {
-          await createPrivateMemberGroup({
-            workspaceId: this.workspace.uuid,
-            userId: this.account.uuid,
-            groupName: this.groupNameInput,
-            memberList: userIds,
-          })
+          await this.createPrivateMemberGroup(userIds)
         }
 
         //정상 저장시 모달창 close
@@ -226,6 +215,23 @@ export default {
 
         console.error(error)
       }
+    },
+    async updatePrivateMemberGroup(userIds) {
+      await updatePrivateMemberGroup({
+        workspaceId: this.workspace.uuid,
+        userId: this.account.uuid,
+        groupId: this.groupId,
+        groupName: this.groupNameInput,
+        memberList: userIds,
+      })
+    },
+    async createPrivateMemberGroup(userIds) {
+      await createPrivateMemberGroup({
+        workspaceId: this.workspace.uuid,
+        userId: this.account.uuid,
+        groupName: this.groupNameInput,
+        memberList: userIds,
+      })
     },
   },
 }
