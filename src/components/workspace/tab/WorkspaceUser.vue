@@ -251,44 +251,45 @@ export default {
       )
 
       //갱신한 목록에서 검색한 해당 멤버의 현재 접속 상태를 확인
-      //갱신한 멤버 목록에 해당 유저가 없는 경우 - 예외상황
-      if (!latestTargetUserInfo) return
+      if (latestTargetUserInfo) {
+        //강제 로그아웃 불가 메시지
+        let text = `${nickNameTag} ${this.$t(
+          'workspace.confirm_force_logout_unavailable',
+        )}`
 
-      //강제 로그아웃 불가 메시지
-      let text = `${nickNameTag} ${this.$t(
-        'workspace.confirm_force_logout_unavailable',
-      )}`
+        let action = () => {}
 
-      let action = () => {}
+        //멤버 상태가 '로그인'인 경우
+        if (latestTargetUserInfo.accessType === 'LOGIN') {
+          //강제 로그인 메시지 API 호출
+          const params = {
+            workspaceId: this.workspace.uuid,
+            userId: this.account.uuid,
+            targetUserIds: new Array(latestTargetUserInfo.uuid),
+          }
 
-      //멤버 상태가 '로그인'인 경우
-      if (latestTargetUserInfo.accessType === 'LOGIN') {
-        //강제 로그인 메시지 API 호출
-        const params = {
-          workspaceId: this.workspace.uuid,
-          userId: this.account.uuid,
-          targetUserIds: new Array(latestTargetUserInfo.uuid),
+          try {
+            await forceLogout(params) //강제 로그아웃 실행
+
+            //강제 로그아웃 실행 확인 메시지
+            text = `${nickNameTag} ${this.$t(
+              'workspace.confirm_force_logout_complete',
+            )}`
+          } catch (e) {
+            console.error(e)
+            return
+          }
+
+          //강제 로그아웃 처리 후 멤버 목록 갱신
+          action = async () => await this.getList()
         }
 
-        try {
-          await forceLogout(params) //강제 로그아웃 실행
-
-          //강제 로그아웃 실행 확인 메시지
-          text = `${nickNameTag} ${this.$t(
-            'workspace.confirm_force_logout_complete',
-          )}`
-        } catch (e) {
-          console.error(e)
-          return
-        }
-
-        //강제 로그아웃 처리 후 멤버 목록 갱신
-        action = async () => await this.getList()
+        //로그인, 협업중인 상태의 멤버에게만 팝업 알림이 뜨도록 한다.
+        if (latestTargetUserInfo.accessType !== 'LOGOUT')
+          this.confirmDefault(text, { action })
       }
-
-      //로그인, 협업중인 상태의 멤버에게만 팝업 알림이 뜨도록 한다.
-      if (latestTargetUserInfo.accessType !== 'LOGOUT')
-        this.confirmDefault(text, { action })
+      //갱신한 멤버 목록에 해당 유저가 없는 경우(예외상황)
+      else return
     },
 
     toggleMode() {
