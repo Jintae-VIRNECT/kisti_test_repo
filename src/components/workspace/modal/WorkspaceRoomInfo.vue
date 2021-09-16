@@ -198,24 +198,10 @@ export default {
 
       try {
         if (isUpdate) {
-          const profile = await updateRoomProfile({
-            profile: params.image,
-            sessionId: params.sessionId,
-            uuid: this.account.uuid,
-            workspaceId: this.workspace.uuid,
-          })
-
-          if (profile.usedStoragePer >= 90) {
-            this.toastError(this.$t('alarm.file_storage_about_to_limit'))
-          }
-
+          await this.updateProfile(params)
           delete params['image']
-          this.$emit('updatedInfo', profile)
         } else if (isDelete) {
-          await removeRoomProfile({
-            sessionId: params.sessionId,
-            workspaceId: this.workspace.uuid,
-          })
+          await this.deleteProfile(params)
         }
         const updateRtn = await updateRoomInfo(params)
         if (updateRtn) {
@@ -230,6 +216,26 @@ export default {
           this.showErrorToast(err.code)
         }
       }
+    },
+    async updateProfile(params) {
+      const profile = await updateRoomProfile({
+        profile: params.image,
+        sessionId: params.sessionId,
+        uuid: this.account.uuid,
+        workspaceId: this.workspace.uuid,
+      })
+
+      if (profile.usedStoragePer >= 90) {
+        this.toastError(this.$t('alarm.file_storage_about_to_limit'))
+      }
+
+      this.$emit('updatedInfo', profile)
+    },
+    async deleteProfile(params) {
+      await removeRoomProfile({
+        sessionId: params.sessionId,
+        workspaceId: this.workspace.uuid,
+      })
     },
     kickoutConfirm(id) {
       this.confirmCancel(
