@@ -19,7 +19,7 @@
             <p>{{ $t('service.participant_invite') }}</p>
           </div>
         </article>
-        <article v-else-if="openRoom && isLeader && !isMaxLength" key="append">
+        <article v-else-if="openRoom && !isGuest && !isMaxLength" key="append">
           <div
             class="participant-video append guest"
             @click="showGuestInviteModal"
@@ -75,6 +75,9 @@ export default {
     ]),
     isLeader() {
       return this.account.roleType === ROLE.LEADER
+    },
+    isGuest() {
+      return this.account.roleType === ROLE.GUEST
     },
     isMaxLength() {
       return this.participants.length === maxParticipants
