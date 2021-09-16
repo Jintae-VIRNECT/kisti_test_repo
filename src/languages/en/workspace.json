@@ -75,6 +75,17 @@
         "caution": "You can upload JPG and PNG files up to 3MB. <br>* Recommended size: 170(horizontal) * 32(vertical, fixed)px / 72 DPI",
         "upload": "Upload Image",
         "submit": "Register"
+      },
+      "ip": {
+        "access": {
+          "title": "IP access control settings",
+          "use": "Access allowed",
+          "notUsed": "Not used"
+        },
+        "list": {
+          "title": "IP settings",
+          "placeholder": "Please enter IP address."
+        }
       }
     }
   }

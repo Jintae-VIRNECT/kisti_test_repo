@@ -75,6 +75,17 @@
         "caution": "최대 3MB의 ICO, JPG, PNG 파일 업로드가 가능합니다. <br>* 권장 사이즈 : 32(가로) * 32(세로, 고정)px / 72 DPI",
         "upload": "이미지 업로드",
         "submit": "이미지 등록"
+      },
+      "ip": {
+        "access": {
+          "title": "IP 접근제어 설정",
+          "use": "접근허용",
+          "notUsed": "미사용"
+        },
+        "list": {
+          "title": "IP 설정",
+          "placeholder": "IP 주소를 입력해 주세요."
+        }
       }
     }
   }
