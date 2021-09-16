@@ -103,9 +103,6 @@ export default {
   },
   computed: {
     ...mapGetters(['video']),
-    // videoQuality() {
-    //   return this.video['quality']
-    // },
     currentQuality() {
       const idx = resolution.findIndex(
         resol => resol.value === this.videoQuality,
@@ -118,8 +115,8 @@ export default {
       } else {
         const size = resolution[idx].resolution.split('X')
         return {
-          width: parseInt(size[0]),
-          height: parseInt(size[1]),
+          width: parseInt(size[0], 10),
+          height: parseInt(size[1], 10),
         }
       }
     },
@@ -231,12 +228,8 @@ export default {
                 resol => resol.value === this.videoQuality,
               )
               if (idx > 0) {
-                // this.videoQuality = resolution[idx - 1].value
                 this.setQuality(resolution[idx - 1].value)
               }
-              // if (err.constraint === 'deviceId') {
-              //   this.invalid = true
-              // }
             }
             if (err.name === 'NotReadableError') {
             }
