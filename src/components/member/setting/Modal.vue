@@ -59,7 +59,7 @@
           v-show="tabName === 'role'"
           :member="form"
           @update="memberInfoUpdate"
-          @kick="$emit(kick)"
+          @kick="$emit('kick')"
         />
       </el-col>
     </el-row>
