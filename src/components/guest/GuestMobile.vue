@@ -73,7 +73,7 @@ export default {
     runApp() {
       if (this.isValid()) {
         const intentLink = getIntentLink({
-          workspaceId: this.workspace.uuid,
+          workspaceId: this.$route.query.workspaceId,
           sessionId: this.$route.query.sessionId,
           packageName: this.packageName,
         })
