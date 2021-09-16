@@ -179,42 +179,28 @@ export default {
     async initStream() {
       if (this.checking) return
       if (this.videoDevices.length === 0) return
+
       this.checking = true
+      this.resetStream()
+      this.invalid = false
+
+      this.$nextTick(async () => {
+        try {
+          await this.getStream()
+          this.logStreamInfo()
+          this.checking = false
+        } catch (err) {
+          this.initStreamErrorHandler(err)
+        }
+      })
+    },
+    resetStream() {
       if (this.stream) {
         this.stream.getTracks().forEach(track => {
           track.stop()
         })
         this.stream = null
       }
-      this.invalid = false
-      this.$nextTick(async () => {
-        try {
-          await this.getStream()
-          this.logStreamInfo()
-
-          this.checking = false
-        } catch (err) {
-          console.error(err)
-          this.stream = null
-          this.checking = false
-          if (typeof err === 'object' && err.name) {
-            this.invalid = err.name
-            if (err.name === 'OverconstrainedError') {
-              const idx = resolution.findIndex(
-                resol => resol.value === this.videoQuality,
-              )
-              if (idx > 0) {
-                this.setQuality(resolution[idx - 1].value)
-              }
-            }
-            if (err.name === 'NotReadableError') {
-            }
-            return err.name
-          } else {
-            this.invalid = true
-          }
-        }
-      })
     },
     async getStream() {
       const videoConstraint = {
@@ -243,6 +229,28 @@ export default {
       this.logger('call', `resolution::${settings.width}X${settings.height}`)
       this.debug('call::setting::', settings)
       this.debug('call::capability::', capability)
+    },
+    initStreamErrorHandler(err) {
+      console.error(err)
+
+      this.stream = null
+      this.checking = false
+      if (typeof err === 'object' && err.name) {
+        this.invalid = err.name
+        if (err.name === 'OverconstrainedError') {
+          const idx = resolution.findIndex(
+            resol => resol.value === this.videoQuality,
+          )
+          if (idx > 0) {
+            this.setQuality(resolution[idx - 1].value)
+          }
+        }
+        if (err.name === 'NotReadableError') {
+        }
+        return err.name
+      } else {
+        this.invalid = true
+      }
     },
   },
   mounted() {
