@@ -189,33 +189,9 @@ export default {
       this.invalid = false
       this.$nextTick(async () => {
         try {
-          const videoConstraint = {
-            width: {
-              exact: this.currentQuality.width,
-            },
-            height: {
-              exact: this.currentQuality.height,
-            },
-            deviceId: {
-              exact: this.videoId,
-            },
-            frameRate: {
-              max: this.videoFPS,
-            },
-          }
-          this.stream = await getUserMedia({
-            audio: false,
-            video: videoConstraint,
-          })
-          const track = this.stream.getVideoTracks()[0]
-          const settings = track.getSettings()
-          const capability = track.getCapabilities()
-          this.logger(
-            'call',
-            `resolution::${settings.width}X${settings.height}`,
-          )
-          this.debug('call::setting::', settings)
-          this.debug('call::capability::', capability)
+          await this.getStream()
+          this.logStreamInfo()
+
           this.checking = false
         } catch (err) {
           console.error(err)
@@ -239,6 +215,34 @@ export default {
           }
         }
       })
+    },
+    async getStream() {
+      const videoConstraint = {
+        width: {
+          exact: this.currentQuality.width,
+        },
+        height: {
+          exact: this.currentQuality.height,
+        },
+        deviceId: {
+          exact: this.videoId,
+        },
+        frameRate: {
+          max: this.videoFPS,
+        },
+      }
+      this.stream = await getUserMedia({
+        audio: false,
+        video: videoConstraint,
+      })
+    },
+    logStreamInfo() {
+      const track = this.stream.getVideoTracks()[0]
+      const settings = track.getSettings()
+      const capability = track.getCapabilities()
+      this.logger('call', `resolution::${settings.width}X${settings.height}`)
+      this.debug('call::setting::', settings)
+      this.debug('call::capability::', capability)
     },
   },
   mounted() {
