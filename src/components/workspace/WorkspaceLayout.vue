@@ -67,6 +67,7 @@ import { mapActions, mapGetters } from 'vuex'
 import { PLAN_STATUS } from 'configs/status.config'
 import { ERROR } from 'configs/error.config'
 import { URLS } from 'configs/env.config'
+import { USER_TYPE } from 'configs/remote.config'
 
 import { MyStorage } from 'utils/storage'
 import { initAudio } from 'plugins/remote/tts/audio'
@@ -181,6 +182,8 @@ export default {
         auth.login()
         return
       } else {
+        this.logoutGuest(authInfo.account.userType)
+
         this.savedStorageDatas(authInfo.account.uuid)
         const res = await getLicense({ userId: authInfo.account.uuid })
         const myPlans = res.myPlanInfoList.filter(
@@ -341,9 +344,9 @@ export default {
     setTabTop() {
       this.tabTop = this.$refs['tabSection'].$el.offsetTop
     },
-    logoutGuest() {
-      if (this.account.userType === 'SEAT_USER') {
-        location.href = `${URLS['console']}/?continue=${location.href}`
+    logoutGuest(userType) {
+      if (userType === USER_TYPE.GUEST_USER) {
+        location.href = `${URLS['console']}`
       }
     },
   },
@@ -357,7 +360,6 @@ export default {
   },
   mounted() {
     initAudio()
-    this.logoutGuest()
     this.mx_changeLang()
     this.setTabTop()
 

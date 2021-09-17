@@ -30,28 +30,14 @@
   }
 }
 .guest-welcome__nickname {
-  overflow: hidden;
   color: rgb(255, 255, 255);
-
   font-weight: 500;
   font-size: 1.2857rem;
-  white-space: nowrap;
-  text-overflow: ellipsis;
+
+  @include ellipsis();
 
   > em {
     color: rgb(123, 187, 245);
-  }
-}
-
-.guest-welcome__button {
-  padding: 1.071rem 2.143rem;
-  color: $color_text;
-  font-weight: 500;
-  font-size: 1.071rem;
-  background-color: $color_primary;
-  border-radius: 2px;
-  &:hover {
-    background-color: $color_primary;
   }
 }
 

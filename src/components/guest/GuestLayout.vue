@@ -16,13 +16,14 @@
 
 <script>
 import HeaderSection from 'components/header/Header'
-import Cookies from 'js-cookie'
 
 import confirmMixin from 'mixins/confirm'
-import { getAllAppList, getLatestAppInfo } from 'api/http/download'
+
+import { getLatestRemoteAosAppInfo, getIntentLink } from 'utils/appCheck'
 import langMixin from 'mixins/language'
 import toastMixin from 'mixins/toast'
 import errorMsgMixin from 'mixins/errorMsg'
+import authStatusCallbackMixin from 'mixins/authStatusCallback'
 
 import { MyStorage } from 'utils/storage'
 import { getConfigs } from 'utils/auth'
@@ -40,6 +41,8 @@ import { URLS } from 'configs/env.config'
 import GuestWeb from './GuestWeb'
 import GuestMobile from './GuestMobile'
 
+import auth, { setTokensToCookies } from 'utils/auth'
+
 export default {
   name: 'GuestLayout',
   async beforeRouteEnter(to, from, next) {
@@ -48,7 +51,13 @@ export default {
     next()
   },
 
-  mixins: [confirmMixin, langMixin, toastMixin, errorMsgMixin],
+  mixins: [
+    confirmMixin,
+    langMixin,
+    toastMixin,
+    errorMsgMixin,
+    authStatusCallbackMixin,
+  ],
   components: {
     GuestWeb,
     GuestMobile,
@@ -56,10 +65,9 @@ export default {
   },
   data() {
     return {
-      url: '',
       workspaceId: '',
       sessionId: '',
-      uuid: '',
+
       serviceMode: '', //web, mobile
       packageName: '',
     }
@@ -71,24 +79,37 @@ export default {
     ...mapActions(['setCompanyInfo', 'updateAccount', 'changeWorkspace']),
 
     async initGuestMember() {
+      await auth.logout(false)
+
       const guestInfo = await getGuestInfo({ workspaceId: this.workspaceId })
+
+      if (guestInfo.uuid === null) {
+        throw { code: ERROR.GUEST_USER_NOT_FOUND }
+      }
 
       this.updateAccount({
         ...guestInfo,
         roleType: ROLE.GUEST,
       })
 
-      //토큰 설정
-      const accessToken = guestInfo.accessToken
-      const refreshToken = guestInfo.refreshToken
-
-      this.setToken(accessToken, refreshToken)
+      setTokensToCookies(guestInfo)
 
       const wsInfo = await getWorkspaceInfo({ workspaceId: this.workspaceId })
 
       this.changeWorkspace(wsInfo)
 
       this.checkCompany(guestInfo.uuid, this.workspaceId)
+
+      await auth.init()
+
+      auth.initAuthConnection(
+        this.workspaceId,
+        this.onDuplicatedRegistration,
+        this.onRemoteExitReceived,
+        this.onForceLogoutReceived,
+        this.onWorkspaceDuplicated,
+        this.onRegistrationFail,
+      )
     },
     async checkCompany(uuid, workspaceId) {
       const res = await getCompanyInfo({
@@ -117,18 +138,6 @@ export default {
         timeout: res.timeout !== undefined ? res.timeout : 60, //협업 연장 질의 팝업 싸이클을 정하는 값. 분 단위
       })
     },
-    setToken(accessToken, refreshToken) {
-      const cookieOption = {
-        expires: 1,
-        domain:
-          location.hostname.split('.').length === 3
-            ? location.hostname.replace(/.*?\./, '')
-            : location.hostname,
-      }
-
-      Cookies.set('accessToken', accessToken, cookieOption)
-      Cookies.set('refreshToken', refreshToken, cookieOption)
-    },
     showGuestExpiredAlarm() {
       this.confirmDefault(this.$t('guest.guest_license_expired'), {
         action: () => {
@@ -140,30 +149,25 @@ export default {
       this.serviceMode = mode
     },
     async checkAppInstalled() {
-      const appInfo = await getLatestAppInfo({ productName: 'remote' })
-      const aosAppInfo = appInfo.appInfoList.find(info => {
-        return info.deviceType === 'Mobile'
-      })
-
-      const appList = await getAllAppList()
-      const aosApp = appList.appInfoList.find(app => {
-        return app.uuid === aosAppInfo.uuid
-      })
+      const aosApp = await getLatestRemoteAosAppInfo()
+      if (!aosApp) return false
 
       this.packageName = aosApp.packageName
 
       const relatedApps = await navigator.getInstalledRelatedApps()
-      console.log(relatedApps)
       const relatedApp = relatedApps.find(app => {
-        console.log(app.id, app.platform, app.url)
         return app.url === this.packageName
       })
 
       return relatedApp ? true : false
     },
     runApp() {
-      const intentLink = `intent://remote?workspaceId=${this.workspaceId}&sessionId=${this.$route.query.sessionId}#$d#Intent;scheme=virnect;action=android.intent.action.VIEW;category=android.intent.category.BROWSABLE;package=${this.packageName};end`
-      console.log(intentLink)
+      const intentLink = getIntentLink({
+        workspaceId: this.workspaceId,
+        sessionId: this.$route.query.sessionId,
+        packageName: this.packageName,
+      })
+
       window.open(intentLink)
     },
     handleMaxScroll(event) {
@@ -171,11 +175,17 @@ export default {
     },
   },
 
+  async created() {
+    this.workspaceId = this.$route.query.workspaceId
+    this.sessionId = this.$route.query.sessionId
+
+    //게스트 멤버는 할당받는 계정이 수시로 변경되므로,
+    //워크스페이스 id로 스토리지 셋팅
+    window.myStorage = new MyStorage(this.workspaceId)
+  },
+
   async mounted() {
     try {
-      this.workspaceId = this.$route.query.workspaceId
-      this.sessionId = this.$route.query.sessionId
-
       //파라미터 유효성 체크
       if (this.workspaceId === undefined || this.sessionId === undefined) {
         location.href = `${URLS['console']}/?continue=${location.href}`
@@ -197,7 +207,6 @@ export default {
       }
 
       await this.initGuestMember()
-      window.myStorage = new MyStorage(this.workspaceId)
     } catch (err) {
       if (err.code === ERROR.ASSIGNED_GUEST_USER_IS_NOT_ENOUGH) {
         this.showGuestExpiredAlarm()

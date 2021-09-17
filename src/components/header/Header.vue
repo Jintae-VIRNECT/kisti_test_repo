@@ -11,7 +11,7 @@
 import WorkspaceHeader from './WorkspaceHeader'
 import ServiceHeader from './ServiceHeader'
 import GuestHeader from './GuestHeader'
-import QrHeader from './QrHeader.vue'
+import QrHeader from './QrHeader'
 
 export default {
   name: 'Header',

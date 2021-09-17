@@ -68,6 +68,7 @@ export const kickoutMember = async ({
  * @param {String} page
  * @param {String} size
  * @param {String} sort
+ * @param {Boolean} includeGuest
  */
 export const invitableList = async function({
   filter = '',
@@ -77,6 +78,7 @@ export const invitableList = async function({
   workspaceId,
   sessionId,
   userId,
+  includeGuest = false,
 }) {
   const returnVal = await http('INVITABLE_MEMBER_LIST', {
     filter,
@@ -87,6 +89,13 @@ export const invitableList = async function({
     sessionId,
     userId,
   })
+
+  if (!includeGuest) {
+    returnVal.memberList = returnVal.memberList.filter(member => {
+      return member.role !== ROLE.GUEST
+    })
+  }
+
   return returnVal
 }
 
