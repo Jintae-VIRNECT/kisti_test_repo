@@ -21,7 +21,9 @@
     },
     "targetTypes": {
       "qr": "QR Target",
-      "vtarget": "V Target"
+      "vtarget": "V Target",
+      "imageTarget": "Image Target",
+      "vr": "VR Target"
     },
     "info": {
       "title": "Content Details",

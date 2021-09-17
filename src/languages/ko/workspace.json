@@ -80,11 +80,14 @@
         "access": {
           "title": "IP 접근제어 설정",
           "use": "접근허용",
-          "notUsed": "미사용"
+          "notUsed": "미사용",
+          "error": "접근이 불가한 IP 주소입니다. 관리자에게 문의하세요."
         },
         "list": {
           "title": "IP 설정",
-          "placeholder": "IP 주소를 입력해 주세요."
+          "placeholder": "IP 주소를 입력해 주세요.",
+          "warning": "접근을 허용할 IP 주소를 입력해주세요.",
+          "error": "IP 형식이 아닙니다."
         }
       }
     }
