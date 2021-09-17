@@ -129,7 +129,7 @@ export default {
       console.log('package name::', this.packageName)
       const relatedApp = relatedApps.find(app => {
         console.log('installed app info ::', app)
-        return app.url === this.packageName
+        return app.id === this.packageName
       })
 
       this.isAppInstalled = relatedApp ? true : false
