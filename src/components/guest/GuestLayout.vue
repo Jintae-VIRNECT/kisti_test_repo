@@ -154,6 +154,8 @@ export default {
 
       this.packageName = aosApp.packageName
 
+      if (!navigator.getInstalledRelatedApps) return false
+
       const relatedApps = await navigator.getInstalledRelatedApps()
       const relatedApp = relatedApps.find(app => {
         return app.url === this.packageName
