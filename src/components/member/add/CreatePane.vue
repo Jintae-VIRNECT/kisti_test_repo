@@ -137,9 +137,9 @@ import workspaceService from '@/services/workspace'
 import { mapGetters } from 'vuex'
 
 import messageMixin from '@/mixins/message'
-import validationMixin from '@/mixins/validation'
+import formRulesMixin from '@/mixins/formRules'
 export default {
-  mixins: [messageMixin, validationMixin],
+  mixins: [messageMixin, formRulesMixin],
   props: ['membersTotal', 'maximum'],
   data() {
     return {
