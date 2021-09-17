@@ -16,13 +16,15 @@
       ></p>
     </section>
     <main class="guest-mobile__buttons">
-      <!-- <button
+      <!-- onpremise는 앱 실행버튼 항상 노출 -->
+      <button
         class="guest-mobile__buttons--runapp"
         @click="runApp"
-        v-if="isOnpremise"
+        v-if="isOnpremise || isAppInstalled"
       >
         {{ $t('button.run_app') }}
       </button>
+
       <button
         class="guest-mobile__buttons--playstore"
         @click="openPlayStore"
@@ -32,10 +34,10 @@
           src="~assets/image/img_google_app_store.svg"
           alt="app_store_logo"
         />
-      </button> -->
-      <button class="guest-mobile__buttons--runapp" @click="runApp">
-        {{ $t('button.run_app') }}
       </button>
+      <!-- <button class="guest-mobile__buttons--runapp" @click="runApp">
+        {{ $t('button.run_app') }}
+      </button> -->
 
       <button class="guest-mobile__buttons--download" @click="downloadApp">
         {{ $t('button.download') }}
@@ -59,6 +61,7 @@ export default {
     return {
       packageName: null,
       appUrl: null,
+      isAppInstalled: false,
     }
   },
   methods: {
@@ -110,9 +113,31 @@ export default {
         this.confirmDefault(this.$t('confirm.network_error'))
       }
     },
+    async checkAppInstalled() {
+      const aosApp = await getLatestRemoteAosAppInfo()
+      if (!aosApp) return false
+
+      this.packageName = aosApp.packageName
+
+      if (!navigator.getInstalledRelatedApps) {
+        console.log('navigator.getInstalledRelatedApps is undefined')
+        return false
+      }
+
+      const relatedApps = await navigator.getInstalledRelatedApps()
+      console.log('installed app list :', relatedApps)
+      const relatedApp = relatedApps.find(app => {
+        console.log('installed app info ::', app)
+        return app.url === this.packageName
+      })
+
+      return relatedApp ? true : false
+    },
   },
+
   async mounted() {
     await this.setAppInfo()
+    this.isAppInstalled = await this.checkAppInstalled()
   },
 }
 </script>

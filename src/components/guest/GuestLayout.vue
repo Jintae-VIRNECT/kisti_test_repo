@@ -148,35 +148,7 @@ export default {
     updateServiceMode(mode) {
       this.serviceMode = mode
     },
-    async checkAppInstalled() {
-      const aosApp = await getLatestRemoteAosAppInfo()
-      if (!aosApp) return false
 
-      this.packageName = aosApp.packageName
-
-      if (!navigator.getInstalledRelatedApps) {
-        console.log('navigator.getInstalledRelatedApps is undefined')
-        return false
-      }
-
-      const relatedApps = await navigator.getInstalledRelatedApps()
-      console.log('installed app list :', relatedApps)
-      const relatedApp = relatedApps.find(app => {
-        console.log('installed app info ::', app)
-        return app.url === this.packageName
-      })
-
-      return relatedApp ? true : false
-    },
-    async runApp() {
-      const intentLink = await getIntentLink({
-        workspaceId: this.workspaceId,
-        sessionId: this.$route.query.sessionId,
-        packageName: this.packageName,
-      })
-
-      window.open(intentLink)
-    },
     handleMaxScroll(event) {
       this.$eventBus.$emit('scroll:end', event)
     },
@@ -204,14 +176,6 @@ export default {
       this.$eventBus.$on('updateServiceMode', this.updateServiceMode)
 
       this.serviceMode = this.isMobileSize ? 'mobile' : 'web'
-
-      if (this.serviceMode === 'mobile') {
-        const isAppInstalled = await this.checkAppInstalled()
-
-        if (isAppInstalled) {
-          this.runApp()
-        }
-      }
 
       await this.initGuestMember()
     } catch (err) {
