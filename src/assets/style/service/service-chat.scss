@@ -1016,6 +1016,11 @@
     .chat-input__form {
       height: 6rem;
       padding: 1.5rem 1.6rem;
+      .chat-input__form-speech {
+        width: 2.4rem;
+        height: 2.4rem;
+        margin-right: 0.8rem;
+      }
       .chat-input__form-upload {
         width: 2.4rem;
         height: 2.4rem;
@@ -1023,7 +1028,11 @@
       }
       .chat-input__form-write {
         @include fontLevel(100);
+        color: $new_color_text_main;
         line-height: 2.9rem;
+        &::placeholder {
+          color: $new_color_text_sub_description;
+        }
       }
       .chat-input__form-remove {
         width: 2.8rem;

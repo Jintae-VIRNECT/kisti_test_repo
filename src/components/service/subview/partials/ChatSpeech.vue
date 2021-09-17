@@ -8,9 +8,9 @@
           :style="`stroke-dashoffset:${strokeDashoffset}`"
           stroke-width="2"
           fill="transparent"
-          r="1.857rem"
-          cx="1.929rem"
-          cy="1.929rem"
+          :r="isMobileSize ? '2.8rem' : '1.857rem'"
+          :cx="isMobileSize ? '3rem' : '1.929rem'"
+          :cy="isMobileSize ? '3rem' : '1.929rem'"
         />
       </svg>
       <button
