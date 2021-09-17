@@ -70,14 +70,14 @@ export default {
         this.confirmDefault(this.$t('confirm.please_allow_popup'))
       }
     },
-    runApp() {
+    async runApp() {
       if (this.isValid()) {
-        const intentLink = getIntentLink({
+        const intentLink = await getIntentLink({
           workspaceId: this.$route.query.workspaceId,
           sessionId: this.$route.query.sessionId,
           packageName: this.packageName,
         })
-
+        console.log('intentLink::', intentLink)
         window.open(intentLink)
       } else {
         return false

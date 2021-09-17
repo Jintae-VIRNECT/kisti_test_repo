@@ -154,17 +154,22 @@ export default {
 
       this.packageName = aosApp.packageName
 
-      if (!navigator.getInstalledRelatedApps) return false
+      if (!navigator.getInstalledRelatedApps) {
+        console.log('navigator.getInstalledRelatedApps is undefined')
+        return false
+      }
 
       const relatedApps = await navigator.getInstalledRelatedApps()
+      console.log('installed app list :', relatedApps)
       const relatedApp = relatedApps.find(app => {
+        console.log('installed app info ::', app)
         return app.url === this.packageName
       })
 
       return relatedApp ? true : false
     },
-    runApp() {
-      const intentLink = getIntentLink({
+    async runApp() {
+      const intentLink = await getIntentLink({
         workspaceId: this.workspaceId,
         sessionId: this.$route.query.sessionId,
         packageName: this.packageName,
