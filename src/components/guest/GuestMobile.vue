@@ -133,6 +133,7 @@ export default {
       })
 
       this.isAppInstalled = relatedApp ? true : false
+      console.log('checkedAppInfo::', this.relatedApp)
       console.log('isAppInstalled::', this.isAppInstalled)
     },
   },
