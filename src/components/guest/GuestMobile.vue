@@ -126,6 +126,7 @@ export default {
 
       const relatedApps = await navigator.getInstalledRelatedApps()
       console.log('installed app list :', relatedApps)
+      console.log('package name::', this.packageName)
       const relatedApp = relatedApps.find(app => {
         console.log('installed app info ::', app)
         return app.url === this.packageName
