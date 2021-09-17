@@ -131,13 +131,14 @@ export default {
         return app.url === this.packageName
       })
 
-      return relatedApp ? true : false
+      this.isAppInstalled = relatedApp ? true : false
+      console.log('isAppInstalled::',this.isAppInstalled)
     },
   },
 
   async mounted() {
     await this.setAppInfo()
-    this.isAppInstalled = await this.checkAppInstalled()
+    await this.checkAppInstalled()
   },
 }
 </script>
