@@ -64,7 +64,7 @@
           <span class="groupcard__leader-mobile" v-if="isLeader">Leader</span>
           <span class="room-title">{{ title ? title : room.title }}</span>
         </div>
-        <div>
+        <div class="room-member-info">
           <span class="room-leader">{{
             `${$t('common.leader')} : ${leader.nickName}`
           }}</span>
