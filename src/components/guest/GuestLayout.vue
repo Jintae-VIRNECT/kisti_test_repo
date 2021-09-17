@@ -178,6 +178,9 @@ export default {
   async created() {
     this.workspaceId = this.$route.query.workspaceId
     this.sessionId = this.$route.query.sessionId
+
+    //게스트 멤버는 할당받는 계정이 수시로 변경되므로,
+    //워크스페이스 id로 스토리지 셋팅
     window.myStorage = new MyStorage(this.workspaceId)
   },
 
