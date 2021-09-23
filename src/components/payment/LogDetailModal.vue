@@ -5,6 +5,7 @@
     width="905px"
     top="10vh"
     :before-close="handleClose"
+    :close-on-click-modal="false"
   >
     <template slot="title">
       <div class="el-dialog__title" v-if="!showCardSlip">
