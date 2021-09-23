@@ -5,6 +5,7 @@
     :visible.sync="visible"
     width="420px"
     :before-close="handleClose"
+    :close-on-click-modal="false"
   >
     <div>
       <p
