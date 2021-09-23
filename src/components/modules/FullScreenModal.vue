@@ -51,7 +51,7 @@ export default {
   right: 0;
   bottom: 0;
   left: 0;
-  z-index: 100;
+  z-index: 101;
   display: flex;
   flex-direction: column;
   background-color: $new_color_bg_sub;

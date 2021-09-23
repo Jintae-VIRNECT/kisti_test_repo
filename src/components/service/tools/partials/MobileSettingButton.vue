@@ -1,9 +1,21 @@
 <template>
-  <button class="setting-button"></button>
+  <button class="setting-button" @click="setting"></button>
 </template>
 
 <script>
-export default {}
+import { mapActions, mapGetters } from 'vuex'
+export default {
+  computed: {
+    ...mapGetters(['modalSetting']),
+  },
+  methods: {
+    ...mapActions(['showModalSetting']),
+    setting() {
+      this.$eventBus.$emit('popover:close')
+      this.showModalSetting(!this.modalSetting)
+    },
+  },
+}
 </script>
 
 <style lang="scss" scoped>
