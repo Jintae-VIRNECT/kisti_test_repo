@@ -259,6 +259,10 @@ public class ContentService {
 				//imgPath = fileUploadUrl + fileUploadPath + defaultVTarget;defaultVTarget
 				imgPath = fileDownloadService.getFilePath(fileUploadPath, V_TARGET_DEFAULT_NAME);
 			}
+			if (targetType.equals(TargetType.VR)) {
+				//imgPath = fileUploadUrl + fileUploadPath + defaultVTarget;defaultVTarget
+				imgPath = null;
+			}
 		}
 
 		//content metadata 안의 targetsize 추출(VECHOSYS-1282)
@@ -381,6 +385,9 @@ public class ContentService {
 				String uploadImgPath = fileDownloadService.getFilePath(fileUploadPath, V_TARGET_DEFAULT_NAME);
 				fileUploadService.deleteByFileUrl(target.getImgPath());
 				target.setImgPath(uploadImgPath);
+			}
+			if (updateRequest.getTargetType() == TargetType.VR) {
+				target.setImgPath(null);
 			}
 		}
 		target.setData(updateRequest.getTargetData());
@@ -878,7 +885,8 @@ public class ContentService {
 		log.info("CONTENT UPLOAD - contentUUID : {}", newContentUUID);
 		//3. 새로 생성하는 컨텐츠의 ares (기존 ares와 내용은 같다.), 파일명은 컨텐츠 식별자(contentUUID)와 동일
 		//String fileUploadPath = this.fileUploadService.uploadByFileInputStream(originFile, newContentUUID + "");
-		String uploadPath = this.fileUploadService.copyByFileObject(oldContents.getPath(), CONTENT_DIRECTORY, newContentUUID);
+		String uploadPath = this.fileUploadService.copyByFileObject(
+			oldContents.getPath(), CONTENT_DIRECTORY, newContentUUID);
 		log.info("CONTENT UPLOAD - file upload path : {}", uploadPath);
 
 		Content newContent = Content.builder()
