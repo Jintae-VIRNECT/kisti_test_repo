@@ -1,6 +1,6 @@
 <template>
   <el-dialog
-    class="member-setting-modal"
+    class="onpremise-member-setting-modal"
     :visible.sync="showMe"
     :title="$t('members.setting.title')"
     width="628px"
@@ -191,7 +191,7 @@ export default {
 </script>
 
 <style lang="scss">
-#__nuxt .member-setting-modal {
+#__nuxt .onpremise-member-setting-modal {
   .el-dialog__body {
     overflow-y: scroll;
   }
