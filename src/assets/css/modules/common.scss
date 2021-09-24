@@ -53,3 +53,9 @@ main {
     vertical-align: middle;
   }
 }
+
+button,
+input,
+input[type="submit"] {
+  border: 0;
+}
