@@ -2,7 +2,7 @@
   <el-dialog
     class="onpremise-member-setting-modal"
     :visible.sync="showMe"
-    :title="$t('members.setting.title')"
+    :title="$t('members.onpremiseSetting.title')"
     width="628px"
     top="11vh"
     :close-on-click-modal="false"
@@ -10,7 +10,7 @@
     <div>
       <h6>{{ $t('members.setting.info') }}</h6>
       <dl>
-        <dt>{{ $t('members.setting.title') }}</dt>
+        <dt>{{ $t('members.onpremiseSetting.nickname') }}</dt>
         <dd class="column-user">
           <VirnectThumbnail :size="28" :image="cdn(data.profile)" />
           <span>{{ data.nickname }}</span>

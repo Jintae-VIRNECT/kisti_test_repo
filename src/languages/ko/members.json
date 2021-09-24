@@ -205,6 +205,10 @@
         "reportedDate": "최근 보고 시간",
         "link": "바로가기"
       }
+    },
+    "onpremiseSetting": {
+      "title": "워크스페이스 멤버 설정",
+      "nickname": "워크스페이스 멤버 닉네임"
     }
   }
 }

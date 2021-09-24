@@ -205,6 +205,10 @@
         "reportedDate": "Report",
         "link": "Shortcuts"
       }
+    },
+    "onpremiseSetting": {
+      "title": "Worksapce Member Settings",
+      "nickname": "Member Nickname"
     }
   }
 }
