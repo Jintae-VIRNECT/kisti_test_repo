@@ -66,7 +66,7 @@ module.exports = async () => {
       '~@virnect': resolve(__dirname, './node_modules/@virnect'),
     },
     build: {
-      transpile: ['@virnect/platform-auth'],
+      transpile: ['@virnect/platform-auth', 'vee-validate/dist/rules'],
     },
     /**
      * env
