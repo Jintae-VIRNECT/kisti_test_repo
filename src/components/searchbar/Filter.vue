@@ -4,6 +4,7 @@
       v-bind:class="filterSelected"
       v-model="myValue"
       @change="change"
+      placeholder=""
       multiple
       collapse-tags
     >
