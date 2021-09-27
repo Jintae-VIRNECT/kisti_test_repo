@@ -14,13 +14,23 @@
         class="guest-mobile__logo--text"
         v-html="$t('guest.guest_install_mobile_app_description')"
       ></p>
+      <br />
+      <p
+        v-if="isOnpremise"
+        class="guest-mobile__logo--text"
+        v-html="$t('guest.guest_install_mobile_app_download_description')"
+      ></p>
     </section>
     <main class="guest-mobile__buttons">
       <button class="guest-mobile__buttons--runapp" @click="runAppOrOpenStore">
         {{ $t('button.run_app') }}
       </button>
 
-      <button class="guest-mobile__buttons--download" @click="downloadApp">
+      <button
+        v-if="isOnpremise"
+        class="guest-mobile__buttons--download"
+        @click="downloadApp"
+      >
         {{ $t('button.download') }}
       </button>
 
