@@ -16,32 +16,14 @@
       ></p>
     </section>
     <main class="guest-mobile__buttons">
-      <!-- onpremise는 앱 실행버튼 항상 노출 -->
-      <button
-        class="guest-mobile__buttons--runapp"
-        @click="runApp"
-        v-if="isOnpremise || isAppInstalled"
-      >
+      <button class="guest-mobile__buttons--runapp" @click="runAppOrOpenStore">
         {{ $t('button.run_app') }}
       </button>
-
-      <button
-        class="guest-mobile__buttons--playstore"
-        @click="openPlayStore"
-        v-else
-      >
-        <img
-          src="~assets/image/img_google_app_store.svg"
-          alt="app_store_logo"
-        />
-      </button>
-      <!-- <button class="guest-mobile__buttons--runapp" @click="runApp">
-        {{ $t('button.run_app') }}
-      </button> -->
 
       <button class="guest-mobile__buttons--download" @click="downloadApp">
         {{ $t('button.download') }}
       </button>
+
       <!-- @TODO ykmo 2021-09-15 모바일 반응형 정식 릴리즈 전까지 숨김 처리 -->
       <!-- <button class="guest-mobile__buttons--linkweb" @click="accessWeb">
         {{ $t('button.connect_web') }}
@@ -65,12 +47,11 @@ export default {
     }
   },
   methods: {
-    openPlayStore() {
-      const isOpend = window.open(
-        'https://play.google.com/store/apps/details?id=com.virnect.remote.mobile2',
-      )
-      if (!isOpend) {
-        this.confirmDefault(this.$t('confirm.please_allow_popup'))
+    async runAppOrOpenStore() {
+      if (this.isOnpremise || this.isAppInstalled) {
+        await this.runApp()
+      } else {
+        this.openPlayStore()
       }
     },
     async runApp() {
@@ -86,6 +67,15 @@ export default {
         return false
       }
     },
+    openPlayStore() {
+      const isOpend = window.open(
+        'https://play.google.com/store/apps/details?id=com.virnect.remote.mobile2',
+      )
+      if (!isOpend) {
+        this.confirmDefault(this.$t('confirm.please_allow_popup'))
+      }
+    },
+
     async downloadApp() {
       if (this.isValid()) {
         window.open(this.appUrl)
