@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.amazonaws.AmazonServiceException;
@@ -59,6 +60,9 @@ public class S3UploadService implements FileUploadService {
 
 	@Override
 	public void deleteByFileUrl(String fileUrl) {
+		if(!StringUtils.hasText(fileUrl)){
+			return;
+		}
 		log.info("[AWS S3 FILE DELETE] DELETE BEGIN. URL : {}", fileUrl);
 		String[] fileSplit = fileUrl.split("/");
 		String fileDir = fileSplit[fileSplit.length - 2];

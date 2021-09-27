@@ -73,7 +73,7 @@ public class ContentController {
             @ApiImplicitParam(name = "shareds", value = "공유 필터 옵션 (ALL, YES, NO)", paramType = "query", defaultValue = "ALL"),
             @ApiImplicitParam(name = "converteds", value = "컨텐츠의 공정 전환 여부(ALL, YES, NO)", dataType = "string", paramType = "query", defaultValue = "ALL"),
             @ApiImplicitParam(name = "userUUID", value = "사용자 식별자", dataType = "string", paramType = "query"),
-            @ApiImplicitParam(name = "target", value = "컨텐츠의 타겟 타입(ALL, QR, VTarget)", dataType = "string", paramType = "query", defaultValue = "ALL"),
+            @ApiImplicitParam(name = "target", value = "컨텐츠의 타겟 타입(ALL, QR, VTarget, VR)", dataType = "string", paramType = "query", defaultValue = "ALL"),
     })
     @GetMapping
     public ResponseEntity<ApiResponse<ContentInfoListResponse>> getContentList(
@@ -143,7 +143,7 @@ public class ContentController {
     @ApiOperation(value = "컨텐츠 파일 업로드", notes = "컨텐츠 식별자를 서버에서 발급하며, 식별자는 업로드 완료 후 반환됨.\n컨텐츠 파일명은 컨텐츠 식별자와 동일한 파일명으로 저장.")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "targetData", value = "타겟 데이터(URL encoding된 데이터)", dataType = "string", paramType = "form", defaultValue = "0jXPVGTgaHBUXHFoTJwi0bLcK7XxmdrCXp0%2ft9pkT%2bQ%3d"),
-            @ApiImplicitParam(name = "targetType", value = "타겟 종류(QR, VTarget)", dataType = "string", paramType = "form", defaultValue = "QR"),
+            @ApiImplicitParam(name = "targetType", value = "타겟 종류(QR, VTarget, VR)", dataType = "string", paramType = "form", defaultValue = "QR"),
             @ApiImplicitParam(name = "workspaceUUID", value = "워크스페이스 식별자", dataType = "string", paramType = "form", required = true, defaultValue = "48254844-235e-4421-b713-4ea682994a98"),
             @ApiImplicitParam(name = "content", value = "업로드 컨텐츠 파일", dataType = "__file", paramType = "form", required = true),
             @ApiImplicitParam(name = "contentType", value = "컨텐츠 종류(AUGMENTED_REALITY(default), ASSISTED_REALITY, CROCESS_PLATFORM, MIXED_REALITY)", dataType = "string", paramType = "form", required = true, defaultValue = "AUGMENTED_REALITY"),
@@ -193,7 +193,7 @@ public class ContentController {
     @ApiImplicitParams({
             @ApiImplicitParam(name = "contentUUID", value = "컨텐츠 고유 번호", dataType = "string", paramType = "path", required = true),
             @ApiImplicitParam(name = "targetData", value = "타겟 데이터(URL encoding된 데이터)", dataType = "string", paramType = "form", defaultValue = "0jXPVGTgaHBUXHFoTJwi0bLcK7XxmdrCXp0%2ft9pkT%2bQ%3d"),
-            @ApiImplicitParam(name = "targetType", value = "타겟 종류(QR, VTarget)", dataType = "string", paramType = "form", defaultValue = "QR"),
+            @ApiImplicitParam(name = "targetType", value = "타겟 종류(QR, VTarget, VR)", dataType = "string", paramType = "form", defaultValue = "QR"),
             @ApiImplicitParam(name = "content", value = "수정할 컨텐츠 ares 파일", dataType = "__file", paramType = "form", required = true),
             @ApiImplicitParam(name = "name", value = "수정할 컨텐츠 명", dataType = "string", paramType = "form", required = true, defaultValue = "update"),
             //@ApiImplicitParam(name = "metadata", value = "수정할 컨텐츠 메타데이터", dataType = "string", paramType = "form", defaultValue = "{\"contents\":{\"id\":\"b5db6bb8-9976-4865-859c-1b98e57a3dc5\",\"name\":\"SampleContent\",\"managerUUID\":\"\",\"subProcessTotal\":1,\"sceneGroups\":[{\"id\":\"5f43e519-0f18-46c1-947e-198f801bf3cc\",\"priority\":1,\"name\":\"SceneGroup\",\"jobTotal\":4,\"scenes\":[{\"id\":\"0292b07c-414a-499d-82ee-ad14e2e40dc1\",\"priority\":1,\"name\":\"Scene\",\"subJobTotal\":1,\"reportObjects\":[]},{\"id\":\"7cfda7c8-3a62-404a-9375-b30c23e45637\",\"priority\":2,\"name\":\"Scene\",\"subJobTotal\":1,\"reportObjects\":[]},{\"id\":\"285c316d-d27c-4032-9cd0-638ab9f682e3\",\"priority\":3,\"name\":\"Scene\",\"subJobTotal\":7,\"reportObjects\":[{\"id\":\"e26735f0-3575-45ef-a9d5-4017ec4b01f1\",\"items\":[{\"id\":null,\"priority\":1,\"type\":\"TOGGLE\",\"title\":\"항목1\"},{\"id\":null,\"priority\":2,\"type\":\"INPUT_FIELD\",\"title\":\"항목2\"},{\"id\":null,\"priority\":3,\"type\":\"REPORT\",\"title\":\"항목3\"}]}]},{\"id\":\"c3604d08-cf2b-43f5-90df-b6b8715537d2\",\"priority\":4,\"name\":\"Scene\",\"subJobTotal\":1,\"reportObjects\":[]}]}]}}"),

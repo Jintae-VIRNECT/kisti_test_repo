@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.google.common.io.Files;
@@ -67,6 +68,9 @@ public class MinioUploadService implements FileUploadService {
 	@Override
 	public void deleteByFileUrl(String fileUrl) {
 		log.info("[MINIO FILE DELETE] DELETE BEGIN. URL : {}", fileUrl);
+		if(!StringUtils.hasText(fileUrl)){
+			return;
+		}
 		String[] fileSplit = fileUrl.split("/");
 		String fileDir = fileSplit[fileSplit.length - 2];
 		String fileName = fileSplit[fileSplit.length - 1];
