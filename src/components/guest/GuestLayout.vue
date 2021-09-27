@@ -19,7 +19,6 @@ import HeaderSection from 'components/header/Header'
 
 import confirmMixin from 'mixins/confirm'
 
-import { getLatestRemoteAosAppInfo, getIntentLink } from 'utils/appCheck'
 import langMixin from 'mixins/language'
 import toastMixin from 'mixins/toast'
 import errorMsgMixin from 'mixins/errorMsg'
@@ -145,8 +144,9 @@ export default {
         },
       })
     },
-    updateServiceMode(mode) {
+    async updateServiceMode(mode) {
       this.serviceMode = mode
+      await this.initGuestMember()
     },
 
     handleMaxScroll(event) {
@@ -177,7 +177,9 @@ export default {
 
       this.serviceMode = this.isMobileSize ? 'mobile' : 'web'
 
-      await this.initGuestMember()
+      if (this.serviceMode === 'web') {
+        await this.initGuestMember()
+      }
     } catch (err) {
       if (err.code === ERROR.ASSIGNED_GUEST_USER_IS_NOT_ENOUGH) {
         this.showGuestExpiredAlarm()

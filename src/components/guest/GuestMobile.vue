@@ -80,7 +80,7 @@ export default {
           sessionId: this.$route.query.sessionId,
           packageName: this.packageName,
         })
-        console.log('intentLink::', intentLink)
+
         window.open(intentLink)
       } else {
         return false
@@ -120,21 +120,29 @@ export default {
       this.packageName = aosApp.packageName
 
       if (!navigator.getInstalledRelatedApps) {
-        console.log('navigator.getInstalledRelatedApps is undefined')
+        this.logger(
+          '[guest login] ',
+          'navigator.getInstalledRelatedApps is undefined',
+        )
         return false
       }
 
       const relatedApps = await navigator.getInstalledRelatedApps()
-      console.log('installed app list :', relatedApps)
-      console.log('package name::', this.packageName)
+
+      this.debug('[guest login] installed app list :: ', relatedApps)
+      this.logger('[guest login] package name ', this.packageName)
+
       const relatedApp = relatedApps.find(app => {
-        console.log('installed app info ::', app)
         return app.id === this.packageName
       })
 
+      this.debug('[guest login] installed app info :: ', relatedApp)
+
       this.isAppInstalled = relatedApp ? true : false
-      console.log('checkedAppInfo::', this.relatedApp)
-      console.log('isAppInstalled::', this.isAppInstalled)
+
+      this.isAppInstalled
+        ? this.logger('[guest login] ', 'app is installed')
+        : this.logger('[guest login] ', 'app is not installed')
     },
   },
 
