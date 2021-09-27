@@ -386,7 +386,7 @@ public class ContentService {
 				fileUploadService.deleteByFileUrl(target.getImgPath());
 				target.setImgPath(uploadImgPath);
 			}
-			if (updateRequest.getTargetType() == TargetType.VR) {
+			if (updateRequest.getTargetType().equals(TargetType.VR)) {
 				target.setImgPath(null);
 			}
 		}
