@@ -1,6 +1,6 @@
 <template>
   <header
-    class="header"
+    class="header workspace"
     :class="{ 'workspace-selected': workspace && workspace.uuid }"
   >
     <div class="header-workspace">

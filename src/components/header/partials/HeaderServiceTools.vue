@@ -12,7 +12,8 @@
 
     <speaker></speaker>
 
-    <notice v-if="isNotGuest"></notice>
+    <!-- 서비스 반응형 추가 후 props 제거 -->
+    <notice v-if="isNotGuest" fixSize="2.429rem" fixSrc tempClass></notice>
 
     <call-time></call-time>
 

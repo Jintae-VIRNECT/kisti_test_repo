@@ -43,7 +43,10 @@
   .remote-layout {
     background-color: $new_color_bg_sub; //@color 수정 필요
   }
-  .remote-wrapper {
+
+  //워크스페이스 반응형만 선반영되기 때문에 servicelayout의 remote-wrapper에 영향 받지 않기 위해 .workspace로 구분 한다
+  //서비스 반응형도 반영될 때는 제거하고 다시 header 클래스 공통 사용 가능. WorkspaceLayout.vue의 remote-wrapper의 workspace class 제거 해야함
+  .remote-wrapper.workspace {
     height: calc(100% - #{$header_m_height});
     margin-top: $header_m_height;
     padding-right: 0;
