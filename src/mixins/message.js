@@ -32,6 +32,18 @@ export default {
       })
     },
     /**
+     * success message 출력
+     * @param {string} msg 출력할 메시지
+     */
+    successMessage(msg) {
+      this.$message.success({
+        message: msg,
+        duration: 3000,
+        showClose: true,
+        dangerouslyUseHTMLString: true,
+      })
+    },
+    /**
      * 메세지 리턴 함수
      * @param {Error} e
      * @returns {string} 메시지
