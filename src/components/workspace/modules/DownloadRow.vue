@@ -86,7 +86,9 @@ export default {
           this.$eventBus.$emit('close:roominfo')
           return
         } else {
-          this.toastError(this.$t('confirm.network_error'))
+          if (err.code) {
+            this.toastError(this.$t('confirm.network_error'))
+          }
         }
       }
 
@@ -100,7 +102,9 @@ export default {
 
         downloadByURL(res)
       } catch (err) {
-        this.toastError(this.$t('confirm.network_error'))
+        if (err.code) {
+          this.toastError(this.$t('confirm.network_error'))
+        }
       }
     },
   },

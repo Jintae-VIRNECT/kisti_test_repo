@@ -69,7 +69,9 @@ export default {
           if (err === 'popup_blocked') {
             this.confirmDefault(this.$t('confirm.please_allow_popup'))
           } else {
-            this.toastError(this.$t('confirm.network_error'))
+            if (err.code) {
+              this.toastError(this.$t('confirm.network_error'))
+            }
           }
         }
       } else {
@@ -84,7 +86,9 @@ export default {
             })
             await this.get(res.name, res.url)
           } catch (err) {
-            this.toastError(this.$t('confirm.network_error'))
+            if (err.code) {
+              this.toastError(this.$t('confirm.network_error'))
+            }
           }
         }
         this.zip.generateAsync({ type: 'blob' }).then(content => {
