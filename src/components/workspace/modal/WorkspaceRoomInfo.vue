@@ -186,34 +186,22 @@ export default {
       this.$emit('update:visible', false)
     },
     async update(params) {
+      const isUpdate =
+        'image' in params &&
+        params['image'] !== null &&
+        params['image'] !== 'default'
+
+      const isDelete =
+        'image' in params &&
+        this.room.profile !== 'default' &&
+        (params['image'] === 'default' || !params['image'])
+
       try {
-        if (
-          'image' in params &&
-          params['image'] !== null &&
-          params['image'] !== 'default'
-        ) {
-          const profile = await updateRoomProfile({
-            profile: params.image,
-            sessionId: params.sessionId,
-            uuid: this.account.uuid,
-            workspaceId: this.workspace.uuid,
-          })
-
-          if (profile.usedStoragePer >= 90) {
-            this.toastError(this.$t('alarm.file_storage_about_to_limit'))
-          }
-
+        if (isUpdate) {
+          await this.updateProfile(params)
           delete params['image']
-          this.$emit('updatedInfo', profile)
-        } else if (
-          'image' in params &&
-          this.room.profile !== 'default' &&
-          (params['image'] === 'default' || !params['image'])
-        ) {
-          await removeRoomProfile({
-            sessionId: params.sessionId,
-            workspaceId: this.workspace.uuid,
-          })
+        } else if (isDelete) {
+          await this.deleteProfile(params)
         }
         const updateRtn = await updateRoomInfo(params)
         if (updateRtn) {
@@ -228,6 +216,26 @@ export default {
           this.showErrorToast(err.code)
         }
       }
+    },
+    async updateProfile(params) {
+      const profile = await updateRoomProfile({
+        profile: params.image,
+        sessionId: params.sessionId,
+        uuid: this.account.uuid,
+        workspaceId: this.workspace.uuid,
+      })
+
+      if (profile.usedStoragePer >= 90) {
+        this.toastError(this.$t('alarm.file_storage_about_to_limit'))
+      }
+
+      this.$emit('updatedInfo', profile)
+    },
+    async deleteProfile(params) {
+      await removeRoomProfile({
+        sessionId: params.sessionId,
+        workspaceId: this.workspace.uuid,
+      })
     },
     kickoutConfirm(id) {
       this.confirmCancel(

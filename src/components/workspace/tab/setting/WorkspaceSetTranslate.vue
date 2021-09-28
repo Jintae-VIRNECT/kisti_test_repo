@@ -129,47 +129,46 @@ export default {
   },
   watch: {
     useTranslate(flag) {
-      this.setTranslateFlag(flag)
+      this.updateTranslateSetting({
+        item: 'flag',
+        value: flag,
+      })
     },
-    transCode(language) {
-      this.setTranslateCode(language)
+    transCode(code) {
+      this.updateTranslateSetting({
+        item: 'code',
+        value: code,
+      })
     },
-    transMultiple(flag) {
-      this.setTranslateMultiple(flag)
+    transMultiple(multiple) {
+      this.updateTranslateSetting({
+        item: 'multiple',
+        value: multiple,
+      })
     },
-    sttSync(flag) {
-      this.setSttSync(flag)
+    sttSync(sttSync) {
+      this.updateTranslateSetting({
+        item: 'sttSync',
+        value: sttSync,
+      })
     },
-    ttsAllow(flag) {
-      this.setTtsAllow(flag)
+    ttsAllow(ttsAllow) {
+      this.updateTranslateSetting({
+        item: 'ttsAllow',
+        value: ttsAllow,
+      })
     },
   },
   methods: {
     ...mapActions(['setTranslate']),
+    updateTranslateSetting({ target = 'translate', item, value }) {
+      this.setTranslate({
+        [item]: value,
+      })
+      window.myStorage.setItemPiece(target, item, value)
+    },
     disableTranslate() {
       this.toastDefault(this.$t('workspace.setting_translate_disable_message'))
-    },
-    setTranslateFlag(flag) {
-      this.setTranslate({
-        flag,
-      })
-      window.myStorage.setItemPiece('translate', 'flag', flag)
-    },
-    setTranslateCode(code) {
-      this.setTranslate({ code })
-      window.myStorage.setItemPiece('translate', 'code', code)
-    },
-    setTranslateMultiple(multiple) {
-      this.setTranslate({ multiple })
-      window.myStorage.setItemPiece('translate', 'multiple', multiple)
-    },
-    setSttSync(sttSync) {
-      this.setTranslate({ sttSync })
-      window.myStorage.setItemPiece('translate', 'sttSync', sttSync)
-    },
-    setTtsAllow(ttsAllow) {
-      this.setTranslate({ ttsAllow })
-      window.myStorage.setItemPiece('translate', 'ttsAllow', ttsAllow)
     },
   },
   created() {
