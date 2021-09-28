@@ -1,14 +1,13 @@
 <template>
   <div class="mobile-header-service">
     <div class="mobile-header-info">
-      <h1>{{roomInfo.title}}</h1>
-      <h1>{{`${min}:${sec}`}}</h1>
+      <h1>{{ roomInfo.title }}</h1>
+      <h1>{{ `${min}:${sec}` }}</h1>
     </div>
 
     <div class="mobile-header-tools">
       <chat></chat>
-      <button class="mobile-header-tools__leave" @click.once="leave">
-      </button>
+      <button class="mobile-header-tools__leave" @click.once="leave"></button>
     </div>
   </div>
 </template>
@@ -21,25 +20,25 @@ export default {
   components: {
     Chat,
   },
-  data(){
-    return{
-      timer : null,
+  data() {
+    return {
+      timer: null,
       time: 0,
       min: '00',
       sec: '00',
     }
   },
-  computed:{
-    ...mapGetters(['roomInfo'])
+  computed: {
+    ...mapGetters(['roomInfo']),
   },
-  methods:{
-    startTimer(){
-      this.timer = setInterval(()=>{
+  methods: {
+    startTimer() {
+      this.timer = setInterval(() => {
         this.time++
-        const min = parseInt(this.time/60)
-        this.min = min < 10 ? '0'+min :min
-        const sec = this.time%60
-        this.sec = sec < 10 ? '0'+sec : sec
+        const min = parseInt(this.time / 60)
+        this.min = min < 10 ? '0' + min : min
+        const sec = this.time % 60
+        this.sec = sec < 10 ? '0' + sec : sec
       }, 1000)
     },
     leave() {
@@ -51,7 +50,7 @@ export default {
       }
     },
   },
-  mounted(){
+  mounted() {
     this.startTimer()
   },
   beforeDestroy() {
