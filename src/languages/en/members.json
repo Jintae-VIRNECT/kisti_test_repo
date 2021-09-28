@@ -174,7 +174,8 @@
         "idDuplicated": "This ID is already registered, please enter a different ID.",
         "notCheckId": "There are accounts that did not check availability.",
         "notHaveAnyPlan": "You need to allocate at least one plan to the account you are creating.",
-        "fail": "Failed to add a member, please try again later. If a same problem occurs, please contact a network adminitrator."
+        "fail": "Failed to add a member, please try again later. If a same problem occurs, please contact a network adminitrator.",
+        "usableId": "It's a usable ID."
       }
     },
     "guest": {
