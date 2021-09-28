@@ -52,7 +52,7 @@ export default {
   data() {
     return {
       timer: null,
-      circumference: 52 * Math.PI,
+      //circumference: 60 * Math.PI,
       strokeDashoffset: 0,
       progress: -1,
       chatText: '',
@@ -72,6 +72,10 @@ export default {
     },
     sendActive() {
       return this.chatText && this.chatText.length > 0 && this.progress === -1
+    },
+    circumference() {
+      if (this.isMobileSize) return 60 * Math.PI
+      else return 52 * Math.PI
     },
   },
   methods: {
