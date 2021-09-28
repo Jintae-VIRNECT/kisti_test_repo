@@ -186,7 +186,6 @@ export default {
         this.initMyStorage(authInfo.account.uuid)
         this.getSavedStorageDatas()
 
-        this.savedStorageDatas(authInfo.account.uuid)
         const res = await getLicense({ userId: authInfo.account.uuid })
         const myPlans = res.myPlanInfoList.filter(
           plan => plan.planProduct === 'REMOTE',
