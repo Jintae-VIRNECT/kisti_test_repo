@@ -1,18 +1,5 @@
 package com.virnect.workspace.infra.file;
 
-import com.virnect.workspace.exception.WorkspaceException;
-import com.virnect.workspace.global.error.ErrorCode;
-import io.minio.*;
-import io.minio.errors.*;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.io.FilenameUtils;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Profile;
-import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
-
-import javax.activation.MimetypesFileTypeMap;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -20,6 +7,37 @@ import java.io.InputStream;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.util.UUID;
+
+import javax.activation.MimetypesFileTypeMap;
+
+import org.apache.commons.io.FilenameUtils;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Profile;
+import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
+import org.springframework.web.multipart.MultipartFile;
+
+import io.minio.BucketExistsArgs;
+import io.minio.MakeBucketArgs;
+import io.minio.MinioClient;
+import io.minio.ObjectStat;
+import io.minio.ObjectWriteResponse;
+import io.minio.PutObjectArgs;
+import io.minio.RemoveObjectArgs;
+import io.minio.StatObjectArgs;
+import io.minio.errors.ErrorResponseException;
+import io.minio.errors.InsufficientDataException;
+import io.minio.errors.InternalException;
+import io.minio.errors.InvalidBucketNameException;
+import io.minio.errors.InvalidResponseException;
+import io.minio.errors.RegionConflictException;
+import io.minio.errors.ServerException;
+import io.minio.errors.XmlParserException;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+
+import com.virnect.workspace.exception.WorkspaceException;
+import com.virnect.workspace.global.error.ErrorCode;
 
 /**
  * Project: PF-Workspace
@@ -33,178 +51,183 @@ import java.util.UUID;
 @Service
 @RequiredArgsConstructor
 public class MinioFileService implements FileService {
-    private final MinioClient minioClient;
+	private final MinioClient minioClient;
 
-    @Value("${minio.bucket}")
-    private String bucket;
+	@Value("${minio.bucket}")
+	private String bucket;
 
-    @Value("${minio.resource}")
-    private String resource;
+	@Value("${minio.prefix}")
+	private String prefix;
 
-    @Value("${minio.extension}")
-    private String allowExtension;
+	@Value("${minio.extension}")
+	private String allowExtension;
 
-    @Override
-    public String upload(MultipartFile file) throws IOException {
-        String extension = FilenameUtils.getExtension(file.getOriginalFilename()).toLowerCase();
+	@Override
+	public String upload(MultipartFile file, String workspaceUUID) throws IOException {
+		String extension = FilenameUtils.getExtension(file.getOriginalFilename());
+		String uniqueFileName = UUID.randomUUID().toString().replace("-", "") + "." + extension;
+		String objectName = String.format("workspace/%s/profile/%s", workspaceUUID, uniqueFileName);
 
-        if (!allowExtension.contains(extension)) {
-            //log.error("Not Allow File Extension. Request File Extension >> {}", extension);
-            //throw new WorkspaceException(ErrorCode.ERR_UNEXPECTED_SERVER_ERROR);
-        }
+		PutObjectArgs putObjectArgs = PutObjectArgs.builder()
+			.bucket(bucket)
+			.object(objectName)
+			.contentType(file.getContentType())
+			.stream(file.getInputStream(), file.getSize(), -1)
+			.build();
+		log.info("[FILE UPLOAD] Upload File Info >> bucket : {}, object : {}, fileSize(byte) : {}",
+			bucket, objectName,
+			file.getSize()
+		);
+		try {
+			bucketExistCheck();
+			ObjectWriteResponse response = minioClient.putObject(putObjectArgs);
+			String uploadPath = minioClient.getObjectUrl(bucket, objectName);
+			log.info("[FILE UPLOAD] Upload Result path : [{}],", uploadPath);
+			return uploadPath;
+		} catch (ErrorResponseException | InsufficientDataException | InternalException | InvalidBucketNameException | InvalidKeyException | InvalidResponseException | NoSuchAlgorithmException |
+			ServerException | XmlParserException exception) {
+			log.error(exception.getClass().toString());
+			log.error(exception.getMessage());
+			throw new WorkspaceException(ErrorCode.ERR_UNEXPECTED_SERVER_ERROR);
+		}
 
-        String uniqueFileName = UUID.randomUUID().toString().replace("-", "") + "." + extension;
-        String objectName = resource + "/" + uniqueFileName;
+	}
 
-        PutObjectArgs putObjectArgs = PutObjectArgs.builder()
-                .bucket(bucket)
-                .object(objectName)
-                .contentType(file.getContentType())
-                .stream(file.getInputStream(), file.getSize(), -1)
-                .build();
-        log.info("[FILE UPLOAD] Upload File Info >> bucket : {}, resource : {}, filename : {}, fileSize(byte) : {}",
-                bucket, resource,
-                uniqueFileName, file.getSize()
-        );
-        try {
-            bucketExistCheck(bucket);
-            ObjectWriteResponse response = minioClient.putObject(putObjectArgs);
-            String uploadPath = minioClient.getObjectUrl(bucket, objectName);
-            log.info("[FILE UPLOAD] Upload Result path : [{}],", uploadPath);
-            return uploadPath;
-        } catch (ErrorResponseException | InsufficientDataException | InternalException | InvalidBucketNameException | InvalidKeyException | InvalidResponseException | NoSuchAlgorithmException |
-                ServerException | XmlParserException exception) {
-            log.error(exception.getClass().toString());
-            log.error(exception.getMessage());
-            throw new WorkspaceException(ErrorCode.ERR_UNEXPECTED_SERVER_ERROR);
-        }
+	@Override
+	public void delete(String fileUrl) {
+		if (!StringUtils.hasText(fileUrl)) {
+			return;
+		}
+		String[] fileSplit = fileUrl.split(prefix);
+		String objectName = fileSplit[fileSplit.length - 1];
 
-    }
+		RemoveObjectArgs removeObjectArgs = RemoveObjectArgs.builder()
+			.bucket(bucket)
+			.object(objectName)
+			.build();
 
-    @Override
-    public void delete(String fileUrl) {
-        String fileName = FilenameUtils.getName(fileUrl);
-        String objectName = resource + "/" + fileName;
-        RemoveObjectArgs removeObjectArgs = RemoveObjectArgs.builder()
-                .bucket(bucket)
-                .object(objectName)
-                .build();
+		try {
+			if (fileUrl.contains(DefaultFile.WORKSPACE_PROFILE_IMG.getFileName())) {
+				log.info(
+					"[FILE DELETE] Not Delete Default File Info >> bucket : {}, object : {}", bucket, objectName
+				);
+			} else {
+				minioClient.removeObject(removeObjectArgs);
+				log.info(
+					"[FILE DELETE] Delete File Info >> bucket : {}, object : {}", bucket, objectName
+				);
+			}
 
-        try {
-            if (fileUrl.contains("workspace-profile")) {
-                log.info("[FILE DELETE] Not Delete Default File Info >> bucket : {}, resource : {}, filename : {}", bucket, resource, fileName);
-            } else {
-                minioClient.removeObject(removeObjectArgs);
-                log.info("[FILE DELETE] Delete File Info >> bucket : {}, resource : {}, filename : {}", bucket, resource, fileName);
-            }
+		} catch (ErrorResponseException | InsufficientDataException | InternalException | InvalidBucketNameException | InvalidKeyException | InvalidResponseException | IOException |
+			NoSuchAlgorithmException | ServerException | XmlParserException exception) {
+			log.error(exception.getMessage());
+			throw new WorkspaceException(ErrorCode.ERR_UNEXPECTED_SERVER_ERROR);
+		}
+	}
 
-        } catch (ErrorResponseException | InsufficientDataException | InternalException | InvalidBucketNameException | InvalidKeyException | InvalidResponseException | IOException |
-                NoSuchAlgorithmException | ServerException | XmlParserException exception) {
-            log.error(exception.getMessage());
-            throw new WorkspaceException(ErrorCode.ERR_UNEXPECTED_SERVER_ERROR);
-        }
-    }
+	@Override
+	public String getDefaultFileUrl(String fileName) {
+		String objectName = String.format("workspace/%s", fileName);
+		log.info("[FILE FIND] get file url request. file name : {}", fileName);
+		//1. 버킷 확인
+		bucketExistCheck();
 
-    @Override
-    public String getFileUrl(String fileName) {
-        String objectName = resource + "/" + fileName;
-        log.info("[FILE FIND] get file url request. file name : {}", fileName);
-        //1. 버킷 확인
-        bucketExistCheck(bucket);
+		//2. object 존재 확인
+		boolean objectExist = objectExistCheck(objectName);
 
-        //2. object 존재 확인
-        boolean objectExist = objectExistCheck(bucket, fileName);
+		//3. metadata 경로에 있는 default 파일의 경우 없으면 올린다.
+		File file = new File("metadata/" + fileName);
 
-        //3. metadata 경로에 있는 default 파일의 경우 없으면 올린다.
-        File file = new File("metadata/" + fileName);
+		if (!objectExist && !file.exists()) {
+			throw new WorkspaceException(ErrorCode.ERR_NOT_FOUND_FILE);
+		}
 
-        if (!objectExist && !file.exists()) {
-            throw new WorkspaceException(ErrorCode.ERR_NOT_FOUND_FILE);
-        }
+		if (!objectExist && file.exists()) {
+			MimetypesFileTypeMap mimeTypesMap = new MimetypesFileTypeMap();
+			String mimeType = mimeTypesMap.getContentType(file);
+			try (InputStream inputStream = new FileInputStream(file)) {
+				long fileSize = file.length();
+				PutObjectArgs putObjectArgs = PutObjectArgs.builder()
+					.bucket(bucket)
+					.object(objectName)
+					.contentType(mimeType)
+					.stream(inputStream, file.length(), -1)
+					.build();
+				log.info(
+					"[FILE FIND] Default file upload Request >> bucket : {}, object : {}, size : {}, content-type : {}",
+					bucket, objectName, fileSize, mimeType
+				);
+				minioClient.putObject(putObjectArgs);
+				return getObjectUrl(bucket, objectName);
+			} catch (ErrorResponseException | InsufficientDataException | InternalException | InvalidBucketNameException | InvalidKeyException | InvalidResponseException | IOException |
+				NoSuchAlgorithmException | ServerException | XmlParserException e) {
+				log.error(e.getMessage());
+				log.error(e.getClass().toString());
+				throw new WorkspaceException(ErrorCode.ERR_UNEXPECTED_SERVER_ERROR);
+			}
+		}
+		return getObjectUrl(bucket, objectName);
+	}
 
-        if (!objectExist && file.exists()) {
-            MimetypesFileTypeMap mimeTypesMap = new MimetypesFileTypeMap();
-            String mimeType = mimeTypesMap.getContentType(file);
-            try (InputStream inputStream = new FileInputStream(file)) {
-                long fileSize = file.length();
-                PutObjectArgs putObjectArgs = PutObjectArgs.builder()
-                        .bucket(bucket)
-                        .object(objectName)
-                        .contentType(mimeType)
-                        .stream(inputStream, file.length(), -1)
-                        .build();
-                log.info(
-                        "[FILE FIND] Default file upload Request >> bucket : {}, resource : {}, filename : {}, size : {}, content-type : {}",
-                        bucket, resource, fileName, fileSize, mimeType
-                );
-                minioClient.putObject(putObjectArgs);
-                return getObjectUrl(bucket, objectName);
-            } catch (ErrorResponseException | InsufficientDataException | InternalException | InvalidBucketNameException | InvalidKeyException | InvalidResponseException | IOException |
-                    NoSuchAlgorithmException | ServerException | XmlParserException e) {
-                log.error(e.getMessage());
-                log.error(e.getClass().toString());
-                throw new WorkspaceException(ErrorCode.ERR_UNEXPECTED_SERVER_ERROR);
-            }
-        }
-        return getObjectUrl(bucket, objectName);
-    }
+	private String getObjectUrl(String bucket, String objectName) {
+		try {
+			return minioClient.getObjectUrl(bucket, objectName);
+		} catch (ErrorResponseException | InsufficientDataException | InternalException | InvalidBucketNameException | InvalidKeyException | InvalidResponseException | IOException |
+			NoSuchAlgorithmException | ServerException | XmlParserException exception) {
+			log.error(exception.getMessage());
+			log.error(exception.getClass().toString());
+			throw new WorkspaceException(ErrorCode.ERR_UNEXPECTED_SERVER_ERROR);
+		}
 
-    private String getObjectUrl(String bucket, String objectName) {
-        try {
-            return minioClient.getObjectUrl(bucket, objectName);
-        } catch (ErrorResponseException | InsufficientDataException | InternalException | InvalidBucketNameException | InvalidKeyException | InvalidResponseException | IOException |
-                NoSuchAlgorithmException | ServerException | XmlParserException exception) {
-            log.error(exception.getMessage());
-            log.error(exception.getClass().toString());
-            throw new WorkspaceException(ErrorCode.ERR_UNEXPECTED_SERVER_ERROR);
-        }
+	}
 
-    }
+	private boolean objectExistCheck(String objectName) {
+		try {
+			StatObjectArgs statObjectArgs = StatObjectArgs.builder()
+				.bucket(bucket)
+				.object(objectName)
+				.build();
+			ObjectStat objectStat = minioClient.statObject(statObjectArgs);
+			log.info(
+				"[FILE FIND] Find file Info >> bucket : {}, object : {}, size : {}, content-type : {}", bucket,
+				objectName, objectStat.length(), objectStat.contentType()
+			);
+			return true;
+		} catch (ErrorResponseException | IllegalArgumentException | InsufficientDataException |
+			InternalException | InvalidBucketNameException | InvalidKeyException |
+			InvalidResponseException | IOException | NoSuchAlgorithmException | ServerException |
+			XmlParserException e) {
+			log.warn(e.getMessage());
+			return false;
+		}
+	}
 
-    private boolean objectExistCheck(String bucket, String fileName) {
-        try {
-            String objectName = resource + "/" + fileName;
-            ObjectStat objectStat = minioClient.statObject(bucket, objectName);
-            log.info(
-                    "[FILE FIND] Find file Info >> bucket : {}, resource : {}, filename : {}, size : {}, content-type : {}",
-                    objectStat.bucketName(),
-                    resource, fileName, objectStat.length(), objectStat.contentType()
-            );
-            return true;
-        } catch (ErrorResponseException | IllegalArgumentException | InsufficientDataException |
-                InternalException | InvalidBucketNameException | InvalidKeyException |
-                InvalidResponseException | IOException | NoSuchAlgorithmException | ServerException |
-                XmlParserException e) {
-            log.warn(e.getMessage());
-            return false;
-        }
-    }
+	private void bucketExistCheck() {
+		try {
+			BucketExistsArgs bucketExistsArgs = BucketExistsArgs.builder().bucket(bucket).build();
+			boolean bucketExists = minioClient.bucketExists(bucketExistsArgs);
+			if (!bucketExists) {
+				MakeBucketArgs makeBucketArgs = MakeBucketArgs.builder()
+					.objectLock(false)
+					.bucket(bucket)
+					.build();
+				minioClient.makeBucket(makeBucketArgs);
+				log.info(
+					"[BUCKET CREATE] Create Bucket success Info >> bucket : {}, objectLock >> {}",
+					makeBucketArgs.bucket(),
+					makeBucketArgs.objectLock()
+				);
+			}
+		} catch (ErrorResponseException | InsufficientDataException | InternalException | InvalidBucketNameException | InvalidKeyException | InvalidResponseException | IOException | NoSuchAlgorithmException | ServerException | XmlParserException | RegionConflictException e) {
+			log.error(
+				"[BUCKET CREATE] Create Bucket fail Info >> bucket : {}", bucket
+			);
+			log.error(e.getMessage());
+			log.error(e.getClass().toString());
+			throw new WorkspaceException(ErrorCode.ERR_UNEXPECTED_SERVER_ERROR);
 
-    private void bucketExistCheck(String bucketName) {
-        try {
-            boolean bucketExists = minioClient.bucketExists(bucketName);
-            if (!bucketExists) {
-                MakeBucketArgs makeBucketArgs = MakeBucketArgs.builder()
-                        .objectLock(false)
-                        .bucket(bucketName)
-                        .build();
-                minioClient.makeBucket(makeBucketArgs);
-                log.info(
-                        "[BUCKET CREATE] Create Bucket success Info >> bucket : {}, objectLock >> {}",
-                        makeBucketArgs.bucket(),
-                        makeBucketArgs.objectLock()
-                );
-            }
-        } catch (ErrorResponseException | InsufficientDataException | InternalException | InvalidBucketNameException | InvalidKeyException | InvalidResponseException | IOException | NoSuchAlgorithmException | ServerException | XmlParserException | RegionConflictException e) {
-            log.error(
-                    "[BUCKET CREATE] Create Bucket fail Info >> bucket : {}", bucketName
-            );
-            log.error(e.getMessage());
-            log.error(e.getClass().toString());
-            throw new WorkspaceException(ErrorCode.ERR_UNEXPECTED_SERVER_ERROR);
+		}
 
-        }
-
-    }
+	}
 
 }

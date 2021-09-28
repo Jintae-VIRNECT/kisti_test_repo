@@ -1,18 +1,21 @@
 package com.virnect.workspace;
 
-import com.virnect.workspace.dao.workspace.WorkspaceSettingRepository;
-import com.virnect.workspace.domain.workspace.WorkspaceSetting;
-import com.virnect.workspace.infra.file.FileService;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import java.util.List;
+import java.util.Optional;
+
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.context.annotation.Profile;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.Optional;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+
+import com.virnect.workspace.dao.workspace.WorkspaceSettingRepository;
+import com.virnect.workspace.domain.workspace.WorkspaceSetting;
+import com.virnect.workspace.infra.file.DefaultFile;
+import com.virnect.workspace.infra.file.FileService;
 
 /**
  * Project: PF-Workspace
@@ -36,10 +39,10 @@ public class WorkspaceRunner implements ApplicationRunner {
 	 */
 	@Override
 	public void run(ApplicationArguments args) {
-        String workspaceProfile = fileService.getFileUrl("workspace-profile.png");
-        String logoDefault = fileService.getFileUrl("virnect-default-logo.png");
-		String logoWhite = fileService.getFileUrl("virnect-white-logo.png");
-		String favicon = fileService.getFileUrl("virnect-default-favicon.ico");
+		String workspaceProfile = fileService.getDefaultFileUrl(DefaultFile.WORKSPACE_PROFILE_IMG.getFileName());
+		String logoDefault = fileService.getDefaultFileUrl(DefaultFile.WORKSPACE_DEFAULT_LOGO_IMG.getFileName());
+		String logoWhite = fileService.getDefaultFileUrl(DefaultFile.WORKSPACE_WHITE_LOGO_IMG.getFileName());
+		String favicon = fileService.getDefaultFileUrl(DefaultFile.WORKSPACE_DEFAULT_FAVICON.getFileName());
 		List<WorkspaceSetting> workspaceSettingList = workspaceSettingRepository.findAll();
 		if (workspaceSettingList.isEmpty()) {
 			WorkspaceSetting newWorkspaceSetting = WorkspaceSetting.builder()

@@ -111,8 +111,8 @@ minio:
   secret-key: "Qjsprxm13@$"
   server: "https://192.168.6.3:2838"
   bucket: "virnect-platform"
-  resource: "workspace/profile"
   extension: "gif,jpg,jpeg,png"
+  prefix: "https://192.168.6.3:2838/virnect-platform/"
 
 account-server:
   ribbon:
@@ -123,3 +123,19 @@ license-server:
 message-server:
   ribbon:
     listOfServers: http://192.168.6.3:8084
+
+
+## AWS Storage
+cloud:
+  aws:
+    credentials:
+      access-key: AKIARQGLJD3UCFBXNUWQ
+      secret-key: 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
+    region:
+      auto: true
+    s3:
+      prefix: "https://virnect-platform-qa.s3.ap-northeast-2.amazonaws.com/"
+      bucket:
+        name: "virnect-platform-qa"
+        extension: "gif,jpg,jpeg,png"
+

@@ -1,14 +1,44 @@
 package com.virnect.workspace.application.workspace;
 
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.List;
+
+import org.apache.commons.io.FilenameUtils;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.context.annotation.Profile;
+import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
+
+import lombok.extern.slf4j.Slf4j;
+
 import com.virnect.workspace.application.license.LicenseRestService;
 import com.virnect.workspace.application.user.UserRestService;
 import com.virnect.workspace.dao.history.HistoryRepository;
 import com.virnect.workspace.dao.setting.SettingRepository;
 import com.virnect.workspace.dao.setting.WorkspaceCustomSettingRepository;
-import com.virnect.workspace.dao.workspace.*;
-import com.virnect.workspace.domain.workspace.*;
+import com.virnect.workspace.dao.workspace.WorkspacePermissionRepository;
+import com.virnect.workspace.dao.workspace.WorkspaceRepository;
+import com.virnect.workspace.dao.workspace.WorkspaceRoleRepository;
+import com.virnect.workspace.dao.workspace.WorkspaceSettingRepository;
+import com.virnect.workspace.dao.workspace.WorkspaceUserPermissionRepository;
+import com.virnect.workspace.dao.workspace.WorkspaceUserRepository;
+import com.virnect.workspace.domain.workspace.Role;
+import com.virnect.workspace.domain.workspace.Workspace;
+import com.virnect.workspace.domain.workspace.WorkspacePermission;
+import com.virnect.workspace.domain.workspace.WorkspaceRole;
+import com.virnect.workspace.domain.workspace.WorkspaceSetting;
+import com.virnect.workspace.domain.workspace.WorkspaceUser;
+import com.virnect.workspace.domain.workspace.WorkspaceUserPermission;
 import com.virnect.workspace.dto.WorkspaceInfoDTO;
-import com.virnect.workspace.dto.onpremise.*;
+import com.virnect.workspace.dto.onpremise.WorkspaceCustomSettingResponse;
+import com.virnect.workspace.dto.onpremise.WorkspaceFaviconUpdateRequest;
+import com.virnect.workspace.dto.onpremise.WorkspaceFaviconUpdateResponse;
+import com.virnect.workspace.dto.onpremise.WorkspaceLogoUpdateRequest;
+import com.virnect.workspace.dto.onpremise.WorkspaceLogoUpdateResponse;
+import com.virnect.workspace.dto.onpremise.WorkspaceTitleUpdateRequest;
+import com.virnect.workspace.dto.onpremise.WorkspaceTitleUpdateResponse;
 import com.virnect.workspace.dto.request.WorkspaceCreateRequest;
 import com.virnect.workspace.dto.rest.UserInfoRestResponse;
 import com.virnect.workspace.event.cache.UserWorkspacesDeleteEvent;
@@ -20,18 +50,8 @@ import com.virnect.workspace.global.constant.Permission;
 import com.virnect.workspace.global.constant.UUIDType;
 import com.virnect.workspace.global.error.ErrorCode;
 import com.virnect.workspace.global.util.RandomStringTokenUtil;
+import com.virnect.workspace.infra.file.DefaultFile;
 import com.virnect.workspace.infra.file.FileService;
-import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.io.FilenameUtils;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.context.annotation.Profile;
-import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
-
-import java.io.IOException;
-import java.util.Arrays;
-import java.util.List;
 
 /**
  * Project: PF-Workspace
@@ -91,20 +111,20 @@ public class OffWorkspaceServiceImpl extends WorkspaceService {
             throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_CREATE_MAX_CREATE);
         }
         //워크스페이스 생성
-        String uuid = RandomStringTokenUtil.generate(UUIDType.UUID_WITH_SEQUENCE, 0);
+        String workspaceId = RandomStringTokenUtil.generate(UUIDType.UUID_WITH_SEQUENCE, 0);
         String pinNumber = RandomStringTokenUtil.generate(UUIDType.PIN_NUMBER, 0);
         String profile;
         if (workspaceCreateRequest.getProfile() != null) {
             try {
-                profile = fileUploadService.upload(workspaceCreateRequest.getProfile());
+                profile = fileUploadService.upload(workspaceCreateRequest.getProfile(), workspaceId);
             } catch (IOException e) {
                 throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_CREATE_INVALID_PROFILE);
             }
         } else {
-            profile = fileUploadService.getFileUrl("workspace-profile.png");
+            profile = fileUploadService.getDefaultFileUrl(DefaultFile.WORKSPACE_PROFILE_IMG.getFileName());
         }
         Workspace newWorkspace = Workspace.builder()
-                .uuid(uuid)
+                .uuid(workspaceId)
                 .userId(workspaceCreateRequest.getUserId())
                 .name(workspaceCreateRequest.getName())
                 .description(workspaceCreateRequest.getDescription())
@@ -144,7 +164,7 @@ public class OffWorkspaceServiceImpl extends WorkspaceService {
 
         //2. 파비콘 확장자, 사이즈 체크
         if (workspaceFaviconUpdateRequest.getFavicon() == null) {
-            String favicon = fileUploadService.getFileUrl("virnect-default-favicon.ico");
+            String favicon = fileUploadService.getDefaultFileUrl(DefaultFile.WORKSPACE_DEFAULT_FAVICON.getFileName());
             workspaceSetting.setFavicon(favicon);
             workspaceSettingRepository.save(workspaceSetting);
             WorkspaceFaviconUpdateResponse workspaceFaviconUpdateResponse = new WorkspaceFaviconUpdateResponse();
@@ -159,7 +179,7 @@ public class OffWorkspaceServiceImpl extends WorkspaceService {
 
         //3. 파비콘 업로드
         try {
-            String favicon = fileUploadService.upload(workspaceFaviconUpdateRequest.getFavicon());
+            String favicon = fileUploadService.upload(workspaceFaviconUpdateRequest.getFavicon(), workspaceId);
             workspaceSetting.setFavicon(favicon);
             workspaceSettingRepository.save(workspaceSetting);
 
@@ -216,7 +236,7 @@ public class OffWorkspaceServiceImpl extends WorkspaceService {
             checkFileExtension(defaultExtension, allowExtension);
 
             try {
-                String logo = fileUploadService.upload(workspaceLogoUpdateRequest.getDefaultLogo());
+                String logo = fileUploadService.upload(workspaceLogoUpdateRequest.getDefaultLogo(), workspaceId);
                 workspaceSetting.setDefaultLogo(logo);
             } catch (IOException e) {
                 log.error("[UPDATE WORKSPACE LOGO] Logo Image upload fail. Error message >> [{}]", e.getMessage());
@@ -225,7 +245,7 @@ public class OffWorkspaceServiceImpl extends WorkspaceService {
                 return workspaceLogoUpdateResponse;
             }
         } else {
-            String logoDefault = fileUploadService.getFileUrl("virnect-default-logo.png");
+            String logoDefault = fileUploadService.getDefaultFileUrl(DefaultFile.WORKSPACE_DEFAULT_LOGO_IMG.getFileName());
             workspaceSetting.setDefaultLogo(logoDefault);
             workspaceSettingRepository.save(workspaceSetting);
 
@@ -239,7 +259,7 @@ public class OffWorkspaceServiceImpl extends WorkspaceService {
             checkFileExtension(greyExtension, allowExtension);
 
             try {
-                String logo = fileUploadService.upload(workspaceLogoUpdateRequest.getGreyLogo());
+                String logo = fileUploadService.upload(workspaceLogoUpdateRequest.getGreyLogo(), workspaceId);
                 workspaceSetting.setGreyLogo(logo);
             } catch (IOException e) {
                 log.error("[UPDATE WORKSPACE LOGO] Logo Image upload fail. Error message >> [{}]", e.getMessage());
@@ -256,7 +276,7 @@ public class OffWorkspaceServiceImpl extends WorkspaceService {
             checkFileExtension(whiteExtension, allowExtension);
 
             try {
-                String logo = fileUploadService.upload(workspaceLogoUpdateRequest.getWhiteLogo());
+                String logo = fileUploadService.upload(workspaceLogoUpdateRequest.getWhiteLogo(), workspaceId);
                 workspaceSetting.setWhiteLogo(logo);
             } catch (IOException e) {
                 log.error("[UPDATE WORKSPACE LOGO] Logo Image upload fail. Error message >> [{}]", e.getMessage());
@@ -265,7 +285,7 @@ public class OffWorkspaceServiceImpl extends WorkspaceService {
                 return workspaceLogoUpdateResponse;
             }
         } else {
-            String logoWhite = fileUploadService.getFileUrl("virnect-white-logo.png");
+            String logoWhite = fileUploadService.getDefaultFileUrl(DefaultFile.WORKSPACE_WHITE_LOGO_IMG.getFileName());
             workspaceSetting.setWhiteLogo(logoWhite);
         }
 

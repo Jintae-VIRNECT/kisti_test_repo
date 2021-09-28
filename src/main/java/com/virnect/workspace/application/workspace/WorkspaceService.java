@@ -247,7 +247,7 @@ public abstract class WorkspaceService {
             }
             //새 프로필 이미지 등록
             try {
-                workspace.setProfile(fileUploadService.upload(workspaceUpdateRequest.getProfile()));
+                workspace.setProfile(fileUploadService.upload(workspaceUpdateRequest.getProfile(), workspaceUpdateRequest.getWorkspaceId()));
             } catch (Exception e) {
                 throw new WorkspaceException(ErrorCode.ERR_UNEXPECTED_SERVER_ERROR);
             }

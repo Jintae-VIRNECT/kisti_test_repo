@@ -20,6 +20,7 @@ import com.virnect.workspace.global.constant.Permission;
 import com.virnect.workspace.global.constant.UUIDType;
 import com.virnect.workspace.global.error.ErrorCode;
 import com.virnect.workspace.global.util.RandomStringTokenUtil;
+import com.virnect.workspace.infra.file.DefaultFile;
 import com.virnect.workspace.infra.file.FileService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
@@ -90,22 +91,22 @@ public class OnWorkspaceServiceImpl extends WorkspaceService {
         }
 
         //워크스페이스 생성
-        String uuid = RandomStringTokenUtil.generate(UUIDType.UUID_WITH_SEQUENCE, 0);
+        String workspaceId = RandomStringTokenUtil.generate(UUIDType.UUID_WITH_SEQUENCE, 0);
         String pinNumber = RandomStringTokenUtil.generate(UUIDType.PIN_NUMBER, 0);
 
         String profile;
         if (workspaceCreateRequest.getProfile() != null) {
             try {
-                profile = fileUploadService.upload(workspaceCreateRequest.getProfile());
+                profile = fileUploadService.upload(workspaceCreateRequest.getProfile(), workspaceId);
             } catch (IOException e) {
                 throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_CREATE_INVALID_PROFILE);
             }
         } else {
-            profile = fileUploadService.getFileUrl("workspace-profile.png");
+            profile = fileUploadService.getDefaultFileUrl(DefaultFile.WORKSPACE_PROFILE_IMG.getFileName());
         }
 
         Workspace newWorkspace = Workspace.builder()
-                .uuid(uuid)
+                .uuid(workspaceId)
                 .userId(workspaceCreateRequest.getUserId())
                 .name(workspaceCreateRequest.getName())
                 .description(workspaceCreateRequest.getDescription())
