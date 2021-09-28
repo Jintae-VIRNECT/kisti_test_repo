@@ -102,7 +102,7 @@ export default {
       this.visibleFlag = flag
     },
   },
-  
+
   methods: {
     reset() {
       this.selection = []
@@ -135,7 +135,10 @@ export default {
         })
       } catch (err) {
         console.error(err)
-        this.toastError(this.$t('confirm.network_error'))
+
+        if (err.code) {
+          this.toastError(this.$t('confirm.network_error'))
+        }
       }
     },
 
@@ -162,7 +165,10 @@ export default {
         })
       } catch (err) {
         console.error(err)
-        this.toastError(this.$t('confirm.network_error'))
+
+        if (err.code) {
+          this.toastError(this.$t('confirm.network_error'))
+        }
       }
     },
   },

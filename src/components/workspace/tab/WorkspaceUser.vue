@@ -335,7 +335,9 @@ export default {
           groupId: groupId,
         })
       } catch (err) {
-        this.toastError(this.$t('confirm.network_error'))
+        if (err.code) {
+          this.toastError(this.$t('confirm.network_error'))
+        }
       }
 
       await this.getMemberGroups()
@@ -376,7 +378,9 @@ export default {
         this.groupList = groups.favoriteGroupResponses
       } catch (err) {
         console.error(err)
-        this.toastError(this.$t('confirm.network_error'))
+        if (err.code) {
+          this.toastError(this.$t('confirm.network_error'))
+        }
       } finally {
         this.groupLoading = false
       }

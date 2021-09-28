@@ -206,14 +206,16 @@ export default {
 
         //정상 저장시 모달창 close
         this.$emit('update:visible', false)
-      } catch (error) {
-        if (error.code === ERROR.WORKSPACE_MEMBER_GROUP_MAX_OVER) {
-          this.showErrorToast(error.code)
+      } catch (err) {
+        if (err.code === ERROR.WORKSPACE_MEMBER_GROUP_MAX_OVER) {
+          this.showErrorToast(err.code)
         } else {
-          this.toastError(this.$t('confirm.network_error'))
+          if (err.code) {
+            this.toastError(this.$t('confirm.network_error'))
+          }
         }
 
-        console.error(error)
+        console.error(err)
       }
     },
     async updatePrivateMemberGroup(userIds) {

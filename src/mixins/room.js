@@ -350,7 +350,9 @@ export default {
           this.toastError(this.$t('alarm.file_storage_capacity_full'))
         } else {
           console.error(`${err.message} (${err.code})`)
-          this.toastError(this.$t('confirm.network_error'))
+          if (err.code) {
+            this.toastError(this.$t('confirm.network_error'))
+          }
         }
       }
     },

@@ -170,7 +170,9 @@ export default {
         ) {
           this.showErrorToast(err.code)
         } else {
-          this.toastError(this.$t('confirm.network_error'))
+          if (err.code) {
+            this.toastError(this.$t('confirm.network_error'))
+          }
         }
         return false
       }
