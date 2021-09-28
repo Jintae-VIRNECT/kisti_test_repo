@@ -185,15 +185,10 @@ export default {
       }
     },
     canSave() {
-      console.log('canSave refreshed')
-      console.log('this.image::', this.image)
-
       //현재 협업이 존재하는가?
       if (!this.room) {
         return false
       }
-
-      console.log('this.room.profile::', this.room.profile)
 
       //협업명이 유효한가?
       if (this.titleValid) {
