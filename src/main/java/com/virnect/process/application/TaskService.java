@@ -374,6 +374,9 @@ public class TaskService {
 				//imgPath = fileUploadUrl + fileUploadPath + defaultVTarget;defaultVTarget
 				imgPath = fileUploadService.getFilePath("virnect_target.png");
 			}
+			if (targetType.equals(TargetType.VR)) {
+				imgPath = null;
+			}
 
 			// 컨텐츠 서버에 담겨진 targetData (= Make에서 제공하는 targetData) 는 AES256인코딩 후 URL인코딩을 한 값이다.
 			// 컨텐츠 서버와 targetData 인코딩을 맞춰주기 위해서 해당 인코딩을 수행한다.
