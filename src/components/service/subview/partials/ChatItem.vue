@@ -4,6 +4,7 @@
       class="chat-item__profile"
       v-if="!hideProfile"
       :image="chat.profile"
+      :thumbStyle="{ width: '2.143rem', height: '2.143rem' }"
     ></profile>
     <div class="chat-item__body" :class="[chat.type, { hidden: hideProfile }]">
       <div class="chat-item__body--chatbox">
