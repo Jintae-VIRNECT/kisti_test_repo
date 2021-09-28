@@ -246,13 +246,14 @@ export default {
   .btn {
     width: 7rem;
     height: 2.5714rem;
-    padding: 0.6429rem 1.6429rem;
+    padding: 0;
     color: #ffffff;
     font-weight: 500;
     font-size: 0.9286rem;
     border-radius: 2px;
 
     &.send-email {
+      padding: 0;
       background: #616872;
       border-radius: 2px;
 
