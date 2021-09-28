@@ -11,6 +11,7 @@
       </vue2-scrollbar>
     </template>
     <guest-mobile v-else-if="serviceMode === 'mobile'"></guest-mobile>
+    <device-denied :visible.sync="showDenied"></device-denied>
   </section>
 </template>
 
@@ -40,6 +41,8 @@ import { URLS } from 'configs/env.config'
 import GuestWeb from './GuestWeb'
 import GuestMobile from './GuestMobile'
 
+import DeviceDenied from '../workspace/modal/WorkspaceDeviceDenied'
+
 import auth, { setTokensToCookies } from 'utils/auth'
 
 export default {
@@ -61,6 +64,7 @@ export default {
     GuestWeb,
     GuestMobile,
     HeaderSection,
+    DeviceDenied,
   },
   data() {
     return {
@@ -69,6 +73,8 @@ export default {
 
       serviceMode: '', //web, mobile
       packageName: '',
+
+      showDenied: false,
     }
   },
   computed: {
@@ -152,6 +158,10 @@ export default {
     handleMaxScroll(event) {
       this.$eventBus.$emit('scroll:end', event)
     },
+
+    showDeviceDenied() {
+      this.showDenied = true
+    },
   },
 
   async created() {
@@ -174,6 +184,7 @@ export default {
 
       this.$eventBus.$on('initGuestMember', this.initGuestMember)
       this.$eventBus.$on('updateServiceMode', this.updateServiceMode)
+      this.$eventBus.$on('devicedenied:show', this.showDeviceDenied)
 
       this.serviceMode = this.isMobileSize ? 'mobile' : 'web'
 
@@ -193,6 +204,7 @@ export default {
   beforeDestroy() {
     this.$eventBus.$off('initGuestMember', this.initGuestMember)
     this.$eventBus.$off('updateServiceMode', this.updateServiceMode)
+    this.$eventBus.$off('devicedenied:show', this.showDeviceDenied)
   },
 }
 </script>
