@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div style="display:flex; flex:1;">
     <section v-if="!isMobileSize" class="tab-view">
       <div class="setting-wrapper offsetwidth">
         <div class="setting-nav">
