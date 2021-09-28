@@ -115,24 +115,12 @@
 
 <script>
 import filterMixin from '@/mixins/filters'
-import validationMixin from '@/mixins/validation'
 import permissionMixin from '@/mixins/permission'
 import messageMixin from '@/mixins/message'
 import utilsMixin from '@/mixins/utils'
-
 import workspaceService from '@/services/workspace'
-import { ValidationProvider } from 'vee-validate'
 export default {
-  mixins: [
-    filterMixin,
-    validationMixin,
-    permissionMixin,
-    messageMixin,
-    utilsMixin,
-  ],
-  components: {
-    ValidationProvider,
-  },
+  mixins: [filterMixin, permissionMixin, messageMixin, utilsMixin],
   data() {
     return {
       originProfile: this.profile,

@@ -28,8 +28,6 @@
     },
     "targetTypes": {
       "all": "All",
-      "content": "Content",
-      "task": "Task",
       "qr": "QR Target",
       "vtarget": "V Target",
       "imageTarget": "Image Target",
@@ -51,10 +49,6 @@
     },
     "modeTypes": {
       "all": "All",
-      "qr": "QR Target",
-      "vtarget": "V Target",
-      "imageTarget": "Image Target",
-      "vr": "VR Target",
       "twoDimensinal": "2D",
       "threeDimensinal": "3D",
       "twoOrThreeDimensinal": "3D+2D"

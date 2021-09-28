@@ -21,7 +21,9 @@
     },
     "targetTypes": {
       "qr": "QR 타겟",
-      "vtarget": "V 타겟"
+      "vtarget": "V 타겟",
+      "imageTarget": "이미지 타겟",
+      "vr": "VR 타겟"
     },
     "info": {
       "title": "콘텐츠 정보",

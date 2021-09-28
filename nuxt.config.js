@@ -42,7 +42,12 @@ module.exports = async () => {
       '@nuxtjs/style-resources',
       '@nuxtjs/axios',
     ],
-    plugins: ['@/plugins/element-ui', '@/plugins/axios', '@/plugins/context'],
+    plugins: [
+      '@/plugins/element-ui',
+      '@/plugins/axios',
+      '@/plugins/context',
+      '@plugins/vee-validate',
+    ],
     /*
      ** Customize style
      */
