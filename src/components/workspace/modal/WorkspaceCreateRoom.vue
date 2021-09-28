@@ -122,8 +122,7 @@ export default {
 
         //멤버 숫자 표기
         this.groupList.map(group => {
-          group.memberCount = `${group.favoriteGroupMemberResponses.length -
-            1}/${this.maxSelect}`
+          group.memberCount = `${group.favoriteGroupMemberResponses.length}/${this.maxSelect}`
         })
 
         //'선택 없음' 항목 추가
