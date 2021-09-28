@@ -36,7 +36,7 @@
 
         <p class="warning-msg danger-color" v-if="message">{{ message }}</p>
 
-        <div class="checkbox-wrap" v-if="$env !== 'onpremise'">
+        <div class="checkbox-wrap">
           <el-checkbox
             v-model="login.rememberMe"
             @change="emailRemember(login.email, login.rememberMe)"
@@ -60,7 +60,7 @@
           :disabled="isDisable"
           >{{ $t('login.title') }}</el-button
         >
-        <div class="find-wrap" v-if="$env !== 'onpremise'">
+        <div class="find-wrap">
           <router-link
             :to="{ name: 'findTab', params: { findCategory: 'email' } }"
             v-if="$env !== 'onpremise'"
