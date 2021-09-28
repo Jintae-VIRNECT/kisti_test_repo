@@ -143,6 +143,8 @@ export default {
     },
     async send() {
       try {
+        if (this.emailAddress.length === 0) return
+
         await sendEmail({
           receivers: [this.emailAddress],
           sender: this.emailSender,
