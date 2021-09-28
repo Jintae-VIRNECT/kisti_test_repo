@@ -163,7 +163,6 @@ export default {
   },
   mounted() {
     this.reset()
-    console.log(this.activeWorkspace)
   },
   computed: {
     ...mapGetters({
