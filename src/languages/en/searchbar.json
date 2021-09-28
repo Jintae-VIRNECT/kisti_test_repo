@@ -26,7 +26,8 @@
     },
     "keyword": {
       "title": "Search",
-      "contentTitle": "Content Name"
+      "contentTitle": "Content Name",
+      "projectTitle": "Project Name"
     }
   }
 }
