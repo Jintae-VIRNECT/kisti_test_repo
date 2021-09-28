@@ -150,13 +150,14 @@ export default {
   },
   methods: {
     async checkMembersId(member) {
-      // 처리 로직 생성 , 정현님 휴가 돌아오면 추가하기
-      member.duplicateCheck = true
       try {
-        const data = await workspaceService.checkMembersId(member.id)
-
-        if (data.result) {
-          console.log('처리 로직 생성 , 정현님 휴가 돌아오면 추가하기 ')
+        const result = await workspaceService.checkMembersId(member.id)
+        if (result) {
+          this.successMessage(this.$t('members.create.message.usableId'))
+          member.duplicateCheck = true
+        } else {
+          this.errorMessage('Error: 1011')
+          member.duplicateCheck = false
         }
       } catch (e) {
         const errCode = this.errorCode(e)
