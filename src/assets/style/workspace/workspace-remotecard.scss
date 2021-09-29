@@ -217,7 +217,7 @@
       width: 48vw;
       .room-leader {
         @include fontLevel(75);
-        width: 32vw;
+        max-width: 32vw;
         margin-right: 0.8rem;
         color: $new_color_text_sub;
         @include ellipsis();
