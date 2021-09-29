@@ -1,12 +1,13 @@
 RELEASE
 
 New Features
-- 없음
+- 게스트 유저 생성, 삭제, 정보 수정
+- 워크스페이스 전용 유저 생성, 삭제, 정보 수정
 
 Bug Fixes
 - 없음
 
 Limitation
-- 워크스페이스 이름, 설명 최대 입력 사이즈 변경 (DPLA-3255)
+- 없음
 
 Copyright (C) 2020, VIRNECT CO., LTD. - All Rights Reserved
