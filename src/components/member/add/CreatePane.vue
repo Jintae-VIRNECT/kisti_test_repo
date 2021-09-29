@@ -41,7 +41,7 @@
           </template>
           <el-input
             v-model="form.id"
-            class="check"
+            :class="cssVars"
             maxlength="20"
             :placeholder="$t('members.create.idPlaceholder')"
           />
@@ -271,6 +271,9 @@ export default {
     availableMember() {
       return this.membersTotal + this.userInfoList.length
     },
+    cssVars() {
+      return this.$i18n.locale
+    },
   },
 }
 </script>
@@ -313,8 +316,11 @@ export default {
       &.full {
         width: 100%;
       }
-      &.check {
+      &.ko {
         width: 425px;
+      }
+      &.en {
+        width: 374px;
       }
     }
   }
