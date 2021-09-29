@@ -289,7 +289,7 @@ public class ContentController {
         return ResponseEntity.ok(response);
     }
 
-    @ApiOperation(value = "작업에서 컨텐츠로의 전환", notes = "작업의 컨텐츠를 복제한 후 컨텐츠 목록에 노출. 중복 가능하며 컨텐츠 식별자가 신규발급됨.")
+    /*@ApiOperation(value = "작업에서 컨텐츠로의 전환", notes = "작업의 컨텐츠를 복제한 후 컨텐츠 목록에 노출. 중복 가능하며 컨텐츠 식별자가 신규발급됨.")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "taskId", value = "작업 식별자로 컨텐츠 파일을 판별.", dataType = "string", required = true, paramType = "path"),
             @ApiImplicitParam(name = "userUUID", value = "요청 사용자의 고유번호", dataType = "string", paramType = "query", required = true)
@@ -305,7 +305,7 @@ public class ContentController {
         ApiResponse<ContentUploadResponse> responseApiResponse = this.contentService.convertTaskToContent(
                 taskId, userUUID);
         return ResponseEntity.ok(responseApiResponse);
-    }
+    }*/
 
     @ApiOperation(value = "컨텐츠 속성 메타데이터 조회")
     @ApiImplicitParams({

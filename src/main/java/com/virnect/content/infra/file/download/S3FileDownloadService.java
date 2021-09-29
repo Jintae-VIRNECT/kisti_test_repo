@@ -1,11 +1,9 @@
 package com.virnect.content.infra.file.download;
 
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.Map;
 
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
@@ -16,7 +14,6 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
-import org.springframework.web.multipart.MultipartFile;
 
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.Headers;
@@ -48,18 +45,18 @@ public class S3FileDownloadService implements FileDownloadService {
 	@Value("${cloud.aws.s3.bucket.name}")
 	private String bucketName;
 
-	@Value("${cloud.aws.s3.bucket.resource}")
-	private String bucketResource;
+	@Value("${file.prefix}")
+	private String prefix;
 
 	@Override
-	public ResponseEntity<byte[]> fileDownload(String fileName, String range) {
-		String resourcePath = fileName.split(bucketResource)[1];
-		log.info("PARSER - RESOURCE PATH: [{}]", resourcePath);
-		String[] resources = resourcePath.split("/");
-		for (String url : resources) {
-			log.info("PARSER - RESOURCE URL: [{}]", url);
-		}
-		GetObjectRequest getObjectRequest = new GetObjectRequest(bucketName, bucketResource + resourcePath);
+	public ResponseEntity<byte[]> fileDownload(String fileUrl, String range) {
+		log.info("PARSER - URL: [{}]", fileUrl);
+		String[] fileSplit = fileUrl.split(prefix);
+		String objectName = fileSplit[fileSplit.length - 1];
+		log.info("PARSER - KEY: [{}]", objectName);
+		String fileName = FilenameUtils.getName(fileUrl);
+
+		GetObjectRequest getObjectRequest = new GetObjectRequest(bucketName, objectName);
 		if (StringUtils.hasText(range)) {
 			range = range.trim();
 			if (!range.matches("^bytes=\\d*-\\d*$")) {
@@ -84,7 +81,7 @@ public class S3FileDownloadService implements FileDownloadService {
 			byte[] bytes = IOUtils.toByteArray(objectInputStream, s3Object.getObjectMetadata().getContentLength());
 			httpHeaders.setContentType(MediaType.APPLICATION_OCTET_STREAM);
 			httpHeaders.setContentLength(bytes.length);
-			httpHeaders.setContentDisposition(ContentDisposition.builder("attachment").filename(resources[1]).build());
+			httpHeaders.setContentDisposition(ContentDisposition.builder("attachment").filename(fileName).build());
 			return new ResponseEntity<>(bytes, httpHeaders, HttpStatus.OK);
 		} catch (AmazonS3Exception | IOException e) {
 			log.error("Error Message:     {}", e.getMessage());
@@ -93,88 +90,7 @@ public class S3FileDownloadService implements FileDownloadService {
 	}
 
 	@Override
-	public void copyFileS3ToLocal(String fileName) {
-		String resourcePath = "contents/" + fileName;
-		GetObjectRequest getObjectRequest = new GetObjectRequest(bucketName, bucketResource + resourcePath);
-		File file = new File("upload/" + fileName);
-		try (S3Object o = amazonS3Client.getObject(getObjectRequest);
-			 S3ObjectInputStream s3is = o.getObjectContent();
-			 FileOutputStream fos = new FileOutputStream(file)) {
-
-			byte[] read_buf = new byte[1024];
-			int read_len = 0;
-			while ((read_len = s3is.read(read_buf)) > 0) {
-				fos.write(read_buf, 0, read_len);
-			}
-		} catch (Exception e) {
-			log.error("Error Message:     {}", e.getMessage());
-			throw new ContentServiceException(ErrorCode.ERR_CONTENT_DOWNLOAD);
-		}
-	}
-
-	public MultipartFile getMultipartfile(String fileName) {
-		String resourcePath = "contents/" + fileName;
-		String key = bucketResource + resourcePath;
-		GetObjectRequest getObjectRequest = new GetObjectRequest(bucketName, key);
-		try (S3Object s3Object = amazonS3Client.getObject(getObjectRequest);
-			 S3ObjectInputStream s3ObjectInputStream = s3Object.getObjectContent();) {
-			MultipartFile multipartFile = new MultipartFile() {
-				@Override
-				public String getName() {
-					return "content";
-				}
-
-				@Override
-				public String getOriginalFilename() {
-					return fileName;
-				}
-
-				@Override
-				public String getContentType() {
-					return s3Object.getObjectMetadata().getContentType();
-				}
-
-				@Override
-				public boolean isEmpty() {
-					return false;
-				}
-
-				@Override
-				public long getSize() {
-					return s3Object.getObjectMetadata().getContentLength();
-				}
-
-				@Override
-				public byte[] getBytes() throws IOException {
-					return IOUtils.toByteArray(s3ObjectInputStream);
-				}
-
-				@Override
-				public InputStream getInputStream() throws IOException {
-					return s3ObjectInputStream;
-				}
-
-				@Override
-				public void transferTo(File dest) throws IOException, IllegalStateException {
-				}
-			};
-			log.info(
-				"[CONVERT INPUTSTREAM TO MULTIPARTFILE] Convert success. uploaded url : [{}], contentType : [{}], file size : [{}], originalFileName : [{}],"
-				, amazonS3Client.getUrl(bucketName, key).toExternalForm()
-				, multipartFile.getContentType()
-				, multipartFile.getSize()
-				, multipartFile.getOriginalFilename()
-			);
-			return multipartFile;
-		} catch (IOException e) {
-			log.error("Error Message:     {}", e.getMessage());
-			throw new ContentServiceException(ErrorCode.ERR_CONTENT_DOWNLOAD);
-		}
-
-	}
-
-	@Override
-	public String getFilePath(String bucketResource, String fileName) {
+	public String getDefaultImagePath(String bucketResource, String fileName) {
 		log.info("[GET FILE PATH] Request BucketResource >> [{}], fileName >> [{}]", bucketResource, fileName);
 		String objectName = bucketResource + fileName;
 		String filePath = amazonS3Client.getUrl(bucketName, objectName).toExternalForm();
@@ -183,9 +99,10 @@ public class S3FileDownloadService implements FileDownloadService {
 	}
 
 	@Override
-	public long getFileSize(String fileDir, String fileName) {
-		log.info("[AWS S3 GET FILE SIZE] GET SIZE BEGIN. DIR : {}, NAME : {}", fileDir, fileName);
-		String objectName = String.format("%s%s/%s", bucketResource, fileDir, fileName);
+	public long getFileSize(String fileUrl) {
+		log.info("[AWS S3 GET FILE SIZE] GET SIZE BEGIN. URL : {}", fileUrl);
+		String[] fileSplit = fileUrl.split(prefix);
+		String objectName = fileSplit[fileSplit.length - 1];
 		log.info("[AWS S3 GET FILE SIZE] BUCKET : {}, KEY : {}", bucketName, objectName);
 		long contentLength = 0L;
 		try (S3Object object = amazonS3Client.getObject(bucketName, objectName)) {
@@ -213,11 +130,8 @@ public class S3FileDownloadService implements FileDownloadService {
 
 	@Override
 	public byte[] getFileStreamBytes(String fileUrl) {
-		String[] fileSplit = fileUrl.split("/");
-		String fileDir = fileSplit[fileSplit.length - 2];
-		String fileName = fileSplit[fileSplit.length - 1];
-		String objectName = bucketResource + fileDir + "/" + fileName;
-
+		String[] fileSplit = fileUrl.split(prefix);
+		String objectName = fileSplit[fileSplit.length - 1];
 		GetObjectRequest getObjectRequest = new GetObjectRequest(bucketName, objectName);
 		try (S3Object s3Object = amazonS3Client.getObject(getObjectRequest);
 			 S3ObjectInputStream objectInputStream = s3Object.getObjectContent()) {

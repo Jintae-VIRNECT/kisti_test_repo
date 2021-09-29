@@ -46,32 +46,33 @@ import com.virnect.content.global.error.ErrorCode;
 public class S3UploadService implements FileUploadService {
 	private final AmazonS3 amazonS3Client;
 	private static final String PROJECT_DIRECTORY = "project";
-	private static final String CONTENT_DIRECTORY = "contents";
+	private static final String CONTENT_DIRECTORY = "content";
 	private static final String REPORT_DIRECTORY = "report";
 	private static final String REPORT_FILE_EXTENSION = ".png";
 	private static final String V_TARGET_DEFAULT_NAME = "virnect_target.png";
 
 	@Value("${cloud.aws.s3.bucket.name}")
 	private String bucketName;
-	@Value("${cloud.aws.s3.bucket.resource}")
-	private String bucketResource;
-	@Value("#{'${upload.allowed-extension}'.split(',')}")
+
+	@Value("${file.prefix}")
+	private String prefix;
+
+	@Value("#{'${file.allowed-extension}'.split(',')}")
 	private List<String> allowedExtension;
 
 	@Override
 	public void deleteByFileUrl(String fileUrl) {
-		if(!StringUtils.hasText(fileUrl)){
+		if (!StringUtils.hasText(fileUrl)) {
 			return;
 		}
 		log.info("[AWS S3 FILE DELETE] DELETE BEGIN. URL : {}", fileUrl);
-		String[] fileSplit = fileUrl.split("/");
-		String fileDir = fileSplit[fileSplit.length - 2];
-		String fileName = fileSplit[fileSplit.length - 1];
-		if (fileDir.equals(REPORT_DIRECTORY) && fileName.equals(V_TARGET_DEFAULT_NAME)) {
-			log.info("[AWS S3 FILE DELETE] DEFAULT FILE SKIP. DIR : {}, NAME : {}", fileDir, fileName);
+		String[] fileSplit = fileUrl.split(prefix);
+		String objectName = fileSplit[fileSplit.length - 1];
+
+		if (fileUrl.contains(V_TARGET_DEFAULT_NAME)) {
+			log.info("[MINIO FILE DELETE] DEFAULT FILE SKIP. KEY : {}", objectName);
 			return;
 		}
-		String objectName = bucketResource + fileDir + "/" + fileName;
 		DeleteObjectRequest deleteObjectRequest = new DeleteObjectRequest(bucketName, objectName);
 		log.info("[AWS S3 FILE DELETE] DELETE REQUEST. BUCKET : {}, KEY : {}", bucketName, objectName);
 		try {
@@ -84,7 +85,9 @@ public class S3UploadService implements FileUploadService {
 	}
 
 	@Override
-	public String uploadByBase64Image(String base64Image, String fileDir, String fileName) {
+	public String uploadByBase64Image(
+		String base64Image, String fileDir, String workspaceUUID, String fileName
+	) {
 		log.info("[AWS S3 BASE64 UPLOAD] UPLOAD BEGIN. DIR : {}, NAME : {}", fileDir, fileName);
 		byte[] image = Base64.getDecoder().decode(base64Image);
 		log.info("[AWS S3 BASE64 UPLOAD] UPLOAD FILE SIZE : {} (byte)", image.length);
@@ -98,7 +101,7 @@ public class S3UploadService implements FileUploadService {
 		objectMetadata.setHeader("filename", fileName);
 		objectMetadata.setContentDisposition(String.format("attachment; filename=\"%s\"", fileName));
 
-		String objectName = String.format("%s%s/%s", bucketResource, fileDir, fileName);
+		String objectName = String.format("workspace/%s/%s/%s", workspaceUUID, fileDir, fileName);
 		PutObjectRequest putObjectRequest = new PutObjectRequest(
 			bucketName, objectName, new ByteArrayInputStream(image), objectMetadata);
 		putObjectRequest.withCannedAcl(CannedAccessControlList.PublicRead);
@@ -114,7 +117,9 @@ public class S3UploadService implements FileUploadService {
 	}
 
 	@Override
-	public String uploadByFileInputStream(MultipartFile file, String fileDir, String fileNameWithoutExtension) {
+	public String uploadByFileInputStream(
+		MultipartFile file, String fileDir, String workspaceUUID, String fileNameWithoutExtension
+	) {
 		log.info("[AWS S3 FILE UPLOAD] UPLOAD BEGIN. DIR : {}, NAME : {}", fileDir, fileNameWithoutExtension);
 
 		// 1. 파일 크기 확인
@@ -129,7 +134,7 @@ public class S3UploadService implements FileUploadService {
 
 		if (fileDir.equals(CONTENT_DIRECTORY) || fileDir.equals(PROJECT_DIRECTORY)) {
 			if (!allowedExtension.contains(fileExtension)) {
-				log.info("[AWS S3 FILE UPLOAD] UNSUPPORTED FILE. NMAE : {}", file.getOriginalFilename());
+				log.info("[AWS S3 FILE UPLOAD] UNSUPPORTED FILE. NAME : {}", file.getOriginalFilename());
 				throw new ContentServiceException(ErrorCode.ERR_UNSUPPORTED_FILE_EXTENSION);
 			}
 		}
@@ -142,8 +147,11 @@ public class S3UploadService implements FileUploadService {
 		objectMetadata.setContentDisposition(
 			String.format("attachment; filename=\"%s\"", fileNameWithoutExtension + fileExtension));
 
-		String objectName = String.format(
-			"%s%s/%s%s", bucketResource, fileDir, fileNameWithoutExtension, fileExtension);
+		String objectName = String.format("workspace/%s/%s%s", fileDir, fileNameWithoutExtension, fileExtension);
+		if (StringUtils.hasText(workspaceUUID)) {
+			objectName = String.format(
+				"workspace/%s/%s/%s%s", workspaceUUID, fileDir, fileNameWithoutExtension, fileExtension);
+		}
 		// 4. 스트림으로 aws s3에 업로드
 		try {
 			PutObjectRequest putObjectRequest = new PutObjectRequest(
@@ -211,7 +219,8 @@ public class S3UploadService implements FileUploadService {
 
 	@Override
 	public String copyByFileObject(
-		String sourceFileUrl, String destinationFileDir, String destinationFileNameWithoutExtension
+		String sourceFileUrl, String destinationFileDir,
+		String destinationWorkspaceUUID, String destinationFileNameWithoutExtension
 	) {
 		log.info(
 			"[MINIO FILE COPY] COPY BEGIN. URL : {}, DESTINATION DIR : {}, DESTINATION NAME : {}", sourceFileUrl,
@@ -222,9 +231,11 @@ public class S3UploadService implements FileUploadService {
 		String sourceFileName = fileSplit[fileSplit.length - 1]; //UUID
 		String sourceFileExtension = sourceFileUrl.substring(sourceFileUrl.lastIndexOf(".") + 1); //Ares
 
-		String sourceObjectName = String.format("%s%s/%s", bucketResource, sourceFileDir, sourceFileName);
+		String sourceObjectName = String.format("workspace/%s/%s", sourceFileDir, sourceFileName);
 		String destinationObjectName = String.format(
-			"%s%s/%s.%s", bucketResource, destinationFileDir, destinationFileNameWithoutExtension, sourceFileExtension);
+			"workspace/%s/%s/%s.%s", destinationWorkspaceUUID, destinationFileDir, destinationFileNameWithoutExtension,
+			sourceFileExtension
+		);
 
 		CopyObjectRequest copyObjRequest = new CopyObjectRequest(
 			bucketName, sourceObjectName, bucketName, destinationObjectName);

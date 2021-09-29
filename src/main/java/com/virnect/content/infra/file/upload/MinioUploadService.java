@@ -9,6 +9,7 @@ import java.util.Base64;
 import java.util.List;
 import java.util.Objects;
 
+import org.apache.commons.io.FilenameUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
 import org.springframework.http.MediaType;
@@ -49,36 +50,36 @@ import com.virnect.content.global.error.ErrorCode;
 public class MinioUploadService implements FileUploadService {
 	private final MinioClient minioClient;
 	private static final String PROJECT_DIRECTORY = "project";
-	private static final String CONTENT_DIRECTORY = "contents";
+	private static final String CONTENT_DIRECTORY = "content";
 	private static final String REPORT_DIRECTORY = "report";
 	private static final String V_TARGET_DEFAULT_NAME = "virnect_target.png";
 
 	@Value("${minio.bucket}")
 	private String bucketName;
 
-	@Value("${minio.bucket-resource}")
-	private String bucketResource;
-
-	@Value("#{'${upload.allowed-extension}'.split(',')}")
-	private List<String> allowedExtension;
-
 	@Value("${minio.server}")
 	private String minioServer;
+
+	@Value("${file.prefix}")
+	private String prefix;
+
+	@Value("#{'${file.allowed-extension}'.split(',')}")
+	private List<String> allowedExtension;
 
 	@Override
 	public void deleteByFileUrl(String fileUrl) {
 		log.info("[MINIO FILE DELETE] DELETE BEGIN. URL : {}", fileUrl);
-		if(!StringUtils.hasText(fileUrl)){
+		if (!StringUtils.hasText(fileUrl)) {
 			return;
 		}
-		String[] fileSplit = fileUrl.split("/");
-		String fileDir = fileSplit[fileSplit.length - 2];
-		String fileName = fileSplit[fileSplit.length - 1];
-		if (fileDir.equals(REPORT_DIRECTORY) && fileName.equals(V_TARGET_DEFAULT_NAME)) {
-			log.info("[MINIO FILE DELETE] DEFAULT FILE SKIP. DIR : {}, NAME : {}", fileDir, fileName);
+		String[] fileSplit = fileUrl.split(prefix);
+		String objectName = fileSplit[fileSplit.length - 1];
+
+		if(fileUrl.contains(V_TARGET_DEFAULT_NAME)){
+			log.info("[MINIO FILE DELETE] DEFAULT FILE SKIP. KEY : {}", objectName);
 			return;
 		}
-		String objectName = bucketResource + fileDir + "/" + fileName;
+
 		RemoveObjectArgs removeObjectArgs = RemoveObjectArgs.builder()
 			.bucket(bucketName)
 			.object(objectName)
@@ -96,14 +97,16 @@ public class MinioUploadService implements FileUploadService {
 	}
 
 	@Override
-	public String uploadByBase64Image(String base64Image, String fileDir, String fileName) {
+	public String uploadByBase64Image(
+		String base64Image, String fileDir, String workspaceUUID, String fileName
+	) {
 		log.info("[MINIO BASE64 UPLOAD] UPLOAD BEGIN. DIR : {}, NAME : {}", fileDir, fileName);
 		byte[] image = Base64.getDecoder().decode(base64Image);
 		log.info("[MINIO BASE64 UPLOAD] UPLOAD FILE SIZE : {} (byte)", image.length);
 		if (image.length <= 0) {
 			throw new ContentServiceException(ErrorCode.ERR_CONTENT_UPLOAD);
 		}
-		String objectName = String.format("%s%s/%s", bucketResource, fileDir, fileName);
+		String objectName = String.format("workspace/%s/%s/%s", workspaceUUID, fileDir, fileName);
 
 		try (InputStream inputStream = new ByteArrayInputStream(image)) {
 			PutObjectArgs putObjectArgs = PutObjectArgs.builder()
@@ -129,7 +132,9 @@ public class MinioUploadService implements FileUploadService {
 	}
 
 	@Override
-	public String uploadByFileInputStream(MultipartFile file, String fileDir, String fileNameWithoutExtension) {
+	public String uploadByFileInputStream(
+		MultipartFile file, String fileDir, String workspaceUUID, String fileNameWithoutExtension
+	) {
 		log.info("[MINIO FILE UPLOAD] UPLOAD BEGIN. DIR : {}, NAME : {}", fileDir, fileNameWithoutExtension);
 
 		// 1. 파일 크기 확인
@@ -139,16 +144,20 @@ public class MinioUploadService implements FileUploadService {
 		}
 
 		// 2. 파일 확장자 확인
-		String fileExtension = String.format(".%s", Files.getFileExtension(Objects.requireNonNull(file.getOriginalFilename())));
+		String fileExtension = String.format(
+			".%s", Files.getFileExtension(Objects.requireNonNull(file.getOriginalFilename())));
 		if (fileDir.equals(CONTENT_DIRECTORY) || fileDir.equals(PROJECT_DIRECTORY)) {
 			if (!allowedExtension.contains(fileExtension)) {
 				log.info("[MINIO FILE UPLOAD] UNSUPPORTED FILE. NAME : {}", file.getOriginalFilename());
 				throw new ContentServiceException(ErrorCode.ERR_UNSUPPORTED_FILE_EXTENSION);
 			}
 		}
+		String objectName = String.format("workspace/%s/%s%s", fileDir, fileNameWithoutExtension, fileExtension);
+		if (StringUtils.hasText(workspaceUUID)) {
+			objectName = String.format(
+				"workspace/%s/%s/%s%s", workspaceUUID, fileDir, fileNameWithoutExtension, fileExtension);
+		}
 
-		String objectName = String.format(
-			"%s%s/%s%s", bucketResource, fileDir, fileNameWithoutExtension, fileExtension);
 		try {
 			PutObjectArgs putObjectArgs = PutObjectArgs.builder()
 				.bucket(bucketName)
@@ -173,21 +182,17 @@ public class MinioUploadService implements FileUploadService {
 
 	@Override
 	public String copyByFileObject(
-		String sourceFileUrl, String destinationFileDir, String destinationFileNameWithoutExtension
+		String sourceFileUrl, String destinationFileDir,
+		String destinationWorkspaceUUID, String destinationFileNameWithoutExtension
 	) {
 		log.info(
 			"[MINIO FILE COPY] COPY BEGIN. URL : {}, DESTINATION DIR : {}, DESTINATION NAME : {}", sourceFileUrl,
 			destinationFileDir, destinationFileNameWithoutExtension
 		);
-
-		String[] fileSplit = sourceFileUrl.split("/");
-		String sourceFileDir = fileSplit[fileSplit.length - 2];//contents
-		String sourceFileName = fileSplit[fileSplit.length - 1]; //UUID
+		String[] fileSplit = sourceFileUrl.split(prefix);
+		String sourceObjectName = fileSplit[fileSplit.length - 1];
 		String sourceFileExtension = sourceFileUrl.substring(sourceFileUrl.lastIndexOf(".") + 1); //Ares
-
-		String sourceObjectName = String.format("%s%s/%s", bucketResource, sourceFileDir, sourceFileName);
-		String destinationObjectName = String.format(
-			"%s%s/%s.%s", bucketResource, destinationFileDir, destinationFileNameWithoutExtension, sourceFileExtension);
+		String destinationObjectName = String.format("workspace/%s/%s/%s.%s", destinationWorkspaceUUID, destinationFileDir, destinationFileNameWithoutExtension, sourceFileExtension);
 
 		CopySource copySource = CopySource.builder()
 			.bucket(bucketName)

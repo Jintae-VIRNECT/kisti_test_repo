@@ -1,15 +1,13 @@
 package com.virnect.content.infra.file.download;
 
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.file.Path;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
@@ -20,7 +18,6 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
-import org.springframework.web.multipart.MultipartFile;
 
 import io.minio.GetObjectArgs;
 import io.minio.GetObjectResponse;
@@ -55,22 +52,20 @@ public class MinioDownloadService implements FileDownloadService {
 	@Value("${minio.bucket}")
 	private String bucketName;
 
-	@Value("${minio.bucket-resource}")
-	private String bucketResource;
-
 	@Value("${minio.server}")
 	private String minioServer;
 
+	@Value("${file.prefix}")
+	private String prefix;
+
 	@Override
-	public ResponseEntity<byte[]> fileDownload(String fileName, String range) {
+	public ResponseEntity<byte[]> fileDownload(String fileUrl, String range) {
 		try {
-			String resourcePath = fileName.split(bucketResource)[1];
-			log.info("PARSER - RESOURCE PATH: [{}]", resourcePath);
-			String[] resources = resourcePath.split("/");
-			for (String url : resources) {
-				log.info("PARSER - RESOURCE URL: [{}]", url);
-			}
-			String objectName = bucketResource + resourcePath;
+			log.info("PARSER - URL: [{}]", fileUrl);
+			String[] fileSplit = fileUrl.split(prefix);
+			String objectName = fileSplit[fileSplit.length - 1];
+			log.info("PARSER - KEY: [{}]", objectName);
+			String fileName = FilenameUtils.getName(fileUrl);
 
 			Map<String, String> headers = new HashMap<>();
 			if (StringUtils.hasText(range)) {
@@ -97,7 +92,7 @@ public class MinioDownloadService implements FileDownloadService {
 				httpHeaders.setContentType(MediaType.APPLICATION_OCTET_STREAM);
 				httpHeaders.setContentLength(bytes.length);
 				httpHeaders.setContentDisposition(
-					ContentDisposition.builder("attachment").filename(resources[1]).build());
+					ContentDisposition.builder("attachment").filename(fileName).build());
 				return new ResponseEntity<>(bytes, httpHeaders, HttpStatus.OK);
 			} catch (ErrorResponseException | InsufficientDataException | InternalException | InvalidKeyException | InvalidResponseException | NoSuchAlgorithmException |
 				ServerException | XmlParserException exception) {
@@ -111,34 +106,7 @@ public class MinioDownloadService implements FileDownloadService {
 	}
 
 	@Override
-	public void copyFileS3ToLocal(String fileName) {
-		try {
-			String resourcePath = "contents/" + fileName;
-			String objectName = bucketResource + resourcePath;
-
-			GetObjectArgs getObjectArgs = GetObjectArgs.builder()
-				.bucket(bucketName)
-				.object(objectName)
-				.build();
-			InputStream inputStream = minioClient.getObject(getObjectArgs);
-
-			File file = new File("upload/" + fileName);
-
-			FileOutputStream fos = new FileOutputStream(file);
-			byte[] read_buf = new byte[1024];
-			int read_len = 0;
-			while ((read_len = inputStream.read(read_buf)) > 0) {
-				fos.write(read_buf, 0, read_len);
-			}
-			inputStream.close();
-			fos.close();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
-
-	@Override
-	public String getFilePath(String bucketResource, String fileName) {
+	public String getDefaultImagePath(String bucketResource, String fileName) {
 		String objectName = bucketResource + fileName;
 		try {
 			GetObjectArgs getObjectArgs = GetObjectArgs.builder()
@@ -155,91 +123,10 @@ public class MinioDownloadService implements FileDownloadService {
 	}
 
 	@Override
-	public MultipartFile getMultipartfile(String fileName) {
-
-		String resourcePath = "contents/" + fileName;
-		String objectName = bucketResource + resourcePath;
-		GetObjectArgs getObjectArgs = GetObjectArgs.builder()
-			.bucket(bucketName)
-			.object(objectName)
-			.build();
-		InputStream inputStream;
-
-		try {
-			inputStream = (InputStream)minioClient.getObject(getObjectArgs);
-		} catch (ErrorResponseException | InsufficientDataException | InternalException | InvalidKeyException | InvalidResponseException | NoSuchAlgorithmException |
-			ServerException | XmlParserException | IOException e) {
-			throw new ContentServiceException(ErrorCode.ERR_CONTENT_DOWNLOAD);
-		}
-
-		MultipartFile multipartFile = new MultipartFile() {
-
-			@Override
-			public String getName() {
-				return "content";
-			}
-
-			@Override
-			public String getOriginalFilename() {
-				return fileName;
-			}
-
-			@Override
-			public String getContentType() {
-				return "application/octet-stream";
-			}
-
-			@Override
-			public boolean isEmpty() {
-				return false;
-			}
-
-			@Override
-			public long getSize() {
-
-				try {
-					InputStream inputStream = minioClient.getObject(getObjectArgs);
-					return IOUtils.toByteArray(inputStream).length;
-				} catch (ErrorResponseException | InsufficientDataException | InternalException | InvalidKeyException | InvalidResponseException | NoSuchAlgorithmException |
-					ServerException | XmlParserException | IOException e) {
-					throw new ContentServiceException(ErrorCode.ERR_CONTENT_DOWNLOAD);
-				}
-			}
-
-			@Override
-			public byte[] getBytes() throws IOException {
-				return IOUtils.toByteArray(inputStream);
-			}
-
-			@Override
-			public InputStream getInputStream() throws IOException {
-				return inputStream;
-			}
-
-			@Override
-			public void transferTo(File dest) throws IOException, IllegalStateException {
-
-			}
-
-			@Override
-			public void transferTo(Path dest) throws IOException, IllegalStateException {
-
-			}
-		};
-		log.info(
-			"[CONVERT INPUTSTREAM TO MULTIPARTFILE] Convert success. uploaded url : [{}], contentType : [{}], file size : [{}], originalFileName : [{}],"
-			, getFilePath("contents", fileName)
-			, multipartFile.getContentType()
-			, multipartFile.getSize()
-			, multipartFile.getOriginalFilename()
-		);
-		return multipartFile;
-	}
-
-	@Override
-	public long getFileSize(String fileDir, String fileName) {
-		log.info("[MINIO GET FILE SIZE] GET SIZE BEGIN. DIR : {}, NAME : {}", fileDir, fileName);
-		String objectName = String.format("%s%s/%s", bucketResource, fileDir, fileName);
+	public long getFileSize(String fileUrl) {
+		log.info("[MINIO GET FILE SIZE] GET SIZE BEGIN. URL : {}", fileUrl);
+		String[] fileSplit = fileUrl.split(prefix);
+		String objectName = fileSplit[fileSplit.length - 1];
 		log.info("[MINIO GET FILE SIZE] BUCKET : {}, KEY : {}", bucketName, objectName);
 		GetObjectArgs getObjectArgs = GetObjectArgs.builder()
 			.bucket(bucketName)
@@ -272,10 +159,8 @@ public class MinioDownloadService implements FileDownloadService {
 
 	@Override
 	public byte[] getFileStreamBytes(String fileUrl) {
-		String[] fileSplit = fileUrl.split("/");
-		String fileDir = fileSplit[fileSplit.length - 2];
-		String fileName = fileSplit[fileSplit.length - 1];
-		String objectName = bucketResource + fileDir + "/" + fileName;
+		String[] fileSplit = fileUrl.split(prefix);
+		String objectName = fileSplit[fileSplit.length - 1];
 		GetObjectArgs getObjectArgs = GetObjectArgs.builder()
 			.bucket(bucketName)
 			.object(objectName)

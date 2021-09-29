@@ -42,7 +42,7 @@ public class ResourceService {
 	private final ContentDownloadLogRepository contentDownloadLogRepository;
 	private final ProjectDownloadLogRepository projectDownloadLogRepository;
 	private static final String PROJECT_DIRECTORY = "project";
-	private static final String CONTENT_DIRECTORY = "contents";
+	private static final String CONTENT_DIRECTORY = "content";
 	private static final String REPORT_DIRECTORY = "report";
 	private static final String REPORT_FILE_EXTENSION = ".png";
 
@@ -65,8 +65,7 @@ public class ResourceService {
 		if (!StringUtils.hasText(fileResourceDir)) {
 			throw new ContentServiceException(ErrorCode.ERR_CONTENT_UPLOAD);
 		}
-		String uploadedPath = fileUploadService.uploadByFileInputStream(
-			fileResourceUploadRequest.getFile(), fileResourceDir, filename);
+		String uploadedPath = fileUploadService.uploadByFileInputStream(fileResourceUploadRequest.getFile(), fileResourceDir, null, filename);
 		return new FileResourceUploadResponse(uploadedPath, LocalDateTime.now());
 	}
 

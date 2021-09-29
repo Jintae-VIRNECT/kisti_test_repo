@@ -13,9 +13,14 @@ public interface FileUploadService {
 
 	void deleteByFileUrl(String fileUrl);
 
-	String uploadByBase64Image(String base64Image, String fileDir, String fileName);
+	String uploadByBase64Image(String base64Image, String fileDir, String workspaceUUID, String fileName);
 
-	String uploadByFileInputStream(MultipartFile file, String fileDir, String fileNameWithoutExtension);
+	String uploadByFileInputStream(
+		MultipartFile file, String fileDir, String workspaceUUID, String fileNameWithoutExtension
+	);
 
-	String copyByFileObject(String sourceFileUrl, String destinationFileDir, String destinationFileNameWithoutExtension);
+	String copyByFileObject(
+		String sourceFileUrl, String destinationFileDir,
+		String destinationWorkspaceUUID, String destinationFileNameWithoutExtension
+	);
 }

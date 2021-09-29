@@ -1,8 +1,5 @@
 package com.virnect.content.infra.file.download;
 
-import java.io.InputStream;
-import java.util.List;
-
 import org.springframework.http.ResponseEntity;
 import org.springframework.lang.Nullable;
 import org.springframework.web.multipart.MultipartFile;
@@ -15,15 +12,11 @@ import org.springframework.web.multipart.MultipartFile;
  * @since 2020.05.10
  */
 public interface FileDownloadService {
-	ResponseEntity<byte[]> fileDownload(final String fileName, @Nullable String range);
+	ResponseEntity<byte[]> fileDownload(final String fileUrl, @Nullable String range);
 
-	void copyFileS3ToLocal(String fileName);
+	String getDefaultImagePath(String bucketResource, String fileName);
 
-	String getFilePath(String bucketResource, String fileName);
-
-	MultipartFile getMultipartfile(String fileName);
-
-	long getFileSize(String fileDir, String fileName);
+	long getFileSize(String fileUrl);
 
 	byte[] getFileStreamBytes(String fileUrl);
 }

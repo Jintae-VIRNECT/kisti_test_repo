@@ -30,7 +30,6 @@ import org.apache.commons.fileupload.disk.DiskFileItem;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -127,11 +126,10 @@ public class ContentService {
 	private final MetadataService metadataService;
 	private final ModelMapper modelMapper;
 	private final ProjectRepository projectRepository;
-	@Value("${file.upload-path}")
-	private String fileUploadPath;
 
 	private static final String V_TARGET_DEFAULT_NAME = "virnect_target.png";
-	private static final String CONTENT_DIRECTORY = "contents";
+	private static final String REPORT_DEFAULT_DIRECTORY = "workspace/report/";
+	private static final String CONTENT_DIRECTORY = "content";
 	private static final String REPORT_DIRECTORY = "report";
 	private static final String REPORT_FILE_EXTENSION = ".png";
 
@@ -169,7 +167,7 @@ public class ContentService {
 
 		// 파일명은 컨텐츠 식별자(contentUUID)와 동일
 		String uploadPath = this.fileUploadService.uploadByFileInputStream(
-			uploadRequest.getContent(), CONTENT_DIRECTORY, contentUUID);
+			uploadRequest.getContent(), CONTENT_DIRECTORY, workspaceUUID, contentUUID);
 
 		// 2-1. 프로퍼티로 메타데이터 생성
 		//MetadataInfo metadataInfo = metadataService.convertMetadata(uploadRequest.getProperties(), uploadRequest.getUserUUID(), uploadRequest.getName());
@@ -253,11 +251,11 @@ public class ContentService {
 
 		if (Objects.nonNull(targetData)) {
 			if (targetType.equals(TargetType.QR)) {
-				imgPath = decodeData(targetData);
+				imgPath = decodeData(targetData, content.getWorkspaceUUID());
 			}
 			if (targetType.equals(TargetType.VTarget)) {
 				//imgPath = fileUploadUrl + fileUploadPath + defaultVTarget;defaultVTarget
-				imgPath = fileDownloadService.getFilePath(fileUploadPath, V_TARGET_DEFAULT_NAME);
+				imgPath = fileDownloadService.getDefaultImagePath(REPORT_DEFAULT_DIRECTORY, V_TARGET_DEFAULT_NAME);
 			}
 			if (targetType.equals(TargetType.VR)) {
 				//imgPath = fileUploadUrl + fileUploadPath + defaultVTarget;defaultVTarget
@@ -336,7 +334,7 @@ public class ContentService {
 
 		//3. 수정 컨텐츠 업로드
 		String uploadPath = fileUploadService.uploadByFileInputStream(
-			updateRequest.getContent(), CONTENT_DIRECTORY, targetContent.getUuid());
+			updateRequest.getContent(), CONTENT_DIRECTORY, targetContent.getWorkspaceUUID(), targetContent.getUuid());
 		// 3 수정 컨텐츠 경로 반영
 		targetContent.setPath(uploadPath);
 
@@ -377,12 +375,13 @@ public class ContentService {
 		if (!target.getData().equals(updateRequest.getTargetData())
 			|| updateRequest.getTargetType() != target.getType()) {
 			if (updateRequest.getTargetType().equals(TargetType.QR)) {
-				String uploadImgPath = decodeData(updateRequest.getTargetData());
+				String uploadImgPath = decodeData(updateRequest.getTargetData(), targetContent.getWorkspaceUUID());
 				fileUploadService.deleteByFileUrl(target.getImgPath());
 				target.setImgPath(uploadImgPath);
 			}
 			if (updateRequest.getTargetType().equals(TargetType.VTarget)) {
-				String uploadImgPath = fileDownloadService.getFilePath(fileUploadPath, V_TARGET_DEFAULT_NAME);
+				String uploadImgPath = fileDownloadService.getDefaultImagePath(
+					REPORT_DEFAULT_DIRECTORY, V_TARGET_DEFAULT_NAME);
 				fileUploadService.deleteByFileUrl(target.getImgPath());
 				target.setImgPath(uploadImgPath);
 			}
@@ -773,7 +772,7 @@ public class ContentService {
 			.workspaceUUID(content.getWorkspaceUUID())
 			//.content(convertFileToMultipart(uploadPath.concat(contentUUID).concat(ARES_FILE_EXTENSION)))
 			//.content(convertFileToMultipart(contentUUID.concat(ARES_FILE_EXTENSION)))
-			.content(fileDownloadService.getMultipartfile(contentUUID.concat(ARES_FILE_EXTENSION)))
+			//.content(fileDownloadService.getMultipartfile(contentUUID.concat(ARES_FILE_EXTENSION)))
 			// TODO : 공정 수정 후 반영 예정
 			//                .contentType(content.getType().getType())
 			.name(response.getData().getName())
@@ -786,7 +785,7 @@ public class ContentService {
 		return contentUpload(uploadRequest);
 	}
 
-	private MultipartFile convertFileToMultipart(String fileUrl) {
+	/*private MultipartFile convertFileToMultipart(String fileUrl) {
 		File file = new File(fileUrl);
 
 		// S3저장소를 쓰는 경우 S3에서 해당 ares파일을 다운받는다.
@@ -809,7 +808,7 @@ public class ContentService {
 		}
 		return null;
 	}
-
+*/
 	@Transactional
 	public ApiResponse<ContentUploadResponse> contentDuplicate(
 		final String contentUUID, final String workspaceUUID, final String userUUID
@@ -886,7 +885,7 @@ public class ContentService {
 		//3. 새로 생성하는 컨텐츠의 ares (기존 ares와 내용은 같다.), 파일명은 컨텐츠 식별자(contentUUID)와 동일
 		//String fileUploadPath = this.fileUploadService.uploadByFileInputStream(originFile, newContentUUID + "");
 		String uploadPath = this.fileUploadService.copyByFileObject(
-			oldContents.getPath(), CONTENT_DIRECTORY, newContentUUID);
+			oldContents.getPath(), CONTENT_DIRECTORY, workspaceUUID, newContentUUID);
 		log.info("CONTENT UPLOAD - file upload path : {}", uploadPath);
 
 		Content newContent = Content.builder()
@@ -1087,7 +1086,7 @@ public class ContentService {
 		return licenseInfoResponse;
 	}
 
-	public String decodeData(String encodeURL) {
+	public String decodeData(String encodeURL, String workspaceUUID) {
 		String imgPath = "";
 
 		try {
@@ -1099,7 +1098,7 @@ public class ContentService {
 
 			log.debug("{}", targetData);
 
-			imgPath = getImgPath(targetData);
+			imgPath = getImgPath(targetData, workspaceUUID);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -1107,7 +1106,7 @@ public class ContentService {
 		return imgPath;
 	}
 
-	private String getImgPath(String targetData) {
+	private String getImgPath(String targetData, String workspaceUUID) {
 		try (ByteArrayOutputStream os = new ByteArrayOutputStream()) {
 			BufferedImage qrImage = QRcodeGenerator.generateQRCodeImage(targetData, 256, 256);
 			ImageIO.write(qrImage, "png", os);
@@ -1117,7 +1116,7 @@ public class ContentService {
 				"%s_%s%s", LocalDate.now().toString(), RandomStringUtils.randomAlphanumeric(10).toLowerCase(),
 				REPORT_FILE_EXTENSION
 			);
-			return fileUploadService.uploadByBase64Image(qrString, REPORT_DIRECTORY, randomFileName);
+			return fileUploadService.uploadByBase64Image(qrString, REPORT_DIRECTORY, workspaceUUID, randomFileName);
 		} catch (Exception e) {
 			log.error(e.getMessage());
 			throw new ContentServiceException(ErrorCode.ERR_CONTENT_UPLOAD);

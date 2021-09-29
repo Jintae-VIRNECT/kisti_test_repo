@@ -102,6 +102,7 @@ public class ProjectService {
 	private static final String PROJECT_DIRECTORY = "project";
 	private static final String REPORT_DIRECTORY = "report";
 	private static final String REPORT_FILE_EXTENSION = ".png";
+	private static final String REPORT_DEFAULT_DIRECTORY = "workspace/report/";
 
 	/**
 	 * 프로젝트 업로드
@@ -113,7 +114,7 @@ public class ProjectService {
 		//1-1. 프로젝트 파일 체크
 		String fileName = projectUploadRequest.getProject()
 			.substring(projectUploadRequest.getProject().lastIndexOf("/") + 1);
-		long projectFileSize = fileDownloadService.getFileSize(PROJECT_DIRECTORY, fileName);
+		long projectFileSize = fileDownloadService.getFileSize(projectUploadRequest.getProject());
 		//1-2. 업로드 사용자의 MAKE 라이선스 체크
 		if (!checkUserHaveMAKELicense(projectUploadRequest.getUserUUID(), projectUploadRequest.getWorkspaceUUID())) {
 			throw new ContentServiceException(ErrorCode.ERR_PROJECT_UPLOAD_INVALID_LICENSE);
@@ -125,8 +126,10 @@ public class ProjectService {
 
 		//2. 프로젝트 저장
 		String projectUUID = UUID.randomUUID().toString();
-		String projectPath = fileUploadService.copyByFileObject(
-			projectUploadRequest.getProject(), PROJECT_DIRECTORY, projectUUID);
+		String projectPath = fileUploadService.copyByFileObject(projectUploadRequest.getProject(), PROJECT_DIRECTORY,
+			projectUploadRequest.getWorkspaceUUID(),
+			projectUUID
+		);
 		fileUploadService.deleteByFileUrl(projectUploadRequest.getProject());//원본파일 삭제
 
 		String properties = "";
@@ -184,10 +187,11 @@ public class ProjectService {
 				"%s_%s%s", LocalDate.now().toString(), RandomStringUtils.randomAlphanumeric(10).toLowerCase(),
 				REPORT_FILE_EXTENSION
 			);
-			targetPath = fileUploadService.uploadByBase64Image(qrString, REPORT_DIRECTORY, randomFileName);
+			targetPath = fileUploadService.uploadByBase64Image(qrString, REPORT_DIRECTORY,
+				projectUploadRequest.getWorkspaceUUID(), randomFileName);
 		}
 		if (projectUploadRequest.getTarget().getType() == TargetType.VTarget) {
-			targetPath = fileDownloadService.getFilePath("workspace/report/", "virnect_target.png");
+			targetPath = fileDownloadService.getDefaultImagePath(REPORT_DEFAULT_DIRECTORY, "virnect_target.png");
 		}
 		if (projectUploadRequest.getTarget().getType() == TargetType.Image) {
 			targetPath = projectUploadRequest.getTarget().getFile();
@@ -499,7 +503,6 @@ public class ProjectService {
 		return generateProjectResponse(project);
 	}
 
-
 	@Transactional
 	public ProjectDeleteResponse deleteProject(List<String> projectUUIDList) {
 		List<Project> projectList = projectRepository.findByUuidIn(projectUUIDList);
@@ -565,16 +568,14 @@ public class ProjectService {
 				throw new ContentServiceException(ErrorCode.ERR_PROJECT_UPDATE_INVALID_LICENSE);
 			}
 			//최대 업로드 사용량 체크
-			String fileName = projectUpdateRequest.getProject()
-				.substring(projectUpdateRequest.getProject().lastIndexOf("/") + 1);
-			long projectFileSize = fileDownloadService.getFileSize(PROJECT_DIRECTORY, fileName);
+			long projectFileSize = fileDownloadService.getFileSize(projectUpdateRequest.getProject());
 			if (!checkWorkspaceMaxStorage(
 				projectUpdateRequest.getUserUUID(), projectFileSize - project.getSize()
 			)) {
 				throw new ContentServiceException(ErrorCode.ERR_PROJECT_UPLOAD_MAX_STORAGE);
 			}
 			String newProjectPath = fileUploadService.copyByFileObject(
-				projectUpdateRequest.getProject(), PROJECT_DIRECTORY, projectUUID);
+				projectUpdateRequest.getProject(), PROJECT_DIRECTORY, project.getWorkspaceUUID(), projectUUID);
 			fileUploadService.deleteByFileUrl(projectUpdateRequest.getProject());//원본파일 삭제
 			fileUploadService.deleteByFileUrl(project.getPath());
 			project.setPath(newProjectPath);
@@ -659,7 +660,7 @@ public class ProjectService {
 				projectTarget.setPath(null);
 			}
 			if (projectUpdateRequest.getTarget().getType() == TargetType.VTarget) {
-				String targetPath = fileDownloadService.getFilePath("workspace/report/", "virnect_target.png");
+				String targetPath = fileDownloadService.getDefaultImagePath(REPORT_DEFAULT_DIRECTORY, "virnect_target.png");
 				projectTarget.setPath(targetPath);
 			}
 			if (projectUpdateRequest.getTarget().getType() == TargetType.QR) {
@@ -668,7 +669,8 @@ public class ProjectService {
 					"%s_%s%s", LocalDate.now().toString(), RandomStringUtils.randomAlphanumeric(10).toLowerCase(),
 					REPORT_FILE_EXTENSION
 				);
-				String targetPath = fileUploadService.uploadByBase64Image(qrString, REPORT_DIRECTORY, randomFileName);
+				String targetPath = fileUploadService.uploadByBase64Image(qrString, REPORT_DIRECTORY,
+					project.getWorkspaceUUID(), randomFileName);
 				projectTarget.setPath(targetPath);
 			}
 			if (projectUpdateRequest.getTarget().getType() == TargetType.Image) {
