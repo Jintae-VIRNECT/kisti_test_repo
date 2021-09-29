@@ -642,15 +642,14 @@ public class LocalFileManagementService implements IFileManagementService {
         }
 
         // check profile directory name or path
-        if(dirPath == null)
-            dirPath = profileBucketName;
+        if(dirPath == null) { dirPath = profileBucketName; };
 
         // file upload with create a InputStream for object upload.
         String fileUrl;
         StringBuilder objectPath = new StringBuilder();
         try {
             String objectName = String.format("%s_%s", LocalDate.now(), RandomStringUtils.randomAlphabetic(20));
-            objectPath.append(dirPath).append("/").append(objectName).append(".").append(fileExtension);
+            objectPath.append(dirPath).append("/").append(profileBucketName).append("/").append(objectName).append(".").append(fileExtension);
             // Create headers
             Map<String, String> headers = new HashMap<>();
             headers.put("Content-Type", file.getContentType());
