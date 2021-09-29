@@ -41,7 +41,7 @@
           </template>
           <el-input
             v-model="form.id"
-            class="check"
+            :class="cssVars"
             maxlength="20"
             :placeholder="$t('members.create.idPlaceholder')"
           />
@@ -258,6 +258,7 @@ export default {
   mounted() {
     this.userInfoList = this.userInfoList.filter(form => form.email)
     if (!this.userInfoList.length) this.reset()
+    console.log(this.$i18n.locale)
   },
   computed: {
     ...mapGetters({
@@ -269,6 +270,9 @@ export default {
     },
     availableMember() {
       return this.membersTotal + this.userInfoList.length
+    },
+    cssVars() {
+      return this.$i18n.locale
     },
   },
 }
@@ -312,8 +316,11 @@ export default {
       &.full {
         width: 100%;
       }
-      &.check {
+      &.ko {
         width: 425px;
+      }
+      &.en {
+        width: 374px;
       }
     }
   }
