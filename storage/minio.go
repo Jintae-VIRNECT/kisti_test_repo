@@ -90,7 +90,8 @@ func New() *Client {
 }
 
 func (c *Client) getObjectName(target string) string {
-	return path.Join(c.ResourceName, target)
+	//return path.Join(c.ResourceName, target)
+	return target
 }
 
 func (c *Client) Upload(ctx context.Context, src string, target string) error {
