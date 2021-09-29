@@ -43,7 +43,7 @@ public class S3FileService implements FileService {
 	private final AmazonS3 amazonS3Client;
 	@Value("${cloud.aws.s3.bucket.name:virnect-platform}")
 	private String bucketName;
-	@Value("${cloud.aws.s3.bucket.resource:profile}")
+	@Value("${cloud.aws.s3.bucket.resource:user/profile}")
 	private String bucketResource;
 
 	@Override
