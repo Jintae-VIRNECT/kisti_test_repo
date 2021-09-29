@@ -258,7 +258,6 @@ export default {
   mounted() {
     this.userInfoList = this.userInfoList.filter(form => form.email)
     if (!this.userInfoList.length) this.reset()
-    console.log(this.$i18n.locale)
   },
   computed: {
     ...mapGetters({
