@@ -111,16 +111,20 @@ export default {
     return new Member(data)
   },
   /**
-   * 아이디 중복 체크
+   * 워크스페이스 전용 계정 아이디 중복 체크
    * @param {string} userId
    */
   async checkMembersId(userId) {
-    const data = await api('MEMBER_ID_CHECK', {
+    const { memberInfoList } = await api('MEMBER_LIST', {
+      route: {
+        workspaceId: activeWorkspaceGetter().uuid,
+      },
       params: {
-        email: userId,
+        search: userId,
       },
     })
-    return data
+
+    return memberInfoList.length ? false : true
   },
   /**
    * 워크스페이스 프로필 설정 변경
