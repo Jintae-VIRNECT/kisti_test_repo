@@ -12,10 +12,16 @@
       </button>
     </div>
     <div class="footer-button-container">
-      <mobile-more-button></mobile-more-button>
+      <mobile-more-button
+        @selectMember="openParticipantModal"
+      ></mobile-more-button>
       <mobile-capture-button :disabled="!isMainViewOn"></mobile-capture-button>
       <mobile-flash-button></mobile-flash-button>
     </div>
+    <mobile-participant-modal
+      :visible.sync="isParticipantModalShow"
+      :beforeClose="beforeClose"
+    ></mobile-participant-modal>
   </footer>
 </template>
 
@@ -24,6 +30,7 @@ import tabChangeMixin from 'mixins/tabChange'
 import MobileMoreButton from './partials/MobileMoreButton.vue'
 import MobileCaptureButton from './partials/MobileCaptureButton.vue'
 import MobileFlashButton from './partials/MobileFlashButton.vue'
+//import MobileParticipantModal from '../modal/MobileParticipantModal'
 import { mapGetters } from 'vuex'
 
 export default {
@@ -32,11 +39,25 @@ export default {
     MobileMoreButton,
     MobileCaptureButton,
     MobileFlashButton,
+    MobileParticipantModal: () => import('../modal/MobileParticipantModal'),
+  },
+  data() {
+    return {
+      isParticipantModalShow: false,
+    }
   },
   computed: {
     ...mapGetters(['mainView']),
     isMainViewOn() {
       return this.mainView && this.mainView.id && this.mainView.video
+    },
+  },
+  methods: {
+    openParticipantModal() {
+      this.isParticipantModalShow = true
+    },
+    beforeClose() {
+      this.isParticipantModalShow = false
     },
   },
 }

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="28px" height="28px" viewBox="0 0 28 28" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>CF4B825B-4E74-4B6D-94D5-66AADACE73E3@1x</title>
+    <defs>
+        <path d="M23,5 L10,5 C8.9,5 8,5.9 8,7 L8,10.99 L10,10.99 L10,6.98 L23,6.98 L23,21.01 L10,21.01 L10,16.99 L8,16.99 L8,21 C8,22.1 8.9,22.98 10,22.98 L23,22.98 C24.1,22.98 25,22.1 25,21 L25,7 C25,5.89 24.1,5 23,5 Z M7,9.99 L3,13.99 L7,17.99 L7,14.99 L17,14.99 L17,12.99 L7,12.99 L7,9.99 Z" id="path-1"></path>
+    </defs>
+    <g id="Remote_collabo_Mobile" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="RWS_0060-_접속화면_참가자-정보_섬네일-선택" transform="translate(-32.000000, -518.000000)">
+            <g id="bottom_area" transform="translate(0.000000, 280.000000)">
+                <g id="list02" transform="translate(16.000000, 224.000000)">
+                    <g id="icon_exit" transform="translate(16.000000, 14.000000)">
+                        <rect id="tr" x="0" y="0" width="28" height="28"></rect>
+                        <mask id="mask-2" fill="white">
+                            <use xlink:href="#path-1"></use>
+                        </mask>
+                        <use id="icon/action/input_24px" fill="#71767F" fill-rule="nonzero" xlink:href="#path-1"></use>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

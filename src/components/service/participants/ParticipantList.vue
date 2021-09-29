@@ -31,47 +31,50 @@
 </template>
 
 <script>
-import { mapGetters, mapActions } from 'vuex'
-import { SIGNAL, VIDEO, ROLE } from 'configs/remote.config'
-import { kickoutMember } from 'api/http/member'
-import { maxParticipants } from 'utils/callOptions'
+// import { mapGetters, mapActions } from 'vuex'
+// import { SIGNAL, VIDEO, ROLE } from 'configs/remote.config'
+// import { kickoutMember } from 'api/http/member'
+// import { maxParticipants } from 'utils/callOptions'
 
 import ParticipantVideo from './ParticipantVideo'
 import InviteModal from '../modal/InviteModal'
 import SelectView from '../modal/SelectView'
 import CameraControl from './CameraControl'
+import participantListMixin from 'mixins/participantList'
+
 export default {
   name: 'ParticipantList',
+  mixins: [participantListMixin],
   components: {
     ParticipantVideo,
     InviteModal,
     SelectView,
     CameraControl,
   },
-  data() {
-    return {
-      selectview: false,
-      invite: false,
-      force: null,
-    }
-  },
-  computed: {
-    ...mapGetters([
-      'participants',
-      'mainView',
-      'viewForce',
-      'roomInfo',
-      'openRoom',
-      'allowCameraControl',
-      'restrictedRoom',
-    ]),
-    isLeader() {
-      return this.account.roleType === ROLE.LEADER
-    },
-    isMaxLength() {
-      return this.participants.length === maxParticipants
-    },
-  },
+  // data() {
+  //   return {
+  //     selectview: false,
+  //     invite: false,
+  //     force: null,
+  //   }
+  // },
+  // computed: {
+  //   ...mapGetters([
+  //     'participants',
+  //     'mainView',
+  //     'viewForce',
+  //     'roomInfo',
+  //     'openRoom',
+  //     'allowCameraControl',
+  //     'restrictedRoom',
+  //   ]),
+  //   isLeader() {
+  //     return this.account.roleType === ROLE.LEADER
+  //   },
+  //   isMaxLength() {
+  //     return this.participants.length === maxParticipants
+  //   },
+  // },
   watch: {
     'participants.length': {
       deep: false,
@@ -96,84 +99,84 @@ export default {
       },
     },
   },
-  methods: {
-    ...mapActions(['setMainView', 'addChat', 'removeMember']),
-    selectMain(participant) {
-      if (this.restrictedRoom) {
-        this.$call.sendVideo(participant.id, true)
-        return
-      }
-      this.selectview = {
-        id: participant.id,
-        nickname: participant.nickname,
-      }
-    },
-    normal() {
-      this.changeMainView(this.selectview, false)
-    },
-    share() {
-      this.changeMainView(this.selectview, true)
-    },
-    changeMainView(select, force) {
-      this.selectview = false
-      if (
-        this.account.roleType === ROLE.LEADER &&
-        select.id === this.mainView.id &&
-        this.viewForce === force
-      )
-        return
-      this.$call.sendVideo(select.id, force)
-      this.setMainView({ id: select.id, force })
-    },
-    more() {
-      this.invite = !this.invite
-    },
-    async kickout(participantId) {
-      const params = {
-        sessionId: this.roomInfo.sessionId,
-        workspaceId: this.workspace.uuid,
-        leaderId: this.account.uuid,
-        participantId: participantId,
-      }
-      const rtn = await kickoutMember(params)
-      if (rtn.result === true) {
-        this.removeMember(participantId)
-      }
-      // this.$call.disconnect(this.participant.connectionId)
-    },
-    signalVideo(event) {
-      const data = JSON.parse(event.data)
-      if (data.type === VIDEO.SHARE) {
-        const participant = this.participants.find(user => user.id === data.id)
-        this.addChat({
-          name: participant.nickname,
-          status: this.isLeader ? 'sharing-start-leader' : 'sharing-start',
-          type: 'system',
-        })
-        this.force = data.id
-      } else if (data.type === VIDEO.NORMAL) {
-        if (this.force) {
-          const participant = this.participants.find(
-            user => user.id === this.force,
-          )
-          if (participant) {
-            this.addChat({
-              name: participant.nickname,
-              status: this.isLeader ? 'sharing-stop-leader' : 'sharing-stop',
-              type: 'system',
-            })
-          }
-        }
-        this.force = null
-      }
-    },
-  },
-  beforeDestroy() {
-    this.$eventBus.$off(SIGNAL.VIDEO, this.signalVideo)
-  },
-  created() {
-    this.$eventBus.$on(SIGNAL.VIDEO, this.signalVideo)
-  },
+  // methods: {
+  //   ...mapActions(['setMainView', 'addChat', 'removeMember']),
+  //   selectMain(participant) {
+  //     if (this.restrictedRoom) {
+  //       this.$call.sendVideo(participant.id, true)
+  //       return
+  //     }
+  //     this.selectview = {
+  //       id: participant.id,
+  //       nickname: participant.nickname,
+  //     }
+  //   },
+  //   normal() {
+  //     this.changeMainView(this.selectview, false)
+  //   },
+  //   share() {
+  //     this.changeMainView(this.selectview, true)
+  //   },
+  //   changeMainView(select, force) {
+  //     this.selectview = false
+  //     if (
+  //       this.account.roleType === ROLE.LEADER &&
+  //       select.id === this.mainView.id &&
+  //       this.viewForce === force
+  //     )
+  //       return
+  //     this.$call.sendVideo(select.id, force)
+  //     this.setMainView({ id: select.id, force })
+  //   },
+  //   more() {
+  //     this.invite = !this.invite
+  //   },
+  //   async kickout(participantId) {
+  //     const params = {
+  //       sessionId: this.roomInfo.sessionId,
+  //       workspaceId: this.workspace.uuid,
+  //       leaderId: this.account.uuid,
+  //       participantId: participantId,
+  //     }
+  //     const rtn = await kickoutMember(params)
+  //     if (rtn.result === true) {
+  //       this.removeMember(participantId)
+  //     }
+  //     // this.$call.disconnect(this.participant.connectionId)
+  //   },
+  //   signalVideo(event) {
+  //     const data = JSON.parse(event.data)
+  //     if (data.type === VIDEO.SHARE) {
+  //       const participant = this.participants.find(user => user.id === data.id)
+  //       this.addChat({
+  //         name: participant.nickname,
+  //         status: this.isLeader ? 'sharing-start-leader' : 'sharing-start',
+  //         type: 'system',
+  //       })
+  //       this.force = data.id
+  //     } else if (data.type === VIDEO.NORMAL) {
+  //       if (this.force) {
+  //         const participant = this.participants.find(
+  //           user => user.id === this.force,
+  //         )
+  //         if (participant) {
+  //           this.addChat({
+  //             name: participant.nickname,
+  //             status: this.isLeader ? 'sharing-stop-leader' : 'sharing-stop',
+  //             type: 'system',
+  //           })
+  //         }
+  //       }
+  //       this.force = null
+  //     }
+  //   },
+  // },
+  // beforeDestroy() {
+  //   this.$eventBus.$off(SIGNAL.VIDEO, this.signalVideo)
+  // },
+  // created() {
+  //   this.$eventBus.$on(SIGNAL.VIDEO, this.signalVideo)
+  // },
 }
 </script>
 <style>

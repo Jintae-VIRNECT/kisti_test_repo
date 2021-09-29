@@ -32,42 +32,7 @@ const MENU = {
 
 export default {
   data() {
-    return {
-      menus: [
-        {
-          name: MENU.CAMERA_CONTROL,
-          icon: require('assets/image/call/mdpi_icon_camera_control_new.svg'),
-          title: this.$t('service.camera_control'),
-          subMenuIcon: true,
-          visible: true,
-        },
-        {
-          name: MENU.SERVER_RECORD,
-          icon: require('assets/image/call/mdpi_icon_server_rec_new.svg'),
-          title: this.$t('service.record_server'),
-          visible: true,
-        },
-        {
-          name: MENU.MEMBER,
-          icon: require('assets/image/call/mdpi_icon_member_new.svg'),
-          title: this.$t('workspace.info_remote_member'),
-          visible: true,
-        },
-        {
-          name: MENU.LOCATION,
-          icon: require('assets/image/call/mdpi_icon_location_new.svg'),
-          title: this.$t('service.map_information'),
-          visible: false,
-        },
-        {
-          name: MENU.SPOT_CONTROL,
-          icon: require('assets/image/call/mdpi_icon_spot_new.svg'),
-          title: this.$t('service.spot_control'),
-          subMenuIcon: true,
-          visible: false,
-        },
-      ],
-    }
+    return {}
   },
   watch: {
     isOnpremise: {
@@ -100,10 +65,49 @@ export default {
     hasMainView() {
       return this.mainView && this.mainView.id
     },
+    menus() {
+      return [
+        {
+          name: MENU.CAMERA_CONTROL,
+          icon: require('assets/image/call/mdpi_icon_camera_control_new.svg'),
+          title: this.$t('service.camera_control'),
+          subMenuIcon: true,
+          visible: true,
+        },
+        {
+          name: MENU.SERVER_RECORD,
+          icon: require('assets/image/call/mdpi_icon_server_rec_new.svg'),
+          title: this.$t('service.record_server'),
+          visible: true,
+        },
+        {
+          name: MENU.MEMBER,
+          icon: require('assets/image/call/mdpi_icon_member_new.svg'),
+          title: this.$t('workspace.info_remote_member'),
+          visible: true,
+        },
+        {
+          name: MENU.LOCATION,
+          icon: require('assets/image/call/mdpi_icon_location_new.svg'),
+          title: this.$t('service.map_information'),
+          visible: false,
+        },
+        {
+          name: MENU.SPOT_CONTROL,
+          icon: require('assets/image/call/mdpi_icon_spot_new.svg'),
+          title: this.$t('service.spot_control'),
+          subMenuIcon: true,
+          visible: false,
+        },
+      ]
+    },
   },
   methods: {
     onSelect(menu) {
       switch (menu.name) {
+        case MENU.MEMBER:
+          this.$emit('selectMember')
+          break
         case MENU.CAMERA_CONTROL:
           this.$emit('selectCameraControl')
           break

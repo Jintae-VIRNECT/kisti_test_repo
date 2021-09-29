@@ -29,6 +29,7 @@
       >
         <more-menu-camera @backToMain="onBackToMain"></more-menu-camera>
         <more-menu-main
+          @selectMember="onSelectMember"
           @selectCameraControl="onSelectCameraControl"
         ></more-menu-main>
       </div>
@@ -91,6 +92,9 @@ export default {
       setTimeout(() => {
         this.isCameraMenu = false
       }, 400)
+    },
+    onSelectMember() {
+      this.$emit('selectMember')
     },
   },
 }

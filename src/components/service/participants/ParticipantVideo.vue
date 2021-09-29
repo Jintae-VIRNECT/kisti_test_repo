@@ -337,8 +337,9 @@ export default {
       event.target.style.display = 'none'
     },
     mute() {
-      const mute = this.participant.mute
-      this.$call.mute(this.participant.connectionId, !mute)
+      //const mute = this.participant.mute
+      //this.$call.mute(this.participant.connectionId, !mute)
+      this.$emit('mute', this.participant)
       this.$nextTick(() => {
         this.$eventBus.$emit('popover:close')
       })
