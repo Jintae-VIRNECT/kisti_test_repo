@@ -2,16 +2,14 @@
 RELEASE
 
 New Features
-- APK 업로드 및 관라 API 사내 아이피로 접근시 인증 예외 처리 추가 [DEVCENTER-3886]
-- 세션 기반 인증 필터 추가 [DEVCENTER-3344]
-- 인증 서버 웹 소켓 라우팅 규칙 추가 [DEVCENTER-4131]
+- pf-account 서버 라우팅 규칙 추가
 
 
 Bug Fixes
-- 없음
+- 앱과 통신시, 메시지 암호화 복호화 부분에서 memory leak 의심 부분 수정
+- 게스트 사용자 인증 url 인증 에러 이슈 수정
 
 Limitation
-- 세션 기반 인증 필터는, 클라이언트에서 세션 기반 인증 시도 시에만 작동, 기본 jwt 토큰 인증 필터도 같이 동작하고 있음.
-
+- 없음
 
 Copyright (C) 2020, VIRNECT CO., LTD. - All Rights Reserved
