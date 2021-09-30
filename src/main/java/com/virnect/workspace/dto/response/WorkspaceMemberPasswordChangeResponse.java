@@ -1,24 +1,24 @@
 package com.virnect.workspace.dto.response;
 
-import java.time.LocalDateTime;
-
 import io.swagger.annotations.ApiModel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+
+import java.time.LocalDateTime;
 
 @ApiModel
 @Getter
 @RequiredArgsConstructor
 public class WorkspaceMemberPasswordChangeResponse {
-	private final String masterUUID;
-	private final String memberUUID;
+	private final String requestUserId;
+	private final String userId;
 	private final LocalDateTime passwordChangedDate;
 
 	@Override
 	public String toString() {
 		return "WorkspaceMemberPasswordChangeResponse{" +
-			"masterUUID='" + masterUUID + '\'' +
-			", memberUUID='" + memberUUID + '\'' +
+			"requestUserId='" + requestUserId + '\'' +
+			", userId='" + userId + '\'' +
 			", passwordChangedDate=" + passwordChangedDate +
 			'}';
 	}

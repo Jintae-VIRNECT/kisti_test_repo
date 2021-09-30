@@ -1,5 +1,6 @@
 package com.virnect.workspace.dto.response;
 
+import com.virnect.workspace.domain.workspace.Role;
 import com.virnect.workspace.dto.rest.PageMetadataRestResponse;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
@@ -33,7 +34,7 @@ public class WorkspaceInfoListResponse {
         @ApiModelProperty(value = "워크스페이스 소개", notes = "워크스페이스 설명 문구", position = 2, example = "SMIC Workspace")
         private String description;
         @ApiModelProperty(value = "해당 워크스페이스에서의 역할 ( MASTER(마스터), MANAGER(매니저), MEMBER(멤버) )", position = 3, example = "MASTER")
-        private String role;
+        private Role role;
         @ApiModelProperty(value = "워크스페이스 생성일자", position = 4, example = "2020-01-20T14:05:30")
         private LocalDateTime createdDate;
         @ApiModelProperty(value = "워크스페이스 수정 일자", position = 5, example = "2020-01-20T14:05:30")

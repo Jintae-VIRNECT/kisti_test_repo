@@ -24,7 +24,7 @@ import com.virnect.workspace.exception.WorkspaceException;
  * DESCRIPTION:
  */
 @SpringBootTest
-@ActiveProfiles("local")
+@ActiveProfiles("test")
 @AutoConfigureMockMvc
 public class CreateWorkspaceTest {
     @Autowired
@@ -35,15 +35,14 @@ public class CreateWorkspaceTest {
         // given
         RequestBuilder request = post("/workspaces")
             .contentType(MediaType.MULTIPART_FORM_DATA)
-            .param("userId", "498b1839dc29ed7bb2ee90ad6985c608")
+            .param("userId", "4b260e69bd6fa9a583c9bbe40f5aceb3")
             .param("name", "이름")
             .param("description", "설명");
         // when
         this.mockMvc.perform(request)
             .andDo(print())
             // then
-            .andExpect((result -> assertTrue(result.getResponse().getContentAsString().contains("1001"))))//ㅎㅎ;;;
-            .andExpect((result -> assertTrue(result.getResolvedException().getClass().isAssignableFrom(WorkspaceException.class))));
+            .andExpect((result -> assertTrue(result.getResponse().getContentAsString().contains("139"))));
     }
     @Test
     public void creete(){

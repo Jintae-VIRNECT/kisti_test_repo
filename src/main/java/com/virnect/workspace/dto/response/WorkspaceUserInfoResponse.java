@@ -1,5 +1,6 @@
 package com.virnect.workspace.dto.response;
 
+import com.virnect.workspace.domain.workspace.Role;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -23,7 +24,7 @@ public class WorkspaceUserInfoResponse {
     private String loginLock;
     private String userType;
     private String nickName;
-    private String role;
+    private Role role;
     private Long roleId;
     private String createdDate;
     private String updatedDate;

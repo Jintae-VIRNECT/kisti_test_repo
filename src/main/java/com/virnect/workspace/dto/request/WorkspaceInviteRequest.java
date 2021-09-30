@@ -1,5 +1,6 @@
 package com.virnect.workspace.dto.request;
 
+import com.virnect.workspace.domain.workspace.Role;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
 import lombok.Setter;
@@ -46,6 +47,11 @@ public class WorkspaceInviteRequest {
         @ApiModelProperty(value = "planView", position = 4)
         @NotNull(message = "초대할 유저의 뷰 플랜 부여 여부는 필수값입니다.")
         private boolean planView;
+    }
+
+    @ApiModelProperty(hidden = true)
+    public boolean existMasterUserInvite() {
+        return userInfoList.stream().anyMatch(userInfo -> userInfo.getRole().equals(Role.MASTER.name()));
     }
 }
 

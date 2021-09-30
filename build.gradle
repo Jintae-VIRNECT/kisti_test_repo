@@ -7,8 +7,8 @@ plugins {
 }
 
 ext {
-    set('springCloudVersion' , 'Hoxton.SR10')
-    set('mapstructVersion','1.4.2.Final')
+    set('springCloudVersion', 'Hoxton.SR10')
+    set('mapstructVersion', '1.4.2.Final')
 }
 
 group = 'com.virnect'
@@ -39,6 +39,7 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-data-redis'
     compileOnly 'org.projectlombok:lombok'
     runtimeOnly 'mysql:mysql-connector-java'
+    runtimeOnly 'com.h2database:h2'
     annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
     annotationProcessor 'org.projectlombok:lombok'
     testImplementation('org.springframework.boot:spring-boot-starter-test') {
@@ -106,16 +107,23 @@ dependencies {
 
 test {
     useJUnitPlatform()
+    systemProperty("spring.active.profiles", "test")
+    environment("VIRNECT_ENV", "test")
 }
 
 // querydsl 적용
-def querydslSrcDir = 'src/main/generated'
+def querydslDir= "$buildDir/generated/querydsl"
 
 querydsl {
     library = "com.querydsl:querydsl-apt"
     jpa = true
-    querydslSourcesDir = querydslSrcDir
+    querydslSourcesDir = querydslDir
 }
+
+sourceSets {
+    main.java.srcDir querydslDir
+}
+
 
 compileQuerydsl {
     options.annotationProcessorPath = configurations.querydsl
@@ -124,15 +132,6 @@ compileQuerydsl {
 configurations {
     querydsl.extendsFrom compileClasspath
 }
-
-sourceSets {
-    main {
-        java {
-            srcDirs = ['src/main/java', querydslSrcDir]
-        }
-    }
-}
-
 
 // separate jar into app and library layers
 task moveLib {

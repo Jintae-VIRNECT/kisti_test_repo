@@ -1,5 +1,6 @@
 package com.virnect.workspace.application.license;
 
+import com.virnect.workspace.dto.rest.LicenseRevokeResponse;
 import com.virnect.workspace.dto.rest.MyLicenseInfoListResponse;
 import com.virnect.workspace.dto.rest.MyLicenseInfoResponse;
 import com.virnect.workspace.dto.rest.WorkspaceLicensePlanInfoResponse;
@@ -37,8 +38,8 @@ public class LicenseRestFallbackFactory implements FallbackFactory<LicenseRestSe
             }
 
             @Override
-            public ApiResponse<Boolean> revokeWorkspaceLicenseToUser(String workspaceId, String userId, String productName) {
-                return new ApiResponse<>(false);
+            public ApiResponse<LicenseRevokeResponse> revokeWorkspaceLicenseToUser(String workspaceId, String userId, String productName) {
+                return new ApiResponse<>(new LicenseRevokeResponse());
             }
         };
     }

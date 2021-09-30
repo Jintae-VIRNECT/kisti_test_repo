@@ -1,7 +1,6 @@
 package com.virnect.workspace.application.workspace;
 
 import com.virnect.workspace.application.license.LicenseRestService;
-import com.virnect.workspace.application.message.MessageRestService;
 import com.virnect.workspace.application.user.UserRestService;
 import com.virnect.workspace.dao.history.HistoryRepository;
 import com.virnect.workspace.dao.setting.SettingRepository;
@@ -10,6 +9,7 @@ import com.virnect.workspace.dao.workspace.WorkspaceRepository;
 import com.virnect.workspace.dao.workspace.WorkspaceUserPermissionRepository;
 import com.virnect.workspace.dao.workspace.WorkspaceUserRepository;
 import com.virnect.workspace.domain.setting.*;
+import com.virnect.workspace.domain.workspace.Role;
 import com.virnect.workspace.domain.workspace.Workspace;
 import com.virnect.workspace.domain.workspace.WorkspaceUser;
 import com.virnect.workspace.domain.workspace.WorkspaceUserPermission;
@@ -20,33 +20,28 @@ import com.virnect.workspace.dto.request.WorkspaceCreateRequest;
 import com.virnect.workspace.dto.request.WorkspaceSettingUpdateRequest;
 import com.virnect.workspace.dto.request.WorkspaceUpdateRequest;
 import com.virnect.workspace.dto.response.*;
-import com.virnect.workspace.dto.rest.MailRequest;
 import com.virnect.workspace.dto.rest.PageMetadataRestResponse;
 import com.virnect.workspace.dto.rest.UserInfoRestResponse;
 import com.virnect.workspace.dto.rest.WorkspaceLicensePlanInfoResponse;
-import com.virnect.workspace.event.cache.UserWorkspacesDeleteEvent;
+import com.virnect.workspace.event.mail.MailContextHandler;
+import com.virnect.workspace.event.mail.MailSendEvent;
 import com.virnect.workspace.exception.WorkspaceException;
 import com.virnect.workspace.global.common.ApiResponse;
-import com.virnect.workspace.global.common.RedirectProperty;
 import com.virnect.workspace.global.common.mapper.rest.RestMapStruct;
 import com.virnect.workspace.global.common.mapper.workspace.WorkspaceMapStruct;
 import com.virnect.workspace.global.constant.LicenseProduct;
 import com.virnect.workspace.global.constant.Mail;
-import com.virnect.workspace.global.constant.MailSender;
-import com.virnect.workspace.global.constant.Role;
 import com.virnect.workspace.global.error.ErrorCode;
 import com.virnect.workspace.infra.file.FileService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Profile;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 import org.thymeleaf.context.Context;
-import org.thymeleaf.spring5.SpringTemplateEngine;
 
 import java.text.DecimalFormat;
 import java.time.LocalDateTime;
@@ -64,23 +59,19 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public abstract class WorkspaceService {
-    private static final String serviceID = "workspace-server";
     private final WorkspaceRepository workspaceRepository;
     private final WorkspaceUserRepository workspaceUserRepository;
     private final WorkspaceUserPermissionRepository workspaceUserPermissionRepository;
     private final UserRestService userRestService;
-    private final MessageRestService messageRestService;
     private final FileService fileUploadService;
-    private final SpringTemplateEngine springTemplateEngine;
     private final HistoryRepository historyRepository;
-    private final MessageSource messageSource;
     private final LicenseRestService licenseRestService;
-    private final RedirectProperty redirectProperty;
     private final WorkspaceMapStruct workspaceMapStruct;
     private final RestMapStruct restMapStruct;
     private final ApplicationEventPublisher applicationEventPublisher;
     private final SettingRepository settingRepository;
     private final WorkspaceCustomSettingRepository workspaceCustomSettingRepository;
+    private final MailContextHandler mailContextHandler;
 
     /**
      * 워크스페이스 생성
@@ -157,9 +148,9 @@ public abstract class WorkspaceService {
 
 
         //role 정보 set
-        long masterUserCount = workspaceUserPermissionList.stream().filter(workspaceUserPermission -> workspaceUserPermission.getWorkspaceRole().getRole().equals(Role.MASTER.name())).count();
-        long managerUserCount = workspaceUserPermissionList.stream().filter(workspaceUserPermission -> workspaceUserPermission.getWorkspaceRole().getRole().equals(Role.MANAGER.name())).count();
-        long memberUserCount = workspaceUserPermissionList.stream().filter(workspaceUserPermission -> workspaceUserPermission.getWorkspaceRole().getRole().equals(Role.MEMBER.name())).count();
+        long masterUserCount = workspaceUserPermissionList.stream().filter(workspaceUserPermission -> workspaceUserPermission.getWorkspaceRole().getRole() == Role.MASTER).count();
+        long managerUserCount = workspaceUserPermissionList.stream().filter(workspaceUserPermission -> workspaceUserPermission.getWorkspaceRole().getRole() == (Role.MANAGER)).count();
+        long memberUserCount = workspaceUserPermissionList.stream().filter(workspaceUserPermission -> workspaceUserPermission.getWorkspaceRole().getRole() == (Role.MEMBER)).count();
 
         //plan 정보 set
         int remotePlanCount = 0, makePlanCount = 0, viewPlanCount = 0;
@@ -207,22 +198,6 @@ public abstract class WorkspaceService {
         return userInfoResponse.getData();
     }
 
-    /**
-     * pf-message 서버로 보낼 메일 전송 api body
-     *
-     * @param html      - 본문
-     * @param receivers - 수신정보
-     * @param sender    - 발신정보
-     * @param subject   - 제목
-     */
-    private void sendMailRequest(String html, List<String> receivers, String sender, String subject) {
-        MailRequest mailRequest = new MailRequest();
-        mailRequest.setHtml(html);
-        mailRequest.setReceivers(receivers);
-        mailRequest.setSender(sender);
-        mailRequest.setSubject(subject);
-        messageRestService.sendMail(mailRequest);
-    }
 
     /**
      * 워크스페이스 정보 변경
@@ -246,30 +221,20 @@ public abstract class WorkspaceService {
             throw new WorkspaceException(ErrorCode.ERR_UNEXPECTED_SERVER_ERROR);
         }
 
+        //이름이 변경된 경우에만 메일 전송
         if (!oldWorkspaceName.equals(workspaceUpdateRequest.getName())) {
             List<String> receiverEmailList = new ArrayList<>();
-            Context context = new Context();
-            context.setVariable("beforeWorkspaceName", oldWorkspaceName);
-            context.setVariable("afterWorkspaceName", workspaceUpdateRequest.getName());
-            context.setVariable("supportUrl", redirectProperty.getSupportWeb());
-
-            List<WorkspaceUser> workspaceUserList = workspaceUserRepository.findByWorkspace_Uuid(
-                    workspace.getUuid());
+            List<WorkspaceUser> workspaceUserList = workspaceUserRepository.findByWorkspace_Uuid(workspace.getUuid());
             workspaceUserList.forEach(workspaceUser -> {
-                applicationEventPublisher.publishEvent(new UserWorkspacesDeleteEvent(workspaceUser.getUserId()));//캐싱 삭제
+                //applicationEventPublisher.publishEvent(new UserWorkspacesDeleteEvent(workspaceUser.getUserId()));//캐싱 삭제
                 UserInfoRestResponse userInfoRestResponse = getUserInfo(workspaceUser.getUserId());
                 if (userInfoRestResponse != null) {
                     receiverEmailList.add(userInfoRestResponse.getEmail());
-                    if (userInfoRestResponse.getUuid().equals(workspace.getUserId())) {
-                        context.setVariable("workspaceMasterNickName", userInfoRestResponse.getNickname());
-                    }
                 }
             });
-
-            String subject = messageSource.getMessage(Mail.WORKSPACE_INFO_UPDATE.getSubject(), null, locale);
-            String template = messageSource.getMessage(Mail.WORKSPACE_INFO_UPDATE.getTemplate(), null, locale);
-            String html = springTemplateEngine.process(template, context);
-            sendMailRequest(html, receiverEmailList, MailSender.MASTER.getValue(), subject);
+            UserInfoRestResponse masterUserInfo = getUserInfo(workspace.getUserId());
+            Context context = mailContextHandler.getWorkspaceInfoUpdateContext(oldWorkspaceName, workspaceUpdateRequest.getName(), masterUserInfo);
+            applicationEventPublisher.publishEvent(new MailSendEvent(context, Mail.WORKSPACE_INFO_UPDATE, locale, receiverEmailList));
         }
         workspace.setName(workspaceUpdateRequest.getName());
         workspace.setDescription(workspaceUpdateRequest.getDescription());
@@ -282,7 +247,7 @@ public abstract class WorkspaceService {
             }
             //새 프로필 이미지 등록
             try {
-                workspace.setProfile(fileUploadService.upload(workspaceUpdateRequest.getProfile()));
+                workspace.setProfile(fileUploadService.upload(workspaceUpdateRequest.getProfile(), workspaceUpdateRequest.getWorkspaceId()));
             } catch (Exception e) {
                 throw new WorkspaceException(ErrorCode.ERR_UNEXPECTED_SERVER_ERROR);
             }
@@ -339,7 +304,7 @@ public abstract class WorkspaceService {
     public WorkspaceSecessionResponse deleteAllWorkspaceInfo(String userUUID) {
         List<WorkspaceUserPermission> workspaceUserPermissionList = workspaceUserPermissionRepository.findByWorkspaceUser_UserId(userUUID);
         workspaceUserPermissionList.forEach(workspaceUserPermission -> {
-            if (workspaceUserPermission.getWorkspaceRole().getRole().equals("MASTER")) {
+            if (workspaceUserPermission.getWorkspaceRole().getRole()==Role.MASTER) {
                 Workspace workspace = workspaceUserPermission.getWorkspaceUser().getWorkspace();
 
                 List<WorkspaceUser> workspaceUserList = workspace.getWorkspaceUserList();

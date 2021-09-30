@@ -1,5 +1,6 @@
 package com.virnect.workspace.dto.response;
 
+import com.virnect.workspace.domain.workspace.Role;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -20,6 +21,6 @@ public class WorkspaceNewMemberInfoResponse {
     private String name;
     private String email;
     private String profile;
-    private String role;
+    private Role role;
     private LocalDateTime joinDate;
 }

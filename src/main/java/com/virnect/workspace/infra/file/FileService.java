@@ -15,9 +15,10 @@ public interface FileService {
     /**
      * 파일 업로드 처리
      * @param file -  파일 업로드 요청
+     * @param workspaceUUID
      * @return - 업로드된 파일 url
      */
-    String upload(MultipartFile file) throws IOException;
+    String upload(MultipartFile file, String workspaceUUID) throws IOException;
 
     /**
      * 업로드 된 파일 삭제 요청
@@ -30,5 +31,5 @@ public interface FileService {
      * @param fileName
      * @return
      */
-    String getFileUrl(String fileName);
+    String getDefaultFileUrl(String fileName);
 }
