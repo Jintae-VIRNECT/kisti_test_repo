@@ -7,7 +7,7 @@
       @touchstart="touch"
       @touchend="touchEnd"
     >
-      <div class="participant-video__stream" v-if="participant.hasVideo">
+      <div class="participant-video__stream" v-if="!participant.hasVideo">
         <video
           :srcObject.prop="participant.stream"
           autoplay
@@ -17,6 +17,9 @@
           ref="participant-video"
           @play="mediaPlay"
         ></video>
+        <span class="participant-video__leader" v-if="isLeader && isMobileSize">
+          Leader
+        </span>
       </div>
       <div class="participant-video__profile" v-else>
         <img
@@ -25,15 +28,11 @@
           :src="profileUrl"
           @error="onImageError"
         />
-        <div class="participant-video__profile-dim"></div>
-        <profile
-          :thumbStyle="{
-            width: '4.571rem',
-            height: '4.571rem',
-            margin: '10px auto 0',
-          }"
-          :image="participant.path"
-        ></profile>
+        <div
+          v-if="isMobileSize && participant.path !== 'default'"
+          class="participant-video__profile-dim"
+        ></div>
+        <profile :thumbStyle="thumbStyle" :image="participant.path"></profile>
         <audio
           v-if="!participant.me"
           :srcObject.prop="participant.stream"
@@ -42,6 +41,9 @@
           loop
           :muted="isMuted"
         ></audio>
+        <span class="participant-video__leader" v-if="isLeader && isMobileSize">
+          Leader
+        </span>
       </div>
       <div class="participant-video__mute" v-if="participant.mute"></div>
       <div class="participant-video__status">
@@ -56,23 +58,15 @@
       <div class="participant-video__device">
         <img
           v-if="participant.hasVideo && !participant.video"
-          src="~assets/image/call/ic_video_off.svg"
+          :src="cameraOffIconUrl"
         />
         <template v-if="!isMe">
           <img
             v-if="participant.hasAudio"
-            :src="
-              participant.audio
-                ? require('assets/image/ic_mic_on.svg')
-                : require('assets/image/ic_mic_off.svg')
-            "
+            :src="participant.audio ? micOnIconUrl : micOffIconUrl"
           />
           <img
-            :src="
-              participant.speaker
-                ? require('assets/image/ic_volume_on.svg')
-                : require('assets/image/ic_volume_off.svg')
-            "
+            :src="participant.speaker ? speakerOnIconUrl : speakerOffIconUrl"
           />
         </template>
       </div>
@@ -164,6 +158,43 @@ export default {
       'restrictedRoom',
       'participants',
     ]),
+    cameraOffIconUrl() {
+      return this.isMobileSize
+        ? require('assets/image/call/mdpi_icon_stream_off_new.svg')
+        : require('assets/image/call/ic_video_off.svg')
+    },
+    micOffIconUrl() {
+      return this.isMobileSize
+        ? require('assets/image/call/mdpi_icon_mic_off_new.svg')
+        : require('assets/image/ic_mic_off.svg')
+    },
+    micOnIconUrl() {
+      return this.isMobileSize
+        ? require('assets/image/call/mdpi_icon_mic_new.svg')
+        : require('assets/image/ic_mic_on.svg')
+    },
+    speakerOnIconUrl() {
+      return this.isMobileSize
+        ? require('assets/image/call/mdpi_icon_volume_new.svg')
+        : require('assets/image/ic_volume_on.svg')
+    },
+    speakerOffIconUrl() {
+      return this.isMobileSize
+        ? require('assets/image/call/mdpi_icon_volume_off_new.svg')
+        : require('assets/image/ic_volume_off.svg')
+    },
+    thumbStyle() {
+      return this.isMobileSize
+        ? {
+            width: '4.8rem',
+            height: '4.8rem',
+          }
+        : {
+            width: '4.571rem',
+            height: '4.571rem',
+            margin: '10px auto 0',
+          }
+    },
     profileUrl() {
       if (!this.participant.path) {
         return ''

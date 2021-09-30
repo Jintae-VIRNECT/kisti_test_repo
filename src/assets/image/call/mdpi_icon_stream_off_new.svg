@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="24px" height="24px" viewBox="0 0 24 24" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>4EAB9963-0EA0-43D9-91CD-B617BE8E11AB@1x</title>
+    <defs>
+        <path d="M18.2222222,15.5555556 L18.2222222,8.77955807 L15.5413132,11.4604671 L15.5413132,9.11467169 C15.5413132,8.74604671 15.239711,8.44444444 14.871086,8.44444444 L11.1111111,8.44444444 L18.2222222,15.5555556 Z M6.69453152,5.77777778 L5.77777778,6.69453152 L7.55276907,8.46952281 L7.0781377,8.46952281 C6.72053872,8.46952281 6.42795774,8.7621038 6.42795774,9.11970277 L6.42795774,15.6215024 C6.42795774,15.9791014 6.72053872,16.2716823 7.0781377,16.2716823 L14.8802972,16.2716823 C15.016835,16.2716823 15.1338674,16.2196679 15.2378962,16.1546499 L17.3054685,18.2222222 L18.2222222,17.3054685 L6.69453152,5.77777778 Z" id="path-1"></path>
+    </defs>
+    <g id="Remote_collabo_Mobile" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="RWS_0060-_접속화면_참가자-정보-오픈방(추가-초대-없음)" transform="translate(-310.000000, -80.000000)">
+            <g id="2.frame-" transform="translate(180.000000, 68.000000)">
+                <g id="icon_nocamera" transform="translate(130.000000, 12.000000)">
+                    <circle id="icon_bg" fill="#272B30" cx="12" cy="12" r="12"></circle>
+                    <mask id="mask-2" fill="white">
+                        <use xlink:href="#path-1"></use>
+                    </mask>
+                    <use id="icon/av/videocam_off_24px" fill="#A6ACB3" xlink:href="#path-1"></use>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

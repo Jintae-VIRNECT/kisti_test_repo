@@ -1,12 +1,17 @@
 <template>
-  <div v-if="visible" class="mobile-select-view-container">
+  <div :class="{ visible }" class="mobile-select-view-container">
     <section class="mobile-select-view__menu">
       <ul class="select-view-menu-list">
-        <li class="select-view-user-name">{{ participant.nickname }}</li>
+        <li class="select-view-user-name">
+          {{ participant ? participant.nickname : '' }}
+        </li>
         <li
           v-for="menuItem in menus"
           :key="menuItem.name"
           class="select-view-menu-item"
+          :class="{
+            disable: !menuItem.visible,
+          }"
           @click="menuItem.fn"
         >
           <img class="icon" :src="menuItem.icon" />
@@ -47,6 +52,7 @@ export default {
     visible(newVal) {
       if (newVal) {
         this.participant = newVal
+        this.initMenus()
       }
     },
   },
@@ -54,11 +60,21 @@ export default {
     return {
       participant: null,
       isMute: false,
+      menus: [],
     }
   },
   computed: {
-    menus() {
-      return [
+    muteVisible() {
+      return this.participant.id !== this.account.uuid
+    },
+    kickoutVisible() {
+      return this.isLeader && this.participant.id !== this.account.uuid
+    },
+  },
+  methods: {
+    //사용자에 따라 메뉴 초기화
+    initMenus() {
+      this.menus = [
         //사용자가 리더인 경우에만 표시
         {
           name: MENU.SHARE_VIEW,
@@ -83,7 +99,7 @@ export default {
           title: this.isMuted
             ? this.$t('service.participant_mute_cancel')
             : this.$t('service.participant_mute'),
-          visible: this.participant.id !== this.account.uuid ? true : false,
+          visible: this.muteVisible,
           fn: this.toggleMute,
         },
         //사용자가 리더이고, 본인이 아닌 경우만 표시
@@ -91,13 +107,11 @@ export default {
           name: MENU.KICK_OUT,
           icon: require('assets/image/call/mdpi_icon_kickout_new.svg'),
           title: this.$t('button.kickout'),
-          visible: this.isLeader && this.participant.id !== this.account.uuid,
+          visible: this.kickoutVisible,
           fn: this.kickout,
         },
       ]
     },
-  },
-  methods: {
     shareView() {
       this.$emit('share')
       this.close()
@@ -141,18 +155,25 @@ export default {
 .mobile-select-view-container {
   position: absolute;
   top: 0;
+  right: 0;
   bottom: 0;
+  left: 0;
   z-index: 20;
   width: 100%;
+  height: 100%;
   background-color: rgba(#121314, 0.6);
+  opacity: 0;
+  transition: all 0.4s;
+  pointer-events: none;
 
   .mobile-select-view__menu {
     position: absolute;
     right: 0;
-    bottom: 0;
+    bottom: -100%;
     left: 0;
     padding: 0 1.6rem;
     border-radius: 6px;
+    transition: bottom 0.4s;
   }
 
   .mobile-select-view__menu ul {
@@ -168,6 +189,10 @@ export default {
       @include fontLevel(100);
       &:hover {
         background-color: $new_color_popup_bg;
+      }
+
+      &.disable {
+        display: none;
       }
     }
 
@@ -196,6 +221,14 @@ export default {
       border-radius: 6px;
       @include fontLevel(200);
     }
+  }
+}
+
+.mobile-select-view-container.visible {
+  opacity: 1;
+  pointer-events: unset;
+  .mobile-select-view__menu {
+    bottom: 0;
   }
 }
 </style>
