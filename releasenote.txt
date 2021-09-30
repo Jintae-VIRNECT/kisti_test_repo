@@ -1,7 +1,7 @@
 RELEASE
 
 New Features
-- 신규 타겟 타입(VR) 추가
+- 신규 타겟 타입(VR) 추가 (DEVCENTER-4866)
 
 Bug Fixes
 - 없음
