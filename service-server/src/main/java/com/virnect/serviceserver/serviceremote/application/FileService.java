@@ -135,7 +135,7 @@ public class FileService {
 
 	private String generateDirPath(String workspaceId, String sessionId) {
 		StringBuilder stringBuilder = new StringBuilder();
-		stringBuilder.append(workspaceId).append("/").append("remote").append("/").append(sessionId).append("/");
+		stringBuilder.append("workspace").append(workspaceId).append("/").append("remote").append("/").append(sessionId).append("/");
 		return stringBuilder.toString();
 	}
 
