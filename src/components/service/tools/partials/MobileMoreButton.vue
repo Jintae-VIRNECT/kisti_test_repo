@@ -25,9 +25,12 @@
 
       <div
         class="popover-more__menu-container"
-        :class="{ swipe: isCameraMenu }"
+        :class="{ swipe: isCameraMenu, 'not-swipe': !restrictedRoom }"
       >
-        <more-menu-camera @backToMain="onBackToMain"></more-menu-camera>
+        <more-menu-camera
+          v-if="restrictedRoom"
+          @backToMain="onBackToMain"
+        ></more-menu-camera>
         <more-menu-main
           @selectMember="onSelectMember"
           @selectCameraControl="onSelectCameraControl"
@@ -65,7 +68,7 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['useTranslate']),
+    ...mapGetters(['useTranslate', 'restrictedRoom']),
     isLeader() {
       return this.account.roleType === ROLE.LEADER
     },
@@ -158,6 +161,13 @@ export default {
     transform: translateX(-188px);
     transition: transform 0.3s;
 
+    &.not-swipe {
+      transform: translateX(0px);
+      // .popover-more__menus {
+      //   padding-bottom: 4px;
+      // }
+    }
+
     &.swipe {
       min-height: 18.2rem;
       transform: translateX(0px);
@@ -171,6 +181,7 @@ export default {
       li {
         img {
           margin-right: 0.8rem;
+          margin-bottom: 0.3rem;
         }
         display: flex;
         align-items: center;

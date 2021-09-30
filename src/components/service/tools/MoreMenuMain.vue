@@ -32,21 +32,11 @@ const MENU = {
 
 export default {
   data() {
-    return {}
+    return {
+      isSpotControlActive: SPOT_CONTROL_ACTIVE, //spot control 활성화 여부 (from config서버)
+    }
   },
   watch: {
-    isOnpremise: {
-      immediate: true,
-      handler(newVal) {
-        if (newVal) {
-          this.menus.forEach(menu => {
-            if (menu.name === MENU.LOCATION) menu.visible = newVal
-            else if (menu.name === MENU.SPOT_CONTROL && SPOT_CONTROL_ACTIVE)
-              menu.visible = newVal
-          })
-        }
-      },
-    },
     hasMainView: {
       immediate: true,
       handler(newVal) {
@@ -61,7 +51,7 @@ export default {
     },
   },
   computed: {
-    ...mapGetters(['mainView', 'useRecording']),
+    ...mapGetters(['mainView', 'useRecording', 'restrictedRoom']),
     hasMainView() {
       return this.mainView && this.mainView.id
     },
@@ -72,13 +62,13 @@ export default {
           icon: require('assets/image/call/mdpi_icon_camera_control_new.svg'),
           title: this.$t('service.camera_control'),
           subMenuIcon: true,
-          visible: true,
+          visible: this.restrictedRoom,
         },
         {
           name: MENU.SERVER_RECORD,
           icon: require('assets/image/call/mdpi_icon_server_rec_new.svg'),
           title: this.$t('service.record_server'),
-          visible: true,
+          visible: true, //@TODO 확인
         },
         {
           name: MENU.MEMBER,
@@ -90,14 +80,14 @@ export default {
           name: MENU.LOCATION,
           icon: require('assets/image/call/mdpi_icon_location_new.svg'),
           title: this.$t('service.map_information'),
-          visible: false,
+          visible: this.isOnpremise, //@TODO 확인
         },
         {
           name: MENU.SPOT_CONTROL,
           icon: require('assets/image/call/mdpi_icon_spot_new.svg'),
           title: this.$t('service.spot_control'),
           subMenuIcon: true,
-          visible: false,
+          visible: this.isSpotControlActive && this.isOnpremise,
         },
       ]
     },
