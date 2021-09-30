@@ -1,13 +1,16 @@
 RELEASE
 
 New Features
-- 없음
+- 신규 타겟 타입(VR) 추가
+- 프로젝트 생성, 조회, 삭제, 수정 기능
+- 프로젝트 공유 권한 제어 기능
+- 프로젝트 편집 권한 제어 기능
+- 프로젝트 모드 정보 추가
 
 Bug Fixes
 - 없음
 
 Limitation
-- jvm max heap size 변경 400mb -> 700mb
-
+- 컨텐츠 리소스 저장 디렉토리 변경
 
 Copyright (C) 2020, VIRNECT CO., LTD. - All Rights Reserved
