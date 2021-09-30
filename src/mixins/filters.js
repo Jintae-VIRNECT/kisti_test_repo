@@ -1,5 +1,6 @@
 import { filters as dayjsFilters } from '@/plugins/dayjs'
 import { targetTypes } from '@/models/content/Content'
+import { targetFilter } from '@/models/project/Project'
 import { app } from '@/plugins/context'
 
 export default {
@@ -14,6 +15,15 @@ export default {
     },
     mb2gb(mb) {
       return (mb / 1024).toFixed(2) * 1
+    },
+    formatBytes(bytes, decimals = 1) {
+      if (bytes === 0) return '0 Bytes'
+      const k = 1024
+      const dm = decimals < 0 ? 0 : decimals
+      const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB']
+      const i = Math.floor(Math.log(bytes) / Math.log(k))
+
+      return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i]
     },
   },
   methods: {
@@ -33,6 +43,14 @@ export default {
     targetType2label(targetType) {
       if (!targetType) return '-'
       const targetInfo = targetTypes.find(({ value }) => value === targetType)
+      return app.i18n.t(targetInfo.label)
+    },
+    // project의 targetType에 따른 라벨 반환.
+    targetType2label4project(targetType) {
+      if (!targetType) return '-'
+      const targetInfo = targetFilter.options.find(
+        ({ value }) => value === targetType,
+      )
       return app.i18n.t(targetInfo.label)
     },
     /**

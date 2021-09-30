@@ -18,6 +18,9 @@
     "message": {
       "notAllowFileExtension": "Unsupported file type.",
       "notAllowFileSize": "Unsupported file size."
-    }
+    },
+    "apply": "Apply",
+    "error": "Request failed. please try again later.",
+    "permanentlyDelete": "Permanently Delete"
   }
 }

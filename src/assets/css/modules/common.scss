@@ -45,8 +45,17 @@ main {
     border: solid 1px #dde1ea;
     border-radius: 100px;
   }
+  & > span {
+    font-size: 14px;
+  }
   & > * {
     display: inline-block;
     vertical-align: middle;
   }
+}
+
+button,
+input,
+input[type="submit"] {
+  border: 0;
 }

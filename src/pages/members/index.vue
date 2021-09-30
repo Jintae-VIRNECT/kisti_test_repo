@@ -56,6 +56,7 @@
     <MemberAddModal
       v-if="showAddModal"
       :membersTotal="membersTotal"
+      @refresh="searchMembers()"
       @close="closeMemberAddModal"
     />
   </div>
@@ -167,6 +168,8 @@ export default {
   }
   .members-list {
     margin-right: -28px;
+    display: inline-flex;
+    flex-wrap: wrap;
   }
   .el-col.el-col-24.profile {
     width: 320px;

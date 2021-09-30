@@ -1,15 +1,23 @@
 <template>
-  <el-dialog
-    class="member-add-modal"
-    :visible.sync="showMe"
-    :title="$t('members.add.title')"
-    width="628px"
-    top="11vh"
-    :close-on-click-modal="false"
-    :before-close="beforeClose"
-  >
-    <div>
-      <p>{{ $t('members.add.desc') }}</p>
+  <article class="invite-pane">
+    <section class="invite-pane__title">
+      <h6>{{ $t('members.invitation.title') }}</h6>
+      <p v-html="$t('members.invitation.desc')" />
+      <div class="invite-pane__sub-title">
+        <p>{{ $t('members.invitation.list') }}</p>
+        <div class="invite-pane__usage">
+          <img src="~assets/images/icon/ic-person.svg" />
+          <strong>{{ availableMember }}/{{ maximum }}</strong>
+          <el-tooltip
+            :content="$t('members.create.workspaceTooltip')"
+            placement="right-start"
+          >
+            <img src="~assets/images/icon/ic-error.svg" />
+          </el-tooltip>
+        </div>
+      </div>
+    </section>
+    <section class="invite-pane__content">
       <el-form
         ref="form"
         v-for="(form, index) in userInfoList"
@@ -40,12 +48,6 @@
             <el-form-item class="horizon">
               <template slot="label">
                 <span>{{ $t('members.setting.role') }}</span>
-                <el-tooltip
-                  :content="$t('members.setting.roleDesc')"
-                  placement="bottom-start"
-                >
-                  <img src="~assets/images/icon/ic-error.svg" />
-                </el-tooltip>
               </template>
               <MemberRoleSelect
                 v-model="form.role"
@@ -56,12 +58,6 @@
         </el-row>
         <label>
           <span>{{ $t('members.setting.givePlans') }}</span>
-          <el-tooltip
-            :content="$t('members.setting.givePlansDesc')"
-            placement="bottom-start"
-          >
-            <img src="~assets/images/icon/ic-error.svg" />
-          </el-tooltip>
         </label>
         <el-row>
           <el-col :span="8">
@@ -96,12 +92,8 @@
           </el-col>
         </el-row>
       </el-form>
-    </div>
-    <div slot="footer">
-      <div class="available">
-        <img src="~assets/images/icon/ic-person.svg" />
-        <span v-html="$tc('members.add.available', availableMember)" />
-      </div>
+    </section>
+    <section class="invite-pane__footer">
       <el-button @click="addMember">
         {{ $t('members.add.addMember') }}
       </el-button>
@@ -113,94 +105,30 @@
         {{ $t('members.add.submit') }}
         <span class="number">{{ userInfoList.length }}</span>
       </el-button>
-    </div>
-  </el-dialog>
+    </section>
+  </article>
 </template>
 
 <script>
-import modalMixin from '@/mixins/modal'
-import { role } from '@/models/workspace/Member'
 import InviteMember from '@/models/workspace/InviteMember'
-import workspaceService from '@/services/workspace'
 import plans from '@/models/workspace/plans'
+import workspaceService from '@/services/workspace'
 import { mapGetters } from 'vuex'
 
+import formRulesMixin from '@/mixins/formRules'
+import messageMixin from '@/mixins/message'
+
 export default {
-  mixins: [modalMixin],
-  props: {
-    membersTotal: Number,
-  },
+  mixins: [messageMixin, formRulesMixin],
+  props: ['membersTotal', 'maximum'],
   data() {
     return {
       plans,
-      roles: role.options.filter(({ value }) => value !== 'MASTER'),
-      availablePlans: { remote: 0, make: 0, view: 0 },
       userInfoList: [new InviteMember()],
-      showMe: true,
-      rules: {
-        email: [
-          {
-            required: true,
-            message: this.$t('invalid.required', [
-              this.$t('members.add.email'),
-            ]),
-          },
-          {
-            type: 'email',
-            message: this.$t('invalid.format', [this.$t('members.add.email')]),
-          },
-        ],
-      },
+      availablePlans: { remote: 0, make: 0, view: 0 },
     }
   },
-  computed: {
-    ...mapGetters({
-      activeWorkspace: 'auth/activeWorkspace',
-      plansInfo: 'plan/plansInfo',
-    }),
-    canChangeRole() {
-      return this.activeWorkspace.role === 'MASTER'
-    },
-    availableMember() {
-      return 49 - this.membersTotal - this.userInfoList.length
-    },
-  },
   methods: {
-    beforeClose(done) {
-      this.$emit('close')
-      done()
-    },
-    async reset() {
-      this.userInfoList = [new InviteMember()]
-      if (this.$refs.from) {
-        this.$refs.form.forEach(form => form.resetFields())
-      }
-
-      if (!this.plansInfo.planStatus) {
-        await this.$store.dispatch('plan/getPlansInfo')
-      }
-      this.initAvailablePlans()
-    },
-    opened() {
-      this.userInfoList = this.userInfoList.filter(form => form.email)
-      if (!this.userInfoList.length) this.reset()
-    },
-    addMember() {
-      if (this.availableMember < 1) {
-        this.$message.error({
-          dangerouslyUseHTMLString: true,
-          message: this.$t('members.add.message.memberOverflow'),
-          duration: 3000,
-          showClose: true,
-        })
-      } else {
-        this.userInfoList.push(new InviteMember())
-      }
-    },
-    clearMember(index) {
-      this.userInfoList.splice(index, 1)
-      this.choosePlan()
-    },
     initAvailablePlans() {
       this.plansInfo.products.forEach(product => {
         this.availablePlans[product.value.toLowerCase()] = product.unUsedAmount
@@ -213,6 +141,28 @@ export default {
         if (user.planMake) this.availablePlans.make -= 1
         if (user.planView) this.availablePlans.view -= 1
       })
+    },
+    addMember() {
+      if (this.availableMember >= this.maximum) {
+        this.errorMessage('Error: 900')
+      } else {
+        this.userInfoList.push(new InviteMember())
+      }
+    },
+    clearMember(index) {
+      this.userInfoList.splice(index, 1)
+      this.choosePlan()
+    },
+    async reset() {
+      this.userInfoList = [new InviteMember()]
+      if (this.$refs.from) {
+        this.$refs.form.forEach(form => form.resetFields())
+      }
+
+      if (!this.plansInfo.planStatus) {
+        await this.$store.dispatch('plan/getPlansInfo')
+      }
+      this.initAvailablePlans()
     },
     async submit() {
       // 유효성 검사
@@ -229,11 +179,10 @@ export default {
           duration: 2000,
           showClose: true,
         })
-        this.$emit('updated', this.form)
+        this.$emit('updated')
         this.reset()
-        this.showMe = false
       } catch (e) {
-        const errCode = e.toString().match(/^Error: ([0-9]+)/)[1]
+        const errCode = this.errorCode(e)
         // 결제센터로
         if (errCode === 2003) {
           this.$confirm(this.$t('members.add.message.noHavePlans'), {
@@ -242,62 +191,40 @@ export default {
           }).then(() => {
             window.open(`${this.$url.pay}`)
           })
-        }
-        // 일반에러
-        else {
-          const errMsg = {
-            1002: this.$t('members.add.message.memberAlready'),
-            1007: this.$t('members.add.message.notHaveAnyPlan'),
-            1008: this.$t('members.add.message.memberOverflow'),
-            1018: this.$t('members.add.message.memberWithdrawal'),
-          }[errCode]
-          this.$message.error({
-            message: errMsg
-              ? errMsg
-              : this.$t('members.add.message.inviteFail') + `\n(${e})`,
-            duration: 4000,
-            showClose: true,
-          })
+        } else {
+          // 일반에러
+          this.errorMessage(e)
         }
       }
     },
   },
   mounted() {
-    this.opened()
+    this.userInfoList = this.userInfoList.filter(form => form.email)
+    if (!this.userInfoList.length) this.reset()
+  },
+  computed: {
+    ...mapGetters({
+      activeWorkspace: 'auth/activeWorkspace',
+      plansInfo: 'plan/plansInfo',
+    }),
+    canChangeRole() {
+      return this.activeWorkspace.role === 'MASTER'
+    },
+    availableMember() {
+      return this.membersTotal + this.userInfoList.length
+    },
   },
 }
 </script>
 
 <style lang="scss">
-#__nuxt .member-add-modal {
-  .el-dialog__body {
-    padding-right: 24px;
-    overflow-y: scroll;
+#__nuxt .invite-pane {
+  section {
+    padding: 24px;
   }
-  p {
-    letter-spacing: -0.3px;
-    & > span,
-    & > img {
-      vertical-align: middle;
-    }
+  section:first-child {
+    padding-bottom: 0;
   }
-  .el-divider {
-    margin: 24px 0;
-  }
-
-  label,
-  .el_input__label {
-    margin-bottom: 8px;
-    color: $font-color-desc;
-    font-size: 13px;
-
-    & > span,
-    & > img {
-      display: inline-block;
-      vertical-align: middle;
-    }
-  }
-
   .el-form {
     margin: 20px 0;
     padding: 20px 20px 4px;
@@ -309,7 +236,7 @@ export default {
     }
 
     h6 {
-      margin-bottom: 20px;
+      margin-bottom: 12px;
       & > span,
       & > img {
         vertical-align: middle;
@@ -327,31 +254,62 @@ export default {
       &.full {
         width: 100%;
       }
+      &.check {
+        width: 425px;
+      }
     }
   }
-  .el-dialog__footer {
-    border-top: solid 1px #edf0f7;
-
-    .available {
-      float: left;
-      & > img {
-        vertical-align: middle;
-        transform: scale(0.85);
-        opacity: 0.6;
-      }
-      & > span {
-        color: $font-color-desc;
-        vertical-align: middle;
-        size: 13px;
-      }
-      & > span > i {
-        color: $color-primary;
-      }
+  .invite-pane__title {
+    h6 {
+      @include fontLevel(100);
+      color: #0b1f48;
+      margin-bottom: 8px;
     }
-
-    .el-button:last-child {
-      float: right;
+    p {
+      @include fontLevel(75);
+      color: #445168;
+      margin-bottom: 16px;
     }
+  }
+  .invite-pane__content {
+    overflow-y: scroll;
+    max-height: 455px;
+    padding: 0 5px 0 24px;
+    width: 610px;
+    .el-tabs .el-tabs__item {
+      height: 40px;
+      line-height: 40px;
+      padding: 0 14px;
+    }
+  }
+  .invite-pane__sub-title {
+    display: flex;
+    justify-content: space-between;
+    border-bottom: 1px solid #eaedf3;
+    p {
+      @include fontLevel(75);
+      color: #0b1f48;
+      margin-bottom: 8px;
+    }
+    .el-divider--horizontal {
+      margin: 8px 0 16px 0;
+    }
+    &.tabs {
+      border-bottom: 0;
+    }
+  }
+  .invite-pane__usage {
+    display: flex;
+    margin-bottom: 8px;
+    strong {
+      margin-right: 7px;
+    }
+  }
+  .invite-pane__footer {
+    display: flex;
+    padding: 24px;
+    justify-content: space-between;
+    border-top: 1px solid #edf0f7;
   }
 }
 </style>
