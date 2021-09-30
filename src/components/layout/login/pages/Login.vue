@@ -26,7 +26,8 @@
         <el-input
           :placeholder="$t('login.passwordPlaceholder')"
           v-model="login.password"
-          show-password
+          type="password"
+          clearable
           name="password"
           :class="{ 'input-danger': message }"
           v-validate="'required'"

@@ -43,7 +43,7 @@
           v-if="authLoading"
           @click="checkVerificationCode()"
         >
-          <span>{{ verificationText }}</span>
+          <span>{{ $t(verificationText) }}</span>
         </el-button>
 
         <button
@@ -60,7 +60,8 @@
         <el-input
           :placeholder="$t('signup.password.comfirm')"
           v-model="signup.password"
-          show-password
+          type="password"
+          clearable
           name="password"
           v-validate="'required|password'"
           :class="{ 'input-danger': errors.has('password') }"
@@ -69,7 +70,8 @@
         <el-input
           :placeholder="$t('signup.password.reComfirm')"
           v-model="passwordConfirm"
-          show-password
+          type="password"
+          clearable
           name="passwordConfirm"
           v-validate="'required|password'"
           :class="{
@@ -237,7 +239,7 @@ export default {
     return {
       authLoading: false,
       isVeritication: false,
-      verificationText: this.$t('signup.authentication.verification'),
+      verificationText: 'signup.authentication.verification',
       signup: new Signup(),
       subscriptionPath: this.createI18nArray('signup.subscriptionPathLists'),
       serviceInfoLists: this.createI18nArray('signup.serviceInfoLists'),
@@ -459,9 +461,7 @@ export default {
             this.signup.sessionCode = res.data.sessionCode
             this.isVeritication = false
             this.isValidEmail = false
-            this.verificationText = this.$t(
-              'signup.authentication.done', // 인증 완료
-            )
+            this.verificationText = 'signup.authentication.done'
             this.check.isEmail = true
             this.alertMessage(
               this.$t('signup.authentication.message.done.title'), // 이메일 인증 성공
