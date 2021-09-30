@@ -1,12 +1,12 @@
 RELEASE
 
 New Features
-- 없음
+- 신규 타겟 타입(VR) 추가
 
 Bug Fixes
-- 컨텐츠 다운로드 시 파일이름 파싱 에러 수정
+- 없음
 
 Limitation
-- jvm max heap size 변경 400mb -> 700mb
+- 없음
 
 Copyright (C) 2020, VIRNECT CO., LTD. - All Rights Reserved
