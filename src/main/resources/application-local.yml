@@ -30,7 +30,7 @@ content-server:
 license-server:
   ribbon:
     listOfServers: http://192.168.6.3:8632
-user-server:
+account-server:
   ribbon:
     listOfServers: http://192.168.6.3:8081
 workspace-server:
@@ -38,8 +38,7 @@ workspace-server:
     listOfServers: http://192.168.6.3:8082
 logging:
   level:
-    com.virnect: DEBUG
-#    org.hibernate.type.descriptor.sql: trace
+    com.virnect.process.application.*: DEBUG
 
 eureka:
   instance:
@@ -63,6 +62,11 @@ upload:
 feign:
   okhttp:
     enabled: true
+  client:
+    config:
+      default:
+        loggerLevel: FULL
+
 
 # monitoring
 management:

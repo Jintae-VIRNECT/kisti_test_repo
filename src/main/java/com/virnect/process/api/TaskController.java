@@ -143,7 +143,7 @@ public class TaskController {
 		@ApiImplicitParam(name = "page", value = "조회할 페이지 번호(1부터)", dataType = "number", paramType = "query", defaultValue = "1"),
 		@ApiImplicitParam(name = "size", value = "페이지당 목록 개수", dataType = "number", paramType = "query", defaultValue = "10"),
 		@ApiImplicitParam(name = "sort", value = "정렬 옵션 데이터(요청파라미터 명, 정렬조건 - reportedDate, name, startDate, endDate, state)", dataType = "String", paramType = "query", defaultValue = "createdDate,desc"),
-		@ApiImplicitParam(name = "target", value = "컨텐츠의 타겟 타입(ALL, QR, VTarget)", dataType = "string", paramType = "query", defaultValue = "ALL")
+		@ApiImplicitParam(name = "target", value = "컨텐츠의 타겟 타입(ALL, QR, VTarget, VR)", dataType = "string", paramType = "query", defaultValue = "ALL")
 	})
 	@GetMapping
 	public ResponseEntity<ApiResponse<ProcessListResponse>> getProcessList(
