@@ -1,5 +1,6 @@
 package com.virnect.serviceserver.servicedashboard.api;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -14,13 +15,12 @@ import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import com.virnect.data.dto.rest.RecordServerFileInfoListResponse;
+import com.virnect.data.dto.rest.ListRecordingFilesResponse;
 import com.virnect.data.error.ErrorCode;
 import com.virnect.data.error.exception.RestServiceException;
 import com.virnect.data.global.common.ApiResponse;
 import com.virnect.data.infra.utils.LogMessage;
 import com.virnect.serviceserver.servicedashboard.application.DashboardFileService;
-import com.virnect.serviceserver.servicedashboard.dto.request.FileDataRequest;
 import com.virnect.serviceserver.servicedashboard.dto.response.FileDeleteResponse;
 import com.virnect.serviceserver.servicedashboard.dto.response.FileDetailInfoListResponse;
 import com.virnect.serviceserver.servicedashboard.dto.response.FileInfoListResponse;
@@ -36,21 +36,7 @@ public class DashboardFileRestController {
 	private static final String REST_PATH = "/remote/dashboard/file";
 
 	private final DashboardFileService fileService;
-	/*
-	 *	2. 협업에서 업로드된 첨부파일 목록을 반환하는 API
-	 *	3. 로컬 녹화 파일 목록을 반환하는 API
-	 *	6. 서버녹화 파일목록을 반환하는 API
-	 *	7. 서버녹화 파일 삭제
-	 *	8. 로컬녹화 파일 삭제
-	 *	9. 첨부파일 삭제
-	 *  11.첨부파일 다운로드 링크를 반환하는 API
-	 *  12.서버 녹화 파일 다운로드 링크를 반환하는 API
-	 *  13.로컬 녹화 파일 다운로드 링크를 반환하는 API
-	 */
 
-	/**
-	 * 2. 협업에서 업로드된 첨부파일 목록을 반환하는 API
-	 */
 	@ApiOperation(value = "[협업]에서 업로드된 첨부파일 목록을 반환하는 API")
 	@ApiImplicitParams({
 		@ApiImplicitParam(name = "workspaceId", value = "워크스페이스 ID", defaultValue = "47cfc8b44fad3d0bbdc96d5307c6370a", required = true),
@@ -69,32 +55,18 @@ public class DashboardFileRestController {
 			TAG,
 			"REST API: GET "
 				+ REST_PATH + "/"
-				+ (workspaceId != null ? workspaceId : "{}") + "::"
-				+ (sessionId != null ? sessionId : "{}"),
+				+ workspaceId + "/"
+				+ sessionId,
 			"getAttachedFileListRequestHandler"
 		);
-		if ((workspaceId != null && workspaceId.isEmpty())
-			|| (userId != null && userId.isEmpty())
-			|| (sessionId != null && sessionId.isEmpty())
-		) {
+		if (StringUtils.isBlank(workspaceId) || StringUtils.isBlank(sessionId) || StringUtils.isBlank(userId)) {
 			throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
 		}
-
-		FileDataRequest option = FileDataRequest.builder()
-				.workspaceId(workspaceId)
-				.sessionId(sessionId)
-				.userId(userId)
-				.deleted(deleted)
-				.build();
-
-		FileInfoListResponse responseData = fileService.getAttachedFileList(option);
-
-		return ResponseEntity.ok(new ApiResponse<>(responseData));
+		return ResponseEntity.ok(
+			new ApiResponse<>(fileService.getAttachedFileList(workspaceId, sessionId, deleted))
+		);
 	}
 
-	/**
-	 * 3. 로컬 녹화 파일 목록을 반환하는 API
-	 */
 	@ApiOperation(value = "[REMOTE WEB]에서 업로드된 로컬 녹화 파일 목록을 반환하는 API")
 	@ApiImplicitParams({
 		@ApiImplicitParam(name = "workspaceId", value = "워크스페이스 ID", defaultValue = "47cfc8b44fad3d0bbdc96d5307c6370a", required = true),
@@ -113,32 +85,18 @@ public class DashboardFileRestController {
 			TAG,
 			"REST API: GET "
 				+ REST_PATH + "/"
-				+ (workspaceId != null ? workspaceId : "{}") + "::"
-				+ (sessionId != null ? sessionId : "{}"),
+				+ workspaceId + "/"
+				+ sessionId,
 			"getLocalRecordFileListRequestHandler"
 		);
-		if ((workspaceId != null && workspaceId.isEmpty())
-			|| (userId != null && userId.isEmpty())
-			|| (sessionId != null && sessionId.isEmpty())
-		) {
+		if (StringUtils.isBlank(workspaceId) || StringUtils.isBlank(sessionId) || StringUtils.isBlank(userId)) {
 			throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
 		}
-
-		FileDataRequest option = FileDataRequest.builder()
-				.workspaceId(workspaceId)
-				.sessionId(sessionId)
-				.userId(userId)
-				.deleted(deleted)
-				.build();
-
-		FileDetailInfoListResponse responseData = fileService.getLocalRecordFileList(option);
-
-		return ResponseEntity.ok(new ApiResponse<>(responseData));
+		return ResponseEntity.ok(
+			new ApiResponse<>(fileService.getLocalRecordFileList(workspaceId, sessionId, deleted))
+		);
 	}
 
-	/**
-	 * 6. 서버녹화 파일목록을 반환하는 API
-	 */
 	@ApiOperation(value = "서버녹화 파일 목록을 반환하는 API")
 	@ApiImplicitParams({
 		@ApiImplicitParam(name = "workspaceId", value = "워크스페이스 ID", defaultValue = "47cfc8b44fad3d0bbdc96d5307c6370a", required = true),
@@ -147,7 +105,7 @@ public class DashboardFileRestController {
 		@ApiImplicitParam(name = "order", value = "정렬", paramType = "query", defaultValue = "createdAt.asc")
 	})
 	@GetMapping(value = "record/{workspaceId}/{userId}")
-	ResponseEntity<ApiResponse<RecordServerFileInfoListResponse>> getServerRecordFileListRequestHandler(
+	ResponseEntity<ApiResponse<ListRecordingFilesResponse>> getServerRecordFileListRequestHandler(
 		@PathVariable(name = "workspaceId") String workspaceId,
 		@PathVariable(name = "userId") String userId,
 		@RequestParam(name = "sessionId") String sessionId,
@@ -157,32 +115,18 @@ public class DashboardFileRestController {
 			TAG,
 			"REST API: GET "
 				+ REST_PATH + "/"
-				+ (workspaceId != null ? workspaceId : "{}") + "::"
-				+ (userId != null ? userId : "{}"),
+				+ workspaceId + "/"
+				+ userId,
 			"getServerRecordFileListRequestHandler"
 		);
-		if ((workspaceId != null && workspaceId.isEmpty())
-			|| (userId != null && userId.isEmpty())
-			|| (sessionId != null && sessionId.isEmpty())
-		) {
+		if (StringUtils.isBlank(workspaceId) || StringUtils.isBlank(sessionId) || StringUtils.isBlank(userId)) {
 			throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
 		}
-
-		FileDataRequest option = FileDataRequest.builder()
-				.workspaceId(workspaceId)
-				.sessionId(sessionId)
-				.userId(userId)
-				.order(order)
-				.build();
-
-		RecordServerFileInfoListResponse responseData = fileService.getServerRecordFileList(option);
-
-		return ResponseEntity.ok(new ApiResponse<>(responseData));
+		return ResponseEntity.ok(
+			new ApiResponse<>(fileService.getServerRecordFileList(workspaceId, sessionId, userId, order))
+		);
 	}
 
-	/**
-	 * 7. 서버녹화 파일 삭제
-	 */
 	@ApiOperation(value = "서버 녹화 파일 삭제")
 	@ApiImplicitParams({
 		@ApiImplicitParam(name = "workspaceId", value = "워크스페이스 ID", defaultValue = "40f9bbee9d85dca7a34a0dd205aae718", required = true),
@@ -199,29 +143,17 @@ public class DashboardFileRestController {
 			TAG,
 			"REST API: DELETE "
 				+ REST_PATH + "/"
-				+ (workspaceId != null ? workspaceId : "{}"),
+				+ workspaceId,
 			"deleteServerRecordFileRequestHandler"
 		);
-		if ((workspaceId != null && workspaceId.isEmpty())
-			|| (userId != null && userId.isEmpty())
-		) {
+		if (StringUtils.isBlank(workspaceId) || StringUtils.isBlank(userId)) {
 			throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
 		}
-
-		FileDataRequest option = FileDataRequest.builder()
-				.workspaceId(workspaceId)
-				.userId(userId)
-				.id(id)
-				.build();
-
-		Object responseData = fileService.deleteServerRecordFileUrl(option);
-
-		return ResponseEntity.ok(new ApiResponse<>(responseData));
+		return ResponseEntity.ok(
+			new ApiResponse<>(fileService.deleteServerRecordFileUrl(workspaceId, userId, id))
+		);
 	}
 
-	/**
-	 * 8. 로컬녹화 파일 삭제
-	 */
 	@ApiOperation(value = "[Remote web]에서 업로드된 로컬 녹화 파일 삭제")
 	@ApiImplicitParams({
 		@ApiImplicitParam(name = "workspaceId", value = "workspaceId", required = true),
@@ -240,33 +172,18 @@ public class DashboardFileRestController {
 			TAG,
 			"REST API: DELETE "
 				+ REST_PATH + "/"
-				+ (workspaceId != null ? workspaceId : "{}")
-				+ (sessionId != null ? sessionId : "{}"),
+				+ workspaceId + "/"
+				+ sessionId,
 			"deleteLocalRecordFileRequestHandler"
 		);
-		if ((workspaceId != null && workspaceId.isEmpty())
-			|| (sessionId != null && sessionId.isEmpty())
-			|| (userId != null && userId.isEmpty())
-			|| (objectName != null && objectName.isEmpty())
-		) {
+		if (StringUtils.isBlank(workspaceId) || StringUtils.isBlank(sessionId) || StringUtils.isBlank(userId) || StringUtils.isBlank(objectName)) {
 			throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
 		}
-
-		FileDataRequest option = FileDataRequest.builder()
-				.workspaceId(workspaceId)
-				.sessionId(sessionId)
-				.userId(userId)
-				.objectName(objectName)
-				.build();
-
-		FileDeleteResponse responseData = fileService.deleteLocalRecordFileUrl(option);
-
-		return ResponseEntity.ok(new ApiResponse<>(responseData));
+		return ResponseEntity.ok(
+			new ApiResponse<>(fileService.deleteLocalRecordFileUrl(workspaceId, sessionId, objectName))
+		);
 	}
 
-	/**
-	 * 9. 협업 중 첨부파일 삭제
-	 */
 	@ApiOperation(value = "협업 중 첨부된 파일 삭제")
 	@ApiImplicitParams({
 		@ApiImplicitParam(name = "workspaceId", value = "workspaceId", required = true),
@@ -285,34 +202,18 @@ public class DashboardFileRestController {
 			TAG,
 			"REST API: DELETE "
 				+ REST_PATH + "/"
-				+ (workspaceId != null ? workspaceId : "{}")
-				+ (sessionId != null ? sessionId : "{}"),
+				+ workspaceId + "/"
+				+ sessionId,
 			"deleteAttachedFileRequestHandler"
 		);
-		if ((workspaceId != null && workspaceId.isEmpty())
-			|| (sessionId != null && sessionId.isEmpty())
-			|| (userId != null && userId.isEmpty())
-			|| (objectName != null && objectName.isEmpty())
-		) {
+		if (StringUtils.isBlank(workspaceId) || StringUtils.isBlank(sessionId) || StringUtils.isBlank(userId) || StringUtils.isBlank(objectName)) {
 			throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
 		}
-
-
-		FileDataRequest option = FileDataRequest.builder()
-				.workspaceId(workspaceId)
-				.sessionId(sessionId)
-				.userId(userId)
-				.objectName(objectName)
-				.build();
-
-		FileDeleteResponse responseData = fileService.deleteAttachedFile(option);
-
-		return ResponseEntity.ok(new ApiResponse<>(responseData));
+		return ResponseEntity.ok(
+			new ApiResponse<>(fileService.deleteAttachedFile(workspaceId, sessionId, objectName))
+		);
 	}
 
-	/**
-	 * 11. 협업중 업로드된 첨부파일을 다운로드 링크를 반환하는 API
-	 */
 	@ApiOperation(value = "파일 다운로드 URL을 받습니다.")
 	@ApiImplicitParams({
 		@ApiImplicitParam(name = "workspaceId", value = "워크스페이스 식별자", dataType = "string", paramType = "path", defaultValue = "47cfc8b44fad3d0bbdc96d5307c6370a", required = true),
@@ -331,33 +232,18 @@ public class DashboardFileRestController {
 			TAG,
 			"REST API: GET "
 				+ REST_PATH + "/"
-				+ (workspaceId != null ? workspaceId : "{}")
-				+ (sessionId != null ? sessionId : "{}"),
+				+ workspaceId + "/"
+				+ sessionId,
 			"getFileDownloadUrlRequestHandler"
 		);
-		if ((workspaceId != null && workspaceId.isEmpty())
-			|| (sessionId != null && sessionId.isEmpty())
-			|| (userId != null && userId.isEmpty())
-			|| (objectName != null && objectName.isEmpty())
-		) {
+		if (StringUtils.isBlank(workspaceId) || StringUtils.isBlank(sessionId) || StringUtils.isBlank(userId) || StringUtils.isBlank(objectName)) {
 			throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
 		}
-
-		FileDataRequest option = FileDataRequest.builder()
-				.workspaceId(workspaceId)
-				.sessionId(sessionId)
-				.userId(userId)
-				.objectName(objectName)
-				.build();
-
-		FilePreSignedResponse responseData = fileService.getAttachedFileUrl(option);
-
-		return ResponseEntity.ok(new ApiResponse<>(responseData));
+		return ResponseEntity.ok(
+			new ApiResponse<>(fileService.getAttachedFileUrl(workspaceId, sessionId, objectName))
+		);
 	}
 
-	/**
-	 * 12. 서버 녹화 파일 다운로드 링크를 반환하는 API
-	 */
 	@ApiOperation(value = "서버 녹화 파일 다운로드 URL을 받습니다")
 	@ApiImplicitParams({
 		@ApiImplicitParam(name = "workspaceId", defaultValue = "47cfc8b44fad3d0bbdc96d5307c6370a", dataType = "string", paramType = "path", required = true),
@@ -374,31 +260,19 @@ public class DashboardFileRestController {
 			TAG,
 			"REST API: GET "
 				+ REST_PATH + "/"
-				+ (workspaceId != null ? workspaceId : "{}")
-				+ (userId != null ? userId : "{}")
-				+ (id != null ? id : "{}"),
+				+ workspaceId + "/"
+				+ userId + "/"
+				+ id,
 			"getServerRecordFileDownloadUrlRequestHandler"
 		);
-		if ((workspaceId != null && workspaceId.isEmpty())
-			|| (userId != null && userId.isEmpty())
-		) {
+		if (StringUtils.isBlank(workspaceId) || StringUtils.isBlank(userId)) {
 			throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
 		}
-
-		FileDataRequest option = FileDataRequest.builder()
-				.workspaceId(workspaceId)
-				.userId(userId)
-				.id(id)
-				.build();
-
-		String responseData = fileService.getServerRecordFileUrl(option);
-
-		return ResponseEntity.ok(new ApiResponse<>(responseData));
+		return ResponseEntity.ok(
+			new ApiResponse<>(fileService.getServerRecordFileUrl(workspaceId, userId, id))
+		);
 	}
 
-	/**
-	 * 13. 로컬 녹화 파일 다운로드 링크를 반환하는 API
-	 */
 	@ApiOperation(value = "로컬 녹화 파일 다운로드 URL을 받습니다.")
 	@ApiImplicitParams({
 		@ApiImplicitParam(name = "workspaceId", value = "워크스페이스 식별자", dataType = "string", paramType = "path", defaultValue = "47cfc8b44fad3d0bbdc96d5307c6370a", required = true),
@@ -417,27 +291,15 @@ public class DashboardFileRestController {
 			TAG,
 			"REST API: GET "
 				+ REST_PATH + "/"
-				+ (workspaceId != null ? workspaceId : "{}")
-				+ (sessionId != null ? sessionId : "{}"),
+				+ workspaceId + "/"
+				+ sessionId,
 			"getLocalRecordFileDownloadUrlRequestHandler"
 		);
-		if ((workspaceId != null && workspaceId.isEmpty())
-			|| (sessionId != null && sessionId.isEmpty())
-			|| (userId != null && userId.isEmpty())
-			|| (objectName != null && objectName.isEmpty())
-		) {
+		if (StringUtils.isBlank(workspaceId) || StringUtils.isBlank(sessionId) || StringUtils.isBlank(userId) || StringUtils.isBlank(objectName)) {
 			throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
 		}
-
-		FileDataRequest option = FileDataRequest.builder()
-				.workspaceId(workspaceId)
-				.sessionId(sessionId)
-				.userId(userId)
-				.objectName(objectName)
-				.build();
-
-		FilePreSignedResponse responseData = fileService.getLocalRecordFileUrl(option);
-
-		return ResponseEntity.ok(new ApiResponse<>(responseData));
+		return ResponseEntity.ok(
+			new ApiResponse<>(fileService.getLocalRecordFileUrl(workspaceId, sessionId, objectName))
+		);
 	}
 }

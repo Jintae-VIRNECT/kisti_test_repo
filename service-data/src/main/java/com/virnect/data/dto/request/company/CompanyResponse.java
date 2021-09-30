@@ -6,8 +6,8 @@ import javax.validation.constraints.NotNull;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import lombok.Builder;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import com.virnect.data.domain.session.SessionType;
@@ -15,7 +15,7 @@ import com.virnect.data.domain.session.SessionType;
 @Getter
 @Setter
 @ApiModel
-@NoArgsConstructor
+@Builder
 public class CompanyResponse {
     @ApiModelProperty(value = "Workspace Identifier", example = "40f9bbee9d85dca7a34a0dd205aae718")
     @NotNull

@@ -37,34 +37,6 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
-	/*@Autowired
-	RemoteServiceConfig remoteServiceConfig;*/
-
-	/*@Override
-	protected void configure(HttpSecurity http) throws Exception {
-		// CORS Configuration
-		CorsConfiguration corsConfiguration = new CorsConfiguration();
-		// CORS Configuration
-		corsConfiguration.addAllowedOrigin(CorsConfiguration.ALL);
-		corsConfiguration.addAllowedMethod(CorsConfiguration.ALL);
-		corsConfiguration.addAllowedHeader(CorsConfiguration.ALL);
-		corsConfiguration.setAllowCredentials(false);
-
-		log.info("CORS ACCESS ALLOW ORIGIN : {}", Arrays.toString(corsConfiguration.getAllowedOrigins().toArray()));
-		log.info("CORS ACCESS ALLOW METHOD : {}", Arrays.toString(corsConfiguration.getAllowedMethods().toArray()));
-		log.info("CORS ACCESS ALLOW HEADER : {}", Arrays.toString(corsConfiguration.getAllowedMethods().toArray()));
-		log.info("CORS ENABLE CREDENTIALS : {}", corsConfiguration.getAllowCredentials().toString().toUpperCase());
-
-		UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-		source.registerCorsConfiguration("/**", corsConfiguration.applyPermitDefaultValues());
-
-		http.cors().configurationSource(source);
-		http.csrf().disable().authorizeRequests();
-		http.authorizeRequests().antMatchers("/**").permitAll();
-		http.httpBasic();
-		http.formLogin().disable();
-	}*/
-
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
 		// Security for API REST

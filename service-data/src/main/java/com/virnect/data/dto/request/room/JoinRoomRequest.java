@@ -4,6 +4,7 @@ import javax.validation.constraints.NotBlank;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -13,6 +14,7 @@ import com.virnect.data.domain.member.MemberType;
 @Getter
 @Setter
 @ApiModel
+@Builder
 public class JoinRoomRequest {
     @NotBlank
     @ApiModelProperty(value = "User Unique Identifier")
@@ -40,5 +42,4 @@ public class JoinRoomRequest {
                 "deviceType='" + deviceType + '\'' +
                 '}';
     }
-
 }

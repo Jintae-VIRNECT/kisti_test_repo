@@ -4,16 +4,9 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-
 import com.virnect.data.domain.member.MemberHistory;
 
 public interface CustomMemberHistoryRepository {
-
-	Page<MemberHistory> findByWorkspaceIdAndUuidAndRoomHistoryIsNotNullAndHistoryDeletedFalse(final String workspaceId, final String userId, boolean paging, Pageable pageable);
-
-	List<MemberHistory> findAllBySessionId(final String sessionId);
 
 	List<MemberHistory> findByWorkspaceIdAndUuid(final String workspaceId, final String userId);
 
@@ -23,9 +16,4 @@ public interface CustomMemberHistoryRepository {
 
 	List<MemberHistory> findByWorkspaceIdAndRoomHistoryIsNotNullAndRoomHistory_ActiveDateBetween(String workspaceId, LocalDateTime startDate, LocalDateTime endDate);
 
-	List<MemberHistory> findByWorkspaceId(final String workspaceId);
-
-	Page<MemberHistory> findByWorkspaceIdAndUuidAndRoomHistoryIsNotNullAndHistoryDeletedFalseBySearch(
-		String workspaceId, String userId, List<String> userIds, String search, Pageable pageable
-	);
 }

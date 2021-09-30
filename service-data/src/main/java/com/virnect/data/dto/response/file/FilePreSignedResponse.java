@@ -2,12 +2,14 @@ package com.virnect.data.dto.response.file;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
 @ApiModel
+@Builder
 public class FilePreSignedResponse {
     @ApiModelProperty(value = "워크스페이스 식별자", notes = "해당 식별자를 통해 워크스페이스 구별합니다.")
     private String workspaceId;

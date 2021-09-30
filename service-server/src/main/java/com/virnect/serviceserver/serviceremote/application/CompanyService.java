@@ -10,6 +10,7 @@ import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Service;
+import org.springframework.util.ObjectUtils;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
@@ -64,8 +65,7 @@ public class CompanyService {
 				.localRecording(companyRequest.isLocalRecording())
 				.build();
 
-			company.setLanguage(
-				Language.builder()
+			company.setLanguage(Language.builder()
 				.transKoKr(companyRequest.getLanguage().isTransKoKr())
 				.transEnUs(companyRequest.getLanguage().isTransEnUs())
 				.transJaJp(companyRequest.getLanguage().isTransJaJp())
@@ -80,14 +80,16 @@ public class CompanyService {
 				.build()
 			);
 
-			if (sessionService.createCompany(company) == null) {
+			if (ObjectUtils.isEmpty(sessionService.createCompany(company))) {
 				return new ApiResponse<>(ErrorCode.ERR_COMPANY_CREATE_FAIL);
 			}
-			CompanyResponse companyResponse = new CompanyResponse();
-			companyResponse.setWorkspaceId(company.getWorkspaceId());
-			companyResponse.setLicenseName(company.getLicenseName());
-			companyResponse.setSessionType(company.getSessionType());
-			return new ApiResponse<>(companyResponse);
+			return new ApiResponse<>(
+				CompanyResponse.builder()
+				.workspaceId(company.getWorkspaceId())
+				.licenseName(company.getLicenseName())
+				.sessionType(company.getSessionType())
+				.build()
+			);
 		} catch (Exception e) {
 			return new ApiResponse<>(ErrorCode.ERR_COMPANY_CREATE_FAIL);
 		}
@@ -95,8 +97,8 @@ public class CompanyService {
 
 	public ApiResponse<CompanyResponse> updateCompany(CompanyRequest companyRequest) {
 
-		Company company = sessionService.getCompany(companyRequest.getWorkspaceId());
-		if (company == null) {
+		Company company = companyRepository.findByWorkspaceId(companyRequest.getWorkspaceId()).orElse(null);
+		if (ObjectUtils.isEmpty(company)) {
 			return new ApiResponse<>(ErrorCode.ERR_COMPANY_NOT_EXIST);
 		}
 
@@ -130,16 +132,17 @@ public class CompanyService {
 				.build()
 			);
 
-			if (sessionService.updateCompany(company) == null) {
+			if (ObjectUtils.isEmpty(sessionService.updateCompany(company))) {
 				return new ApiResponse<>(ErrorCode.ERR_COMPANY_UPDATE_FAIL);
 			}
 
-			CompanyResponse companyResponse = new CompanyResponse();
-			companyResponse.setWorkspaceId(company.getWorkspaceId());
-			companyResponse.setLicenseName(company.getLicenseName());
-			companyResponse.setSessionType(company.getSessionType());
-			return new ApiResponse<>(companyResponse);
-
+			return new ApiResponse<>(
+				CompanyResponse.builder()
+				.workspaceId(company.getWorkspaceId())
+				.licenseName(company.getLicenseName())
+				.sessionType(company.getSessionType())
+				.build()
+			);
 		} catch (Exception e) {
 			return new ApiResponse<>(ErrorCode.ERR_COMPANY_UPDATE_FAIL);
 		}
@@ -168,23 +171,20 @@ public class CompanyService {
 	) {
 		try {
 			if (companyCode == CompanyConstants.COMPANY_VIRNECT) {
-				CompanyInfoResponse companyInfoResponse = loadServicePolicy(workspaceId, policyLocation);
-				return new ApiResponse<>(companyInfoResponse);
+				return new ApiResponse<>(loadServicePolicy(workspaceId, policyLocation));
 			}
 		} catch (IOException e) {
 			return new ApiResponse<>(ErrorCode.ERR_IO_EXCEPTION);
 		}
 
 		Company company = companyRepository.findByWorkspaceId(workspaceId).orElse(null);
-		if (company == null) {
-			CompanyInfoResponse empty = new CompanyInfoResponse();
+		if (ObjectUtils.isEmpty(company)) {
 			return new ApiResponse<>(ErrorCode.ERR_COMPANY_INVALID_CODE);
 		}
 
 		CompanyInfoResponse companyInfoResponse = companyMapper.toDto(company);
-		Language language = company.getLanguage();
-		List<LanguageCode> languageCodes = combineLanguageCode(language);
-		companyInfoResponse.setLanguageCodes(languageCodes);
+		companyInfoResponse.setLanguageCodes(combineLanguageCode(company.getLanguage()));
+
 		return new ApiResponse<>(companyInfoResponse);
 	}
 
@@ -301,6 +301,7 @@ public class CompanyService {
 
 	private List<LanguageCode> combineLanguageCode(Language language) {
 		List<LanguageCode> languageCodes = new ArrayList<>();
+
 		if (language.isTransKoKr()) {
 			LanguageCode languageCode = new LanguageCode(TranslationItem.LANGUAGE_KR);
 			languageCodes.add(languageCode);

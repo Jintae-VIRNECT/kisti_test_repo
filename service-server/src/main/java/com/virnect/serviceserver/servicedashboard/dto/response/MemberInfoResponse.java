@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import com.virnect.data.domain.DeviceType;
+import com.virnect.data.domain.Role;
 import com.virnect.data.domain.member.MemberStatus;
 import com.virnect.data.domain.member.MemberType;
 
@@ -36,7 +37,7 @@ public class MemberInfoResponse {
 	@ApiModelProperty(
 		value = "User Permission ( MASTER, MANAGER, MEMBER )",
 		position = 7)
-	private String role;
+	private Role role;
 
     /*@ApiModelProperty(
             value = "User Permission Id ( MASTER(1), MANAGER(2), MEMBER(3) )",

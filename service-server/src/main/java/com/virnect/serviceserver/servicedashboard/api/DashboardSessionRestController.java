@@ -1,5 +1,6 @@
 package com.virnect.serviceserver.servicedashboard.api;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -28,9 +29,6 @@ public class DashboardSessionRestController {
 
 	private final DashboardHistoryService historyService;
 
-	/**
-	 * 현재 진행 중입 협업 상세 정보 가져오는 API
-	 */
 	@ApiOperation(value = "특정 원격협업 방 상세 정보를 조회하는 API 입니다.")
 	@GetMapping(value = "room/{workspaceId}/{sessionId}")
 	ResponseEntity<ApiResponse<RoomDetailInfoResponse>> getRoomDetailInfoRequestHandler(
@@ -41,18 +39,15 @@ public class DashboardSessionRestController {
 			TAG,
 			"REST API: GET "
 				+ REST_PATH + "/"
-				+ (workspaceId != null ? workspaceId : "{}") + "::"
-				+ (sessionId != null ? sessionId : "{}"),
+				+ workspaceId + "/"
+				+ sessionId,
 			"getRoomDetailInfoRequestHandler"
 		);
-		if ((workspaceId != null && workspaceId.isEmpty())
-			|| (sessionId != null && sessionId.isEmpty())
-		) {
+		if (StringUtils.isBlank(workspaceId) || StringUtils.isBlank(sessionId)) {
 			throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
 		}
-
-		RoomDetailInfoResponse responseData = historyService.getOngoingRoomDetail(workspaceId, sessionId);
-
-		return ResponseEntity.ok(new ApiResponse<>(responseData));
+		return ResponseEntity.ok(
+			new ApiResponse<>(historyService.getOngoingRoomDetail(workspaceId, sessionId))
+		);
 	}
 }

@@ -30,7 +30,7 @@ public class BashCoturnCredentialsService extends CoturnCredentialsService {
 	private AtomicLong logCounter = new AtomicLong(0);
 	private final long LOG_LIMIT = 30;
 
-	@PostConstruct
+	/*@PostConstruct
 	private void initialize() {
 		try {
 			String response = CommandExecutor.execCommand(10000, "/bin/sh", "-c",
@@ -69,7 +69,7 @@ public class BashCoturnCredentialsService extends CoturnCredentialsService {
 		} catch (IOException | InterruptedException e) {
 			e.printStackTrace();
 		}
-	}
+	}*/
 
 	@Override
 	public TurnCredentials createUser() throws IOException, InterruptedException {

@@ -39,4 +39,11 @@ public class RoomDetailInfoResponse {
 
     @ApiModelProperty(value = "Remote Session Allocated Member Information List", position = 8)
     private List<MemberInfoResponse> memberList = new ArrayList<>();
+
+    @ApiModelProperty(value = "Video Restricted Mode", position = 9)
+    private boolean videoRestrictedMode;
+
+    @ApiModelProperty(value = "Audio Restricted Mode", position = 10)
+    private boolean audioRestrictedMode;
+
 }

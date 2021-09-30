@@ -8,6 +8,7 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeFormatterBuilder;
 import java.time.temporal.ChronoField;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -15,13 +16,14 @@ import java.util.stream.IntStream;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import com.virnect.data.application.record.RecordRestService;
-import com.virnect.data.application.user.UserRestService;
+import com.virnect.data.application.account.AccountRestService;
 import com.virnect.data.application.workspace.WorkspaceRestService;
 import com.virnect.data.dao.file.FileRepository;
 import com.virnect.data.dao.file.RecordFileRepository;
@@ -37,7 +39,8 @@ import com.virnect.data.domain.member.MemberType;
 import com.virnect.data.domain.room.Room;
 import com.virnect.data.domain.roomhistory.RoomHistory;
 import com.virnect.data.domain.roomhistory.RoomHistorySortType;
-import com.virnect.data.dto.rest.RecordServerFileInfoResponse;
+import com.virnect.data.dto.PageMetadataResponse;
+import com.virnect.data.dto.rest.RecordingFiles;
 import com.virnect.data.dto.rest.UserInfoListResponse;
 import com.virnect.data.dto.rest.UserInfoResponse;
 import com.virnect.data.dto.rest.WorkspaceMemberInfoResponse;
@@ -45,19 +48,18 @@ import com.virnect.data.error.ErrorCode;
 import com.virnect.data.error.exception.RestServiceException;
 import com.virnect.data.global.common.ApiResponse;
 import com.virnect.data.global.util.ListUtils;
-import com.virnect.serviceserver.servicedashboard.dto.PageMetadataResponse;
+import com.virnect.data.global.util.paging.CustomPaging;
+import com.virnect.data.global.util.paging.PagingUtils;
 import com.virnect.serviceserver.servicedashboard.dto.mapper.file.DashboardFileInfoMapper;
 import com.virnect.serviceserver.servicedashboard.dto.mapper.file.DashboardFileUserInfoMapper;
 import com.virnect.serviceserver.servicedashboard.dto.mapper.member.DashboardMemberInfoMapper;
 import com.virnect.serviceserver.servicedashboard.dto.mapper.memberhistroy.DashboardMemberHistoryMapper;
 import com.virnect.serviceserver.servicedashboard.dto.mapper.record.DashboardRecordFileDetailMapper;
-import com.virnect.serviceserver.servicedashboard.dto.mapper.room.OngoingRoomInfoMapper;
 import com.virnect.serviceserver.servicedashboard.dto.mapper.room.DashboardRoomDetailInfoMapper;
+import com.virnect.serviceserver.servicedashboard.dto.mapper.room.OngoingRoomInfoMapper;
 import com.virnect.serviceserver.servicedashboard.dto.mapper.roomhistory.DashboardRoomHistoryDetailInfoMapper;
 import com.virnect.serviceserver.servicedashboard.dto.mapper.roomhistory.DashboardRoomHistoryInfoMapper;
-import com.virnect.serviceserver.servicedashboard.dto.request.RoomHistoryDetailRequest;
 import com.virnect.serviceserver.servicedashboard.dto.request.RoomHistoryListRequest;
-import com.virnect.serviceserver.servicedashboard.dto.request.RoomHistoryStatsRequest;
 import com.virnect.serviceserver.servicedashboard.dto.response.FileDetailInfoResponse;
 import com.virnect.serviceserver.servicedashboard.dto.response.FileInfoResponse;
 import com.virnect.serviceserver.servicedashboard.dto.response.FileUserInfoResponse;
@@ -75,7 +77,7 @@ import com.virnect.serviceserver.servicedashboard.dto.response.RoomHistoryInfoRe
 public class DashboardHistoryService {
 
 	private final WorkspaceRestService workspaceRestService;
-	private final UserRestService userRestService;
+	private final AccountRestService accountRestService;
 	private final RecordRestService recordRestService;
 
 	private final RoomRepository roomRepository;
@@ -95,20 +97,10 @@ public class DashboardHistoryService {
 	private final DashboardRecordFileDetailMapper dashboardRecordFileDetailMapper;
 	private final OngoingRoomInfoMapper ongoingRoomInfoMapper;
 
-	/**
-	 * 협업 히스토리 요청 처리
-	 *
-	 * @param request - 파일 요청 데이터
-	 * @return - 로컬 녹화 파일  URL 정보
-	 */
-	public RoomHistoryInfoListResponse getRoomHistory(
-		RoomHistoryListRequest request, String workspaceId, String userId
+	public ApiResponse<RoomHistoryInfoListResponse> getRoomHistory(
+		String workspaceId, String userId, RoomHistoryListRequest request
 	) {
-
-		RoomHistoryInfoListResponse roomHistoryInfoListResponse;
-
 		List<RoomHistoryInfoResponse> roomHistories = new ArrayList<>();
-
 		switch (request.getStatus()) {
 			case ALL:
 				ListUtils.addAllIfNotNull(roomHistories, getMyOnGoingRoomHistory(request, workspaceId, userId));
@@ -121,518 +113,338 @@ public class DashboardHistoryService {
 				ListUtils.addAllIfNotNull(roomHistories, getMyEndRoomHistory(request, workspaceId, userId));
 				break;
 		}
-
-		roomHistoryInfoListResponse = handleData(request, roomHistories);
-
-		return roomHistoryInfoListResponse;
+		return handleData(workspaceId, userId, request, roomHistories);
 	}
 
-	/**
-	 * 선택 일(Date)의 협업 히스토리 통계 요청 처리
-	 *
-	 * @param request - 파일 요청 데이터
-	 * @return - 본인 및 전체 히스토리 횟수 및 시간 통계
-	 */
-	public HistoryCountResponse getRoomHistoryStatsInDate(RoomHistoryStatsRequest request) {
+	public HistoryCountResponse getRoomHistoryStatsInDate(
+		String workspaceId,
+		String userId,
+		String selectedDate,
+		int timeDifference
+	) {
 
-		List<MemberHistory> loadData;
-
-		LocalDateTime startDateTime;
-		LocalDateTime endDateTime;
-
-		int historyPeriodTemp = 0;
-		String historySessionTemp = "sessionId";
-
-		int hourOfMemberHistory;
 		int hourOfOneDay = 24;
-		int START_HOUR_INDEX = 0;
-		int END_HOUR_INDEX = 23;
 		int[] myHistory = new int[hourOfOneDay];
 		int[] entireHistory = new int[hourOfOneDay];
 		long[] myDuration = new long[hourOfOneDay];
 		long[] entireDuration = new long[hourOfOneDay];
 
-		try {
-			startDateTime = LocalDateTime.of(
-				LocalDate.parse(request.getPeriod()),
-				LocalTime.of(0, 0, 0)
-			).plusMinutes(request.getDiffTime());
-			endDateTime = LocalDateTime.of(
-				LocalDate.parse(request.getPeriod()),
-				LocalTime.of(23, 59, 59)
-			).plusMinutes(request.getDiffTime());
+		String historySessionTemp = "sessionId";
+		int historyPeriodTemp = 0;
+		int hourOfMemberHistory;
+		int START_HOUR_INDEX = 0;
+		int END_HOUR_INDEX = 23;
 
-			// Load DB data
-			loadData = memberHistoryRepository.findByWorkspaceIdAndRoomHistoryIsNotNullAndRoomHistory_ActiveDateBetween(
-				request.getWorkspaceId(), startDateTime, endDateTime);
+		LocalDateTime startDateTime = LocalDateTime.of(
+			LocalDate.parse(selectedDate), LocalTime.of(0, 0, 0)).plusMinutes(timeDifference);
+		LocalDateTime endDateTime = LocalDateTime.of(
+			LocalDate.parse(selectedDate), LocalTime.of(23, 59, 59)).plusMinutes(timeDifference);
 
+		// Load DB data
+		List<MemberHistory> loadData = memberHistoryRepository.findByWorkspaceIdAndRoomHistoryIsNotNullAndRoomHistory_ActiveDateBetween(
+			workspaceId,
+			startDateTime,
+			endDateTime
+		);
+
+		for (MemberHistory memberHistory : loadData) {
+			memberHistory.setStartDate(memberHistory.getStartDate().minusMinutes(timeDifference));
+		}
+
+		// Data handling
+		int hour = START_HOUR_INDEX;
+		while (hour <= END_HOUR_INDEX) {
 			for (MemberHistory memberHistory : loadData) {
-				memberHistory.setStartDate(memberHistory.getStartDate().minusMinutes(request.getDiffTime()));
-			}
+				hourOfMemberHistory = Integer.parseInt(
+					memberHistory.getStartDate().format(DateTimeFormatter.ofPattern("HH")));
 
-			// Data handling
-			int hour = START_HOUR_INDEX;
-			while (hour <= END_HOUR_INDEX) {
-				for (MemberHistory memberHistory : loadData) {
-					hourOfMemberHistory = Integer.parseInt(
-						memberHistory.getStartDate().format(DateTimeFormatter.ofPattern("HH")));
-
-					if (hour == hourOfMemberHistory) {
-						if (!(historyPeriodTemp == hourOfMemberHistory && historySessionTemp.equals(
-							memberHistory.getSessionId()))) {
-							historyPeriodTemp = hourOfMemberHistory;
-							historySessionTemp = memberHistory.getSessionId();
-							entireHistory[hour]++;
-						}
-
-						if (memberHistory.getUuid() != null) {
-							if (memberHistory.getUuid().equals(request.getUserId())) {
-								myHistory[hour]++;
-								myDuration[hour] = myDuration[hour] + memberHistory.getDurationSec();
-							}
-						}
-						entireDuration[hour] = entireDuration[hour] + memberHistory.getDurationSec();
+				if (hour == hourOfMemberHistory) {
+					if (!(historyPeriodTemp == hourOfMemberHistory && historySessionTemp.equals(
+						memberHistory.getSessionId()))) {
+						historyPeriodTemp = hourOfMemberHistory;
+						historySessionTemp = memberHistory.getSessionId();
+						entireHistory[hour]++;
 					}
+					if (memberHistory.getUuid() != null) {
+						if (memberHistory.getUuid().equals(userId)) {
+							myHistory[hour]++;
+							myDuration[hour] = myDuration[hour] + memberHistory.getDurationSec();
+						}
+					}
+					entireDuration[hour] = entireDuration[hour] + memberHistory.getDurationSec();
 				}
-				hour++;
 			}
-		} catch (Exception exception) {
-			throw new RestServiceException(ErrorCode.ERR_ROOM_HISTORY_STATS_IN_DATE);
+			hour++;
 		}
 		return new HistoryCountResponse(myHistory, entireHistory, myDuration, entireDuration);
 	}
 
-	/**
-	 * 선택 월(Month)의 협업 히스토리 통계 요청 처리
-	 *
-	 * @param request - 파일 요청 데이터
-	 * @return - 본인 및 전체 히스토리 횟수 및 시간 통계
-	 */
-	public HistoryCountResponse getRoomHistoryStatsOnMonth(RoomHistoryStatsRequest request) {
+	public HistoryCountResponse getRoomHistoryStatsOnMonth(
+		String workspaceId,
+		String userId,
+		String selectedMonth,
+		int timeDifference
+	) {
 
 		DateTimeFormatter customDateFormat = new DateTimeFormatterBuilder()
 			.appendPattern("yyyy-MM")
 			.parseDefaulting(ChronoField.DAY_OF_MONTH, 1)
 			.toFormatter();
-		YearMonth yearMonth = YearMonth.from(LocalDate.parse(request.getPeriod(), customDateFormat));
+		YearMonth yearMonth = YearMonth.from(LocalDate.parse(selectedMonth, customDateFormat));
+		int lastDay = yearMonth.lengthOfMonth();
+		int month = Integer.parseInt(yearMonth.format(DateTimeFormatter.ofPattern("MM")));
 
-		List<MemberHistory> loadData;
-		LocalDateTime startDateTime;
-		LocalDateTime endDateTime;
+		int[] myHistory = new int[lastDay];
+		int[] entireHistory = new int[lastDay];
+		long[] myDuration = new long[lastDay];
+		long[] entireDuration = new long[lastDay];
 
-		int[] myHistory;
-		int[] entireHistory;
-		long[] myDuration;
-		long[] entireDuration;
-
-		int historyPeriodTemp = 0;
 		String historySessionTemp = "sessionId";
-
+		int historyPeriodTemp = 0;
 		int dayOfMemberHistory;
 		int monthOfMemberHistory;
-		int lastDay = yearMonth.lengthOfMonth();
-		int selectedMonth = Integer.parseInt(yearMonth.format(DateTimeFormatter.ofPattern("MM")));
 
-		log.info("month : {}", selectedMonth);
+		log.info("month : {}", month);
 
-		startDateTime = LocalDateTime.of(
-			LocalDate.parse(request.getPeriod() + "-01"),
-			LocalTime.of(0, 0, 0)
-		).plusMinutes(request.getDiffTime());
-		endDateTime = LocalDateTime.of(
-			LocalDate.parse(request.getPeriod() + "-" + lastDay),
-			LocalTime.of(23, 59, 59)
-		).plusMinutes(request.getDiffTime());
+		LocalDateTime startDateTime = LocalDateTime.of(
+			LocalDate.parse(selectedMonth + "-01"), LocalTime.of(0, 0, 0)).plusMinutes(timeDifference);
+		LocalDateTime endDateTime = LocalDateTime.of(
+			LocalDate.parse(selectedMonth + "-" + lastDay), LocalTime.of(23, 59, 59)).plusMinutes(timeDifference);
 
-		myHistory = new int[lastDay];
-		entireHistory = new int[lastDay];
-		myDuration = new long[lastDay];
-		entireDuration = new long[lastDay];
+		// Load DB data
+		List<MemberHistory> loadData = memberHistoryRepository.findByWorkspaceIdAndRoomHistoryIsNotNullAndRoomHistory_ActiveDateBetween(
+			workspaceId,
+			startDateTime,
+			endDateTime
+		);
+		for (MemberHistory memberHistory : loadData) {
+			memberHistory.setStartDate(memberHistory.getStartDate().minusMinutes(timeDifference));
+		}
 
-		try {
-			// Load DB data
-			loadData = memberHistoryRepository.findByWorkspaceIdAndRoomHistoryIsNotNullAndRoomHistory_ActiveDateBetween(
-				request.getWorkspaceId(),
-				startDateTime,
-				endDateTime
-			);
-
+		// Data handling
+		int day = 0;
+		while (day < lastDay) {
 			for (MemberHistory memberHistory : loadData) {
-				memberHistory.setStartDate(memberHistory.getStartDate().minusMinutes(request.getDiffTime()));
-			}
+				dayOfMemberHistory = Integer.parseInt(
+					memberHistory.getStartDate().format(DateTimeFormatter.ofPattern("dd")));
+				monthOfMemberHistory = Integer.parseInt(
+					memberHistory.getStartDate().format(DateTimeFormatter.ofPattern("MM")));
 
-			// Data handling
-			int day = 0;
-			while (day < lastDay) {
-				for (MemberHistory memberHistory : loadData) {
-					dayOfMemberHistory = Integer.parseInt(
-						memberHistory.getStartDate().format(DateTimeFormatter.ofPattern("dd")));
-					monthOfMemberHistory = Integer.parseInt(
-						memberHistory.getStartDate().format(DateTimeFormatter.ofPattern("MM")));
+				if (day + 1 == dayOfMemberHistory) {
 
-					if (day + 1 == dayOfMemberHistory) {
-
-						if (monthOfMemberHistory == selectedMonth) {
-							if (!(historyPeriodTemp == dayOfMemberHistory && historySessionTemp.equals(
-								memberHistory.getSessionId()))) {
-								historyPeriodTemp = dayOfMemberHistory;
-								historySessionTemp = memberHistory.getSessionId();
-								entireHistory[day]++;
-							}
-							entireDuration[day] = entireDuration[day] + memberHistory.getDurationSec();
+					if (monthOfMemberHistory == month) {
+						if (!(historyPeriodTemp == dayOfMemberHistory && historySessionTemp.equals(
+							memberHistory.getSessionId()))) {
+							historyPeriodTemp = dayOfMemberHistory;
+							historySessionTemp = memberHistory.getSessionId();
+							entireHistory[day]++;
 						}
-
-						if (memberHistory.getUuid().equals(request.getUserId())) {
-							myHistory[day]++;
-							myDuration[day] = myDuration[day] + memberHistory.getDurationSec();
-						}
+						entireDuration[day] = entireDuration[day] + memberHistory.getDurationSec();
+					}
+					if (memberHistory.getUuid().equals(userId)) {
+						myHistory[day]++;
+						myDuration[day] = myDuration[day] + memberHistory.getDurationSec();
 					}
 				}
-				day++;
 			}
-		} catch (Exception exception) {
-			throw new RestServiceException(ErrorCode.ERR_ROOM_HISTORY_STATS_ON_MONTH);
+			day++;
 		}
+
 		return new HistoryCountResponse(myHistory, entireHistory, myDuration, entireDuration);
 	}
 
-	/**
-	 * 진행중인 협업 상세정보 요청 처리
-	 * @param workspaceId - 협업이 진행중인 워크스페이스 고유 식별자
-	 * @param sessionId - 진행중인 협업의 세션 식별자
-	 * @return - 협업 상세 정보
-	 */
 	public RoomDetailInfoResponse getOngoingRoomDetail(String workspaceId, String sessionId) {
-
-		RoomDetailInfoResponse roomDetailInfoResponse;
 
 		Room ongoingRoom = roomRepository.findRoomByWorkspaceIdAndSessionIdForWrite(workspaceId, sessionId).orElseThrow(()
 			-> new RestServiceException(ErrorCode.ERR_ROOM_NOT_FOUND));
 
-		try {
-			roomDetailInfoResponse = dashboardRoomDetailInfoMapper.toDto(ongoingRoom);
-			roomDetailInfoResponse.setSessionType(ongoingRoom.getSessionProperty().getSessionType());
+		RoomDetailInfoResponse roomDetailInfoResponse = dashboardRoomDetailInfoMapper.toDto(ongoingRoom);
+		roomDetailInfoResponse.setSessionType(ongoingRoom.getSessionProperty().getSessionType());
 
-			List<MemberInfoResponse> memberInfoResponses = ongoingRoom.getMembers()
-				.stream()
-				.map(member -> dashboardMemberInfoMapper.toDto(member))
-				.collect(Collectors.toList());
+		List<MemberInfoResponse> memberInfoResponses = ongoingRoom.getMembers()
+			.stream()
+			.map(dashboardMemberInfoMapper::toDto)
+			.collect(Collectors.toList());
 
-			memberInfoResponses.removeIf(
-				memberInfoResponse -> memberInfoResponse.getMemberStatus().equals(MemberStatus.EVICTED));
+		memberInfoResponses.removeIf(memberInfoResponse -> memberInfoResponse.getMemberStatus().equals(MemberStatus.EVICTED));
 
-			roomDetailInfoResponse.setMemberList(memberInfoResponses);
+		roomDetailInfoResponse.setMemberList(memberInfoResponses);
 
-			// Set Member Info
-			if (!roomDetailInfoResponse.getMemberList().isEmpty()) {
-
-				for (MemberInfoResponse memberInfoResponse : roomDetailInfoResponse.getMemberList()) {
-					ApiResponse<WorkspaceMemberInfoResponse> workspaceMemberInfo =
-						workspaceRestService.getWorkspaceMemberInfo(workspaceId, memberInfoResponse.getUuid());
-					WorkspaceMemberInfoResponse workspaceMemberData = workspaceMemberInfo.getData();
-					memberInfoResponse.setRole(workspaceMemberData.getRole());
-					memberInfoResponse.setEmail(workspaceMemberData.getEmail());
-					memberInfoResponse.setName(workspaceMemberData.getName());
-					memberInfoResponse.setNickName(workspaceMemberData.getNickName());
-					memberInfoResponse.setProfile(workspaceMemberData.getProfile());
-				}
-
-				roomDetailInfoResponse.setMemberList(
-					setLeader(roomDetailInfoResponse.getMemberList())
-				);
-
+		// Set Member Info
+		if (!roomDetailInfoResponse.getMemberList().isEmpty()) {
+			for (MemberInfoResponse memberInfoResponse : roomDetailInfoResponse.getMemberList()) {
+				ApiResponse<WorkspaceMemberInfoResponse> workspaceMemberInfo = workspaceRestService.getWorkspaceMember(
+					workspaceId, memberInfoResponse.getUuid());
+				WorkspaceMemberInfoResponse workspaceMemberData = workspaceMemberInfo.getData();
+				memberInfoResponse.setRole(workspaceMemberData.getRole());
+				memberInfoResponse.setEmail(workspaceMemberData.getEmail());
+				memberInfoResponse.setName(workspaceMemberData.getName());
+				memberInfoResponse.setNickName(workspaceMemberData.getNickName());
+				memberInfoResponse.setProfile(workspaceMemberData.getProfile());
 			}
-		} catch (Exception exception) {
-			throw new RestServiceException(ErrorCode.ERR_ROOM_MAPPER);
+			roomDetailInfoResponse.setMemberList(setLeader(roomDetailInfoResponse.getMemberList()));
 		}
 		return roomDetailInfoResponse;
 	}
 
-	/**
-	 * 종료된 협업 상세정보 요청 처리
-	 *
-	 * @param request - 협업 요청 데이터
-	 * @return - 종료된 협업 상세 정보
-	 */
-	public RoomHistoryDetailInfoResponse getEndRoomDetail(RoomHistoryDetailRequest request) {
+	public RoomHistoryDetailInfoResponse getEndRoomDetail(
+		String workspaceId,
+		String sessionId
+	) {
 
-		RoomHistoryDetailInfoResponse roomHistoryDetailInfoResponse;
+		RoomHistory endRoom = roomHistoryRepository.findRoomHistoryByWorkspaceIdAndSessionId(workspaceId, sessionId)
+			.orElseThrow(() -> new RestServiceException(ErrorCode.ERR_HISTORY_ROOM_NOT_FOUND));
 
-		RoomHistory endRoom = roomHistoryRepository.findRoomHistoryByWorkspaceIdAndSessionId(
-			request.getWorkspaceId(),
-			request.getSessionId()
-		).orElseThrow(() -> new RestServiceException(ErrorCode.ERR_ROOM_HISTORY_FOUND));
+		RoomHistoryDetailInfoResponse roomHistoryDetailInfoResponse = dashboardRoomHistoryDetailInfoMapper.toDto(endRoom);
+		roomHistoryDetailInfoResponse.setSessionType(endRoom.getSessionPropertyHistory().getSessionType());
 
-		try {
+		List<MemberInfoResponse> memberInfoList = endRoom.getMemberHistories()
+			.stream()
+			.map(dashboardMemberHistoryMapper::toDto)
+			.collect(Collectors.toList());
 
-			roomHistoryDetailInfoResponse = dashboardRoomHistoryDetailInfoMapper.toDto(endRoom);
-			roomHistoryDetailInfoResponse.setSessionType(endRoom.getSessionPropertyHistory().getSessionType());
+		memberInfoList.removeIf(
+			memberInfoResponse -> memberInfoResponse.getMemberStatus().equals(MemberStatus.EVICTED));
 
-			List<MemberInfoResponse> memberInfoList = endRoom.getMemberHistories()
-				.stream()
-				.map(memberHistory -> dashboardMemberHistoryMapper.toDto(memberHistory))
-				.collect(Collectors.toList());
+		roomHistoryDetailInfoResponse.setMemberList(memberInfoList);
 
-			memberInfoList.removeIf(
-				memberInfoResponse -> memberInfoResponse.getMemberStatus().equals(MemberStatus.EVICTED));
-
-			roomHistoryDetailInfoResponse.setMemberList(memberInfoList);
-
-			// Set Member Info
-			if (!endRoom.getMemberHistories().isEmpty()) {
-				for (MemberInfoResponse memberInfoResponse : roomHistoryDetailInfoResponse.getMemberList()) {
-					ApiResponse<WorkspaceMemberInfoResponse> workspaceMemberInfo =
-						workspaceRestService.getWorkspaceMemberInfo(request.getWorkspaceId(), memberInfoResponse.getUuid());
-					WorkspaceMemberInfoResponse workspaceMemberData = workspaceMemberInfo.getData();
-					memberInfoResponse.setRole(workspaceMemberData.getRole());
-					memberInfoResponse.setEmail(workspaceMemberData.getEmail());
-					memberInfoResponse.setName(workspaceMemberData.getName());
-					memberInfoResponse.setNickName(workspaceMemberData.getNickName());
-					memberInfoResponse.setProfile(workspaceMemberData.getProfile());
-				}
-
-				roomHistoryDetailInfoResponse.setMemberList(
-					setLeader(roomHistoryDetailInfoResponse.getMemberList())
-				);
-
+		// Set Member Info
+		if (!endRoom.getMemberHistories().isEmpty()) {
+			for (MemberInfoResponse memberInfoResponse : roomHistoryDetailInfoResponse.getMemberList()) {
+				ApiResponse<WorkspaceMemberInfoResponse> workspaceMemberInfo =
+					workspaceRestService.getWorkspaceMember(workspaceId, memberInfoResponse.getUuid());
+				WorkspaceMemberInfoResponse workspaceMemberData = workspaceMemberInfo.getData();
+				memberInfoResponse.setRole(workspaceMemberData.getRole());
+				memberInfoResponse.setEmail(workspaceMemberData.getEmail());
+				memberInfoResponse.setName(workspaceMemberData.getName());
+				memberInfoResponse.setNickName(workspaceMemberData.getNickName());
+				memberInfoResponse.setProfile(workspaceMemberData.getProfile());
 			}
-		} catch (Exception exception) {
-			throw new RestServiceException(ErrorCode.ERR_ROOM_HISTORY_MAPPER);
-
+			roomHistoryDetailInfoResponse.setMemberList(setLeader(roomHistoryDetailInfoResponse.getMemberList()));
 		}
 		return roomHistoryDetailInfoResponse;
 	}
 
-	/*public List<RoomHistoryInfoResponse> makeOngoingRooms(RoomHistoryListRequest request) {
-
-		LocalDateTime startDateTime = null;
-		LocalDateTime endDateTime = null;
-		boolean useFromTo = request.getFromTo() != null && !request.getFromTo().isEmpty();
-		boolean useUserId = request.getUserId() != null && !request.getUserId().isEmpty();
-		String[] fromToSplit = useFromTo ? request.getFromTo().split(",") : null;
-		if (useFromTo) {
-			startDateTime = LocalDateTime.of(LocalDate.parse(fromToSplit[0].toString()), LocalTime.of(0, 0, 0));
-			endDateTime = LocalDateTime.of(LocalDate.parse(fromToSplit[1].toString()), LocalTime.of(23, 59, 59));
-		}
-
-		List<Room> ongoingRooms;
-		if (useFromTo) {
-			ongoingRooms = roomRepository.findByWorkspaceIdAndRoomStatusAndActiveDateBetween(
-				request.getWorkspaceId(), RoomStatus.ACTIVE, startDateTime, endDateTime);
-		} else {
-			ongoingRooms = roomRepository.findByWorkspaceIdAndRoomStatus(
-				request.getWorkspaceId(), RoomStatus.ACTIVE);
-		}
-		List<Member> ongoingRoomMemberHistories = memberRepository.findByWorkspaceIdAndRoomNotNull(
-			request.getWorkspaceId());
-		return ongoingRoomMapper(ongoingRooms, ongoingRoomMemberHistories);
-	}*/
-
-	/*public List<RoomHistoryInfoResponse> makeEndRooms(RoomHistoryListRequest request) {
-
-		List<RoomHistory> endRooms = new ArrayList<>();
-
-		LocalDateTime startDateTime = null;
-		LocalDateTime endDateTime = null;
-		boolean useFromTo = request.getFromTo() != null && !request.getFromTo().isEmpty();
-		boolean useUserId = request.getUserId() != null && !request.getUserId().isEmpty();
-		String[] fromToSplit = useFromTo ? request.getFromTo().split(",") : null;
-
-		if (useFromTo) {
-			startDateTime = LocalDateTime.of(LocalDate.parse(fromToSplit[0].toString()), LocalTime.of(0, 0, 0));
-			endDateTime = LocalDateTime.of(LocalDate.parse(fromToSplit[1].toString()), LocalTime.of(23, 59, 59));
-		}
-
-		if (useUserId) {
-			if (useFromTo) {
-				endRooms = roomHistoryRepository.findRoomHistoryByWorkspaceIdAndMemberHistories_UuidAndUnactiveDateBetween(
-					request.getWorkspaceId(),
-					request.getUserId(),
-					startDateTime,
-					endDateTime
-				);
-			} else {
-				endRooms = roomHistoryRepository.findRoomHistoryByWorkspaceIdAndMemberHistories_Uuid(
-					request.getWorkspaceId(),
-					request.getUserId()
-				);
-			}
-		} else {
-			if (useFromTo) {
-				endRooms = roomHistoryRepository.findRoomHistoryByWorkspaceIdAndUnactiveDateBetween(
-					request.getWorkspaceId(),
-					startDateTime,
-					endDateTime
-				);
-			} else {
-				endRooms = roomHistoryRepository.findRoomHistoryByWorkspaceId(request.getWorkspaceId());
-			}
-		}
-
-		List<MemberHistory> endRoomMemberHistories = memberHistoryRepository.findByWorkspaceId(
-			request.getWorkspaceId());
-		return endRoomMapper(endRooms, endRoomMemberHistories);
-	}*/
-
-	/**
-	 * 협업 히스토리 데이터 핸들링 처리
-	 * @param request - Request 옵션(workspaceId, sessionId ..) 
-	 * @param roomHistories - 대상 데이터
-	 * @return - 핸들링 된 협업 히스토리
-	 */
-	public RoomHistoryInfoListResponse handleData(
-		RoomHistoryListRequest request, List<RoomHistoryInfoResponse> roomHistories
+	public ApiResponse<RoomHistoryInfoListResponse> handleData(
+		String workspaceId,
+		String userId,
+		RoomHistoryListRequest request,
+		List<RoomHistoryInfoResponse> roomHistories
 	) {
+		if (CollectionUtils.isEmpty(roomHistories)) {
+			return new ApiResponse<>(
+				RoomHistoryInfoListResponse.builder()
+					.roomHistoryInfoList(Collections.emptyList())
+					.pageMeta(PagingUtils.emptyPagingBuilder())
+					.build());
+		}
 
-		RoomHistoryInfoListResponse roomHistoryInfoListResponse;
+		List<WorkspaceMemberInfoResponse> workspaceMembers = workspaceRestService.getWorkspaceMembers(workspaceId).getData().getMemberInfoList();
+		List<FileDetailInfoResponse> localRecFileAll = getLocalRecordFileList(
+			workspaceId,
+			//roomHistory.getSessionId(),
+			false
+		);
+		List<FileInfoResponse> attachFileAll = getAttachedFileList(
+			workspaceId,
+			//roomHistory.getSessionId(),
+			false
+		);
+		List<RecordingFiles> serverRecFileAll = recordRestService.getServerRecordFileList(workspaceId, "DASHBOARD").getData().getInfos();
+		if (CollectionUtils.isEmpty(serverRecFileAll)) {
+			serverRecFileAll = new ArrayList<>();
+		}
+		log.info("RECORD SERVER LIST SIZE : " + serverRecFileAll.size());
 
-		PageMetadataResponse pageMeta = PageMetadataResponse.builder()
-			.currentPage(0)
-			.currentSize(0)
-			.numberOfElements(roomHistories.size())
-			.totalPage(0)
-			.totalElements(roomHistories.size())
-			.last(true)
-			.build();
-
-		if (roomHistories.size() > 0) {
-			try {
-
-				List<WorkspaceMemberInfoResponse> workspaceMembers =
-					workspaceRestService.getWorkspaceMembers(request.getWorkspaceId()).getData().getMemberInfoList();
-
-				List<FileDetailInfoResponse> localRecFileAll = getLocalRecordFileList(
-					request.getWorkspaceId(),
-					//roomHistory.getSessionId(),
-					false
-				);
-				List<FileInfoResponse> attachFileAll = getAttachedFileList(
-					request.getWorkspaceId(),
-					//roomHistory.getSessionId(),
-					false
-				);
-				List<RecordServerFileInfoResponse> serverRecFileAll =
-					recordRestService.getServerRecordFileList(
-						request.getWorkspaceId(), "DASHBOARD")
-						.getData()
-						.getInfos();
-
-				for (RoomHistoryInfoResponse roomHistory : roomHistories) {
-					for (MemberInfoResponse memberInfoResponse : roomHistory.getMemberList()) {
-						for (WorkspaceMemberInfoResponse memberInfo : workspaceMembers) {
-							if (memberInfo.getUuid() != null && memberInfoResponse.getUuid() != null) {
-								if (memberInfo.getUuid().equals(memberInfoResponse.getUuid())) {
-									memberInfoResponse.setRole(memberInfo.getRole());
-									memberInfoResponse.setEmail(memberInfo.getEmail());
-									memberInfoResponse.setName(memberInfo.getName());
-									memberInfoResponse.setNickName(memberInfo.getNickName());
-									memberInfoResponse.setProfile(memberInfo.getProfile());
-								}
-							}
+		for (RoomHistoryInfoResponse roomHistory : roomHistories) {
+			for (MemberInfoResponse memberInfoResponse : roomHistory.getMemberList()) {
+				for (WorkspaceMemberInfoResponse memberInfo : workspaceMembers) {
+					if (memberInfo.getUuid() != null && memberInfoResponse.getUuid() != null) {
+						if (memberInfo.getUuid().equals(memberInfoResponse.getUuid())) {
+							memberInfoResponse.setRole(memberInfo.getRole());
+							memberInfoResponse.setEmail(memberInfo.getEmail());
+							memberInfoResponse.setName(memberInfo.getName());
+							memberInfoResponse.setNickName(memberInfo.getNickName());
+							memberInfoResponse.setProfile(memberInfo.getProfile());
 						}
 					}
-
-					roomHistory.setMemberList(roomHistory.getMemberList());
-					roomHistory.setMemberList(setLeader(roomHistory.getMemberList()));
-
-					roomHistory.setLeaderNickName(
-						roomHistory.getMemberList()
-							.stream()
-							.filter(memberInfoResponse -> memberInfoResponse.getMemberType() == MemberType.LEADER)
-							.map(MemberInfoResponse::getNickName)
-							.collect(Collectors.joining())
-					);
-
-					roomHistory.setServerRecord(
-						serverRecFileAll
-							.stream()
-							.filter(recordFiles -> recordFiles.getSessionId().equals(roomHistory.getSessionId()))
-							.count()
-					);
-					roomHistory.setLocalRecord(
-						localRecFileAll
-							.stream()
-							.filter(recordFiles -> recordFiles.getSessionId().equals(roomHistory.getSessionId()))
-							.count()
-					);
-					roomHistory.setAttach(
-						attachFileAll
-							.stream()
-							.filter(recordFiles -> recordFiles.getSessionId().equals(roomHistory.getSessionId()))
-							.count()
-					);
 				}
-
-				if (request.getSearchWord() != null) {
-					roomHistories = roomHistories.stream()
-						.filter(roomInfo -> roomInfo.getTitle().contains(request.getSearchWord())
-							|| roomInfo.getMemberList().stream()
-							.anyMatch(memberInfo -> memberInfo.getNickName().contains(request.getSearchWord()))
-						)
-						.collect(Collectors.toList());
-				}
-
-				// 리스트 정렬 및 글 넘버 Setting
-				roomHistories = sortingAndSetNumber(
-					roomHistories,
-					request.getSortProperties(),
-					request.getSortOrder()
-				);
-
-				// 페이징 사용시
-				if (request.isPaging()) {
-					int currentPageNumber = request.getPage() + 1; // current page number (start : 0)
-					int pagingSize = request.getSize(); // page data count
-					long totalElements = roomHistories.size(); // return searched data count
-					int totalPageNumber = totalElements % pagingSize == 0 ? (int)(totalElements / (pagingSize)) :
-						(int)(totalElements / (pagingSize)) + 1;
-					boolean last = (currentPageNumber) == totalPageNumber;
-					int startIndex = 0;
-					int endIndex = 0;
-
-					if (!roomHistories.isEmpty()) {
-						startIndex = (currentPageNumber - 1) * pagingSize;
-						endIndex = last ? roomHistories.size() : ((currentPageNumber - 1) * pagingSize) + (pagingSize);
-					}
-
-					// 데이터 range
-					roomHistories = IntStream
-						.range(startIndex, endIndex)
-						.mapToObj(roomHistories::get)
-						.collect(Collectors.toList());
-
-					// 페이징 데이터 설정
-					pageMeta = PageMetadataResponse.builder()
-						.currentPage(currentPageNumber)
-						.currentSize(pagingSize)
-						.numberOfElements(roomHistories.size())
-						.totalPage(totalPageNumber)
-						.totalElements(totalElements)
-						.last(last)
-						.build();
-				}
-			} catch (Exception exception) {
-				throw new RestServiceException(ErrorCode.ERR_ROOM_HISTORY_HANDLE);
 			}
+
+			roomHistory.setMemberList(roomHistory.getMemberList());
+			roomHistory.setMemberList(setLeader(roomHistory.getMemberList()));
+
+			roomHistory.setLeaderNickName(
+				roomHistory.getMemberList()
+					.stream()
+					.filter(memberInfoResponse -> memberInfoResponse.getMemberType() == MemberType.LEADER)
+					.map(MemberInfoResponse::getNickName)
+					.collect(Collectors.joining())
+			);
+
+			roomHistory.setServerRecord(
+				serverRecFileAll
+					.stream()
+					.filter(recordFiles -> recordFiles.getSessionId().equals(roomHistory.getSessionId()))
+					.count()
+			);
+			roomHistory.setLocalRecord(
+				localRecFileAll
+					.stream()
+					.filter(recordFiles -> recordFiles.getSessionId().equals(roomHistory.getSessionId()))
+					.count()
+			);
+			roomHistory.setAttach(
+				attachFileAll
+					.stream()
+					.filter(recordFiles -> recordFiles.getSessionId().equals(roomHistory.getSessionId()))
+					.count()
+			);
 		}
 
-		roomHistoryInfoListResponse = RoomHistoryInfoListResponse
-			.builder()
-			.pageMeta(pageMeta)
-			.roomHistoryInfoList(roomHistories).build();
+		if (request.getSearchWord() != null) {
+			roomHistories = roomHistories.stream()
+				.filter(roomInfo -> roomInfo.getTitle().contains(request.getSearchWord())
+					|| roomInfo.getMemberList().stream()
+					.anyMatch(memberInfo -> memberInfo.getNickName().contains(request.getSearchWord()))
+				)
+				.collect(Collectors.toList());
+		}
 
-		return roomHistoryInfoListResponse;
+		// 리스트 정렬 및 글 넘버 Setting
+		roomHistories = sortingAndSetNumber(
+			roomHistories,
+			request.getSortProperties(),
+			request.getSortOrder()
+		);
+
+		CustomPaging customPaging = PagingUtils.customPaging(request.getPage(), roomHistories.size(), request.getSize(), roomHistories.isEmpty());
+
+		// 데이터 range
+		roomHistories = IntStream
+			.range(customPaging.getStartIndex(), customPaging.getEndIndex())
+			.mapToObj(roomHistories::get)
+			.collect(Collectors.toList());
+
+		// 페이징 데이터 설정
+		PageMetadataResponse pageMeta = PageMetadataResponse.builder()
+			.currentPage(customPaging.getCurrentPage())
+			.currentSize(customPaging.getSize())
+			.numberOfElements(roomHistories.size())
+			.totalPage(customPaging.getTotalPage())
+			.totalElements(customPaging.getTotalElements())
+			.last(customPaging.isLast())
+			.build();
+
+		return new ApiResponse<>(
+			RoomHistoryInfoListResponse.builder()
+			.pageMeta(pageMeta)
+			.roomHistoryInfoList(roomHistories).build()
+		);
 	}
 
-	/**
-	 * 로컬 첨부파일 목록 요청 처리
-	 * @param workspaceId - 대상 Workspace Id
-	 * @param deleted - 삭제 유무
-	 * @return - 로컬 첨부파일 목록
-	 */
 	public List<FileInfoResponse> getAttachedFileList(
 		String workspaceId,
-		//String sessionId,
 		boolean deleted
 	) {
 		List<FileInfoResponse> fileInfoResponses = new ArrayList<>();
@@ -640,21 +452,15 @@ public class DashboardHistoryService {
 			List<File> files = fileRepository.findByWorkspaceIdAndDeleted(workspaceId, deleted);
 			if (files.size() > 0) {
 				fileInfoResponses = files.stream()
-					.map(file -> dashboardFileInfoMapper.toDto(file))
+					.map(dashboardFileInfoMapper::toDto)
 					.collect(Collectors.toList());
 			}
 		} catch (Exception exception) {
-			throw new RestServiceException(ErrorCode.ERR_ATTACHED_FILE_FOUND);
+			throw new RestServiceException(ErrorCode.ERR_FILE_GET_SIGNED_EXCEPTION);
 		}
 		return fileInfoResponses;
 	}
 
-	/**
-	 * 로컬 녹화파일 목록 요청 처리
-	 * @param workspaceId - 대상 Workspace Id
-	 * @param deleted - 삭제 유무
-	 * @return - 로컬 녹화파일 목록
-	 */
 	public List<FileDetailInfoResponse> getLocalRecordFileList(
 		String workspaceId,
 		boolean deleted
@@ -663,7 +469,7 @@ public class DashboardHistoryService {
 		try {
 			List<RecordFile> recordFiles = recordFileRepository.findByWorkspaceIdAndDeleted(workspaceId, deleted);
 
-			ApiResponse<UserInfoListResponse> listResponse = userRestService.getUserInfo(false);
+			ApiResponse<UserInfoListResponse> listResponse = accountRestService.getUserInfo(false);
 			UserInfoResponse userInfo = null;
 			for (RecordFile recordFile : recordFiles) {
 				for (UserInfoResponse response : listResponse.getData().getUserInfoList()) {
@@ -677,18 +483,11 @@ public class DashboardHistoryService {
 				fileDetailInfoResponses.add(fileDetailInfoResponse);
 			}
 		} catch (Exception exception) {
-			throw new RestServiceException(ErrorCode.ERR_LOCAL_RECORD_FILE_FOUND);
+			throw new RestServiceException(ErrorCode.ERR_FILE_GET_SIGNED_EXCEPTION);
 		}
 		return fileDetailInfoResponses;
 	}
 
-	/**
-	 * 정렬, 글 번호 설정
-	 * @param roomHistoryInfoList - 대상 데이터
-	 * @param sortProperties - 정렬 속성
-	 * @param sortOrder - 차순
-	 * @return - Sorted Data
-	 */
 	public List<RoomHistoryInfoResponse> sortingAndSetNumber(
 		List<RoomHistoryInfoResponse> roomHistoryInfoList,
 		RoomHistorySortType sortProperties,
@@ -875,14 +674,6 @@ public class DashboardHistoryService {
 		return roomHistoryInfoList;
 	}
 
-	/**
-	 * 정렬에 데이터 비교
-	 * @param sortOrder - 검색 시작 일자
-	 * @param result - 차순
-	 * @param count1 - 비교 대상 1
-	 * @param count2 - 비교 대상 2
-	 * @return - 비교 결과
-	 */
 	private int getCountOrderResult(
 		OrderType sortOrder,
 		int result,
@@ -907,13 +698,6 @@ public class DashboardHistoryService {
 		return result;
 	}
 
-	/**
-	 * 현재 진행중인 내 협업 내역 정보 조회
-	 * @param option - 협업 내역 정보 조회 조건
-	 * @param workspaceId - 협업 대상 워크스페이스
-	 * @param userId - 내 계정 고유 식별자 정보
-	 * @return - 현재 진행중인 내 협업 내역 정보
-	 */
 	public List<RoomHistoryInfoResponse> getMyOnGoingRoomHistory(
 		RoomHistoryListRequest option, String workspaceId, String userId
 	) {
@@ -925,31 +709,21 @@ public class DashboardHistoryService {
 			userId
 		);
 
-		return myRoomHistory.stream()
-			.map(room -> {
-				RoomHistoryInfoResponse roomHistoryInfoResponse = ongoingRoomInfoMapper.toDto(room);
-				roomHistoryInfoResponse.setSessionType(room.getSessionProperty().getSessionType());
+		return myRoomHistory.stream().map(room -> {
+			RoomHistoryInfoResponse roomHistoryInfoResponse = ongoingRoomInfoMapper.toDto(room);
+			roomHistoryInfoResponse.setSessionType(room.getSessionProperty().getSessionType());
 
-				List<MemberInfoResponse> memberInfoResponses = room.getMembers().stream()
-					.filter(member -> member.getMemberStatus() != MemberStatus.EVICTED)
-					.map(
-						member -> dashboardMemberInfoMapper.toDto(member)
-					)
-					.collect(Collectors.toList());
+			List<MemberInfoResponse> memberInfoResponses = room.getMembers().stream()
+				.filter(member -> member.getMemberStatus() != MemberStatus.EVICTED)
+				.map(dashboardMemberInfoMapper::toDto)
+				.collect(Collectors.toList());
 
-				roomHistoryInfoResponse.setStatus(false);
-				roomHistoryInfoResponse.setMemberList(memberInfoResponses);
-				return roomHistoryInfoResponse;
-			}).collect(Collectors.toList());
+			roomHistoryInfoResponse.setStatus(false);
+			roomHistoryInfoResponse.setMemberList(memberInfoResponses);
+			return roomHistoryInfoResponse;
+		}).collect(Collectors.toList());
 	}
 
-	/**
-	 * 종료된 내 협업 내역 정보 조회
-	 * @param option - 협업 내역 정보 조회 조건
-	 * @param workspaceId - 협업 대상 워크스페이스
-	 * @param userId - 내 계정 고유 식별자 정보
-	 * @return - 종료된 내 협업 내역 정보
-	 */
 	public List<RoomHistoryInfoResponse> getMyEndRoomHistory(
 		RoomHistoryListRequest option, String workspaceId, String userId
 	) {
@@ -958,29 +732,21 @@ public class DashboardHistoryService {
 			option.getSearchStartDate(), option.getSearchEndDate(), workspaceId, userId
 		);
 
-		return roomHistories.stream()
-			.map(roomHistory -> {
-				RoomHistoryInfoResponse endRoomHistoryInfoResponse = dashboardRoomHistoryInfoMapper.toDto(roomHistory);
-				endRoomHistoryInfoResponse.setSessionType(roomHistory.getSessionPropertyHistory().getSessionType());
-				endRoomHistoryInfoResponse.setStatus(true);
+		return roomHistories.stream().map(roomHistory -> {
+			RoomHistoryInfoResponse endRoomHistoryInfoResponse = dashboardRoomHistoryInfoMapper.toDto(roomHistory);
+			endRoomHistoryInfoResponse.setSessionType(roomHistory.getSessionPropertyHistory().getSessionType());
+			endRoomHistoryInfoResponse.setStatus(true);
 
-				// MemberHistory 도메인 객체의 경우 MemberStatus 값이 없기에, 회원 정보 필터링 불가능
-				List<MemberInfoResponse> memberInfoResponses = roomHistory.getMemberHistories().stream()
-					.map(
-						memberHistory -> dashboardMemberHistoryMapper.toDto(memberHistory)
-					)
-					.collect(Collectors.toList());
+			// MemberHistory 도메인 객체의 경우 MemberStatus 값이 없기에, 회원 정보 필터링 불가능
+			List<MemberInfoResponse> memberInfoResponses = roomHistory.getMemberHistories().stream()
+				.map(dashboardMemberHistoryMapper::toDto)
+				.collect(Collectors.toList());
 
-				endRoomHistoryInfoResponse.setMemberList(memberInfoResponses);
-				return endRoomHistoryInfoResponse;
+			endRoomHistoryInfoResponse.setMemberList(memberInfoResponses);
+			return endRoomHistoryInfoResponse;
 		}).collect(Collectors.toList());
 	}
 
-	/**
-	 * 멤버 표출 순위 설정(Leader가 1번째)
-	 * @param members - 대상 멤버 리스트
-	 * @return - Leader가 1번째로 변경된 멤버 목록
-	 */
 	private List<MemberInfoResponse> setLeader(List<MemberInfoResponse> members) {
 		members.sort((t1, t2) -> {
 			if (t1.getMemberType().equals(MemberType.LEADER)) {

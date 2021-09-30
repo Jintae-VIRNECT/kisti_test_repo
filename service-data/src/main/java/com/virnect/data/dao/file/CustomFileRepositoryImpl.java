@@ -16,13 +16,11 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 
 import com.virnect.data.domain.file.File;
 import com.virnect.data.domain.file.FileType;
-import com.virnect.data.domain.member.MemberHistory;
 
 @Repository
 public class CustomFileRepositoryImpl extends QuerydslRepositorySupport implements CustomFileRepository {
 
 	private final JPAQueryFactory query;
-	private final long EXPIRATION_DATE = 30;
 
 	public CustomFileRepositoryImpl(JPAQueryFactory query) {
 		super(File.class);

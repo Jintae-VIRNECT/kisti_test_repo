@@ -4,15 +4,19 @@ import java.util.List;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
 import com.virnect.data.domain.session.SessionType;
 import com.virnect.data.dto.response.member.MemberInfoResponse;
 
+import javax.persistence.Column;
+
 @Getter
 @Setter
 @ApiModel
+@Builder
 public class RoomInfoResponse {
     @ApiModelProperty(value = "Remote Session Identifier", example = "ses_NxKh1OiT2S")
     private String sessionId;
@@ -32,7 +36,12 @@ public class RoomInfoResponse {
     @ApiModelProperty(value = "Remote Session Type", position = 5, example = "PRIVATE")
     private SessionType sessionType;
 
+    @Column(name = "video_restricted_mode")
+    private boolean videoRestrictedMode;
+
+    @Column(name = "audio_restricted_mode")
+    private boolean audioRestrictedMode;
+
     @ApiModelProperty(value = "Remote Session Allocated Member Information List", position = 6)
     private List<MemberInfoResponse> memberList;
-
 }

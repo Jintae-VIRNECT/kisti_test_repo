@@ -14,8 +14,6 @@ import org.springframework.stereotype.Repository;
 import com.querydsl.jpa.JPQLQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 
-import lombok.RequiredArgsConstructor;
-
 import com.virnect.data.domain.file.RecordFile;
 
 @Repository

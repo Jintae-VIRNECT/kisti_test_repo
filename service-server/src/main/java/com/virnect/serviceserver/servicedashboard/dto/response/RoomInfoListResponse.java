@@ -5,7 +5,7 @@ import java.util.List;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
-import com.virnect.serviceserver.servicedashboard.dto.PageMetadataResponse;
+import com.virnect.data.dto.PageMetadataResponse;
 
 @Getter
 @RequiredArgsConstructor

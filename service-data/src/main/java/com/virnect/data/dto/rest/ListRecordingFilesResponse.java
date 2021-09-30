@@ -9,18 +9,16 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-public class RecordServerFileInfoListResponse {
+public class ListRecordingFilesResponse {
 
 	private int currentPage;
-	private int totalPage;
-	private List<RecordServerFileInfoResponse> infos;
+	private List<RecordingFiles> infos;
 
-	public RecordServerFileInfoListResponse(
-		int currentPage, int totalPage,
-		List<RecordServerFileInfoResponse> infos
+	public ListRecordingFilesResponse(
+		int currentPage,
+		List<RecordingFiles> infos
 	) {
 		this.currentPage = currentPage;
-		this.totalPage = totalPage;
 		this.infos = infos;
 	}
 
@@ -28,7 +26,6 @@ public class RecordServerFileInfoListResponse {
 	public String toString() {
 		return "RecordServerFileInfoListResponse{" +
 			"currentPage=" + currentPage +
-			", totalPage=" + totalPage +
 			", infos=" + infos +
 			'}';
 	}

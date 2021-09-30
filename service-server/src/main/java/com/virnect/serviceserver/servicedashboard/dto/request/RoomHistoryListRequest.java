@@ -20,9 +20,7 @@ import com.virnect.data.global.validation.CustomEnumValid;
 @Getter
 public class RoomHistoryListRequest {
 
-	private String workspaceId;
 	private String sessionId;
-	private String userId;
 
 	@NotNull
 	private boolean paging;
@@ -63,10 +61,6 @@ public class RoomHistoryListRequest {
 		this.sessionId = sessionId;
 	}
 
-	public void setUserId(String userId) {
-		this.userId = userId;
-	}
-
 	public void setPaging(boolean paging) {
 		this.paging = paging;
 	}
@@ -103,11 +97,6 @@ public class RoomHistoryListRequest {
 	public void setSortOrder(OrderType sortOrder) {
 		this.sortOrder = sortOrder;
 	}
-
-	public void setWorkspaceId(String workspaceId) {
-		this.workspaceId = workspaceId;
-	}
-
 
 	public boolean fromToDateConditionIsAvailable(){
 		if(StringUtils.isEmpty(this.fromTo)){

@@ -11,7 +11,7 @@ import org.springframework.util.ObjectUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import com.virnect.data.application.user.UserRestService;
+import com.virnect.data.application.account.AccountRestService;
 import com.virnect.data.dto.rest.UserInfoResponse;
 import com.virnect.data.redis.dao.AccessStatusRepository;
 import com.virnect.data.redis.domain.AccessStatus;
@@ -26,7 +26,7 @@ public class AccessStatusServiceImpl implements AccessStatusService {
 	private static final String TAG = AccessStatusServiceImpl.class.getSimpleName();
 
 	private final AccessStatusRepository accessStatusRepository;
-	private final UserRestService userRestService;
+	private final AccountRestService accountRestService;
 
 	public AccessStatus saveAccessStatus(
 		String id,
@@ -64,7 +64,7 @@ public class AccessStatusServiceImpl implements AccessStatusService {
 				if (accessType == AccessType.LEAVE) {
 					target.setAccessType(AccessType.LOGIN);
 				}
-				UserInfoResponse userInfo = userRestService.getUserInfoByUserId(uuid).getData();
+				UserInfoResponse userInfo = accountRestService.getUserInfoByUserId(uuid).getData();
 				if (!ObjectUtils.isEmpty(userInfo)) {
 					target.setEmail(userInfo.getEmail());
 				}

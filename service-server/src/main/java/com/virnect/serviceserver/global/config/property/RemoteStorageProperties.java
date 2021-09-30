@@ -22,6 +22,7 @@ public class RemoteStorageProperties extends PropertyService {
 	private String serverUrl;
 	private String accessKey;
 	private String secretKey;
+	
 	private String bucketName;
 	private String bucketProfileName;
 	private String bucketFileName;

@@ -7,7 +7,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import com.virnect.serviceserver.servicedashboard.dto.PageMetadataResponse;
+import com.virnect.data.dto.PageMetadataResponse;
 
 @Getter
 @Setter

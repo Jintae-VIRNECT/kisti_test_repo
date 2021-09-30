@@ -18,7 +18,7 @@ spring:
         database-platform: org.hibernate.dialect.MySQL5InnoDBDialect
         generate-ddl: true
         hibernate:
-            ddl-auto: update
+            ddl-auto: validate
         properties:
             hibernate:
                 format_sql: true
@@ -27,6 +27,10 @@ spring:
     mvc:
         async:
             request-timeout: 10000
+    servlet:
+      multipart:
+          max-file-size: 10MB
+          max-request-size: 10MB
 
 eureka:
     client:
@@ -52,13 +56,13 @@ feign:
         enabled: true
     license-prefix: license-server
     workspace-prefix: workspace-server
-    user-prefix: user-server
+    account-prefix: account-server
     message-prefix: message-server
     remote-prefix: remote-service-server
     record-prefix: remote-record-server
     license-url: http://192.168.6.3:8632
     workspace-url: http://192.168.6.3:8082
-    user-url: http://192.168.6.3:8081
+    account-url: http://192.168.6.3:8081
     message-url: http://192.168.6.3:8084
     remote-url: http://192.168.6.3:8000
     record-url: https://192.168.6.3:8083
@@ -67,7 +71,7 @@ workspace-server:
     ribbon:
         listOfServers: http://192.168.6.3:8082
 
-user-server:
+account-server:
     ribbon:
         listOfServers: http://192.168.6.3:8081
 
@@ -106,22 +110,13 @@ service:
     kms-uris-conference: ["ws://192.168.6.3:8888/kurento"]
     kms-uris-streaming: []
 
-
     policy-location: policy/publicServicePolicy.json
     wss: wss://192.168.13.36:8000/remote/websocket
     certificate_type: owncert
     remote_cdr: true
     remote_cdr_path: /var/log/remote/cdr
     remote_log_path: /var/log/remote/service
-    remote_recording: false
-    remote_recording_autostop_timeout: 120
-    remote_recording_composed_url: ''
-    remote_recording_custom_layout: /opt/remote/custom-layout
-    remote_recording_debug: false
-    remote_recording_notification: publisher_moderator
-    remote_recording_path: /opt/remote/recordings
-    remote_recording_public_access: true
-    remote_recording_version: 2.15.0
+
     remote_secret: remote
     remote_sessions_garbage_interval: 900
     remote_sessions_garbage_threshold: 3600
@@ -131,8 +126,9 @@ service:
     remote_streams_video_min_send_bandwidth: 1000
     remote_webhook: false
     remote_webhook_endpoint: https://webhook.site/67d3ca77-8754-428f-b814-91f45146a26a
-    remote_webhook_events: '["sessionCreated","sessionDestroyed","participantJoined","participantLeft","webrtcConnectionCreated","webrtcConnectionDestroyed","recordingStatusChanged","filterEventDispatched","mediaNodeStatusChanged"]'
-    remote_webhook_headers: '[]'
+    remote_webhook_events: ["sessionCreated","sessionDestroyed","participantJoined","participantLeft","webrtcConnectionCreated","webrtcConnectionDestroyed","recordingStatusChanged","filterEventDispatched","mediaNodeStatusChanged"]
+    remote_webhook_headers: []
+    remote_service_public_url: https://192.168.6.3:8073
 
 storage:
     enabled: true

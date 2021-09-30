@@ -21,8 +21,9 @@ import lombok.extern.slf4j.Slf4j;
 
 import com.virnect.client.RemoteServiceException;
 import com.virnect.data.application.record.RecordRestService;
-import com.virnect.data.application.user.UserRestService;
+import com.virnect.data.application.account.AccountRestService;
 import com.virnect.data.dao.member.MemberRepository;
+import com.virnect.data.dao.room.RoomRepository;
 import com.virnect.data.domain.DeviceType;
 import com.virnect.data.domain.member.Member;
 import com.virnect.data.domain.member.MemberHistory;
@@ -32,7 +33,6 @@ import com.virnect.data.domain.room.Room;
 import com.virnect.data.domain.roomhistory.RoomHistory;
 import com.virnect.data.domain.session.SessionProperty;
 import com.virnect.data.domain.session.SessionPropertyHistory;
-import com.virnect.data.domain.session.SessionType;
 import com.virnect.data.dto.constraint.LicenseItem;
 import com.virnect.data.dto.request.room.InviteRoomRequest;
 import com.virnect.data.dto.request.room.JoinRoomRequest;
@@ -76,13 +76,15 @@ public class SessionDataRepository {
     private final SessionTransactionalService sessionService;
     private final HistoryService historyService;
     private final PushMessageClient pushMessageClient;
-    private final UserRestService userRestService;
+
+    private final AccountRestService accountRestService;
     private final RecordRestService recordRestService;
 
     private final AccessStatusService accessStatusService;
 
     private final RemoteServiceConfig config;
 
+    private final RoomRepository roomRepository;
     private final MemberRepository memberRepository;
 
     public void setAccessStatus(Participant participant, String sessionId, AccessType accessType) {
@@ -95,8 +97,8 @@ public class SessionDataRepository {
             String uuid;
             clientMetaData = objectMapper.readValue(jsonObject.toString(), ClientMetaData.class);
             uuid = clientMetaData.getClientData();
-            Member member = memberRepository.findBySessionIdAndUuid(sessionId, uuid);
-            if (member != null) {
+            Member member = memberRepository.findBySessionIdAndUuid(sessionId, uuid).orElse(null);
+            if (!ObjectUtils.isEmpty(member)) {
                 workspaceId = member.getWorkspaceId();
                 accessStatusService.saveAccessStatus(workspaceId + "_" + uuid, accessType, uuid);
             } else {
@@ -109,8 +111,7 @@ public class SessionDataRepository {
 
     public Boolean destroySession(String sessionId, EndReason reason) {
 
-        Room room = sessionService.getRoom(sessionId);
-
+        Room room = roomRepository.findBySessionId(sessionId).orElse(null);
         if (ObjectUtils.isEmpty(room)) {
             LogMessage.formedError(
                 TAG,
@@ -206,7 +207,7 @@ public class SessionDataRepository {
             sessionId
         );
 
-        Room room = sessionService.getRoom(sessionId);
+        Room room = roomRepository.findBySessionId(sessionId).orElse(null);
         if (ObjectUtils.isEmpty(room)) {
             return false;
         }
@@ -256,7 +257,7 @@ public class SessionDataRepository {
         log.info("session leave and clientMetaData is :[DeviceType] {}", clientMetaData.getDeviceType());
 
         // Load DB Data
-        Room room = sessionService.getRoom(sessionId);
+        Room room = roomRepository.findBySessionId(sessionId).orElse(null);
         if (ObjectUtils.isEmpty(room)) {
             LogMessage.formedError(
                 TAG,
@@ -293,7 +294,7 @@ public class SessionDataRepository {
     public Boolean closeSession(Participant participant, String sessionId, EndReason reason) {
 
         ClientMetaData clientMetaData = null;
-        Room room = sessionService.getRoom(sessionId);
+        Room room = roomRepository.findBySessionId(sessionId).orElse(null);
 
         // pre data process
         JsonObject jsonObject = JsonParser.parseString(participant.getClientMetadata()).getAsJsonObject();
@@ -390,7 +391,7 @@ public class SessionDataRepository {
     public ErrorCode joinSession(Participant participant, String sessionId) {
 
         ClientMetaData clientMetaData;
-        Room room = sessionService.getRoom(sessionId);
+        Room room = roomRepository.findBySessionId(sessionId).orElse(null);
         if (room == null) {
             return ErrorCode.ERR_ROOM_NOT_FOUND;
         }
@@ -410,11 +411,11 @@ public class SessionDataRepository {
         log.info("session join and clientMetaData is :[RoleType] {}", clientMetaData.getRoleType());
         log.info("session join and clientMetaData is :[DeviceType] {}", clientMetaData.getDeviceType());
 
-        Member member = sessionService.getMember(
+        Member member = memberRepository.findByWorkspaceIdAndSessionIdAndUuid(
             room.getWorkspaceId(),
             sessionId,
             clientMetaData.getClientData()
-        );
+        ).orElse(null);
 
         if (member.getMemberStatus().equals(MemberStatus.LOAD)) {
             return ErrorCode.ERR_ROOM_MEMBER_STATUS_INVALID; //Code.EXISTING_USER_IN_ROOM_ERROR_CODE
@@ -461,7 +462,7 @@ public class SessionDataRepository {
             log.info("session disconnect and clientMetaData is :[DeviceType] {}", clientMetaData.getDeviceType());
 
             // Load DB Data
-            Room room = sessionService.getRoom(sessionId);
+            Room room = roomRepository.findBySessionId(sessionId).orElse(null);
             if (room == null) {
                 throw new RestServiceException(ErrorCode.ERR_ROOM_NOT_FOUND);
             }
@@ -503,7 +504,7 @@ public class SessionDataRepository {
 
     public UserInfoResponse checkUserValidation(String userId) {
 
-        ApiResponse<UserInfoResponse> feignResponse = userRestService.getUserInfoByUserId(userId);
+        ApiResponse<UserInfoResponse> feignResponse = accountRestService.getUserInfoByUserId(userId);
         //todo:check something?
 
         return feignResponse.getData();
@@ -511,7 +512,7 @@ public class SessionDataRepository {
 
     public PushResponse sendSessionCreate(String sessionId) {
 
-        Room room = sessionService.getRoom(sessionId);
+        Room room = roomRepository.findBySessionId(sessionId).orElse(null);
         if (room == null) {
             throw new RestServiceException(ErrorCode.ERR_ROOM_NOT_FOUND);
         }
@@ -683,7 +684,6 @@ public class SessionDataRepository {
                     .uuid(participant)
                     .sessionId(room.getSessionId())
                     .build();
-
                 room.getMembers().add(member);
             }
         } else {
@@ -726,7 +726,7 @@ public class SessionDataRepository {
         }
 
         RoomHistory roomHistory = historyService.getRoomHistory(roomRequest.getWorkspaceId(), preSessionId);
-        if (roomHistory == null) {
+        if (ObjectUtils.isEmpty(roomHistory)) {
             return new ApiResponse<>(ErrorCode.ERR_HISTORY_ROOM_NOT_FOUND);
         }
 
@@ -816,9 +816,9 @@ public class SessionDataRepository {
      * Prepare to join the room the user is....
      */
     public ApiResponse<Boolean> prepareJoinRoom(String workspaceId, String sessionId, String userId) {
-            
+
         Room room = sessionService.getRoomForWrite(workspaceId, sessionId);
-        if (room == null) {
+        if (ObjectUtils.isEmpty(room)) {
             return new ApiResponse<>(false, ErrorCode.ERR_ROOM_NOT_FOUND);
         }
 
@@ -844,7 +844,7 @@ public class SessionDataRepository {
         switch (room.getSessionProperty().getSessionType()) {
             case PRIVATE:
             case PUBLIC: {
-                if (member != null) {
+                if (!ObjectUtils.isEmpty(member)) {
                     MemberStatus memberStatus = member.getMemberStatus();
                     if (memberStatus == MemberStatus.UNLOAD) {
                         member.setMemberStatus(MemberStatus.LOADING);
@@ -871,7 +871,7 @@ public class SessionDataRepository {
             }
             break;
             case OPEN: {
-                if (member != null) {
+                if (!ObjectUtils.isEmpty(member)) {
                     MemberStatus memberStatus = member.getMemberStatus();
                     if (memberStatus.equals(MemberStatus.UNLOAD) || memberStatus.equals(MemberStatus.EVICTED))
                     {
@@ -904,6 +904,60 @@ public class SessionDataRepository {
         return new ApiResponse<>(result, errorCode);
     }
 
+    /**
+     * Prepare to join the room the user is....
+     */
+    public ApiResponse<Boolean> prepareJoinRoomOnlyGuest(String workspaceId, String sessionId, String userId) {
+
+        Room room = roomRepository.findOpenRoomByGuest(workspaceId, sessionId).orElse(null);
+        if (ObjectUtils.isEmpty(room)) {
+            return new ApiResponse<>(false, ErrorCode.ERR_ROOM_NOT_FOUND);
+        }
+
+        if (!room.getMembers().isEmpty()) {
+            long memberCount = room.getMembers().stream().filter(
+                member -> !(member.getMemberStatus() == MemberStatus.UNLOAD || member.getMemberStatus() == MemberStatus.EVICTED)
+            ).count();
+            if (memberCount >= ROOM_MEMBER_LIMIT) {
+                return new ApiResponse<>(false, ErrorCode.ERR_ROOM_MEMBER_MAX_COUNT);
+            }
+        }
+
+        Member member = null;
+        for (Member m : room.getMembers()) {
+            if (m.getUuid().equals(userId)) {
+                member = m;
+            }
+        }
+
+        boolean result = false;
+        ErrorCode errorCode = ErrorCode.ERR_SUCCESS;
+        if (!ObjectUtils.isEmpty(member)) {
+            MemberStatus memberStatus = member.getMemberStatus();
+            if (memberStatus.equals(MemberStatus.UNLOAD) || memberStatus.equals(MemberStatus.EVICTED))
+            {
+                member.setMemberStatus(MemberStatus.LOADING);
+                sessionService.setMember(member);
+                result = true;
+            } else {
+                errorCode = ErrorCode.ERR_ROOM_MEMBER_STATUS_INVALID;
+            }
+        } else {
+            Member roomMember = Member.builder()
+                .room(room)
+                .memberType(MemberType.GUEST)
+                .uuid(userId)
+                .workspaceId(workspaceId)
+                .sessionId(sessionId)
+                .build();
+            roomMember.setMemberStatus(MemberStatus.LOADING);
+            room.getMembers().add(roomMember);
+            sessionService.updateRoom(room);
+            result = true;
+        }
+        return new ApiResponse<>(result, errorCode);
+    }
+
     public ApiResponse<RoomResponse> joinRoom(
         String workspaceId,
         String sessionId,
@@ -911,8 +965,13 @@ public class SessionDataRepository {
         JoinRoomRequest joinRoomRequest
     ) {
 
-        Room room = sessionService.getRoom(workspaceId, sessionId).orElse(null);
-        if (room == null) {
+        Room room;
+        if (joinRoomRequest.getMemberType() == MemberType.GUEST) {
+            room = roomRepository.findOpenRoomByGuest(workspaceId, sessionId).orElse(null);
+        } else {
+            room = roomRepository.findRoomByWorkspaceIdAndSessionIdForWrite(workspaceId, sessionId).orElse(null);
+        }
+        if (ObjectUtils.isEmpty(room)) {
             return new ApiResponse<>(new RoomResponse(), ErrorCode.ERR_ROOM_NOT_FOUND);
         }
 
@@ -958,13 +1017,14 @@ public class SessionDataRepository {
         return new ApiResponse<>(roomResponse);
     }
 
+
     public ApiResponse<KickRoomResponse> kickFromRoom(
         String workspaceId,
         String sessionId,
         KickRoomRequest kickRoomRequest
     ) {
 
-        Room room = sessionService.getRoom(workspaceId, sessionId).orElse(null);
+        Room room = roomRepository.findRoomByWorkspaceIdAndSessionIdForWrite(workspaceId, sessionId).orElse(null);
         if (ObjectUtils.isEmpty(room)) {
             return new ApiResponse<>(new KickRoomResponse(), ErrorCode.ERR_ROOM_NOT_FOUND);
         }
@@ -1001,7 +1061,7 @@ public class SessionDataRepository {
     public ApiResponse<InviteRoomResponse> inviteMember(
         String workspaceId, String sessionId, InviteRoomRequest inviteRoomRequest
     ) {
-        Room room = sessionService.getRoom(workspaceId, sessionId).orElse(null);
+        Room room = roomRepository.findRoomByWorkspaceIdAndSessionIdForWrite(workspaceId, sessionId).orElse(null);
         if (ObjectUtils.isEmpty(room)) {
             return new ApiResponse<>(new InviteRoomResponse(), ErrorCode.ERR_ROOM_NOT_FOUND);
         }
@@ -1055,7 +1115,7 @@ public class SessionDataRepository {
             "the server restarts and deletes the room list information"
         );
 
-        List<Room> roomList = sessionService.getRoomList();
+        List<Room> roomList = roomRepository.findAll();
         for (Room room : roomList) {
 
             // Remote Room History Entity Create
@@ -1122,53 +1182,5 @@ public class SessionDataRepository {
             sessionService.setRoomHistory(roomHistory);
             sessionService.deleteRoom(room);
         }
-    }
-
-    public ApiResponse<RoomResponse> joinOpenRoomOnlyNonmember(String workspaceId, String sessionId, String sessionToken) {
-
-        Room room = sessionService.getRoomForWrite(workspaceId, sessionId);
-        if (room == null) {
-            throw new RestServiceException(ErrorCode.ERR_ROOM_NOT_FOUND);
-        }
-
-        if (room.getSessionProperty().getSessionType() != SessionType.OPEN) {
-            throw new RestServiceException(ErrorCode.ERR_ROOM_INFO_ACCESS);
-        }
-
-        if (!room.getMembers().isEmpty()) {
-            long memberCount = room.getMembers().stream().filter(member -> !(member.getMemberStatus() == MemberStatus.UNLOAD)).count();
-            if (memberCount >= ROOM_MEMBER_LIMIT) {
-                throw new RestServiceException(ErrorCode.ERR_ROOM_MEMBER_MAX_COUNT);
-            }
-        }
-
-        // Pre data process
-        SessionTokenResponse sessionTokenResponse = null;
-        try {
-            sessionTokenResponse = objectMapper.readValue(sessionToken, SessionTokenResponse.class);
-        } catch (JsonProcessingException e) {
-            e.printStackTrace();
-        }
-
-        Member member = Member.builder()
-            .workspaceId(workspaceId)
-            .sessionId(sessionId)
-            .uuid("NONMEMBER")
-            .memberType(MemberType.NONMEMBER)
-            .room(room)
-            .build();
-
-        sessionService.setMember(member);
-
-        RoomResponse roomResponse = new RoomResponse();
-        //not set session create at property
-        roomResponse.setSessionId(sessionId);
-        roomResponse.setToken(sessionTokenResponse.getToken());
-        roomResponse.setWss(config.remoteServiceProperties.getWss() + WS_PATH);
-        roomResponse.setVideoRestrictedMode(room.isVideoRestrictedMode());
-        roomResponse.setAudioRestrictedMode(room.isAudioRestrictedMode());
-        roomResponse.setSessionType(room.getSessionProperty().getSessionType());
-
-        return new ApiResponse<>(roomResponse);
     }
 }

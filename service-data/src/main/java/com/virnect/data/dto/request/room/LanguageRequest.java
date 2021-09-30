@@ -36,6 +36,6 @@ public class LanguageRequest {
     @ApiModelProperty(value = "Enable Translation Language", position = 8, example = "false")
     private boolean transPlPl;
 
-    @ApiModelProperty(value = "Enable Translation Language", position = 8, example = "false")
+    @ApiModelProperty(value = "Enable Translation Language", position = 9, example = "false")
     private boolean transThTh;
 }

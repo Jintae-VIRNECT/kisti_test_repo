@@ -1,16 +1,19 @@
 package com.virnect.serviceserver.serviceremote.application;
 
+import org.springframework.stereotype.Service;
+import org.springframework.util.ObjectUtils;
+
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+
 import com.virnect.data.application.license.LicenseRestService;
+import com.virnect.data.dto.constraint.LicenseConstants;
+import com.virnect.data.dto.constraint.LicenseItem;
+import com.virnect.data.dto.response.license.LicenseItemResponse;
 import com.virnect.data.dto.rest.LicenseInfoListResponse;
 import com.virnect.data.dto.rest.LicenseInfoResponse;
 import com.virnect.data.error.ErrorCode;
 import com.virnect.data.global.common.ApiResponse;
-import com.virnect.data.dto.constraint.LicenseConstants;
-import com.virnect.data.dto.constraint.LicenseItem;
-import com.virnect.data.dto.response.license.LicenseItemResponse;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Service;
 
 @Slf4j
 @Service
@@ -21,8 +24,7 @@ public class ValidationService {
 
 	public ApiResponse<LicenseItemResponse> getLicenseInfo(String workspaceId, String userId) {
 
-		ApiResponse<LicenseInfoListResponse> licenseValidation = this.licenseRestService.getUserLicenseValidation(
-			workspaceId, userId);
+		ApiResponse<LicenseInfoListResponse> licenseValidation = this.licenseRestService.getUserLicenseValidation(workspaceId, userId);
 		if (licenseValidation.getCode() != ErrorCode.ERR_SUCCESS.getCode()) {
 			return new ApiResponse<>(licenseValidation.getCode(), licenseValidation.getMessage());
 		}
@@ -34,8 +36,7 @@ public class ValidationService {
 			}
 		}
 
-		LicenseItem licenseItem = LicenseItem.ITEM_PRODUCT;
-		if (currentLicense == null) {
+		if (ObjectUtils.isEmpty(currentLicense)) {
 			return new ApiResponse<>(ErrorCode.ERR_LICENSE_PRODUCT_VALIDITY);
 		}
 
@@ -43,11 +44,10 @@ public class ValidationService {
 			return new ApiResponse<>(ErrorCode.ERR_LICENSE_NOT_VALIDITY);
 		}
 
-		LicenseItemResponse licenseItemResponse = new LicenseItemResponse();
-		licenseItemResponse.setItemName(licenseItem.getItemName());
-		licenseItemResponse.setUserCapacity(licenseItem.getUserCapacity());
-
-		return new ApiResponse<>(licenseItemResponse);
+		return new ApiResponse<>(LicenseItemResponse.builder()
+			.itemName(LicenseItem.ITEM_PRODUCT.getItemName())
+			.userCapacity(LicenseItem.ITEM_PRODUCT.getUserCapacity())
+			.build());
 	}
 
 }
