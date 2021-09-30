@@ -41,8 +41,8 @@ public class SessionAuthenticationFilter implements GlobalFilter {
 
 	@PostConstruct
 	public void init() {
-		log.info("[Session Authentication Filter] - Active.");
-		log.info("[Session Authentication Filter] - Session Cookie Properties :: [{}].", sessionCookieProperty);
+		log.info("[Session Authentication Filter] => Active");
+		log.info("[Session Authentication Filter] => Session Cookie Properties :: [{}]", sessionCookieProperty);
 		this.secretKey = Base64.getEncoder().encodeToString(secretKey.getBytes());
 	}
 
@@ -51,8 +51,6 @@ public class SessionAuthenticationFilter implements GlobalFilter {
 		ServerWebExchange exchange,
 		GatewayFilterChain chain
 	) {
-		log.info("SessionAuthenticationFilter - doFilter");
-
 		if (RequestValidationProcessor.isRequestAuthenticationProcessSkip(exchange.getRequest())) {
 			return chain.filter(exchange);
 		}
@@ -116,22 +114,19 @@ public class SessionAuthenticationFilter implements GlobalFilter {
 		}
 		log.info("SessionAuthenticationFilter - WebSession :: ID: [{}]", webSession.getId());
 		log.info(
-			"SessionAuthenticationFilter - WebSession :: uuid: [{}]",
-			webSession.getAttributeOrDefault("userUUID", "None")
-		);
-		log.info(
-			"SessionAuthenticationFilter - WebSession :: email: [{}]",
+			"SessionAuthenticationFilter - WebSession :: uuid: [{}] email: [{}]",
+			webSession.getAttributeOrDefault("userUUID", "None"),
 			webSession.getAttributeOrDefault("userEmail", "None")
 		);
-		log.info(
+		log.debug(
 			"SessionAuthenticationFilter - WebSession :: name: [{}]",
 			webSession.getAttributeOrDefault("userName", "None")
 		);
-		log.info(
+		log.debug(
 			"SessionAuthenticationFilter - WebSession :: country: [{}]",
 			webSession.getAttributeOrDefault("country", "None")
 		);
-		log.info(
+		log.debug(
 			"SessionAuthenticationFilter - WebSession :: ip: [{}]",
 			webSession.getAttributeOrDefault("ip", "None")
 		);
