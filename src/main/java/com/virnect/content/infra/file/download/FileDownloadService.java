@@ -12,11 +12,11 @@ import org.springframework.web.multipart.MultipartFile;
  * @since 2020.05.10
  */
 public interface FileDownloadService {
-    ResponseEntity<byte[]> fileDownload(final String fileName, @Nullable String range);
+	ResponseEntity<byte[]> fileDownload(final String fileUrl, @Nullable String range);
 
-    void copyFileS3ToLocal(String fileName);
+	String getDefaultImagePath(String bucketResource, String fileName);
 
-    String getFilePath(String bucketResource, String fileName);
+	long getFileSize(String fileUrl);
 
-    MultipartFile getMultipartfile(String fileName);
+	byte[] getFileStreamBytes(String fileUrl);
 }

@@ -114,12 +114,10 @@ public class ContentCustomRepositoryImpl extends QuerydslRepositorySupport imple
     public Long getWorkspaceStorageSize(String workspaceUUID) {
         QContent qContent = QContent.content;
 
-        Long sumSize = from(qContent)
+        return from(qContent)
                 .select(qContent.size.sum())
                 .where(qContent.workspaceUUID.eq(workspaceUUID))
                 .fetchOne();
-
-        return sumSize;
     }
 
     @Override

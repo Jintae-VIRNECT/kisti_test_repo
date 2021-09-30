@@ -5,6 +5,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import com.virnect.content.dto.rest.MemberInfoDTO;
 import com.virnect.content.dto.rest.MemberListResponse;
 import com.virnect.content.dto.rest.WorkspaceInfoListResponse;
 import com.virnect.content.global.common.ApiResponse;
@@ -30,4 +31,8 @@ public interface WorkspaceRestService {
 
 	@GetMapping("/workspaces/{workspaceId}/members/simple")
 	ApiResponse<MemberListResponse> getSimpleWorkspaceUserList(@PathVariable("workspaceId") String workspaceId);
+
+	@GetMapping("/workspaces/{workspaceId}/members/info")
+	ApiResponse<MemberInfoDTO> getMemberInfo(@PathVariable("workspaceId") String workspaceId, @RequestParam("userId") String userId);
+
 }
