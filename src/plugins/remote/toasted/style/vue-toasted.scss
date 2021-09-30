@@ -3,65 +3,109 @@
 @import "~assets/style/plugin/material-icons";
 
 .toasted {
-  padding: 0.214rem 1.429rem;
+  //padding: 0.214rem 1.429rem;
 }
+
 .toasted.rounded {
   border-radius: 1.714em;
 }
+
 .toasted .primary,
 .toasted.toasted-primary.remote-toast {
   min-height: 2.714rem;
-  padding: 0.214rem 1.429rem;
+  //padding: 0.214rem 1.429rem;
   color: #fff;
   font-weight: 300;
-  font-size: 1.071rem;
-  line-height: 1.1rem;
-  background-color: #353535;
-  border-radius: 2px;
+  text-align: center;
+  background-color: $new_color_toast_bg !important;
+  border-radius: 3px !important;
+  //font-size: 1.071rem;
+  //line-height: 1.1rem;
+  //background-color: #353535;  //통일
+  //border-radius: 2px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
+  @include fontLevel(100);
   > em {
     color: $color_primary_500;
   }
+
+  &.mobile {
+    border-radius: 6px !important;
+    @include fontLevel(75);
+  }
 }
-.toasted .primary.success,
-.toasted.toasted-primary.remote-toast.success {
-  background: #4caf50;
-}
+
+//close icon이 있는 형태
+//toastNotify
+.toasted .primary.default,
+.toasted.toasted-primary.remote-toast.default,
+//toastError
 .toasted .primary.error,
-.toasted.toasted-primary.remote-toast.error {
-  background: #f44336;
+.toasted.toasted-primary.remote-toast.error, 
+.toasted.toasted-primary.remote-toast.error.info {
+  padding: 3px 18px;
+  &.mobile {
+    padding: 0.02rem 1.6rem;
+    .action.icon {
+      margin-left: 0;
+    }
+  }
+  .action.icon {
+    margin-left: 40px;
+  }
 }
-.toasted .primary.notice,
-.toasted.toasted-primary.remote-toast.notice {
-  background-color: #2f343d;
-  border: solid 1px #3d4147;
-  border-radius: 4px;
-  box-shadow: 0 3px 8px 0 rgba(16, 16, 17, 0.5),
-    0 1px 3px 0 rgba(16, 16, 17, 0.14);
-}
+
+//미사용
+// .toasted .primary.success,
+// .toasted.toasted-primary.remote-toast.success {
+//   //background: #4caf50;  //통일
+// }
+//.toasted .primary.error,
+//.toasted.toasted-primary.remote-toast.error {
+//background: #f44336;  //통일
+//}
+
+//미사용
+// .toasted .primary.notice,
+// .toasted.toasted-primary.remote-toast.notice {
+//background-color: #2f343d;  //통일
+//border: solid 1px #3d4147;
+//border-radius: 4px;
+// box-shadow: 0 3px 8px 0 rgba(16, 16, 17, 0.5),
+//   0 1px 3px 0 rgba(16, 16, 17, 0.14);
+//}
+
+//close icon이 없는 형태
+//toastDefault
 .toasted .primary.info,
 .toasted.toasted-primary.remote-toast.info {
-  padding: 0.714rem 2.143rem;
-  line-height: 2rem;
+  //padding: 0.714rem 2.143rem;
   // line-height: 1.429rem;
-  text-align: center;
+  //text-align: center;
   // border: solid 1px #3d4147;
-  background-color: rgba(#121517, 0.5);
-  border-radius: 3px;
-  box-shadow: 0 3px 8px 0 rgba(16, 16, 17, 0.5),
-    0 1px 3px 0 rgba(16, 16, 17, 0.14);
+  //background-color: rgba(#121517, 0.5);//통일
+
+  // border-radius: 3px;
+  // box-shadow: 0 3px 8px 0 rgba(16, 16, 17, 0.5),
+  //   0 1px 3px 0 rgba(16, 16, 17, 0.14);
+  padding: 16px 18px;
+  &.mobile {
+    justify-content: center;
+    padding: 1.2rem 1.6rem;
+  }
 }
 .toasted .primary.notice,
 .toasted.toasted-primary.remote-toast.notify {
-  width: 26.786rem;
-  margin-right: 1.143rem;
-  padding: 1.143rem 1.286rem;
-  font-size: 14px;
-  background: $color_darkgray_500;
-  border: 1px solid rgba($color_sub_border, 0.12);
-  border-radius: 5px;
-  box-shadow: 0 3px 8px 0 rgba(16, 16, 17, 0.5),
-    0 1px 3px 0 rgba(16, 16, 17, 0.14);
+  //width: 26.786rem;
+  //margin-right: 1.143rem;
+  //padding: 1.143rem 1.286rem;
+  //font-size: 14px;
+  //background: $color_darkgray_500;  //통일
+
+  //border: 1px solid rgba($color_sub_border, 0.12);
+  //border-radius: 5px;
+  // box-shadow: 0 3px 8px 0 rgba(16, 16, 17, 0.5),
+  //   0 1px 3px 0 rgba(16, 16, 17, 0.14);
 
   figure {
     display: flex;

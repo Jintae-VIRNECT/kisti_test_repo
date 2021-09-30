@@ -6,11 +6,11 @@
     
     "stream_connecting": "映像連絡中",
     "stream_no_video": "出力する映像がございません。",
-    "stream_no_worker": "ログインしている作業者がいません。",
+    "stream_no_worker": "ログインしている参加者がいません。",
     "stream_choose_stream": "共有する参加者映像を選択してください。",
     "stream_no_stream": "共用された映像がございません。",
     "stream_stop": "映像を停止しました。",
-    "stream_background": "作業者のRemote Appが<br />バックグラウンドの状態です。",
+    "stream_background": "参加者のRemote Appが<br />バックグラウンドの状態です。",
     "stream_stoped": "参加者の映像が一時停止状態です。",
     "stream_off": "カメラオフ",
     "stream_choice": "参加者リストから映像を<br>選択してください。",
@@ -18,14 +18,14 @@
     "stream_choice_share_description": "共有時、ポインティング機能をご利用できます。",
 
     "toast_leave_leader": "リーダーが協業を終了しました。",
-    "toast_leave_worker": "作業者が協業を終了しました。",
+    "toast_leave_worker": "参加者が協業を終了しました。",
     "toast_exit_ar": "AR共有を終了しますか？",
     "toast_exit_drawing": "協業ボードを終了しますか？",
     "toast_cannot_leave_ar": "AR共有中の際、他のメニューに移動できません。",
     "toast_cannot_invite_drawing": "協業ボードが有効になっていません。",
     "toast_cannot_invite_ar": "AR共有が有効になっていません。",
     "toast_refused_ar": "受信者がAR機能を断りました。 再連絡すると、AR機能をご利用できます。",
-    "toast_no_worker": "作業者がいません。",
+    "toast_no_worker": "参加者がいません。",
     "toast_current_stream": "私の映像です。",
     "toast_unsupport_ar": "AR機能を使用できない機械です。",
     "toast_request_permission": "相手にAR機能の許可を要請しました。 少々お待ちください。",
@@ -69,7 +69,6 @@
     "share_save": "イメージを保存しますか？​",
     "share_notready": "イメージを共有しています。",
     "share_delete_real": "本当に削除しますか？",
-    "share_locked": "暗号化されたファイルは支援されません。",
 
     "drawing_dblclick": "ファイルをダブルクリックすると、相手に共有を開始します。",
     "drawing_drag": "画像やPDFファイルをここにドラッグ、もしくは「開く」ボタンを押してください。",
@@ -218,6 +217,7 @@
     "record_server_end_message": "サーバー録画を終了します。",
     "record_server_over_max_count": "現在、実行可能なサーバーの録画数を超えました。 もう一度やり直してください。",
     "record_server_no_storage": "サーバーに録画ファイルを保存できるスペースがございません。 管理者へお問い合わせください。",
+    "record_server_start_auto_record_message":"サーバー録画を自動的にはじめます。",
     
     "reconnect_network_connecting": "ネットワーク連絡中",
     "reconnect_room_connecting": "協業再接続中です…",
@@ -241,6 +241,17 @@
     "spot_networ_error" : "ネットワーク/サーバの問題でSpotの接続が終了しました。\n再接続をしますか？",
     "spot_connecting" : "Spot接続中...",
     "spot_reconnecting" : "Spot再接続中...",
-    "spot_battery_warning" : "Spotバッテリー残量が{battery}%残りました。"
+    "spot_battery_warning" : "Spotバッテリー残量が{battery}%残りました。",
+    "encrypted_file_unsupport" : "暗号化されたファイルはサポートできません。",
+
+
+    "guest_invite_url":"接続URL",
+    "guest_invite_with_url":"E-mail転送",
+    "guest_invite_send_email":"メールアドレスを入力してください。",
+    "guest_invite_description":"接続URLを介してコラボ参加時、非会員権に参加します。​",
+    "guest_invite_url_copied":"接続URLをコピーしました。",
+    "guest_invite_email_transport_succeed":"接続URLをメールで送信しました。​",
+    "guest_invite_email_transport_failed":"メール送信に失敗しました。​",
+    "guest_invite_email_please_input_email_address":"メールアドレスを入力してください。"
   }
 }

@@ -62,4 +62,10 @@ export default {
   background-color: #313135;
   animation: skeleton-animation 1.5s ease-in-out 0.5s infinite;
 }
+
+@include responsive-mobile {
+  .skeleton-screen {
+    background-color: $new_color_bg_sub;
+  }
+}
 </style>

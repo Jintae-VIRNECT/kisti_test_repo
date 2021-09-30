@@ -1,71 +1,88 @@
 <template>
-  <modal
-    :title="$t('workspace.info_remote_detail')"
-    width="64.286em"
-    height="56.429em"
-    :showClose="true"
-    :visible.sync="visibleFlag"
-    :beforeClose="beforeClose"
-    customClass="modal-roominfo"
-  >
-    <div class="roominfo">
-      <section class="roominfo-nav">
-        <div class="roominfo-nav__image">
-          <profile
-            :group="true"
-            :image="image"
-            :thumbStyle="{ width: '5.143rem', height: '5.143rem' }"
-          ></profile>
-        </div>
-        <div class="roominfo-nav__menus">
-          <button
-            class="roominfo-nav__menu"
-            :class="{ active: tabview === 'group' }"
-            :data-text="$t('workspace.info_remote')"
-            @click="tabChange('group')"
-          >
-            {{ $t('workspace.info_remote') }}
-          </button>
-          <button
-            class="roominfo-nav__menu"
-            :class="{ active: tabview === 'user' }"
-            :data-text="$t('workspace.info_remote_member')"
-            @click="tabChange('user')"
-          >
-            {{ $t('workspace.info_remote_member') }}
-          </button>
-          <button
-            v-if="useStorage"
-            class="roominfo-nav__menu"
-            :class="{ active: tabview === 'download' }"
-            :data-text="$t('button.download')"
-            @click="tabChange('download')"
-          >
-            {{ $t('button.download') }}
-          </button>
-        </div>
-      </section>
+  <div>
+    <modal
+      :title="$t('workspace.info_remote_detail')"
+      width="64.286em"
+      height="56.429em"
+      :showClose="true"
+      :visible.sync="visiblePcFlag"
+      :beforeClose="beforeClose"
+      customClass="modal-roominfo"
+    >
+      <div class="roominfo">
+        <section class="roominfo-nav">
+          <div class="roominfo-nav__image">
+            <profile
+              :group="true"
+              :image="image"
+              :thumbStyle="{ width: '5.143rem', height: '5.143rem' }"
+            ></profile>
+          </div>
+          <div class="roominfo-nav__menus">
+            <button
+              class="roominfo-nav__menu"
+              :class="{ active: tabview === 'group' }"
+              :data-text="$t('workspace.info_remote')"
+              @click="tabChange('group')"
+            >
+              {{ $t('workspace.info_remote') }}
+            </button>
+            <button
+              class="roominfo-nav__menu"
+              :class="{ active: tabview === 'user' }"
+              :data-text="$t('workspace.info_remote_member')"
+              @click="tabChange('user')"
+            >
+              {{ $t('workspace.info_remote_member') }}
+            </button>
+            <button
+              v-if="useStorage"
+              class="roominfo-nav__menu"
+              :class="{ active: tabview === 'download' }"
+              :data-text="$t('button.download')"
+              @click="tabChange('download')"
+            >
+              {{ $t('button.download') }}
+            </button>
+          </div>
+        </section>
 
-      <keep-alive>
-        <room-info
-          v-if="tabview === 'group'"
-          :room="room"
-          :image.sync="image"
-          :isLeader="isLeader"
-          @update="update"
-        ></room-info>
+        <keep-alive>
+          <room-info
+            v-if="tabview === 'group'"
+            :room="room"
+            :image.sync="image"
+            :isLeader="isLeader"
+            @update="update"
+          ></room-info>
 
-        <participants-info
-          v-else-if="tabview === 'user'"
-          :participants="memberList"
-          :isLeader="isLeader"
-          :sessionId="sessionId"
-          @kickout="kickout"
-        ></participants-info>
-        <room-download v-else :sessionId="sessionId"></room-download>
-      </keep-alive>
-    </div>
-  </modal>
+          <participants-info
+            v-else-if="tabview === 'user'"
+            :participants="memberList"
+            :isLeader="isLeader"
+            :sessionId="sessionId"
+            @kickout="kickout"
+          ></participants-info>
+          <room-download v-else :sessionId="sessionId"></room-download>
+        </keep-alive>
+      </div>
+    </modal>
+
+    <!-- 모바일 레이아웃 -->
+    <workspace-mobile-room-info
+      :room="room"
+      :sessionId="sessionId"
+      :isLeader="isLeader"
+      :visible.sync="visibleMobileFlag"
+      :beforeClose="beforeClose"
+      :tabview="tabview"
+      :memberList="memberList"
+      @tabChange="tabChange"
+      @update="update"
+      @kickout="kickout"
+    >
+    </workspace-mobile-room-info>
+  </div>
 </template>
 
 <script>
@@ -81,25 +98,36 @@ import RoomInfo from '../partials/ModalRoomInfo'
 import ParticipantsInfo from '../partials/ModalParticipantsInfo'
 import RoomDownload from '../partials/ModalRoomDownload'
 import Profile from 'Profile'
+
 import toastMixin from 'mixins/toast'
 import confirmMixin from 'mixins/confirm'
+import errorMsgMixin from 'mixins/errorMsg'
+import responsiveModalVisibleMixin from 'mixins/responsiveModalVisible'
+
+import { ERROR } from 'configs/error.config'
+
 import { mapGetters } from 'vuex'
 
 export default {
   name: 'WorkspaceRoomInfo',
-  mixins: [toastMixin, confirmMixin],
+  mixins: [
+    toastMixin,
+    confirmMixin,
+    errorMsgMixin,
+    responsiveModalVisibleMixin,
+  ],
   components: {
     Modal,
     Profile,
     RoomInfo,
     ParticipantsInfo,
     RoomDownload,
+    WorkspaceMobileRoomInfo: () => import('./WorkspaceMobileRoomInfo'),
   },
   data() {
     return {
       room: null,
       tabview: 'group',
-      visibleFlag: false,
       image: null,
     }
   },
@@ -132,7 +160,7 @@ export default {
       if (flag === true) {
         this.initRemote()
       }
-      this.visibleFlag = flag
+      this.setVisiblePcOrMobileFlag(flag)
     },
   },
   methods: {
@@ -145,8 +173,8 @@ export default {
         this.image = this.room.profile
         this.tabview = 'group'
       } catch (err) {
-        if (err.code === 4002) {
-          this.toastError(this.$t('workspace.remote_already_removed'))
+        if (err.code === ERROR.REMOTE_ALREADY_REMOVED) {
+          this.showErrorToast(err.code)
           this.$emit('update:visible', false)
         }
       }
@@ -158,34 +186,22 @@ export default {
       this.$emit('update:visible', false)
     },
     async update(params) {
+      const isUpdate =
+        'image' in params &&
+        params['image'] !== null &&
+        params['image'] !== 'default'
+
+      const isDelete =
+        'image' in params &&
+        this.room.profile !== 'default' &&
+        (params['image'] === 'default' || !params['image'])
+
       try {
-        if (
-          'image' in params &&
-          params['image'] !== null &&
-          params['image'] !== 'default'
-        ) {
-          const profile = await updateRoomProfile({
-            profile: params.image,
-            sessionId: params.sessionId,
-            uuid: this.account.uuid,
-            workspaceId: this.workspace.uuid,
-          })
-
-          if (profile.usedStoragePer >= 90) {
-            this.toastError(this.$t('alarm.file_storage_about_to_limit'))
-          }
-
+        if (isUpdate) {
+          await this.updateProfile(params)
           delete params['image']
-          this.$emit('updatedInfo', profile)
-        } else if (
-          'image' in params &&
-          this.room.profile !== 'default' &&
-          (params['image'] === 'default' || !params['image'])
-        ) {
-          await removeRoomProfile({
-            sessionId: params.sessionId,
-            workspaceId: this.workspace.uuid,
-          })
+        } else if (isDelete) {
+          await this.deleteProfile(params)
         }
         const updateRtn = await updateRoomInfo(params)
         if (updateRtn) {
@@ -193,13 +209,33 @@ export default {
           this.$emit('update:visible', false)
         }
       } catch (err) {
-        if (err.code === 4002) {
-          this.toastError(this.$t('workspace.remote_already_removed'))
+        if (err.code === ERROR.REMOTE_ALREADY_REMOVED) {
+          this.showErrorToast(err.code)
           this.$emit('update:visible', false)
-        } else if (err.code === 7017) {
-          this.toastError(this.$t('alarm.file_storage_capacity_full'))
+        } else if (err.code === ERROR.FILE_STORAGE_CAPACITY_FULL) {
+          this.showErrorToast(err.code)
         }
       }
+    },
+    async updateProfile(params) {
+      const profile = await updateRoomProfile({
+        profile: params.image,
+        sessionId: params.sessionId,
+        uuid: this.account.uuid,
+        workspaceId: this.workspace.uuid,
+      })
+
+      if (profile.usedStoragePer >= 90) {
+        this.toastError(this.$t('alarm.file_storage_about_to_limit'))
+      }
+
+      this.$emit('updatedInfo', profile)
+    },
+    async deleteProfile(params) {
+      await removeRoomProfile({
+        sessionId: params.sessionId,
+        workspaceId: this.workspace.uuid,
+      })
     },
     kickoutConfirm(id) {
       this.confirmCancel(
@@ -232,8 +268,8 @@ export default {
           this.$emit('updatedInfo', {})
         }
       } catch (err) {
-        if (err.code === 4002) {
-          this.toastError(this.$t('workspace.remote_already_removed'))
+        if (err.code === ERROR.REMOTE_ALREADY_REMOVED) {
+          this.showErrorToast(err.code)
           this.$emit('update:visible', false)
         }
       }

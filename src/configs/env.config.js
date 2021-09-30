@@ -27,6 +27,12 @@ export let ALLOW_NO_AUDIO = false
 export let ALLOW_NO_DEVICE = false
 
 /**
+ * spot control 기능 버튼 표시 여부
+ * @default false
+ */
+export let SPOT_CONTROL_ACTIVE = false
+
+/**
  * 회사 구분 코드
  * @default 0
  */
@@ -54,6 +60,7 @@ export const setConfigs = configs => {
   TARGET_COMPANY = configs.targetCompany || TARGET_COMPANY
   WHITE_LOGO = configs.whiteLogo || WHITE_LOGO
   DEFAULT_LOGO = configs.defaultLogo || DEFAULT_LOGO
+  SPOT_CONTROL_ACTIVE = configs.SPOT_CONTROL_ACTIVE || SPOT_CONTROL_ACTIVE
 }
 
 /**
@@ -94,3 +101,7 @@ export default {
   RUNTIME_ENV,
   TARGET_COMPANY,
 }
+
+//configuration server 응답 데이터 키값 스트링
+export const CONF_SPOT_CONTROL_ACTIVE = 'SPOT_CONTROL_ACTIVE'
+export const CONF_RUNTIME = 'RUNTIME'

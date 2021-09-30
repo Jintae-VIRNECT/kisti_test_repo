@@ -22,7 +22,7 @@ NODE_ENV: local, develop, production / SSL_ENV: private, public
 
 ```
 npm -> ^5.6.0
-node -> v10.15.1
+node -> v12.15.1
 ```
 
 ## Build
@@ -50,4 +50,6 @@ docker build -t rm-web ./docker/Dockerfile .
 Needed SSL_ENV, NODE_ENV as Environment variables
 
 docker run -d --name 'rm-web' -p 8886:8886 -e SSL_ENV=public NODE_ENV=production rm-web
+
+
 ```

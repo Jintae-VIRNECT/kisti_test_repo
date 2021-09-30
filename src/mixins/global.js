@@ -1,4 +1,4 @@
-import { mapGetters } from 'vuex'
+import { mapGetters, mapMutations } from 'vuex'
 import dayjs from 'dayjs'
 import { RUNTIME, RUNTIME_ENV } from 'configs/env.config'
 
@@ -35,7 +35,14 @@ export default {
     },
   },
   computed: {
-    ...mapGetters(['account', 'workspace', 'deviceType', 'hasLicense']),
+    ...mapGetters([
+      'account',
+      'workspace',
+      'deviceType',
+      'hasLicense',
+      'isMobileSize',
+      'isTabletSize',
+    ]),
     isSafari() {
       const userAgent = navigator.userAgent || ''
       return (
@@ -73,6 +80,7 @@ export default {
     },
   },
   methods: {
+    ...mapMutations(['SET_IS_MOBILE_SIZE', 'SET_IS_TABLET_SIZE']),
     onImageError(event) {
       // console.log(event.target)
       // event.target.src = require('assets/image/img_user_profile.svg')
@@ -83,5 +91,28 @@ export default {
       // event.target.src = require('assets/image/img_default_group.svg')
       event.target.style.display = 'none'
     },
+    responsiveGlobal() {
+      if (matchMedia('screen and (max-width: 767px)').matches) {
+        this.SET_IS_MOBILE_SIZE(true)
+        this.SET_IS_TABLET_SIZE(false)
+      } else if (
+        matchMedia(
+          'only screen and (min-device-width: 768px) and (max-width: 1023px)',
+        ).matches
+      ) {
+        this.SET_IS_MOBILE_SIZE(false)
+        this.SET_IS_TABLET_SIZE(true)
+      } else {
+        this.SET_IS_MOBILE_SIZE(false)
+        this.SET_IS_TABLET_SIZE(false)
+      }
+    },
+  },
+  mounted() {
+    this.responsiveGlobal()
+    window.addEventListener('resize', this.responsiveGlobal)
+  },
+  beforeDestroy() {
+    window.removeEventListener('resize', this.responsiveGlobal)
   },
 }

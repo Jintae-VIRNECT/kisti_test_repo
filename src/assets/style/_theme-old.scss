@@ -1,0 +1,76 @@
+@import "@virnect/ui-assets/stylesheets/abstracts/_vars",
+  "@virnect/ui-assets/stylesheets/abstracts/_functions";
+
+/// ANCHOR colorThemed old
+/// HOWTOUSE @include colorThemed { t($primary-40) }
+@mixin colorThemedOld {
+  @each $theme, $map in $color-map {
+    $theme-map: () !global;
+    @each $key, $submap in $map {
+      $value: map-get(map-get($color-map, "dark"), "#{$key}");
+      $theme-map: map-merge(
+        $theme-map,
+        (
+          $key: $value
+        )
+      ) !global;
+    }
+    @content;
+    $theme-map: null !global;
+  }
+}
+
+html {
+  --color-static-gray-10: #{$static-gray-10};
+  --color-static-gray-20: #{$static-gray-20};
+  --color-static-gray-30: #{$static-gray-30};
+  --color-static-gray-40: #{$static-gray-40};
+  --color-static-gray-50: #{$static-gray-50};
+  --color-static-gray-60: #{$static-gray-60};
+  --color-static-gray-70: #{$static-gray-70};
+  --color-static-gray-80: #{$static-gray-80};
+  --color-static-font-gray-10: #{$font-gray-10};
+  @include colorThemedOld {
+    --color-font-gray-90: #{t($font-gray-90)};
+    --color-font-gray-80: #{t($font-gray-80)};
+    --color-font-gray-70: #{t($font-gray-70)};
+    --color-font-blue-70: #{t($font-blue-70)};
+
+    --color-gray-5: #{t($gray-5)};
+    --color-gray-10: #{t($gray-10)};
+    --color-gray-20: #{t($gray-20)};
+    --color-gray-30: #{t($gray-30)};
+    --color-gray-40: #{t($gray-40)};
+    --color-gray-50: #{t($gray-50)};
+    --color-gray-60: #{t($gray-60)};
+    --color-gray-70: #{t($gray-70)};
+    --color-gray-80: #{t($gray-80)};
+    --color-gray-90: #{t($gray-90)};
+    --color-gray-100: #{t($gray-100)};
+
+    --color-coolGray-40: #{t($coolGray-40)};
+    --color-coolGray-50: #{t($coolGray-50)};
+    --color-coolGray-60: #{t($coolGray-60)};
+    --color-coolGray-70: #{t($coolGray-70)};
+
+    --color-blue-40: #{t($primary-40)};
+    --color-blue-50: #{t($primary-50)};
+    --color-blue-60: #{t($primary-60)};
+    --color-blue-70: #{t($primary-70)};
+
+    --color-red-40: #{t($danger-40)};
+    --color-red-50: #{t($danger-50)};
+    --color-red-60: #{t($danger-60)};
+    --color-red-70: #{t($danger-70)};
+
+    --color-orange-40: #{t($warning-40)};
+    --color-orange-50: #{t($warning-50)};
+    --color-orange-60: #{t($warning-60)};
+    --color-orange-70: #{t($warning-70)};
+
+    --color-green-40: #{t($success-40)};
+    --color-green-50: #{t($success-50)};
+    --color-green-60: #{t($success-60)};
+    --color-green-70: #{t($success-70)};
+  }
+}

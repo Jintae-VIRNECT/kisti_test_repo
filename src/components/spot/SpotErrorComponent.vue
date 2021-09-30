@@ -22,11 +22,16 @@
 
 <script>
 import ErrorComponent from '../error/ErrorComponent'
+import { spotControlRouterGuard } from 'utils/validator'
 
 export default {
   name: 'SpotErrorComponent',
   components: {
     ErrorComponent,
+  },
+  //spot 페이지 진입 라우터 가드
+  beforeRouteEnter(to, from, next) {
+    spotControlRouterGuard(next)
   },
   methods: {
     closeBrowser() {

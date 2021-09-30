@@ -1,8 +1,23 @@
 export default {
+  computed: {
+    toastPosition() {
+      if (this.isMobileSize) return 'top-center'
+      else {
+        if (this.$route.name === 'service') return 'top-center'
+        else return 'bottom-center'
+      }
+    },
+    className() {
+      if (this.isMobileSize) return ['remote-toast', 'mobile']
+      else return ['remote-toast']
+    },
+  },
   methods: {
+    //.error
     toastError(message) {
       this.$toasted.error(message, {
-        position: 'bottom-center',
+        position: this.toastPosition, //'bottom-center',
+        className: this.className,
         duration: 5000,
         action: {
           icon: 'close',
@@ -12,9 +27,11 @@ export default {
         },
       })
     },
+    //.default
     toastNotify(message) {
       this.$toasted.show(message, {
-        position: 'bottom-center',
+        position: this.toastPosition, //'bottom-center',
+        className: this.className,
         duration: 5000,
         action: {
           icon: 'close',
@@ -24,11 +41,12 @@ export default {
         },
       })
     },
+    //.info
     toastDefault(message, options) {
       this.$toasted.clear()
       this.$toasted.show(message, {
-        position: 'top-center',
-        className: ['remote-toast'],
+        position: this.toastPosition, //'top-center',
+        className: this.className,
         type: 'info',
         duration: 3000,
         action: null,

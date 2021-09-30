@@ -1,10 +1,32 @@
 <template>
   <section class="roominfo-view">
-    <p class="roominfo-view__title">
+    <p v-if="!isLeader" class="roominfo-view__title">
       {{ $t('workspace.info_remote') }}
     </p>
     <div class="roominfo-view__body">
       <template v-if="isLeader">
+        <div v-if="isMobileSize" class="roominfo-profile-mobile">
+          <div class="profile-mobile-container">
+            <profile-image
+              :image.sync="imageURL"
+              :deleteBtn="!!imageURL"
+              @delete="imageRemove"
+              size="8rem"
+            ></profile-image>
+            <input
+              ref="inputImage"
+              type="file"
+              name="file"
+              accept="image/gif,image/jpeg,image/png"
+              style="display: none;"
+              @change="uploadImage($event, (isProfile = true))"
+            />
+            <button class="mobile-regist-image" @click="imageUpload">
+              <img />
+            </button>
+          </div>
+        </div>
+
         <input-row
           type="text"
           :title="$t('workspace.remote_name')"
@@ -25,7 +47,11 @@
           :value.sync="description"
           :placeholder="$t('workspace.create_remote_description_input')"
         ></input-row>
-        <input-row type="buttons" :title="$t('button.image_regist')">
+        <input-row
+          v-if="!isMobileSize"
+          type="buttons"
+          :title="$t('button.image_regist')"
+        >
           <div>
             <input
               ref="inputImage"
@@ -111,6 +137,7 @@ export default {
   mixins: [imageMixin],
   components: {
     InputRow,
+    ProfileImage: () => import('ProfileImage'),
   },
   props: {
     room: {
@@ -158,23 +185,33 @@ export default {
       }
     },
     canSave() {
-      if (!this.room) return false
+      //현재 협업이 존재하는가?
+      if (!this.room) {
+        return false
+      }
+
+      //협업명이 유효한가?
       if (this.titleValid) {
         return false
       }
 
+      //현재 협업명과 이전 협업명이 다른가?
       if (this.title !== this.room.title) {
         return true
       }
+
+      //현재 협업 설명과 이전 협업 설명이 다른가?
       if (this.description !== this.room.description) {
         return true
       }
 
-      if (this.image !== this.room.profile) {
-        return true
+      //현재 프로파일 이미지가 삭제되었고 프로파일이 default 인가?
+      if (this.image === '' && this.room.profile === 'default') {
+        return false
       }
 
-      if (this.image === '' && this.room.profile === 'default') {
+      //현재 이미지와 협업 이미지가 다른가?
+      if (this.image !== this.room.profile) {
         return true
       }
 

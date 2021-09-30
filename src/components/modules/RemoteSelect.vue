@@ -221,4 +221,36 @@ export default {
     color: rgba($color_text, 0.76);
   }
 }
+
+@include responsive-mobile {
+  .select-label {
+    border: 1.5px solid $new_color_line_border;
+    border-radius: 0.3rem;
+    transition: none;
+    &:hover,
+    &:active,
+    &:focus {
+      border-color: $new_color_line_border;
+    }
+
+    &.disabled {
+      opacity: 0.4;
+    }
+  }
+  .popover.select-options {
+    border: 1.5px solid $new_color_line_border;
+    border-top: none;
+    border-radius: 0.3rem !important;
+    > .popover--body {
+      background-color: $color_darkgray !important;
+      .select-option {
+        @include fontLevel(100);
+        color: $new_color_text_sub_description;
+        &.active {
+          color: $new_color_text_main;
+        }
+      }
+    }
+  }
+}
 </style>

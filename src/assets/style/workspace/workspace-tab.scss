@@ -114,6 +114,10 @@
   align-items: center;
   padding: 3.643rem 0 0;
   padding-bottom: 1.643rem;
+
+  &.sub {
+    padding-bottom: 0;
+  }
 }
 .tab-view__tools {
   position: absolute;
@@ -144,18 +148,18 @@
   background-color: #4d4d4d;
   border-radius: 0.857rem;
 }
-// .tab-view__description {
-//   flex: 1 0 0;
-//   margin-top: 0.643rem;
-//   color: rgba($color_text_sub, 0.3);
-//   @include ellipsis();
-// }
+.tab-view__description {
+  flex: 1 0 0;
+  margin-top: 0.643rem;
+  color: rgba($color_text_sub, 0.3);
+  @include ellipsis();
+}
 
-// .tab-view__sub-header {
-//   display: flex;
-//   justify-content: space-between;
-//   padding-bottom: 1.643rem;
-// }
+.tab-view__sub-header {
+  display: flex;
+  justify-content: space-between;
+  padding-bottom: 1.643rem;
+}
 
 .tab-view__body {
   flex: 1;
@@ -181,4 +185,155 @@
 .tab-view__loading-logo {
   margin: auto;
   text-align: center;
+}
+
+//워크스페이스 선택 모바일 레이아웃
+@include responsive-mobile {
+  .workspace-tab {
+    background-color: $new_color_bg_sub;
+
+    //헤더
+    .tab-view .tab-view__header {
+      width: initial;
+      max-width: initial;
+      height: 1.8rem;
+      margin: 2.3rem 1.6rem 2.1rem 1.6rem;
+      padding: 0;
+    }
+    .tab-view .tab-view__header .tab-view__title {
+      display: none; //워크스페이스를 선택하세요 문구 제거
+
+      //워크스페이스 선택 이후의 타이틀은 다시 표시
+      &.workspace-selected {
+        display: block;
+        margin-right: 0.6rem;
+        color: rgba($new_color_text_main, 0.8);
+        @include fontLevel(200);
+      }
+    }
+
+    .tab-view__count {
+      height: 2rem;
+      margin-top: 0;
+      color: $new_color_text_main;
+      background-color: $new_color_bg_icon;
+      border-radius: 1.2rem;
+      @include fontLevel(50);
+    }
+
+    .tab-view .tab-view__header .workspace-selected,
+    .tab-view__count {
+      transition: transform 0.25s, opacity 0.08s;
+      &.search-focused {
+        transform: translateX(-200px);
+        opacity: 0;
+      }
+    }
+
+    .tab-view__sub-header {
+      display: none;
+    }
+
+    //검색, 새로고침 버튼
+    .tab-view .tab-view__header .tab-view__tools {
+      top: -12%;
+      justify-content: flex-end;
+      width: 100%;
+      margin-top: 0;
+    }
+
+    .tab-view__tools {
+      .icon-button {
+        //삭제 버튼
+        &.delete > img {
+          content: url(~assets/image/ic_delete_16.svg);
+        }
+        //새로고침 버튼
+        &.refresh > img {
+          content: url(~assets/image/workspace/ic_renew_16.svg);
+        }
+        &.favourite > img {
+          content: url(~assets/image/workspace/ic_manage_member_group_16.svg);
+        }
+        &.member > img {
+          content: url(~assets/image/workspace/ic_member_16.svg);
+        }
+        &.add-group > img {
+          content: url(~assets/image/workspace/ic_add_member_group_16.svg);
+        }
+      }
+    }
+
+    //바디
+    .tab-view .tab-view__body.offsetwidth {
+      width: initial;
+      max-width: initial;
+      margin: 0 1.6rem;
+      .show-empty {
+        background-color: transparent;
+      }
+    }
+
+    //loading
+    .tab-view__loading {
+      background-color: $new_color_bg_sub;
+    }
+
+    .tab-view {
+      background-color: $new_color_bg_sub;
+      //워크스페이스 선택 목록
+      .workcard-list {
+        grid-template-columns: repeat(2, minmax(15.9rem, 1fr));
+        -webkit-column-gap: 1rem;
+        -moz-column-gap: 1rem;
+        column-gap: 1rem;
+        row-gap: 1rem;
+      }
+      .groupcard-list {
+        grid-template-columns: 1fr;
+      }
+    }
+  }
+
+  .workspace-tab__nav {
+    background-color: $new_color_bg;
+
+    ul {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      max-width: 100%;
+      margin: 0;
+      padding: 0 1.2rem;
+      .workspace-tab__button {
+        margin: 0 0.2rem 0 0.2rem;
+      }
+      .workspace-tab__button > button {
+        width: 100%;
+        padding: 1rem 0 1.2rem 0;
+        @include fontLevel(150);
+        color: $new_color_text_main;
+
+        //active bar 굵기 변경
+        &::after {
+          height: 0.3rem;
+        }
+      }
+    }
+
+    //워크스페이스 선택 시 탭 메뉴 비활성화
+    &.tab-mobile {
+      display: none;
+    }
+
+    //tab 메뉴
+    &.fix {
+      width: initial;
+      background-color: $new_color_bg;
+    }
+
+    //tab메뉴에 표시되는 협업방 생성 버튼 레이아웃 비활성화
+    .workspace-tab__side {
+      display: none;
+    }
+  }
 }

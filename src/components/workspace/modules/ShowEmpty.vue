@@ -42,6 +42,7 @@ export default {
 
 <style lang="scss" scoped>
 @import '~assets/style/vars';
+@import '~assets/style/mixin';
 
 .show-empty {
   position: absolute;
@@ -73,5 +74,20 @@ export default {
   font-weight: 300;
   font-size: 1.286rem;
   text-align: center;
+}
+
+@include responsive-mobile {
+  .show-empty__image {
+    height: 23rem;
+  }
+  .show-empty__title {
+    @include fontLevel(200);
+    color: $new_color_text_main;
+  }
+  .show-empty__description {
+    @include fontLevel(75);
+    padding-top: 0.2rem;
+    color: $new_color_text_sub_description;
+  }
 }
 </style>

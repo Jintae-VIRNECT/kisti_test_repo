@@ -2,7 +2,7 @@
   <section class="remote-layout">
     <header-section></header-section>
     <vue2-scrollbar
-      classes="remote-wrapper"
+      classes="remote-wrapper workspace"
       ref="wrapperScroller"
       @onScroll="onScroll"
       :onMaxScroll="handleMaxScroll"
@@ -31,7 +31,17 @@
       <device-denied :visible.sync="showDenied"></device-denied>
     </vue2-scrollbar>
     <plan-overflow :visible.sync="showPlanOverflow"></plan-overflow>
-    <room-loading :visible.sync="showLoading"></room-loading>
+    <room-loading
+      :visible.sync="showLoading"
+      :isOpenRoom="isOpenRoom"
+      :isJoin="isJoin"
+    ></room-loading>
+    <collabo-float-button
+      v-if="workspace && workspace.uuid && tabName !== 'setting'"
+    ></collabo-float-button>
+    <openroom-float-button
+      v-if="workspace && workspace.uuid && tabName !== 'setting'"
+    ></openroom-float-button>
   </section>
 </template>
 
@@ -42,15 +52,23 @@ import WorkspaceTab from './section/WorkspaceTab'
 import auth, { getSettings } from 'utils/auth'
 import { getLicense, workspaceLicense, getCompanyInfo } from 'api/http/account'
 import RecordList from 'LocalRecordList'
+
 import confirmMixin from 'mixins/confirm'
 import langMixin from 'mixins/language'
 import toastMixin from 'mixins/toast'
 import authStatusCallbackMixin from 'mixins/authStatusCallback'
+import errorMsgMixin from 'mixins/errorMsg'
+
 import DeviceDenied from './modal/WorkspaceDeviceDenied'
 import PlanOverflow from './modal/WorkspacePlanOverflow'
 import RoomLoading from './modal/WorkspaceRoomLoading'
 import { mapActions, mapGetters } from 'vuex'
+
 import { PLAN_STATUS } from 'configs/status.config'
+import { ERROR } from 'configs/error.config'
+import { URLS } from 'configs/env.config'
+import { USER_TYPE } from 'configs/remote.config'
+
 import { MyStorage } from 'utils/storage'
 import { initAudio } from 'plugins/remote/tts/audio'
 
@@ -67,7 +85,13 @@ export default {
       })
     }
   },
-  mixins: [confirmMixin, langMixin, toastMixin, authStatusCallbackMixin],
+  mixins: [
+    confirmMixin,
+    langMixin,
+    toastMixin,
+    authStatusCallbackMixin,
+    errorMsgMixin,
+  ],
   components: {
     HeaderSection,
     WorkspaceWelcome,
@@ -77,6 +101,8 @@ export default {
     PlanOverflow,
     RoomLoading,
     CookiePolicy: () => import('CookiePolicy'),
+    CollaboFloatButton: () => import('./partials/CollaboFloatButton'),
+    OpenroomFloatButton: () => import('./partials/OpenroomFloatButton'),
   },
   data() {
     const cookie = localStorage.getItem('ServiceCookiesAgree')
@@ -89,7 +115,10 @@ export default {
       showDenied: false,
       showPlanOverflow: false,
       showLoading: false,
+      isOpenRoom: false,
+      isJoin: false,
       inited: false,
+      tabName: 'remote',
     }
   },
   watch: {
@@ -143,6 +172,7 @@ export default {
       'setServerRecord',
       'setScreenStrict',
       'clearWorkspace',
+      'setAutoServerRecord',
     ]),
 
     async init() {
@@ -152,7 +182,10 @@ export default {
         auth.login()
         return
       } else {
-        this.savedStorageDatas(authInfo.account.uuid)
+        this.logoutGuest(authInfo.account.userType)
+        this.initMyStorage(authInfo.account.uuid)
+        this.getSavedStorageDatas()
+
         const res = await getLicense({ userId: authInfo.account.uuid })
         const myPlans = res.myPlanInfoList.filter(
           plan => plan.planProduct === 'REMOTE',
@@ -197,9 +230,9 @@ export default {
           userId: this.account.uuid,
         })
       } catch (err) {
-        if (err.code === 5003) {
+        if (err.code === ERROR.NO_LICENSE) {
           this.clearWorkspace(this.workspace.uuid)
-          this.toastError(this.$t('workspace.no_license'))
+          this.showErrorToast(err.code)
         }
       }
     },
@@ -226,38 +259,33 @@ export default {
       this.$refs['wrapperScroller'].scrollToY(0)
       this.tabFix = false
     },
-    tabChange() {
+    tabChange(tabName) {
       this.scrollTop()
+      this.tabName = tabName
     },
     toggleList() {
       this.showList = true
     },
-    savedStorageDatas(uuid) {
+    initMyStorage(uuid) {
       window.myStorage = new MyStorage(uuid)
-      const deviceInfo = window.myStorage.getItem('deviceInfo')
-      if (deviceInfo) {
-        this.setDevices(deviceInfo)
+    },
+    getSavedStorageDatas() {
+      const settingMap = {
+        deviceInfo: this.setDevices,
+        recordInfo: this.setRecord,
+        translate: this.setTranslate,
+        serverRecordInfo: this.setServerRecord,
+        screenStrict: this.setScreenStrict,
+        autoServerRecord: this.setAutoServerRecord,
       }
-      const recordInfo = window.myStorage.getItem('recordInfo')
-      if (recordInfo) {
-        this.setRecord(recordInfo)
-      }
-      // const allow = this.$localStorage.getItem('allow')
-      // if (allow) {
-      //   this.setAllow(allow)
-      // }
-      const translateInfo = window.myStorage.getItem('translate')
-      if (translateInfo) {
-        this.setTranslate(translateInfo)
-      }
-      const serverRecordInfo = window.myStorage.getItem('serverRecordInfo')
-      if (serverRecordInfo) {
-        this.setServerRecord(serverRecordInfo)
-      }
-      const screenStrict = window.myStorage.getItem('screenStrict')
-      if (screenStrict) {
-        this.setScreenStrict(screenStrict)
-      }
+
+      Object.keys(settingMap).forEach(key => {
+        const setting = window.myStorage.getItem(key)
+        if (setting) {
+          const setFunc = settingMap[key]
+          setFunc(setting)
+        }
+      })
     },
     showDeviceDenied() {
       this.showDenied = true
@@ -296,8 +324,20 @@ export default {
         timeout: res.timeout !== undefined ? res.timeout : 60, //협업 연장 질의 팝업 싸이클을 정하는 값. 분 단위
       })
     },
-    showRoomLoading(toggle) {
+    showRoomLoading({ toggle, isOpenRoom = false, isJoin = false }) {
       this.showLoading = toggle
+      if (this.showLoading) {
+        this.isOpenRoom = isOpenRoom
+        this.isJoin = isJoin
+      }
+    },
+    setTabTop() {
+      this.tabTop = this.$refs['tabSection'].$el.offsetTop
+    },
+    logoutGuest(userType) {
+      if (userType === USER_TYPE.GUEST_USER) {
+        location.href = `${URLS['console']}`
+      }
     },
   },
 
@@ -311,13 +351,18 @@ export default {
   mounted() {
     initAudio()
     this.mx_changeLang()
-    this.tabTop = this.$refs['tabSection'].$el.offsetTop
+    this.setTabTop()
+
+    //반응형 대응 : 모바일 레이아웃으로 접근 후 PC화면으로 스크린 크기 변화 시 tabTop값이 업데이트 되어야 sticky header가 정상 동작하므로
+    window.addEventListener('resize', this.setTabTop)
+
     this.$eventBus.$on('scroll:reset:workspace', this.scrollTop)
     this.$eventBus.$on('filelist:open', this.toggleList)
     this.$eventBus.$on('devicedenied:show', this.showDeviceDenied)
     this.$eventBus.$on('roomloading:show', this.showRoomLoading)
   },
   beforeDestroy() {
+    window.removeEventListener('resize', this.setTabTop)
     this.$eventBus.$off('scroll:reset:workspace', this.scrollTop)
     this.$eventBus.$off('filelist:open')
     this.$eventBus.$off('devicedenied:show')

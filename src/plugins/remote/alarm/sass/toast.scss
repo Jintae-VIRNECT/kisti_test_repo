@@ -299,6 +299,9 @@
       & + button {
         margin-left: 1rem;
       }
+      &.close {
+        display: none;
+      }
       &.filelink {
         position: relative;
         padding-left: 2.857rem;
@@ -621,5 +624,74 @@
   }
   #toasted-container .toasted {
     border-radius: 0;
+  }
+}
+
+@include responsive-mobile {
+  .toasted-container.top-center {
+    min-width: 92%;
+    max-width: 92%;
+  }
+
+  //top-right 위치의 알람을 모바일에서는 중앙으로 배치한다.
+  .toasted-container.fit-to-screen.top-right {
+    top: 2.4rem;
+    left: 50%;
+    min-width: 92%;
+    transform: translateX(-50%);
+  }
+
+  .toasted.toasted-primary.notify {
+    width: 100%;
+    padding: 1.6rem 1.6rem 2rem 1.6rem;
+    background-color: $new_color_popup_bg;
+    border: none;
+
+    .toasted--thumb {
+      width: 4rem;
+      height: 4rem;
+      margin-top: 0.1rem;
+      margin-right: 1.2rem;
+    }
+    .toasted__info {
+      @include fontLevel(75);
+      margin-bottom: 0.1rem;
+
+      .invite {
+        color: $new_color_text_sub;
+      }
+    }
+    p.toasted__description {
+      color: $new_color_text_main;
+      @include fontLevel(100);
+    }
+    .toasted__buttons {
+      margin-top: 1.4rem;
+      margin-bottom: 0;
+      button {
+        min-width: 10.2rem;
+        height: 3.6rem;
+        padding: 0;
+        background-color: $new_color_bg_button_primary;
+        border: none;
+        border-radius: 0.4rem;
+        @include fontLevel(100);
+
+        &.sub {
+          background-color: $new_color_bg_item;
+        }
+
+        &.close {
+          position: absolute;
+          top: 1.4rem;
+          right: 1.4rem;
+          display: block;
+          min-width: 2rem;
+          max-width: 2rem;
+          height: 2rem;
+          background: url("~assets/image/ic_close_24.svg") center no-repeat;
+        }
+      }
+    }
   }
 }

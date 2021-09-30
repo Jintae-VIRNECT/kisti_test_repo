@@ -38,15 +38,19 @@ const localWebpackConfig = merge(baseWebpackConfig(mode), {
           to: '/remote/index.html',
         },
         {
+          from: /qr(\/.*)?/,
+          to: '/remote/index.html',
+        },
+        {
+          from: /connectioninfo(\/.*)?/,
+          to: '/remote/index.html',
+        },
+        {
           from: /account(\/.*)?/,
           to: '/account/index.html',
         },
         {
           from: /support(\/.*)?/,
-          to: '/extra/index.html',
-        },
-        {
-          from: /policy(\/.*)?/,
           to: '/extra/index.html',
         },
         {
@@ -101,6 +105,10 @@ const localWebpackConfig = merge(baseWebpackConfig(mode), {
 
       app.get('/pdf.worker', function(req, res) {
         res.sendFile(path.join(__dirname, '../static/js/pdf.worker.js'))
+      })
+
+      app.get('/sw.js', function(req, res) {
+        res.sendFile(path.join(__dirname, '../static/js/sw.js'))
       })
 
       app.post('/translate', express.json(), function(req, res) {

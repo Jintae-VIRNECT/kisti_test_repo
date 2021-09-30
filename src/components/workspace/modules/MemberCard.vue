@@ -4,7 +4,7 @@
       v-if="showMasterMenu"
       class="card-menu"
       popperClass="card-menu__popover"
-      placement="bottom-start"
+      :placement="placement"
       :scrollHide="true"
     >
       <button
@@ -26,10 +26,7 @@
     </popover>
     <div class="card-center">
       <div class="card-profile--thumb">
-        <profile
-          :image="imageUrl"
-          :thumbStyle="{ width: '4.571rem', height: '4.571rem' }"
-        ></profile>
+        <profile :image="imageUrl" :thumbStyle="thumbStyle"></profile>
         <tooltip
           customClass="status-tooltip"
           :class="status"
@@ -64,6 +61,11 @@ import Tooltip from 'Tooltip'
 import Popover from 'Popover'
 
 import { WORKSPACE_ROLE, MEMBER_STATUS } from 'configs/status.config'
+import responsiveCardMixin from 'mixins/responsiveCard'
+
+const MOBILE_PLACEMENT = 'bottom-end'
+const DEFAULT_THUMBSTYLE = { width: '4.571rem', height: '4.571rem' }
+const MOBILE_THUMBSTYLE = { width: '4.3rem', height: '4.3rem' }
 
 export default {
   name: 'Card',
@@ -73,7 +75,7 @@ export default {
     Tooltip,
     Popover,
   },
-
+  mixins: [responsiveCardMixin],
   props: {
     //사용자의 현재 상태
     status: {
@@ -103,7 +105,10 @@ export default {
     },
   },
   data() {
-    return {}
+    return {
+      // placement: DEFAULT_PLACEMENT,
+      // thumbStyle: DEFAULT_THUMBSTYLE,
+    }
   },
   computed: {
     showRole() {
@@ -144,6 +149,11 @@ export default {
   },
 
   /* Lifecycles */
+  created() {
+    this.setDefaultHeightAndThumbStyle(null, DEFAULT_THUMBSTYLE)
+    this.setMobileHeightAndThumbStyle(null, MOBILE_THUMBSTYLE)
+    this.setMobilePlacement(MOBILE_PLACEMENT)
+  },
   mounted() {
     //활성화된 popoever 버튼 focus 해제
     this.$eventBus.$on('scroll:memberlist', this.releaseFocus)
@@ -271,6 +281,68 @@ export default {
 
   text-align: center;
   border-top: solid 1px rgba(#3e3e42, 0.92);
+}
+
+@include responsive-mobile {
+  .card {
+    max-height: 17.8rem;
+    padding-top: 2.3rem;
+    padding-bottom: 2.8rem;
+    background-color: $new_color_bg;
+    border: none;
+    border-radius: 0.6rem;
+    &:hover {
+      background-color: $new_color_bg;
+    }
+  }
+
+  .card-profile--name {
+    display: -webkit-box;
+    margin-top: 1rem;
+    margin-bottom: 0.1rem;
+    color: $new_color_text_main;
+    white-space: normal;
+    text-align: left;
+    text-overflow: ellipsis;
+    word-wrap: break-word;
+    word-break: break-all;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    @include fontLevel(150);
+  }
+
+  .card-profile--email {
+    @include fontLevel(50);
+    margin-bottom: 1rem;
+    color: $new_color_text_sub;
+  }
+
+  .card-center .role {
+    color: #58a3f7;
+    border-color: #58a3f7;
+  }
+
+  //멤버 상태
+  .card-profile--badge {
+    width: 1.6rem;
+    height: 1.6rem;
+    border: 0.3rem solid $new_color_bg;
+  }
+
+  .card-menu {
+    top: 4px;
+    right: 4px;
+    .card-menu__btn {
+      width: 2.8rem;
+      height: 2.8rem;
+      background-size: 100%;
+      &:active,
+      &:focus,
+      &:hover {
+        background-color: $new_color_bg_button_sub;
+      }
+    }
+  }
 }
 </style>
 <style lang="scss">

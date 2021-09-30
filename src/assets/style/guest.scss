@@ -1,0 +1,13 @@
+@import "common";
+@import "./guest/guest-welcome.scss";
+@import "./guest/guest-layout.scss";
+@import "./workspace/workspace-setting.scss";
+@import "./guest/guest-tab.scss";
+
+.offsetwidth {
+  position: relative;
+  width: 100%;
+  max-width: 80%;
+  margin-right: auto;
+  margin-left: auto;
+}

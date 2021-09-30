@@ -46,3 +46,14 @@ export const validId = target => {
 export const escapeRegExp = string => {
   return string.replace(/[.*+\-?^${}()|[\]\\]/g, '\\$&')
 }
+
+export const validJsonString = str => {
+  let res
+  try {
+    res = JSON.parse(str)
+  } catch (e) {
+    return null
+  }
+
+  return res
+}

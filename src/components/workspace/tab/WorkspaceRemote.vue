@@ -3,7 +3,7 @@
     :title="$t('workspace.remote_title')"
     :description="$t('workspace.remote_list_description')"
     :placeholder="$t('workspace.search_room')"
-    :emptyImage="require('assets/image/img_remote_empty.svg')"
+    :emptyImage="emptyImage"
     :emptyTitle="emptyTitle"
     :emptyDescription="emptyDescription"
     :listCount="roomList.length"
@@ -36,12 +36,20 @@ import {
   deleteRoom,
   leaveRoom,
 } from 'api/http/room'
+
+import { ERROR } from 'configs/error.config'
+
 import confirmMixin from 'mixins/confirm'
 import roomMixin from 'mixins/room'
+import errorMsgMixin from 'mixins/errorMsg'
+import responsiveEmptyImageMixin from 'mixins/responsiveEmptyImage'
+
+const defaultEmptyImage = require('assets/image/img_remote_empty.svg')
+const mobileEmptyImage = require('assets/image/img_remote_empty_mobile.svg')
 
 export default {
   name: 'WorkspaceRemote',
-  mixins: [confirmMixin, roomMixin],
+  mixins: [confirmMixin, roomMixin, errorMsgMixin, responsiveEmptyImageMixin],
   components: { TabView, RemoteCard },
   data() {
     return {
@@ -179,20 +187,26 @@ export default {
           })
         }
       } catch (err) {
-        if (err.code === 4015) {
-          this.toastError(this.$t('workspace.confirm_remote_leader_leave'))
+        if (err.code === ERROR.CONFIRM_REMOTE_LEADER_LEAVE) {
+          this.showErrorToast(err.code)
         } else if (err.code === 4017) {
           this.toastError(this.$t('workspace.confirm_already_invite_leave'))
         }
         this.refresh()
       }
     },
+    setEmptyImageDefault() {
+      this.emptyImage = require('assets/image/img_remote_empty.svg')
+    },
+    setEmptyImageMobile() {
+      this.emptyImage = require('assets/image/img_remote_empty_mobile.svg')
+    },
   },
 
   /* Lifecycles */
   created() {
     this.init()
+    this.setMobileDefaultEmptyImage(defaultEmptyImage, mobileEmptyImage)
   },
-  mounted() {},
 }
 </script>

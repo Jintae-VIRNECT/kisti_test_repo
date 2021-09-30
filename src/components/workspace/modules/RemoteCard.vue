@@ -4,8 +4,10 @@
     :class="{ open: isOpenRoom }"
     :menu="true"
     width="100%"
-    height="33rem"
+    :height="height"
+    :placement="placement"
     popoverClass="group-menu"
+    @mobileJoin="join"
   >
     <div class="groupcard-body">
       <span class="groupcard__leader" v-if="isLeader">Leader</span>
@@ -14,7 +16,7 @@
           <profile
             :group="true"
             :image="room.profile"
-            :thumbStyle="{ width: '5.143rem', height: '5.143rem' }"
+            :thumbStyle="thumbStyle"
           ></profile>
         </div>
         <!-- <img
@@ -57,6 +59,20 @@
           ></profile-list>
         </div>
       </div>
+      <div class="groupcard-info-mobile">
+        <div class="title-container">
+          <span class="groupcard__leader-mobile" v-if="isLeader">Leader</span>
+          <span class="room-title">{{ title ? title : room.title }}</span>
+        </div>
+        <div>
+          <span class="room-leader">{{
+            `${$t('common.leader')} : ${leader.nickName}`
+          }}</span>
+          <span class="room-member">{{
+            `${activeMemberList.length}/ ${room.maxUserCount}`
+          }}</span>
+        </div>
+      </div>
       <button class="groupcard-button btn small" @click="join">
         {{ $t('button.invite') }}
       </button>
@@ -95,10 +111,18 @@ import RoominfoModal from '../modal/WorkspaceRoomInfo'
 import { STATUS, ROOM_STATUS } from 'configs/status.config'
 import { ROLE } from 'configs/remote.config'
 import mixinToast from 'mixins/toast'
+import responsiveCardMixin from 'mixins/responsiveCard'
+
+const defaultThumbStyle = { width: '5.143rem', height: '5.143rem' }
+const mobileThumbStyle = { width: '4.2rem', height: '4.2rem' }
+const defaultPlacement = 'bottom-start'
+const mobilePlacement = 'left-start'
+const defaultCardHeight = '33rem'
+const mobileCardHeight = '8.4rem'
 
 export default {
   name: 'RemoteCard',
-  mixins: [mixinToast],
+  mixins: [mixinToast, responsiveCardMixin],
   components: {
     Card,
     Profile,
@@ -177,10 +201,23 @@ export default {
         open: this.isOpenRoom,
       })
     },
+    setResponsiveDefault() {
+      this.placement = defaultPlacement
+      this.thumbStyle = defaultThumbStyle
+      this.height = defaultCardHeight
+    },
+    setResponsiveMobile() {
+      this.placement = mobilePlacement
+      this.thumbStyle = mobileThumbStyle
+      this.height = mobileCardHeight
+    },
   },
-
   /* Lifecycles */
-  mounted() {},
+  created() {
+    this.setDefaultHeightAndThumbStyle(defaultCardHeight, defaultThumbStyle)
+    this.setMobileHeightAndThumbStyle(mobileCardHeight, mobileThumbStyle)
+    this.setMobilePlacement(mobilePlacement)
+  },
 }
 </script>
 
@@ -192,6 +229,7 @@ export default {
 
 <style lang="scss">
 @import '~assets/style/vars';
+@import '~assets/style/mixin';
 
 .popover.group-menu {
   width: 8.571em;
@@ -219,6 +257,12 @@ export default {
     &:active {
       background-color: rgba($color_bg_item, 0.5);
     }
+  }
+}
+
+@include responsive-mobile {
+  .group-menu {
+    @include responsive-popover;
   }
 }
 </style>

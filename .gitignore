@@ -70,3 +70,6 @@ dist/
 
 # backup file
 *.back.*
+
+#vscode history file
+.history

@@ -1,0 +1,46 @@
+.guest-welcome {
+  flex: 0;
+}
+
+.guest-welcome__body {
+  width: 100%;
+  height: 23.5rem;
+
+  padding: 7.2857em 20em;
+  background: url(~assets/image/img_banner_guest.svg) 50% no-repeat #12233a;
+
+  border-radius: 8px;
+  &.offsetwidth {
+    margin: 2.143rem auto 0.714rem;
+  }
+}
+
+.guest-welcome__name {
+  display: flex;
+  flex-direction: row;
+  max-width: 100%;
+  margin: 0.429rem 0 1.643rem;
+  color: $color_text;
+  font-weight: 500;
+  font-size: 1.857rem;
+
+  > span {
+    flex: 0;
+    white-space: nowrap;
+  }
+}
+.guest-welcome__nickname {
+  color: rgb(255, 255, 255);
+  font-weight: 500;
+  font-size: 1.2857rem;
+
+  @include ellipsis();
+
+  > em {
+    color: rgb(123, 187, 245);
+  }
+}
+
+.btn.join {
+  width: 12.1429rem;
+}

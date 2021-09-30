@@ -1,9 +1,9 @@
 <template>
   <popover
     trigger="click"
-    placement="bottom-end"
+    :placement="placement"
     popperClass="popover-notice"
-    width="29.571rem"
+    :width="width"
     @visible="setVisible"
   >
     <toggle-button
@@ -12,15 +12,15 @@
       "
       slot="reference"
       :description="$t('common.notice')"
-      size="2.429rem"
+      :size="fixSize ? fixSize : size"
       :toggle="!onPush"
       :active="active"
-      :activeSrc="require('assets/image/ic_notice.svg')"
-      :inactiveSrc="require('assets/image/ic_notice_off.svg')"
+      :activeSrc="fixSrc ? defaultActiveSrc : activeSrc"
+      :inactiveSrc="fixSrc ? defaultInactiveSrc : inactiveSrc"
       @action="notice"
     ></toggle-button>
 
-    <div>
+    <div :class="{ workspace: !tempClass }">
       <div class="popover-notice__header">
         <span>{{ $t('common.notice') }}</span>
         <switcher text="Push" :value.sync="onPush">Push</switcher>
@@ -114,6 +114,7 @@
 import { mapActions, mapGetters } from 'vuex'
 import { EVENT } from 'configs/push.config'
 import { ROLE } from 'configs/remote.config'
+import { ERROR } from 'configs/error.config'
 import { sendPush } from 'api/http/message'
 import { getRoomInfo } from 'api/http/room'
 
@@ -127,17 +128,46 @@ import alarmMixin from 'mixins/alarm'
 import roomMixin from 'mixins/room'
 import toastMixin from 'mixins/toast'
 import confirmMixin from 'mixins/confirm'
+import errorMsgMixin from 'mixins/errorMsg'
 import { isRegisted } from 'utils/auth'
+
+const defaultPopoverWidth = '29.571rem'
+const mobilePopoverWidth = '26.5rem'
+const deafultPlacement = 'bottom-end'
+const mobilePlacement = 'bottom-start'
+const defaultNoticeIconSize = '2.429rem'
+const mobileNoticeIconSize = '4rem'
+const defaultActiveSrc = require('assets/image/ic_notice.svg')
+const defaultInactiveSrc = require('assets/image/ic_notice_off.svg')
+const mobileActiveSrc = require('assets/image/ic_notice_24.svg')
+const mobileInactiveSrc = require('assets/image/ic_notice_off_24.svg')
 
 export default {
   name: 'Notice',
-  mixins: [roomMixin, alarmMixin, toastMixin, confirmMixin],
+  mixins: [roomMixin, alarmMixin, toastMixin, confirmMixin, errorMsgMixin],
   components: {
     Switcher,
     Popover,
     ToggleButton,
     Scroller,
     NoticeItem,
+  },
+  props: {
+    //TEMP : 서비스 반응형 반영 후 제거 필요
+    //워크스페이스 선반영되어 서비스 화면에 영향을 주게되어 고정 사이즈와 src를 부여하기 위해 추가한 속성
+    //서비스 반응형 완료 후에는 제거해도됨
+    fixSize: {
+      type: String,
+      default: null,
+    },
+    fixSrc: {
+      type: Boolean,
+      default: false,
+    },
+    tempClass: {
+      type: Boolean,
+      default: false,
+    },
   },
   data() {
     return {
@@ -147,6 +177,15 @@ export default {
       visible: false,
       muted: true,
       // alarmList: [],
+      activeSrc: defaultActiveSrc,
+      inactiveSrc: defaultInactiveSrc,
+      size: defaultNoticeIconSize,
+      placement: deafultPlacement,
+      width: defaultPopoverWidth,
+
+      //TEMP : 서비스 반응형 반영 후 제거 필요
+      defaultActiveSrc: Object.freeze(defaultActiveSrc),
+      defaultInactiveSrc: Object.freeze(defaultInactiveSrc),
     }
   },
   computed: {
@@ -164,6 +203,13 @@ export default {
       if (val.uuid && !oldVal.uuid) {
         this.pushInit()
       }
+    },
+    isMobileSize: {
+      immediate: true,
+      handler: function(newVal) {
+        if (newVal) this.setNoticeIconMobile()
+        else this.setNoticeIconDefault()
+      },
     },
   },
   methods: {
@@ -259,9 +305,11 @@ export default {
           // if (!this.onPush) return
           this.alarmInviteDenied(body.contents.nickName)
           break
+        //제거예정
         case EVENT.LICENSE_EXPIRATION:
           this.alarmLicenseExpiration(body.contents.leftLicenseTime)
           break
+        //제거예정
         case EVENT.LICENSE_EXPIRED:
           if (this.$route.name === 'workspace') {
             this.clearWorkspace(this.workspace.uuid)
@@ -332,8 +380,8 @@ export default {
         })
         this.clearAlarm()
       } catch (err) {
-        if (err.code === 4002) {
-          this.toastError(this.$t('workspace.remote_already_removed'))
+        if (err.code === ERROR.REMOTE_ALREADY_REMOVED) {
+          this.showErrorToast(err.code)
           return
         } else {
           this.toastError(this.$t('workspace.remote_invite_impossible'))
@@ -352,6 +400,20 @@ export default {
       if (!this.workspace.uuid) return
       await this.$push.init(this.workspace)
       this.$push.addListener(this.key, this.alarmListener)
+    },
+    setNoticeIconMobile() {
+      this.activeSrc = mobileActiveSrc
+      this.inactiveSrc = mobileInactiveSrc
+      this.size = mobileNoticeIconSize
+      this.placement = mobilePlacement
+      this.width = mobilePopoverWidth
+    },
+    setNoticeIconDefault() {
+      this.activeSrc = defaultActiveSrc
+      this.inactiveSrc = defaultInactiveSrc
+      this.size = defaultNoticeIconSize
+      this.placement = deafultPlacement
+      this.width = defaultPopoverWidth
     },
   },
 
@@ -381,7 +443,7 @@ export default {
 </script>
 
 <style lang="scss">
-@import '~assets/style/vars';
+@import '~assets/style/mixin';
 
 .popover.popover-notice {
   overflow: hidden;
@@ -400,6 +462,8 @@ export default {
   border-bottom: solid 1px rgba($color_line_border, 0.06);
   > span {
     // padding: 11px 12px;
+    display: flex;
+    align-items: center;
     color: $color_text;
     font-size: 1.143rem;
   }
@@ -446,6 +510,60 @@ export default {
   > span {
     color: rgba($color_text, 0.74);
     font-size: 0.929rem;
+  }
+}
+
+@include responsive-mobile {
+  //서비스 반응형 추가 후 주석 제거
+  // .popover.popover-notice {
+  //   background-color: $new_color_bg_popover;
+  //   border: none;
+  // }
+
+  //@TEMP 임시로 사용하는 workspace class, 서비스 반응형 추가후 tempClass와 workspace class 블록은 제거해야함
+  .workspace {
+    //서비스 반응형 추가 후 제거
+    background-color: $new_color_bg_popover;
+    border: none;
+    //서비스 반응형 추가 후 제거
+
+    .popover-notice__header {
+      height: 4.8rem;
+      border-bottom-color: $new_color_line_border;
+      > span {
+        @include fontLevel(150);
+      }
+
+      .switcher .switcher-text {
+        color: $new_color_text_sub_description;
+        @include fontLevel(75);
+      }
+
+      .switcher .switcher-toggle {
+        display: flex;
+        align-items: center;
+        width: 3.2rem;
+        height: 1.4rem;
+        border-radius: 0.8rem;
+
+        .switcher-toggle__type {
+          width: 2rem;
+          height: 2rem;
+          transform: translateY(0%);
+        }
+      }
+    }
+    .popover-notice__body .popover-notice__empty-box {
+      > img {
+        width: 8rem;
+        height: 8rem;
+        content: url(~assets/image/img_noalram_new.svg);
+      }
+      > span {
+        @include fontLevel(150);
+        color: $new_color_text_sub;
+      }
+    }
   }
 }
 </style>

@@ -1,68 +1,68 @@
 <template>
-  <modal
-    :title="$t('workspace.info_remote_detail')"
-    width="64.286em"
-    height="56.429em"
-    :showClose="true"
-    :visible.sync="visibleFlag"
-    :beforeClose="beforeClose"
-    customClass="modal-roominfo"
-  >
-    <div class="roominfo">
-      <section class="roominfo-nav">
-        <div class="roominfo-nav__image">
-          <profile
-            :group="true"
-            :image="image"
-            :thumbStyle="{ width: '5.143rem', height: '5.143rem' }"
-          ></profile>
-        </div>
-        <div class="roominfo-nav__menus">
-          <button
-            class="roominfo-nav__menu"
-            :class="{ active: tabview === 'group' }"
-            :data-text="$t('workspace.info_remote')"
-            @click="tabChange('group')"
-          >
-            {{ $t('workspace.info_remote') }}
-          </button>
-          <button
-            class="roominfo-nav__menu"
-            :class="{ active: tabview === 'user' }"
-            :data-text="$t('workspace.info_remote_member')"
-            @click="tabChange('user')"
-          >
-            {{ $t('workspace.info_remote_member') }}
-          </button>
-          <!-- <button
-            v-if="isOnpremise"
-            class="roominfo-nav__menu"
-            :class="{ active: tabview === 'download' }"
-            :data-text="$t('button.download')"
-            @click="tabChange('download')"
-          >
-            {{ $t('button.download') }}
-          </button> -->
-        </div>
-      </section>
-      <room-info
-        v-if="tabview === 'group' && room && room.title"
-        :room="room"
-      ></room-info>
+  <div>
+    <modal
+      :title="$t('workspace.info_remote_detail')"
+      width="64.286em"
+      height="56.429em"
+      :showClose="true"
+      :visible.sync="visiblePcFlag"
+      :beforeClose="beforeClose"
+      customClass="modal-roominfo"
+    >
+      <div class="roominfo">
+        <section class="roominfo-nav">
+          <div class="roominfo-nav__image">
+            <profile
+              :group="true"
+              :image="image"
+              :thumbStyle="{ width: '5.143rem', height: '5.143rem' }"
+            ></profile>
+          </div>
+          <div class="roominfo-nav__menus">
+            <button
+              class="roominfo-nav__menu"
+              :class="{ active: tabview === 'group' }"
+              :data-text="$t('workspace.info_remote')"
+              @click="tabChange('group')"
+            >
+              {{ $t('workspace.info_remote') }}
+            </button>
+            <button
+              class="roominfo-nav__menu"
+              :class="{ active: tabview === 'user' }"
+              :data-text="$t('workspace.info_remote_member')"
+              @click="tabChange('user')"
+            >
+              {{ $t('workspace.info_remote_member') }}
+            </button>
+          </div>
+        </section>
+        <room-info
+          v-if="tabview === 'group' && room && room.title"
+          :room="room"
+        ></room-info>
 
-      <participants-info
-        v-else-if="tabview === 'user'"
-        :participants="participants"
-        :leader="leader"
-        :sessionId="sessionId"
-      ></participants-info>
+        <participants-info
+          v-else-if="tabview === 'user'"
+          :participants="participants"
+          :sessionId="sessionId"
+        ></participants-info>
+      </div>
+    </modal>
 
-      <!-- <room-download
-        v-else-if="isOnpremise"
-        :sessionId="sessionId"
-      ></room-download> -->
-    </div>
-  </modal>
+    <!-- 모바일 레이아웃 -->
+    <workspace-mobile-room-info
+      :room="room"
+      :sessionId="sessionId"
+      :visible.sync="visibleMobileFlag"
+      :beforeClose="beforeClose"
+      :tabview="tabview"
+      :memberList="participants"
+      :isHistory="true"
+      @tabChange="tabChange"
+    >
+    </workspace-mobile-room-info>
+  </div>
 </template>
 
 <script>
@@ -70,8 +70,8 @@ import Modal from 'Modal'
 import { getHistorySingleItem } from 'api/http/history'
 import RoomInfo from '../partials/ModalHistoryRoomInfo'
 import ParticipantsInfo from '../partials/ModalParticipantsInfo'
-// import RoomDownload from '../partials/ModalRoomDownload'
 import Profile from 'Profile'
+import responsiveModalVisibleMixin from 'mixins/responsiveModalVisible'
 
 export default {
   name: 'WorkspaceHistoryInfo',
@@ -80,19 +80,22 @@ export default {
     Profile,
     RoomInfo,
     ParticipantsInfo,
-    // RoomDownload,
+    WorkspaceMobileRoomInfo: () => import('./WorkspaceMobileRoomInfo'),
   },
+  mixins: [responsiveModalVisibleMixin],
   data() {
     return {
       room: null,
       tabview: 'group',
-      visibleFlag: false,
+      //visibleFlag: false,
       image: null,
     }
   },
   computed: {
     participants() {
-      return this.room.memberList
+      if (this.room) {
+        return this.room.memberList
+      } else return []
     },
   },
   props: {
@@ -104,17 +107,14 @@ export default {
       type: String,
       required: true,
     },
-    leader: {
-      type: Boolean,
-      default: false,
-    },
   },
   watch: {
     visible(flag) {
       if (flag === true) {
         this.initHistory()
       }
-      this.visibleFlag = flag
+      //this.visibleFlag = flag
+      this.setVisiblePcOrMobileFlag(flag)
     },
   },
   methods: {

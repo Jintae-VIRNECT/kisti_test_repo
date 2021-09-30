@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="16px" height="16px" viewBox="0 0 16 16" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>7E4B86B7-E779-4765-8580-7822E5E62F03@2x</title>
+    <g id="Remote_Main_Mobile" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Icon" transform="translate(-1269.000000, -121.000000)">
+            <g id="ic_plus" transform="translate(1269.000000, 121.000000)">
+                <rect id="tr" opacity="0.800000012" x="0" y="0" width="16" height="16"></rect>
+                <g id="Shape-2" transform="translate(0.500000, 0.500000)" fill="#B6BCC2" fill-rule="nonzero">
+                    <path d="M7.5,0 C3.36,0 0,3.36 0,7.5 C0,11.64 3.36,15 7.5,15 C11.64,15 15,11.64 15,7.5 C15,3.36 11.64,0 7.5,0 Z M11.25,8.25 L8.25,8.25 L8.25,11.25 L6.75,11.25 L6.75,8.25 L3.75,8.25 L3.75,6.75 L6.75,6.75 L6.75,3.75 L8.25,3.75 L8.25,6.75 L11.25,6.75 L11.25,8.25 Z" id="Shape"></path>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

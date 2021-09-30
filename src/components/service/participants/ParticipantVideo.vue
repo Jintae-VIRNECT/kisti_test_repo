@@ -45,18 +45,10 @@
       </div>
       <div class="participant-video__mute" v-if="participant.mute"></div>
       <div class="participant-video__status">
-        <div class="participant-video__network" :class="participant.status">
-          <!-- <div
-            class="participant-video__network-hover"
-            :class="{ hover: hover }"
-            :style="statusHover"
-          >
-            <span :class="participant.status"
-              >{{ $t('service.participant_network') }} :
-              {{ participant.status | networkStatus }}</span
-            >
-          </div> -->
-        </div>
+        <div
+          class="participant-video__network"
+          :class="participant.status"
+        ></div>
         <span class="participant-video__leader" v-if="isLeader">
           Leader
         </span>
@@ -289,7 +281,6 @@ export default {
         '.participant-video__network-hover',
       )
       if (statusTooltip) {
-        //this.$root.$el.append(this.$refs['popover'])
         document.body.append(statusTooltip)
       }
       const top = window.pageYOffset + status.getBoundingClientRect().top
@@ -310,10 +301,7 @@ export default {
     },
     changeMain() {
       if (this.restrictedRoom && this.account.roleType !== ROLE.LEADER) return
-      // if (!this.participant.hasCamera) {
-      //   this.toastDefault(this.$t('service.participant_no_stream'))
-      //   return
-      // }
+
       if (!this.participant.hasVideo) {
         this.toastDefault(this.$t('service.participant_no_stream'))
         return
@@ -326,25 +314,8 @@ export default {
           }
           this.toastDefault(this.$t('service.participant_ar_cannot_change'))
           return
-          // this.confirmCancel(
-          //  this.$t('service.participant_ar_change_alarm'),
-          //   { text: this.$t('button.confirm'), action: this.changeAr },
-          //   {
-          //     text: this.$t('button.cancel'),
-          //   },
-          // )
-          // return
         }
         this.$emit('selectMain')
-        // this.confirmCancel(
-        //   this.$t('service.participant_sharing'),
-        //   { text: this.$t('button.stream_sharing'), action: this.forceMain },
-        //   {
-        //     text: this.$t('button.stream_normal'),
-        //     action: this.normalMain,
-        //     backdrop: true,
-        //   },
-        // )
       } else {
         if (this.view === VIEW.AR) {
           this.toastDefault(this.$t('service.participant_ar_cannot_change'))
@@ -360,41 +331,7 @@ export default {
         this.setMainView({ id: this.participant.id })
       }
     },
-    changeAr() {
-      // 참가자 ar 가능 여부 체크
-      // 가능하면 퍼미션 체크
-      // 퍼미션 허용이면 전체 사용자 메인뷰 변경
-      // 신규 ar 공유 진행
-      if (this.participant.permission === true) {
-        // 메인뷰 변경
 
-        this.$emit('selectMain')
-      } else {
-        // 퍼미션 요청
-        this.$eventBus.$on('startAr', this.getPermission)
-        this.$call.sendCapturePermission([this.participant.connectionId])
-        // 리턴받는 퍼미션은 HeaderServiceLnb에서 처리
-      }
-    },
-    getPermission(permission) {
-      if (permission === true) {
-        // this.forceMain()
-        // this.$call.sendArFeatureStop()
-        this.$nextTick(() => {
-          this.$emit('selectMain')
-          // this.$call.sendArFeatureStart(this.participant.id)
-        })
-      } else {
-        this.toastDefault(this.$t('service.toast_refused_ar'))
-        this.addChat({
-          status: 'ar-deny',
-          type: 'system',
-        })
-      }
-      this.$nextTick(() => {
-        this.$eventBus.$off('startAr', this.getPermission)
-      })
-    },
     profileImageError(event) {
       event.target.style.display = 'none'
     },
@@ -423,10 +360,6 @@ export default {
       )
     },
     requestVideo() {
-      // if (this.participant.cameraStatus === CAMERA.CAMREA_NONE) {
-      //   this.toastDefault(this.$t('service.participant_no_stream'))
-      //   return
-      // }
       if (!this.participant.hasVideo) {
         this.toastDefault(this.$t('service.participant_no_stream'))
         return

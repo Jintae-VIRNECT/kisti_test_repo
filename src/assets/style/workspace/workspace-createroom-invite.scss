@@ -113,3 +113,49 @@
 .createroom-user__loading-logo {
   margin: auto;
 }
+
+@include responsive-mobile {
+  .createroom-user {
+    width: calc(100% - 3rem);
+    margin: 0.7rem 1.6rem 1.6rem 1.6rem;
+
+    .createroom-user__header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: 1.3rem;
+      margin-bottom: 2.2rem;
+    }
+
+    .createroom-user__body .vue-scrollbar__wrapper {
+      padding-right: 16px;
+    }
+  }
+
+  .createroom-user__header .createroom-user__title {
+    @include fontLevel(200);
+    display: flex;
+    align-items: center;
+    color: $new_color_text_main;
+    opacity: 0.8;
+    .createroom-user__number {
+      @include fontLevel(50);
+      margin-top: 0.2rem;
+      background-color: $new_color_bg_icon;
+    }
+  }
+
+  .createroom-user__header .icon-button {
+    position: relative;
+    top: 0;
+  }
+
+  // .widecard.choice {
+  //   background-color: $new_color_bg_item;
+  //   border-radius: 0.6rem;
+
+  //   &.selected {
+  //     border-color: $new_color_bg_button_primary;
+  //   }
+  // }
+}

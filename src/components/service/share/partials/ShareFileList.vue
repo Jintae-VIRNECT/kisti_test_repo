@@ -37,9 +37,15 @@
 import { mapActions, mapGetters } from 'vuex'
 import SharingImage from './SharingImage'
 import SharingPdf from './SharingPdf'
+
 import toastMixin from 'mixins/toast'
+import errorMsgMixin from 'mixins/errorMsg'
+
 import { drawingUpload, drawingList, drawingDownload } from 'api/http/drawing'
+
 import { SIGNAL, DRAWING } from 'configs/remote.config'
+import { ERROR } from 'configs/error.config'
+
 import { isOverflowY } from 'utils/element.js'
 import { resetOrientation } from 'utils/file'
 import { setQueueAct } from 'plugins/remote/call/RemoteSessionEventListener'
@@ -47,7 +53,7 @@ import { setQueueAct } from 'plugins/remote/call/RemoteSessionEventListener'
 const maxFileSize = 1024 * 1024 * 20
 export default {
   name: 'ShareFileList',
-  mixins: [toastMixin],
+  mixins: [toastMixin, errorMsgMixin],
   components: {
     SharingImage,
     SharingPdf,
@@ -164,12 +170,16 @@ export default {
               this.toastDefault(this.$t('alarm.file_uploaded'))
             }
           } catch (err) {
-            if (err.code === 7017) {
-              this.toastError(this.$t('alarm.file_storage_capacity_full'))
-            } else if (err.code === 7003) {
-              this.toastError(this.$t('service.file_extension_unsupport'))
-            } else {
-              this.toastError(this.$t('confirm.network_error'))
+            switch (err.code) {
+              case ERROR.FILE_EXTENSION_UNSUPPORT: //미지원 파일 확장자
+              case ERROR.FILE_STORAGE_CAPACITY_FULL: //파일 스토리지 용량 초과
+              case ERROR.FILE_ENCRYPTED: //암호화 파일
+                this.showErrorToast(err.code)
+                break
+              default:
+                if (err.code) {
+                  this.toastError(this.$t('confirm.network_error'))
+                }
             }
             return false
           }

@@ -1,0 +1,12 @@
+{
+  "guest":{
+    "guest_join_description_1": "Access to",
+    "guest_join_description_2": "Please log on within the time limit.​​​",
+
+    "guest_time_expired_description": "The time limit is complete.\nPlease select request to prepare to connect.​",
+    "guest_license_expired":"A plan for non-member access is not assigned to the workspace to be accessed, or all of them are in use.​",
+    "guest_install_mobile_app_description":"Please press the [App Runs] button below to run the VIRNECT Remote App.​",
+    "guest_install_mobile_app_download_description":"If it is not installed, please download the APK file."
+
+  }
+}
