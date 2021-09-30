@@ -73,6 +73,7 @@ public class UserInformationUpdateServiceImpl implements UserInformationUpdateSe
 			.orElseThrow(() -> new UserServiceException(UserAccountErrorCode.ERR_USER_NOT_FOUND));
 
 		if (profileImageUpdateRequest.isUpdateAsDefaultImage()) {
+			fileService.delete(user.getProfile());
 			user.profileImageSetAsDefaultImage();
 		} else {
 			try {

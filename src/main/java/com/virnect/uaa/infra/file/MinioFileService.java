@@ -35,7 +35,7 @@ public class MinioFileService implements FileService {
 	private final MinioClient minioClient;
 	@Value("${minio.bucket:virnect-platform}")
 	private String bucket;
-	@Value("${minio.resource:profile}")
+	@Value("${minio.resource:user/profile}")
 	private String resourceDir;
 
 	@Override

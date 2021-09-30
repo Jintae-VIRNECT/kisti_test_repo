@@ -8,6 +8,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import com.virnect.uaa.global.validator.ProfileImageValidate;
+import springfox.documentation.annotations.ApiIgnore;
 
 /**
  * @author jeonghyeon.chang (johnmark)
@@ -25,6 +26,7 @@ public class ProfileImageUpdateRequest {
 	@ProfileImageValidate
 	private MultipartFile profile;
 
+	@ApiIgnore
 	public boolean isUpdateAsDefaultImage() {
 		return profile == null;
 	}
