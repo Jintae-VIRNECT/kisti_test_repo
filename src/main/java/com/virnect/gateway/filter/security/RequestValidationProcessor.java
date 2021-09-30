@@ -24,7 +24,7 @@ public class RequestValidationProcessor {
 			requestUrlPath.contains("/licenses/sdk/authentication") ||
 			requestUrlPath.contains("/workspaces/setting") ||
 			requestUrlPath.matches("^/workspaces/([a-zA-Z0-9]+)/invite/accept$") ||
-			requestUrlPath.matches("^/remote/invitation/guest/([a-zA-Z0-9]+)/[a-zA-Z0-9_]+$") ||
+			requestUrlPath.matches("^/remote/invitation/guest/([a-zA-Z0-9]+)$") ||
 			requestUrlPath.matches("^/workspaces/invite/[a-zA-Z0-9]+/(accept|reject).*$");
 		if (isSkipUrlMatched) {
 			logger.info("[RequestValidationProcessing] - permitAllUrl :: Skip Url Check about [{}]", requestUrlPath);
