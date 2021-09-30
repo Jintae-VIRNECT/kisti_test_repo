@@ -5,6 +5,7 @@ import java.util.List;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
 /**
@@ -16,9 +17,9 @@ import lombok.Setter;
  */
 
 @Getter
-@Setter
+@RequiredArgsConstructor
 @ApiModel
 public class UserEmailFindResponse {
 	@ApiModelProperty(value = "찾은 이메일 정보 리스트")
-	List<UserEmailFindInfoResponse> emailFindInfoList;
+	private final List<UserEmailFindInfoResponse> emailFindInfoList;
 }

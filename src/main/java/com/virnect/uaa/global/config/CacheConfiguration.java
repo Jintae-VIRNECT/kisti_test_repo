@@ -16,7 +16,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import lombok.RequiredArgsConstructor;
 
-import com.virnect.user.dto.response.UserInfoResponse;
+import com.virnect.uaa.domain.user.dto.response.UserInfoResponse;
 
 @Configuration
 @EnableCaching
@@ -27,7 +27,6 @@ public class CacheConfiguration {
 
 	@Bean
 	public CacheManager cacheManager() {
-		// todo: cache all dto types
 		Jackson2JsonRedisSerializer jackson2JsonRedisSerializer = new Jackson2JsonRedisSerializer<>(
 			UserInfoResponse.class);
 		jackson2JsonRedisSerializer.setObjectMapper(objectMapper);

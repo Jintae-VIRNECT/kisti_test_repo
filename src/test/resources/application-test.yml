@@ -1,0 +1,116 @@
+spring:
+  application:
+    name: account-server
+  datasource:
+    driver-class-name: org.h2.Driver
+    url: jdbc:h2:mem:users
+    username: sa
+    password:
+    h2:
+      console:
+        enabled: true
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    database-platform: H2
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+  redis:
+    host: 192.168.6.3
+    port: 6379
+  mail:
+    host: email-smtp.us-west-2.amazonaws.com
+    port: 587
+    username: AKIARQGLJD3UHE5MGO5U
+    password: BDPEKBJR3TV38/5vwlb8ndX2jcNgj5QQLN+JdgR1JmVa
+  cloud:
+    loadbalancer:
+      ribbon:
+        enabled: false
+  zipkin:
+    base-url: http://192.168.6.3:9411
+    discovery-client-enabled: false
+    enabled: false
+  servlet:
+    multipart:
+      max-file-size: 5MB
+  session:
+    store-type: redis
+    redis:
+      flush-mode: on-save
+      namespace: session
+
+logging:
+  level:
+    com.virnect.user.application.*: DEBUG
+
+eureka:
+  instance:
+    prefer-ip-address: true
+  client:
+    service-url:
+      defaultZone: http://192.168.6.3:8761/eureka
+    registry-fetch-interval-seconds: 3
+    enabled: false
+
+## Server Configuration
+server:
+  port: 8326
+
+## Project Configuration
+upload:
+  dir: "upload/"
+  serverUrl: "http://192.168.6.3:${server.port}/users/"
+
+
+## CORS
+cors:
+  credentials: false
+  allowed-origins: "*"
+  allowed-headers: "*"
+  allowed-methods: "*"
+
+
+security:
+  jwt-config:
+    secret: "2020-tcenriv-platform-392"
+    issuer: "test-admin"
+    access-token-expire: 3900
+    refresh-token-expire: 2678400
+  cookie-domain: "192.168.6.3"
+  cookie-path: "/"
+  cookieMaxAgeDay: 30
+
+feign:
+  hystrix:
+    enabled: true
+
+# monitoring
+management:
+  endpoints:
+    web:
+      exposure:
+        include: prometheus
+  metrics:
+    tags:
+      application: ${spring.application.name}
+
+minio:
+    access-key: "virnect"
+    secret-key: "Qjsprxm13@$"
+    server: "https://192.168.6.3:2838"
+    bucket: "virnect-platform"
+    resource: "profile"
+
+cookie:
+  session:
+    domain: 192.168.6.3
+    name: DVSESSION
+    same-site: None
+    http-only-cookie-enabled: true
+  remember-me:
+    domain: 192.168.6.3
+    name: DrememberMe
+    remember-me-parameter: rememberMe

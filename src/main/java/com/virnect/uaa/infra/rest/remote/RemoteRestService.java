@@ -9,6 +9,6 @@ import com.virnect.uaa.infra.rest.remote.dto.RemoteSecessionResponse;
 
 @FeignClient(name = "remote-service-server", fallbackFactory = RemoteRestServiceFallbackFactory.class)
 public interface RemoteRestService {
-    @DeleteMapping("/remote/members/{userId}")
+	@DeleteMapping("/remote/members/{userId}")
 	ApiResponse<RemoteSecessionResponse> remoteUserSecession(@PathVariable("userId") String userId);
 }

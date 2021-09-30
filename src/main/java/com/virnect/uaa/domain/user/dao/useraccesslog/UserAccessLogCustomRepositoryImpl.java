@@ -2,6 +2,7 @@ package com.virnect.uaa.domain.user.dao.useraccesslog;
 
 import org.springframework.data.jpa.repository.support.QuerydslRepositorySupport;
 
+import com.virnect.uaa.domain.user.domain.QUserAccessLog;
 import com.virnect.uaa.domain.user.domain.User;
 import com.virnect.uaa.domain.user.domain.UserAccessLog;
 

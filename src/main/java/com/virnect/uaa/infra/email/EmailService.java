@@ -1,5 +1,7 @@
 package com.virnect.uaa.infra.email;
 
+import com.virnect.uaa.infra.email.context.MailMessageContext;
+
 /**
  * @author jeonghyeon.chang (johnmark)
  * @project PF-Auth
@@ -8,5 +10,9 @@ package com.virnect.uaa.infra.email;
  * @since 2020.03.25
  */
 public interface EmailService {
-	void sendEmail(EmailMessage emailMessage);
+	void send(MailMessageContext mailMessageContext);
+
+	default String getSystemEmail() {
+		return "no-reply@virnect.com";
+	}
 }

@@ -6,7 +6,7 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
-import com.virnect.user.dto.rest.WorkspaceInfoResponse;
+import com.virnect.uaa.infra.rest.workspace.dto.WorkspaceInfoResponse;
 
 /**
  * @author jeonghyeon.chang (johnmark)

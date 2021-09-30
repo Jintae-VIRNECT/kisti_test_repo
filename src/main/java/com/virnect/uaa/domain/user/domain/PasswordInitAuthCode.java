@@ -4,7 +4,6 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.redis.core.RedisHash;
 import org.springframework.data.redis.core.TimeToLive;
 
-import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -28,13 +27,18 @@ public class PasswordInitAuthCode {
 	@TimeToLive
 	private Long expiredDate;
 
-	@Builder
 	public PasswordInitAuthCode(String email, String name, String uuid, String code, Long expiredDate) {
 		this.email = email;
 		this.name = name;
 		this.uuid = uuid;
 		this.code = code;
 		this.expiredDate = expiredDate;
+	}
+
+	public static PasswordInitAuthCode of(
+		User user, String code, long expireSeconds
+	) {
+		return new PasswordInitAuthCode(user.getEmail(), user.getName(), user.getUuid(), code, expireSeconds);
 	}
 
 	@Override

@@ -8,8 +8,9 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
 import lombok.Setter;
 
-import com.virnect.uaa.domain.user.domain.Status;
+import com.virnect.uaa.domain.user.domain.AcceptOrReject;
 import com.virnect.uaa.domain.user.validator.ValueOfEnum;
+import com.virnect.uaa.global.validator.PasswordFormatPolicyValidate;
 
 /**
  * @author jeonghyeon.chang (johnmark)
@@ -30,6 +31,7 @@ public class UserInfoModifyRequest {
 	@ApiModelProperty(value = "변경할 닉네임", position = 2, notes = "변경할 경우 입력하면됩니다.", example = "닉넴")
 	private String nickname;
 	@ApiModelProperty(value = "변경할 비밀번호", position = 3, notes = "변경할 경우 입력하면됩니다.", example = "test12345")
+	@PasswordFormatPolicyValidate(emptyIgnore = true)
 	private String password;
 	@ApiModelProperty(value = "변경할 생년월일", position = 4, notes = "변경할 경우 입력하면됩니다.", example = "2020-02-20")
 	@Pattern(regexp = "^\\d{4}-\\d{2}-\\d{2}$")
@@ -39,13 +41,37 @@ public class UserInfoModifyRequest {
 	@Email
 	@ApiModelProperty(value = "변경할 복구 이메일 주소", position = 6, notes = "변경할 경우 입력하면됩니다.", example = "test@test.com")
 	private String recoveryEmail;
-	@ValueOfEnum(enumClass = Status.class)
+	@ValueOfEnum(enumClass = AcceptOrReject.class)
 	@ApiModelProperty(value = "마케팅 정보 수신 동의 여부", position = 7, notes = "변경할 경우 입력하면됩니다.", example = "ACCEPT")
 	private String marketInfoReceive;
 	@ApiModelProperty(value = "비밀번호 찾기 질문", position = 8, example = "집에 가고 싶나요?")
 	private String question;
 	@ApiModelProperty(value = "비밀번호 찾기 대답", position = 9, example = "네네 선장님!")
 	private String answer;
+
+	@ApiModelProperty(hidden = true)
+	public String getName() {
+		if (lastName == null || firstName == null) {
+			return null;
+		}
+		return lastName + firstName;
+	}
+
+	@ApiModelProperty(hidden = true)
+	public String getInternationalNumber() {
+		if (mobile == null) {
+			return null;
+		}
+		return mobile.split("-")[0];
+	}
+
+	@ApiModelProperty(hidden = true)
+	public String getPhoneNumber() {
+		if (mobile == null) {
+			return null;
+		}
+		return mobile.substring(getInternationalNumber().length() + 1);
+	}
 
 	@Override
 	public String toString() {

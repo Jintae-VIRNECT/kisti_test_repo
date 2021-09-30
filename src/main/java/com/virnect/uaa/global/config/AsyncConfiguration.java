@@ -25,7 +25,7 @@ public class AsyncConfiguration {
 		taskExecutor.setCorePoolSize(3);
 		taskExecutor.setMaxPoolSize(30);
 		taskExecutor.setQueueCapacity(10);
-		taskExecutor.setThreadNamePrefix("[AsyncMailService] -");
+		taskExecutor.setThreadNamePrefix("AsyncMailService -");
 		taskExecutor.initialize();
 		return taskExecutor;
 	}

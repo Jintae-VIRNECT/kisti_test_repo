@@ -18,8 +18,8 @@ import lombok.extern.slf4j.Slf4j;
 import ua_parser.Client;
 import ua_parser.Parser;
 
-import com.virnect.uaa.domain.auth.dto.user.ClientGeoIPInfo;
-import com.virnect.uaa.domain.auth.dto.user.GeoIPInfo;
+import com.virnect.uaa.domain.auth.account.dto.ClientGeoIPInfo;
+import com.virnect.uaa.domain.auth.account.dto.GeoIPInfo;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -40,6 +40,19 @@ public class ClientUserAgentInformationParser {
 		String userAgent = request.getHeader("user-agent");
 		String deviceDetails = getDeviceDetails(userAgent);
 
+		ClientGeoIPInfo clientGeoIPInfo = new ClientGeoIPInfo();
+		clientGeoIPInfo.setIp(ip);
+		clientGeoIPInfo.setLocation(geoIPInfo.getLocation());
+		clientGeoIPInfo.setCountry(geoIPInfo.getCountry());
+		clientGeoIPInfo.setCountryCode(geoIPInfo.getCountryCode());
+		clientGeoIPInfo.setUserAgent(userAgent);
+		clientGeoIPInfo.setDeviceDetails(deviceDetails);
+		return clientGeoIPInfo;
+	}
+
+	public ClientGeoIPInfo getClientGeoIPInformation(String ip, String userAgent) {
+		GeoIPInfo geoIPInfo = getUserLocationByIp(ip);
+		String deviceDetails = getDeviceDetails(userAgent);
 		ClientGeoIPInfo clientGeoIPInfo = new ClientGeoIPInfo();
 		clientGeoIPInfo.setIp(ip);
 		clientGeoIPInfo.setLocation(geoIPInfo.getLocation());

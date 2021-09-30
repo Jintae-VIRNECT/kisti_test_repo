@@ -23,8 +23,8 @@ import com.google.common.io.Files;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import com.virnect.user.exception.UserServiceException;
-import com.virnect.user.global.error.ErrorCode;
+import com.virnect.uaa.domain.user.error.UserAccountErrorCode;
+import com.virnect.uaa.domain.user.exception.UserServiceException;
 
 /**
  * @author jeonghyeon.chang (johnmark)
@@ -43,7 +43,7 @@ public class S3FileService implements FileService {
 	private final AmazonS3 amazonS3Client;
 	@Value("${cloud.aws.s3.bucket.name:virnect-platform}")
 	private String bucketName;
-	@Value("${cloud.aws.s3.bucket.resource:profile}")
+	@Value("${cloud.aws.s3.bucket.resource:user/profile}")
 	private String bucketResource;
 
 	@Override
@@ -53,25 +53,25 @@ public class S3FileService implements FileService {
 
 		log.info("[AWS S3 UPLOADER] - UPLOAD BEGIN");
 		if (file.getSize() <= 0) {
-			throw new UserServiceException(ErrorCode.ERR_USER_PROFILE_IMAGE_UPLOAD);
+			throw new UserServiceException(UserAccountErrorCode.ERR_USER_PROFILE_IMAGE_UPLOAD);
 		}
 
 		// 2. 확장자 검사
 		String fileExtension = Files.getFileExtension(Objects.requireNonNull(file.getOriginalFilename()));
 		if (!PROFILE_IMAGE_ALLOW_EXTENSION.contains(fileExtension)) {
 			log.error("[FILE_UPLOAD_SERVICE] [UNSUPPORTED_FILE] [{}]", file.getOriginalFilename());
-			throw new UserServiceException(ErrorCode.ERR_USER_PROFILE_IMAGE_EXTENSION);
+			throw new UserServiceException(UserAccountErrorCode.ERR_USER_PROFILE_IMAGE_EXTENSION);
 		}
 
 		// 3. 파일 용량 검사
 		if (file.getSize() >= MAX_USER_PROFILE_IMAGE_SIZE) {
-			throw new UserServiceException(ErrorCode.ERR_USER_PROFILE_IMAGE_SIZE_LIMIT);
+			throw new UserServiceException(UserAccountErrorCode.ERR_USER_PROFILE_IMAGE_SIZE_LIMIT);
 		}
 
 		File uploadFile = convert(file)
 			.orElseThrow(() -> {
 				log.info("MultipartFile -> File 변환 실패");
-				return new UserServiceException(ErrorCode.ERR_USER_PROFILE_IMAGE_UPLOAD);
+				return new UserServiceException(UserAccountErrorCode.ERR_USER_PROFILE_IMAGE_UPLOAD);
 			});
 
 		String uniqueFileName = LocalDate.now() + "_" + UUID.randomUUID().toString().replace("-", "");

@@ -1,20 +1,20 @@
 package com.virnect.uaa.domain.user.dao.userpermission;
 
-import org.springframework.data.jpa.repository.support.QuerydslRepositorySupport;
+import static com.virnect.uaa.domain.user.domain.QUserPermission.*;
+
+import com.querydsl.jpa.impl.JPAQueryFactory;
 
 import com.virnect.uaa.domain.user.domain.User;
-import com.virnect.uaa.domain.user.domain.UserPermission;
 
-public class UserPermissionCustomRepositoryImpl extends QuerydslRepositorySupport
-	implements UserPermissionCustomRepository {
+public class UserPermissionCustomRepositoryImpl implements UserPermissionCustomRepository {
+	private final JPAQueryFactory query;
 
-	public UserPermissionCustomRepositoryImpl() {
-		super(UserPermission.class);
+	public UserPermissionCustomRepositoryImpl(JPAQueryFactory query) {
+		this.query = query;
 	}
 
 	@Override
 	public long deleteAllUserPermissionByUser(User user) {
-		QUserPermission qUserPermission = QUserPermission.userPermission;
-		return delete(qUserPermission).where(qUserPermission.user.eq(user)).execute();
+		return query.delete(userPermission).where(userPermission.user.eq(user)).execute();
 	}
 }

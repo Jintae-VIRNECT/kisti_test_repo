@@ -4,6 +4,8 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
+import com.virnect.uaa.domain.user.domain.User;
+
 /**
  * Project: PF-User
  * DATE: 2020-02-25
@@ -26,6 +28,13 @@ public class InviteUserDetailInfoResponse {
 	private final String lastName;
 	@ApiModelProperty(value = "사용자 닉네임", position = 5, example = "화려한 조명이 나를 감싸네")
 	private final String nickname;
+
+	public static InviteUserDetailInfoResponse ofUser(User user) {
+		return new InviteUserDetailInfoResponse(
+			user.getUuid(), user.getEmail(), user.getName(), user.getFirstName(),
+			user.getLastName(), user.getNickname()
+		);
+	}
 
 	public static InviteUserDetailInfoResponse getDummy() {
 		return new InviteUserDetailInfoResponse("", "", "", "", "", "");

@@ -12,7 +12,8 @@ plugins {
 }
 
 ext {
-    set('springCloudVersion', "Hoxton.SR10")
+    springCloudVersion = 'Hoxton.SR10'
+    mapstructVersion = '1.4.2.Final'
 }
 
 
@@ -41,6 +42,7 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     implementation 'org.springframework.boot:spring-boot-starter-validation'
     implementation 'org.springframework.data:spring-data-envers'
+    implementation 'org.springframework.boot:spring-boot-starter-websocket'
     implementation 'org.springframework.boot:spring-boot-starter-data-redis'
     implementation 'org.springframework.session:spring-session-data-redis'
     implementation 'org.springframework.boot:spring-boot-starter-security'
@@ -49,10 +51,12 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-mail'
     implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-server'
     runtimeOnly 'mysql:mysql-connector-java'
+    runtimeOnly 'com.h2database:h2'
     testImplementation('org.springframework.boot:spring-boot-starter-test') {
         exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
     }
     testImplementation 'org.springframework.security:spring-security-test'
+    testImplementation 'com.google.code.gson:gson:2.8.7'
 
 
     // Netflix Feign Client
@@ -99,6 +103,9 @@ dependencies {
     implementation 'com.google.zxing:core:3.3.0'
     implementation 'com.google.zxing:javase:3.3.0'
 
+    // minio
+    implementation 'io.minio:minio:7.1.2'
+
     // version string handling
     implementation 'com.vdurmont:semver4j:3.1.0'
 
@@ -111,21 +118,43 @@ dependencies {
 
     // JSON PARSING
     implementation 'com.google.code.gson:gson:2.8.5'
+
+    // aws s3
+    implementation 'com.amazonaws:aws-java-sdk-s3:1.11.415' // AWS Storage Service
+
+
+    // map struct
+    implementation "org.mapstruct:mapstruct:${mapstructVersion}"
+
+    annotationProcessor(
+            "org.mapstruct:mapstruct-processor:${mapstructVersion}"
+    )
+
+    testAnnotationProcessor(
+            "org.mapstruct:mapstruct-processor:${mapstructVersion}"
+    )
+
 }
 
 
 test {
     useJUnitPlatform()
+    systemProperty("spring.active.profiles", "test")
+    systemProperty("VIRNECT_ENV","test")
 }
 
 
 // querydsl 적용
-def querydslSrcDir = 'src/main/generated'
+def querydslDir= "$buildDir/generated/querydsl"
 
 querydsl {
     library = "com.querydsl:querydsl-apt"
     jpa = true
-    querydslSourcesDir = querydslSrcDir
+    querydslSourcesDir = querydslDir
+}
+
+sourceSets {
+    main.java.srcDir querydslDir
 }
 
 compileQuerydsl {
@@ -136,13 +165,6 @@ configurations {
     querydsl.extendsFrom compileClasspath
 }
 
-sourceSets {
-    main {
-        java {
-            srcDirs = ['src/main/java', querydslSrcDir]
-        }
-    }
-}
 
 
 //License Reporting Configuration

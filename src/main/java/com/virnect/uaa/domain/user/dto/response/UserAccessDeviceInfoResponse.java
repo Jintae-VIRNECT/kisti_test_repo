@@ -27,4 +27,14 @@ public class UserAccessDeviceInfoResponse {
 	private String location;
 	@ApiModelProperty(value = "접속 일자", example = "2020-05-12T10:01:44.0")
 	private LocalDateTime lastLoggedIn;
+
+	@Override
+	public String toString() {
+		return "UserAccessDeviceInfoResponse{" +
+			"ip='" + ip + '\'' +
+			", device='" + device + '\'' +
+			", location='" + location + '\'' +
+			", lastLoggedIn=" + lastLoggedIn +
+			'}';
+	}
 }

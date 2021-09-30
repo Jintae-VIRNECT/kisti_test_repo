@@ -31,7 +31,8 @@ public class UserServiceGlobalExceptionHandler {
 	public ResponseEntity<ErrorResponseMessage> maxUploadSizeExceededException(MaxUploadSizeExceededException e) {
 		log.error(e.getMessage());
 		log.error("프로필 이미지 파일 최대 용량 에러");
-		return ResponseEntity.ok(ErrorResponseMessage.parseError(UserAccountErrorCode.ERR_USER_PROFILE_IMAGE_SIZE_LIMIT));
+		return ResponseEntity.ok(
+			ErrorResponseMessage.parseError(UserAccountErrorCode.ERR_USER_PROFILE_IMAGE_SIZE_LIMIT));
 	}
 
 	@ExceptionHandler(Exception.class)

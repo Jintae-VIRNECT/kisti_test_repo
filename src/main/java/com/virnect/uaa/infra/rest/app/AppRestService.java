@@ -4,8 +4,8 @@ import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import com.virnect.uaa.infra.rest.app.dto.AppDetailInfoResponse;
 import com.virnect.uaa.global.common.ApiResponse;
+import com.virnect.uaa.infra.rest.app.dto.AppDetailInfoResponse;
 
 @FeignClient(name = "download-server")
 public interface AppRestService {
