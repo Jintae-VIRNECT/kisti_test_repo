@@ -5,6 +5,7 @@
     :visible.sync="visible"
     width="580px"
     :before-close="handleClose"
+    :close-on-click-modal="false"
   >
     <p>{{ $t('payment.autoPaymentCancelModal.desc') }}</p>
     <el-table :data="autoPaymentItems">
