@@ -124,14 +124,21 @@ public class FileService {
 
 	private List<String> shareFileAllowExtensionList = null;
 
-	private String generateDirPath(String... args) {
+	/*private String generateDirPath(String... args) {
 		StringBuilder stringBuilder;
 		stringBuilder = new StringBuilder();
 		for (String argument : args) {
 			stringBuilder.append(argument).append("/");
 		}
 		return stringBuilder.toString();
+	}*/
+
+	private String generateDirPath(String workspaceId, String sessionId) {
+		StringBuilder stringBuilder = new StringBuilder();
+		stringBuilder.append(workspaceId).append("/").append("remote").append("/").append(sessionId).append("/");
+		return stringBuilder.toString();
 	}
+
 
 	@Transactional
 	public ApiResponse<FileUploadResponse> uploadFile(FileUploadRequest fileUploadRequest) {
@@ -238,7 +245,7 @@ public class FileService {
 			try {
 				UploadResult uploadResult = fileManagementService.uploadProfile(
 					roomProfileUpdateRequest.getProfile(),
-					null
+					generateDirPath(workspaceId, sessionId)
 				);
 				switch (uploadResult.getErrorCode()) {
 					case ERR_FILE_ASSUME_DUMMY:
