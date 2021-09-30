@@ -7,7 +7,7 @@
       @touchstart="touch"
       @touchend="touchEnd"
     >
-      <div class="participant-video__stream" v-if="!participant.hasVideo">
+      <div class="participant-video__stream" v-if="participant.hasVideo">
         <video
           :srcObject.prop="participant.stream"
           autoplay
