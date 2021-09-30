@@ -19,6 +19,7 @@ import org.springframework.security.web.authentication.session.SessionFixationPr
 import org.springframework.security.web.session.HttpSessionEventPublisher;
 import org.springframework.session.FindByIndexNameSessionRepository;
 import org.springframework.session.Session;
+import org.springframework.session.data.redis.config.ConfigureRedisAction;
 import org.springframework.session.data.redis.config.annotation.web.http.EnableRedisHttpSession;
 import org.springframework.session.security.SpringSessionBackedSessionRegistry;
 import org.springframework.session.web.http.CookieSerializer;
@@ -117,4 +118,10 @@ public class SessionConfiguration<S extends Session> {
 		return new HttpSessionEventPublisher();
 	}
 
+
+	@Bean
+	ConfigureRedisAction configureRedisAction() {
+
+		return ConfigureRedisAction.NO_OP;
+	}
 }
