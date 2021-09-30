@@ -121,6 +121,7 @@ public class SessionConfiguration<S extends Session> {
 
 	@Bean
 	ConfigureRedisAction configureRedisAction() {
+
 		return ConfigureRedisAction.NO_OP;
 	}
 }
