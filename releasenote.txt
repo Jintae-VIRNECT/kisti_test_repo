@@ -1,19 +1,23 @@
-HOTFIX
+# RELEASE 1.4.0
 
-New Features
+## ✨ Features
 
-메인화면 다운로드, 가이드, FAQ
-플랜 사용 정보
-Bug Fixes
+- [[DEVCENTER-4779](https://virtualconnection.atlassian.net/browse/DEVCENTER-4779)] 멤버 유형 추가
 
-SSR 에러페이지
-유저 플랜설정에 뷰 수정 불가능한 부분 수정
-[DPLA-6, 145] 오타 수정
-[DPLA-15] 네트워크 에러페이지
-[DPLA-25] 컨텐츠 상세정보에서 작업생성 버튼 추가
-[DPLA-132] 워크스페이스 시작하기 글자 수 제한
-[DPLA-133] 워크스페이스 시작하기 알림창 노출
+## 🐛 Bugfix
 
-Limitation
+- [[DEVCENTER-5029](https://virtualconnection.atlassian.net/browse/DEVCENTER-5029)] fix: 다국어 변경시의 plans 영역, input placeholder, 오타 등 수정
+- [[DPLA-2980](https://virtualconnection.atlassian.net/browse/DPLA-2980)] fix: 탭으로 필터 후 워크스페이스 변경 시 리스트 노출 오류
 
-Copyright (C) 2020, VIRNECT CO., LTD. - All Rights Reserved
+## 🚨 Hotfix
+
+- [[DPLA-2980](https://virtualconnection.atlassian.net/browse/DPLA-2980)] 탭으로 필터 후 워크스페이스 변경 시 리스트 노출 오류 리오픈 처리
+
+## ♻️ Refactor
+
+- [[DEVCENTER-5046](https://virtualconnection.atlassian.net/browse/DEVCENTER-5046)]전용 계정 생성에서 영문으로 변경시 생성 버튼이 내려가는 현상 개선
+- [[DEVCENTER-5035](https://virtualconnection.atlassian.net/browse/DEVCENTER-5035)] 국문일 때 멤버 리스트 디자인 깨지는 현상 개선
+- [[DEVCENTER-4997](https://virtualconnection.atlassian.net/browse/DEVCENTER-4997)] ui-assets, component 모듈 v1.8.8 로 업그레이드
+- [[DEVCENTER-5014](https://virtualconnection.atlassian.net/browse/DEVCENTER-5014)] VirnectHeader 컴포넌트에서 Link, 계정관리 기능 삭제하기
+
+Copyright (C) 2021, VIRNECT CO., LTD. - All Rights Reserved
