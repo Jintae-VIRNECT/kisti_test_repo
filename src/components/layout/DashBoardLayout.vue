@@ -43,6 +43,7 @@ export default {
       )
       if (workspaces.length === 0) {
         next(vm => {
+          location.href = window.urls.remote
           vm.license = false
           vm.init(authInfo)
         })
