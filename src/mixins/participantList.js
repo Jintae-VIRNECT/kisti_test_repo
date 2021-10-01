@@ -16,6 +16,9 @@ export default {
     isLeader() {
       return this.account.roleType === ROLE.LEADER
     },
+    isGuest() {
+      return this.account.roleType === ROLE.GUEST
+    },
     isMaxLength() {
       return this.participants.length === maxParticipants
     },
@@ -50,6 +53,11 @@ export default {
       this.$nextTick(() => {
         this.$eventBus.$emit('popover:close')
       })
+    },
+
+    //게스트 초대 모달 열기
+    showGuestInviteModal() {
+      this.$eventBus.$emit('guestInvite:show', true)
     },
 
     //내보내기
