@@ -2,7 +2,7 @@
   <div class="popover-more__menus camera-control">
     <button class="back-btn" @click="backToMain">
       <img src="~assets/image/call/mdpi_icon_arrow_left_new.svg" alt="" />
-      <span>이전</span>
+      <span>{{ $t('button.previous') }}</span>
     </button>
     <ul>
       <li class="popover-more__camera-allow">
