@@ -162,7 +162,7 @@
       "workspaceTooltip": "Current number of members/Workspace Member Limit Number",
       "submit": "Create",
       "caution": {
-        "createId": "Enter your ID and password to create a new workspace member account. \n<u>You must allocate at least one plan you have when creating an account.</u>",
+        "createId": "Enter your ID and password to create a new workspace member account.<br><u>You must allocate at least one plan you have when creating an account.</u>",
         "validUserId": "You can choose between 4 and 20 characters of english letters and numbers for the ID",
         "validId": "You can choose between 4 and 20 characters of english letters and numbers for the <u>ID</u>.",
         "validPassword": "Your password must be between 8 and 20 characters long. Your password needs to be included with at least 3 of following character types. <br>- Uppercase letter <br>- Lowercase letter<br>- Number <br>- Special character ( . ! @ # $ % ). <br>Also your password must not contain consecutive numbers and more than four of same characters.",
