@@ -1036,10 +1036,10 @@
   dependencies:
     "@types/node" "*"
 
-"@virnect/components@^1.9.1":
-  version "1.9.1"
-  resolved "http://192.168.6.3:4873/@virnect%2fcomponents/-/components-1.9.1.tgz#ce144f47153825e1204e58f115b0947680a3435d"
-  integrity sha512-SZALm/Iiarpi0h0RzmUiPE5EPSSBHneRhBmoIm3h4EktpxAm2ifwF/gdurssqWE07F02mX1ssKyPKRnOKnhzdA==
+"@virnect/components@^1.9.2":
+  version "1.9.2"
+  resolved "http://192.168.6.3:4873/@virnect%2fcomponents/-/components-1.9.2.tgz#8cf25f716411cebe1aa03da9419fbf694de73f2c"
+  integrity sha512-vrVkV5EWLkTcAPE0c4ogZ36g+A3dVeUIoV3XWZhDHuXszVL0kYFXVQqFojxSDtgY3bcTSJgZ6EbYXAfPx/HF+g==
   dependencies:
     "@virnect/ui-assets" "1.9.0"
     "@vue/composition-api" "^1.0.0-rc.2"

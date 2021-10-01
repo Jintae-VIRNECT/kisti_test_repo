@@ -22,7 +22,7 @@
   "devDependencies": {
     "@babel/core": "^7.7.5",
     "@babel/preset-env": "^7.7.6",
-    "@virnect/components": "^1.9.1",
+    "@virnect/components": "^1.9.2",
     "@virnect/eslint-config": "^1.0.3",
     "@virnect/i18n": "^1.1.1",
     "@virnect/platform-auth": "^1.0.2",
