@@ -2,6 +2,7 @@ package com.virnect.uaa.domain.auth.account.application.signin;
 
 import java.time.LocalDateTime;
 import java.util.Arrays;
+import java.util.Enumeration;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -33,15 +34,15 @@ import com.virnect.uaa.domain.auth.account.dto.request.OTPQRGenerateRequest;
 import com.virnect.uaa.domain.auth.account.dto.response.LogoutResponse;
 import com.virnect.uaa.domain.auth.account.dto.response.OAuthTokenResponse;
 import com.virnect.uaa.domain.auth.account.dto.response.OTPQRGenerateResponse;
+import com.virnect.uaa.domain.auth.account.event.account.AccountLockEvent;
 import com.virnect.uaa.domain.auth.common.error.AuthenticationErrorCode;
 import com.virnect.uaa.domain.auth.common.exception.LoginFailException;
 import com.virnect.uaa.domain.auth.common.exception.UserAuthenticationServiceException;
-import com.virnect.uaa.domain.auth.account.event.account.AccountLockEvent;
+import com.virnect.uaa.domain.auth.security.token.JwtPayload;
+import com.virnect.uaa.domain.auth.security.token.JwtProvider;
 import com.virnect.uaa.domain.user.dao.user.UserRepository;
 import com.virnect.uaa.domain.user.domain.User;
 import com.virnect.uaa.global.common.TotpQRCodeGenerator;
-import com.virnect.uaa.domain.auth.security.token.JwtPayload;
-import com.virnect.uaa.domain.auth.security.token.JwtProvider;
 
 @Slf4j
 @Service
@@ -65,6 +66,8 @@ public class AccountSignInServiceImpl implements AccountSignInService {
 		HttpServletRequest request,
 		HttpServletResponse response
 	) {
+
+		printheader(request);
 		User user;
 
 		// login authentication processing
@@ -81,6 +84,14 @@ public class AccountSignInServiceImpl implements AccountSignInService {
 		ClientGeoIPInfo clientGeoIPInfo = userAccessLogService.saveUserAccessLogInformation(user, request);
 
 		return getOauthLoginResponse(user, clientGeoIPInfo);
+	}
+
+	private void printheader(HttpServletRequest request) {
+		Enumeration<String> headerNames = request.getHeaderNames();
+		while (headerNames.hasMoreElements()) {
+			String headerName = headerNames.nextElement();
+			log.debug("[header]-> [{}] : [{}]", headerName, request.getHeader(headerName));
+		}
 	}
 
 	@Override
