@@ -4,13 +4,14 @@
     :visible.sync="showMe"
     :title="$t('members.create.new')"
     width="800px"
-    top="11vh"
+    :top="cssVars"
     :close-on-click-modal="false"
     :before-close="beforeClose"
   >
     <div class="member-add-modal__content">
       <div class="member-add-modal--left">
         <button
+          v-if="!$isOnpremise"
           @click="showTab('invite')"
           class="member-add-modal__tab-button"
           :class="{
@@ -76,7 +77,7 @@ export default {
   data() {
     return {
       showMe: true,
-      tabName: 'invite',
+      tabName: this.$isOnpremise ? 'create' : 'invite',
       maximum: 49,
     }
   },
@@ -92,6 +93,11 @@ export default {
       this.$emit('close')
       this.$emit('refresh')
       this.showMe = false
+    },
+  },
+  computed: {
+    cssVars() {
+      return this.$isOnpremise ? '4vh' : '11vh'
     },
   },
 }
@@ -112,7 +118,7 @@ export default {
     }
   }
   &--right {
-    width: 614px;
+    width: 616px;
   }
   .member-add-modal__content {
     display: flex;
