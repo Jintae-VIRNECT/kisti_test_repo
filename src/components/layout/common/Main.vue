@@ -8,13 +8,8 @@
 import Vue from 'vue'
 import api from 'api/axios'
 import auth from '@virnect/platform-auth'
-import store from '@/store/index'
 export default {
   async beforeRouteEnter(to, from, next) {
-    if (to.query.lang) {
-      const lang = to.query.lang
-      await store.dispatch('CHANGE_LANG', lang)
-    }
     let res = await api.getUrls()
     const environmentCss = 'font-size: 1.2rem;'
     console.log('%cprocess env: %s', environmentCss, res.env)
@@ -48,5 +43,3 @@ export default {
   },
 }
 </script>
-
-<style lang="scss" scoped></style>
