@@ -156,7 +156,7 @@ export default {
         return
       }
 
-      if (this.allowLocalRecord && !this.isSafari) {
+      if (this.useLocalRecording && this.allowLocalRecord && !this.isSafari) {
         this.tabview = 'local-record'
         return
       }

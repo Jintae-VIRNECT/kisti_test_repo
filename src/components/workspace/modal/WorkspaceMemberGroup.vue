@@ -72,12 +72,15 @@ import {
 
 import toastMixin from 'mixins/toast'
 import responsiveModalVisibleMixin from 'mixins/responsiveModalVisible'
+import errorMsgMixin from 'mixins/errorMsg'
 
 import { maxParticipants } from 'utils/callOptions'
 
+import { ERROR } from 'configs/error.config'
+
 export default {
   name: 'WorkspaceMemberGroup',
-  mixins: [toastMixin, responsiveModalVisibleMixin],
+  mixins: [toastMixin, responsiveModalVisibleMixin, errorMsgMixin],
   components: {
     Modal,
     RoomInvite,
@@ -112,7 +115,6 @@ export default {
   },
   data() {
     return {
-      //visibleFlag: false,
       loading: false,
       selection: [],
       maxSelect: maxParticipants - 1,
@@ -174,7 +176,6 @@ export default {
       const idx = this.selection.findIndex(select => user.uuid === select.uuid)
       if (idx < 0) {
         if (this.selection.length >= this.maxSelect) {
-          // TODO: MESSAGE
           this.toastNotify(this.$t('service.invite_max'))
           return
         }
@@ -198,35 +199,41 @@ export default {
         const userIds = this.selection.map(member => member.uuid)
         userIds.push(this.account.uuid)
         if (this.groupId) {
-          const result = await updatePrivateMemberGroup({
-            workspaceId: this.workspace.uuid,
-            userId: this.account.uuid,
-            groupId: this.groupId,
-            groupName: this.groupNameInput,
-            memberList: userIds,
-          })
+          await this.updatePrivateMemberGroup(userIds)
         } else {
-          const result = await createPrivateMemberGroup({
-            workspaceId: this.workspace.uuid,
-            userId: this.account.uuid,
-            groupName: this.groupNameInput,
-            memberList: userIds,
-          })
+          await this.createPrivateMemberGroup(userIds)
         }
 
         //정상 저장시 모달창 close
         this.$emit('update:visible', false)
-      } catch (error) {
-        if (error.code === 4027) {
-          this.toastDefault(
-            this.$t('workspace.workspace_member_group_max_description'),
-          )
+      } catch (err) {
+        if (err.code === ERROR.WORKSPACE_MEMBER_GROUP_MAX_OVER) {
+          this.showErrorToast(err.code)
         } else {
-          this.toastError(this.$t('confirm.network_error'))
+          if (err.code) {
+            this.toastError(this.$t('confirm.network_error'))
+          }
         }
 
-        console.error(error)
+        console.error(err)
       }
+    },
+    async updatePrivateMemberGroup(userIds) {
+      await updatePrivateMemberGroup({
+        workspaceId: this.workspace.uuid,
+        userId: this.account.uuid,
+        groupId: this.groupId,
+        groupName: this.groupNameInput,
+        memberList: userIds,
+      })
+    },
+    async createPrivateMemberGroup(userIds) {
+      await createPrivateMemberGroup({
+        workspaceId: this.workspace.uuid,
+        userId: this.account.uuid,
+        groupName: this.groupNameInput,
+        memberList: userIds,
+      })
     },
   },
 }

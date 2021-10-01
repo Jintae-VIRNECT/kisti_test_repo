@@ -14,7 +14,7 @@
       src="~assets/image/gif_loading.gif"
       alt="Loading"
     />
-    <!-- @TODO:다국어 추가 -->
+
     <p class="room-loading__text">
       {{ roomLoadingText }}
     </p>

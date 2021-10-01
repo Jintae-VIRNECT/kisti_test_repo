@@ -45,7 +45,7 @@ export default {
     thumbStyle: {
       type: Object,
       default: () => {
-        return { width: '5.143rem', height: '5.143rem' }
+        return { width: '5.143rem', height: '5.143rem' } //기본 세팅 주의
       },
     },
     image: String,

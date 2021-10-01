@@ -29,4 +29,13 @@ export const ERROR = {
 
   //비밀번호 설정된 PDF 파일
   FILE_ENCRYPTED: 7018,
+
+  //워크스페이스에 할당된 GUEST 계정이 모두 사용중일 때
+  ASSIGNED_GUEST_USER_IS_NOT_ENOUGH: 4028,
+
+  //해당 워크스페이스에 할당된 Guest 계정이 존재하지 않는 경우
+  GUEST_USER_NOT_FOUND: 4029,
+
+  //즐겨찾기 그룹 갯수를 초과한 경우
+  WORKSPACE_MEMBER_GROUP_MAX_OVER: 4027,
 }

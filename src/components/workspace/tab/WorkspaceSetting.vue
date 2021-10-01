@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div style="display:flex; flex:1;">
     <section v-if="!isMobileSize" class="tab-view">
       <div class="setting-wrapper offsetwidth">
         <div class="setting-nav">
@@ -144,6 +144,18 @@ export default {
         })
       }
       return menu
+    },
+  },
+  watch: {
+    menus: {
+      handler(curMenus, prevMenus) {
+        //PC <-> 모바일 화면 전환간 menu변경시
+        //이전에 참조하고 있던 메뉴 유지
+        const prevMenu = prevMenus[this.tabIdx].key
+        const newMenuIdx = curMenus.findIndex(menu => menu.key === prevMenu)
+        this.tabIdx = newMenuIdx >= 0 ? newMenuIdx : 0
+      },
+      deep: true,
     },
   },
   methods: {

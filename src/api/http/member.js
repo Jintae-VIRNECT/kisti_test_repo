@@ -1,5 +1,5 @@
 import http from 'api/gateway'
-
+import { ROLE } from 'configs/remote.config'
 /**
  * 멤버 리스트 호출
  * @param {String} filter 사용자 필터(MASTER, MANAGER, MEMBER) default ''
@@ -7,6 +7,7 @@ import http from 'api/gateway'
  * @param {Number} size 페이지 데이터 사이즈 default 100
  * @param {String} sort 정렬 기준 default 'role, desc'
  * @param {String} workspaceId 조회할 워크스페이스 id
+ * @param {Boolean} includeGuest Seat 멤버 포함 여부
  */
 export const getMemberList = async function({
   filter = '',
@@ -15,6 +16,7 @@ export const getMemberList = async function({
   sort = 'email,desc',
   workspaceId,
   userId,
+  includeGuest = true,
 }) {
   const returnVal = await http('MEMBER_LIST', {
     filter,
@@ -24,6 +26,13 @@ export const getMemberList = async function({
     workspaceId,
     userId,
   })
+
+  if (!includeGuest) {
+    returnVal.memberList = returnVal.memberList.filter(member => {
+      return member.role !== ROLE.GUEST
+    })
+  }
+
   return returnVal
 }
 
@@ -59,6 +68,7 @@ export const kickoutMember = async ({
  * @param {String} page
  * @param {String} size
  * @param {String} sort
+ * @param {Boolean} includeGuest
  */
 export const invitableList = async function({
   filter = '',
@@ -68,6 +78,7 @@ export const invitableList = async function({
   workspaceId,
   sessionId,
   userId,
+  includeGuest = false,
 }) {
   const returnVal = await http('INVITABLE_MEMBER_LIST', {
     filter,
@@ -78,6 +89,13 @@ export const invitableList = async function({
     sessionId,
     userId,
   })
+
+  if (!includeGuest) {
+    returnVal.memberList = returnVal.memberList.filter(member => {
+      return member.role !== ROLE.GUEST
+    })
+  }
+
   return returnVal
 }
 

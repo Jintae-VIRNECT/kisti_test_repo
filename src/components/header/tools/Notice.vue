@@ -12,15 +12,15 @@
       "
       slot="reference"
       :description="$t('common.notice')"
-      :size="size"
+      :size="fixSize ? fixSize : size"
       :toggle="!onPush"
       :active="active"
-      :activeSrc="activeSrc"
-      :inactiveSrc="inactiveSrc"
+      :activeSrc="fixSrc ? defaultActiveSrc : activeSrc"
+      :inactiveSrc="fixSrc ? defaultInactiveSrc : inactiveSrc"
       @action="notice"
     ></toggle-button>
 
-    <div>
+    <div :class="{ workspace: !tempClass }">
       <div class="popover-notice__header">
         <span>{{ $t('common.notice') }}</span>
         <switcher text="Push" :value.sync="onPush">Push</switcher>
@@ -152,6 +152,23 @@ export default {
     Scroller,
     NoticeItem,
   },
+  props: {
+    //TEMP : 서비스 반응형 반영 후 제거 필요
+    //워크스페이스 선반영되어 서비스 화면에 영향을 주게되어 고정 사이즈와 src를 부여하기 위해 추가한 속성
+    //서비스 반응형 완료 후에는 제거해도됨
+    fixSize: {
+      type: String,
+      default: null,
+    },
+    fixSrc: {
+      type: Boolean,
+      default: false,
+    },
+    tempClass: {
+      type: Boolean,
+      default: false,
+    },
+  },
   data() {
     return {
       onPush: true,
@@ -165,6 +182,10 @@ export default {
       size: defaultNoticeIconSize,
       placement: deafultPlacement,
       width: defaultPopoverWidth,
+
+      //TEMP : 서비스 반응형 반영 후 제거 필요
+      defaultActiveSrc: Object.freeze(defaultActiveSrc),
+      defaultInactiveSrc: Object.freeze(defaultInactiveSrc),
     }
   },
   computed: {
@@ -493,45 +514,55 @@ export default {
 }
 
 @include responsive-mobile {
-  .popover.popover-notice {
+  //서비스 반응형 추가 후 주석 제거
+  // .popover.popover-notice {
+  //   background-color: $new_color_bg_popover;
+  //   border: none;
+  // }
+
+  //@TEMP 임시로 사용하는 workspace class, 서비스 반응형 추가후 tempClass와 workspace class 블록은 제거해야함
+  .workspace {
+    //서비스 반응형 추가 후 제거
     background-color: $new_color_bg_popover;
     border: none;
-  }
-  .popover-notice__header {
-    height: 4.8rem;
-    border-bottom-color: $new_color_line_border;
-    > span {
-      @include fontLevel(150);
-    }
+    //서비스 반응형 추가 후 제거
 
-    .switcher .switcher-text {
-      color: $new_color_text_sub_description;
-      @include fontLevel(75);
-    }
+    .popover-notice__header {
+      height: 4.8rem;
+      border-bottom-color: $new_color_line_border;
+      > span {
+        @include fontLevel(150);
+      }
 
-    .switcher .switcher-toggle {
-      display: flex;
-      align-items: center;
-      width: 3.2rem;
-      height: 1.4rem;
-      border-radius: 0.8rem;
+      .switcher .switcher-text {
+        color: $new_color_text_sub_description;
+        @include fontLevel(75);
+      }
 
-      .switcher-toggle__type {
-        width: 2rem;
-        height: 2rem;
-        transform: translateY(0%);
+      .switcher .switcher-toggle {
+        display: flex;
+        align-items: center;
+        width: 3.2rem;
+        height: 1.4rem;
+        border-radius: 0.8rem;
+
+        .switcher-toggle__type {
+          width: 2rem;
+          height: 2rem;
+          transform: translateY(0%);
+        }
       }
     }
-  }
-  .popover-notice__body .popover-notice__empty-box {
-    > img {
-      width: 8rem;
-      height: 8rem;
-      content: url(~assets/image/img_noalram_new.svg);
-    }
-    > span {
-      @include fontLevel(150);
-      color: $new_color_text_sub;
+    .popover-notice__body .popover-notice__empty-box {
+      > img {
+        width: 8rem;
+        height: 8rem;
+        content: url(~assets/image/img_noalram_new.svg);
+      }
+      > span {
+        @include fontLevel(150);
+        color: $new_color_text_sub;
+      }
     }
   }
 }

@@ -176,6 +176,7 @@ export const ROLE = {
   WORKER: 'WORKER', //작업자
   UNKNOWN: 'UNKNOWN', //알수없음
   SECESSION: 'SECESSION', //탈퇴
+  GUEST: 'GUEST',
 }
 
 /**
@@ -188,4 +189,8 @@ export const LOCATION = {
   STOP_SEND: 'stopSendLocationInfo', //위치 요청을 멈출 단일 참가자
 
   STOPPED: 'stopped', //GPS 기능 off or 전체 화면 공유로 인한 위치 정보 공유 중단
+}
+
+export const USER_TYPE = {
+  GUEST_USER: 'GUEST_USER',
 }

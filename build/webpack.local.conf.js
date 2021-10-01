@@ -38,6 +38,14 @@ const localWebpackConfig = merge(baseWebpackConfig(mode), {
           to: '/remote/index.html',
         },
         {
+          from: /qr(\/.*)?/,
+          to: '/remote/index.html',
+        },
+        {
+          from: /connectioninfo(\/.*)?/,
+          to: '/remote/index.html',
+        },
+        {
           from: /account(\/.*)?/,
           to: '/account/index.html',
         },

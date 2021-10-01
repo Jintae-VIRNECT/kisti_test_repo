@@ -1,0 +1,11 @@
+{
+  "qr":{
+    "qr_login":"QRログイン",
+    "qr_login_description":"スマートグラスからQRコードに簡単にログインしてください。",
+    "qr_login_how_to":"QRログイン方法",
+    "qr_login_how_to_description_1":"1.使用するスマートグラスでVIRNECT Remote Appを実行してください。",
+    "qr_login_how_to_description_2":"2.ログイン画面下部の[QRログイン]を選択してください。",
+    "qr_login_how_to_description_3":"3.現在、画面上のQRコードを映してください。 QRコード認識後、機器がログインされます。",
+    "qr_login_how_to_description_4":"*QRコード対応機器のみ可能"
+  }
+}

@@ -60,6 +60,8 @@
       v-if="isOnpremise"
       :visible.sync="positionMapVisible"
     ></map-modal>
+    <guest-invite-modal :visible.sync="guestInviteModalVisible">
+    </guest-invite-modal>
   </section>
 </template>
 
@@ -70,19 +72,19 @@ import UserList from './participants/ParticipantList'
 import { ROLE } from 'configs/remote.config'
 import { CAMERA } from 'configs/device.config'
 import { VIEW } from 'configs/view.config'
+import { URLS } from 'configs/env.config'
 import localRecorderMixin from 'mixins/localRecorder'
 import serverRecordMixin from 'mixins/serverRecorder'
 import Store from 'stores/remote/store'
 import confirmMixin from 'mixins/confirm'
 import { checkInput } from 'utils/deviceCheck'
 import ReconnectModal from './modal/ReconnectModal'
-import { MyStorage } from 'utils/storage'
 
 import { mapGetters, mapActions, mapMutations } from 'vuex'
 export default {
   name: 'ServiceLayout',
   beforeRouteEnter(to, from, next) {
-    if (from.name !== 'workspace') {
+    if (from.name !== 'workspace' && from.name !== 'connectioninfo') {
       next({ name: 'workspace' })
     }
     next()
@@ -107,6 +109,7 @@ export default {
     SettingModal: () => import('./modal/SettingModal'),
     MapModal: () => import('./modal/PositionMapModal'),
     MobileFooter: () => import('./tools/MobileFooter'),
+    GuestInviteModal: () => import('./modal/GuestInviteModal'),
   },
   data() {
     return {
@@ -116,6 +119,7 @@ export default {
       connectVisible: false,
       isVideoLoaded: false,
       positionMapVisible: false,
+      guestInviteModalVisible: false,
     }
   },
   computed: {
@@ -247,7 +251,12 @@ export default {
     },
     reconnect(event) {
       if (event.reason === 'networkDisconnect') {
-        this.connectVisible = true
+        if (this.account.roleType === ROLE.GUEST) {
+          location.href = `${URLS['console']}/?continue=${location.href}`
+          return
+        } else {
+          this.connectVisible = true
+        }
       }
     },
     setVideoLoaded(flag) {
@@ -255,6 +264,9 @@ export default {
     },
     togglePositionMap(flag) {
       this.positionMapVisible = flag
+    },
+    toggleGuestInvite(flag) {
+      this.guestInviteModalVisible = flag
     },
   },
 
@@ -288,6 +300,7 @@ export default {
     this.$eventBus.$on('video:fullscreen', this.setFullScreen)
     this.$eventBus.$on('video:loaded', this.setVideoLoaded)
     this.$eventBus.$on('map:show', this.togglePositionMap)
+    this.$eventBus.$on('guestInvite:show', this.toggleGuestInvite)
   },
   beforeDestroy() {
     if (this.callTimeout) {
@@ -309,6 +322,7 @@ export default {
     this.$eventBus.$off('video:fullscreen', this.setFullScreen)
     this.$eventBus.$off('video:loaded', this.setVideoLoaded)
     this.$eventBus.$off('map:show', this.togglePositionMap)
+    this.$eventBus.$off('guestInvite:show', this.toggleGuestInvite)
 
     //협업 종료시 stt 종료
     this.useStt(false)

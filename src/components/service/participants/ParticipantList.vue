@@ -15,8 +15,16 @@
           @kickout="kickout(participant.id)"
         ></participant-video>
         <article v-if="!openRoom && isLeader && !isMaxLength" key="append">
-          <div class="participant-video more" @click="more">
+          <div class="participant-video append more" @click="more">
             <p>{{ $t('service.participant_invite') }}</p>
+          </div>
+        </article>
+        <article v-else-if="openRoom && !isGuest && !isMaxLength" key="append">
+          <div
+            class="participant-video append guest"
+            @click="showGuestInviteModal"
+          >
+            <p>{{ $t('service.guest_invite_url') }}</p>
           </div>
         </article>
       </transition-group>

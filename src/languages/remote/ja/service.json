@@ -243,6 +243,16 @@
     "spot_connecting" : "Spot接続中...",
     "spot_reconnecting" : "Spot再接続中...",
     "spot_battery_warning" : "Spotバッテリー残量が{battery}%残りました。",
-    "encrypted_file_unsupport" : "暗号化されたファイルはサポートできません。"
+    "encrypted_file_unsupport" : "暗号化されたファイルはサポートできません。",
+
+
+    "guest_invite_url":"接続URL",
+    "guest_invite_with_url":"E-mail転送",
+    "guest_invite_send_email":"メールアドレスを入力してください。",
+    "guest_invite_description":"接続URLを介してコラボ参加時、非会員権に参加します。​",
+    "guest_invite_url_copied":"接続URLをコピーしました。",
+    "guest_invite_email_transport_succeed":"接続URLをメールで送信しました。​",
+    "guest_invite_email_transport_failed":"メール送信に失敗しました。​",
+    "guest_invite_email_please_input_email_address":"メールアドレスを入力してください。"
   }
 }
