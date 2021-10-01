@@ -32,11 +32,16 @@ export default {
     ...mapGetters(['roomInfo']),
   },
   methods: {
+    //협업 소요시간을 표기하기 위한 타이머 시작
     startTimer() {
       this.timer = setInterval(() => {
         this.time++
+
+        //분
         const min = parseInt(this.time / 60)
         this.min = min < 10 ? '0' + min : min
+
+        //초
         const sec = this.time % 60
         this.sec = sec < 10 ? '0' + sec : sec
       }, 1000)

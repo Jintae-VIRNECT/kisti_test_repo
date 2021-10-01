@@ -240,10 +240,7 @@ export default {
           top -= (popover.offsetHeight - reference.offsetHeight) / 2
         }
       }
-      //true시 10px를 추가함.
-      // if (this.useTopMargin) {
-      //   top = top + this.useTopMargin
-      // }
+
       top = top + this.useTopMargin
 
       this.$set(this.style, 'top', top + 'px')
