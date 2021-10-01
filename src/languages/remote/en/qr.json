@@ -1,0 +1,11 @@
+{
+  "qr":{
+    "qr_login":"QR Login",
+    "qr_login_description":"You can log in by recognizing the QR code from Smart Glasses",
+    "qr_login_how_to":"How to use?",
+    "qr_login_how_to_description_1":"1. Run the VIRNECT Remote App on the smart glasses to be used.",
+    "qr_login_how_to_description_2":"2. Select [QR Login] on the login screen to run it.",
+    "qr_login_how_to_description_3":"3. Please display the QR code on the current screen. The instrument logs in when the QR code is recognized.",
+    "qr_login_how_to_description_4":"*Only for devices that support QR code"
+  }
+}

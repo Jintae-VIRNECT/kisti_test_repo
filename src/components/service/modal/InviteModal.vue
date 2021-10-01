@@ -184,7 +184,6 @@ export default {
       const idx = this.selection.findIndex(select => user.uuid === select.uuid)
       if (idx < 0) {
         if (this.selection.length >= this.maxSelect) {
-          // TODO: MESSAGE
           this.toastNotify(this.$t('service.invite_max'))
           return
         }
@@ -233,7 +232,7 @@ export default {
       const res = await inviteRoom(params)
       if (res.result === true) {
         this.addMember(this.selection)
-        // TODO: MESSAGE
+
         this.toastNotify(this.$t('service.invite_success'))
         this.$nextTick(() => {
           this.visibleFlag = false

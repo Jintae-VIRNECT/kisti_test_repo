@@ -43,8 +43,6 @@ export default {
     return {
       audioStream: null,
 
-      //for camera permission.
-      videoStream: null,
       audioSoundVolume: 0,
 
       micTestMode: false,
@@ -119,8 +117,6 @@ export default {
           .getUserMedia(constraints)
           .then(stream => {
             connectSoundMeter(stream)
-            //for camera permission.
-            this.videoStream = stream
           })
           .catch(err => console.error(err))
       }
@@ -132,6 +128,14 @@ export default {
     setOutputDevice(newSpeaker) {
       this.$refs['audioComponent'].setSinkId(newSpeaker)
     },
+  },
+  beforeDestroy() {
+    if (this.audioStream) {
+      this.audioStream.getTracks().forEach(track => {
+        track.stop()
+      })
+      this.audioStream = null
+    }
   },
 }
 </script>

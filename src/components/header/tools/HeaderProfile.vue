@@ -28,25 +28,29 @@
           :thumbStyle="myInfothumbStyle"
         ></profile>
       </div>
+
       <div class="popover-profile__linklist">
-        <div class="popover-profile__link">
-          <button @click="link(urlLink)">
-            {{ $t('common.workstation') }}
-          </button>
-        </div>
-        <div class="popover-profile__link" v-if="!!dashboardLink">
-          <button @click="link(dashboardLink)">
-            {{ $t('common.dashboard') }}
-          </button>
-        </div>
-        <div
-          class="popover-profile__link"
-          v-if="useLocalRecording && !isSafari"
-        >
-          <button @click="fileList">
-            {{ $t('common.local_record_file') }}
-          </button>
-        </div>
+        <template v-if="!isGuest">
+          <div class="popover-profile__link">
+            <button @click="link(urlLink)">
+              {{ $t('common.workstation') }}
+            </button>
+          </div>
+          <div class="popover-profile__link" v-if="!!dashboardLink">
+            <button @click="link(dashboardLink)">
+              {{ $t('common.dashboard') }}
+            </button>
+          </div>
+          <div
+            class="popover-profile__link"
+            v-if="useLocalRecording && !isSafari"
+          >
+            <button @click="fileList">
+              {{ $t('common.local_record_file') }}
+            </button>
+          </div>
+        </template>
+
         <div class="popover-profile__link">
           <button @click="logout">{{ $t('button.logout') }}</button>
         </div>
@@ -95,6 +99,15 @@ export default {
       visible: false,
       width: defaultPopoverWidth,
     }
+  },
+  props: {
+    isGuest: {
+      type: Boolean,
+      default: false,
+    },
+    guestAccount: {
+      type: Object,
+    },
   },
   computed: {
     ...mapGetters(['account', 'useStorage', 'useLocalRecording']),

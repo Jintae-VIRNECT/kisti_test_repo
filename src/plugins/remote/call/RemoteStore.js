@@ -16,7 +16,7 @@ const getDefaultState = () => {
       // video: stream.videoActive,
       // hasVideo: hasVideo,
       // status: 'good',
-      // roleType: 'LEADER' / 'EXPERT'
+      // roleType: 'LEADER' / 'EXPERT' / 'GUEST'
       // deviceType: configs/device.config.DEVICE
       // permission: 'default' / 'noAR' / false / true
       // hasArFeature

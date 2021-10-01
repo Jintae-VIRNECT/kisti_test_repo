@@ -41,7 +41,8 @@
 .toasted.toasted-primary.remote-toast.default,
 //toastError
 .toasted .primary.error,
-.toasted.toasted-primary.remote-toast.error {
+.toasted.toasted-primary.remote-toast.error, 
+.toasted.toasted-primary.remote-toast.error.info {
   padding: 3px 18px;
   &.mobile {
     padding: 0.02rem 1.6rem;

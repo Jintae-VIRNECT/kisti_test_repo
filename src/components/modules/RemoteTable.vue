@@ -147,7 +147,7 @@ export default {
 
         //execute render function
         this.renderOpts.forEach(render => {
-          if (newData.hasOwnProperty(render.column)) {
+          if (Object.prototype.hasOwnProperty.call(newData, render.column)) {
             newData[render.column] = render.render(newData[render.column])
           }
         })

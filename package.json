@@ -1,6 +1,6 @@
 {
   "name": "rm-web",
-  "version": "2.4.8-10",
+  "version": "2.5.0",
   "private": true,
   "description": "rm-web",
   "author": "yunze89@virnect.com",
@@ -95,6 +95,7 @@
     "pkg": "^4.4.2",
     "prettier": "^1.19.1",
     "process": "^0.11.10",
+    "qrcode": "^1.4.4",
     "qs": "^6.9.4",
     "recorder-js": "^1.0.7",
     "sass-loader": "^7.3.1",

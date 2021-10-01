@@ -121,8 +121,7 @@ export default {
 
         //멤버 숫자 표기
         this.groupList.map(group => {
-          group.memberCount = `${group.favoriteGroupMemberResponses.length -
-            1}/${this.maxSelect}`
+          group.memberCount = `${group.favoriteGroupMemberResponses.length}/${this.maxSelect}`
         })
 
         //'선택 없음' 항목 추가
@@ -134,7 +133,10 @@ export default {
         })
       } catch (err) {
         console.error(err)
-        this.toastError(this.$t('confirm.network_error'))
+
+        if (err.code) {
+          this.toastError(this.$t('confirm.network_error'))
+        }
       }
     },
 
@@ -161,7 +163,10 @@ export default {
         })
       } catch (err) {
         console.error(err)
-        this.toastError(this.$t('confirm.network_error'))
+
+        if (err.code) {
+          this.toastError(this.$t('confirm.network_error'))
+        }
       }
     },
   },

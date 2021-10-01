@@ -64,7 +64,7 @@
           :initValue="videoFPS"
         ></range-slider>
 
-        <p class="fps-value-mobile">
+        <p v-if="isMobileSize" class="fps-value-mobile">
           {{ videoFPS }}
         </p>
       </figure>
@@ -103,9 +103,6 @@ export default {
   },
   computed: {
     ...mapGetters(['video']),
-    // videoQuality() {
-    //   return this.video['quality']
-    // },
     currentQuality() {
       const idx = resolution.findIndex(
         resol => resol.value === this.videoQuality,
@@ -118,8 +115,8 @@ export default {
       } else {
         const size = resolution[idx].resolution.split('X')
         return {
-          width: parseInt(size[0]),
-          height: parseInt(size[1]),
+          width: parseInt(size[0], 10),
+          height: parseInt(size[1], 10),
         }
       }
     },
@@ -182,70 +179,78 @@ export default {
     async initStream() {
       if (this.checking) return
       if (this.videoDevices.length === 0) return
+
       this.checking = true
+      this.resetStream()
+      this.invalid = false
+
+      this.$nextTick(async () => {
+        try {
+          await this.getStream()
+          this.logStreamInfo()
+          this.checking = false
+        } catch (err) {
+          this.initStreamErrorHandler(err)
+        }
+      })
+    },
+    resetStream() {
       if (this.stream) {
         this.stream.getTracks().forEach(track => {
           track.stop()
         })
         this.stream = null
       }
-      this.invalid = false
-      this.$nextTick(async () => {
-        try {
-          const videoConstraint = {
-            width: {
-              exact: this.currentQuality.width,
-            },
-            height: {
-              exact: this.currentQuality.height,
-            },
-            deviceId: {
-              exact: this.videoId,
-            },
-            frameRate: {
-              max: this.videoFPS,
-            },
-          }
-          this.stream = await getUserMedia({
-            audio: false,
-            video: videoConstraint,
-          })
-          const track = this.stream.getVideoTracks()[0]
-          const settings = track.getSettings()
-          const capability = track.getCapabilities()
-          this.logger(
-            'call',
-            `resolution::${settings.width}X${settings.height}`,
+    },
+    async getStream() {
+      const videoConstraint = {
+        width: {
+          exact: this.currentQuality.width,
+        },
+        height: {
+          exact: this.currentQuality.height,
+        },
+        deviceId: {
+          exact: this.videoId,
+        },
+        frameRate: {
+          max: this.videoFPS,
+        },
+      }
+      this.stream = await getUserMedia({
+        audio: false,
+        video: videoConstraint,
+      })
+    },
+    logStreamInfo() {
+      const track = this.stream.getVideoTracks()[0]
+      const settings = track.getSettings()
+      const capability = track.getCapabilities()
+      this.logger('call', `resolution::${settings.width}X${settings.height}`)
+      this.debug('call::setting::', settings)
+      this.debug('call::capability::', capability)
+    },
+    initStreamErrorHandler(err) {
+      console.error(err)
+
+      this.stream = null
+      this.checking = false
+      if (typeof err === 'object' && err.name) {
+        this.invalid = err.name
+        if (err.name === 'OverconstrainedError') {
+          const idx = resolution.findIndex(
+            resol => resol.value === this.videoQuality,
           )
-          this.debug('call::setting::', settings)
-          this.debug('call::capability::', capability)
-          this.checking = false
-        } catch (err) {
-          console.error(err)
-          this.stream = null
-          this.checking = false
-          if (typeof err === 'object' && err.name) {
-            this.invalid = err.name
-            if (err.name === 'OverconstrainedError') {
-              const idx = resolution.findIndex(
-                resol => resol.value === this.videoQuality,
-              )
-              if (idx > 0) {
-                // this.videoQuality = resolution[idx - 1].value
-                this.setQuality(resolution[idx - 1].value)
-              }
-              // if (err.constraint === 'deviceId') {
-              //   this.invalid = true
-              // }
-            }
-            if (err.name === 'NotReadableError') {
-            }
-            return err.name
-          } else {
-            this.invalid = true
+          if (idx > 0) {
+            this.setQuality(resolution[idx - 1].value)
           }
         }
-      })
+        if (err.name === 'NotReadableError') {
+        }
+        return err.name
+      } else {
+        this.invalid = true
+      }
     },
   },
   mounted() {

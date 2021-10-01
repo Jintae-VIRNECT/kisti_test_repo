@@ -12,7 +12,8 @@
 
     <speaker></speaker>
 
-    <notice></notice>
+    <!-- 서비스 반응형 추가 후 props 제거 -->
+    <notice v-if="isNotGuest" fixSize="2.429rem" fixSrc tempClass></notice>
 
     <call-time></call-time>
 
@@ -69,26 +70,27 @@ export default {
     isLeader() {
       return this.account.roleType === ROLE.LEADER
     },
+    isNotGuest() {
+      return this.account.roleType !== ROLE.GUEST
+    },
   },
   methods: {
     leave() {
       try {
         this.$call.leave()
-        this.$router.push({ name: 'workspace' })
+
+        if (this.account.roleType === ROLE.GUEST) {
+          window.history.back()
+        } else {
+          this.$router.push({ name: 'workspace' })
+        }
       } catch (err) {
-        this.$router.push({ name: 'workspace' })
+        if (this.account.roleType === ROLE.GUEST) {
+          window.history.back()
+        } else {
+          this.$router.push({ name: 'workspace' })
+        }
       }
-    },
-    /**
-     * 현재 미사용으로 확인됨
-     * @TODO store 체크로 수정 예정
-     *
-     * 현재 내 카메라가 없으나 화면 공유를 위해
-     * 활성화 되는 카메라를 숨기기 위한 코드
-     * @param {Boolean} flag 플래그값
-     */
-    toggleStream(flag) {
-      this.hideStream = flag
     },
   },
 

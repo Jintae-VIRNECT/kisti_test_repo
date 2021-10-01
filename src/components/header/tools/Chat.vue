@@ -22,7 +22,7 @@ import { mapGetters, mapActions, mapMutations } from 'vuex'
 import Tooltip from 'Tooltip'
 import ToggleButton from 'ToggleButton'
 export default {
-  name: 'Mic',
+  name: 'Chat',
   components: {
     Tooltip,
     ToggleButton,
