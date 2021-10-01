@@ -139,7 +139,7 @@ export default {
     canKick() {
       return this.$isOnpremise
         ? this.activeWorkspace.role === 'MASTER' &&
-            this.data.userType === 'MEMBER_USER'
+            this.data.userType === 'WORKSPACE_ONLY_USER'
         : this.data.role !== 'MASTER' &&
             this.activeWorkspace.role !== 'MEMBER' &&
             this.activeWorkspace.role !== this.data.role
