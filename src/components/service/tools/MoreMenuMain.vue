@@ -37,18 +37,18 @@ export default {
     }
   },
   watch: {
-    hasMainView: {
-      immediate: true,
-      handler(newVal) {
-        this.menus[1].disabled = !newVal
-      },
-    },
-    useRecording: {
-      immediate: true,
-      handler(newVal) {
-        this.menus[1].visible = newVal
-      },
-    },
+    // hasMainView: {
+    //   immediate: true,
+    //   handler(newVal) {
+    //     this.menus[1].disabled = !newVal
+    //   },
+    // },
+    // useRecording: {
+    //   immediate: true,
+    //   handler(newVal) {
+    //     this.menus[1].visible = newVal
+    //   },
+    // },
   },
   computed: {
     ...mapGetters(['mainView', 'useRecording', 'restrictedRoom']),
@@ -68,7 +68,8 @@ export default {
           name: MENU.SERVER_RECORD,
           icon: require('assets/image/call/mdpi_icon_server_rec_new.svg'),
           title: this.$t('service.record_server'),
-          visible: true, //@TODO 확인
+          visible: this.useRecording,
+          disabled: !this.hasMainView,
         },
         {
           name: MENU.MEMBER,
@@ -80,7 +81,7 @@ export default {
           name: MENU.LOCATION,
           icon: require('assets/image/call/mdpi_icon_location_new.svg'),
           title: this.$t('service.map_information'),
-          visible: this.isOnpremise, //@TODO 확인
+          visible: this.isOnpremise,
         },
         {
           name: MENU.SPOT_CONTROL,
