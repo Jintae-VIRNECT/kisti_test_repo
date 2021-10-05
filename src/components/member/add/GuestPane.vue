@@ -19,20 +19,11 @@
       </ul>
       <div class="guest-pane__sub-title">
         <p>{{ $t('members.guest.settings') }}</p>
-        <div class="guest-pane__usage">
-          <img src="~assets/images/icon/ic-person.svg" />
-          <strong>{{ currentMember }}/{{ maximum }}</strong>
-          <el-tooltip
-            :content="$t('members.create.workspaceTooltip')"
-            placement="right-start"
-          >
-            <img src="~assets/images/icon/ic-error.svg" />
-          </el-tooltip>
-        </div>
+        <MemberAddUsage :availableMember="currentMember" :maximum="maximum" />
       </div>
     </section>
     <section class="guest-pane__content">
-      <el-tabs v-model="tabName" @tab-click="tabClick">
+      <el-tabs ref="elTabs" v-model="tabName" @tab-click="tabClick">
         <el-tab-pane :label="$t('members.guest.remoteTabName')" name="remote">
           <el-form class="virnect-workstation-form">
             <h6>{{ $t('members.guest.remoteTab.title') }}</h6>
@@ -125,6 +116,9 @@ export default {
       }
       this.initAvailablePlans()
       this.numOfGuest = 0
+      // mounted 시 강제로 active bar의 크기를 설정합니다.
+      this.$refs.elTabs.$el.querySelector('.el-tabs__active-bar').style.width =
+        '81px'
     },
     async submit() {
       const form = {}
@@ -279,13 +273,6 @@ export default {
     }
     .el-divider--horizontal {
       margin: 8px 0 16px 0;
-    }
-  }
-  .guest-pane__usage {
-    display: flex;
-    margin-bottom: 8px;
-    strong {
-      margin-right: 7px;
     }
   }
   .guest-pane__footer {
