@@ -294,10 +294,14 @@ export default {
    * @param {string} uuid
    * @param {string} password
    */
-  async deleteGuestMember(uuid) {
+  async deleteGuestMember(uuid, password) {
     const params = {
       requestUserId: myProfileGetter().uuid,
       userId: uuid,
+    }
+
+    if (password !== undefined) {
+      params.requestUserPassword = password
     }
 
     const data = await api('MEMBER_GUEST_DELETE', {
