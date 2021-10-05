@@ -56,8 +56,10 @@
     <reconnect-modal :visible.sync="connectVisible"></reconnect-modal>
     <setting-modal></setting-modal>
     <record-list v-if="useLocalRecording"></record-list>
+
+    <!-- pc에서만 지원 -->
     <map-modal
-      v-if="isOnpremise"
+      v-if="isOnpremise && !isMobileSize"
       :visible.sync="positionMapVisible"
     ></map-modal>
     <guest-invite-modal :visible.sync="guestInviteModalVisible">
