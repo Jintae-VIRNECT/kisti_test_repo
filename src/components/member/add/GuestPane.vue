@@ -23,7 +23,7 @@
       </div>
     </section>
     <section class="guest-pane__content">
-      <el-tabs v-model="tabName" @tab-click="tabClick">
+      <el-tabs ref="elTabs" v-model="tabName" @tab-click="tabClick">
         <el-tab-pane :label="$t('members.guest.remoteTabName')" name="remote">
           <el-form class="virnect-workstation-form">
             <h6>{{ $t('members.guest.remoteTab.title') }}</h6>
@@ -117,7 +117,8 @@ export default {
       this.initAvailablePlans()
       this.numOfGuest = 0
       // mounted 시 강제로 active bar의 크기를 설정합니다.
-      document.querySelectorAll('.el-tabs__active-bar')[0].style.width = '81px'
+      this.$refs.elTabs.$el.querySelector('.el-tabs__active-bar').style.width =
+        '81px'
     },
     async submit() {
       const form = {}
