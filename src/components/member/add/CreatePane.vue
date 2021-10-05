@@ -322,6 +322,9 @@ export default {
         width: 374px;
       }
     }
+    .el-button {
+      font-size: 13px;
+    }
   }
 
   .create-pane__title {
