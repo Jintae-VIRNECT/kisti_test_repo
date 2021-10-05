@@ -46,7 +46,7 @@
 
         <a
           v-if="isOnpremise"
-          class="btn send-email"
+          class="btn send-email mail-to"
           :href="mailToLink('mailto')"
           target="_blank"
         >
@@ -174,8 +174,13 @@ export default {
     getMailBody(target) {
       const newLine = target === 'mailto' ? '%0D%0A' : '<br>'
 
-      const webUrl = this.getInviteUrl('web')
-      const qrUrl = this.getInviteUrl('qr')
+      let webUrl = this.getInviteUrl('web')
+      let qrUrl = this.getInviteUrl('qr')
+
+      if (target === 'mailto') {
+        webUrl = webUrl.replaceAll('&', '%26')
+        qrUrl = qrUrl.replaceAll('&', '%26')
+      }
 
       const msg =
         `[${this.emailSubject}] ${newLine}` +
@@ -266,6 +271,11 @@ export default {
       &:active {
         background-color: $color_darkgray_400;
       }
+    }
+
+    &.mail-to {
+      padding: 0.5714rem;
+      text-align: center;
     }
   }
 }
