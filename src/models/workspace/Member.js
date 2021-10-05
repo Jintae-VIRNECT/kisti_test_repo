@@ -51,6 +51,10 @@ export const role = {
       value: 'MEMBER',
       label: 'members.role.member',
     },
+    {
+      value: 'GUEST',
+      label: 'members.role.guest',
+    },
   ],
 }
 
