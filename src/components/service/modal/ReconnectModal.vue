@@ -8,13 +8,21 @@
     <div class="reconnect__layout">
       <transition name="reconnect-logo">
         <div class="reconnect__header" v-show="state !== 'disconnected'">
-          <img src="~assets/image/call/img_reconnect.svg" />
+          <img :src="imgPath" />
           <div class="reconnect__header-dot" ref="reconnectContainer"></div>
         </div>
       </transition>
       <div class="reconnect__body">
         <p class="reconnect__body-description">{{ description }}</p>
-        <p class="reconnect__body-text" v-html="text">{{ text }}</p>
+        <p
+          class="reconnect__body-text"
+          :class="{
+            timer: state === 'network-connect' || state === 'room-connect',
+          }"
+          v-html="text"
+        >
+          {{ text }}
+        </p>
       </div>
       <div class="reconnect__footer">
         <button class="btn sub" @click="cancel">
@@ -76,6 +84,13 @@ export default {
     ...mapGetters(['roomInfo']),
     modalWidth() {
       return this.isMobileSize ? '30.6rem' : '30.714em'
+    },
+    imgPath() {
+      return this.isMobileSize
+        ? this.state === 'cancel'
+          ? require('assets/image/call/mdpi_reconnect_cancel_new.svg')
+          : require('assets/image/call/img_reconnect_new.svg')
+        : require('assets/image/call/img_reconnect.svg')
     },
     cancelText() {
       if (this.state === 'disconnected' || this.state === 'cancel') {

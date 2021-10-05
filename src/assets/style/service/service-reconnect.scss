@@ -94,6 +94,7 @@
 
 @include responsive-mobile {
   .modal.reconnect .modal--inner {
+    border: none;
     border-radius: 6px;
   }
   .reconnect__layout {
@@ -101,11 +102,27 @@
     background-color: $new_color_popup_bg;
     border-radius: 6px;
 
+    .reconnect__header {
+      background-color: $new_color_popup_bg;
+    }
+
     .reconnect__body {
       margin: 0 1.8rem;
     }
+
+    .reconnect__body .reconnect__body-description {
+      @include fontLevel(100);
+      margin-bottom: 2px;
+      color: $new_color_text_sub;
+    }
+
     .reconnect__body .reconnect__body-text {
       @include fontLevel(100);
+
+      &.timer {
+        @include fontLevel(400);
+        margin-bottom: -4px;
+      }
     }
     .reconnect__footer {
       padding-top: 1.8rem;
@@ -115,8 +132,17 @@
       width: 10.2rem;
       height: 3.6rem;
       padding: 0;
-      @include fontLevel(100);
+      background-color: $new_color_bg_button_primary;
       border-radius: 4px;
+      @include fontLevel(100);
+      &:disabled {
+        background-color: $new_color_bg_button_sub;
+        opacity: 0.4;
+      }
+
+      &.sub {
+        background-color: $new_color_bg_button_sub;
+      }
     }
   }
 }
