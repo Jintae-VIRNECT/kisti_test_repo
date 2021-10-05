@@ -24,6 +24,12 @@ export default {
 #__nuxt .usage {
   display: flex;
   margin-bottom: 8px;
+  align-items: center;
+  img:first-child {
+    opacity: 0.6;
+    width: 20px;
+    height: 20px;
+  }
   &__counter {
     span {
       @include fontLevel(75);
