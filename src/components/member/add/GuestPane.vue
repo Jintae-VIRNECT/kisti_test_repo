@@ -19,16 +19,7 @@
       </ul>
       <div class="guest-pane__sub-title">
         <p>{{ $t('members.guest.settings') }}</p>
-        <div class="guest-pane__usage">
-          <img src="~assets/images/icon/ic-person.svg" />
-          <strong>{{ currentMember }}/{{ maximum }}</strong>
-          <el-tooltip
-            :content="$t('members.create.workspaceTooltip')"
-            placement="right-start"
-          >
-            <img src="~assets/images/icon/ic-error.svg" />
-          </el-tooltip>
-        </div>
+        <MemberAddUsage :availableMember="currentMember" :maximum="maximum" />
       </div>
     </section>
     <section class="guest-pane__content">
@@ -279,13 +270,6 @@ export default {
     }
     .el-divider--horizontal {
       margin: 8px 0 16px 0;
-    }
-  }
-  .guest-pane__usage {
-    display: flex;
-    margin-bottom: 8px;
-    strong {
-      margin-right: 7px;
     }
   }
   .guest-pane__footer {

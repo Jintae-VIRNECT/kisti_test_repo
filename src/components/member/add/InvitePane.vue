@@ -5,16 +5,7 @@
       <p v-html="$t('members.invitation.desc')" />
       <div class="invite-pane__sub-title">
         <p>{{ $t('members.invitation.list') }}</p>
-        <div class="invite-pane__usage">
-          <img src="~assets/images/icon/ic-person.svg" />
-          <strong>{{ availableMember }}/{{ maximum }}</strong>
-          <el-tooltip
-            :content="$t('members.create.workspaceTooltip')"
-            placement="right-start"
-          >
-            <img src="~assets/images/icon/ic-error.svg" />
-          </el-tooltip>
-        </div>
+        <MemberAddUsage :availableMember="availableMember" :maximum="maximum" />
       </div>
     </section>
     <section class="invite-pane__content">
@@ -296,13 +287,6 @@ export default {
     }
     &.tabs {
       border-bottom: 0;
-    }
-  }
-  .invite-pane__usage {
-    display: flex;
-    margin-bottom: 8px;
-    strong {
-      margin-right: 7px;
     }
   }
   .invite-pane__footer {
