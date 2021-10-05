@@ -4,7 +4,8 @@
     "role": {
       "master": "MASTER",
       "manager": "MANAGER",
-      "member": "MEMBER"
+      "member": "MEMBER",
+      "guest": "GUEST"
     },
     "card": {
       "profile": "프로필",
