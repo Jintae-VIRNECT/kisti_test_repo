@@ -86,6 +86,7 @@ export default {
 <style lang="scss">
 @import '~assets/style/mixin';
 .modal.modal-room-loading {
+  z-index: 101;
   .modal--inner {
     background: #151517;
     border: 1px solid #525252;
