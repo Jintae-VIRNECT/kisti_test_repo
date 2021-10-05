@@ -2,7 +2,7 @@
   <modal
     :visible.sync="visibleFlag"
     :dimClose="false"
-    width="30.714em"
+    :width="modalWidth"
     class="reconnect"
   >
     <div class="reconnect__layout">
@@ -74,6 +74,9 @@ export default {
   },
   computed: {
     ...mapGetters(['roomInfo']),
+    modalWidth() {
+      return this.isMobileSize ? '30.6rem' : '30.714em'
+    },
     cancelText() {
       if (this.state === 'disconnected' || this.state === 'cancel') {
         return this.$t('button.exit')

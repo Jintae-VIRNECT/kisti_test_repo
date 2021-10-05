@@ -91,3 +91,32 @@
     }
   }
 }
+
+@include responsive-mobile {
+  .modal.reconnect .modal--inner {
+    border-radius: 6px;
+  }
+  .reconnect__layout {
+    padding-top: 2.6rem;
+    background-color: $new_color_popup_bg;
+    border-radius: 6px;
+
+    .reconnect__body {
+      margin: 0 1.8rem;
+    }
+    .reconnect__body .reconnect__body-text {
+      @include fontLevel(100);
+    }
+    .reconnect__footer {
+      padding-top: 1.8rem;
+      padding-bottom: 2.4rem;
+    }
+    .reconnect__footer .btn {
+      width: 10.2rem;
+      height: 3.6rem;
+      padding: 0;
+      @include fontLevel(100);
+      border-radius: 4px;
+    }
+  }
+}
