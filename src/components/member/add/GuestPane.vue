@@ -116,6 +116,8 @@ export default {
       }
       this.initAvailablePlans()
       this.numOfGuest = 0
+      // mounted 시 강제로 active bar의 크기를 설정합니다.
+      document.querySelectorAll('.el-tabs__active-bar')[0].style.width = '81px'
     },
     async submit() {
       const form = {}
