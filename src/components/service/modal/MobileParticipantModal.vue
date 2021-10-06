@@ -12,6 +12,21 @@
       @selectMain="selectMain(participant)"
     ></participant-video>
 
+    <!-- 참가자 초대 -->
+    <article v-if="!openRoom && isLeader && !isMaxLength" key="append">
+      <div class="participant-video append more" @click="more">
+        <img src="~assets/image/call/ic_addppl.svg" />
+        <p>{{ $t('service.participant_invite') }}</p>
+      </div>
+    </article>
+    <!-- 게스트 멤버 초대 -->
+    <article v-else-if="openRoom && !isGuest && !isMaxLength" key="append">
+      <div class="participant-video append guest" @click="showGuestInviteModal">
+        <img src="~assets/image/call/ic_guest_url.svg" />
+        <p>{{ $t('service.guest_invite_url') }}</p>
+      </div>
+    </article>
+
     <mobile-select-view
       :visible.sync="selectview"
       :isLeader="isLeader"

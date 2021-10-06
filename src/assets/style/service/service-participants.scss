@@ -53,23 +53,21 @@
   }
 
   &.append {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
     cursor: pointer;
+    img {
+      width: 2rem;
+      height: 2rem;
+    }
     > p {
-      margin-top: 4.429rem;
+      //margin-top: 4.429rem;
       color: $color_text_sub;
       font-weight: 500;
       text-align: center;
     }
-  }
-
-  &.more {
-    background: url(~assets/image/call/ic_addppl.svg) center 1.5rem/2.571rem
-      no-repeat $color_darkgray_500;
-  }
-
-  &.guest {
-    background: url(~assets/image/call/ic_guest_url.svg) center 1.5rem/2.571rem
-      no-repeat $color_darkgray_500;
   }
 }
 
@@ -349,6 +347,7 @@
     background-color: transparent;
     border: none;
     border-radius: 4px;
+
     &.current {
       border: none;
     }
@@ -435,6 +434,24 @@
         height: 2.4rem;
         margin-bottom: 0.3rem;
       }
+    }
+  }
+
+  .participant-video.append {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: none;
+    background-color: $new_color_bg_item_2;
+    img {
+      width: 3.2rem;
+      height: 3.2rem;
+      margin-bottom: 0.2rem;
+    }
+    p {
+      margin-top: 0;
+      @include fontLevel(50);
     }
   }
 }
