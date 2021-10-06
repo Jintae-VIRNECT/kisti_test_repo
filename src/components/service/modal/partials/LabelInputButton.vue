@@ -1,7 +1,8 @@
 <template>
   <article class="guest-invite-input__container">
     <label :for="label" class="guest-invite-input__label">
-      <img :src="iconImgPath" :alt="label" />
+      <!-- <img :src="iconImgPath" :alt="label" /> -->
+      <span :style="imgStyle" :alt="label"></span>
       <p>{{ title }}</p>
     </label>
 
@@ -77,6 +78,13 @@ export default {
       input: this.inputText,
     }
   },
+  computed: {
+    imgStyle() {
+      return this.isMobileSize
+        ? `mask-image: url(${this.iconImgPath}); background-color: #616872;`
+        : `background-image: url(${this.iconImgPath});`
+    },
+  },
   watch: {
     input(newVal) {
       this.$emit('update:inputText', newVal)
@@ -97,6 +105,10 @@ export default {
   display: flex;
   align-items: center;
   margin-bottom: 0.7857rem;
+  > span {
+    width: 24px;
+    height: 24px;
+  }
   > p {
     margin-left: 0.5714rem;
   }
