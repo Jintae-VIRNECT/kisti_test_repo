@@ -44,7 +44,11 @@
             </el-row>
           </el-form>
         </el-tab-pane>
-        <el-tab-pane :label="$t('members.guest.viewTabName')" name="view">
+        <el-tab-pane
+          v-if="!$isOnpremise"
+          :label="$t('members.guest.viewTabName')"
+          name="view"
+        >
           <el-form class="virnect-workstation-form">
             <h6>{{ $t('members.guest.viewTab.title') }}</h6>
             <el-row>
