@@ -27,6 +27,7 @@
       </div>
     </article>
 
+    <invite-modal :visible.sync="invite"></invite-modal>
     <mobile-select-view
       :visible.sync="selectview"
       :isLeader="isLeader"
@@ -43,12 +44,14 @@ import ParticipantVideo from '../participants/ParticipantVideo'
 import FullScreenModal from '../../modules/FullScreenModal'
 import MobileSelectView from './MobileSelectView.vue'
 import participantListMixin from 'mixins/participantList'
+import InviteModal from '../modal/InviteModal'
 
 export default {
   components: {
     FullScreenModal,
     ParticipantVideo,
     MobileSelectView,
+    InviteModal,
   },
   mixins: [participantListMixin],
   props: {
