@@ -8,8 +8,8 @@ files.keys().forEach(key => {
 })
 
 // keyname
-modules.keyname = {
-  languageAbbr: 'KEYNAME',
+modules.key = {
+  languageAbbr: 'key',
 }
 ;(function recursion(parent, name, obj) {
   const list = Array.isArray(obj)
@@ -23,6 +23,7 @@ modules.keyname = {
       recursion(parent[key], name + key + '.', val)
     }
   })
-})(modules.keyname, '', modules.ko)
+})(modules.key, '', modules.ko)
+console.log(modules)
 
 export default modules
