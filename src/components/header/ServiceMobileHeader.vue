@@ -15,6 +15,7 @@
 <script>
 import { mapGetters } from 'vuex'
 import Chat from './tools/Chat'
+import { ROLE } from 'configs/remote.config'
 
 export default {
   components: {
@@ -46,23 +47,35 @@ export default {
         this.sec = sec < 10 ? '0' + sec : sec
       }, 1000)
     },
+    //pc인 경우 HeaderServiceTools에서 처리된다(동일함수)
     leave() {
       try {
         this.$call.leave()
-        this.$router.push({ name: 'workspace' })
+
+        if (this.account.roleType === ROLE.GUEST) {
+          window.history.back()
+        } else {
+          this.$router.push({ name: 'workspace' })
+        }
       } catch (err) {
-        this.$router.push({ name: 'workspace' })
+        if (this.account.roleType === ROLE.GUEST) {
+          window.history.back()
+        } else {
+          this.$router.push({ name: 'workspace' })
+        }
       }
     },
   },
   mounted() {
     this.startTimer()
+    this.$eventBus.$on('call:logout', this.leave)
   },
   beforeDestroy() {
     clearInterval(this.timer)
     this.time = 0
     this.min = 0
     this.sec = 0
+    this.$eventBus.$off('call:logout', this.leave)
   },
 }
 </script>

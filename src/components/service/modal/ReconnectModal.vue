@@ -258,6 +258,8 @@ export default {
     },
     logout() {
       this.$eventBus.$emit('call:logout')
+      //pc에서는 HeaderServiceTools에서 실행되고,
+      //모바일에서는 HeaderServiceTools가 활성화 되있지 않으므로, ServiceMobileHeader에서 실행된다.
     },
   },
   beforeDestroy() {

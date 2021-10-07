@@ -74,6 +74,7 @@ export default {
     },
   },
   methods: {
+    //모바일인 경우 ServiceMobileHeader에서 처리된다(동일함수)
     leave() {
       try {
         this.$call.leave()
