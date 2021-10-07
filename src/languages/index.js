@@ -24,6 +24,5 @@ modules.key = {
     }
   })
 })(modules.key, '', modules.ko)
-console.log(modules)
 
 export default modules
