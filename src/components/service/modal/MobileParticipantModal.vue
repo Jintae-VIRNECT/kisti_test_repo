@@ -14,7 +14,10 @@
 
     <!-- 참가자 초대 -->
     <article v-if="!openRoom && isLeader && !isMaxLength" key="append">
-      <div class="participant-video append more" @click="more">
+      <div
+        class="participant-video append more"
+        @click="showInviteModalWithEventBus"
+      >
         <img src="~assets/image/call/ic_addppl.svg" />
         <p>{{ $t('service.participant_invite') }}</p>
       </div>
@@ -27,7 +30,7 @@
       </div>
     </article>
 
-    <invite-modal :visible.sync="invite"></invite-modal>
+    <!-- <invite-modal :visible.sync="invite"></invite-modal> -->
     <mobile-select-view
       :visible.sync="selectview"
       :isLeader="isLeader"
@@ -44,14 +47,14 @@ import ParticipantVideo from '../participants/ParticipantVideo'
 import FullScreenModal from '../../modules/FullScreenModal'
 import MobileSelectView from './MobileSelectView.vue'
 import participantListMixin from 'mixins/participantList'
-import InviteModal from '../modal/InviteModal'
+// import InviteModal from '../modal/InviteModal'
 
 export default {
   components: {
     FullScreenModal,
     ParticipantVideo,
     MobileSelectView,
-    InviteModal,
+    //InviteModal,
   },
   mixins: [participantListMixin],
   props: {
@@ -69,6 +72,9 @@ export default {
   methods: {
     close() {
       this.beforeClose()
+    },
+    showInviteModalWithEventBus() {
+      this.$eventBus.$emit('inviteModal:show', true)
     },
   },
 }

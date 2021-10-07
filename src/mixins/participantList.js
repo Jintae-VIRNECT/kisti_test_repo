@@ -98,11 +98,6 @@ export default {
       this.setMainView({ id: select.id, force })
     },
 
-    //추가 초대하기 버튼 클릭시 초대창 띄우기
-    more() {
-      this.invite = !this.invite
-    },
-
     // video 제어 시그널 수신 이벤트 헨들러
     signalVideo(event) {
       const data = JSON.parse(event.data)

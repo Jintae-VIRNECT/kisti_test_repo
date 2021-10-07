@@ -154,6 +154,11 @@
       display: flex;
     }
 
+    h1 {
+      @include fontLevel(200);
+      color: $new_color_text_main;
+    }
+
     .createroom-user {
       height: 100%;
     }
@@ -183,6 +188,20 @@
       .selected-status {
         @include fontLevel(150);
         color: $new_color_text_blue;
+      }
+      .user-list-toggle-btn {
+        position: absolute;
+        top: 1.6rem;
+        right: 2rem;
+        width: 2.4rem;
+        height: 2.4rem;
+        background: url(~assets/image/ic_dropdown_20.svg) 50% no-repeat;
+        background-size: 120%;
+        transition: 0.3s;
+
+        &.off {
+          transform: rotate(180deg);
+        }
       }
     }
     .profilelist {

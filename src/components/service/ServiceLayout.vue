@@ -35,7 +35,11 @@
         </transition>
       </main>
 
-      <user-list v-if="!isMobileSize" :class="userListClass"></user-list>
+      <user-list
+        v-if="!isMobileSize"
+        :class="userListClass"
+        @openInviteModal="toggleInviteModal"
+      ></user-list>
       <!-- <div v-else>
         <figure
           v-for="participant of participants"
@@ -64,6 +68,7 @@
     ></map-modal>
     <guest-invite-modal :visible.sync="guestInviteModalVisible">
     </guest-invite-modal>
+    <invite-modal :visible.sync="inviteModalVisible"></invite-modal>
   </section>
 </template>
 
@@ -112,6 +117,7 @@ export default {
     MapModal: () => import('./modal/PositionMapModal'),
     MobileFooter: () => import('./tools/MobileFooter'),
     GuestInviteModal: () => import('./modal/GuestInviteModal'),
+    InviteModal: () => import('./modal/InviteModal'),
   },
   data() {
     return {
@@ -122,6 +128,7 @@ export default {
       isVideoLoaded: false,
       positionMapVisible: false,
       guestInviteModalVisible: false,
+      inviteModalVisible: false,
     }
   },
   computed: {
@@ -270,6 +277,9 @@ export default {
     toggleGuestInvite(flag) {
       this.guestInviteModalVisible = flag
     },
+    toggleInviteModal(flag) {
+      this.inviteModalVisible = flag
+    },
   },
 
   /* Lifecycles */
@@ -303,6 +313,7 @@ export default {
     this.$eventBus.$on('video:loaded', this.setVideoLoaded)
     this.$eventBus.$on('map:show', this.togglePositionMap)
     this.$eventBus.$on('guestInvite:show', this.toggleGuestInvite)
+    this.$eventBus.$on('inviteModal:show', this.toggleInviteModal)
   },
   beforeDestroy() {
     if (this.callTimeout) {
@@ -325,6 +336,7 @@ export default {
     this.$eventBus.$off('video:loaded', this.setVideoLoaded)
     this.$eventBus.$off('map:show', this.togglePositionMap)
     this.$eventBus.$off('guestInvite:show', this.toggleGuestInvite)
+    this.$eventBus.$off('inviteModal:show', this.toggleInviteModal)
 
     //협업 종료시 stt 종료
     this.useStt(false)

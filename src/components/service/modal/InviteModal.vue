@@ -44,7 +44,7 @@
                   ></profile>
                   <button
                     class="invite-modal__current-kickout"
-                    @click="kickoutConfirm(user, idx)"
+                    @click="kickoutConfirm({ participant: user, idx })"
                   >
                     {{ $t('button.kickout') }}
                   </button>
@@ -84,13 +84,14 @@
       :maxSelect="maxSelect"
       :roomInfo="roomInfo"
       :users="users"
-      :currentUser="currentUser"
+      :currentUser="currentUserWithFlag"
       :selection="selection"
       :beforeClose="beforeClose"
       :loading="loading"
       @userSelect="selectUser"
       @inviteRefresh="init"
       @invite="invite"
+      @kickout="kickoutConfirm"
     ></mobile-invite-modal>
   </div>
 </template>
@@ -143,6 +144,12 @@ export default {
     maxSelect() {
       return this.roomInfo.maxUserCount - this.currentLength
     },
+    currentUserWithFlag() {
+      return this.currentUser.map(user => {
+        user.currentInvited = true
+        return user
+      })
+    },
   },
   watch: {
     visible(flag) {
@@ -154,7 +161,7 @@ export default {
         this.users = []
         this.loading = false
       }
-      this.visibleFlag = flag
+      this.setVisiblePcOrMobileFlag(flag)
     },
   },
   methods: {
@@ -165,7 +172,9 @@ export default {
     beforeClose() {
       this.$emit('update:visible', false)
     },
-    kickoutConfirm(participant, idx) {
+    kickoutConfirm({ participant, idx }) {
+      console.log(participant, idx)
+
       this.serviceConfirmCancel(
         this.$t('service.participant_kick_confirm', {
           name: participant.nickName,

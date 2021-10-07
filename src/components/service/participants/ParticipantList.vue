@@ -15,7 +15,7 @@
           @kickout="kickout(participant.id)"
         ></participant-video>
         <article v-if="!openRoom && isLeader && !isMaxLength" key="append">
-          <div class="participant-video append more" @click="more">
+          <div class="participant-video append more" @click="openInviteModal">
             <img src="~assets/image/call/ic_addppl.svg" />
             <p>{{ $t('service.participant_invite') }}</p>
           </div>
@@ -31,7 +31,6 @@
         </article>
       </transition-group>
     </vue2-scrollbar>
-    <invite-modal :visible.sync="invite"></invite-modal>
     <select-view
       :visible.sync="selectview"
       @share="share"
@@ -47,7 +46,6 @@
 // import { maxParticipants } from 'utils/callOptions'
 
 import ParticipantVideo from './ParticipantVideo'
-import InviteModal from '../modal/InviteModal'
 import SelectView from '../modal/SelectView'
 import CameraControl from './CameraControl'
 import participantListMixin from 'mixins/participantList'
@@ -57,7 +55,6 @@ export default {
   mixins: [participantListMixin],
   components: {
     ParticipantVideo,
-    InviteModal,
     SelectView,
     CameraControl,
   },
@@ -107,6 +104,11 @@ export default {
           })
         }
       },
+    },
+  },
+  methods: {
+    openInviteModal() {
+      this.$emit('openInviteModal', true)
     },
   },
   // methods: {

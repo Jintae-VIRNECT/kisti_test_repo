@@ -91,7 +91,6 @@ export default {
   data() {
     return {
       selectedGroupId: '',
-      responsiveFn: null,
     }
   },
   props: {
