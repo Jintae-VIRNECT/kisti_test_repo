@@ -84,8 +84,9 @@ export default {
 .service-mobile-participant-modal .fullscreen-modal--body {
   display: grid;
   grid-template-columns: 1fr 1fr;
+  height: auto;
   padding: 2rem;
   column-gap: 1.2rem;
-  row-gap: 1.2rem;
+  row-gap: 3.7rem;
 }
 </style>
