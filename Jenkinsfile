@@ -4,6 +4,7 @@ pipeline {
     environment {
         GIT_TAG = sh(returnStdout: true, script: 'git for-each-ref refs/tags --sort=-creatordate --format="%(refname)" --count=1 | cut -d/  -f3').trim()
         REPO_NAME = sh(returnStdout: true, script: 'git config --get remote.origin.url | sed "s/.*:\\/\\/github.com\\///;s/.git$//"').trim()
+        SERVICE_NAME = sh(returnStdout: true, script: 'git config --get remote.origin.url | cut -d / -f5 | cut -d . -f1').trim()
     }
 
     stages {
@@ -194,7 +195,7 @@ pipeline {
 
     post {
         always {
-                  sh "curl -H \"Content-Type: application/json\" --data '{\"summary\": \"Swagger Change\",\"sections\" : [{ \"facts\": [{\"name\": \"Swagger Service\" ,\"value\": \"'\"$REPO_NAME\"'\"},{\"name\": \"Information\",\"value\": \"'\"`java -jar /var/lib/jenkins/Swagger-Diff/Jar/swagger-diff.jar -old /var/lib/jenkins/Swagger-Diff/Jar/old.json -new /var/lib/jenkins/Swagger-Diff/Jar/new.json`\"'\"}],\"markdown\": true}]}' 'https://virtualconnect.webhook.office.com/webhookb2/9b126938-3d1f-4493-98bb-33f25285af65@d70d3a32-a4b8-4ac8-93aa-8f353de411ef/IncomingWebhook/864150903f604b4a8c57ec558197ce45/d0ac2f62-c503-4802-8bf9-f6368d7f39f8'"
+                  sh "curl -H \"Content-Type: application/json\" --data '{\"summary\": \"Swagger Change\",\"sections\" : [{ \"facts\": [{\"name\": \"Swagger Service\" ,\"value\": \"'\"$REPO_NAME\"'\"},{\"name\": \"Information\",\"value\": \"'\"`java -jar /var/lib/jenkins/Swagger-Diff/swagger-diff.jar -old /var/lib/jenkins/Swagger-Diff/Diff/$SERVICE_NAME_old.json -new /var/lib/jenkins/Swagger-Diff/Diff/$SERVICE_NAME_new.json`\"'\"}],\"markdown\": true}]}' 'https://virtualconnect.webhook.office.com/webhookb2/9b126938-3d1f-4493-98bb-33f25285af65@d70d3a32-a4b8-4ac8-93aa-8f353de411ef/IncomingWebhook/864150903f604b4a8c57ec558197ce45/d0ac2f62-c503-4802-8bf9-f6368d7f39f8'"
                   office365ConnectorSend webhookUrl:'https://virtualconnect.webhook.office.com/webhookb2/9b126938-3d1f-4493-98bb-33f25285af65@d70d3a32-a4b8-4ac8-93aa-8f353de411ef/IncomingWebhook/72710a45ecce45e4bf72663717e7f323/d5a8ebb7-7fe2-4cd2-817c-1884fd25e7b0'
         }
     }
