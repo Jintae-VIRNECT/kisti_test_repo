@@ -45,7 +45,7 @@ Vue.use(VueQrcodeReader)
 Vue.use(VueI18n)
 const i18n = new VueI18n({
   locale: 'ko',
-  fallbackLocale: process.env.VIRNECT_ENV === 'production' ? 'ko' : null,
+  fallbackLocale: 'en',
   messages: messages,
 })
 

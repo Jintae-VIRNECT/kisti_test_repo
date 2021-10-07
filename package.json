@@ -27,7 +27,7 @@
     "@virnect/i18n": "^1.1.1",
     "@virnect/platform-auth": "^1.0.2",
     "@virnect/stylelint-config": "^1.0.2",
-    "@virnect/ui-assets": "1.9.0",
+    "@virnect/ui-assets": "1.9.2",
     "autoprefixer": "^7.1.2",
     "babel-core": "^6.25.0",
     "babel-loader": "^7.1.1",

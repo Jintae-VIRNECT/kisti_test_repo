@@ -1105,6 +1105,11 @@
   resolved "http://192.168.6.3:4873/@virnect%2fui-assets/-/ui-assets-1.9.0.tgz#2769a6a434362e15f5a7df3687b3ae7eefa07a47"
   integrity sha512-Kf+RHiMX8J1XL1y15aK/Xv+m2MIWq9kdqEvnzw4ZIEmIHziwBACKcHBcSGZRiniD8HpDTkcozkiXLQcGgv+Xow==
 
+"@virnect/ui-assets@1.9.2":
+  version "1.9.2"
+  resolved "http://192.168.6.3:4873/@virnect%2fui-assets/-/ui-assets-1.9.2.tgz#66de33d4cf7344cc007be027c9fdceb0865b1312"
+  integrity sha512-PI7tm/3Ai5ryi45gF6VB4hMsXqtUfcwBJp7hZBt6gq2FAjyokZXgxR41FLwDiMh/6fSVUNhepYDGdqyD8xKOdQ==
+
 "@vue/composition-api@^1.0.0-rc.2":
   version "1.2.2"
   resolved "https://registry.yarnpkg.com/@vue/composition-api/-/composition-api-1.2.2.tgz#7276667eea4c65add902a132802504c6a9950fa2"
