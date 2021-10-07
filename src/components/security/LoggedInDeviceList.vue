@@ -42,7 +42,24 @@ export default {
       accessLogs: [],
       accessLogsTotal: 0,
       accessLogsPage: 1,
+      currentDevice: null,
     }
+  },
+  computed: {
+    lang() {
+      return this.$i18n.locale
+    },
+    accessLogsDevice() {
+      return `
+        <span class="now">
+          ${this.$t('security.now')}
+        </span>`
+    },
+  },
+  watch: {
+    lang() {
+      this.accessLogs[0].device = this.currentDeviceElement()
+    },
   },
   methods: {
     changedSearchParams(searchParams) {
@@ -56,11 +73,13 @@ export default {
       this.accessLogsTotal = total
       // 현재기기 텍스트 삽입
       if (this.accessLogs[0] && this.accessLogsPage === 1) {
-        this.accessLogs[0].device += `
-        <span class="now">
-          ${this.$t('security.now')}
-        </span>`
+        this.currentDevice = this.accessLogs[0].device
+        this.accessLogs[0].device = this.currentDeviceElement()
       }
+    },
+    currentDeviceElement() {
+      return (this.accessLogs[0].device =
+        this.currentDevice + this.accessLogsDevice)
     },
   },
   beforeMount() {
