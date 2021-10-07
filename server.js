@@ -26,8 +26,8 @@ app.use(route)
 	if (envSet.SSL_ENV === 'private') {
 		const options = {
 			key: fs.readFileSync(`./cert/${config.sslConfig.name}.key`),
-			cert: fs.readFileSync(`./cert/${config.sslConfig.name}.crt`),
-      passphrase: config.sslConfig.pass
+			cert: fs.readFileSync(`./cert/${config.sslConfig.name}.crt`)
+      // passphrase: config.sslConfig.pass
 		}
 		https.createServer(options, app).listen(envSet.SERVER_PORT)
 	} else {
