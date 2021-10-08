@@ -19,12 +19,7 @@ export default {
 @import '~assets/style/mixin';
 
 .mobile-flash-btn {
-  position: relative;
-  width: 6rem;
-  height: 6rem;
-  margin: 0 1rem;
-  background-color: $new_color_bg_button_sub2;
-  border-radius: 50%;
+  @include mobile-circle-btn($new_color_bg_button_sub2);
 
   &::after {
     position: absolute;

@@ -7,7 +7,7 @@
       </transition>
 
       <transition name="share">
-        <share v-show="currentView === 'drawing'"></share>
+        <share v-if="!isMobileSize" v-show="currentView === 'drawing'"></share>
       </transition>
 
       <main

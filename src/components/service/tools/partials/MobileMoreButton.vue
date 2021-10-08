@@ -107,13 +107,9 @@ export default {
 @import '~assets/style/mixin';
 
 .mobile-more-btn {
-  width: 6rem;
-  height: 6rem;
-  margin: 0 1rem;
   background: url(~assets/image/call/mdpi_icon_more_new.svg) center/2.4rem
     no-repeat;
-  background-color: $new_color_bg_button_primary;
-  border-radius: 50%;
+  @include mobile-circle-btn($new_color_bg_button_primary);
   transition: transform 0.3s;
 
   &.visible {

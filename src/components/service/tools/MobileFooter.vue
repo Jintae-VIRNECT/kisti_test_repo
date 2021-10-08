@@ -12,11 +12,21 @@
       </button>
     </div>
     <div class="footer-button-container">
-      <mobile-more-button
-        @selectMember="openParticipantModal"
-      ></mobile-more-button>
-      <mobile-capture-button :disabled="!isMainViewOn"></mobile-capture-button>
-      <mobile-flash-button></mobile-flash-button>
+      <template v-if="view === VIEW.STREAM">
+        <mobile-more-button
+          @selectMember="openParticipantModal"
+        ></mobile-more-button>
+        <mobile-capture-button
+          :disabled="!isMainViewOn"
+        ></mobile-capture-button>
+        <mobile-flash-button></mobile-flash-button>
+      </template>
+      <template v-else-if="view === VIEW.DRAWING">
+        <mobile-drawing-exit-button></mobile-drawing-exit-button>
+        <mobile-file-list-button></mobile-file-list-button>
+        <mobile-download-button></mobile-download-button>
+        <mobile-upload-button></mobile-upload-button>
+      </template>
     </div>
     <mobile-participant-modal
       :visible.sync="isParticipantModalShow"
@@ -27,11 +37,16 @@
 
 <script>
 import tabChangeMixin from 'mixins/tabChange'
-import MobileMoreButton from './partials/MobileMoreButton.vue'
-import MobileCaptureButton from './partials/MobileCaptureButton.vue'
-import MobileFlashButton from './partials/MobileFlashButton.vue'
+import MobileMoreButton from './partials/MobileMoreButton'
+import MobileCaptureButton from './partials/MobileCaptureButton'
+import MobileFlashButton from './partials/MobileFlashButton'
+import MobileUploadButton from './partials/MobileUploadButton'
+import MobileFileListButton from './partials/MobileFileListButton'
+import MobileDownloadButton from './partials/MobileDownloadButton'
+import MobileDrawingExitButton from './partials/MobileDrawingExitButton'
 //import MobileParticipantModal from '../modal/MobileParticipantModal'
 import { mapGetters } from 'vuex'
+import { VIEW } from 'configs/view.config'
 
 export default {
   mixins: [tabChangeMixin],
@@ -40,9 +55,14 @@ export default {
     MobileCaptureButton,
     MobileFlashButton,
     MobileParticipantModal: () => import('../modal/MobileParticipantModal'),
+    MobileUploadButton,
+    MobileFileListButton,
+    MobileDownloadButton,
+    MobileDrawingExitButton,
   },
   data() {
     return {
+      VIEW: Object.freeze(VIEW),
       isParticipantModalShow: false,
     }
   },
@@ -68,12 +88,14 @@ export default {
 
 .mobile-service-footer {
   position: absolute;
-  bottom: 2.8rem;
+  bottom: 0;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   width: 100%;
+  padding-bottom: 2.8rem;
+  background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.4));
 
   .footer-tab-container {
     //width: 25.8rem;

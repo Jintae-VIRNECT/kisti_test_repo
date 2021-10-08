@@ -181,6 +181,7 @@
     "file_choice_num": "Select {number}",
     "file_remove": "Remove files",
     "file_upload": "Upload files",
+    "file_upload_mobile_guide": "The file upload button at the bottom<br/>allows you to upload a file to be shared.",
     "file_upload_maxnum": "Only one file per upload is supported currently.",
     "file_upload_maxsize": "Exceeded the attachable file size.",
     "file_image_notsupport": "Does not support this image format.",
