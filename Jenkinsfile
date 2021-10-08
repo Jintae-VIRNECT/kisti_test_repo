@@ -48,7 +48,7 @@ pipeline {
                         sh 'count=`docker ps -a | grep pf-login-onpremise | wc -l`; if [ ${count} -gt 0 ]; then echo "Running STOP&DELETE"; docker stop pf-login-onpremise && docker rm pf-login-onpremise; else echo "Not Running STOP&DELETE"; fi;'
                         sh 'docker run -p 18883:8883 --restart=always -e "CONFIG_SERVER=http://192.168.6.3:6383" -e "VIRNECT_ENV=onpremise" -e eureka.instance.ip-address=`hostname -I | awk \'{print $1}\'` -d --name=pf-login-onpremise pf-login'
                         catchError {
-                             sh "if [ `docker images | grep pf-login | grep -v 103505534696 | grep -v server | wc -l` -gt 2 ]; then docker rmi  -f \$(docker images | grep \"pf-login\" | grep -v server | grep -v \\${GIT_TAG} | grep -v \"latest\" | awk \'{print \$3}\'); else echo \"Just One Images...\"; fi;"
+                             sh "if [ `docker images | grep pf-login | grep -v 103505534696 | grep -v server | wc -l` -gt 3 ]; then docker rmi  -f \$(docker images | grep \"pf-login\" | grep -v server | grep -v \\${GIT_TAG} | grep -v \"latest\" | awk \'{print \$3}\'); else echo \"Just One Images...\"; fi;"
                         }
                     }
                 }
