@@ -52,9 +52,13 @@ export default {
     }
   },
   methods: {
-    logout() {
-      auth.logout()
-      location.reload()
+    async logout() {
+      try {
+        await auth.logout()
+        location.reload()
+      } catch (e) {
+        console.error(e)
+      }
     },
   },
   watch: {

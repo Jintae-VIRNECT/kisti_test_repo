@@ -1077,10 +1077,10 @@
     dotenv "^8.1.0"
     log4js "^6.1.0"
 
-"@virnect/platform-auth@^1.0.2":
-  version "1.0.2"
-  resolved "http://192.168.6.3:4873/@virnect%2fplatform-auth/-/platform-auth-1.0.2.tgz#5b48268ecf0d517ed20b2033de1a5fa93a7e91e8"
-  integrity sha512-h7Rjizzvzu4KBOQmGlcIgRxusBDjk3RPRmpElUpo4gKuzCWu5OlAXiQ+W07iLIuXYZ5eeSIIdnhs9SZucd2DTg==
+"@virnect/platform-auth@^1.0.3":
+  version "1.0.3"
+  resolved "http://192.168.6.3:4873/@virnect%2fplatform-auth/-/platform-auth-1.0.3.tgz#e83ffe003ea82d17d1e2a1bc86ba65f521249e1c"
+  integrity sha512-NNxjqqL9YZJD7bwyLSDpFzgjkfL/lSzY3DY5U9jIlipAug8TiKPEx/ohzSBtKQtYCQnAJB6I4YFquAYSNG2LmA==
   dependencies:
     axios "^0.19.2"
     js-cookie "^2.2.1"
