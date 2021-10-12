@@ -5,7 +5,13 @@
         :label="$t('security.column.deviceName')"
         prop="device"
         :dangerouslyUseHTMLString="true"
-      />
+      >
+        <template v-slot:status>
+          <span class="now">
+            {{ $t('security.now') }}
+          </span>
+        </template>
+      </ColumnDefault>
       <ColumnDefault
         :label="$t('security.column.loginLocation')"
         prop="location"
@@ -45,22 +51,6 @@ export default {
       currentDevice: null,
     }
   },
-  computed: {
-    lang() {
-      return this.$i18n.locale
-    },
-    accessLogsDevice() {
-      return `
-        <span class="now">
-          ${this.$t('security.now')}
-        </span>`
-    },
-  },
-  watch: {
-    lang() {
-      this.accessLogs[0].device = this.currentDeviceElement()
-    },
-  },
   methods: {
     changedSearchParams(searchParams) {
       this.getLoggedInDeviceList(searchParams)
@@ -73,13 +63,8 @@ export default {
       this.accessLogsTotal = total
       // 현재기기 텍스트 삽입
       if (this.accessLogs[0] && this.accessLogsPage === 1) {
-        this.currentDevice = this.accessLogs[0].device
-        this.accessLogs[0].device = this.currentDeviceElement()
+        this.accessLogs[0].active = true
       }
-    },
-    currentDeviceElement() {
-      return (this.accessLogs[0].device =
-        this.currentDevice + this.accessLogsDevice)
     },
   },
   beforeMount() {

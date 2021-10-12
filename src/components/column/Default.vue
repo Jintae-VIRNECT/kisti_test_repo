@@ -10,6 +10,7 @@
       <div class="column-default">
         <span v-if="dangerouslyUseHTMLString" v-html="scope.row[prop]" />
         <span v-else>{{ scope.row[prop] }}</span>
+        <slot v-if="scope.row.active" name="status"></slot>
       </div>
     </template>
   </el-table-column>
