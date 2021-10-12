@@ -324,3 +324,57 @@ $share_savebtn_height: 2.929rem;
     no-repeat #38383a;
   @include ellipsis();
 }
+
+@include responsive-mobile {
+  .sharing-image {
+    margin-top: 0;
+    padding: 0.6rem;
+    overflow: hidden;
+  }
+  .sharing-image > .sharing-image__item {
+    height: 26vw;
+    max-height: 26vw;
+    margin-bottom: 0;
+    > img {
+      background-color: $new_color_bg_item;
+      border-radius: 4px;
+    }
+    &.active {
+      // pointer-events: none;
+      &:before {
+        position: absolute;
+        top: -0.5rem;
+        left: -0.5rem;
+        z-index: -1;
+        width: calc(100% + 0.8rem);
+        height: calc(100% + 0.8rem);
+        background-color: rgba($new_color_selected_rgb, 0.3);
+        border: solid 1px rgba($new_color_selected_rgb, 1);
+        border-radius: 4px;
+        content: "";
+      }
+      > .sharing-image__item-active {
+        display: block;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 3rem;
+        background-color: rgba($new_color_selected_rgb, 0.8);
+        border-bottom-right-radius: 4px;
+        border-bottom-left-radius: 4px;
+        @include fontLevel(150);
+      }
+      & + .sharing-image__remove {
+        display: none;
+      }
+    }
+  }
+  .sharing-image > .sharing-image__name {
+    position: relative;
+    top: 0;
+    margin-top: 0.3rem;
+    color: $new_color_text_main;
+    background-color: transparent;
+    @include fontLevel(75);
+  }
+}

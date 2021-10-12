@@ -2,7 +2,7 @@
   <button
     class="mobile-filelist-btn"
     :disabled="disabled"
-    @click="upload"
+    @click="openFileListModal"
   ></button>
 </template>
 
@@ -12,7 +12,9 @@ export default {
     disabled: { type: Boolean },
   },
   methods: {
-    upload() {},
+    openFileListModal() {
+      this.$emit('openFileListModal')
+    },
   },
 }
 </script>

@@ -1,11 +1,28 @@
 <template>
-  <button class="mobile-upload-btn" @click="upload"></button>
+  <button class="mobile-upload-btn" @click="upload">
+    <input
+      type="file"
+      ref="uploadFile"
+      style="display:none;"
+      accept="image/gif,image/bmp,image/jpeg,image/png,application/pdf"
+      @change="fileChangeHandler"
+    />
+  </button>
 </template>
 
 <script>
+import shareFileUploadMixin from 'mixins/shareFileUpload'
+
 export default {
+  mixins: [shareFileUploadMixin],
   methods: {
-    upload() {},
+    fileChangeHandler(event) {
+      const file = event.target.files[0]
+      this.loadFile(file, () => this.$emit('uploaded'))
+    },
+    upload() {
+      this.$refs['uploadFile'].click()
+    },
   },
 }
 </script>

@@ -74,6 +74,7 @@ export default {
         height: this.fileInfo.height,
         index: 0,
       })
+      this.$emit('shareImage')
     },
     deleteImage() {
       this.confirmCancel(
