@@ -73,7 +73,7 @@
     <section class="guest-pane__footer">
       <el-button type="primary" @click="submit" :disabled="!numOfGuest">
         {{ $t('members.guest.submit') }}
-        <span class="number" v-if="numOfGuest !== 0">{{ numOfGuest }}</span>
+        <span class="number" v-if="numOfGuest !== ''">{{ numOfGuest }}</span>
       </el-button>
     </section>
   </article>
@@ -95,7 +95,7 @@ export default {
       plans,
       tabName: 'remote',
       availablePlans: { remote: 0, make: 0, view: 0 },
-      numOfGuest: 0,
+      numOfGuest: '',
     }
   },
   methods: {
@@ -119,7 +119,7 @@ export default {
         await this.$store.dispatch('plan/getPlansInfo')
       }
       this.initAvailablePlans()
-      this.numOfGuest = 0
+      this.numOfGuest = ''
       // mounted 시 강제로 active bar의 크기를 설정합니다.
       this.$refs.elTabs.$el.querySelector('.el-tabs__active-bar').style.width =
         '81px'
