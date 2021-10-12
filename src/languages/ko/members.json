@@ -31,7 +31,7 @@
       "role": "권한",
       "roleDesc": "매니저는 멤버 초대, 멤버 설정 권한을 갖습니다.",
       "workspaceRole": "역할",
-      "workspaceRoleDesc": "워크스테이션 역할",
+      "workspaceRoleDesc": "워크스페이스 권한",
       "givePlans": "플랜",
       "givePlansDesc": "플랜을 할당해야 제품을 사용할 수 있습니다.",
       "givePlansEmpty": "할당 없음",
@@ -160,7 +160,7 @@
       "workspaceMemberDesc": "멤버 계정을 직접 생성합니다. 등록 계정은 등록된 워크스페이스를 통해 서비스를 이용합니다.",
       "workspaceMemberList": "계정 생성 목록",
       "workspaceMember": "워크스페이스 멤버 생성",
-      "workspaceTooltip" : "현재 회원 수 + 추가 회원 수 / 워크스페이스 멤버 제한 수",
+      "workspaceTooltip": "현재 회원 수 + 추가 회원 수 / 워크스페이스 멤버 제한 수",
       "submit": "생성",
       "caution": {
         "createId": "ID와 비밀번호를 입력해 새로운 워크스페이스 멤버 계정을 생성합니다.<br><u>계정 생성시 보유하신 플랜을 최소 1개 이상 반드시 할당</u>해야 합니다.",
