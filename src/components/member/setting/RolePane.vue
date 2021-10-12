@@ -1,6 +1,6 @@
 <template>
   <section class="member-setting-role-pane">
-    <h6>{{ $t('members.setting.workspaceRole') }}</h6>
+    <h6>{{ $t('members.setting.role') }}</h6>
     <el-form class="virnect-workstation-form" ref="form" :model="member">
       <el-col :span="18" v-if="isNotGuest">
         <el-form-item class="horizon">
