@@ -43,7 +43,11 @@ export default {
     },
     kickEnabled() {
       if (this.mine(this.member.userId)) return false
-      return this.canManage(this.member.role)
+      if (this.canManage(this.member.role)) {
+        if (this.isUserTypeUser(this.member.userType)) return true
+        else return false
+      }
+      return false
     },
     isNotGuest() {
       return !this.isRoleGuest(this.member.role)
