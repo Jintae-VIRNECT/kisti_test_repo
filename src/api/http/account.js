@@ -7,6 +7,15 @@ export const login = async function(data) {
 }
 
 /**
+ * 로그아웃
+ * @param {String} uuid 자신의 uuid
+ * @param {String} accessToken accessToken
+ */
+export const logout = async ({ uuid, accessToken }) => {
+  await http('LOGOUT', { uuid, accessToken })
+}
+
+/**
  * 내 정보 조회
  */
 export const getAccount = async function() {
