@@ -61,7 +61,7 @@ export default {
       return this.isRoleGuest(this.member.role)
     },
     editEnabled() {
-      if (this.canManage(this.member.userType, this.member.role)) {
+      if (this.canManage(this.member.role)) {
         if (this.isGuest) {
           return false
         } else return true
