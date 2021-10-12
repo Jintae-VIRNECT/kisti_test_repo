@@ -190,8 +190,8 @@ class Auth {
     location.href = `${URLS['console']}/?continue=${location.href}`
     return this
   }
-  logout() {
-    logout({ uuid: myInfo.uuid, accessToken: Cookies.get('accessToken') })
+  async logout() {
+    await logout({ uuid: myInfo.uuid, accessToken: Cookies.get('accessToken') })
     cookieClear()
     isLogin = false
     myInfo = {}
