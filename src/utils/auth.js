@@ -543,9 +543,9 @@ class Auth {
     location.href = `${URLS['console']}/?continue=${location.href}`
     return this
   }
-  logout(redirect = true) {
+  async logout(redirect = true) {
     //call api
-    logout({ uuid: myInfo.uuid, accessToken: Cookies.get('accessToken') })
+    await logout({ uuid: myInfo.uuid, accessToken: Cookies.get('accessToken') })
     endLoginStatus() //로그아웃 상태 업데이트
     cookieClear()
     isLogin = false
