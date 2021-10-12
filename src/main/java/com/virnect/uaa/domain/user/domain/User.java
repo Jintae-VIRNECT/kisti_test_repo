@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -156,14 +157,15 @@ public class User extends BaseTimeEntity {
 	 * @param encodedPassword - Guest 계정 비밀번호 정보
 	 * @param seatUserSequence - Guest 계정 번호 정보(1..N)
 	 */
-	@Builder(builderClassName = "ByRegisterGuestMemberUserBuilder", builderMethodName = "ByRegisterGuestMemberUserBuilder")
+	@Builder(builderClassName = "ByRegisterGuestMemberUserBuilder",
+			 builderMethodName = "ByRegisterGuestMemberUserBuilder")
 	public User(
 		User masterUser,
 		String workspaceUUID,
 		String encodedPassword,
 		int seatUserSequence
 	) {
-		String uuid = RandomStringUtils.randomAlphanumeric(13);
+		String uuid = UUID.randomUUID().toString().replaceAll("-", "");
 		String seatUserNickName = String.format("GuestUser-%d", seatUserSequence);
 		this.master = masterUser;
 		this.uuid = uuid;
@@ -192,7 +194,7 @@ public class User extends BaseTimeEntity {
 		String encodedPassword
 	) {
 		this.master = masterUser;
-		this.uuid = RandomStringUtils.randomAlphanumeric(13);
+		this.uuid = UUID.randomUUID().toString().replaceAll("-", "");
 		this.email = memberRegistrationRequest.getEmail();
 		this.password = encodedPassword;
 		this.lastName = memberRegistrationRequest.getEmail();
@@ -211,7 +213,7 @@ public class User extends BaseTimeEntity {
 
 	@Builder(builderClassName = "BySignUpUserBuilder", builderMethodName = "BySignUpUserBuilder")
 	public User(RegisterRequest registerRequest, String encodedPassword, String profileUrl) {
-		this.uuid = RandomStringUtils.randomAlphanumeric(13);
+		this.uuid = UUID.randomUUID().toString().replaceAll("-", "");
 		this.email = registerRequest.getEmail();
 		this.password = encodedPassword;
 		this.name = registerRequest.getName();
