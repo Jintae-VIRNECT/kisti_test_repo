@@ -155,7 +155,6 @@ export default {
           this.successMessage(this.$t('members.create.message.usableId'))
           member.duplicateCheck = true
         } else {
-          this.errorMessage('Error: 1011')
           member.duplicateCheck = false
         }
       } catch (e) {
