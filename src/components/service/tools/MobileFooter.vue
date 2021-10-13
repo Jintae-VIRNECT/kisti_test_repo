@@ -35,15 +35,17 @@
         <mobile-upload-button @uploaded="onFileUploaded"></mobile-upload-button>
       </template>
     </div>
-    <mobile-participant-modal
-      :visible.sync="isParticipantModalShow"
-      :beforeClose="beforeClose"
-    ></mobile-participant-modal>
-    <mobile-share-file-list-modal
-      ref="file-list"
-      :modalShow.sync="isFileListModalShow"
-      :fileList="fileList"
-    ></mobile-share-file-list-modal>
+    <div class="footer-modal-container">
+      <mobile-participant-modal
+        :visible.sync="isParticipantModalShow"
+        :beforeClose="beforeClose"
+      ></mobile-participant-modal>
+      <mobile-share-file-list-modal
+        ref="file-list"
+        :modalShow.sync="isFileListModalShow"
+        :fileList="fileList"
+      ></mobile-share-file-list-modal>
+    </div>
   </footer>
 </template>
 
@@ -172,6 +174,7 @@ export default {
   width: 100%;
   padding-bottom: 2.8rem;
   background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.4));
+  pointer-events: none;
 
   .footer-tab-container {
     //width: 25.8rem;
@@ -185,6 +188,7 @@ export default {
       padding: 0.4rem;
       color: $new_color_text_main;
       border-radius: 1.4rem;
+      pointer-events: all;
       @include fontLevel(75);
 
       &.active {
@@ -206,6 +210,13 @@ export default {
   .footer-button-container {
     display: flex;
     height: 6rem;
+    > button,
+    > span {
+      pointer-events: all;
+    }
+  }
+  .footer-modal-container {
+    pointer-events: all;
   }
 }
 </style>
