@@ -51,7 +51,7 @@ export default {
             imgSrc: require('assets/image/img_flag_CN.svg'),
           },
           {
-            text: '繁體中文(譯本))',
+            text: '繁體中文(譯本)',
             value: 'zh-TW',
             imgSrc: require('assets/image/img_flag_CN.svg'),
           },
