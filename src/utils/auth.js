@@ -544,8 +544,13 @@ class Auth {
     return this
   }
   async logout(redirect = true) {
-    //call api
-    await logout({ uuid: myInfo.uuid, accessToken: Cookies.get('accessToken') })
+    if (myInfo.uuid && Cookies.get('accessToken')) {
+      await logout({
+        uuid: myInfo.uuid,
+        accessToken: Cookies.get('accessToken'),
+      })
+    }
+
     endLoginStatus() //로그아웃 상태 업데이트
     cookieClear()
     isLogin = false
