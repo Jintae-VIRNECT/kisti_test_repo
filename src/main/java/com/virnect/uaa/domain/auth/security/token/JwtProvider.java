@@ -149,4 +149,7 @@ public class JwtProvider {
 		return Base64.getEncoder().encodeToString(tokenProperty.getJwtConfig().getSecret().getBytes());
 	}
 
+	public TokenProperty getTokenProperty() {
+		return tokenProperty;
+	}
 }
