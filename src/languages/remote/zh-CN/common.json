@@ -1,33 +1,33 @@
 {
   "button": {
-    "confirm": "确认",
-    "cancel": "取消",
-    "refresh": "刷新",
-    "logout": "退出",
-    "progress": "进行",
-    "select_download": "选择下载",
-    "select_delete": "选择删除"
+	"confirm": "确认",
+	"cancel": "取消",
+	"refresh": "刷新",
+	"logout": "退出",
+	"progress": "进行",
+	"select_download": "选择下载",
+	"select_delete": "选择删除"
   },
   "common": {
-    "dashboard": "仪表盘",
-    "workstation": "工作区",
-    "collabo_list": "合作明细"
+	"dashboard": "仪表盘",
+	"workstation": "工作区",
+	"collabo_list": "合作明细"
   },
   "confirm": {
-    "network_error": "服务器和通信不顺畅。请稍后再试。",
-    "file_not_found": "这是已经删除或不存在的文件。",
-    "server_no_response": "服务器应答不正确。\\n 请稍后再试。"
+	"network_error": "服务器和通信不顺畅。请稍后再试。",
+	"file_not_found": "这是已经删除或不存在的文件。",
+	"server_no_response": "服务器应答不正确。\\n 请稍后再试。"
   },
   "excel": {
-    "room_title": "合作名称",
-    "room_description": "合作内容",
-    "room_leader": "领导",
-    "room_member_list": "参加者",
-    "room_active_date": "开始时间",
-    "room_unactive_date": "结束时间",
-    "room_duration_sec": "进行时间",
-    "file_server_record": "服务器拍摄",
-    "file_local_record": "本地拍摄",
-    "file_attach_file": "附加文件"
+	"room_title": "合作名称",
+	"room_description": "合作内容",
+	"room_leader": "领导",
+	"room_member_list": "参加者",
+	"room_active_date": "开始时间",
+	"room_unactive_date": "结束时间",
+	"room_duration_sec": "进行时间",
+	"file_server_record": "服务器拍摄",
+	"file_local_record": "本地拍摄",
+	"file_attach_file": "附加文件"
   }
 }
