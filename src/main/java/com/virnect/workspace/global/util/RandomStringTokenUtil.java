@@ -16,8 +16,8 @@ import java.util.UUID;
 public class RandomStringTokenUtil {
 	public static String generate(UUIDType type, int digit) {
 		switch (type) {
-			case UUID_WITH_SEQUENCE: {
-				return RandomStringUtils.randomAlphanumeric(13);
+			case WORKSPACE_UUID: {
+				return UUID.randomUUID().toString().replaceAll("-", "");
 			}
 			case PIN_NUMBER: {
 				Random random = new Random(System.currentTimeMillis());
