@@ -1,7 +1,12 @@
 <template>
   <div class="share-body__file pdf">
     <button class="share-body__backbutton" @click="back">
+      <img src="~assets/image/call/ic_back.svg" alt="back" />
+      <p v-if="isMobileSize" class="share-body__backbutton-text" slot="body">
+        {{ file.name }}
+      </p>
       <tooltip
+        v-else
         :content="file.name"
         placement="bottom-start"
         width="-webkit-fill-available"

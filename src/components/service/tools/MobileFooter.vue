@@ -40,7 +40,8 @@
       :beforeClose="beforeClose"
     ></mobile-participant-modal>
     <mobile-share-file-list-modal
-      :visible.sync="isFileListModalShow"
+      ref="file-list"
+      :modalShow.sync="isFileListModalShow"
       :fileList="fileList"
     ></mobile-share-file-list-modal>
   </footer>
@@ -119,8 +120,7 @@ export default {
     async fileShare({ data }) {
       if (data.type === DRAWING.FILE_SHARE) {
         if (data.contentType === 'application/pdf') {
-          //this.loadPdf(data)
-          // this.$eventBus.$emit(`loadPdf_${data.objectName}`, data.index + 1)
+          this.$refs['file-list'].addPdfHistory(data)
         } else {
           const res = await drawingDownload({
             sessionId: this.roomInfo.sessionId,
