@@ -1,0 +1,12 @@
+{
+  "support": {
+	"header_title": "在连接的浏览器中<br>不支持<br><span class='c-remote'>Remote Service</span> 服务。",
+	"header_description": "请利用下面的快捷方式按键使用Remote Serivce。<br class=\"noM\">详细内容请向<a href=\"https://virnect.com/contact/inquiry\" target=\"_blank\"><u>客服中心</u></a>咨询。",
+	"header_description_mobile": "详细内容请向<a href=\"https://virnect.com/contact/inquiry\" target=\"_blank\"><u>客服中心</u></a>咨询。",
+	"pc_web": "可以在<br>电脑Chrome浏览器中<br class='noM'> 使用Remote网络版本。",
+	"pc_web_button": "下载电脑Chrome",
+	"spot_already_use": "存在已经正在使用的<span class='c-remote-y'>Spot控制</span><br>浏览器。",
+	"spot_already_use_description": "其他浏览器中正在使用Spot控制。<br>请重试。",
+	"close_browser": "关闭浏览器"
+  }
+}
