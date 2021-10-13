@@ -26,7 +26,7 @@ export default {
   props: {
     label: String,
     amount: Number,
-    numOfGuest: Number,
+    numOfGuest: String,
   },
   computed: {
     ...mapGetters({

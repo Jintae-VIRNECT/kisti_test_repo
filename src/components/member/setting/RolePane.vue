@@ -10,7 +10,7 @@
           <MemberRoleSelect v-model="member.role" :disabled="!editEnabled" />
         </el-form-item>
         <el-form-item class="footer" v-if="editEnabled">
-          <el-button v-show="kickEnabled" @click="$emit('kick')">
+          <el-button v-if="kickEnabled" @click="$emit('kick')">
             {{ $t('members.setting.kick') }}
           </el-button>
           <el-button type="primary" @click="updateMembersRole">
@@ -36,13 +36,19 @@ export default {
   },
   computed: {
     editEnabled() {
-      if (this.canManage(this.member.userType, this.member.role)) {
-        return true
+      if (this.canManage(this.member.role)) {
+        return this.member.role === 'MASTER' ? false : true
       }
       return false
     },
     kickEnabled() {
-      return this.isUserTypeUser(this.member.userType)
+      // 본인 정보 이면
+      if (this.mine(this.member.userId)) return false
+      // 관리 권한이 없다면
+      if (!this.canManage(this.member.role)) return false
+      // 유터 타입이 USER 가 아니면
+      if (!this.isUserTypeUser(this.member.userType)) return false
+      return true
     },
     isNotGuest() {
       return !this.isRoleGuest(this.member.role)

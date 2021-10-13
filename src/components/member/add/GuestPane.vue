@@ -112,7 +112,7 @@ export default {
     // 플랜 선택 이벤트
     choosePlan(plan) {
       this.initAvailablePlans()
-      this.numOfGuest = plan.amount
+      this.numOfGuest = plan.amount.toString()
     },
     async reset() {
       if (!this.plansInfo.planStatus) {
@@ -126,8 +126,8 @@ export default {
     },
     async submit() {
       const form = {}
-      if (this.tabName === 'remote') form.planRemote = this.numOfGuest
-      else if (this.tabName === 'view') form.planView = this.numOfGuest
+      if (this.tabName === 'remote') form.planRemote = Number(this.numOfGuest)
+      else if (this.tabName === 'view') form.planView = Number(this.numOfGuest)
 
       // api 요청
       try {
@@ -171,7 +171,7 @@ export default {
       return this.activeWorkspace.role === 'MASTER'
     },
     currentMember() {
-      return this.membersTotal + this.numOfGuest
+      return this.membersTotal + Number(this.numOfGuest)
     },
   },
 }
