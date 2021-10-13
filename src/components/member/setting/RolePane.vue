@@ -42,12 +42,13 @@ export default {
       return false
     },
     kickEnabled() {
+      // 본인 정보 이면
       if (this.mine(this.member.userId)) return false
-      if (this.canManage(this.member.role)) {
-        if (this.isUserTypeUser(this.member.userType)) return true
-        else return false
-      }
-      return false
+      // 관리 권한이 없다면
+      if (!this.canManage(this.member.role)) return false
+      // 유터 타입이 USER 가 아니면
+      if (!this.isUserTypeUser(this.member.userType)) return false
+      return true
     },
     isNotGuest() {
       return !this.isRoleGuest(this.member.role)
