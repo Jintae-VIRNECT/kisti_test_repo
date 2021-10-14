@@ -61,12 +61,8 @@ export default {
       return this.isRoleGuest(this.member.role)
     },
     editEnabled() {
-      if (this.canManage(this.member.role)) {
-        if (this.isGuest) {
-          return false
-        } else return true
-      }
-      return false
+      // 플랜 정보는 마스터가 본인 포함 모두 변경 가능
+      return this.activeWorkspace.role === 'MASTER' ? true : false
     },
   },
   methods: {
