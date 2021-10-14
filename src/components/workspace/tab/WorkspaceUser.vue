@@ -212,6 +212,7 @@ export default {
     },
     async getList() {
       try {
+        this.$eventBus.$emit('search:clear')
         this.loading = true
 
         const params = {
