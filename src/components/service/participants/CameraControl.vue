@@ -18,7 +18,8 @@
         <span>{{ $t('service.camera_control') }}</span>
         <check
           :text="$t('service.camera_control_allow')"
-          :value.sync="allowCameraControl"
+          :value="flagAllowCameraControl"
+          @click="toggleFlagAllowCameraControl"
         ></check>
         <button class="camera-control__body-btn" @click="setCameraStatue(true)">
           {{ $t('service.camera_control_every_on') }}
@@ -40,6 +41,7 @@ import { CONTROL } from 'configs/remote.config'
 
 import Popover from 'Popover'
 import Check from 'Check'
+import { mapMutations, mapGetters } from 'vuex'
 
 export default {
   name: 'ParticipantVideo',
@@ -50,22 +52,33 @@ export default {
   },
   data() {
     return {
-      allowCameraControl: false,
+      flagAllowCameraControl: false,
       showControl: false,
     }
   },
   watch: {
-    allowCameraControl(flag) {
-      this.$call.sendControlRestrict('video', !flag)
+    flagAllowCameraControl(flag) {
+      this.SET_ALLOW_CAMERA_CONTROL(flag)
     },
   },
+  computed: {
+    ...mapGetters(['allowCameraControlFlag']),
+  },
   methods: {
+    ...mapMutations(['SET_ALLOW_CAMERA_CONTROL']),
     setCameraStatue(flag) {
       this.$call.sendControl(CONTROL.VIDEO, flag)
     },
     visible(val) {
       this.showControl = val
     },
+    toggleFlagAllowCameraControl() {
+      this.$call.sendControlRestrict('video', this.flagAllowCameraControl)
+      this.flagAllowCameraControl = !this.flagAllowCameraControl
+    },
+  },
+  created() {
+    this.flagAllowCameraControl = this.allowCameraControlFlag
   },
 }
 </script>

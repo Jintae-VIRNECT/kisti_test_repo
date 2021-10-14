@@ -18,6 +18,7 @@ export const CALL_SPEAKER = 'CALL_SPEAKER'
 export const CALL_MIC = 'CALL_MIC'
 export const MUTE_ON_OFF = 'MUTE_ON_OFF'
 export const SET_TAB_MENU_NOTICE = 'SET_TAB_MENU_NOTICE'
+export const SET_ALLOW_CAMERA_CONTROL = 'SET_ALLOW_CAMERA_CONTROL'
 
 // tools
 export const TOOL_DRAWING_COLOR = 'TOOL_DRAWING_COLOR'
