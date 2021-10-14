@@ -181,6 +181,7 @@
     "file_choice_num": "{number}個",
     "file_remove": "ファイル削除",
     "file_upload": "ファイルアップロード",
+    "file_upload_mobile_guide": "下段のファイルアップロードボタンから<br/>共有するファイルをアップロードできます。",
     "file_upload_maxnum": "ファイルは1個ずつアップロードしてください。",
     "file_upload_maxsize": "添付容量を超えました。",
     "file_image_notsupport": "該当画像は支援されません。",
@@ -238,6 +239,7 @@
     "map_cannot_use_gps":"位置情報機能を使用できない機械です。",
     "map_timeout":"GPS情報を確認できません。要請した参加者にGPS機能を使用しているかどうかを確認してください。",
     
+    "spot_control": "Spot制御",
     "spot_networ_error" : "ネットワーク/サーバの問題でSpotの接続が終了しました。\n再接続をしますか？",
     "spot_connecting" : "Spot接続中...",
     "spot_reconnecting" : "Spot再接続中...",

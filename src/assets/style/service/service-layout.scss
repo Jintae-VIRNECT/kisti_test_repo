@@ -66,3 +66,20 @@
   &.screen {
   }
 }
+
+@include responsive-mobile {
+  .service-wrapper.remote-wrapper {
+    height: 100%;
+    margin-top: 0;
+  }
+
+  .main-wrapper {
+    height: 100%;
+    margin-bottom: 0;
+
+    &.shareview {
+      width: 100%;
+      margin-left: 0;
+    }
+  }
+}

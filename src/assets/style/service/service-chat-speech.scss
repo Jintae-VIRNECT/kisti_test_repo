@@ -160,3 +160,91 @@
   height: 1.714rem;
   background: url(~assets/image/call/ic-close-w.svg) no-repeat center/100%;
 }
+
+@include responsive-mobile {
+  .chat-speech {
+    height: 39.3vh;
+    padding: 4rem 1.6rem 1.6rem 1.6rem;
+    background-color: $new_color_popup_bg;
+    border-radius: 1.6rem 1.6rem 0 0;
+  }
+
+  .chat-speech__main {
+    height: 5.9rem;
+  }
+
+  .chat-speech__progress {
+    width: 5.9rem;
+    height: 5.9rem;
+  }
+
+  .chat-speech__icon {
+    width: 5.4rem;
+    height: 5.4rem;
+    margin-right: 1.3rem;
+    margin-left: 0.3rem;
+    &::before {
+      display: none;
+    }
+
+    &::after {
+      width: 5.4rem;
+      height: 5.4rem;
+      background-color: #868c94;
+      background-size: 3rem;
+    }
+
+    &.recording {
+      width: 4.4rem;
+      height: 4.4rem;
+      margin-right: 2.3rem;
+      &::after {
+        top: 0;
+        left: 5px;
+        width: 4.4rem;
+        height: 4.4rem;
+      }
+    }
+  }
+
+  .chat-speech__text {
+    @include fontLevel(150);
+  }
+
+  .chat-speech__send {
+    flex: unset;
+    width: 6.4rem;
+    height: 3rem;
+    color: $new_color_text_main;
+    background-color: $new_color_bg_button_primary;
+    border-radius: 5px;
+    @include fontLevel(100);
+
+    &.inactive {
+      color: $new_color_text_main;
+      background-color: $new_color_bg_button_inactive;
+      opacity: 0.4;
+    }
+  }
+
+  .chat-speach__textarea {
+    height: calc(39.3vh - 12.2rem);
+    > textarea {
+      color: $new_color_text_main;
+      background-color: $new_color_bg_textarea;
+      @include fontLevel(150);
+      &::placeholder {
+        color: $new_color_text_sub_description;
+      }
+    }
+  }
+
+  .chat-speech__close {
+    top: 1rem;
+    right: 1rem;
+    width: 2.4rem;
+    height: 2.4rem;
+    background: url(~assets/image/call/mdpi_icon_close_new.svg) no-repeat
+      center/110%;
+  }
+}

@@ -143,6 +143,7 @@ export default {
     this.$eventBus.$off('scrollReset')
     this.$nextTick(() => {
       this.$eventBus.$on('scrollReset', this.reset)
+      this.$eventBus.$on('scrollHeightReset', this.responsiveReset)
     })
   },
   mounted() {

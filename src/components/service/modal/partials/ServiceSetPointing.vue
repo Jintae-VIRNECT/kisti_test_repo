@@ -1,9 +1,20 @@
 <template>
   <section class="service-setting__view">
-    <p class="service-setting--header">
+    <p v-if="!isMobileSize" class="service-setting--header">
       {{ $t('service.setting_pointing') }}
     </p>
-    <div class="service-setting__row">
+
+    <figure v-if="isMobileSize" class="setting__figure">
+      <p class="setting__label">
+        {{ $t('service.setting_pointing_participant') }}
+      </p>
+      <check
+        :text="$t('service.setting_pointing_allow')"
+        :value.sync="pointing"
+      ></check>
+    </figure>
+
+    <div v-else class="service-setting__row">
       <p class="service-setting__text">
         {{ $t('service.setting_pointing_participant') }}
       </p>
@@ -18,6 +29,7 @@
 
 <script>
 import RCheck from 'RemoteCheckBox'
+import Check from 'Check'
 
 import toastMixin from 'mixins/toast'
 
@@ -27,7 +39,7 @@ import { ROLE, CONTROL } from 'configs/remote.config'
 export default {
   name: 'ServiceSetPointing',
   mixins: [toastMixin],
-  components: { RCheck },
+  components: { Check, RCheck },
 
   data() {
     return {
@@ -62,3 +74,24 @@ export default {
   },
 }
 </script>
+
+<style lang="scss">
+@import '~assets/style/mixin';
+
+@include responsive-mobile {
+  .service-setting__view {
+    width: 100%;
+    padding: 2rem 1.6rem;
+
+    .setting__figure {
+      .setting__label {
+        @include fontLevel(100);
+        margin-bottom: 0.8rem;
+      }
+      .check {
+        @include responsive-check-toggle;
+      }
+    }
+  }
+}
+</style>

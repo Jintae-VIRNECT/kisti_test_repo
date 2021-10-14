@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="24px" height="24px" viewBox="0 0 24 24" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>29821DDE-26B3-42F6-BB7C-57E9035E0106@1x</title>
+    <defs>
+        <polygon id="path-1" points="7.53333333 1.6 7.53333333 13.3333333 10.7333333 13.3333333 10.7333333 22.9333333 18.2 10.1333333 13.9333333 10.1333333 18.2 1.6"></polygon>
+    </defs>
+    <g id="Remote_Main_remote" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="RWS_0100-_접속-화면_기본-기능-(리더)_더보기-메뉴_spot버튼-추가" transform="translate(-130.000000, -100.000000)">
+            <g id="more_lists-copy" transform="translate(70.000000, 84.000000)">
+                <g id="more_list_flash" transform="translate(54.000000, 10.000000)">
+                    <g id="on" transform="translate(6.000000, 6.000000)">
+                        <rect id="tr" opacity="0.174409412" x="0" y="0" width="24" height="24"></rect>
+                        <mask id="mask-2" fill="white">
+                            <use xlink:href="#path-1"></use>
+                        </mask>
+                        <use id="icon/image/flash_on_24px" fill="#BCC1C7" xlink:href="#path-1"></use>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

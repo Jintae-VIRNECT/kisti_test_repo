@@ -5,6 +5,8 @@
     @click="clickListener"
     @mousedown="mousedown"
     @mouseup="mouseup"
+    @touchstart="touchstart"
+    @touchend="touchend"
   >
     <div class="back">
       <img class="icon" :src="imgSrc" />
@@ -24,14 +26,25 @@ export default {
     },
   },
   methods: {
-    clickListener() {
+    clickListener(evt) {
+      evt.preventDefault()
       this.$emit('click')
     },
-    mouseup() {
+    mouseup(evt) {
+      evt.preventDefault()
       this.$emit('mouseup')
     },
-    mousedown() {
+    mousedown(evt) {
+      evt.preventDefault()
       this.$emit('mousedown')
+    },
+    touchstart(evt) {
+      evt.preventDefault()
+      this.$emit('touchstart')
+    },
+    touchend(evt) {
+      evt.preventDefault()
+      this.$emit('touchend')
     },
   },
 }

@@ -11,6 +11,7 @@
           :beforeChat="idx === 0 ? null : chatList[idx - 1]"
           :afterChat="idx === chatList.length - 1 ? null : chatList[idx + 1]"
           :chat="chat"
+          :class="{ create: chat.status === 'create' }"
           @tts="doTts"
         ></chat-item>
       </ol>

@@ -311,7 +311,12 @@
         width: 100%;
         padding: 1rem 0 1.2rem 0;
         @include fontLevel(150);
-        color: $new_color_text_main;
+        color: $new_color_text_sub;
+        opacity: 1;
+
+        &.active {
+          color: $new_color_text_main;
+        }
 
         //active bar 굵기 변경
         &::after {

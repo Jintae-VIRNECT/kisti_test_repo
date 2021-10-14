@@ -12,8 +12,7 @@
 
     <speaker></speaker>
 
-    <!-- 서비스 반응형 추가 후 props 제거 -->
-    <notice v-if="isNotGuest" fixSize="2.429rem" fixSrc tempClass></notice>
+    <notice v-if="isNotGuest"></notice>
 
     <call-time></call-time>
 
@@ -75,6 +74,7 @@ export default {
     },
   },
   methods: {
+    //모바일인 경우 ServiceMobileHeader에서 처리된다(동일함수)
     leave() {
       try {
         this.$call.leave()

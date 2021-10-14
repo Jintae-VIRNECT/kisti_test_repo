@@ -7,7 +7,7 @@
       </transition>
 
       <transition name="share">
-        <share v-show="currentView === 'drawing'"></share>
+        <share v-if="!isMobileSize" v-show="currentView === 'drawing'"></share>
       </transition>
 
       <main
@@ -35,7 +35,11 @@
         </transition>
       </main>
 
-      <user-list :class="userListClass"></user-list>
+      <user-list
+        v-if="!isMobileSize"
+        :class="userListClass"
+        @openInviteModal="toggleInviteModal"
+      ></user-list>
       <!-- <div v-else>
         <figure
           v-for="participant of participants"
@@ -52,15 +56,19 @@
       </div> -->
       <!-- <component :is="viewComponent"></component> -->
     </div>
+    <mobile-footer v-if="isMobileSize"></mobile-footer>
     <reconnect-modal :visible.sync="connectVisible"></reconnect-modal>
     <setting-modal></setting-modal>
     <record-list v-if="useLocalRecording"></record-list>
+
+    <!-- pc에서만 지원 -->
     <map-modal
-      v-if="isOnpremise"
+      v-if="isOnpremise && !isMobileSize"
       :visible.sync="positionMapVisible"
     ></map-modal>
     <guest-invite-modal :visible.sync="guestInviteModalVisible">
     </guest-invite-modal>
+    <invite-modal :visible.sync="inviteModalVisible"></invite-modal>
   </section>
 </template>
 
@@ -79,7 +87,7 @@ import confirmMixin from 'mixins/confirm'
 import { checkInput } from 'utils/deviceCheck'
 import ReconnectModal from './modal/ReconnectModal'
 
-import { mapGetters, mapActions } from 'vuex'
+import { mapGetters, mapActions, mapMutations } from 'vuex'
 export default {
   name: 'ServiceLayout',
   beforeRouteEnter(to, from, next) {
@@ -107,7 +115,9 @@ export default {
     RecordList: () => import('LocalRecordList'),
     SettingModal: () => import('./modal/SettingModal'),
     MapModal: () => import('./modal/PositionMapModal'),
+    MobileFooter: () => import('./tools/MobileFooter'),
     GuestInviteModal: () => import('./modal/GuestInviteModal'),
+    InviteModal: () => import('./modal/InviteModal'),
   },
   data() {
     return {
@@ -118,6 +128,7 @@ export default {
       isVideoLoaded: false,
       positionMapVisible: false,
       guestInviteModalVisible: false,
+      inviteModalVisible: false,
     }
   },
   computed: {
@@ -154,8 +165,16 @@ export default {
       }
     },
   },
-
+  watch: {
+    //채팅창이 보이게 되는 경우 chat아이콘의 notice 제거
+    isScreenDesktop(newVal) {
+      if (newVal) {
+        this.SET_CHAT_ACTIVE(false)
+      }
+    },
+  },
   methods: {
+    ...mapMutations(['SET_CHAT_ACTIVE']),
     ...mapActions(['useStt', 'setTool']),
     changeOrientation(event) {
       if (!this.myInfo || !this.myInfo.stream) return
@@ -258,6 +277,9 @@ export default {
     toggleGuestInvite(flag) {
       this.guestInviteModalVisible = flag
     },
+    toggleInviteModal(flag) {
+      this.inviteModalVisible = flag
+    },
   },
 
   /* Lifecycles */
@@ -291,6 +313,7 @@ export default {
     this.$eventBus.$on('video:loaded', this.setVideoLoaded)
     this.$eventBus.$on('map:show', this.togglePositionMap)
     this.$eventBus.$on('guestInvite:show', this.toggleGuestInvite)
+    this.$eventBus.$on('inviteModal:show', this.toggleInviteModal)
   },
   beforeDestroy() {
     if (this.callTimeout) {
@@ -313,6 +336,7 @@ export default {
     this.$eventBus.$off('video:loaded', this.setVideoLoaded)
     this.$eventBus.$off('map:show', this.togglePositionMap)
     this.$eventBus.$off('guestInvite:show', this.toggleGuestInvite)
+    this.$eventBus.$off('inviteModal:show', this.toggleInviteModal)
 
     //협업 종료시 stt 종료
     this.useStt(false)

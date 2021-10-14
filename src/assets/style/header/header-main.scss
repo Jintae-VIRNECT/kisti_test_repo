@@ -25,11 +25,19 @@
 
 //모바일 반응형 v2.5
 @include responsive-mobile {
-  //워크스페이스 반응형만 선반영되기 때문에 서비스 헤더에 영향 주지않기 위해 .workspace로 구분 한다
-  //서비스 반응형도 반영될 때는 제거하고 다시 header 클래스 공통 사용 가능. WorkspaceHeader.vue의 header element의 workspace class 제거 해야함
-  .header.workspace {
+  .header {
     height: $header_m_height;
     background-color: $new_color_bg; //@color 수정 필요
+
+    &.service {
+      z-index: 2;
+      height: 7.4rem;
+      background: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0));
+      pointer-events: none;
+      &::after {
+        display: none;
+      }
+    }
   }
 
   //workspace 선택 화면 이외에는 header의 아래 border선 제거

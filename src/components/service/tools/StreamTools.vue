@@ -6,7 +6,8 @@
       <div class="division"></div>
       <screen-share></screen-share>
     </template>
-    <position-map v-if="isOnpremise"></position-map>
+    <!-- PC에서만 지원 -->
+    <position-map v-if="isOnpremise && !isMobileSize"></position-map>
   </div>
 </template>
 

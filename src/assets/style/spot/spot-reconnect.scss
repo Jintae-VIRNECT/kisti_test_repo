@@ -1,4 +1,4 @@
-@import "~assets/style/vars";
+@import "~assets/style/mixin";
 
 .modal.spot-reconnect .modal--inner {
   padding: 0;
@@ -61,6 +61,47 @@
     }
     &:active {
       background-color: #434346;
+    }
+  }
+}
+
+@include responsive-mobile {
+  .spot-reconnect.modal {
+    .modal--inner {
+      min-width: unset;
+      border-radius: 8px;
+    }
+    .modal--body {
+      background-color: $new_color_popup_bg;
+      border-radius: 8px;
+    }
+  }
+
+  .spot-reconnect__layout {
+    .spot-reconnect__img {
+      background-color: transparent;
+    }
+    .spot-reconnect__body {
+      height: unset;
+      margin-bottom: 1.2rem;
+      padding-top: 0.4rem;
+      .reconnect-title {
+        @include fontLevel(100);
+      }
+      .reconnect-timer {
+        @include fontLevel(400);
+      }
+    }
+  }
+
+  .spot-reconnect__footer {
+    height: 6.8rem;
+    .cancel {
+      width: 8.7rem;
+      height: 3.8rem;
+      background-color: $new_color_bg_button_sub;
+      border-radius: 5px;
+      @include fontLevel(200);
     }
   }
 }

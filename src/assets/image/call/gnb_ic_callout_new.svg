@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="40px" height="40px" viewBox="0 0 40 40" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>B23BCF7F-EF85-4F21-82C2-D8CD89456625@1x</title>
+    <defs>
+        <path d="M27,20 L27,28 L13,28 L13,20 L11,20 L11,28 C11,29.1 11.9,30 13,30 L27,30 C28.1,30 29,29.1 29,28 L29,20 L27,20 Z M19,13.83 L16.41,16.41 L15,15 L20,10 L25,15 L23.59,16.41 L21,13.83 L21,23.5 L19,23.5 L19,13.83 Z" id="path-1"></path>
+        <filter x="-16.7%" y="-15.0%" width="133.3%" height="130.0%" filterUnits="objectBoundingBox" id="filter-3">
+            <feOffset dx="0" dy="0" in="SourceAlpha" result="shadowOffsetOuter1"></feOffset>
+            <feGaussianBlur stdDeviation="1" in="shadowOffsetOuter1" result="shadowBlurOuter1"></feGaussianBlur>
+            <feColorMatrix values="0 0 0 0 0   0 0 0 0 0   0 0 0 0 0  0 0 0 0.2 0" type="matrix" in="shadowBlurOuter1"></feColorMatrix>
+        </filter>
+    </defs>
+    <g id="Remote_Main_Mobile" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Icon" transform="translate(-846.000000, -874.000000)">
+            <g id="40-x-40" transform="translate(36.000000, 818.000000)">
+                <g id="ic_collabo_exit" transform="translate(800.000000, 46.000000)">
+                    <g id="ic_collabo_gnb_exit" transform="translate(10.000000, 10.000000)">
+                        <rect id="top_icon_exit" opacity="0.39343843" x="0" y="0" width="40" height="40"></rect>
+                        <mask id="mask-2" fill="white">
+                            <use xlink:href="#path-1"></use>
+                        </mask>
+                        <g id="top_icon_exit" fill-rule="nonzero" transform="translate(20.000000, 20.000000) rotate(-270.000000) translate(-20.000000, -20.000000) ">
+                            <use fill="black" fill-opacity="1" filter="url(#filter-3)" xlink:href="#path-1"></use>
+                            <use fill="#FFFFFF" xlink:href="#path-1"></use>
+                        </g>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

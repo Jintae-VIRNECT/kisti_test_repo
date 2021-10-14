@@ -1,7 +1,7 @@
 <template>
   <div class="main-body stream">
-    <stream-tools></stream-tools>
-    <menus></menus>
+    <stream-tools v-if="!isMobileSize"></stream-tools>
+    <menus v-if="!isMobileSize"></menus>
     <main-video></main-video>
   </div>
 </template>

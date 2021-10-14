@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="28px" height="28px" viewBox="0 0 28 28" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>9C535045-A720-4445-A641-3764CF1ECF2D@1x</title>
+    <defs>
+        <path d="M18.76,8.36 L17.08,10.05 C17.88,11.18 17.91,12.63 17.17,13.79 L18.87,15.49 C20.77,13.47 20.74,10.51 18.76,8.36 Z M22.07,5 L20.44,6.63 C23.16,9.6 23.2,14.02 20.58,17.19 L22.22,18.83 C25.96,14.94 25.93,8.99 22.07,5 Z M11.43,8.04 L14.96,11.57 C14.76,9.71 13.29,8.24 11.43,8.04 Z M6.41,5.86 L5,7.27 L7.62,9.89 C7.23,10.5 7,11.22 7,12 C7,14.21 8.79,16 11,16 C11.78,16 12.5,15.77 13.11,15.38 L17.51,19.78 C15.74,18.6 12.78,18 11,18 C8.33,18 3,19.34 3,22 L3,24 L19,24 L19,22 C19,21.63 18.89,21.3 18.71,20.98 L21.73,24 L23.14,22.59 L6.41,5.86 Z" id="path-1"></path>
+    </defs>
+    <g id="Remote_collabo_Mobile" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="RWS_0060-_접속화면_참가자-정보_섬네일-선택" transform="translate(-32.000000, -462.000000)">
+            <g id="bottom_area" transform="translate(0.000000, 280.000000)">
+                <g id="list01" transform="translate(16.000000, 168.000000)">
+                    <g id="icon_mute" transform="translate(16.000000, 14.000000)">
+                        <polygon id="tr" points="0 0 28 0 28 28 0 28"></polygon>
+                        <mask id="mask-2" fill="white">
+                            <use xlink:href="#path-1"></use>
+                        </mask>
+                        <use id="icon_user_mute_on" fill="#71767F" fill-rule="nonzero" xlink:href="#path-1"></use>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

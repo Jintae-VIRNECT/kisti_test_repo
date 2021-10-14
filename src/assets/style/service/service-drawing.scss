@@ -54,3 +54,21 @@
     height: 8.571rem;
   }
 }
+
+@include responsive-mobile {
+  .drawing-box__empty,
+  .drawing-box {
+    height: 100%;
+    background-color: $new_color_bg;
+  }
+
+  .drawing-box__empty-inner {
+    > p {
+      @include fontLevel(200);
+      &.description {
+        @include fontLevel(75);
+        color: $new_color_text_sub;
+      }
+    }
+  }
+}

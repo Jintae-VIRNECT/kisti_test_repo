@@ -10,6 +10,8 @@
         inactive: !moveBtn,
         pressed: key[btn.key].state,
       }"
+      @touchstart="moveBtnDown(btn.key)"
+      @touchend="moveBtnUp(btn.key)"
       @mousedown="moveBtnDown(btn.key)"
       @mouseup="moveBtnUp(btn.key)"
     ></control-btn>
@@ -147,16 +149,18 @@ export default {
 </script>
 
 <style lang="scss">
+@import '~assets/style/mixin';
+
 .move-control-group {
   position: absolute;
-  bottom: 5.5vh;
   right: 5.5vh;
+  bottom: 5.5vh;
+  z-index: 2;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
 
   width: 22vh;
-
-  display: flex;
-  justify-content: flex-end;
-  flex-wrap: wrap;
 
   .spot-control-btn {
     width: 5.925vh;
@@ -174,7 +178,41 @@ export default {
     }
 
     &.pressed > .back {
-      background-color: #74747a; //opacity로 필요
+      background-color: rgba(white, 0.3);
+    }
+  }
+}
+
+@include responsive-tablet-mobile {
+  .move-control-group .spot-control-btn .icon {
+    width: 18px;
+    height: 18px;
+  }
+}
+
+@include responsive-tablet {
+  .move-control-group {
+    right: 16.9vw;
+    bottom: 5.5vh;
+    width: 220px;
+    .spot-control-btn {
+      width: 64px;
+      height: 64px;
+      margin: 4px;
+    }
+  }
+}
+
+@include responsive-mobile {
+  .move-control-group {
+    right: 16px;
+    bottom: 24px;
+    width: 20rem;
+
+    .spot-control-btn {
+      width: 5.6rem;
+      height: 5.6rem;
+      margin: 0.3rem;
     }
   }
 }

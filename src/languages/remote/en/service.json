@@ -181,6 +181,7 @@
     "file_choice_num": "Select {number}",
     "file_remove": "Remove files",
     "file_upload": "Upload files",
+    "file_upload_mobile_guide": "The file upload button at the bottom<br/>allows you to upload a file to be shared.",
     "file_upload_maxnum": "Only one file per upload is supported currently.",
     "file_upload_maxsize": "Exceeded the attachable file size.",
     "file_image_notsupport": "Does not support this image format.",
@@ -238,6 +239,7 @@
     "map_cannot_use_gps":"This device does not support the location information function.",
     "map_timeout":"Unable to verify GPS information. Please check whether the GPS function is used by the requested participant.",
 
+    "spot_control": "Spot control",
     "spot_networ_error" : "The Spot connection was terminated due to a network/server problem.​\nWould you like to reconnect?​",
     "spot_connecting" : "Connecting to Spot…",
     "spot_reconnecting" : "Spot reconnecting…",

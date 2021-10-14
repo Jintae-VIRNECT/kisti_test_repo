@@ -59,6 +59,9 @@ import SpotCameraBlock from './SpotCameraBlock.vue'
 export default {
   components: { SpotCameraBlock },
   props: {
+    cameraBlockList: {
+      type: Object,
+    },
     frontLeftImage: {
       type: String,
     },
@@ -75,86 +78,6 @@ export default {
       type: String,
     },
   },
-  data() {
-    return {
-      cameraBlockList: {
-        front: [
-          {
-            name: 'fl',
-            title: 'Front Camera 01',
-            ratio: 'potrait',
-            video: this.frontLeft,
-            option: {
-              //clearRect: [0, 0, 480, 640],
-              //translate: [240, 320],
-              //rotate: (90 * Math.PI) / 180,
-              //drawImage: [-320, -240],
-            },
-          },
-          {
-            name: 'fr',
-            title: 'Front Camera 02',
-            ratio: 'potrait',
-            video: null,
-            option: {
-              //clearRect: [0, 0, 480, 640],
-              //translate: [240, 320],
-              //rotate: (90 * Math.PI) / 180,
-              //drawImage: [-320, -240],
-            },
-          },
-        ],
-        side: [
-          {
-            name: 'sl',
-            title: 'Left Camera',
-            ratio: 'landscape',
-            video: null,
-            option: null,
-          },
-          {
-            name: 'sr',
-            title: 'Right Camera',
-            ratio: 'landscape',
-            video: null,
-            option: {
-              upsideDown: true,
-              //clearRect: [0, 0, 640, 480],
-              //translate: [320, 240],
-              //rotate: (180 * Math.PI) / 180,
-              //drawImage: [-320, -240],
-            },
-          },
-        ],
-        back: [
-          {
-            name: 'b',
-            title: 'Back Camera',
-            ratio: 'landscape',
-            video: null,
-            option: null,
-          },
-        ],
-      },
-    }
-  },
-  watch: {
-    frontLeftImage(val) {
-      this.cameraBlockList['front'][0].video = val
-    },
-    frontRightImage(val) {
-      this.cameraBlockList['front'][1].video = val
-    },
-    sideLeftImage(val) {
-      this.cameraBlockList['side'][0].video = val
-    },
-    sideRightImage(val) {
-      this.cameraBlockList['side'][1].video = val
-    },
-    backImage(val) {
-      this.cameraBlockList['back'][0].video = val
-    },
-  },
   computed: {
     ...mapGetters(['isSpotFullscreen']),
   },
@@ -166,30 +89,35 @@ export default {
   background: black;
 }
 .spot-camera-block.front-camera-fullmode {
+  width: calc(100vh * 0.754);
+  height: 100%;
+  margin-right: 0.4rem;
+  margin-left: 0.4rem;
+  //aspect-ratio: 0.754/1;
+  background: black;
   border: none;
-  margin-left: 4px;
-  margin-right: 4px;
 
-  height: 100vh;
-  aspect-ratio: 0.754/1;
+  img {
+    max-width: 100vh;
+    height: 75%;
+    transform: rotate(90deg);
+  }
 }
 .fullscreen-camera-row {
   position: absolute;
   bottom: 2.777vh;
-  width: 100vw;
-
   display: flex;
   flex-direction: row;
   justify-content: center;
+  width: 100vw;
 
   .spot-camera-block {
+    //aspect-ratio: 1/0.75;
+    width: calc(15.5vh / 0.75);
+    height: 15.5vh;
     margin: 0 0.648vh;
-
     border: 2px solid #040404;
     border-radius: 3px;
-
-    height: 15.5vh;
-    aspect-ratio: 1/0.75;
   }
 }
 </style>

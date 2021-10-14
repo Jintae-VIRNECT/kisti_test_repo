@@ -95,7 +95,7 @@ export const activateSpotConnectResponse = callback => {
 export const spotRunningStateListener = callback => {
   socket.on('running_state', data => {
     //{battery, estop, power}
-    logger(data)
+    //logger('[SPOT]', data)
     callback(data)
   })
 }

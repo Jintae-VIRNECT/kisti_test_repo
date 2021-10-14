@@ -1,7 +1,7 @@
 <template>
   <div class="main-body drawing">
     <drawing-tools></drawing-tools>
-    <menus></menus>
+    <menus v-if="!isMobileSize"></menus>
     <drawing></drawing>
   </div>
 </template>
