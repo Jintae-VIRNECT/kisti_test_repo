@@ -14,7 +14,7 @@ import { getGuestRoomInfo } from 'api/http/guest'
 import roomMixin from 'mixins/room'
 import { ROLE } from 'configs/remote.config'
 import { ERROR } from 'configs/error.config'
-import { URLS } from 'configs/env.config'
+import auth from 'utils/auth'
 
 const EXPIRE_TIMER = 120 //120초
 
@@ -89,8 +89,8 @@ export default {
       } catch (err) {
         if (err.code === ERROR.REMOTE_ALREADY_REMOVED) {
           this.confirmDefault(this.$t('workspace.remote_already_removed'), {
-            action: () => {
-              location.href = `${URLS['console']}/?continue=${location.href}`
+            action: async () => {
+              await auth.logout()
             },
           })
         } else {
