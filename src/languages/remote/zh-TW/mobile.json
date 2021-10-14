@@ -1,0 +1,20 @@
+{
+  "mobile": {
+	"policy": "條款及政策",
+	"use_terms": "使用條款",
+	"privacy_policy": "個人信息處理方針",
+	"opensource_license": "開源許可",
+	"company": "公司介紹",
+	"company_name": "公司名稱",
+	"virnect": "（株）VIRNECT",
+	"ceo": "代表",
+	"ceo_name": "河泰真",
+	"address": "地址",
+	"seoul_branch": "VIRNECT Experience Center",
+	"research_center": "Research Center",
+	"seoul_address": "首爾市龍山區漢江大路7路10-15",
+	"research_address": "REGUS 3005, Donau-City-Strasse 7/2 (DC Tower) 30th floor, 1220 Wien, Austria",
+	"homepage": "網站",
+	"business_license_number": "營業執照號碼"
+  }
+}

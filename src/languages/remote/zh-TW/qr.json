@@ -1,0 +1,11 @@
+{
+  "qr":{
+	"qr_login": "二維碼登錄",
+	"qr_login_description": "請在智能眼鏡中利用二維碼方便登錄。",
+	"qr_login_how_to": "二維碼登錄方法",
+	"qr_login_how_to_description_1": "1. 請在將要使用的智能眼鏡中執行VIRNECT Remote。",
+	"qr_login_how_to_description_2": "2. 請選擇登錄畫面下方的[二維碼登錄]。",
+	"qr_login_how_to_description_3": "3. 請照射當前畫面上的二維碼。識別二維碼後，設備將登錄。",
+	"qr_login_how_to_description_4": "*只有支持二維碼的設備可行"
+  }
+}

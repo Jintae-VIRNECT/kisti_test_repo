@@ -1,0 +1,12 @@
+{
+  "support": {
+	"header_title": "在連接的流覽器中<br>不支持<br><span class='c-remote'>Remote Service</span> 服務。",
+	"header_description": "請利用下麵的快捷方式按鍵使用Remote Serivce。<br class=\"noM\">詳細內容請向<a href=\"https://virnect.com/contact/inquiry\" target=\"_blank\"><u>客服中心</u></a>諮詢。",
+	"header_description_mobile": "詳細內容請向<a href=\"https://virnect.com/contact/inquiry\" target=\"_blank\"><u>客服中心</u></a>諮詢。",
+	"pc_web": "可以在<br>電腦Chrome流覽器中<br class='noM'> 使用Remote網路版本。",
+	"pc_web_button": "下載電腦Chrome",
+	"spot_already_use": "存在已經正在使用的<span class='c-remote-y'>Spot控制</span><br>流覽器。",
+	"spot_already_use_description": "其他流覽器中正在使用Spot控制。<br>請重試。",
+	"close_browser": "關閉流覽器"
+  }
+}
