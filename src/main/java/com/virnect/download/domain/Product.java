@@ -5,6 +5,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Index;
 import javax.persistence.Table;
 
 import lombok.Getter;
@@ -22,16 +23,19 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-@Table(name = "product")
+@Table(
+	name = "product",
+	indexes = @Index(name = "uidx_product_name", columnList = "name", unique = true)
+)
 public class Product extends TimeEntity {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "product_id")
-    private Long id;
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "product_id")
+	private Long id;
 
-    @Column(name = "name")
-    private String name;
+	@Column(name = "name", length = 70)
+	private String name;
 
-    @Column(name = "description")
-    private String description;
+	@Column(name = "description")
+	private String description;
 }
