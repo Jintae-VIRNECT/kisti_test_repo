@@ -47,12 +47,12 @@ export default {
           },
           {
             text: '简体中文(翻译)',
-            value: 'zh-CN',
+            value: 'zh-cn',
             imgSrc: require('assets/image/img_flag_CN.svg'),
           },
           {
             text: '繁體中文(譯本)',
-            value: 'zh-TW',
+            value: 'zh-tw',
             imgSrc: require('assets/image/img_flag_CN.svg'),
           },
           {
