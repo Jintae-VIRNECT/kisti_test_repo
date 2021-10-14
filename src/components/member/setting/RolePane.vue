@@ -37,8 +37,7 @@ export default {
   computed: {
     editEnabled() {
       // 수정 권한이 있다면
-      if (this.canManage(this.member.role)) return true
-      return false
+      return this.canManage(this.member.role)
     },
     kickEnabled() {
       // 본인 정보 이면 불가
