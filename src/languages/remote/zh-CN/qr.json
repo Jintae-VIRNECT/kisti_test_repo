@@ -1,0 +1,11 @@
+{
+  "qr":{
+	"qr_login": "二维码登录",
+	"qr_login_description": "请在智能眼镜中利用二维码方便登录。",
+	"qr_login_how_to": "二维码登录方法",
+	"qr_login_how_to_description_1": "1. 请在将要使用的智能眼镜中执行VIRNECT Remote。",
+	"qr_login_how_to_description_2": "2. 请选择登录画面下方的[二维码登录]。",
+	"qr_login_how_to_description_3": "3. 请照射当前画面上的二维码。识别二维码后，设备将登录。",
+	"qr_login_how_to_description_4": "*只有支持二维码的设备可行"
+  }
+}

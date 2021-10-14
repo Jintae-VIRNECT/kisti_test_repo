@@ -1,0 +1,12 @@
+{
+  "support": {
+	"header_title": "<br><span class='c-remote'>Remote Service</span> El Servicio de Remote no se soporta<br> en el navegador conectado.",
+	"header_description": "Por favor, toque el botón Acceso Directo que se encuentra en la parte inferior para acceder al Servicio de Remote. <br class=\"noM\">noM\">Para tener más información, <a href=\"https://virnect.com/contact/inquiry\" target=\"_blank\"><u>consulte con el centro de atención del cliente</u></a>.",
+	"header_description_mobile": "Para tener más información, <a href=\"https://virnect.com/contact/inquiry\" target=\"_blank\"><u>consulte con el centro de atención del cliente</u></a>.",
+	"pc_web": "La web VIRNECT Remote está habilitada<br> en Chrome para PC<br class='noM'>.",
+	"pc_web_button": "Descargar Chrome para PC",
+	"spot_already_use": "El <span class='c-remote-y'>controlador de Spot</span><br> ya está activada en otro navegador.",
+	"spot_already_use_description": "Otro navegador está usando el controlador de Spot.<br>Por favor intente otra vez.",
+	"close_browser": "Cerrar el navegador"
+  }
+}

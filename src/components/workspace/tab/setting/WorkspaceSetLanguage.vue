@@ -45,6 +45,21 @@ export default {
             value: 'ja',
             imgSrc: require('assets/image/img_flag_JP.svg'),
           },
+          {
+            text: '简体中文(翻译)',
+            value: 'zh-cn',
+            imgSrc: require('assets/image/img_flag_CN.svg'),
+          },
+          {
+            text: '繁體中文(譯本)',
+            value: 'zh-tw',
+            imgSrc: require('assets/image/img_flag_CN.svg'),
+          },
+          {
+            text: 'Español',
+            value: 'es',
+            imgSrc: require('assets/image/img_flag_ES.svg'),
+          },
         ],
         text: 'text',
         value: 'value',

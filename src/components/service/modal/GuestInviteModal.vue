@@ -261,6 +261,8 @@ export default {
 
     &.send-email {
       padding: 0;
+      line-height: 1.0714rem;
+      white-space: normal;
       background: #616872;
       border-radius: 2px;
 

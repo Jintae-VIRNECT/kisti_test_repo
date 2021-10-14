@@ -35,7 +35,7 @@ export default {
     ...mapActions(['roomClear', 'setRoomInfo']),
     async join(room, showRestrictAgreeModal = true) {
       this.logger('>>> JOIN ROOM')
-
+      console.log('debug room :', room)
       try {
         //멤버 상태 등록 안된 경우 협업방 입장 불가
         //그러나 guest 멤버는 체크하지 않음.
@@ -64,8 +64,6 @@ export default {
               room.leaderId === this.account.uuid ? ROLE.LEADER : ROLE.EXPERT
           }
         }
-
-        room.videoRestrictedMode = await this.checkVideoStrictMode(room)
 
         const showVideoRestrictModal =
           role !== ROLE.LEADER &&
@@ -184,19 +182,6 @@ export default {
         this.roomClear()
         console.error('>>>join room fail')
         this.clicked = false
-      }
-    },
-
-    async checkVideoStrictMode(room) {
-      if (!('videoRestrictedMode' in room)) {
-        const params = {
-          workspaceId: this.workspace.uuid,
-          sessionId: room.sessionId,
-        }
-        const roomInfo = await getRoomInfo(params)
-        return roomInfo.videoRestrictedMode
-      } else {
-        return false
       }
     },
 
