@@ -267,3 +267,85 @@
   margin: auto 0.5rem;
   background-color: rgba($color_white, 0.18);
 }
+
+@include responsive-mobile {
+  .tools {
+    right: 1.6rem;
+    bottom: 50%;
+    left: unset;
+    flex-direction: column;
+    align-items: center;
+    background-color: #3d454f;
+    border: none;
+    border-radius: 6px;
+    transform: translate(0, 50%);
+
+    > .mobile-drawing-tools-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      height: 0;
+      overflow-y: hidden;
+      opacity: 0;
+      transition: all 0.3s;
+      &.active {
+        height: 28.3rem;
+        opacity: 1;
+      }
+      > button {
+        margin-top: 6px;
+      }
+    }
+
+    div.division {
+      width: 2.4rem;
+      min-height: 1px;
+      margin-top: 6px;
+    }
+
+    .tooltip {
+      margin-top: 6px;
+    }
+
+    .tooltip > button.tool {
+      width: 4rem;
+      height: 4rem;
+      opacity: 1;
+      &.disabled {
+        opacity: 0.5;
+      }
+
+      > .line-color {
+        width: 2rem;
+        height: 2rem;
+      }
+      > img {
+        object-fit: none;
+      }
+    }
+
+    .drawing-tools-toggle-btn {
+      width: 4rem;
+      height: 4rem;
+      margin-top: 0;
+      background-color: #121314;
+      border-radius: 6px;
+      transform: rotate(0deg);
+      &.active {
+        margin-top: 6px;
+        border-bottom-right-radius: 0;
+        border-bottom-left-radius: 0;
+        transform: rotate(180deg);
+      }
+    }
+  }
+
+  .picker--container {
+    position: fixed;
+    top: 57%;
+    left: -180%;
+    .picker--range__guage {
+      margin-top: -2px;
+    }
+  }
+}
