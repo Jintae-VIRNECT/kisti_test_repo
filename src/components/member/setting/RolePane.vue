@@ -36,17 +36,15 @@ export default {
   },
   computed: {
     editEnabled() {
-      if (this.canManage(this.member.role)) {
-        return this.member.role === 'MASTER' ? false : true
-      }
-      return false
+      // 수정 권한이 있다면
+      return this.canManage(this.member.role)
     },
     kickEnabled() {
-      // 본인 정보 이면
+      // 본인 정보 이면 불가
       if (this.mine(this.member.userId)) return false
-      // 관리 권한이 없다면
+      // 관리 권한이 없다면 불가
       if (!this.canManage(this.member.role)) return false
-      // 유터 타입이 USER 가 아니면
+      // 유저 타입이 USER 가 아니면 불가
       if (!this.isUserTypeUser(this.member.userType)) return false
       return true
     },
