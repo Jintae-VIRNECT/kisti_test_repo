@@ -62,7 +62,7 @@ export default {
     },
     editEnabled() {
       // 플랜 정보는 마스터가 본인 포함 모두 변경 가능
-      return this.activeWorkspace.role === 'MASTER' ? true : false
+      return this.activeWorkspace.role === 'MASTER'
     },
   },
   methods: {
