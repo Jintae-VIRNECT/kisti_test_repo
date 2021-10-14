@@ -62,7 +62,7 @@
           <el-input disabled :placeholder="member.email" />
         </el-form-item>
         <el-form-item
-          v-if="isUserTypeWorkspaceOnly(member.userType)"
+          v-if="isUserTypeWorkspaceOnly(member.userType) && editEnabled"
           :label="$t('members.setting.password.title')"
           class="horizon"
         >
@@ -136,19 +136,15 @@ export default {
   },
   computed: {
     editEnabled() {
-      if (this.mine(this.member.userId)) {
-        return true
-      } else if (this.canEdit(this.member.userType, this.member.role)) {
-        return true
-      }
+      // 본인 정보이면 수정 가능
+      if (this.mine(this.member.userId)) return true
+      // 수정 권한이 있으면 수정 가능
+      if (this.canEdit(this.member.userType, this.member.role)) return true
       return false
     },
     deleteEnabled() {
-      if (this.isRoleManager(this.member.role)) {
-        return false
-      } else if (this.canEdit(this.member.userType, this.member.role)) {
-        return true
-      }
+      // 수정 권한이 있으면 삭제 가능
+      if (this.canEdit(this.member.userType, this.member.role)) return true
       return false
     },
     deleteTitle() {
