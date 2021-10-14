@@ -65,6 +65,17 @@ export default {
   font-weight: 400;
   line-height: 1.429rem;
 }
+
+//스페인어 길이 대응
+body {
+  &:lang(es) {
+    .checkbox-text {
+      font-size: 0.8571rem !important;
+      line-height: 0.7857rem;
+    }
+  }
+}
+
 .checkbox-toggle {
   position: relative;
   width: 1.429rem;

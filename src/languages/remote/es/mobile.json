@@ -1,0 +1,20 @@
+{
+  "mobile": {
+	"policy": "Términos y Política",
+	"use_terms": "Términos de Servicio ",
+	"privacy_policy": "Política de Privacidad",
+	"opensource_license": "Licencia de Código Abierto",
+	"company": "Perfil de Compañía",
+	"company_name": "Nombre de Compañía",
+	"virnect": "VIRNECT CO., LTD.",
+	"ceo": "CEO",
+	"ceo_name": "HA TEA GIN",
+	"address": "Dirección　",
+	"seoul_branch": "VIRNECT Experience Center",
+	"research_center": "Research Center",
+	"seoul_address": "10-15, Hangang-daero 7-gil, Yongsan-gu, Seoul, Korea",
+	"research_address": "REGUS 3005, Donau-City-Strasse 7/2 (DC Tower) 30th floor, 1220 Vienna, Austria",
+	"homepage": "Página web",
+	"business_license_number": "Número de Licencia Comercial"
+  }
+}
