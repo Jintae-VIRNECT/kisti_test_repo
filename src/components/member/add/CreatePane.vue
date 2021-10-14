@@ -48,6 +48,7 @@
             type="primary"
             v-else
             @click="checkMembersId(form)"
+            :disabled="form.id.length === 0"
             :class="cssVars"
             >{{ $t('members.create.idCheck') }}</el-button
           >
