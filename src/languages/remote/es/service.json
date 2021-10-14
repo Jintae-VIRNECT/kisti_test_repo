@@ -251,7 +251,8 @@
 	"guest_invite_url_copied": "La URL de conexión se ha copiado con éxito.",
 	"guest_invite_email_transport_succeed": "La URL de conexión ha sido enviada por correo electrónico.",
 	"guest_invite_email_transport_failed": "El envío de correos electrónicos ha fallado.",
-	"guest_invite_email_please_input_email_address": "Por favor introduzca la dirección de correo electrónico."
+	"guest_invite_email_please_input_email_address": "Por favor introduzca la dirección de correo electrónico.",
+	"guest_invite_email_validation_failed": "Formato de dirección de correo electrónico incorrecto."
 
   }
 }

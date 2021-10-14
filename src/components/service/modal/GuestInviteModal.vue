@@ -80,6 +80,8 @@ import { sendEmail } from 'api/http/mail'
 
 import { mapGetters } from 'vuex'
 
+import { validEmail } from 'utils/regexp.js'
+
 export default {
   name: 'GuestInviteModal',
   mixins: [toastMixin],
@@ -144,6 +146,13 @@ export default {
     async send() {
       try {
         if (this.emailAddress.length === 0) return
+
+        if (!validEmail(this.emailAddress)) {
+          this.toastDefault(
+            this.$t('service.guest_invite_email_validation_failed'),
+          )
+          return
+        }
 
         await sendEmail({
           receivers: [this.emailAddress],

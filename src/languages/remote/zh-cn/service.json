@@ -251,7 +251,8 @@
 	"guest_invite_url_copied": "已复制连接URL。",
 	"guest_invite_email_transport_succeed": "已用邮箱发送连接URL。",
 	"guest_invite_email_transport_failed": "发送邮件失败。",
-	"guest_invite_email_please_input_email_address": "请输入邮箱地址。"
+	"guest_invite_email_please_input_email_address": "请输入邮箱地址。",
+	"guest_invite_email_validation_failed": "不是正确的邮箱形式。"
 
   }
 }

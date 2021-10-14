@@ -252,6 +252,7 @@
     "guest_invite_url_copied":"接続URLをコピーしました。",
     "guest_invite_email_transport_succeed":"接続URLをメールで送信しました。​",
     "guest_invite_email_transport_failed":"メール送信に失敗しました。​",
-    "guest_invite_email_please_input_email_address":"メールアドレスを入力してください。"
+    "guest_invite_email_please_input_email_address":"メールアドレスを入力してください。",
+    "guest_invite_email_validation_failed": "正しいメールアドレス形式ではありません。"
   }
 }
