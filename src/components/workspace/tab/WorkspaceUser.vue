@@ -194,6 +194,8 @@ export default {
     async mode(now) {
       if (now === 'group') {
         await this.getMemberGroups()
+      } else {
+        await this.getList()
       }
     },
   },
@@ -213,6 +215,7 @@ export default {
     async getList() {
       try {
         this.$eventBus.$emit('search:clear')
+        this.searchText = ''
         this.loading = true
 
         const params = {
