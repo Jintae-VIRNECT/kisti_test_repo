@@ -34,14 +34,24 @@
             v-model="form.id"
             :class="cssVars"
             maxlength="20"
+            :disabled="form.duplicateCheck"
             :placeholder="$t('members.create.idPlaceholder')"
           />
           <el-button
             type="primary"
+            @click="form.duplicateCheck = false"
+            v-if="form.duplicateCheck"
+            :class="cssVars"
+            >{{ $t('members.create.reEnter') }}</el-button
+          >
+          <el-button
+            type="primary"
+            v-else
             @click="checkMembersId(form)"
-            :disabled="form.duplicateCheck"
+            :class="cssVars"
             >{{ $t('members.create.idCheck') }}</el-button
           >
+
           <span>{{ $t('members.create.caution.validUserId') }}</span>
         </el-form-item>
         <el-form-item class="horizon" prop="password" required>
@@ -149,6 +159,9 @@ export default {
   },
   methods: {
     async checkMembersId(member) {
+      // 아이디를 입력하지 않고 중복체크 불가
+      if (!member.id.length) return false
+
       try {
         const result = await workspaceService.checkMembersId(member.id)
         if (result) {
@@ -323,6 +336,9 @@ export default {
     }
     .el-button {
       font-size: 13px;
+      &.en {
+        width: 133px;
+      }
     }
   }
 
