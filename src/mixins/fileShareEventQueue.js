@@ -23,6 +23,9 @@ export default {
       },
     },
   },
+
+  /** created,beforeDestroy에 이벤트 버스 헨들러는 각 컴포넌트에 직접 구현한다 */
+
   destroyed() {
     //해당 component가 제거되면 다시 queue를 활성화 시키도록한다.
     setQueueAct(true)

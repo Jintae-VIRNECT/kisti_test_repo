@@ -92,8 +92,10 @@ export default {
         this.account.roleType === ROLE.LEADER &&
         select.id === this.mainView.id &&
         this.viewForce === force
-      )
+      ) {
         return
+      }
+
       this.$call.sendVideo(select.id, force)
       this.setMainView({ id: select.id, force })
     },
