@@ -227,7 +227,7 @@
 
     "camera_control": "Camera Control",
     "camera_control_allow": "Allow camera control",
-    "camera_control_limit": "Limit camera control",
+    "camera_control_limit": "Camera Control Limits",
     "camera_control_every_on": "Turn on all cameras",
     "camera_control_every_off": "Turn off all cameras",
 

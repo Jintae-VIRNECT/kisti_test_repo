@@ -227,7 +227,7 @@
 
     "camera_control": "カメラ制御",
     "camera_control_allow": "カメラ制御許容",
-    "camera_control_limit": "",
+    "camera_control_limit": "カメラ制御制限",
     "camera_control_every_on": "全体カメラオン",
     "camera_control_every_off": "全体カメラオフ",
 
