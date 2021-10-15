@@ -226,12 +226,9 @@ public class S3UploadService implements FileUploadService {
 			"[MINIO FILE COPY] COPY BEGIN. URL : {}, DESTINATION DIR : {}, DESTINATION NAME : {}", sourceFileUrl,
 			destinationFileDir, destinationFileNameWithoutExtension
 		);
-		String[] fileSplit = sourceFileUrl.split("/");
-		String sourceFileDir = fileSplit[fileSplit.length - 2];//contents
-		String sourceFileName = fileSplit[fileSplit.length - 1]; //UUID
+		String[] fileSplit = sourceFileUrl.split(prefix);
+		String sourceObjectName = fileSplit[fileSplit.length - 1];
 		String sourceFileExtension = sourceFileUrl.substring(sourceFileUrl.lastIndexOf(".") + 1); //Ares
-
-		String sourceObjectName = String.format("workspace/%s/%s", sourceFileDir, sourceFileName);
 		String destinationObjectName = String.format(
 			"workspace/%s/%s/%s.%s", destinationWorkspaceUUID, destinationFileDir, destinationFileNameWithoutExtension,
 			sourceFileExtension
