@@ -204,6 +204,7 @@
     "record_local_list": "Local recording list",
     "record_blocked": "The local recording feature is not allowed for the participants.",
     "record_server": "Server recording",
+    "record_server_end": "End server recording",
     "record_start_message": "Starting the local screen recording. If you wish to end it, click the button again or press [ESC] key.",
     "record_fail_memory": "Stopping the recording due to lack of PC storage. The file being recorded is not saved.",
     "record_end_message": "Local recording was successful, please check the file from the recording file menu.",

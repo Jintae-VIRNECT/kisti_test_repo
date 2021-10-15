@@ -204,6 +204,7 @@
     "record_local_list": "ローカル録画リスト",
     "record_blocked": "参加者ローカル録画使用が許可されていません。",
     "record_server": "サーバー録画",
+    "record_server_end": "サーバー録画終了",
     "record_start_message": "ローカル画面録画を開始します。録画を終了するには、ボタンをもう一度クリック、又は[ESC]キーを押してください。",
     "record_fail_memory": "PCの容量が不足して録画を中止します。進行中録画ファイルは保存されません。​",
     "record_end_message": "ローカル録画が完了しました。録画ファイルメニューからファイルをご確認ください。",
