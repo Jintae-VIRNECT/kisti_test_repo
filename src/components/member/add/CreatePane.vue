@@ -40,13 +40,13 @@
           <el-button
             type="primary"
             @click="form.duplicateCheck = false"
-            v-if="form.duplicateCheck"
+            v-show="form.duplicateCheck"
             :class="cssVars"
             >{{ $t('members.create.reEnter') }}</el-button
           >
           <el-button
             type="primary"
-            v-else
+            v-show="!form.duplicateCheck"
             @click="checkMembersId(form)"
             :disabled="form.id.length === 0"
             :class="cssVars"
@@ -337,6 +337,7 @@ export default {
     }
     .el-button {
       font-size: 13px;
+      margin: 0;
       &.en {
         width: 133px;
       }
