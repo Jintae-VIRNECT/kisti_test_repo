@@ -49,7 +49,7 @@
               :disabled="!valid"
               >{{ $t('members.setting.submit') }}</el-button
             >
-            <span>{{ errors[0] }}</span>
+            <span>{{ $t(errors[0]) }}</span>
           </ValidationProvider>
         </el-form-item>
         <el-form-item
@@ -83,7 +83,7 @@
               :disabled="!valid"
               >{{ $t('members.setting.submit') }}</el-button
             >
-            <span> {{ errors[0] }}</span>
+            <span> {{ $t(errors[0]) }}</span>
           </ValidationProvider>
         </el-form-item>
         <div v-if="deleteEnabled">
