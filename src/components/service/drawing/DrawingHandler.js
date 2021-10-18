@@ -1,6 +1,7 @@
 import { fabric } from 'plugins/remote/fabric.custom'
 import { DRAWING, ROLE } from 'configs/remote.config'
 import { ACTION } from 'configs/view.config'
+import { v4 as uuidv4 } from 'uuid'
 
 export default {
   methods: {
@@ -26,7 +27,8 @@ export default {
         this.debug(event)
         const object = event.target
 
-        const objID = canvas.getObjects().length - 1
+        // const objID = canvas.getObjects().length - 1
+        const objID = uuidv4()
 
         // object.set('id',getID('object'));
         // object.set('id',canvas.getObjects().length-1);

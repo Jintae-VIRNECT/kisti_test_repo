@@ -34,6 +34,7 @@
     "toast_no_sharing": "すべて共有中の映像はありません。",
     "toast_video_restrict_mode": "映像制限モードです。<br>参加者全員がカメラをオフにして接続します。​",
     "toast_drawing_end" : "協業ボードの共有が終了しました。",
+    "toast_captured_image_uploaded" :"<em>{name}</em>さんのキャプチャ画像が協業ボードにアップロードされました。​",
 
     "participant_mute": "ミュート",
     "participant_mute_cancel": "ミュート解除",
@@ -252,6 +253,7 @@
     "guest_invite_url_copied":"接続URLをコピーしました。",
     "guest_invite_email_transport_succeed":"接続URLをメールで送信しました。​",
     "guest_invite_email_transport_failed":"メール送信に失敗しました。​",
-    "guest_invite_email_please_input_email_address":"メールアドレスを入力してください。"
+    "guest_invite_email_please_input_email_address":"メールアドレスを入力してください。",
+    "guest_invite_email_validation_failed": "正しいメールアドレス形式ではありません。"
   }
 }

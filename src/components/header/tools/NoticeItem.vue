@@ -101,7 +101,7 @@ export default {
   },
   filters: {
     noticeDate(date) {
-      return dayjs(date).format('YYYY.MM.DD A HH:mm')
+      return dayjs(date).format('YYYY.MM.DD A h:mm')
     },
   },
   computed: {

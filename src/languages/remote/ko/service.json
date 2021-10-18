@@ -34,6 +34,7 @@
     "toast_no_sharing": "전체 공유 중인 영상이 없습니다.",
     "toast_video_restrict_mode": "영상 제한 모드입니다.<br> 참가자 모두 카메라가 꺼진 상태로 접속합니다.",
     "toast_drawing_end" : "협업 보드 공유가 종료되었습니다.",
+    "toast_captured_image_uploaded" :"<em>{name}</em>님의 캡처 이미지가 협업보드로 업로드 되었습니다",
 
     "participant_mute": "음소거",
     "participant_mute_cancel": "음소거 해제",
@@ -251,7 +252,7 @@
     "guest_invite_url_copied":"접속 URL을 복사했습니다.",
     "guest_invite_email_transport_succeed":"접속 URL을 이메일로 전송하였습니다.",
     "guest_invite_email_transport_failed":"이메일 전송에 실패하였습니다.",
-    "guest_invite_email_please_input_email_address":"메일 주소를 입력해주세요."
-    
+    "guest_invite_email_please_input_email_address":"메일 주소를 입력해주세요.",
+    "guest_invite_email_validation_failed": "올바른 이메일 형식이 아닙니다."
   }
 }

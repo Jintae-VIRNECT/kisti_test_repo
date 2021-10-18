@@ -46,7 +46,7 @@
 
         <a
           v-if="isOnpremise"
-          class="btn send-email"
+          class="btn send-email mail-to"
           :href="mailToLink('mailto')"
           target="_blank"
         >
@@ -79,6 +79,8 @@ import toastMixin from 'mixins/toast'
 import { sendEmail } from 'api/http/mail'
 
 import { mapGetters } from 'vuex'
+
+import { validEmail } from 'utils/regexp.js'
 
 export default {
   name: 'GuestInviteModal',
@@ -145,6 +147,13 @@ export default {
       try {
         if (this.emailAddress.length === 0) return
 
+        if (!validEmail(this.emailAddress)) {
+          this.toastDefault(
+            this.$t('service.guest_invite_email_validation_failed'),
+          )
+          return
+        }
+
         await sendEmail({
           receivers: [this.emailAddress],
           sender: this.emailSender,
@@ -174,8 +183,13 @@ export default {
     getMailBody(target) {
       const newLine = target === 'mailto' ? '%0D%0A' : '<br>'
 
-      const webUrl = this.getInviteUrl('web')
-      const qrUrl = this.getInviteUrl('qr')
+      let webUrl = this.getInviteUrl('web')
+      let qrUrl = this.getInviteUrl('qr')
+
+      if (target === 'mailto') {
+        webUrl = webUrl.replaceAll('&', '%26')
+        qrUrl = qrUrl.replaceAll('&', '%26')
+      }
 
       const msg =
         `[${this.emailSubject}] ${newLine}` +
@@ -256,6 +270,8 @@ export default {
 
     &.send-email {
       padding: 0;
+      line-height: 1.0714rem;
+      white-space: normal;
       background: #616872;
       border-radius: 2px;
 
@@ -266,6 +282,11 @@ export default {
       &:active {
         background-color: $color_darkgray_400;
       }
+    }
+
+    &.mail-to {
+      padding: 0.5714rem;
+      text-align: center;
     }
   }
 }
