@@ -194,7 +194,8 @@
       "viewTab": {
         "title": "View 플랜 할당 게스트 추가"
       },
-      "numberOfGuest": "추가 게스트 수 ",
+      "numberOfGuest": "추가 게스트 수",
+      "noHavePlans": "잔여 플랜 없음",
       "submit": "등록"
     },
     "activity": {
