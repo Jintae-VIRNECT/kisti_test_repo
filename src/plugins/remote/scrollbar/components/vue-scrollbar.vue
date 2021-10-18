@@ -149,7 +149,7 @@ export default {
         }
 
         //Y축 스크롤을 할 수 없는 상태일 때 스크롤을 리셋시킴
-        if (!canScrollY) {
+        if (!canScrollY && !this.reverseAxios) {
           this.top = 0
           this.reset()
         }
