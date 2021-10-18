@@ -40,16 +40,18 @@ public class ContentUpdateRequest {
 	@NotBlank
 	private String userUUID;
 
-    @Override
-    public String toString() {
-        return "ContentUpdateRequest{" +
-                "targetData='" + targetData + '\'' +
-                ", targetType=" + targetType +
-                ", content=" + content +
-                ", name='" + name + '\'' +
-      //          ", metadata='" + metadata + '\'' +
-                //", properties='" + properties + '\'' +
-                ", userUUID='" + userUUID + '\'' +
-                '}';
-    }
+	private MultipartFile targetImage;
+
+	@Override
+	public String toString() {
+		return "ContentUpdateRequest{" +
+			"targetData='" + targetData + '\'' +
+			", targetType=" + targetType +
+			", content=" + content +
+			", name='" + name + '\'' +
+			//", properties='" + properties + '\'' +
+			", userUUID='" + userUUID + '\'' +
+			", targetImage=" + targetImage +
+			'}';
+	}
 }
