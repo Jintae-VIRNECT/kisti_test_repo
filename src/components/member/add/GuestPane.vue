@@ -37,6 +37,8 @@
                     :label="plans.remote.label"
                     :amount="availablePlans.remote"
                     :numOfGuest="numOfGuest"
+                    :membersTotal="membersTotal"
+                    :maximum="maximum"
                     @change="choosePlan"
                   />
                 </el-form-item>
