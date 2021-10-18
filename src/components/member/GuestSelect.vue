@@ -7,6 +7,7 @@
     collapse-tags
     :placeholder="$t('members.setting.directInput')"
     :disabled="activeWorkspace.role !== 'MASTER' || !amount"
+    :no-match-text="$t('members.guest.noHavePlans')"
     @change="change"
   >
     <el-option

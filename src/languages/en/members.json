@@ -195,6 +195,7 @@
         "title": "Add View plan assignment guest"
       },
       "numberOfGuest": "Number of additional guest",
+      "noHavePlans": "No remaining plans.",
       "submit": "Registration"
     },
     "activity": {
