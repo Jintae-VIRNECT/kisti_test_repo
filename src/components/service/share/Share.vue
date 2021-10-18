@@ -56,8 +56,11 @@ import { SIGNAL, DRAWING, ROLE } from 'configs/remote.config'
 import FileList from './partials/ShareFileList'
 import PdfView from './partials/SharePdfView'
 import HistoryList from './partials/ShareHistoryList'
+import { DEVICE } from 'configs/device.config'
+import toastMixin from 'mixins/toast'
 export default {
   name: 'Share',
+  mixins: [toastMixin],
   components: {
     FileList,
     HistoryList,
@@ -71,7 +74,7 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['shareFile']),
+    ...mapGetters(['shareFile', 'participants']),
     show() {
       if (this.list === 'file') {
         if (!this.file || !this.file.id) {
@@ -108,9 +111,25 @@ export default {
       this.list = val
       // this.$eventBus.$emit('scroll:reset')
     },
-    signalDrawing({ data }) {
+    signalDrawing({ data, receive }) {
       if (data.type === DRAWING.ADDED) {
         this.$refs['shareFileList'].getFileList()
+
+        if (this.isLeader) {
+          const fromConnectionId = receive.from.connectionId
+          const fromUser = this.participants.find(pt => {
+            return pt.connectionId === fromConnectionId
+          })
+
+          if (fromUser && fromUser.deviceType === DEVICE.GLASSES) {
+            this.toastDefault(
+              this.$t('service.toast_captured_image_uploaded', {
+                name: fromUser.nickname,
+              }),
+            )
+          }
+        }
+
         this.changeTab('file')
       } else if (data.type === DRAWING.DELETED) {
         this.$refs['shareFileList'].getFileList()

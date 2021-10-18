@@ -34,6 +34,7 @@
     "toast_no_sharing": "No videos are being shared.",
     "toast_video_restrict_mode": "This is the video restriction mode.<br>Participants all connect with the camera turned off.​",
     "toast_drawing_end" : "Collaboard sharing has ended.",
+    "toast_captured_image_uploaded" :"<em>{name}</em>captured image has been upload​​",
 
     "participant_mute": "Mute",
     "participant_mute_cancel": "Unmute",

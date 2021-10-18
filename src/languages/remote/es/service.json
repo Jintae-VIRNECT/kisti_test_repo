@@ -34,6 +34,7 @@
 	"toast_no_sharing": "No hay vídeos compartidos a todos.",
 	"toast_video_restrict_mode": "Este modo es para bloquear vídeos. La cámara de todos los participantes se encontrará desactivada.",
 	"toast_drawing_end": "Se ha acabado el compartimiento del Colaboard.",
+	"toast_captured_image_uploaded" :"<em>{name}</em>ha La imagen capturada de ha subido al Collaboard.​​",
 	
 	"participant_mute": "Mudo",
 	"participant_mute_cancel": "Desactivar Mudo",

@@ -34,6 +34,7 @@
 	"toast_no_sharing": "沒有正在整體共用的影像。",
 	"toast_video_restrict_mode": "這是影像限制模式。<br>參與者的全部相機均為關閉狀態。",
 	"toast_drawing_end": "已結束共用合作板。",
+	"toast_captured_image_uploaded" :"<em>{name}</em>拍攝的圖像已上傳到合作工作板。​",
 
 	"participant_mute": "靜音",
 	"participant_mute_cancel": "解除靜音",
