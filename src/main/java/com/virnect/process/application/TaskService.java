@@ -1335,7 +1335,20 @@ public class TaskService {
 		processInfoResponse.setIssuesTotal(this.processRepository.getCountIssuesInProcess(process.getId()));
 		processInfoResponse.setSubTaskAssign(this.getSubProcessesAssign(process));
 		processInfoResponse.setTargets(targetResponseList);
+		processInfoResponse.setContentSize(getContentInfoByUUID(process.getContentUUID()).getContentSize());
 		return new ApiResponse<>(processInfoResponse);
+	}
+
+	private ContentInfoResponse getContentInfoByUUID(String contentUUID) {
+		ApiResponse<ContentInfoResponse> apiResponse = contentRestService.getContentInfo(contentUUID);
+		if (apiResponse.getCode() != 200 || apiResponse.getData() == null) {
+			log.error(
+				"[GET CONTENT INFO BY UUID] content uuid : {}, response code : {}, message : {}", contentUUID,
+				apiResponse.getCode(), apiResponse.getMessage()
+			);
+			throw new ProcessServiceException(ErrorCode.ERR_NOT_FOUND_CONTENT);
+		}
+		return apiResponse.getData();
 	}
 
 	/**
