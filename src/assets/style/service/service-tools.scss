@@ -275,7 +275,7 @@
     left: unset;
     flex-direction: column;
     align-items: center;
-    background-color: #3d454f;
+    background-color: transparent;
     border: none;
     border-radius: 6px;
     transform: translate(0, 50%);
@@ -286,24 +286,34 @@
       align-items: center;
       height: 0;
       overflow-y: hidden;
+      background-color: #3d454f;
       opacity: 0;
       transition: all 0.3s;
       &.active {
+        padding-bottom: 6px;
         opacity: 1;
       }
       &.drawing.active {
-        height: 28.3rem;
+        height: 28.9rem;
       }
       &.stream.active {
-        height: 9.2rem;
+        height: 9.8rem;
+      }
+      &.ar.active {
+        height: 19.7rem;
       }
       > button {
         margin-top: 6px;
       }
     }
 
+    .ar .division {
+      margin-bottom: 0px;
+    }
+
     div.division {
       width: 2.4rem;
+      height: 1px;
       min-height: 1px;
       margin-top: 6px;
     }
@@ -346,12 +356,18 @@
       border-radius: 6px;
       transform: rotate(0deg);
       &.active {
-        margin-top: 6px;
+        //margin-top: 6px;
         border-bottom-right-radius: 0;
         border-bottom-left-radius: 0;
         transform: rotate(180deg);
       }
     }
+  }
+
+  .tools > .mobile-ar-tools-btn {
+    margin-top: 8px;
+    background-color: #121314;
+    border-radius: 6px;
   }
 
   .drawing .picker--container {
@@ -360,6 +376,10 @@
 
   .stream .picker--container {
     top: 0;
+  }
+
+  .ar .picker--container {
+    top: 60%;
   }
 
   .picker--container {

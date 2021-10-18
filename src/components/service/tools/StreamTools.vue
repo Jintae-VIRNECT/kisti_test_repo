@@ -2,8 +2,8 @@
   <div class="stream-tools tools">
     <template v-if="isMobileSize">
       <div class="mobile-tools-container stream" :class="{ active }">
-        <color></color>
-        <pointing></pointing>
+        <color :disableTooltip="true"></color>
+        <pointing :disableTooltip="true"></pointing>
       </div>
       <button class="tools-toggle-btn" :class="{ active }" @click="toggle">
         <img src="~assets/image/call/icn_dropdown_new.svg" alt="dropdown" />

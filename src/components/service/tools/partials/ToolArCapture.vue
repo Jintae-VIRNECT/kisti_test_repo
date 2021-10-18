@@ -3,6 +3,7 @@
     :text="$t('service.ar_capute')"
     :disabled="disabled"
     :active="active"
+    :disableTooltip="disableTooltip"
     :src="require('assets/image/ic_ar_capture.svg')"
     @click.native="clickHandler"
   ></tool-button>
@@ -17,7 +18,7 @@ export default {
   mixins: [toolMixin],
   computed: {
     active() {
-      return this.viewAction === ACTION.AR_AREA
+      return this.isMobileSize ? false : this.viewAction === ACTION.AR_AREA
     },
   },
   methods: {
