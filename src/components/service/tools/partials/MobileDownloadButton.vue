@@ -2,17 +2,48 @@
   <button
     class="mobile-download-btn"
     :disabled="disabled"
-    @click="upload"
+    @click="download"
   ></button>
 </template>
 
 <script>
+import FileSaver from 'file-saver'
+import { base64ToBlob } from 'utils/file'
+
+import confirmMixin from 'mixins/confirm'
+import { mapGetters } from 'vuex'
+
 export default {
+  mixins: [confirmMixin],
   props: {
     disabled: { type: Boolean },
   },
+  computed: {
+    ...mapGetters(['historyList', 'shareFile']),
+  },
   methods: {
-    upload() {},
+    download() {
+      this.confirmCancel(
+        this.$t('service.share_save'),
+        {
+          text: this.$t('button.confirm'),
+          action: this.save,
+        },
+        {
+          text: this.$t('button.cancel'),
+        },
+      )
+    },
+    async save() {
+      const history = this.historyList.find(
+        history => history.id === this.shareFile.id,
+      )
+      const dataType = 'application/octet-stream'
+      const file = await base64ToBlob(history.img, dataType, history.fileName)
+      FileSaver.saveAs(file)
+      this.selected = []
+      return
+    },
   },
 }
 </script>
