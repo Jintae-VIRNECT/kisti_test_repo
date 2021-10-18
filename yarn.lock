@@ -1036,10 +1036,10 @@
   dependencies:
     "@types/node" "*"
 
-"@virnect/components@^1.9.2":
-  version "1.9.2"
-  resolved "http://192.168.6.3:4873/@virnect%2fcomponents/-/components-1.9.2.tgz#8cf25f716411cebe1aa03da9419fbf694de73f2c"
-  integrity sha512-vrVkV5EWLkTcAPE0c4ogZ36g+A3dVeUIoV3XWZhDHuXszVL0kYFXVQqFojxSDtgY3bcTSJgZ6EbYXAfPx/HF+g==
+"@virnect/components@^1.9.4":
+  version "1.9.4"
+  resolved "http://192.168.6.3:4873/@virnect%2fcomponents/-/components-1.9.4.tgz#2fab76526b4658c44691ddd731bb44d5c2c2b9a9"
+  integrity sha512-Nw+6YrxBwggk8ytUqS810Ojc4oAHixYvpwo1Brdh+axT3x7l6WncS1Mpjnf1LXgYEp1hYEs+PVIMJTaepKmYFQ==
   dependencies:
     "@virnect/ui-assets" "1.9.0"
     "@vue/composition-api" "^1.0.0-rc.2"
@@ -1077,10 +1077,10 @@
     dotenv "^8.1.0"
     log4js "^6.1.0"
 
-"@virnect/platform-auth@^1.0.3":
-  version "1.0.3"
-  resolved "http://192.168.6.3:4873/@virnect%2fplatform-auth/-/platform-auth-1.0.3.tgz#e83ffe003ea82d17d1e2a1bc86ba65f521249e1c"
-  integrity sha512-NNxjqqL9YZJD7bwyLSDpFzgjkfL/lSzY3DY5U9jIlipAug8TiKPEx/ohzSBtKQtYCQnAJB6I4YFquAYSNG2LmA==
+"@virnect/platform-auth@^0.0.0":
+  version "0.0.0"
+  resolved "http://192.168.6.3:4873/@virnect%2fplatform-auth/-/platform-auth-0.0.0.tgz#012bfb46b2411a4d7b19030b824eaa90ecccf894"
+  integrity sha512-ZLTgEmKdz6crsfLkcq+1PYYAkuttGMcqa48yQTKU2mYgnNGawomvv/GfQVuuzHWuWILrv6ssS/QcaLxGNgmiog==
   dependencies:
     axios "^0.19.2"
     js-cookie "^2.2.1"
@@ -1105,10 +1105,10 @@
   resolved "http://192.168.6.3:4873/@virnect%2fui-assets/-/ui-assets-1.9.0.tgz#2769a6a434362e15f5a7df3687b3ae7eefa07a47"
   integrity sha512-Kf+RHiMX8J1XL1y15aK/Xv+m2MIWq9kdqEvnzw4ZIEmIHziwBACKcHBcSGZRiniD8HpDTkcozkiXLQcGgv+Xow==
 
-"@virnect/ui-assets@1.9.2":
-  version "1.9.2"
-  resolved "http://192.168.6.3:4873/@virnect%2fui-assets/-/ui-assets-1.9.2.tgz#66de33d4cf7344cc007be027c9fdceb0865b1312"
-  integrity sha512-PI7tm/3Ai5ryi45gF6VB4hMsXqtUfcwBJp7hZBt6gq2FAjyokZXgxR41FLwDiMh/6fSVUNhepYDGdqyD8xKOdQ==
+"@virnect/ui-assets@1.9.4":
+  version "1.9.4"
+  resolved "http://192.168.6.3:4873/@virnect%2fui-assets/-/ui-assets-1.9.4.tgz#a29b3c35bed921aed0ae6f373631aab5b8d0fd40"
+  integrity sha512-4QYh//esu0mD8UtQBlT48fKYEcx6KnyTCZPrzneVkv8jGiujsAGMdqgHOZtvZ6tdQc43kahnOpjWlGWKwrUzyQ==
 
 "@vue/composition-api@^1.0.0-rc.2":
   version "1.2.2"
