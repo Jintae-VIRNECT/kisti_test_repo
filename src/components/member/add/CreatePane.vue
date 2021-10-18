@@ -30,29 +30,30 @@
           <template slot="label">
             <span>{{ $t('members.create.id') }}</span>
           </template>
-          <el-input
-            v-model="form.id"
-            :class="cssVars"
-            maxlength="20"
-            :disabled="form.duplicateCheck"
-            :placeholder="$t('members.create.idPlaceholder')"
-          />
-          <el-button
-            type="primary"
-            @click="form.duplicateCheck = false"
-            v-show="form.duplicateCheck"
-            :class="cssVars"
-            >{{ $t('members.create.reEnter') }}</el-button
-          >
-          <el-button
-            type="primary"
-            v-show="!form.duplicateCheck"
-            @click="checkMembersId(form)"
-            :disabled="form.id.length === 0"
-            :class="cssVars"
-            >{{ $t('members.create.idCheck') }}</el-button
-          >
-
+          <ValidationProvider rules="idCheck" v-slot="{ valid }">
+            <el-input
+              v-model="form.id"
+              :class="cssVars"
+              maxlength="20"
+              :disabled="form.duplicateCheck"
+              :placeholder="$t('members.create.idPlaceholder')"
+            />
+            <el-button
+              type="primary"
+              @click="form.duplicateCheck = false"
+              v-show="form.duplicateCheck"
+              :class="cssVars"
+              >{{ $t('members.create.reEnter') }}</el-button
+            >
+            <el-button
+              type="primary"
+              v-show="!form.duplicateCheck"
+              @click="checkMembersId(form)"
+              :disabled="form.id.length === 0 || !valid"
+              :class="cssVars"
+              >{{ $t('members.create.idCheck') }}</el-button
+            >
+          </ValidationProvider>
           <span>{{ $t('members.create.caution.validUserId') }}</span>
         </el-form-item>
         <el-form-item class="horizon" prop="password" required>
