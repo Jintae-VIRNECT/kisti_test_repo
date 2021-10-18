@@ -280,7 +280,7 @@
     border-radius: 6px;
     transform: translate(0, 50%);
 
-    > .mobile-drawing-tools-container {
+    > .mobile-tools-container {
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -289,8 +289,13 @@
       opacity: 0;
       transition: all 0.3s;
       &.active {
-        height: 28.3rem;
         opacity: 1;
+      }
+      &.drawing.active {
+        height: 28.3rem;
+      }
+      &.stream.active {
+        height: 9.2rem;
       }
       > button {
         margin-top: 6px;
@@ -322,9 +327,18 @@
       > img {
         object-fit: none;
       }
+
+      &.active {
+        &::before {
+          width: 3.2rem;
+          height: 3.2rem;
+          background-color: #677280;
+          border-radius: 6px;
+        }
+      }
     }
 
-    .drawing-tools-toggle-btn {
+    .tools-toggle-btn {
       width: 4rem;
       height: 4rem;
       margin-top: 0;
@@ -340,9 +354,17 @@
     }
   }
 
+  .drawing .picker--container {
+    top: 57%;
+  }
+
+  .stream .picker--container {
+    top: 0;
+  }
+
   .picker--container {
     position: fixed;
-    top: 57%;
+    //top: 57%;
     left: -180%;
     .picker--range__guage {
       margin-top: -2px;

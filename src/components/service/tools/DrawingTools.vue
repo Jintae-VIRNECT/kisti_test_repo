@@ -1,7 +1,7 @@
 <template>
   <div class="drawing-tools tools">
     <template v-if="isMobileSize">
-      <div class="mobile-drawing-tools-container" :class="{ active }">
+      <div class="mobile-tools-container drawing" :class="{ active }">
         <undo :disableTooltip="true"></undo>
         <redo :disableTooltip="true"></redo>
         <clear :disableTooltip="true"></clear>
@@ -10,11 +10,7 @@
         <color :disableTooltip="true"></color>
         <drawing-lock @click="onDrawingLock"></drawing-lock>
       </div>
-      <button
-        class="drawing-tools-toggle-btn"
-        :class="{ active }"
-        @click="toggle"
-      >
+      <button class="tools-toggle-btn" :class="{ active }" @click="toggle">
         <img src="~assets/image/call/icn_dropdown_new.svg" alt="dropdown" />
       </button>
     </template>

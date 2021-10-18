@@ -1,5 +1,8 @@
 <template>
   <div class="main-video">
+    <p v-if="viewForce" class="main-video__sharing-user">
+      {{ mainView.nickname }}
+    </p>
     <div
       class="main-video__box"
       @mouseenter="hoverTools = true"
@@ -30,7 +33,11 @@
               class="btn small main-video__sharing-button active"
               @click="cancelSharing"
             >
-              {{ $t('button.stream_sharing_cancel') }}
+              {{
+                isMobileSize
+                  ? $t('button.stream_sharing')
+                  : $t('button.stream_sharing_cancel')
+              }}
             </button>
             <button v-else class="btn small main-video__sharing-button">
               {{ $t('button.stream_sharing') }}
@@ -39,8 +46,12 @@
         </transition>
 
         <!-- 녹화 시간 정보 -->
-        <div class="main-video__recording">
-          <div class="main-video__recording--time" v-if="serverTimer">
+        <div
+          v-if="serverTime"
+          class="main-video__recording"
+          :class="{ 'sharing-on': viewForce }"
+        >
+          <div class="main-video__recording--time">
             <p class="server">
               {{ serverTime | timeFilter }}
             </p>

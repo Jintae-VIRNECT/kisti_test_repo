@@ -1,13 +1,24 @@
 <template>
   <div class="stream-tools tools">
-    <pointing></pointing>
-    <color></color>
-    <template v-if="!isTablet && !isSafari">
-      <div class="division"></div>
-      <screen-share></screen-share>
+    <template v-if="isMobileSize">
+      <div class="mobile-tools-container stream" :class="{ active }">
+        <color></color>
+        <pointing></pointing>
+      </div>
+      <button class="tools-toggle-btn" :class="{ active }" @click="toggle">
+        <img src="~assets/image/call/icn_dropdown_new.svg" alt="dropdown" />
+      </button>
     </template>
-    <!-- PC에서만 지원 -->
-    <position-map v-if="isOnpremise && !isMobileSize"></position-map>
+    <template v-else>
+      <pointing></pointing>
+      <color></color>
+      <template v-if="!isTablet && !isSafari && !isMobileSize">
+        <div class="division"></div>
+        <screen-share></screen-share>
+      </template>
+      <!-- PC에서만 지원 -->
+      <position-map v-if="isOnpremise && !isMobileSize"></position-map>
+    </template>
   </div>
 </template>
 
@@ -24,10 +35,20 @@ export default {
     ScreenShare,
     PositionMap,
   },
+  data() {
+    return {
+      active: false,
+    }
+  },
   computed: {
     ...mapGetters(['mainView']),
     isLeader() {
       return this.account.roleType === ROLE.LEADER
+    },
+  },
+  methods: {
+    toggle() {
+      this.active = !this.active
     },
   },
 }
