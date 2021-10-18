@@ -172,10 +172,38 @@
 
 @include responsive-mobile {
   .main-video {
+    display: flex;
+    align-items: center;
     height: 100%;
     .main-video__empty {
       width: 100%;
       background-color: $new_color_bg;
+    }
+  }
+
+  .main-video__box {
+    top: unset;
+    transform: unset;
+
+    .main-video__recording {
+      position: fixed;
+      top: 6.8rem;
+      right: unset;
+      left: 1.6rem;
+      .main-video__recording--time {
+        display: flex;
+        align-items: center;
+        width: 7.7rem;
+        height: 3rem;
+        margin-left: 0;
+      }
+      .server {
+        padding: 0;
+        padding-left: 2.6rem;
+        background-position-x: 0px;
+        background-size: 18px;
+        @include fontLevel(100);
+      }
     }
   }
 
