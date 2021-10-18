@@ -6,6 +6,5 @@ import org.springframework.stereotype.Repository;
 import com.virnect.data.domain.group.RemoteGroupMember;
 
 @Repository
-public interface RemoteGroupMemberRepository extends JpaRepository<RemoteGroupMember, Long> {
-
+public interface RemoteGroupMemberRepository extends JpaRepository<RemoteGroupMember, Long>, CustomRemoteGroupMemberRepository {
 }

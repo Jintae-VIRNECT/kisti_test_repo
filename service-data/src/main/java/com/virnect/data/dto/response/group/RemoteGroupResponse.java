@@ -11,20 +11,32 @@ import lombok.Setter;
 @Getter
 @Setter
 @ApiModel
-@Builder
 public class RemoteGroupResponse {
 	@ApiModelProperty(value = "Workspace Identifier", position = 1, example = "40f9bbee9d85dca7a34a0dd205aae718")
-	private String workspaceId = "";
+	private String workspaceId;
 
 	@ApiModelProperty(value = "Group id", position = 2, example = "group id")
-	private String groupId = "";
+	private String groupId;
 
 	@ApiModelProperty(value = "Group name", position = 3, example = "group name")
-	private String groupName = "";
+	private String groupName;
 
 	@ApiModelProperty(value = "Group members", position = 4, example = "group members")
 	private List<RemoteGroupMemberResponse> remoteGroupMemberResponses;
 
 	@ApiModelProperty(value = "Group member total count", position = 5)
 	private long memberCount;
+
+	@Builder
+	public RemoteGroupResponse(
+		String workspaceId, String groupId, String groupName,
+		List<RemoteGroupMemberResponse> remoteGroupMemberResponses,
+		long memberCount
+	) {
+		this.workspaceId = workspaceId;
+		this.groupId = groupId;
+		this.groupName = groupName;
+		this.remoteGroupMemberResponses = remoteGroupMemberResponses;
+		this.memberCount = memberCount;
+	}
 }

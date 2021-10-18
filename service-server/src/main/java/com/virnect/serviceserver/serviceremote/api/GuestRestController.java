@@ -11,14 +11,12 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import com.virnect.data.domain.DeviceType;
 import com.virnect.data.domain.member.MemberType;
 import com.virnect.data.dto.request.room.JoinRoomRequest;
 import com.virnect.data.dto.response.guest.GuestInfoResponse;
@@ -40,24 +38,6 @@ public class GuestRestController {
 	private static final String REST_PATH = "/remote/guest";
 
 	private final GuestService guestService;
-
-	/*@ApiOperation(value = "Create Guest invite URL", notes = "Guest 멤버를 초대하는 URL을 생성합니다")
-	@GetMapping(value = "guest/url/{workspaceId}/{sessionId}")
-	ResponseEntity<ApiResponse<GuestInviteUrlResponse>> createGuestInviteUrl(
-		@PathVariable("workspaceId") String workspaceId,
-		@PathVariable("sessionId") String sessionId
-	) {
-		LogMessage.formedInfo(
-			TAG,
-			"REST API: GET "
-				+ REST_PATH
-				+ workspaceId + "/"
-				+ sessionId,
-			"createGuestInviteUrl"
-		);
-		ApiResponse<GuestInviteUrlResponse> responseData = guestService.createGuestInviteUrl(workspaceId, sessionId);
-		return ResponseEntity.ok(responseData);
-	}*/
 
 	@ApiOperation(value = "Get Guest member info", notes = "Guest 정보를 반환합니다")
 	@GetMapping(value = "invitation/guest/{workspaceId}")
@@ -99,10 +79,7 @@ public class GuestRestController {
 	ResponseEntity<ApiResponse<RoomResponse>> joinOpenRoomByGuest(
 		@PathVariable("workspaceId") String workspaceId,
 		@PathVariable("sessionId") String sessionId,
-		/*@RequestParam(name = "uuid") String uuid,
-		@RequestParam(name = "deviceType") DeviceType deviceType,*/
-		@RequestBody @Valid JoinRoomRequest joinRoomRequest,
-		BindingResult result
+		@RequestBody @Valid JoinRoomRequest joinRoomRequest
 	) {
 		LogMessage.formedInfo(
 			TAG,

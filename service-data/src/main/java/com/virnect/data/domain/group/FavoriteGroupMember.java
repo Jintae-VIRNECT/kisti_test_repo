@@ -33,6 +33,9 @@ public class FavoriteGroupMember extends BaseTimeEntity {
 	@Column(name = "uuid", nullable = false)
 	private String uuid;
 
+	@Column(name = "deleted", nullable = false)
+	private boolean deleted;
+
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "favorite_group_id")
 	private FavoriteGroup favoriteGroup;

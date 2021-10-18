@@ -13,12 +13,13 @@ spring:
         url: jdbc:mysql://localhost:3306/woong?serverTimezone=UTC&characterEncoding=UTF-8
         username: root
         password: dndqmffldb
+
     jpa:
         database: mysql
         database-platform: org.hibernate.dialect.MySQL5InnoDBDialect
         generate-ddl: true
         hibernate:
-            ddl-auto: validate
+            ddl-auto: update
         properties:
             hibernate:
                 format_sql: true

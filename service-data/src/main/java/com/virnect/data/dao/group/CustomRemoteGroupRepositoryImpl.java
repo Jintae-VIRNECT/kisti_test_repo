@@ -34,6 +34,7 @@ public class CustomRemoteGroupRepositoryImpl extends QuerydslRepositorySupport i
 			.innerJoin(remoteGroup.groupMembers, remoteGroupMember).fetchJoin()
 			.where(
 				remoteGroup.workspaceId.eq(workspaceId),
+				remoteGroupMember.deleted.isFalse(),
 				includeOneself(userId, includeOneself)
 			)
 			.orderBy(remoteGroup.groupName.asc())
@@ -48,6 +49,7 @@ public class CustomRemoteGroupRepositoryImpl extends QuerydslRepositorySupport i
 			.innerJoin(remoteGroup.groupMembers, remoteGroupMember).fetchJoin()
 			.where(
 				remoteGroup.workspaceId.eq(workspaceId),
+				remoteGroupMember.deleted.isFalse(),
 				includeUserIds(userIds)
 			)
 			.orderBy(remoteGroup.groupName.asc())
@@ -80,7 +82,8 @@ public class CustomRemoteGroupRepositoryImpl extends QuerydslRepositorySupport i
 			.innerJoin(remoteGroup.groupMembers, remoteGroupMember).fetchJoin()
 			.where(
 				remoteGroup.workspaceId.eq(workspaceId),
-				remoteGroup.groupId.eq(groupId)
+				remoteGroup.groupId.eq(groupId),
+				remoteGroupMember.deleted.isFalse()
 			)
 			.fetchFirst());
 	}
@@ -98,7 +101,8 @@ public class CustomRemoteGroupRepositoryImpl extends QuerydslRepositorySupport i
 			.where(
 				remoteGroup.workspaceId.eq(workspaceId),
 				remoteGroup.groupId.eq(groupId),
-				remoteGroupMember.uuid.notIn(userId)
+				remoteGroupMember.uuid.notIn(userId),
+				remoteGroupMember.deleted.isFalse()
 			)
 			.fetchFirst());
 	}
@@ -114,6 +118,7 @@ public class CustomRemoteGroupRepositoryImpl extends QuerydslRepositorySupport i
 			.where(
 				remoteGroup.workspaceId.eq(workspaceId),
 				remoteGroup.groupId.eq(groupId),
+				remoteGroupMember.deleted.isFalse(),
 				includeOneself(userId, includeOneself)
 			)
 			.fetchFirst());
@@ -129,7 +134,10 @@ public class CustomRemoteGroupRepositoryImpl extends QuerydslRepositorySupport i
 	private BooleanExpression includeUserIds(List<String> userIds) {
 		List<Long> userRoomIdList = query.selectFrom(remoteGroupMember)
 			.select(remoteGroupMember.remoteGroup.id)
-			.where(remoteGroupMember.uuid.in(userIds))
+			.where(
+				remoteGroupMember.uuid.in(userIds),
+				remoteGroupMember.deleted.isFalse()
+			)
 			.fetch();
 		return remoteGroup.id.in(userRoomIdList);
 	}

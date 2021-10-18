@@ -11,10 +11,17 @@ import lombok.Setter;
 @Getter
 @Setter
 @ApiModel
-@Builder
 public class RemoteGroupListResponse {
 
 	private List<RemoteGroupResponse> groupInfoResponseList;
 	private long memberTotalCount;
 
+	@Builder
+	public RemoteGroupListResponse(
+		List<RemoteGroupResponse> groupInfoResponseList,
+		long memberTotalCount
+	) {
+		this.groupInfoResponseList = groupInfoResponseList;
+		this.memberTotalCount = memberTotalCount;
+	}
 }

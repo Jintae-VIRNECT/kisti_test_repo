@@ -46,6 +46,7 @@ public class CustomFavoriteGroupRepositoryImpl extends QuerydslRepositorySupport
 			.where(
 				favoriteGroup.workspaceId.eq(workspaceId),
 				favoriteGroup.uuid.eq(userId),
+				favoriteGroupMember.deleted.isFalse(),
 				includeOneself(userId, includeOneself)
 			)
 			.orderBy(favoriteGroup.groupName.asc())
@@ -62,7 +63,8 @@ public class CustomFavoriteGroupRepositoryImpl extends QuerydslRepositorySupport
 			.where(
 				favoriteGroup.workspaceId.eq(workspaceId),
 				favoriteGroup.uuid.eq(userId),
-				favoriteGroup.groupId.eq(groupId)
+				favoriteGroup.groupId.eq(groupId),
+				favoriteGroupMember.deleted.isFalse()
 			)
 			.fetchFirst());
 	}
@@ -82,6 +84,7 @@ public class CustomFavoriteGroupRepositoryImpl extends QuerydslRepositorySupport
 				favoriteGroup.workspaceId.eq(workspaceId),
 				favoriteGroup.uuid.eq(userId),
 				favoriteGroup.groupId.eq(groupId),
+				favoriteGroupMember.deleted.isFalse(),
 				includeOneself(userId, includeOneself)
 			)
 			.fetchFirst());
