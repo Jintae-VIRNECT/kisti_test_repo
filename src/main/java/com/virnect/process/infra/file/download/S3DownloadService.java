@@ -1,4 +1,4 @@
-package com.virnect.process.infra.file;
+package com.virnect.process.infra.file.download;
 
 import java.io.IOException;
 
@@ -29,7 +29,7 @@ import com.virnect.process.global.error.ErrorCode;
 @Profile({"staging", "production", "test"})
 @Component
 @Slf4j
-public class AwsDownloadService implements FileDownloadService {
+public class S3DownloadService implements FileDownloadService {
 	private final AmazonS3 amazonS3Client;
 
 	@Value("${cloud.aws.s3.bucket.name}")

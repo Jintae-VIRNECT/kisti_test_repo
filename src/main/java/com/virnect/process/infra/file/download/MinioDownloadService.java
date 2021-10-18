@@ -1,4 +1,4 @@
-package com.virnect.process.infra.file;
+package com.virnect.process.infra.file.download;
 
 import java.io.IOException;
 import java.io.InputStream;

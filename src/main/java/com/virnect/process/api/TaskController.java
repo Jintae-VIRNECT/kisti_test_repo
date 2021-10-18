@@ -191,6 +191,7 @@ public class TaskController {
 	public ResponseEntity<ApiResponse<ProcessRegisterResponse>> createProcess(
 		@RequestBody @Valid ProcessRegisterRequest registerNewProcess, BindingResult result
 	) {
+		log.info("[TASK REGISTER REQUEST] {}", registerNewProcess.toString());
 		if (result.hasErrors()) {
 			result.getAllErrors().forEach(message -> {
 				log.error("[CONTENTS > TASK] ERROR MESSAGE >> {}", message);

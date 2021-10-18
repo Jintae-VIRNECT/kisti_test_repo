@@ -95,7 +95,7 @@ import com.virnect.process.global.common.ResponseMessage;
 import com.virnect.process.global.error.ErrorCode;
 import com.virnect.process.global.util.AES256EncryptUtils;
 import com.virnect.process.global.util.QRcodeGenerator;
-import com.virnect.process.infra.file.FileUploadService;
+import com.virnect.process.infra.file.upload.FileUploadService;
 
 /**
  * Project: PF-ProcessManagement
@@ -165,7 +165,6 @@ public class TaskService {
 		 *
 		 */
 		// 공정 생성 요청 처리
-		log.info("CREATE THE PROCESS requestBody ---> {}", registerNewProcess.toString());
 
 		// 1. 컨텐츠 메타데이터 가져오기
 		ApiResponse<ContentRestDto> contentApiResponse = this.contentRestService.getContentMetadata(
@@ -235,7 +234,8 @@ public class TaskService {
 			}
 
 			// 3-1-5. 타겟 등록
-			addTargetToProcess(newProcess, registerNewProcess.getTargetSize(), registerNewProcess.getTargetType());
+			String imgPath = contentDuplicate.getData().getTargets().get(0).getImgPath();
+			addTargetToProcess(newProcess, registerNewProcess.getTargetSize(), registerNewProcess.getTargetType(), imgPath);
 			//addTargetToProcess(newProcess, registerNewProcess.getTargetSize(), registerNewProcess.getTargetType());
 
 			ApiResponse<ContentRestDto> duplicatedContent = this.contentRestService.getContentMetadata(
@@ -351,7 +351,7 @@ public class TaskService {
 	 * @param newProcess
 	 * @param targetType
 	 */
-	private void addTargetToProcess(Process newProcess, float targetSize, final TargetType targetType) {
+	private void addTargetToProcess(Process newProcess, float targetSize, final TargetType targetType, String targetPath) {
 		// 타겟데이터
 		try {
 			String targetData = UUID.randomUUID().toString();
@@ -376,6 +376,9 @@ public class TaskService {
 			}
 			if (targetType.equals(TargetType.VR)) {
 				imgPath = null;
+			}
+			if (targetType.equals(TargetType.Image)) {
+				imgPath = targetPath;
 			}
 
 			// 컨텐츠 서버에 담겨진 targetData (= Make에서 제공하는 targetData) 는 AES256인코딩 후 URL인코딩을 한 값이다.
@@ -678,7 +681,7 @@ public class TaskService {
 			/*
 			복제된 컨텐츠는 타겟정보가 없다. 따라서 클라이언트에서 받는다.
 			*/
-			addTargetToProcess(newProcess, duplicateRequest.getTargetSize(), duplicateRequest.getTargetType());
+			addTargetToProcess(newProcess, duplicateRequest.getTargetSize(), duplicateRequest.getTargetType() ,contentDuplicate.getData().getPath());
 
 			// addSubProcessOnProcess에 들어갈 객체
 			ProcessRegisterRequest registerNewProcess = new ProcessRegisterRequest();

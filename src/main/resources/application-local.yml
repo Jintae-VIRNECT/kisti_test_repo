@@ -53,10 +53,9 @@ server:
   port: 8079
 
 # File Upload Configuration
-upload:
-  #  dir: "upload/"
-  #  serverUrl: "https://api.virnect.com/processes/"
-  allowed-extension: '.ares,.mars,.Ares,.Mars'
+file:
+  allowed-extension: ".ares,.mars,.Ares,.Mars"
+  prefix: "https://192.168.6.3:2838/virnect-platform/"
 
 ## FEIGN Configuration
 feign:

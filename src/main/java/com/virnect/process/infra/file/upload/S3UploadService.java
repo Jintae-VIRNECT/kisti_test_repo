@@ -1,20 +1,17 @@
-package com.virnect.process.infra.file;
+package com.virnect.process.infra.file.upload;
 
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.time.LocalDate;
 import java.util.Base64;
 import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
-import org.springframework.web.multipart.MultipartFile;
+import org.springframework.util.StringUtils;
 
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.CannedAccessControlList;
@@ -37,7 +34,7 @@ import com.virnect.process.global.error.ErrorCode;
 @Profile({"staging", "production", "test"})
 @Component
 @RequiredArgsConstructor
-public class AmazonS3UploadService implements FileUploadService {
+public class S3UploadService implements FileUploadService {
 	private static String CONTENT_DIRECTORY = "contents";
 	private static String REPORT_DIRECTORY = "report";
 	private static String REPORT_FILE_EXTENSION = ".jpg";
@@ -48,42 +45,28 @@ public class AmazonS3UploadService implements FileUploadService {
 	@Value("${cloud.aws.s3.bucket.resource}")
 	private String bucketResource;
 
-	@Value("#{'${upload.allowed-extension}'.split(',')}")
+	@Value("#{'${file.allowed-extension}'.split(',')}")
 	private List<String> allowedExtension;
+
+	@Value("${file.prefix}")
+	private String prefix;
 
 	private final AmazonS3 amazonS3Client;
 
 	@Override
-	public String upload(MultipartFile file) {
-		return null;
-	}
-
-	@Override
-	public String upload(MultipartFile file, String fileName) throws IOException {
-		return null;
-	}
-
-	@Override
 	public boolean delete(String url) {
-		String key = bucketResource + REPORT_DIRECTORY + "/" + FilenameUtils.getName(url);
+		if (!StringUtils.hasText(url) || url.contains("virnect_target.png")) {
+			log.info("[S3 DELETE] DEFAULT FILE SKIP. URL : {}", url);
+			return true;
+		}
+		String[] fileSplit = url.split(prefix);
+		String key = fileSplit[fileSplit.length - 1];
+
+		log.info("[S3 FILE DELETE] DELETE REQUEST. BUCKET : {}, KEY : {}", bucketName, key);
+
 		amazonS3Client.deleteObject(bucketName, key);
 		log.info(FilenameUtils.getName(url) + " 파일이 AWS S3(" + bucketName + "/" + key + ")에서 삭제되었습니다.");
 		return true;
-	}
-
-	@Override
-	public String getFileExtension(String originFileName) {
-		return null;
-	}
-
-	@Override
-	public boolean isAllowFileExtension(String fileExtension) {
-		return false;
-	}
-
-	@Override
-	public File getFile(String url) {
-		return null;
 	}
 
 	@Override
@@ -120,19 +103,6 @@ public class AmazonS3UploadService implements FileUploadService {
 		}
 	}
 
-	// 이미지 전송 요청을 받아 로컬 파일로 변환
-	private Optional<File> convert(MultipartFile file) throws IOException {
-		File convertFile = new File(Objects.requireNonNull(file.getOriginalFilename()));
-		if (convertFile.createNewFile()) {
-			try (FileOutputStream fos = new FileOutputStream(convertFile)) {
-				fos.write(file.getBytes());
-			}
-			return Optional.of(convertFile);
-		}
-
-		return Optional.empty();
-	}
-
 	/**
 	 * AWS S3 이미지 업로드 요청 전송
 	 *
@@ -154,4 +124,5 @@ public class AmazonS3UploadService implements FileUploadService {
 		log.info("[GET FILE PATH] Response file Path >> [{}]", filePath);
 		return filePath;
 	}
+
 }

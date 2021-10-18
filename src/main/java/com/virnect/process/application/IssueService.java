@@ -34,7 +34,7 @@ import com.virnect.process.exception.ProcessServiceException;
 import com.virnect.process.global.common.ApiResponse;
 import com.virnect.process.global.common.PageMetadataResponse;
 import com.virnect.process.global.error.ErrorCode;
-import com.virnect.process.infra.file.FileUploadService;
+import com.virnect.process.infra.file.upload.FileUploadService;
 
 /**
  * Project: PF-ProcessManagement
