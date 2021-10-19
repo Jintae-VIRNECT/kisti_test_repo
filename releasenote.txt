@@ -1,12 +1,13 @@
 RELEASE
 
 New Features
-- 신규 타겟 타입(VR) 추가 (DEVCENTER-4866)
+- 신규 타겟 타입(Image) 추가 (DEV-805)
 
 Bug Fixes
-- 없음
+- 작업 상세조회 시 컨텐츠 사이즈 미응답 에러 수정 (DEV-806)
 
 Limitation
-- 없음
+- 컨텐츠 타겟 리소스 저장 디렉토리 변경 (DEV-829)
+- 이슈 보고일자 변경 (DEV-664)
 
 Copyright (C) 2020, VIRNECT CO., LTD. - All Rights Reserved
