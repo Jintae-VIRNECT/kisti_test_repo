@@ -1,7 +1,10 @@
 <template>
   <div class="drawing-tools tools">
     <template v-if="isMobileSize">
-      <div class="mobile-tools-container drawing" :class="{ active }">
+      <div
+        class="mobile-tools-container drawing"
+        :class="{ active, leader: isLeader }"
+      >
         <undo :disableTooltip="true"></undo>
         <redo :disableTooltip="true"></redo>
         <clear :disableTooltip="true"></clear>
