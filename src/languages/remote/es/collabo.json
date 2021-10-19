@@ -1,0 +1,66 @@
+{
+  "room": {
+	"room_info": "Detalles de Colabo Remota",
+	"title": "Nombre de Colabo",
+	"leader": "Líder",
+	"description": "Descripción de Colab",
+	"member_list": "Miembro conectado",
+	"active_date": "Tiempo inicial",
+	"unactive_date": "Tiempo final",
+	"duration_sec": "Duración"
+  },
+  "status": {
+	"all": "Todo",
+	"progress": "En curso",
+	"finished": "Terminada",
+	"unknown": "Desconocida"
+  },
+  "search": {
+	"collabo_status": "Estado de Colabo",
+	"text": "Palabra clave",
+	"placeholder": "Buscar Colabl/miembro",
+	"use_date_search": "Uso de búsqueda de período",
+	"execute": "Buscar",
+	"over_period": "Solo puede buscar un período de los últimos 3 meses.",
+	"invalid_period": "Período inválido.",
+	"invalid_date": "Por favor especifique una fecha válida.",
+	"select_period": "Seleccionar período",
+	"enable_search": "Utilizar la búsqueda "
+  },
+  "list": {
+	"title": "Lista del historial de Colabo",
+	"title_description": "Se muestra el historial reciente de Colabo.",
+	"no_data": "No resultados encontrados.",
+	"room_title": "Nombre de Colabo",
+	"room_leader": "Líder",
+	"room_active_date": "Fehca inicial",
+	"room_status": "Estado",
+	"room_server_record": "Grabación del servidor",
+	"room_local_record": "Grabación local",
+	"room_attach_file": "Archivo adjunto",
+	"count": "{count}"
+  },
+  "file": {
+	"name": "Nombre de archivo",
+	"record_time": "Tiempo de grabación",
+	"size": "Tamaño de archivo",
+	"server_record": "Archivo de grabación del servidor",
+	"local_record": "Archivo de grabación local",
+	"record_member": "Miembro de grabación",
+	"attach_file": "Archivo adjunto",
+	"expired": "Sesión expirada",
+	"download_period": "Período de descarga",
+	"upload_member": "Miembro de descarga",
+	"play": "Reproducir",
+	"server_record_description": "La grabación puede interrumpirse si el servidor no cumple las especificaciones requeridas."
+  },
+  "date": {
+	"lastday": "[Ayer] A 　",
+	"nextday": "[Mañana] A",
+	"timeHour": "h[hora] m[minuto]",
+	"time": "m[minuto] s[segundo]",
+	"hour": "Hora",
+	"minute": "Minuto",
+	"second": "Segundo"
+  }
+}

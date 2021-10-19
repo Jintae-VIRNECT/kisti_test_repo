@@ -1,0 +1,33 @@
+{
+  "button": {
+	"confirm": "Confirmar",
+	"cancel": "Cancelar",
+	"refresh": "Refrescar",
+	"logout": "Cerrar sesión",
+	"progress": "En curso",
+	"select_download": "Descargar archivo seleccionado",
+	"select_delete": "Eliminar archivo seleccionado"
+  },
+  "common": {
+	"dashboard": "Tablero",
+	"workstation": "Espacio de trabajo",
+	"collabo_list": "Historial de Colabo 　"
+  },
+  "confirm": {
+	"network_error": "Se ha interrumpido la conexión con el servidor. Por favor intente otra vez más tarde.",
+	"file_not_found": "Archivo eliminado o no existente.",
+	"server_no_response": "Respuesta del servidor incorrecta.​\nPor favor intente otra vez más tarde."
+  },
+  "excel": {
+	"room_title": "Nombre de Colabo",
+	"room_description": "Descripción de Colabo",
+	"room_leader": "Líder",
+	"room_member_list": "Miembro",
+	"room_active_date": "Tiempo inicial",
+	"room_unactive_date": "Tiempo final",
+	"room_duration_sec": "Duración",
+	"file_server_record": "Grabación del servidor",
+	"file_local_record": "Grabación local",
+	"file_attach_file": "Archivo adjunto"
+  }
+}

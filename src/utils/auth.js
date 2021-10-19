@@ -1,4 +1,9 @@
-import { getAccount, tokenRequest, getSettingInfo } from 'api/http/account'
+import {
+  getAccount,
+  tokenRequest,
+  getSettingInfo,
+  logout,
+} from 'api/http/account'
 import Cookies from 'js-cookie'
 import clonedeep from 'lodash.clonedeep'
 import jwtDecode from 'jwt-decode'
@@ -185,7 +190,8 @@ class Auth {
     location.href = `${URLS['console']}/?continue=${location.href}`
     return this
   }
-  logout() {
+  async logout() {
+    await logout({ uuid: myInfo.uuid, accessToken: Cookies.get('accessToken') })
     cookieClear()
     isLogin = false
     myInfo = {}
