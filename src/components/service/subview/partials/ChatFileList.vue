@@ -81,8 +81,11 @@ export default {
           file => file.objectName === fileInfo.objectName,
         )
         if (idx === -1) {
-          this.fileList.push(fileInfo)
+          this.fileList.unshift(fileInfo)
         }
+      })
+      this.fileList.sort((a, b) => {
+        return new Date(b.createdDate) - new Date(a.createdDate)
       })
       this.$nextTick(() => {
         if (this.$refs['chatFileListScrollbar']) {

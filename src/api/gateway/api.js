@@ -149,7 +149,6 @@ export default {
   /* 다운로드 서버 */
   LATEST_APP_INFO: ['GET', '/download/list/{productName}'],
   DOWNLOAD_APP: ['GET', '/download/app/{uuid}'],
-  ALL_APP_LIST: ['GET', '/download/app/list'],
 }
 
 export const wsUri = {
