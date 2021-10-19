@@ -3,7 +3,11 @@
     <div class="footer-tab-container">
       <button
         v-for="menu in tabMenus"
-        :class="{ active: view === menu.key, notice: menu.notice }"
+        :class="{
+          active: view === menu.key,
+          notice: menu.notice,
+          invisible: menu.key === VIEW.AR && !isLeader,
+        }"
         :key="menu.key"
         @click="goTab(menu.key)"
       >
@@ -64,7 +68,7 @@ import fileShareEventQueueMixin from 'mixins/fileShareEventQueue'
 import { drawingList, drawingDownload } from 'api/http/drawing'
 import { mapGetters, mapActions } from 'vuex'
 import { VIEW } from 'configs/view.config'
-import { SIGNAL, DRAWING } from 'configs/remote.config'
+import { SIGNAL, DRAWING, ROLE } from 'configs/remote.config'
 
 export default {
   mixins: [tabChangeMixin, fileShareEventQueueMixin],
@@ -91,6 +95,9 @@ export default {
     ...mapGetters(['mainView', 'historyList', 'roomInfo']),
     isMainViewOn() {
       return this.mainView && this.mainView.id && this.mainView.video
+    },
+    isLeader() {
+      return this.account.roleType === ROLE.LEADER
     },
   },
   methods: {
@@ -167,6 +174,7 @@ export default {
 .mobile-service-footer {
   position: absolute;
   bottom: 0;
+  z-index: 2;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -203,6 +211,9 @@ export default {
         background-color: #d9333a;
         border-radius: 50%;
         content: '';
+      }
+      &.invisible {
+        display: none;
       }
     }
   }
