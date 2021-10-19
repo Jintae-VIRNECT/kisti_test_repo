@@ -62,16 +62,13 @@ export default {
       type: Boolean,
       dafault: true,
     },
-    beforeClose: {
-      type: Function,
-    },
   },
   data() {
     return {}
   },
   methods: {
     close() {
-      this.beforeClose()
+      this.$emit('update:visible', false)
     },
     onShare() {
       this.share()

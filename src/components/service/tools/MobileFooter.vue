@@ -41,7 +41,7 @@
         <mobile-upload-button @uploaded="onFileUploaded"></mobile-upload-button>
       </template>
     </div>
-    <div class="footer-modal-container">
+    <!-- <div class="footer-modal-container">
       <mobile-participant-modal
         :visible.sync="isParticipantModalShow"
         :beforeClose="beforeClose"
@@ -51,7 +51,7 @@
         :modalShow.sync="isFileListModalShow"
         :fileList="fileList"
       ></mobile-share-file-list-modal>
-    </div>
+    </div> -->
   </footer>
 </template>
 
@@ -78,8 +78,8 @@ export default {
     MobileMoreButton,
     MobileCaptureButton,
     MobileFlashButton,
-    MobileParticipantModal: () => import('../modal/MobileParticipantModal'),
-    MobileShareFileListModal: () => import('../modal/MobileShareFileListModal'),
+    //MobileParticipantModal: () => import('../modal/MobileParticipantModal'),
+    //MobileShareFileListModal: () => import('../modal/MobileShareFileListModal'),
     MobileUploadButton,
     MobileFileListButton,
     MobileDownloadButton,
@@ -88,8 +88,8 @@ export default {
   data() {
     return {
       VIEW: Object.freeze(VIEW),
-      isParticipantModalShow: false,
-      isFileListModalShow: false,
+      //isParticipantModalShow: false,
+      //isFileListModalShow: false,
       fileList: [],
     }
   },
@@ -105,23 +105,26 @@ export default {
   methods: {
     ...mapActions(['addHistory']),
     openParticipantModal() {
-      this.isParticipantModalShow = true
+      //this.isParticipantModalShow = true
+      this.$emit('participantModalShow')
     },
     openFileListModal() {
-      this.isFileListModalShow = true
+      this.$emit('openFileListModal')
+      //this.isFileListModalShow = true
     },
     onFileUploaded() {
       this.getFileList()
     },
-    beforeClose() {
-      this.isParticipantModalShow = false
-    },
+    // beforeClose() {
+    //   this.isParticipantModalShow = false
+    // },
     async getFileList() {
       const res = await drawingList({
         sessionId: this.roomInfo.sessionId,
         workspaceId: this.workspace.uuid,
       })
       this.fileList = res.fileInfoList
+      this.$emit('getFileList', res.fileInfoList)
     },
     signalDrawing({ data }) {
       if (data.type === DRAWING.ADDED || data.type === DRAWING.DELETED) {
@@ -131,7 +134,8 @@ export default {
     async fileShare({ data }) {
       if (data.type === DRAWING.FILE_SHARE) {
         if (data.contentType === 'application/pdf') {
-          this.$refs['file-list'].addPdfHistory(data)
+          //this.$refs['file-list'].addPdfHistory(data)
+          this.$emit('addPdfHistory', data)
         } else {
           const res = await drawingDownload({
             sessionId: this.roomInfo.sessionId,
