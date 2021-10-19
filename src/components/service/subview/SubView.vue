@@ -21,7 +21,11 @@ export default {
   computed: {
     ...mapGetters(['view', 'viewAction']),
     subView() {
-      return VIEW.DRAWING === this.view || ACTION.AR_DRAWING === this.viewAction
+      if (!this.isMobileSize)
+        return (
+          VIEW.DRAWING === this.view || ACTION.AR_DRAWING === this.viewAction
+        )
+      else return false
     },
   },
 }
