@@ -138,6 +138,10 @@ export default {
         return
       }
 
+      if (type === VIEW.DRAWING) {
+        this.menus[this.drawingNotice].notice = false
+      }
+
       const isLeader = this.account.roleType === ROLE.LEADER
       isLeader ? this.goTabAsLeader(type) : this.goTabAsNotLeader(type)
     },
