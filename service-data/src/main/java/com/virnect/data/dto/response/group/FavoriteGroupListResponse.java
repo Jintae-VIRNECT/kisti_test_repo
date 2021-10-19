@@ -10,9 +10,14 @@ import lombok.Setter;
 @Getter
 @Setter
 @ApiModel
-@Builder
 public class FavoriteGroupListResponse {
 
 	private List<FavoriteGroupResponse> favoriteGroupResponses;
 
+	@Builder
+	public FavoriteGroupListResponse(
+		List<FavoriteGroupResponse> favoriteGroupResponses
+	) {
+		this.favoriteGroupResponses = favoriteGroupResponses;
+	}
 }

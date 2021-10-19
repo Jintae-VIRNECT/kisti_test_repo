@@ -14,19 +14,19 @@ import com.virnect.data.redis.domain.AccessType;
 public class RemoteGroupMemberResponse {
 
 	@ApiModelProperty(value = "User Unique Identifier", position = 1, example = "498b1839dc29ed7bb2ee90ad6985c608")
-	private String uuid = "";
+	private String uuid;
 
 	@ApiModelProperty(value = "User Nick Name", position = 2, example = "리모트 데모")
-	private String nickName = "";
+	private String nickName;
 
 	@ApiModelProperty(value = "User Profile image URL", position = 3, example = "url")
-	private String profile = "";
+	private String profile;
 
 	@ApiModelProperty(value = "User email", position = 4, example = "uuid")
-	private String email = "";
+	private String email;
 
 	@ApiModelProperty(value = "User type", position = 5, example = "uuid")
-	private String userType = "";
+	private String userType;
 
 	@ApiModelProperty(value = "User name", position = 6, example = "uuid")
 	private String name;

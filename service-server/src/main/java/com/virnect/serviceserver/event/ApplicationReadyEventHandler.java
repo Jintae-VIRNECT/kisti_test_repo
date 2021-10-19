@@ -26,7 +26,6 @@ public class ApplicationReadyEventHandler {
 			+ "   * Config Server Url: [" + System.getenv("CONFIG_SERVER") + "]\n" + "\n"
 			+ "----------------------------------------------------\n";
 		log.info(msg);
-		
 		sessionDataRepository.removeAllRoom();
 	}
 

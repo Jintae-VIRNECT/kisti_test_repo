@@ -1,6 +1,7 @@
 package com.virnect.serviceserver.serviceremote.application;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -18,7 +19,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import com.virnect.data.application.workspace.WorkspaceRestService;
+import com.virnect.data.dao.group.FavoriteGroupMemberRepository;
 import com.virnect.data.dao.group.FavoriteGroupRepository;
+import com.virnect.data.dao.group.RemoteGroupMemberRepository;
 import com.virnect.data.dao.group.RemoteGroupRepository;
 import com.virnect.data.domain.Role;
 import com.virnect.data.domain.group.FavoriteGroup;
@@ -55,7 +58,9 @@ public class GroupService {
 	private final WorkspaceRestService workspaceRestService;
 
 	private final RemoteGroupRepository groupRepository;
+	private final RemoteGroupMemberRepository remoteGroupMemberRepository;
 	private final FavoriteGroupRepository favoriteGroupRepository;
+	private final FavoriteGroupMemberRepository favoriteGroupMemberRepository;
 
 	private final WorkspaceToFavoriteGroupMemberMapper workspaceToFavoriteGroupMemberMapper;
 	private final WorkspaceToRemoteGroupMemberMapper workspaceToRemoteGroupMemberMapper;
@@ -460,11 +465,26 @@ public class GroupService {
 		for (FavoriteGroupMember favoriteGroupMember : favoriteGroupMembers) {
 			for (WorkspaceMemberInfoResponse workspaceMemberInfoResponse : workspaceMembers) {
 				if (favoriteGroupMember.getUuid().equals(workspaceMemberInfoResponse.getUuid())) {
-					FavoriteGroupMemberResponse favoriteGroupMemberResponse = workspaceToFavoriteGroupMemberMapper.toDto(workspaceMemberInfoResponse);
-					favoriteGroupMemberResponse.setAccessType(
-						loadAccessType(favoriteGroupMember.getFavoriteGroup().getWorkspaceId(), favoriteGroupMemberResponse.getUuid())
-					);
-					favoriteGroupMembersResponse.add(favoriteGroupMemberResponse);
+					if (Arrays.asList(workspaceMemberInfoResponse.getLicenseProducts()).contains("REMOTE")) {
+						FavoriteGroupMemberResponse favoriteGroupMemberResponse = workspaceToFavoriteGroupMemberMapper.toDto(
+							workspaceMemberInfoResponse);
+						favoriteGroupMemberResponse.setAccessType(
+							loadAccessType(
+								favoriteGroupMember.getFavoriteGroup().getWorkspaceId(),
+								favoriteGroupMemberResponse.getUuid()
+							)
+						);
+						favoriteGroupMembersResponse.add(favoriteGroupMemberResponse);
+					} else {
+						FavoriteGroupMember target = favoriteGroupMemberRepository.findByFavoriteGroupIdAndUuid(
+							favoriteGroupMember.getFavoriteGroup().getId(),
+							favoriteGroupMember.getUuid()).orElse(null);
+						if (!ObjectUtils.isEmpty(target)) {
+							target.setDeleted(true);
+							favoriteGroupMemberRepository.save(target);
+							log.info("REMOTE LICENSE NOT EXIST UUID -> {}", favoriteGroupMember.getUuid());
+						}
+					}
 				}
 			}
 		}
@@ -479,11 +499,22 @@ public class GroupService {
 		for (RemoteGroupMember remoteGroupMember : remoteGroupMembers) {
 			for (WorkspaceMemberInfoResponse workspaceMemberInfoResponse : workspaceMembers) {
 				if (remoteGroupMember.getUuid().equals(workspaceMemberInfoResponse.getUuid())) {
-					RemoteGroupMemberResponse remoteGroupMemberResponse = workspaceToRemoteGroupMemberMapper.toDto(workspaceMemberInfoResponse);
-					remoteGroupMemberResponse.setAccessType(
-						loadAccessType(remoteGroupMember.getRemoteGroup().getWorkspaceId(), remoteGroupMemberResponse.getUuid())
-					);
-					remoteGroupMemberResponses.add(workspaceToRemoteGroupMemberMapper.toDto(workspaceMemberInfoResponse));
+					if (Arrays.asList(workspaceMemberInfoResponse.getLicenseProducts()).contains("REMOTE")) {
+						RemoteGroupMemberResponse remoteGroupMemberResponse = workspaceToRemoteGroupMemberMapper.toDto(workspaceMemberInfoResponse);
+						remoteGroupMemberResponse.setAccessType(
+							loadAccessType(remoteGroupMember.getRemoteGroup().getWorkspaceId(), remoteGroupMemberResponse.getUuid())
+						);
+						remoteGroupMemberResponses.add(workspaceToRemoteGroupMemberMapper.toDto(workspaceMemberInfoResponse));
+					} else {
+						RemoteGroupMember target = remoteGroupMemberRepository.findByRemoteGroupIdAndUuid(
+							remoteGroupMember.getRemoteGroup().getId(),
+							remoteGroupMember.getUuid()).orElse(null);
+						if (!ObjectUtils.isEmpty(target)) {
+							target.setDeleted(true);
+							remoteGroupMemberRepository.save(target);
+							log.info("REMOTE LICENSE NOT EXIST UUID -> {}", remoteGroupMember.getUuid());
+						}
+					}
 				}
 			}
 		}

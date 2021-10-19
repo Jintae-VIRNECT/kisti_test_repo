@@ -31,6 +31,7 @@ import lombok.extern.slf4j.Slf4j;
 import com.virnect.client.RemoteServiceException;
 import com.virnect.data.application.workspace.WorkspaceRestService;
 import com.virnect.data.dao.member.MemberRepository;
+import com.virnect.data.domain.Role;
 import com.virnect.data.domain.member.Member;
 import com.virnect.data.domain.member.MemberStatus;
 import com.virnect.data.dto.PageMetadataResponse;
@@ -730,7 +731,8 @@ public class ServiceSessionManager {
 			log.info("Master uuid is null");
 			return new ApiResponse<>(ErrorCode.ERR_ACCESS_AUTHORITY);
 		}
-		if (!("MASTER".equals(masterUserInfo.getRole()))) {
+
+		if (masterUserInfo.getRole() != Role.MASTER) {
 			log.info("This user is not Master");
 			return new ApiResponse<>(ErrorCode.ERR_ACCESS_AUTHORITY);
 		}
