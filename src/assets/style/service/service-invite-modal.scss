@@ -170,6 +170,9 @@
       background-color: $new_color_bg_button_primary;
       border-radius: 0.4rem;
       @include fontLevel(200);
+      &:disabled {
+        opacity: 0.4;
+      }
     }
   }
 
