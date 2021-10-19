@@ -123,9 +123,11 @@ export default {
           this.recording()
           break
         case MENU.MEMBER:
+          this.$eventBus.$emit('popover:close')
           this.$emit('selectMember')
           break
         case MENU.SPOT_CONTROL:
+          this.$eventBus.$emit('popover:close')
           window.open('/spot-control')
           break
       }
