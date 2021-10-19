@@ -198,6 +198,7 @@
 	"workspace_add_and_update_member_group": "添加/修改收藏夾",
 	"workspace_member_group_max_description": "最多可生成10個收藏夾小組。",
 	"workspace_member_group_name_valid1": "請輸入收藏夾名稱。",
+	"workspace_member_group_name_valid2": "收藏夾名稱請輸入2字以上。",
 	"workspace_member_group_member": "收藏夾成員",
 	"workspace_member_group_member_no_selection": "無選擇",
 
