@@ -35,7 +35,7 @@
       :visible.sync="selectview"
       :isLeader="isLeader"
       @share="onShare"
-      @normal="normal"
+      @normal="onNormal"
       @mute="mute"
       @kickout="kickout"
     ></mobile-select-view>
@@ -75,6 +75,10 @@ export default {
     },
     onShare() {
       this.share()
+      this.close()
+    },
+    onNormal() {
+      this.normal()
       this.close()
     },
     showInviteModalWithEventBus() {
