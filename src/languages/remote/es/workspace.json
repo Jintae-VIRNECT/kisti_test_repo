@@ -201,6 +201,7 @@
 	"workspace_member_group_name_valid2": "El nombre de Favoritos debe ser más de 2 caracteres.",
 	"workspace_member_group_member": "Miembros de Favoritos",
 	"workspace_member_group_member_no_selection": "No seleccionar",
+	"workspace_member_group_count_valid":"Seleccione al menos 1 miembro.",
 
 	"workspace_select": "Seleccionar Espacio de trabajo"
   }

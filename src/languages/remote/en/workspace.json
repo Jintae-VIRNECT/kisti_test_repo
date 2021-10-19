@@ -202,6 +202,7 @@
     "workspace_member_group_name_valid2":"Type in more than 2 letters for Favorites name​.",
     "workspace_member_group_member":"Favorite member",
     "workspace_member_group_member_no_selection" :"Do not select​",
+    "workspace_member_group_count_valid":"Please select at least 1 member.",
 
     "workspace_select":"Select Workspace"
   }
