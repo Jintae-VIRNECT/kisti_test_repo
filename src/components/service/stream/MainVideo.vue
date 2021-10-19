@@ -71,7 +71,7 @@
         <!-- 디바이스 컨트롤 뷰 -->
         <template v-if="allowTools">
           <transition name="opacity">
-            <video-tools v-if="hoverTools"></video-tools>
+            <video-tools v-if="hoverTools && !isMobileSize"></video-tools>
           </transition>
         </template>
         <transition name="opacity">
