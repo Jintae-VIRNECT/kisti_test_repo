@@ -74,6 +74,14 @@ $share_savebtn_height: 2.929rem;
     }
   }
 }
+//스페인어 길이 대응
+body {
+  &:lang(es) {
+    .share-body__file {
+      top: 2.1429rem;
+    }
+  }
+}
 
 .share-body__history {
   display: flex;
