@@ -98,11 +98,11 @@
 	"tool_pointing": "指向",
 	"tool_pointing_block": "参加者不能使用指点。",
 	"tool_enlarge_reduce": "扩大/缩小",
-	"tool_screen_share": "",
+	"tool_screen_share": "屏幕共享",
 
 
 	"setting": "设置",
-	"setting_service": "",
+	"setting_service": "设置环境",
 	"setting_pointing": "设置指向",
 	"setting_pointing_participant": "参加者指向",
 	"setting_pointing_allow": "允许参加者指向",
