@@ -149,7 +149,8 @@
 }
 
 @include responsive-mobile {
-  .service-mobile-inviteroom-modal {
+  .service-mobile-inviteroom-modal.fullscreen-modal {
+    z-index: 102;
     .fullscreen-modal--body {
       display: flex;
     }
