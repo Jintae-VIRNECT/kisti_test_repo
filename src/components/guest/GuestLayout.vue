@@ -45,6 +45,8 @@ import DeviceDenied from '../workspace/modal/WorkspaceDeviceDenied'
 
 import auth, { setTokensToCookies } from 'utils/auth'
 
+import { initAudio } from 'plugins/remote/tts/audio'
+
 export default {
   name: 'GuestLayout',
   async beforeRouteEnter(to, from, next) {
@@ -181,6 +183,8 @@ export default {
         console.error('invalid params')
         return
       }
+
+      initAudio()
 
       this.$eventBus.$on('initGuestMember', this.initGuestMember)
       this.$eventBus.$on('updateServiceMode', this.updateServiceMode)
