@@ -1,8 +1,9 @@
 <template>
   <full-screen-modal
+    v-show="modalShow"
+    :visible="true"
     class="service-mobile-participant-modal"
     :title="$t('workspace.info_remote_member')"
-    :visible="visible"
     @close="close"
   >
     <participant-video
@@ -62,13 +63,17 @@ export default {
       type: Boolean,
       dafault: true,
     },
+    modalShow: {
+      type: Boolean,
+      dafault: true,
+    },
   },
   data() {
     return {}
   },
   methods: {
     close() {
-      this.$emit('update:visible', false)
+      this.$emit('update:modalShow', false)
     },
     onShare() {
       this.share()

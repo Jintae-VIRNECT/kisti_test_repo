@@ -79,7 +79,7 @@
     <!-- 모바일에서만 필요 -->
     <mobile-participant-modal
       v-if="isMobileSize"
-      :visible.sync="isParticipantModalShow"
+      :modalShow.sync="isParticipantModalShow"
     ></mobile-participant-modal>
     <mobile-share-file-list-modal
       v-if="isMobileSize"
