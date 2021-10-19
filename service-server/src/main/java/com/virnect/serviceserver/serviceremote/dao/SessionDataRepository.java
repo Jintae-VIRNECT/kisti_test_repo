@@ -161,21 +161,21 @@ public class SessionDataRepository {
         // Set room member history
         // Mapping Member List Data to Member History List
         for (Member roomMember : room.getMembers()) {
-            MemberHistory memberHistory = MemberHistory.builder()
-                .roomHistory(roomHistory)
-                .workspaceId(roomMember.getWorkspaceId())
-                .uuid(roomMember.getUuid())
-                .memberType(roomMember.getMemberType())
-                .deviceType(roomMember.getDeviceType())
-                .sessionId(roomMember.getSessionId())
-                .startDate(roomMember.getStartDate())
-                .endDate(roomMember.getEndDate())
-                .durationSec(roomMember.getDurationSec())
-                .build();
-
-            //sessionService.setMemberHistory(memberHistory);
-            roomHistory.getMemberHistories().add(memberHistory);
-
+            if (roomMember.getMemberStatus() != MemberStatus.EVICTED) {
+                MemberHistory memberHistory = MemberHistory.builder()
+                    .roomHistory(roomHistory)
+                    .workspaceId(roomMember.getWorkspaceId())
+                    .uuid(roomMember.getUuid())
+                    .memberType(roomMember.getMemberType())
+                    .deviceType(roomMember.getDeviceType())
+                    .sessionId(roomMember.getSessionId())
+                    .startDate(roomMember.getStartDate())
+                    .endDate(roomMember.getEndDate())
+                    .durationSec(roomMember.getDurationSec())
+                    .build();
+                //sessionService.setMemberHistory(memberHistory);
+                roomHistory.getMemberHistories().add(memberHistory);
+            }
             //delete member
             sessionService.deleteMember(roomMember);
         }
