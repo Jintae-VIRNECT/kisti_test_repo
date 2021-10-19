@@ -8,5 +8,5 @@ package com.virnect.process.infra.file.download;
  * DESCRIPTION:
  */
 public interface FileDownloadService {
-	byte[] fileDownloadByFileName(String fileName);
+	byte[] fileDownloadByFileName(String fileUrl);
 }

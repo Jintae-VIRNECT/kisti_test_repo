@@ -111,7 +111,7 @@ public class WorkResultSyncRequest {
         private long id;
         @ApiModelProperty(value = "작업 레포트 액션 내용", position = 1)
         private String answer;
-        @ApiModelProperty(value = "작업 레포트 액션 사진", position = 2)
+        @ApiModelProperty(value = "작업 레포트 액션 사진(base64 인코딩 이미지)", position = 2)
         private String photoFile;
         @ApiModelProperty(value = "정상작업 여부", notes = "값은 \"OK\" or \"NOK\" 둘 중 하나임", position = 3, example = "OK")
         private Result result;

@@ -8,9 +8,9 @@ package com.virnect.process.infra.file.upload;
  * DESCRIPTION: File Upload Interface for LocalFileUpload and AWS FileUpload
  */
 public interface FileUploadService {
-	boolean delete(final String url);
+	void delete(final String url);
 
-	String base64ImageUpload(final String base64Image);
+	String base64ImageUpload(final String base64Image, String workspaceUUID);
 
-	String getFilePath(String fileName);
+	String getDefaultReportImagePath(String fileName);
 }

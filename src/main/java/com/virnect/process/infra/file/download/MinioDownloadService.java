@@ -42,13 +42,15 @@ public class MinioDownloadService implements FileDownloadService {
 	@Value("${minio.bucket}")
 	private String bucketName;
 
-	@Value("${minio.bucket-resource}")
-	private String bucketResource;
+	@Value("${file.prefix}")
+	private String prefix;
 
 	@Override
-	public byte[] fileDownloadByFileName(String fileName) {
-		String resourcePath = fileName.split(bucketResource)[1];
-		String objectName = bucketResource + resourcePath;
+	public byte[] fileDownloadByFileName(String fileUrl) {
+		log.info("PARSER - URL: [{}]", fileUrl);
+		String[] fileSplit = fileUrl.split(prefix);
+		String objectName = fileSplit[fileSplit.length - 1];
+		log.info("PARSER - KEY: [{}]", objectName);
 		GetObjectArgs getObjectArgs = GetObjectArgs.builder()
 			.bucket(bucketName)
 			.object(objectName)

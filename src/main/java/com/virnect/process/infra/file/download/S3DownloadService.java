@@ -35,13 +35,17 @@ public class S3DownloadService implements FileDownloadService {
 	@Value("${cloud.aws.s3.bucket.name}")
 	private String bucketName;
 
-	@Value("${cloud.aws.s3.bucket.resource}")
-	private String bucketResource;
+	@Value("${file.prefix}")
+	private String prefix;
 
 	@Override
-	public byte[] fileDownloadByFileName(String fileName) {
-		String resourcePath = fileName.split(bucketResource)[1];
-		GetObjectRequest getObjectRequest = new GetObjectRequest(bucketName, bucketResource + resourcePath);
+	public byte[] fileDownloadByFileName(String fileUrl) {
+		log.info("PARSER - URL: [{}]", fileUrl);
+		String[] fileSplit = fileUrl.split(prefix);
+		String objectName = fileSplit[fileSplit.length - 1];
+		log.info("PARSER - KEY: [{}]", objectName);
+
+		GetObjectRequest getObjectRequest = new GetObjectRequest(bucketName, objectName);
 		try (S3Object s3Object = amazonS3Client.getObject(getObjectRequest);
 			 S3ObjectInputStream objectInputStream = s3Object.getObjectContent()) {
 			return IOUtils.toByteArray(objectInputStream, s3Object.getObjectMetadata().getContentLength());

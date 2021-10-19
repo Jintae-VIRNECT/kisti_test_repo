@@ -197,7 +197,7 @@ public class IssueService {
 
 		// Base64로 받은 이미지 처리
 		if (!StringUtils.isEmpty(request.getPhotoFile())) {
-			issue.setPath(getFileUploadUrl(request.getPhotoFile()));
+			issue.setPath(getFileUploadUrl(request.getPhotoFile(), null));//todo : 워크스페이스 식별자 요청 파라미터 추가 필요
 		}
 
 		this.issueRepository.save(issue);
@@ -287,10 +287,11 @@ public class IssueService {
 	 * base64로 인코딩된 이미지 파일 업로드
 	 *
 	 * @param base64EncodedImage - upload file
+	 * @param workspaceUUID
 	 * @return - file path
 	 */
-	private String getFileUploadUrl(String base64EncodedImage) {
-		return Optional.of(fileUploadService.base64ImageUpload(base64EncodedImage))
+	private String getFileUploadUrl(String base64EncodedImage, String workspaceUUID) {
+		return Optional.of(fileUploadService.base64ImageUpload(base64EncodedImage, workspaceUUID))
 			.orElseThrow(() -> new ProcessServiceException(ErrorCode.ERR_PROCESS_WORK_RESULT_SYNC));
 	}
 }
