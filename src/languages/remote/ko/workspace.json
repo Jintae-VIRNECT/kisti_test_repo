@@ -201,6 +201,7 @@
     "workspace_member_group_name_valid2":"즐겨찾기 이름은 2자 이상 입력해 주세요.",
     "workspace_member_group_member":"즐겨찾기 멤버",
     "workspace_member_group_member_no_selection" :"선택 없음",
+    "workspace_member_group_count_valid":"멤버를 1명 이상 선택해 주세요.",
 
     "workspace_select": "워크스페이스 선택"
   }
