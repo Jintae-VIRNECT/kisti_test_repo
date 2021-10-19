@@ -137,7 +137,7 @@ export default {
     },
 
     //중복 로그인으로 인해 신규접속자로 부터 원격종료 이벤트 수신한 경우 - 로그아웃 처리 후 팝업 클릭 시 로그인 페이지 이동
-    async conRemoteExitReceived() {
+    async onRemoteExitReceived() {
       await auth.logout(false) //바로 로그아웃 처리
       //팝업 표시 후 리디렉트 실행
       this.confirmDefault(
