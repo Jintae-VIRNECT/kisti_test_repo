@@ -198,6 +198,7 @@
 	"workspace_add_and_update_member_group": "Añadir/Editar Favoritos",
 	"workspace_member_group_max_description": "Está permitido crear hasta 10 grupos de Favoritos.",
 	"workspace_member_group_name_valid1": "Por favor introduzca un nombre de Favoritos",
+	"workspace_member_group_name_valid2": "El nombre de Favoritos debe ser más de 2 caracteres.",
 	"workspace_member_group_member": "Miembros de Favoritos",
 	"workspace_member_group_member_no_selection": "No seleccionar",
 

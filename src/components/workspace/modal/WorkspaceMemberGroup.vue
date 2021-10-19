@@ -131,8 +131,11 @@ export default {
       }
     },
     groupNameInvalidMessage() {
-      if (this.groupNameInput.length < 2) {
+      const inputLength = this.groupNameInput.length
+      if (inputLength === 0) {
         return this.$t('workspace.workspace_member_group_name_valid1')
+      } else if (inputLength < 2 && inputLength > 0) {
+        return this.$t('workspace.workspace_member_group_name_valid2')
       } else {
         return this.$t('workspace.remote_name_valid2')
       }
