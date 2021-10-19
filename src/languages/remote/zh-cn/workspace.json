@@ -201,6 +201,7 @@
 	"workspace_member_group_name_valid2":"收藏夹名称请输入2字以上。",
 	"workspace_member_group_member": "收藏夹成员",
 	"workspace_member_group_member_no_selection": "无选择",
+	"workspace_member_group_count_valid":"请至少选择 1 位成员。",
 
 	"workspace_select": "选择工作区"
   }

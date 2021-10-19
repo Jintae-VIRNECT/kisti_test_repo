@@ -203,6 +203,7 @@
     "workspace_member_group_name_valid2":"コラボグループ名​は２字以上入力してください。",
     "workspace_member_group_member":"コラボグループメンバー",
     "workspace_member_group_member_no_selection" :"選択しない​",
+    "workspace_member_group_count_valid":"メンバーを1人以上選択してください。",
 
     "workspace_select":"ワークスペース選択"
   }
