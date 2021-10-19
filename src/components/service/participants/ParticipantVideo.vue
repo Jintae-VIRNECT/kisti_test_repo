@@ -349,6 +349,11 @@ export default {
         }
         this.$emit('selectMain')
       } else {
+        //모바일웹 반응형 경우 셀렉트 뷰 메뉴를 표시한다.
+        if (this.isMobileSize) {
+          this.$emit('selectMain')
+          return
+        }
         if (this.view === VIEW.AR) {
           this.toastDefault(this.$t('service.participant_ar_cannot_change'))
           return
