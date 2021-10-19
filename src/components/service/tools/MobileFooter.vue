@@ -158,7 +158,6 @@ export default {
     this.$eventBus.$on(SIGNAL.DRAWING, this.signalDrawing)
     this.$eventBus.$on(SIGNAL.DRAWING_FROM_VUEX, this.fileShare) //vuex 큐에 임시 저장해두었다가 발생시키는 이벤트 리스너
     this.$eventBus.$on(SIGNAL.DRAWING, this.fileShare) //누락 이벤트가 모두 처리된 후 정상적으로 이벤트 직접 수신
-    this.getFileList()
   },
   beforeDestroy() {
     this.$eventBus.$off(SIGNAL.DRAWING, this.signalDrawing)
