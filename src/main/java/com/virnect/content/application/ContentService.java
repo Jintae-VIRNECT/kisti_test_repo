@@ -20,6 +20,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -542,6 +543,9 @@ public class ContentService {
 				this.contentRepository.save(content);
 			} else {
 				// 2 컨텐츠 삭제
+				Optional<Target> optionalTarget = targetRepository.findByContentId(content.getId());
+				optionalTarget.ifPresent(target -> fileUploadService.deleteByFileUrl(target.getImgPath()));
+
 				long affectRows = this.contentRepository.deleteByUuid(content.getUuid());
 				log.info("deleteByUuid affectRows = {}", affectRows);
 
@@ -565,10 +569,6 @@ public class ContentService {
                         }
                     }
                 }*/
-				String targetPath = content.getTargetList().get(0).getImgPath();
-				if (StringUtils.hasText(targetPath)) {
-					fileUploadService.deleteByFileUrl(targetPath);
-				}
 			}
 			// 5 삭제 성공 반환
 			contentDeleteResponse.setMsg(ErrorCode.ERR_CONTENT_DELETE_SUCCEED.getMessage());
