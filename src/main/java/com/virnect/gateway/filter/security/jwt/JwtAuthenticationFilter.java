@@ -56,7 +56,7 @@ public class JwtAuthenticationFilter implements GlobalFilter {
 
 	@Override
 	public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
-		if (RequestValidationProcessor.isRequestAuthenticationProcessSkip(exchange.getRequest())) {
+		if (RequestValidationProcessor.process(exchange.getRequest())) {
 			return chain.filter(exchange);
 		}
 
