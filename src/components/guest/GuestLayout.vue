@@ -148,7 +148,7 @@ export default {
     showGuestExpiredAlarm() {
       this.confirmDefault(this.$t('guest.guest_license_expired'), {
         action: () => {
-          location.href = `${URLS['console']}/?continue=${location.href}`
+          location.href = `${URLS['console']}`
         },
       })
     },
@@ -179,7 +179,7 @@ export default {
     try {
       //파라미터 유효성 체크
       if (this.workspaceId === undefined || this.sessionId === undefined) {
-        location.href = `${URLS['console']}/?continue=${location.href}`
+        location.href = `${URLS['console']}`
         console.error('invalid params')
         return
       }
