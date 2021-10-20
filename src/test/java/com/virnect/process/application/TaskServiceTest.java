@@ -37,7 +37,7 @@ import com.virnect.process.domain.SubProcess;
 import com.virnect.process.domain.Target;
 import com.virnect.process.domain.TargetType;
 import com.virnect.process.domain.YesOrNo;
-import com.virnect.process.infra.file.FileUploadService;
+import com.virnect.process.infra.file.upload.FileUploadService;
 
 /**
  * Project: PF-ProcessManagement

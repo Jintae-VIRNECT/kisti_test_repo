@@ -33,7 +33,7 @@ import com.virnect.process.dto.rest.response.license.MyLicenseInfoListResponse;
 import com.virnect.process.dto.rest.response.license.MyLicenseInfoResponse;
 import com.virnect.process.exception.ProcessServiceException;
 import com.virnect.process.global.error.ErrorCode;
-import com.virnect.process.infra.file.FileDownloadService;
+import com.virnect.process.infra.file.download.FileDownloadService;
 
 /**
  * Project: PF-ProcessManagement

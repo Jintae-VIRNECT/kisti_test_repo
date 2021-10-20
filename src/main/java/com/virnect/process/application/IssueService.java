@@ -34,7 +34,7 @@ import com.virnect.process.exception.ProcessServiceException;
 import com.virnect.process.global.common.ApiResponse;
 import com.virnect.process.global.common.PageMetadataResponse;
 import com.virnect.process.global.error.ErrorCode;
-import com.virnect.process.infra.file.FileUploadService;
+import com.virnect.process.infra.file.upload.FileUploadService;
 
 /**
  * Project: PF-ProcessManagement
@@ -197,7 +197,7 @@ public class IssueService {
 
 		// Base64로 받은 이미지 처리
 		if (!StringUtils.isEmpty(request.getPhotoFile())) {
-			issue.setPath(getFileUploadUrl(request.getPhotoFile()));
+			issue.setPath(getFileUploadUrl(request.getPhotoFile(), null));//todo : 워크스페이스 식별자 요청 파라미터 추가 필요
 		}
 
 		this.issueRepository.save(issue);
@@ -227,15 +227,15 @@ public class IssueService {
 			// 이슈가 글로벌 이슈인 경우 process, subProcess, job 이 null 이므로 그에 맞는 null 체크
 			return IssueInfoResponse.builder()
 				.issueId(issue.getId())
-				.reportedDate(Objects.isNull(subProcess) ? issue.getUpdatedDate() : subProcess.getReportedDate())
-				.photoFilePath(Optional.of(issue).map(Issue::getPath).orElseGet(() -> ""))
-				.caption(Optional.of(issue).map(Issue::getContent).orElseGet(() -> ""))
-				.taskId(Objects.isNull(process) ? 0 : process.getId())
-				.taskName(Objects.isNull(process) ? null : process.getName())
-				.subTaskId(Objects.isNull(subProcess) ? 0 : subProcess.getId())
-				.subTaskName(Objects.isNull(subProcess) ? null : subProcess.getName())
-				.stepId(Objects.isNull(job) ? 0 : job.getId())
-				.stepName(Objects.isNull(job) ? null : job.getName())
+				.reportedDate(issue.getUpdatedDate()) //DEV-664
+				.photoFilePath(Optional.of(issue).map(Issue::getPath).orElse(""))
+				.caption(Optional.of(issue).map(Issue::getContent).orElse(""))
+				.taskId(Optional.ofNullable(process).map(Process::getId).orElse(0L))
+				.taskName(Optional.ofNullable(process).map(Process::getName).orElse(""))
+				.subTaskId(Optional.ofNullable(subProcess).map(SubProcess::getId).orElse(0L))
+				.subTaskName(Optional.ofNullable(subProcess).map(SubProcess::getName).orElse(""))
+				.stepId(Optional.ofNullable(job).map(Job::getId).orElse(0L))
+				.stepName(Optional.ofNullable(job).map(Job::getName).orElse(""))
 				.workerUUID(userInfo.getUuid())
 				.workerName(userInfo.getNickname())
 				.workerProfile(userInfo.getProfile())
@@ -287,10 +287,11 @@ public class IssueService {
 	 * base64로 인코딩된 이미지 파일 업로드
 	 *
 	 * @param base64EncodedImage - upload file
+	 * @param workspaceUUID
 	 * @return - file path
 	 */
-	private String getFileUploadUrl(String base64EncodedImage) {
-		return Optional.of(fileUploadService.base64ImageUpload(base64EncodedImage))
+	private String getFileUploadUrl(String base64EncodedImage, String workspaceUUID) {
+		return Optional.of(fileUploadService.base64ImageUpload(base64EncodedImage, workspaceUUID))
 			.orElseThrow(() -> new ProcessServiceException(ErrorCode.ERR_PROCESS_WORK_RESULT_SYNC));
 	}
 }

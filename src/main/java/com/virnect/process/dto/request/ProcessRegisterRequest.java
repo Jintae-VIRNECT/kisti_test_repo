@@ -9,13 +9,11 @@ import javax.validation.constraints.NotNull;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
 import lombok.Setter;
-import lombok.ToString;
 
 import com.virnect.process.domain.TargetType;
 
 @Getter
 @Setter
-@ToString
 public class ProcessRegisterRequest {
 
 	@NotBlank
@@ -60,4 +58,21 @@ public class ProcessRegisterRequest {
 	@NotNull
 	@ApiModelProperty(value = "세부 작업 정보 배열", notes = "해당 작업에서의 세부 작업 정보들이 담긴 배열", required = true, position = 10)
 	private List<NewSubProcessRequest> subTaskList;
+
+	@Override
+	public String toString() {
+		return "ProcessRegisterRequest{" +
+			"contentUUID='" + contentUUID + '\'' +
+			", name='" + name + '\'' +
+			", ownerUUID='" + ownerUUID + '\'' +
+			", startDate=" + startDate +
+			", endDate=" + endDate +
+			", position='" + position + '\'' +
+			", targetType=" + targetType +
+			", targetSize=" + targetSize +
+			", workspaceUUID='" + workspaceUUID + '\'' +
+			", targetSetting='" + targetSetting + '\'' +
+			", subTaskList=" + subTaskList +
+			'}';
+	}
 }

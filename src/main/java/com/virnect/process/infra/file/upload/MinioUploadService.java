@@ -1,13 +1,12 @@
-package com.virnect.process.infra.file;
+package com.virnect.process.infra.file.upload;
 
 import java.io.ByteArrayInputStream;
-import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.time.LocalDate;
 import java.util.Base64;
+import java.util.List;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.RandomStringUtils;
@@ -15,7 +14,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
-import org.springframework.web.multipart.MultipartFile;
+import org.springframework.util.StringUtils;
 
 import io.minio.MinioClient;
 import io.minio.PutObjectArgs;
@@ -54,73 +53,65 @@ public class MinioUploadService implements FileUploadService {
 	@Value("${minio.bucket}")
 	private String bucketName;
 
-	@Value("${minio.bucket-resource}")
-	private String bucketResource;
+	@Value("#{'${file.allowed-extension}'.split(',')}")
+	private List<String> allowedExtension;
+
+	@Value("${file.prefix}")
+	private String prefix;
 
 	@Override
-	public String upload(MultipartFile file) throws IOException {
-		return null;
-	}
+	public void delete(String url) {
+		if (!StringUtils.hasText(url) || url.contains("virnect_target.png")) {
+			log.info("[MINIO FILE DELETE] DEFAULT FILE SKIP. URL : {}", url);
+		}
+		String[] fileSplit = url.split(prefix);
+		String objectName = fileSplit[fileSplit.length - 1];
 
-	@Override
-	public String upload(MultipartFile file, String fileName) throws IOException {
-		return null;
-	}
-
-	@Override
-	public boolean delete(String url) {
-
-		String objectName = bucketResource + REPORT_DIRECTORY + "/" + FilenameUtils.getName(url);
 		RemoveObjectArgs removeObjectArgs = RemoveObjectArgs.builder()
 			.bucket(bucketName)
 			.object(objectName)
 			.build();
+		log.info("[MINIO FILE DELETE] DELETE REQUEST. BUCKET : {}, KEY : {}", bucketName, objectName);
 		try {
 			minioClient.removeObject(removeObjectArgs);
 			log.info(FilenameUtils.getName(url) + " 파일이 삭제되었습니다.");
 		} catch (ErrorResponseException | InsufficientDataException | InternalException | InvalidBucketNameException | InvalidKeyException | InvalidResponseException | IOException |
 			NoSuchAlgorithmException | ServerException | XmlParserException exception) {
 			log.error(exception.getMessage());
-			throw new ProcessServiceException(ErrorCode.ERR_FILE_DELETE);
+		}
+	}
+
+	@Override
+	public String base64ImageUpload(String base64Image, String workspaceUUID) {
+		byte[] image = Base64.getDecoder().decode(base64Image);
+		log.info("[MINIO BASE64 UPLOAD] UPLOAD FILE SIZE : {} (byte)", image.length);
+		String randomFileName = String.format(
+			"%s_%s%s", LocalDate.now().toString(), RandomStringUtils.randomAlphanumeric(10).toLowerCase(),
+			REPORT_FILE_EXTENSION
+		);
+		String objectName = String.format("workspace/%s/%s", REPORT_DIRECTORY, randomFileName);
+		if (StringUtils.hasText(workspaceUUID)) {
+			objectName = String.format("workspace/%s/%s/%s", workspaceUUID, REPORT_DIRECTORY, randomFileName);
 		}
 
-		return true;
-	}
+		PutObjectArgs putObjectArgs = PutObjectArgs.builder()
+			.bucket(bucketName)
+			.object(objectName)
+			.contentType(MediaType.APPLICATION_OCTET_STREAM_VALUE)
+			.stream(new ByteArrayInputStream(image), image.length, -1)
+			.build();
 
-	@Override
-	public String getFileExtension(String originFileName) {
-		return null;
-	}
-
-	@Override
-	public boolean isAllowFileExtension(String fileExtension) {
-		return false;
-	}
-
-	@Override
-	public File getFile(String url) {
-		return null;
-	}
-
-	@Override
-	public String base64ImageUpload(String base64Image) {
+		log.info(
+			"[MINIO BASE64 UPLOAD] UPLOAD REQUEST. BUCKET : {}, KEY : {}, CONTENT TYPE : {}", bucketName,
+			objectName,
+			MediaType.APPLICATION_OCTET_STREAM_VALUE
+		);
 		try {
-			byte[] image = Base64.getDecoder().decode(base64Image);
-			String randomFileName = String.format(
-				"%s_%s%s", LocalDate.now().toString(), RandomStringUtils.randomAlphanumeric(10).toLowerCase(),
-				REPORT_FILE_EXTENSION
-			);
-			String objectName = String.format("%s%s/%s", bucketResource, REPORT_DIRECTORY, randomFileName);
-
-			InputStream inputStream = new ByteArrayInputStream(image);
-			PutObjectArgs putObjectArgs = PutObjectArgs.builder()
-				.bucket(bucketName)
-				.object(objectName)
-				.contentType(MediaType.APPLICATION_OCTET_STREAM_VALUE)
-				.stream(inputStream, image.length, -1)
-				.build();
 			minioClient.putObject(putObjectArgs);
-			return minioClient.getObjectUrl(bucketName, objectName);
+			log.info("[MINIO BASE64 UPLOAD] UPLOAD SUCCESS.");
+			String url = minioClient.getObjectUrl(bucketName, objectName);
+			log.info("[MINIO BASE64 UPLOAD] UPLOADED URL : {}", url);
+			return url;
 		} catch (Exception e) {
 			log.error(e.getMessage());
 			throw new ProcessServiceException(ErrorCode.ERR_FILE_UPLOAD);
@@ -128,8 +119,9 @@ public class MinioUploadService implements FileUploadService {
 	}
 
 	@Override
-	public String getFilePath(String fileName) {
-		String objectName = bucketResource + REPORT_DIRECTORY + "/" + fileName;
+	public String getDefaultReportImagePath(String fileName) {
+		String objectName = "workspace/report/" + fileName;
+		log.info("[MINIO GET FILE PATH] BUCKET : {}, KEY : {} ", bucketName, objectName);
 		try {
 			return minioClient.getObjectUrl(bucketName, objectName);
 		} catch (ErrorResponseException | InsufficientDataException | InternalException | InvalidBucketNameException | InvalidKeyException | InvalidResponseException | NoSuchAlgorithmException |

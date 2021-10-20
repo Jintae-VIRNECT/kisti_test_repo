@@ -30,10 +30,10 @@ public interface WorkspaceRestService {
 		@PathVariable("workspaceId") String workspaceId, @RequestParam("size") int size
 	);
 
-	@GetMapping("/workspaces/{workspaceId}/settings")
+	/*@GetMapping("/workspaces/{workspaceId}/settings")
 	ApiResponse<WorkspaceSettingInfoListResponse> getWorkspaceSettingList(
 		@PathVariable("workspaceId") String workspaceId, @RequestParam("product") String product
-	);
+	);*/
 
 	@GetMapping("/workspaces/{workspaceId}/members/info")
 	ApiResponse<AllMemberInfoResponse> getWorkspaceUserInfo(

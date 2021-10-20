@@ -1,4 +1,4 @@
-package com.virnect.process.infra.file;
+package com.virnect.process.infra.file.download;
 
 /**
  * Project: PF-ProcessManagement
@@ -8,5 +8,5 @@ package com.virnect.process.infra.file;
  * DESCRIPTION:
  */
 public interface FileDownloadService {
-	byte[] fileDownloadByFileName(String fileName);
+	byte[] fileDownloadByFileName(String fileUrl);
 }

@@ -13,6 +13,7 @@ import io.swagger.annotations.ApiModel;
 public enum ErrorCode {
 	// 작업 관련 에러코드 - 500x
 	ERR_OWNERSHIP(5001, "An error occurred in the request. Because it is NOT ownership."),
+	ERR_NOT_FOUND_CONTENT(5002, "Could not found content"),
 	ERR_CAN_CREATE_PROCESS(5003, "The content can create process."),    // make에서 로직처리 되어 있음. 컨텐츠 업데이트가 가능한 메시지
 	ERR_NOT_FOUND_PROCESS(5004, "Could not found process."),
 	ERR_NOT_FOUND_PROCESS_FOR_PROCESS_METADATA(5005, "The requested process id could not be found."),

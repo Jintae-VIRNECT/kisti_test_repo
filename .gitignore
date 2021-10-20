@@ -36,6 +36,3 @@ out/
 
 ### Application Running Configuratino on Local Environment ###
 /src/main/resources/application-local.yml
-
-### Content Upload Directory
-upload
