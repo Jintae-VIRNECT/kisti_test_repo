@@ -1,8 +1,6 @@
 package com.virnect.gateway.filter.security.session;
 
-import java.util.ArrayList;
 import java.util.Base64;
-import java.util.Optional;
 
 import javax.annotation.PostConstruct;
 
@@ -51,7 +49,7 @@ public class SessionAuthenticationFilter implements GlobalFilter {
 		ServerWebExchange exchange,
 		GatewayFilterChain chain
 	) {
-		if (RequestValidationProcessor.isRequestAuthenticationProcessSkip(exchange.getRequest())) {
+		if (RequestValidationProcessor.process(exchange.getRequest())) {
 			return chain.filter(exchange);
 		}
 

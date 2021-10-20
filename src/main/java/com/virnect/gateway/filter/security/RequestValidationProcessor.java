@@ -10,7 +10,7 @@ import org.springframework.http.server.reactive.ServerHttpRequest;
 public class RequestValidationProcessor {
 	private static final Logger logger = LoggerFactory.getLogger(RequestValidationProcessor.class);
 
-	public static boolean isSkipUrl(ServerHttpRequest request) {
+	public static boolean isAuthenticationIgnoreUrl(ServerHttpRequest request) {
 		String requestUrlPath = request.getURI().getPath();
 
 		boolean isSkipUrlMatched = requestUrlPath.startsWith("/auth") ||
@@ -20,6 +20,7 @@ public class RequestValidationProcessor {
 			requestUrlPath.startsWith("/licenses/allocate/check") ||
 			requestUrlPath.startsWith("/licenses/allocate") ||
 			requestUrlPath.startsWith("/licenses/deallocate") ||
+			requestUrlPath.startsWith("/download/list") ||
 			requestUrlPath.contains("/licenses/deallocate") ||
 			requestUrlPath.contains("/licenses/sdk/authentication") ||
 			requestUrlPath.contains("/workspaces/setting") ||
@@ -32,8 +33,8 @@ public class RequestValidationProcessor {
 		return isSkipUrlMatched;
 	}
 
-	public static boolean isRequestAuthenticationProcessSkip(ServerHttpRequest request) {
-		return isSkipUrl(request) || hostNameCheck(request) || allowedOfficeInternalAPKDeployRequest(request);
+	public static boolean process(ServerHttpRequest request) {
+		return isAuthenticationIgnoreUrl(request) || hostNameCheck(request) || allowedOfficeInternalAPKDeployRequest(request);
 	}
 
 	private static boolean hostNameCheck(ServerHttpRequest request) {
