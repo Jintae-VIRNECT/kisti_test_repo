@@ -86,6 +86,7 @@
       ref="file-list"
       :modalShow.sync="isFileListModalShow"
       :fileList="fileList"
+      @rendered="onFileListRendered"
     ></mobile-share-file-list-modal>
   </section>
 </template>
@@ -153,6 +154,7 @@ export default {
       fileList: [],
       isFileListModalShow: false,
       isParticipantModalShow: false,
+      fileListCallback: () => {},
     }
   },
   computed: {
@@ -314,7 +316,18 @@ export default {
       this.isParticipantModalShow = true
     },
     mobileAddPdfHistory(data) {
-      this.$refs['file-list'].addPdfHistory(data)
+      //mobile-share-file-list-modal 컴포넌트가 생성되기 전에 호출 되므로,
+      //아직 컴포넌트 dom이 추가되지 않았다면 callback으로 등록시켜 논 후 해당 컴포넌트가 랜더링 된 후
+      //이벤트수신 시 콜백을 실행하도록 한다.
+      if (this.$refs['file-list']) this.$refs['file-list'].addPdfHistory(data)
+      else
+        this.fileListCallback = () => {
+          this.fileListCallback = () => {}
+          this.$refs['file-list'].addPdfHistory(data)
+        }
+    },
+    onFileListRendered() {
+      this.fileListCallback()
     },
   },
 
