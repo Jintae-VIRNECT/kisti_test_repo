@@ -8,7 +8,6 @@ import org.springframework.web.multipart.MultipartFile;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
-import lombok.ToString;
 
 import com.virnect.content.domain.TargetType;
 import com.virnect.content.domain.Types;
@@ -40,19 +39,19 @@ public class ContentUploadRequest {
 	@NotBlank
 	private String name;
 
-	//private String metadata;
-
 	@NotBlank
 	private String properties;
 
 	@NotBlank
 	private String userUUID;
 
+	private MultipartFile targetImage;
+
 	@Builder
 	public ContentUploadRequest(
 		String targetData, TargetType targetType, @NotBlank String workspaceUUID, @NotNull MultipartFile content,
-		Types contentType, @NotBlank String name,@NotBlank String properties,
-		@NotBlank String userUUID
+		Types contentType, @NotBlank String name, @NotBlank String properties,
+		@NotBlank String userUUID, MultipartFile targetImage
 	) {
 		this.targetData = targetData;
 		this.targetType = targetType;
@@ -60,9 +59,9 @@ public class ContentUploadRequest {
 		this.content = content;
 		this.contentType = contentType;
 		this.name = name;
-		//this.metadata = metadata;
 		this.properties = properties;
 		this.userUUID = userUUID;
+		this.targetImage = targetImage;
 	}
 
 	@Override
@@ -76,6 +75,7 @@ public class ContentUploadRequest {
 			", name='" + name + '\'' +
 			//", properties='" + properties + '\'' +
 			", userUUID='" + userUUID + '\'' +
+			", targetImage=" + targetImage +
 			'}';
 	}
 }

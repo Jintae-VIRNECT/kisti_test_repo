@@ -20,6 +20,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -203,7 +204,9 @@ public class ContentService {
 				throw new ContentServiceException(ErrorCode.ERR_TARGET_DATA_ALREADY_EXIST);
 			} else {
 				targetData = addTargetToContent(
-					content, uploadRequest.getTargetType(), uploadRequest.getTargetData());
+					content, uploadRequest.getTargetType(), uploadRequest.getTargetData(),
+					uploadRequest.getTargetImage()
+				);
 			}
 		}
 
@@ -246,7 +249,9 @@ public class ContentService {
 		});
 	}
 
-	private String addTargetToContent(Content content, TargetType targetType, String targetData) {
+	private String addTargetToContent(
+		Content content, TargetType targetType, String targetData, MultipartFile targetImage
+	) {
 		String imgPath = null;
 
 		if (Objects.nonNull(targetData)) {
@@ -260,6 +265,15 @@ public class ContentService {
 			if (targetType.equals(TargetType.VR)) {
 				//imgPath = fileUploadUrl + fileUploadPath + defaultVTarget;defaultVTarget
 				imgPath = null;
+			}
+			if (targetType.equals(TargetType.Image)) {
+				if (targetImage.getSize() <= 0) {
+					throw new ContentServiceException(ErrorCode.ERR_CONTENT_UPLOAD);
+				}
+				String fileName = String.format(
+					"%s_%s", LocalDate.now().toString(), RandomStringUtils.randomAlphanumeric(10).toLowerCase());
+				imgPath = fileUploadService.uploadByFileInputStream(
+					targetImage, REPORT_DIRECTORY, content.getWorkspaceUUID(), fileName);
 			}
 		}
 
@@ -386,7 +400,21 @@ public class ContentService {
 				target.setImgPath(uploadImgPath);
 			}
 			if (updateRequest.getTargetType().equals(TargetType.VR)) {
+				fileUploadService.deleteByFileUrl(target.getImgPath());
 				target.setImgPath(null);
+			}
+			if (updateRequest.getTargetType().equals(TargetType.Image)) {
+				if (updateRequest.getTargetImage().isEmpty()) {
+					throw new ContentServiceException(ErrorCode.ERR_CONTENT_UPDATE);
+				}
+				String fileName = String.format(
+					"%s_%s", LocalDate.now().toString(), RandomStringUtils.randomAlphanumeric(10).toLowerCase());
+				String filePath = fileUploadService.uploadByFileInputStream(updateRequest.getTargetImage(),
+					REPORT_DIRECTORY,
+					targetContent.getWorkspaceUUID(), fileName
+				);
+				fileUploadService.deleteByFileUrl(target.getImgPath());
+				target.setImgPath(filePath);
 			}
 		}
 		target.setData(updateRequest.getTargetData());
@@ -515,6 +543,9 @@ public class ContentService {
 				this.contentRepository.save(content);
 			} else {
 				// 2 컨텐츠 삭제
+				Optional<Target> optionalTarget = targetRepository.findByContentId(content.getId());
+				optionalTarget.ifPresent(target -> fileUploadService.deleteByFileUrl(target.getImgPath()));
+
 				long affectRows = this.contentRepository.deleteByUuid(content.getUuid());
 				log.info("deleteByUuid affectRows = {}", affectRows);
 
