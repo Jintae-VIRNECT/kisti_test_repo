@@ -1,6 +1,9 @@
 <template>
   <button
     class="mobile-filelist-btn"
+    :class="{
+      notice,
+    }"
     :disabled="disabled"
     @click="openFileListModal"
   ></button>
@@ -10,6 +13,7 @@
 export default {
   props: {
     disabled: { type: Boolean },
+    notice: { type: Boolean },
   },
   methods: {
     openFileListModal() {
@@ -32,5 +36,15 @@ export default {
     $new_color_bg_button_sub,
     '~assets/image/call/mdpi_icon_filelist_new.svg'
   );
+  &.notice::before {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    width: 0.6rem;
+    height: 0.6rem;
+    background-color: #d9333a;
+    border-radius: 50%;
+    content: '';
+  }
 }
 </style>

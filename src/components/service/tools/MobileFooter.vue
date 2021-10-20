@@ -34,6 +34,7 @@
         <mobile-file-list-button
           :disabled="fileList.length === 0"
           @openFileListModal="openFileListModal"
+          :notice="fileListNotice"
         ></mobile-file-list-button>
         <mobile-download-button
           :disabled="historyList.length === 0"
@@ -91,10 +92,11 @@ export default {
       //isParticipantModalShow: false,
       //isFileListModalShow: false,
       fileList: [],
+      fileListNotice: false,
     }
   },
   computed: {
-    ...mapGetters(['mainView', 'historyList', 'roomInfo']),
+    ...mapGetters(['mainView', 'historyList', 'roomInfo', 'myInfo']),
     isMainViewOn() {
       return this.mainView && this.mainView.id && this.mainView.video
     },
@@ -109,6 +111,7 @@ export default {
       this.$emit('participantModalShow')
     },
     openFileListModal() {
+      this.fileListNotice = false
       this.$emit('openFileListModal')
       //this.isFileListModalShow = true
     },
@@ -126,8 +129,17 @@ export default {
       this.fileList = res.fileInfoList
       this.$emit('getFileList', res.fileInfoList)
     },
-    signalDrawing({ data }) {
+    signalDrawing({ data, receive }) {
       if (data.type === DRAWING.ADDED || data.type === DRAWING.DELETED) {
+        //타 참가자가 파일 업로드 한 경우 파일목록 버튼에 NOTICE 활성화
+        if (
+          this.myInfo &&
+          receive &&
+          this.myInfo.connectionId !== receive.from.connectionId
+        ) {
+          this.fileListNotice = true
+        }
+
         this.getFileList()
       }
     },
