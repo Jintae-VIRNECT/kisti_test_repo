@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
@@ -33,15 +34,15 @@ import com.virnect.uaa.domain.auth.account.dto.request.OTPQRGenerateRequest;
 import com.virnect.uaa.domain.auth.account.dto.response.LogoutResponse;
 import com.virnect.uaa.domain.auth.account.dto.response.OAuthTokenResponse;
 import com.virnect.uaa.domain.auth.account.dto.response.OTPQRGenerateResponse;
+import com.virnect.uaa.domain.auth.account.event.account.AccountLockEvent;
 import com.virnect.uaa.domain.auth.common.error.AuthenticationErrorCode;
 import com.virnect.uaa.domain.auth.common.exception.LoginFailException;
 import com.virnect.uaa.domain.auth.common.exception.UserAuthenticationServiceException;
-import com.virnect.uaa.domain.auth.account.event.account.AccountLockEvent;
+import com.virnect.uaa.domain.auth.security.token.JwtPayload;
+import com.virnect.uaa.domain.auth.security.token.JwtProvider;
 import com.virnect.uaa.domain.user.dao.user.UserRepository;
 import com.virnect.uaa.domain.user.domain.User;
 import com.virnect.uaa.global.common.TotpQRCodeGenerator;
-import com.virnect.uaa.domain.auth.security.token.JwtPayload;
-import com.virnect.uaa.domain.auth.security.token.JwtProvider;
 
 @Slf4j
 @Service
@@ -68,7 +69,7 @@ public class AccountSignInServiceImpl implements AccountSignInService {
 		User user;
 
 		// login authentication processing
-		if (loginRequest.isRememberMe() && request.getCookies() != null) {
+		if (loginRequest.isRememberMe() && loginRequest.getPassword() == null && request.getCookies() != null) {
 			user = rememberMeLoginAuthentication(request);
 		} else {
 			user = userIdAndPasswordLoginAuthentication(loginRequest);
@@ -80,7 +81,28 @@ public class AccountSignInServiceImpl implements AccountSignInService {
 		// save account access log
 		ClientGeoIPInfo clientGeoIPInfo = userAccessLogService.saveUserAccessLogInformation(user, request);
 
-		return getOauthLoginResponse(user, clientGeoIPInfo);
+		OAuthTokenResponse oauthLoginResponse = getOauthLoginResponse(user, clientGeoIPInfo);
+
+		// remember me
+		if (loginRequest.isRememberMe()) {
+			setRememberMeCookie(response, oauthLoginResponse.getRefreshToken());
+		}
+
+		return oauthLoginResponse;
+	}
+
+	public void setRememberMeCookie(HttpServletResponse response, String refreshToken) {
+		Cookie cookie = new Cookie(REMEMBER_ME_COOKIE, refreshToken);
+		cookie.setDomain(jwtProvider.getTokenProperty().getCookieDomain());
+		cookie.setHttpOnly(true);
+		cookie.setSecure(true);
+		cookie.setMaxAge((int)TimeUnit.DAYS.toSeconds(jwtProvider.getTokenProperty().getCookieMaxAgeDay()));
+		cookie.setPath(jwtProvider.getTokenProperty().getCookiePath());
+		response.addCookie(cookie);
+		log.info(
+			"[AUTO_LOGIN][CREATE COOKIE]: {} =>[{}] , {}, {}, {}", cookie.getName(), cookie.getValue(),
+			cookie.getDomain(), cookie.getMaxAge(), cookie.getPath()
+		);
 	}
 
 	@Override
@@ -235,6 +257,7 @@ public class AccountSignInServiceImpl implements AccountSignInService {
 			throw new UserAuthenticationServiceException(AuthenticationErrorCode.ERR_API_AUTHENTICATION);
 		}
 		JwtPayload userInfo = jwtProvider.getJwtPayload(rememberMeCookie.getValue());
+
 		log.info("RememberMeLoginAuthentication - JwtPayload: [{}]", userInfo);
 		User user = findUserByUserUUID(userInfo.getUuid(), AuthenticationErrorCode.ERR_LOGIN);
 		// account status check

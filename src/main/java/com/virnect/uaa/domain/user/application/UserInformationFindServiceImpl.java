@@ -128,13 +128,19 @@ public class UserInformationFindServiceImpl implements UserInformationFindServic
 		UserPasswordFindAuthCodeCheckRequest authCodeCheckRequest
 	) {
 		PasswordInitAuthCode passwordInitAuthCode = userPasswordAuthCodeRepository.findById(
-			authCodeCheckRequest.getEmail())
+				authCodeCheckRequest.getEmail())
 			.orElseThrow(() -> new UserServiceException(UserAccountErrorCode.ERR_PASSWORD_INIT_CODE_NOT_FOUND));
 
-		if (passwordInitAuthCode.getCode().equals(authCodeCheckRequest.getCode())) {
+		log.info(
+			"Password Initialize Info Check : REQ:[{}] SERVER:[{}] -> RESULT:[{}]",
+			authCodeCheckRequest.getCode(),
+			passwordInitAuthCode.getCode(),
+			authCodeCheckRequest.getCode().equals(passwordInitAuthCode.getCode())
+		);
+
+		if (!passwordInitAuthCode.getCode().equals(authCodeCheckRequest.getCode())) {
 			throw new UserServiceException(UserAccountErrorCode.ERR_PASSWORD_INIT_CODE_NOT_FOUND);
 		}
-		log.info("Password Initialize Info Check : [{}]", passwordInitAuthCode);
 
 		userPasswordAuthCodeRepository.deleteById(authCodeCheckRequest.getEmail());
 

@@ -16,6 +16,9 @@ import org.springframework.security.web.authentication.session.CompositeSessionA
 import org.springframework.security.web.authentication.session.RegisterSessionAuthenticationStrategy;
 import org.springframework.security.web.authentication.session.SessionAuthenticationStrategy;
 import org.springframework.security.web.authentication.session.SessionFixationProtectionStrategy;
+import org.springframework.security.web.jackson2.WebJackson2Module;
+import org.springframework.security.web.jackson2.WebServletJackson2Module;
+import org.springframework.security.web.server.jackson2.WebServerJackson2Module;
 import org.springframework.security.web.session.HttpSessionEventPublisher;
 import org.springframework.session.FindByIndexNameSessionRepository;
 import org.springframework.session.Session;
@@ -75,7 +78,10 @@ public class SessionConfiguration<S extends Session> {
 	public RedisSerializer<Object> springSessionDefaultRedisSerializer() {
 		ObjectMapper objectMapper = new ObjectMapper();
 		objectMapper.registerModule(new CoreJackson2Module());
-		objectMapper.registerModules(SecurityJackson2Modules.getModules(this.getClass().getClassLoader()));
+		objectMapper.registerModule(new WebJackson2Module());
+		objectMapper.registerModule(new WebServletJackson2Module());
+		objectMapper.registerModule(new WebServerJackson2Module());
+
 		SimpleModule simpleModule = new SimpleModule();
 		simpleModule.setMixInAnnotation(UserAuthenticationDetails.class, UserAuthenticationDetailsMixin.class);
 		objectMapper.registerModule(simpleModule);
@@ -120,8 +126,7 @@ public class SessionConfiguration<S extends Session> {
 
 
 	@Bean
-	ConfigureRedisAction configureRedisAction() {
-
+	public ConfigureRedisAction configureRedisAction() {
 		return ConfigureRedisAction.NO_OP;
 	}
 }
