@@ -1,15 +1,10 @@
 package com.virnect.download.application;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
@@ -18,6 +13,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import com.virnect.download.dao.AppRepository;
 import com.virnect.download.domain.App;
+import com.virnect.download.dto.domain.DeviceLatestVersionCodeDto;
 import com.virnect.download.dto.response.AppInfoListResponse;
 import com.virnect.download.dto.response.AppInfoResponse;
 import com.virnect.download.exception.DownloadException;
@@ -47,27 +43,34 @@ public class DownloadService {
 	}
 
 	public AppInfoListResponse getAppList(String productName, Locale locale) {
-		List<App> apps = appRepository.getActiveAppList(productName.toUpperCase());
-		Map<List<Object>, List<App>> result = apps.stream()
-			.collect(Collectors.groupingBy(app -> Arrays.asList(app.getDevice(), app.getOs())));
-		List<AppInfoResponse> appInfoResponseList = new ArrayList<>();
+		List<DeviceLatestVersionCodeDto> latestAppVersionOfPerDeviceByProductName = appRepository.getLatestVersionInfoPerDeviceOfProduct(
+			productName.toUpperCase()
+		);
 
-		result.values().forEach(appList -> {
-			Optional<App> optionalApp = appList.stream().findFirst();
-			optionalApp.ifPresent(app -> {
-				AppInfoResponse appInfoResponse = modelMapper.map(app, AppInfoResponse.class);
-				appInfoResponse.setDeviceType(app.getDevice().getTypeDescription());
-				if (StringUtils.hasText(locale.getLanguage()) && locale.getLanguage().equalsIgnoreCase("en")) {
-					appInfoResponse.setDeviceName(app.getDevice().getModelDescriptionEng());
-				} else {
-					appInfoResponse.setDeviceName(app.getDevice().getModelDescription());
-				}
-				appInfoResponse.setOs(app.getOs().getDescription());
-				appInfoResponse.setReleaseTime(app.getCreatedDate());
-				appInfoResponse.setVersion("v" + app.getVersionName());
-				appInfoResponseList.add(appInfoResponse);
-			});
-		});
+		List<Long> deviceIds = latestAppVersionOfPerDeviceByProductName
+			.stream()
+			.map(DeviceLatestVersionCodeDto::getDeviceId)
+			.collect(Collectors.toList());
+
+		List<Long> latestVersionCodes = latestAppVersionOfPerDeviceByProductName
+			.stream()
+			.map(DeviceLatestVersionCodeDto::getVersionCode)
+			.collect(Collectors.toList());
+
+		List<App> apps = appRepository.getActiveAppList(deviceIds, latestVersionCodes);
+		List<AppInfoResponse> appInfoResponseList = apps.stream().map(app -> {
+			AppInfoResponse appInfoResponse = modelMapper.map(app, AppInfoResponse.class);
+			appInfoResponse.setDeviceType(app.getDevice().getTypeDescription());
+			if (StringUtils.hasText(locale.getLanguage()) && locale.getLanguage().equalsIgnoreCase("en")) {
+				appInfoResponse.setDeviceName(app.getDevice().getModelDescriptionEng());
+			} else {
+				appInfoResponse.setDeviceName(app.getDevice().getModelDescription());
+			}
+			appInfoResponse.setOs(app.getOs().getDescription());
+			appInfoResponse.setReleaseTime(app.getCreatedDate());
+			appInfoResponse.setVersion("v" + app.getVersionName());
+			return appInfoResponse;
+		}).collect(Collectors.toList());
 		return new AppInfoListResponse(appInfoResponseList);
 	}
 
