@@ -4,6 +4,7 @@ pipeline {
     environment {
         GIT_TAG = sh(returnStdout: true, script: 'git for-each-ref refs/tags --sort=-creatordate --format="%(refname)" --count=1 | cut -d/  -f3').trim()
         REPO_NAME = sh(returnStdout: true, script: 'git config --get remote.origin.url | sed "s/.*:\\/\\/github.com\\///;s/.git$//"').trim()
+        SERVICE_NAME = sh(returnStdout: true, script: 'git config --get remote.origin.url | cut -d / -f5 | cut -d . -f1').trim()
     }
 
     stages {
@@ -48,7 +49,7 @@ pipeline {
                         sh 'count=`docker ps -a | grep pf-gateway-onpremise | wc -l`; if [ ${count} -gt 0 ]; then echo "Running STOP&DELETE"; docker stop pf-gateway-onpremise && docker rm pf-gateway-onpremise; else echo "Not Running STOP&DELETE"; fi;'
                         sh 'docker run -p 18073:8073 --restart=always -m 1g -e "CONFIG_SERVER=http://192.168.6.3:6383" -e "VIRNECT_ENV=onpremise" -d --name=pf-gateway-onpremise pf-gateway'
                         catchError() {
-                             sh "if [ `docker images | grep pf-gateway | grep -v 103505534696 | wc -l` -gt 2 ]; then docker rmi  -f \$(docker images | grep \"pf-gateway\" | grep -v \\${GIT_TAG} | grep -v \"latest\"  | awk \'{print \$3}\'); else echo \"Just One Images...\"; fi;"
+                             sh "if [ `docker images | grep pf-gateway | grep -v 103505534696 | wc -l` -gt 3 ]; then docker rmi   \$(docker images | grep \"pf-gateway\" | grep -v \\${GIT_TAG} | grep -v \"latest\"  | awk \'{print \$3}\'); else echo \"Just One Images...\"; fi;"
                         }
                     }
                 }
