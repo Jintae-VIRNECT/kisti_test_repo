@@ -35,7 +35,7 @@
             >
               {{ $t('workspace.info_remote_member') }}
             </button>
-            <button
+            <!-- <button
               v-if="useStorage"
               class="roominfo-nav__menu"
               :class="{ active: tabview === 'download' }"
@@ -43,7 +43,7 @@
               @click="tabChange('download')"
             >
               {{ $t('button.download') }}
-            </button>
+            </button> -->
           </div>
         </section>
 
@@ -63,7 +63,7 @@
             :sessionId="sessionId"
             @kickout="kickout"
           ></participants-info>
-          <room-download v-else :sessionId="sessionId"></room-download>
+          <!-- <room-download v-else :sessionId="sessionId"></room-download> -->
         </keep-alive>
       </div>
     </modal>
@@ -96,7 +96,7 @@ import {
 import { kickoutMember } from 'api/http/member'
 import RoomInfo from '../partials/ModalRoomInfo'
 import ParticipantsInfo from '../partials/ModalParticipantsInfo'
-import RoomDownload from '../partials/ModalRoomDownload'
+// import RoomDownload from '../partials/ModalRoomDownload'
 import Profile from 'Profile'
 
 import toastMixin from 'mixins/toast'
@@ -121,7 +121,7 @@ export default {
     Profile,
     RoomInfo,
     ParticipantsInfo,
-    RoomDownload,
+    // RoomDownload,
     WorkspaceMobileRoomInfo: () => import('./WorkspaceMobileRoomInfo'),
   },
   data() {
