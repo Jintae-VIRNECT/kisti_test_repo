@@ -1,13 +1,12 @@
 RELEASE
 
 New Features
-- 게스트 유저 생성, 삭제, 정보 수정
-- 워크스페이스 전용 유저 생성, 삭제, 정보 수정
+- 워크스페이스 식별자 생성방식 변경 (DEV-662)
 
 Bug Fixes
-- 없음
+- 구축형 유저 정보 수정 시 메일 전송 제외 (DEV-658)
 
 Limitation
-- 프로필 이미지 저장 디렉토리 변경
+- 없음
 
 Copyright (C) 2020, VIRNECT CO., LTD. - All Rights Reserved

@@ -111,7 +111,7 @@ public class OffWorkspaceServiceImpl extends WorkspaceService {
             throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_CREATE_MAX_CREATE);
         }
         //워크스페이스 생성
-        String workspaceId = RandomStringTokenUtil.generate(UUIDType.UUID_WITH_SEQUENCE, 0);
+        String workspaceId = RandomStringTokenUtil.generate(UUIDType.WORKSPACE_UUID, 0);
         String pinNumber = RandomStringTokenUtil.generate(UUIDType.PIN_NUMBER, 0);
         String profile;
         if (workspaceCreateRequest.getProfile() != null) {

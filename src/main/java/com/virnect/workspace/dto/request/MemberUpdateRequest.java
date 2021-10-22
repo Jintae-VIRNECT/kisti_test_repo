@@ -1,5 +1,7 @@
 package com.virnect.workspace.dto.request;
 
+import java.util.List;
+
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
 import lombok.Setter;
@@ -44,8 +46,17 @@ public class MemberUpdateRequest {
         return licenseRemote || licenseMake || licenseView;
     }
     @ApiModelProperty(hidden = true)
-    public boolean existLicenseUpdate() {
-        return licenseRemote != null || licenseMake != null || licenseView != null;
+    public boolean existLicenseUpdate(List<String> currentLicenseProductList) {
+        if (licenseRemote == null && licenseMake == null && licenseView == null) {
+            return false;
+        }
+        if ((licenseRemote != null && currentLicenseProductList.contains("REMOTE") == licenseRemote)
+            && (licenseMake != null && currentLicenseProductList.contains("MAKE") == licenseMake)
+            && (licenseView != null && currentLicenseProductList.contains("VIEW") == licenseView)
+        ) {
+            return false;
+        }
+        return true;
     }
 
     @Override
