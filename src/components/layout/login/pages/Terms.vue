@@ -28,7 +28,7 @@
               :source="$t('policy.md')"
             ></vue-markdown>
           </div>
-          <el-checkbox v-model="marketingAgree">{{
+          <el-checkbox v-model="marketingAgree" class="marketing-check">{{
             $t('terms.page.marketingReceive')
           }}</el-checkbox>
         </div>

@@ -6,6 +6,7 @@
         <p class="disc">{{ $t('signup.signupDesk') }}</p>
         <p class="input-title must-check">{{ $t('signup.account') }}</p>
         <el-input
+          class="email-input"
           :placeholder="$t('signup.mailPlaceholder')"
           v-model="signup.email"
           type="email"
@@ -16,7 +17,7 @@
         >
         </el-input>
         <el-button
-          class="block-btn"
+          class="block-btn verification-btn"
           type="info"
           :disabled="errors.has('email') || signup.email == ''"
           v-if="!authLoading"
@@ -26,8 +27,9 @@
         </el-button>
 
         <el-input
+          class="verification-input"
           :placeholder="$t('signup.authentication.number')"
-          v-if="isVeritication"
+          v-if="isVerification"
           v-model="verificationCode"
           type="text"
           name="verificationCode"
@@ -39,7 +41,7 @@
         <el-button
           class="block-btn"
           type="info"
-          :disabled="this.verificationCode.length !== 6 || !isVeritication"
+          :disabled="this.verificationCode.length !== 6 || !isVerification"
           v-if="authLoading"
           @click="checkVerificationCode()"
         >
@@ -48,7 +50,7 @@
 
         <button
           class="resend-btn"
-          v-if="isVeritication == true"
+          v-if="isVerification == true"
           :class="{ disabled: !setCount }"
           @click="resendEmail()"
         >
@@ -58,6 +60,7 @@
           {{ $t('signup.password.pass') }}
         </p>
         <el-input
+          class="password-input"
           :placeholder="$t('signup.password.comfirm')"
           v-model="signup.password"
           type="password"
@@ -68,6 +71,7 @@
         >
         </el-input>
         <el-input
+          class="passwordconfirm-input"
           :placeholder="$t('signup.password.reComfirm')"
           v-model="passwordConfirm"
           type="password"
@@ -238,7 +242,7 @@ export default {
   data() {
     return {
       authLoading: false,
-      isVeritication: false,
+      isVerification: false,
       verificationText: 'signup.authentication.verification',
       signup: new Signup(),
       subscriptionPath: this.createI18nArray('signup.subscriptionPathLists'),
@@ -414,7 +418,7 @@ export default {
         // console.log(mailAuth)
         if (mailAuth.code === 200) {
           this.authLoading = true
-          this.isVeritication = true
+          this.isVerification = true
           this.delayResend()
           this.alertMessage(
             this.$t('signup.done.verification.title'), // 이메일 인증 메일 전송 성공
@@ -459,7 +463,7 @@ export default {
           if (res.code === 200) {
             // console.log(res)
             this.signup.sessionCode = res.data.sessionCode
-            this.isVeritication = false
+            this.isVerification = false
             this.isValidEmail = false
             this.verificationText = 'signup.authentication.done'
             this.check.isEmail = true

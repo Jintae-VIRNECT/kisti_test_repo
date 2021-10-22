@@ -7,6 +7,7 @@
           {{ $env !== 'onpremise' ? $t('login.email') : 'ID' }}
         </p>
         <el-input
+          class="email-input"
           ref="focusOut"
           :placeholder="
             $env !== 'onpremise'
@@ -24,6 +25,7 @@
 
         <p class="input-title">{{ $t('login.password') }}</p>
         <el-input
+          class="password-input"
           :placeholder="$t('login.passwordPlaceholder')"
           v-model="login.password"
           type="password"
@@ -34,7 +36,13 @@
           @keyup.enter.native="handleLogin"
         ></el-input>
 
-        <p class="warning-msg danger-color" v-if="message">{{ message }}</p>
+        <p class="warning-msg danger-color" v-if="errorCode == 2000">
+          {{
+            $env !== 'onpremise'
+              ? this.$t('login.accountError.contents')
+              : this.$t('onpremise.login.error')
+          }}
+        </p>
 
         <div class="checkbox-wrap">
           <el-checkbox
@@ -119,6 +127,7 @@ export default {
       },
       loading: false,
       message: '',
+      errorCode: null,
       token: Cookies.get('accessToken'),
       rememberEmail: Cookies.get('email'),
       rememberLogin: Cookies.get('auto'),
@@ -210,6 +219,7 @@ export default {
       } catch (e) {
         const failCount = e.failCount || 0
         this.loading = false
+        this.errorCode = e.code
 
         // 일반 에러
         if (e.code === 2000 && failCount < 2) {
