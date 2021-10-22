@@ -3,6 +3,8 @@ import _, { addSubscriber, removeSubscriber } from './Remote'
 
 import { URLS } from 'configs/env.config'
 
+import auth from 'utils/auth'
+
 import {
   SIGNAL,
   CONTROL,
@@ -73,15 +75,16 @@ const streamDestroyed = event => {
 }
 
 /** session closed */
-const sessionDisconnected = event => {
+const sessionDisconnected = async event => {
   const isGuest = _.account.roleType === ROLE.GUEST
   if (event.reason === 'sessionClosedByServer') {
     logger('room', 'participant disconnect')
     _.clear()
-    window.vue.$toasted.error(
+    window.vue.$toasted.show(
       window.vue.$t('workspace.confirm_removed_room_leader'),
       {
         position: 'bottom-center',
+        className: 'remote-toast',
         duration: 5000,
         action: {
           icon: 'close',
@@ -93,17 +96,19 @@ const sessionDisconnected = event => {
     )
 
     if (isGuest) {
-      location.href = `${URLS['console']}/?continue=${location.href}`
+      await auth.logout(false)
+      location.href = `${URLS['console']}`
     } else {
       window.vue.$router.push({ name: 'workspace' })
     }
   } else if (event.reason === 'forceDisconnectByUser') {
     logger('room', 'participant disconnect')
     _.clear()
-    window.vue.$toasted.error(
+    window.vue.$toasted.show(
       window.vue.$t('workspace.confirm_kickout_leader'),
       {
         position: 'bottom-center',
+        className: 'remote-toast',
         duration: 5000,
         action: {
           icon: 'close',
@@ -115,7 +120,8 @@ const sessionDisconnected = event => {
     )
 
     if (isGuest) {
-      location.href = `${URLS['console']}/?continue=${location.href}`
+      await auth.logout(false)
+      location.href = `${URLS['console']}`
     } else {
       window.vue.$router.push({ name: 'workspace' })
     }
