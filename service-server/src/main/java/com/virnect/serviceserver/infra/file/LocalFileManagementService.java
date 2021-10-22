@@ -468,7 +468,7 @@ public class LocalFileManagementService implements IFileManagementService {
             }
             case RECORD: {
                 try {
-                    objectPath.append(dirPath).append(recordBucketName).append("/").append(objectName);
+                    objectPath.append(dirPath).append(recordBucketName).append("/").append(objectName).append(".mp4");
                     minioClient.putObject(PutObjectArgs.builder().bucket(bucketName).object(objectPath.toString())
                             .stream(file.getInputStream(), file.getInputStream().available(), -1)
                             .contentType(file.getContentType()).build());
@@ -912,7 +912,7 @@ public class LocalFileManagementService implements IFileManagementService {
                 }
 
                 case RECORD: {
-                    objectPath.append(dirPath).append(recordBucketName).append("/").append(objectName);
+                    objectPath.append(dirPath).append(recordBucketName).append("/").append(objectName).append(".mp4");
                     /*url = minioClient.getPresignedObjectUrl(
                             GetPresignedObjectUrlArgs.builder()
                                     .method(Method.GET)

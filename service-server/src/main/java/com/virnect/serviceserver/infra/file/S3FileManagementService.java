@@ -618,7 +618,7 @@ public class S3FileManagementService implements IFileManagementService {
             }
 
             case RECORD: {
-                objectPath.append(dirPath).append(bucketRecordName).append("/").append(objectName);
+                objectPath.append(dirPath).append(bucketRecordName).append("/").append(objectName).append(".mp4");
                 url = amazonS3Client.getUrl(bucketName, objectPath.toString()).toString();
                 LogMessage.formedInfo(
                         TAG,

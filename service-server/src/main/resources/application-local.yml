@@ -136,10 +136,10 @@ storage:
     serverUrl: https://192.168.6.3:2838
     access-key: virnect
     secret-key: Qjsprxm13@$
-    bucket-name: virnect-remote
+    bucket-name: virnect-platform
     bucket-file-name: file
     bucket-profile-name: profile
-    bucket-record-name: record
+    bucket-record-name: localRecord
     policy-enabled: true
     policy-lifecycle: 
     policy-location:
