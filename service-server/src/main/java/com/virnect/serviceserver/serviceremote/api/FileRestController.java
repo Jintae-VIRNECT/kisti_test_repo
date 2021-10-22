@@ -112,9 +112,9 @@ public class FileRestController {
                 + recordFileUploadRequest.toString(),
             "recordFileUploadRequestHandler"
         );
-        if (result.hasErrors()) {
+        /*if (result.hasErrors()) {
             throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
-        }
+        }*/
         if (!remoteStorageProperties.isEnabled()) {
             throw new RestServiceException(ErrorCode.ERR_STORAGE_NOT_SUPPORTED);
         }
@@ -146,9 +146,9 @@ public class FileRestController {
         if (result.hasErrors()) {
             throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
-        /*if (!remoteStorageProperties.isEnabled()) {
+        if (!remoteStorageProperties.isEnabled()) {
             throw new RestServiceException(ErrorCode.ERR_STORAGE_NOT_SUPPORTED);
-        }*/
+        }
         ApiResponse<RoomProfileUpdateResponse> responseData = fileService.profileUpload(
             workspaceId,
             sessionId,

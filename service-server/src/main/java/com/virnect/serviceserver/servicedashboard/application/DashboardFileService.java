@@ -65,14 +65,21 @@ public class DashboardFileService {
 	private final DashboardFilePreSignedMapper dashboardFilePreSignedMapper;
 	private final DashboardRecordFilePreSignedMapper dashboardRecordFilePreSignedMapper;
 
-	String generateDirPath(String... args) {
+	/*String generateDirPath(String... args) {
 		StringBuilder stringBuilder;
 		stringBuilder = new StringBuilder();
 		for (String argument : args) {
 			stringBuilder.append(argument).append("/");
 		}
 		return stringBuilder.toString();
+	}*/
+
+	private String generateDirPath(String workspaceId, String sessionId) {
+		StringBuilder stringBuilder = new StringBuilder();
+		stringBuilder.append("workspace").append("/").append(workspaceId).append("/").append("remote").append("/").append(sessionId).append("/");
+		return stringBuilder.toString();
 	}
+
 
 	public FileInfoListResponse getAttachedFileList(
 		String workspaceId,
