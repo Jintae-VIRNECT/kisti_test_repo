@@ -5,7 +5,7 @@
     popper-class="member-plan-select__dropdown"
     multiple
     collapse-tags
-    :disabled="activeWorkspace.role === 'MEMBER' || isGuest"
+    :disabled="activeWorkspace.role !== 'MASTER' || isGuest"
     @change="change"
   >
     <el-option :value="false" :label="$t('members.setting.givePlansEmpty')" />

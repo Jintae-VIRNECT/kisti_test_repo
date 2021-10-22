@@ -7,7 +7,12 @@ import { required } from 'vee-validate/dist/rules'
 for (const rule in defaultRules) {
   extend(rule, { ...defaultRules[rule] }) // eslint-disable-line
 }
-
+function idCheck(id) {
+  if (!/^[A-Za-z]{1}[A-Za-z0-9]{4,20}$/i.test(id)) {
+    return false
+  }
+  return true
+}
 function nicknameCheck(nickname) {
   if (nickname.trim().length < 1 || nickname.trim().length > 20) {
     return false
@@ -57,6 +62,10 @@ extend('passwordCheck', {
 extend('requiredNickname', {
   ...required,
   message: 'members.setting.nickname.caution',
+})
+extend('idCheck', {
+  validate: idCheck,
+  message: 'members.create.caution.validUserId',
 })
 extend('nicknameCheck', {
   validate: nicknameCheck,

@@ -34,7 +34,7 @@
             'member-setting-modal__tab-button--clicked': tabName === 'role',
           }"
         >
-          {{ $t('members.setting.workspaceRole') }}
+          {{ $t('members.setting.role') }}
         </button>
       </el-col>
       <el-col :span="17" class="member-setting-modal--right">

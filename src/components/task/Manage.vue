@@ -191,6 +191,7 @@ export default {
         const schedule = this.mainForm.schedule
         return {
           disabledDate(time) {
+            if (schedule === null) return false
             if (!schedule.length) return false
             const t = time.getTime()
             const start = schedule[0].getTime()

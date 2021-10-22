@@ -6,14 +6,15 @@
     filterable
     collapse-tags
     :placeholder="$t('members.setting.directInput')"
-    :disabled="activeWorkspace.role === 'MEMBER' || !amount"
+    :disabled="activeWorkspace.role !== 'MASTER' || !amount"
+    :no-match-text="$t('members.guest.noHavePlans')"
     @change="change"
   >
     <el-option
       v-for="(index, number) in amount"
       :key="index"
-      :disabled="!amount"
       :value="number + 1"
+      :disabled="isMemberMaxium(number)"
     >
       <span>{{ number + 1 }}</span>
     </el-option>
@@ -26,7 +27,9 @@ export default {
   props: {
     label: String,
     amount: Number,
-    numOfGuest: Number,
+    numOfGuest: String,
+    membersTotal: Number,
+    maximum: Number,
   },
   computed: {
     ...mapGetters({
@@ -44,6 +47,9 @@ export default {
     }
   },
   methods: {
+    isMemberMaxium(number) {
+      return this.maximum < this.membersTotal + (number + 1)
+    },
     change(v) {
       this.$emit('change', { name: this.label, amount: v })
     },

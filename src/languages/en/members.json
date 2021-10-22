@@ -4,7 +4,8 @@
     "role": {
       "master": "MASTER",
       "manager": "MANAGER",
-      "member": "MEMBER"
+      "member": "MEMBER",
+      "guest": "GUEST"
     },
     "card": {
       "profile": "Profile",
@@ -59,7 +60,7 @@
       "password": {
         "title": "Password",
         "placeholder": "Please enter a new password",
-        "caution": "Your password must be between 8 and 20 characters long. Your password needs to be included with at least 3 of following character types. <br>- Uppercase letter <br>- Lowercase letter<br>- Number <br>- Special character ( . ! @ # $ % ). <br>Also your password must not contain consecutive numbers and more than four of same characters.",
+        "caution": "Your password must be between 8 and 20 characters long. Your password needs to be included with at least 3 of following character types. Also your password must not contain consecutive numbers and more than four of same characters.",
         "success": "Successfully updated your password",
         "fail": "Failed to edit your nickname please try again later"
       },
@@ -159,10 +160,11 @@
       "workspaceMemberDesc": "Create your own member account. The registration account uses the service through the registered workspace.",
       "workspaceMemberList": "Account Creation List",
       "workspaceMember": "Create Workspace Member",
-      "workspaceTooltip": "Current number of members/Workspace Member Limit Number",
+      "workspaceTooltip": "Current Number of Members + Number of Additional Members / Workspace Member Limit Number",
       "submit": "Create",
+      "reEnter": "Re-enter",
       "caution": {
-        "createId": "Enter your ID and password to create a new workspace member account. \n<u>You must allocate at least one plan you have when creating an account.</u>",
+        "createId": "Enter your ID and password to create a new workspace member account.<br><u>You must allocate at least one plan you have when creating an account.</u>",
         "validUserId": "You can choose between 4 and 20 characters of english letters and numbers for the ID",
         "validId": "You can choose between 4 and 20 characters of english letters and numbers for the <u>ID</u>.",
         "validPassword": "Your password must be between 8 and 20 characters long. Your password needs to be included with at least 3 of following character types. <br>- Uppercase letter <br>- Lowercase letter<br>- Number <br>- Special character ( . ! @ # $ % ). <br>Also your password must not contain consecutive numbers and more than four of same characters.",
@@ -193,6 +195,7 @@
         "title": "Add View plan assignment guest"
       },
       "numberOfGuest": "Number of additional guest",
+      "noHavePlans": "No remaining plans.",
       "submit": "Registration"
     },
     "activity": {

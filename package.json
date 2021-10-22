@@ -1,8 +1,8 @@
 {
   "name": "workstation",
-  "version": "1.4.0",
+  "version": "1.4.0.1",
   "description": "Virnect Workstation",
-  "author": "SangBaek-VIRNECT <lsb@virnect.com>",
+  "author": "Yongho-VIRNECT, seyoung-VIRNECT",
   "private": true,
   "scripts": {
     "dev": "cross-env VIRNECT_ENV=local nuxt",

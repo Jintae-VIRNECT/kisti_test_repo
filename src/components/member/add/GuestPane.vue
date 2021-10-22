@@ -19,20 +19,11 @@
       </ul>
       <div class="guest-pane__sub-title">
         <p>{{ $t('members.guest.settings') }}</p>
-        <div class="guest-pane__usage">
-          <img src="~assets/images/icon/ic-person.svg" />
-          <strong>{{ currentMember }}/{{ maximum }}</strong>
-          <el-tooltip
-            :content="$t('members.create.workspaceTooltip')"
-            placement="right-start"
-          >
-            <img src="~assets/images/icon/ic-error.svg" />
-          </el-tooltip>
-        </div>
+        <MemberAddUsage :availableMember="currentMember" :maximum="maximum" />
       </div>
     </section>
     <section class="guest-pane__content">
-      <el-tabs v-model="tabName" @tab-click="tabClick">
+      <el-tabs ref="elTabs" v-model="tabName" @tab-click="tabClick">
         <el-tab-pane :label="$t('members.guest.remoteTabName')" name="remote">
           <el-form class="virnect-workstation-form">
             <h6>{{ $t('members.guest.remoteTab.title') }}</h6>
@@ -46,6 +37,8 @@
                     :label="plans.remote.label"
                     :amount="availablePlans.remote"
                     :numOfGuest="numOfGuest"
+                    :membersTotal="membersTotal"
+                    :maximum="maximum"
                     @change="choosePlan"
                   />
                 </el-form-item>
@@ -53,7 +46,11 @@
             </el-row>
           </el-form>
         </el-tab-pane>
-        <el-tab-pane :label="$t('members.guest.viewTabName')" name="view">
+        <el-tab-pane
+          v-if="!$isOnpremise"
+          :label="$t('members.guest.viewTabName')"
+          name="view"
+        >
           <el-form class="virnect-workstation-form">
             <h6>{{ $t('members.guest.viewTab.title') }}</h6>
             <el-row>
@@ -78,7 +75,7 @@
     <section class="guest-pane__footer">
       <el-button type="primary" @click="submit" :disabled="!numOfGuest">
         {{ $t('members.guest.submit') }}
-        <span class="number" v-if="numOfGuest !== 0">{{ numOfGuest }}</span>
+        <span class="number" v-if="numOfGuest !== ''">{{ numOfGuest }}</span>
       </el-button>
     </section>
   </article>
@@ -100,7 +97,7 @@ export default {
       plans,
       tabName: 'remote',
       availablePlans: { remote: 0, make: 0, view: 0 },
-      numOfGuest: 0,
+      numOfGuest: '',
     }
   },
   methods: {
@@ -117,19 +114,22 @@ export default {
     // 플랜 선택 이벤트
     choosePlan(plan) {
       this.initAvailablePlans()
-      this.numOfGuest = plan.amount
+      this.numOfGuest = plan.amount.toString()
     },
     async reset() {
       if (!this.plansInfo.planStatus) {
         await this.$store.dispatch('plan/getPlansInfo')
       }
       this.initAvailablePlans()
-      this.numOfGuest = 0
+      this.numOfGuest = ''
+      // mounted 시 강제로 active bar의 크기를 설정합니다.
+      this.$refs.elTabs.$el.querySelector('.el-tabs__active-bar').style.width =
+        '81px'
     },
     async submit() {
       const form = {}
-      if (this.tabName === 'remote') form.planRemote = this.numOfGuest
-      else if (this.tabName === 'view') form.planView = this.numOfGuest
+      if (this.tabName === 'remote') form.planRemote = Number(this.numOfGuest)
+      else if (this.tabName === 'view') form.planView = Number(this.numOfGuest)
 
       // api 요청
       try {
@@ -173,7 +173,7 @@ export default {
       return this.activeWorkspace.role === 'MASTER'
     },
     currentMember() {
-      return this.membersTotal + this.numOfGuest
+      return this.membersTotal + Number(this.numOfGuest)
     },
   },
 }
@@ -279,13 +279,6 @@ export default {
     }
     .el-divider--horizontal {
       margin: 8px 0 16px 0;
-    }
-  }
-  .guest-pane__usage {
-    display: flex;
-    margin-bottom: 8px;
-    strong {
-      margin-right: 7px;
     }
   }
   .guest-pane__footer {

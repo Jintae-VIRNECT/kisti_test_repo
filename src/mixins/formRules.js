@@ -9,23 +9,14 @@ export default {
         id: [
           {
             required: true,
-            message: this.$t('invalid.required', [
-              this.$t('members.create.id'),
-            ]),
+            message: ' ',
           },
           {
             validator: (rule, value, callback) => {
-              if (!/^.{4,20}$/.test(value)) {
-                callback(
-                  new Error(this.$t('members.create.caution.validUserId')),
-                )
-              } else if (!/^[a-z][a-z0-9]*$/i.test(value)) {
-                callback(
-                  new Error(this.$t('members.create.caution.validUserId')),
-                )
-              } else {
-                callback()
+              if (!/^[A-Za-z]{1}[A-Za-z0-9]{4,20}$/i.test(value)) {
+                callback(new Error(' '))
               }
+              callback()
             },
           },
         ],
@@ -39,19 +30,19 @@ export default {
               if (/[$.$,$!$@$#$$$%]/.test(value)) typeCount++
 
               if (typeCount < 3) {
-                callback(new Error(this.$t('members.setting.password.caution')))
+                callback(new Error(' '))
               }
               if (!/^.{8,20}$/.test(value)) {
-                callback(new Error(this.$t('members.setting.password.caution')))
+                callback(new Error(' '))
               }
               if (/(.)\1\1\1/.test(value)) {
-                callback(new Error(this.$t('members.setting.password.caution')))
+                callback(new Error(' '))
               }
               if (/(0123|1234|2345|3456|4567|5678|6789|7890)/.test(value)) {
-                callback(new Error(this.$t('members.setting.password.caution')))
+                callback(new Error(' '))
               }
               if (/(0987|9876|8765|7654|6543|5432|4321|3210)/.test(value)) {
-                callback(new Error(this.$t('members.setting.password.caution')))
+                callback(new Error(' '))
               }
 
               callback()

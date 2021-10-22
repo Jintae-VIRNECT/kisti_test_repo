@@ -7,16 +7,7 @@
       </p>
       <div class="create-pane__sub-title">
         <p>{{ $t('members.create.workspaceMemberList') }}</p>
-        <div class="create-pane__usage">
-          <img src="~assets/images/icon/ic-person.svg" />
-          <strong>{{ availableMember }}/{{ maximum }}</strong>
-          <el-tooltip
-            :content="$t('members.create.workspaceTooltip')"
-            placement="right-start"
-          >
-            <img src="~assets/images/icon/ic-error.svg" />
-          </el-tooltip>
-        </div>
+        <MemberAddUsage :availableMember="availableMember" :maximum="maximum" />
       </div>
     </section>
     <section class="create-pane__content">
@@ -39,18 +30,31 @@
           <template slot="label">
             <span>{{ $t('members.create.id') }}</span>
           </template>
-          <el-input
-            v-model="form.id"
-            :class="cssVars"
-            maxlength="20"
-            :placeholder="$t('members.create.idPlaceholder')"
-          />
-          <el-button
-            type="primary"
-            @click="checkMembersId(form)"
-            :disabled="form.duplicateCheck"
-            >{{ $t('members.create.idCheck') }}</el-button
-          >
+          <ValidationProvider rules="idCheck" v-slot="{ valid }">
+            <el-input
+              v-model="form.id"
+              :class="cssVars"
+              maxlength="20"
+              :disabled="form.duplicateCheck"
+              :placeholder="$t('members.create.idPlaceholder')"
+            />
+            <el-button
+              type="primary"
+              @click="form.duplicateCheck = false"
+              v-show="form.duplicateCheck"
+              :class="cssVars"
+              >{{ $t('members.create.reEnter') }}</el-button
+            >
+            <el-button
+              type="primary"
+              v-show="!form.duplicateCheck"
+              @click="checkMembersId(form)"
+              :disabled="form.id.length === 0 || !valid"
+              :class="cssVars"
+              >{{ $t('members.create.idCheck') }}</el-button
+            >
+          </ValidationProvider>
+          <span>{{ $t('members.create.caution.validUserId') }}</span>
         </el-form-item>
         <el-form-item class="horizon" prop="password" required>
           <template slot="label">
@@ -63,6 +67,7 @@
             maxlength="20"
             :placeholder="$t('members.create.passwordPlaceholder')"
           />
+          <span>{{ $t('members.setting.password.caution') }}</span>
         </el-form-item>
         <el-row>
           <el-col :span="8">
@@ -114,6 +119,12 @@
         </el-row>
       </el-form>
     </section>
+    <section class="create-pane__caution" v-if="$isOnpremise">
+      <el-row>
+        <p v-html="$t('members.create.caution.createId')" />
+        <p v-html="$t('members.create.caution.canModify')" />
+      </el-row>
+    </section>
     <section class="create-pane__footer">
       <el-button @click="addMember">
         {{ $t('members.add.addMember') }}
@@ -150,13 +161,15 @@ export default {
   },
   methods: {
     async checkMembersId(member) {
+      // 아이디를 입력하지 않고 중복체크 불가
+      if (!member.id.length) return false
+
       try {
         const result = await workspaceService.checkMembersId(member.id)
         if (result) {
           this.successMessage(this.$t('members.create.message.usableId'))
           member.duplicateCheck = true
         } else {
-          this.errorMessage('Error: 1011')
           member.duplicateCheck = false
         }
       } catch (e) {
@@ -309,7 +322,7 @@ export default {
     }
 
     .el-form-item {
-      margin-bottom: 30px;
+      margin-bottom: 12px;
     }
     .el-input {
       width: 168px;
@@ -321,6 +334,13 @@ export default {
       }
       &.en {
         width: 374px;
+      }
+    }
+    .el-button {
+      font-size: 13px;
+      margin: 0;
+      &.en {
+        width: 133px;
       }
     }
   }
@@ -364,12 +384,10 @@ export default {
       border-bottom: 0;
     }
   }
-  .create-pane__usage {
-    display: flex;
-    margin-bottom: 8px;
-    strong {
-      margin-right: 7px;
-    }
+  .create-pane__caution {
+    padding: 24px;
+    @include fontLevel(75);
+    border-radius: 3px;
   }
   .create-pane__footer {
     display: flex;

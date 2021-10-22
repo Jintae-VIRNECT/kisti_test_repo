@@ -4,7 +4,8 @@
     "role": {
       "master": "MASTER",
       "manager": "MANAGER",
-      "member": "MEMBER"
+      "member": "MEMBER",
+      "guest": "GUEST"
     },
     "card": {
       "profile": "프로필",
@@ -30,7 +31,7 @@
       "role": "권한",
       "roleDesc": "매니저는 멤버 초대, 멤버 설정 권한을 갖습니다.",
       "workspaceRole": "역할",
-      "workspaceRoleDesc": "워크스테이션 역할",
+      "workspaceRoleDesc": "워크스페이스 권한",
       "givePlans": "플랜",
       "givePlansDesc": "플랜을 할당해야 제품을 사용할 수 있습니다.",
       "givePlansEmpty": "할당 없음",
@@ -159,10 +160,11 @@
       "workspaceMemberDesc": "멤버 계정을 직접 생성합니다. 등록 계정은 등록된 워크스페이스를 통해 서비스를 이용합니다.",
       "workspaceMemberList": "계정 생성 목록",
       "workspaceMember": "워크스페이스 멤버 생성",
-      "workspaceTooltip": "현재 회원 수/워크스페이스 멤버 제한 수",
+      "workspaceTooltip": "현재 회원 수 + 추가 회원 수 / 워크스페이스 멤버 제한 수",
       "submit": "생성",
+      "reEnter": "재입력",
       "caution": {
-        "createId": "ID와 비밀번호를 입력해 새로운 워크스페이스 멤버 계정을 생성합니다. <u>계정 생성시 보유하신 플랜을 최소 1개 이상 반드시 할당</u>해야 합니다.",
+        "createId": "ID와 비밀번호를 입력해 새로운 워크스페이스 멤버 계정을 생성합니다.<br><u>계정 생성시 보유하신 플랜을 최소 1개 이상 반드시 할당</u>해야 합니다.",
         "validUserId": "ID는 영문 및 숫자 구성으로 4~20자로 구성할 수 있습니다.",
         "validId": "<u>ID</u>는 영문 및 숫자 구성으로 4~20자로 구성할 수 있습니다.",
         "validPassword": "<u>비밀번호</u>는 8-20자 이내로 영문 대,소문자/숫자/특수문자(.,!,@,#,$,%)를 3가지 이상 조합하여 입력해 주세요. <br>연속된 숫자 또는 4자 이상의 동일 문자는 비밀번호로 사용할 수 없습니다. ",
@@ -192,7 +194,8 @@
       "viewTab": {
         "title": "View 플랜 할당 게스트 추가"
       },
-      "numberOfGuest": "추가 게스트 수 ",
+      "numberOfGuest": "추가 게스트 수",
+      "noHavePlans": "잔여 플랜 없음",
       "submit": "등록"
     },
     "activity": {

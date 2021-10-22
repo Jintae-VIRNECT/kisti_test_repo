@@ -73,7 +73,16 @@ export default {
       }
       // api 요청
       try {
-        await workspaceService.deleteMember(this.data.uuid, this.form.password)
+        if (this.data.userType === 'WORKSPACE_ONLY_USER')
+          await workspaceService.deleteMember(
+            this.data.uuid,
+            this.form.password,
+          )
+        else if (this.data.userType === 'GUEST_USER')
+          await workspaceService.deleteGuestMember(
+            this.data.uuid,
+            this.form.password,
+          )
 
         this.$alert(
           this.$t('members.delete.message.successContent'),

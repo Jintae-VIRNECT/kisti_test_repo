@@ -123,11 +123,7 @@ export default {
       await this.$store.dispatch('plan/getPlansInfo')
     },
     addMember() {
-      if (this.$isOnpremise) {
-        this.$router.push('/members/create')
-      } else {
-        this.showAddModal = true
-      }
+      this.showAddModal = true
     },
     /**
      * @description 데이터 조회 조건 초기화

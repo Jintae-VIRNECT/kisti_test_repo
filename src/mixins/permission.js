@@ -12,11 +12,12 @@ export default {
       return userId === this.auth.myInfo.uuid
     },
     canManage(role) {
-      if (this.activeWorkspace.role === 'MANAGER') {
-        if (role !== 'MASTER') return true
-        else return false
-      } else if (this.activeWorkspace.role === 'MASTER') return true
-      else return false
+      // 마스터 권한이 아니라면
+      if (this.activeWorkspace.role !== 'MASTER') return false
+
+      // 편집할 멤버의 권한이 마스터라면
+      if (role === 'MASTER') return false
+      return true
     },
     isRoleMaster(role) {
       return role === 'MASTER'

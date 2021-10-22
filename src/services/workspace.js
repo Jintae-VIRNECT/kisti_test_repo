@@ -115,16 +115,13 @@ export default {
    * @param {string} userId
    */
   async checkMembersId(userId) {
-    const { memberInfoList } = await api('MEMBER_LIST', {
-      route: {
-        workspaceId: activeWorkspaceGetter().uuid,
-      },
+    const data = await api('MEMBER_ID_CHECK', {
       params: {
-        search: userId,
+        email: userId,
       },
     })
 
-    return memberInfoList.length ? false : true
+    return data.result ? true : false
   },
   /**
    * 워크스페이스 프로필 설정 변경
@@ -294,10 +291,14 @@ export default {
    * @param {string} uuid
    * @param {string} password
    */
-  async deleteGuestMember(uuid) {
+  async deleteGuestMember(uuid, password) {
     const params = {
       requestUserId: myProfileGetter().uuid,
       userId: uuid,
+    }
+
+    if (password !== undefined) {
+      params.requestUserPassword = password
     }
 
     const data = await api('MEMBER_GUEST_DELETE', {
