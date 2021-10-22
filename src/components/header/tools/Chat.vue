@@ -45,7 +45,9 @@ export default {
       this.toggleChat(!this.chatBox)
     },
     listChange() {
-      if (!this.chatBox) {
+      if (this.chatBox) return
+
+      if (this.chatList.length > 1) {
         this.active = true
       }
     },
