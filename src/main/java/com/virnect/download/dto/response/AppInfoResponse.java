@@ -28,14 +28,16 @@ public class AppInfoResponse {
 	private String deviceName = "";
 	@ApiModelProperty(value = "앱 디바이스 타입", position = 4, example = "")
 	private String deviceType = "";
-	@ApiModelProperty(value = "앱 디바이스 타입", position = 5, example = "")
+	@ApiModelProperty(value = "패키지 이름 정보", position = 5, example = "")
+	private String packageName = "";
+	@ApiModelProperty(value = "앱 디바이스 타입", position = 6, example = "")
 	private String os = "";
-	@ApiModelProperty(value = "앱 설치파일", position = 6, example = "")
+	@ApiModelProperty(value = "앱 설치파일", position = 7, example = "")
 	private String appUrl = "";
-	@ApiModelProperty(value = "앱 가이드파일", position = 7, example = "")
+	@ApiModelProperty(value = "앱 가이드파일", position = 8, example = "")
 	private String guideUrl = "";
-	@ApiModelProperty(value = "앱 썸네일 url", position = 8, example = "")
+	@ApiModelProperty(value = "앱 썸네일 url", position = 9, example = "")
 	private String imageUrl = "";
-	@ApiModelProperty(value = "앱 릴리즈 일자", position = 9, example = "")
+	@ApiModelProperty(value = "앱 릴리즈 일자", position = 10, example = "")
 	private LocalDateTime releaseTime = LocalDateTime.now();
 }
