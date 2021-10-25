@@ -1,19 +1,16 @@
 package com.virnect.serviceserver.serviceremote.application;
 
-import org.apache.http.Header;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import com.virnect.mediaserver.cdr.CDREventName;
 import com.virnect.mediaserver.config.MediaServerProperties;
 import com.virnect.serviceserver.global.config.RemoteServiceBuildInfo;
 import com.virnect.serviceserver.global.config.RemoteServiceConfig;
@@ -42,7 +39,7 @@ public class ConfigService {
 		json.addProperty("domain_or_public_ip", remoteServiceConfig.remoteServiceProperties.getDomainOrPublicIp());
 		json.addProperty("https_port", remoteServiceConfig.remoteServiceProperties.getHttpsPort());
 		json.addProperty(
-			"remote_service_publicurl", remoteServiceConfig.remoteServiceProperties.getRemoteServicePublicUrl());
+			"remote_service_public_url", remoteServiceConfig.remoteServiceProperties.getRemoteServicePublicUrl());
 		json.addProperty("remote_service_cdr", remoteServiceConfig.remoteServiceProperties.isRemoteCdr());
 
 		//BandwidthProperty

@@ -2,11 +2,14 @@ package com.virnect.data.dto.rest;
 
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 
-@Data
+@Getter
+@Setter
 @RequiredArgsConstructor
-public class RecordServerFileInfoResponse {
+public class RecordingFiles {
 
 	@ApiModelProperty(value = "Record file creatAt")
 	private String createAt;

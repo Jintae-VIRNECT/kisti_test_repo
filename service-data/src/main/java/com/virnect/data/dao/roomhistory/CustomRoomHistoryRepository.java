@@ -15,13 +15,7 @@ public interface CustomRoomHistoryRepository {
 
 	Optional<RoomHistory> findRoomHistoryByWorkspaceIdAndSessionId(String workspaceId, String sessionId);
 
-	Optional<RoomHistory> findBySessionId(final String sessionId);
-
 	boolean existsByWorkspaceIdAndSessionId(final String workspaceId, final String sessionId);
-
-	Page<RoomHistory> findRoomBySearch(String workspaceId, String userId, List<String> userIds, String search, Pageable pageable);
-
-	Page<RoomHistory> findRoomByWorkspaceIdAndUserIdCurrent(final String workspaceId, final String userId, boolean paging, Pageable pageable);
 
 	Page<RoomHistory> findMyRoomHistorySpecificUserId(String workspaceId, String userId, boolean paging, Pageable pageable);
 

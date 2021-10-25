@@ -11,17 +11,17 @@ import lombok.Setter;
 @Builder
 public class PageMetadataResponse {
     @ApiModelProperty(value = "Page number currently viewed", notes = "Current page number", example = "0")
-    @Builder.Default private int currentPage = 1;
+    private int currentPage;
     @ApiModelProperty(value = "Current number of data per page", notes = "Requested number of data per page", example = "2")
-    @Builder.Default private int currentSize = 1;
+    private int currentSize;
     @ApiModelProperty(value = "Number of data currently returned", notes = "Returned number of data per page", example = "2")
-    @Builder.Default private int numberOfElements = 0;
+    private int numberOfElements;
     @ApiModelProperty(value = "Total number of page", notes = "Total page size", example = "10")
-    @Builder.Default private int totalPage = 0;
+    private int totalPage;
     @ApiModelProperty(value = "Total number of data", notes = "Total data size", example = "20")
-    @Builder.Default private long totalElements = 0;
+    private long totalElements;
     @ApiModelProperty(value = "Whether the last page", notes = "check last page", example = "false")
-    @Builder.Default private boolean last = true;
+    private boolean last;
 
     @Override
     public String toString() {

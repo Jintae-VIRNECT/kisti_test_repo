@@ -468,7 +468,7 @@ public class LocalFileManagementService implements IFileManagementService {
             }
             case RECORD: {
                 try {
-                    objectPath.append(dirPath).append(recordBucketName).append("/").append(objectName);
+                    objectPath.append(dirPath).append(recordBucketName).append("/").append(objectName).append(".mp4");
                     minioClient.putObject(PutObjectArgs.builder().bucket(bucketName).object(objectPath.toString())
                             .stream(file.getInputStream(), file.getInputStream().available(), -1)
                             .contentType(file.getContentType()).build());
@@ -642,15 +642,14 @@ public class LocalFileManagementService implements IFileManagementService {
         }
 
         // check profile directory name or path
-        if(dirPath == null)
-            dirPath = profileBucketName;
+        if(dirPath == null) { dirPath = profileBucketName; };
 
         // file upload with create a InputStream for object upload.
         String fileUrl;
         StringBuilder objectPath = new StringBuilder();
         try {
             String objectName = String.format("%s_%s", LocalDate.now(), RandomStringUtils.randomAlphabetic(20));
-            objectPath.append(dirPath).append("/").append(objectName).append(".").append(fileExtension);
+            objectPath.append(dirPath).append("/").append(profileBucketName).append("/").append(objectName).append(".").append(fileExtension);
             // Create headers
             Map<String, String> headers = new HashMap<>();
             headers.put("Content-Type", file.getContentType());
@@ -913,7 +912,7 @@ public class LocalFileManagementService implements IFileManagementService {
                 }
 
                 case RECORD: {
-                    objectPath.append(dirPath).append(recordBucketName).append("/").append(objectName);
+                    objectPath.append(dirPath).append(recordBucketName).append("/").append(objectName).append(".mp4");
                     /*url = minioClient.getPresignedObjectUrl(
                             GetPresignedObjectUrlArgs.builder()
                                     .method(Method.GET)

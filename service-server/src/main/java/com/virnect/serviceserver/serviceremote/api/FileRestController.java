@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
 import org.apache.commons.lang.StringUtils;
@@ -87,7 +88,7 @@ public class FileRestController {
         /*if (!remoteStorageProperties.isEnabled()) {
             throw new RestServiceException(ErrorCode.ERR_STORAGE_NOT_SUPPORTED);
         }*/
-        ApiResponse<FileUploadResponse> responseData = fileService.uploadFile(fileUploadRequest, FileType.FILE);
+        ApiResponse<FileUploadResponse> responseData = fileService.uploadFile(fileUploadRequest);
         return ResponseEntity.ok(responseData);
     }
 
@@ -111,9 +112,9 @@ public class FileRestController {
                 + recordFileUploadRequest.toString(),
             "recordFileUploadRequestHandler"
         );
-        if (result.hasErrors()) {
+        /*if (result.hasErrors()) {
             throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
-        }
+        }*/
         if (!remoteStorageProperties.isEnabled()) {
             throw new RestServiceException(ErrorCode.ERR_STORAGE_NOT_SUPPORTED);
         }
@@ -145,9 +146,9 @@ public class FileRestController {
         if (result.hasErrors()) {
             throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
-        /*if (!remoteStorageProperties.isEnabled()) {
+        if (!remoteStorageProperties.isEnabled()) {
             throw new RestServiceException(ErrorCode.ERR_STORAGE_NOT_SUPPORTED);
-        }*/
+        }
         ApiResponse<RoomProfileUpdateResponse> responseData = fileService.profileUpload(
             workspaceId,
             sessionId,
@@ -404,8 +405,9 @@ public class FileRestController {
         "content-type=multipart/*"}, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<ApiResponse<ShareFileUploadResponse>> shareFileUploadRequestHandler(
         @ModelAttribute @Valid FileUploadRequest fileUploadRequest,
-        BindingResult result
-    ) throws IOException, NoSuchAlgorithmException, InvalidKeyException {
+        BindingResult result,
+        HttpServletRequest httpServletRequest
+    ) throws Exception {
         LogMessage.formedInfo(
             TAG,
             "REST API: POST "
@@ -419,7 +421,7 @@ public class FileRestController {
         /*if (!remoteStorageProperties.isEnabled()) {
             throw new RestServiceException(ErrorCode.ERR_STORAGE_NOT_SUPPORTED);
         }*/
-        ApiResponse<ShareFileUploadResponse> responseData = fileService.uploadShareFile(fileUploadRequest);
+        ApiResponse<ShareFileUploadResponse> responseData = fileService.uploadShareFile(fileUploadRequest, httpServletRequest);
         return ResponseEntity.ok(responseData);
     }
 

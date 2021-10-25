@@ -1,0 +1,27 @@
+package com.virnect.data.dto.response.group;
+
+import java.util.List;
+
+import io.swagger.annotations.ApiModel;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.Setter;
+
+
+@Getter
+@Setter
+@ApiModel
+public class RemoteGroupListResponse {
+
+	private List<RemoteGroupResponse> groupInfoResponseList;
+	private long memberTotalCount;
+
+	@Builder
+	public RemoteGroupListResponse(
+		List<RemoteGroupResponse> groupInfoResponseList,
+		long memberTotalCount
+	) {
+		this.groupInfoResponseList = groupInfoResponseList;
+		this.memberTotalCount = memberTotalCount;
+	}
+}

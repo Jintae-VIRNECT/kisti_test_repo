@@ -6,5 +6,5 @@ public enum MemberType {
     EXPERT,
     WORKER,
     SECESSION, // 서비스 탈퇴 멤버
-    NONMEMBER // 비회원
+    GUEST, // 비회원
 }

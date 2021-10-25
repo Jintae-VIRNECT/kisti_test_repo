@@ -1,5 +1,6 @@
 package com.virnect.data.dto;
 
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -8,6 +9,7 @@ import com.virnect.data.error.ErrorCode;
 
 @Getter
 @Setter
+@Builder
 public class FileUploadResult {
 
 	private String objectName;

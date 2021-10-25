@@ -444,14 +444,13 @@ public class S3FileManagementService implements IFileManagementService {
         }
 
         // check profile directory name or path
-        if (dirPath == null)
-            dirPath = bucketProfileName;
+        if (dirPath == null) { dirPath = bucketProfileName; }
 
         // file upload with create a InputStream for object upload.
         String objectName = String.format("%s_%s", LocalDate.now(), RandomStringUtils.randomAlphabetic(20));
         StringBuilder objectPath;
         objectPath = new StringBuilder();
-        objectPath.append(dirPath).append("/").append(objectName).append(".").append(fileExtension);
+        objectPath.append(dirPath).append("/").append(bucketProfileName).append("/").append(objectName).append(".").append(fileExtension);
         // Create headers
         ObjectMetadata objectMetadata = new ObjectMetadata();
         objectMetadata.setContentType(file.getContentType());
@@ -619,7 +618,7 @@ public class S3FileManagementService implements IFileManagementService {
             }
 
             case RECORD: {
-                objectPath.append(dirPath).append(bucketRecordName).append("/").append(objectName);
+                objectPath.append(dirPath).append(bucketRecordName).append("/").append(objectName).append(".mp4");
                 url = amazonS3Client.getUrl(bucketName, objectPath.toString()).toString();
                 LogMessage.formedInfo(
                         TAG,

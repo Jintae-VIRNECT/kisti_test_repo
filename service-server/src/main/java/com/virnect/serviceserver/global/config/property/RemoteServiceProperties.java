@@ -9,6 +9,7 @@ import javax.validation.constraints.PositiveOrZero;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.context.annotation.Profile;
 import org.springframework.core.env.Environment;
 import org.springframework.validation.annotation.Validated;
 
@@ -25,33 +26,21 @@ import com.virnect.serviceserver.infra.utils.ConfigValidation;
 @Validated
 @ConfigurationProperties(prefix = "service", ignoreInvalidFields = true)
 public class RemoteServiceProperties extends PropertyService {
-//public class RemoteServiceProperties {
 
 	public final MediaServerProperties mediaServerProperties;
 
 	public static String wsUrl;
 	public static String wssUrl;
-	//public static String httpUrl;
 
 	@Value("#{'${spring.profiles.active:}'.length() > 0 ? '${spring.profiles.active:}'.split(',') : \"default\"}")
 	protected String springProfile;
 
-	// yml property value
 	@NotNull
 	private boolean dotenv;
 	private String dotenvPath;
 
 	private String coturnCredential;
-	private int coturnMysqlConnectTimeout;
-	private String coturnMysqlDbname;
-	private String coturnMysqlIp;
-	private String coturnMysqlPassword;
-	private String coturnMysqlUsername;
 	private String coturnName;
-
-	private String coturnRedisDbname;
-	private String coturnRedisPassword;
-	private String coturnRedisConnectTimeout;
 
 	private List<String> coturnUrisConference;
 	private List<String> coturnUrisStreaming;
@@ -68,27 +57,6 @@ public class RemoteServiceProperties extends PropertyService {
 	@NotNull
 	private boolean remoteCdr;
 	private String remoteCdrPath;
-	private String remoteLogPath;
-
-	@NotNull
-	private boolean remoteRecording;
-
-	@PositiveOrZero
-	private Integer remoteRecordingAutostopTimeout;
-
-	private String remoteRecordingComposedUrl;
-	private String remoteRecordingCustomLayout;
-
-	@NotNull
-	private boolean remoteRecordingDebug;
-	private String remoteRecordingNotification;
-	private String remoteRecordingPath;
-
-	@NotNull
-	private boolean remoteRecordingPublicAccess;
-
-	//@NotEmpty
-	private String remoteRecordingVersion;
 
 	private String remoteSecret;
 
@@ -135,13 +103,6 @@ public class RemoteServiceProperties extends PropertyService {
 		mediaServerProperties.coturnProperty.setCoturnUrisSteaming(
 			(List<String>)getValue("service.coturn-uris-streaming", coturnUrisStreaming));
 
-		/*mediaServerProperties.coturnProperty.setCoturnRedisDbname(
-			getValue("service.coturn-redis-dbname",coturnRedisDbname).toString());
-		mediaServerProperties.coturnProperty.setCoturnRedisPassword(
-			getValue("service.coturn-redis-password",coturnRedisPassword).toString());
-		mediaServerProperties.coturnProperty.setCoturnRedisConnectTimeout(
-			getValue("service.coturn-redis-connect-timeout",coturnRedisConnectTimeout).toString());*/
-
 		// set Media server property
 		mediaServerProperties.serverProperty.setSessionsGarbageInterval(
 			(Integer)getValue("service.remote_sessions_garbage_interval",remoteSessionsGarbageInterval));
@@ -161,27 +122,6 @@ public class RemoteServiceProperties extends PropertyService {
 				: ConfigValidation.asFileSystemPath(getValue("service.remote_cdr_path",remoteCdrPath).toString())
 		);
 
-		// set Media recording property
-		mediaServerProperties.recordingProperty.setRecording(
-			(Boolean)getValue("service.remote_recording_debug",remoteRecording));
-		mediaServerProperties.recordingProperty.setRecordingDebug(
-			(Boolean)getValue("service.remote_recording_debug",remoteRecordingDebug));
-		mediaServerProperties.recordingProperty.setRecordingPath(
-			mediaServerProperties.recordingProperty.isRecording() ?
-				ConfigValidation.asWritableFileSystemPath(getValue("service.remote_cdr_path", remoteRecordingPath).toString()) :
-				ConfigValidation.asFileSystemPath(getValue("service.remote_cdr_path", remoteRecordingPath).toString())
-		);
-		mediaServerProperties.recordingProperty.setRecordingPublicAccess(
-			(Boolean)getValue("service.remote_recording_public_access", remoteRecordingPublicAccess));
-		mediaServerProperties.recordingProperty.setRecordingAutoStopTimeout(
-			(Integer)getValue("service.remote_recording_autostop_timeout", remoteRecordingAutostopTimeout));
-		mediaServerProperties.recordingProperty.setRecordingCustomLayout(
-			getValue("service.remote_recording_custom_layout", remoteRecordingCustomLayout).toString());
-		mediaServerProperties.recordingProperty.setRecordingVersion(
-			getValue("service.remote_recording_version", remoteRecordingVersion).toString());
-		mediaServerProperties.recordingProperty.setRecordingComposedUrl(
-			getValue("service.remote_recording_composed_url",remoteRecordingComposedUrl).toString());
-
 		// set Bandwidth property
 		mediaServerProperties.bandwidthProperty.setStreamsVideoMaxRecvBandwidth(
 			(Integer)getValue("service.remote_streams_video_max_recv_bandwidth", remoteStreamsVideoMaxRecvBandwidth));
@@ -200,11 +140,11 @@ public class RemoteServiceProperties extends PropertyService {
 
 	private void checkDomainOrPublicIp(String domain) {
 		if (domain != null && !domain.isEmpty()) {
-			this.remoteServicePublicUrl = "https://" + domainOrPublicIp;
+			//this.remoteServicePublicUrl = "https://" + domainOrPublicIp;
 			this.remoteWebsocketUrl = wss;
-			if (this.httpsPort != null && this.httpsPort != 443) {
+			/*if (this.httpsPort != null && this.httpsPort != 443) {
 				this.remoteServicePublicUrl += (":" + this.httpsPort);
-			}
+			}*/
 		}
 	}
 
@@ -250,9 +190,6 @@ public class RemoteServiceProperties extends PropertyService {
 			" ------------------------\n" + "\n\t" +
 			"* SERVICE_COTURN_CREDENTIAL=" + this.coturnCredential + "\n\t" +
 			"* SERVICE_COTURN_NAME=" + this.coturnName + "\n\t" +
-			"* SERVICE_COTURN_REDIS_CONNECT_TIMEOUT=" + this.coturnRedisConnectTimeout + "\n\t" +
-			"* SERVICE_COTURN_REDIS_DBNAME=" + this.coturnRedisDbname + "\n\t" +
-			"* SERVICE_COTURN_REDIS_PASSWORD=" + this.coturnRedisPassword + "\n\t" +
 			"* SERVICE_COTURN_URIS_CONFERENCE=" + this.coturnUrisConference + "\n\t" +
 			"* SERVICE_COTURN_URIS_STREAMING=" + this.coturnUrisStreaming+ "\n\t" +
 			"* SERVICE_DOMAIN_OR_PUBLIC_IP=" + this.domainOrPublicIp + "\n\t" +
@@ -263,15 +200,6 @@ public class RemoteServiceProperties extends PropertyService {
 			"* SERVICE_POLICY_LOCATION=" + this.policyLocation + "\n\t" +
 			"* SERVICE_REMOTE_CDR=" + this.remoteCdr + "\n\t" +
 			"* SERVICE_REMOTE_CDR_PATH=" + this.remoteCdrPath + "\n\t" +
-			"* SERVICE_REMOTE_RECORDING=" + this.remoteRecording + "\n\t" +
-			"* SERVICE_REMOTE_RECORDING_AUTOSTOP_TIMEOUT=" + this.remoteRecordingAutostopTimeout + "\n\t" +
-			"* SERVICE_REMOTE_RECORDING_COMPOSED_URL=" + this.remoteRecordingComposedUrl + "\n\t" +
-			"* SERVICE_REMOTE_RECORDING_CUSTOM_LAYOUT=" + this.remoteRecordingCustomLayout + "\n\t" +
-			"* SERVICE_REMOTE_RECORDING_DEBUG=" + this.remoteRecordingDebug + "\n\t" +
-			"* SERVICE_REMOTE_RECORDING_NOTIFICATION=" + this.remoteRecordingNotification + "\n\t" +
-			"* SERVICE_REMOTE_RECORDING_PATH=" + this.remoteRecordingPath + "\n\t" +
-			"* SERVICE_REMOTE_RECORDING_PUBLIC_ACCESS=" + this.remoteRecordingPublicAccess + "\n\t" +
-			"* SERVICE_REMOTE_RECORDING_VERSION=" + this.remoteRecordingVersion + "\n\t" +
 			"* SERVICE_REMOTE_SECRET=" + this.remoteSecret + "\n\t" +
 			"* SERVICE_REMOTE_SESSIONS_GARBAGE_INTERVAL=" + this.remoteSessionsGarbageInterval + "\n\t" +
 			"* SERVICE_REMOTE_SESSIONS_GARBAGE_THRESHOLD=" + this.remoteSessionsGarbageThreshold + "\n\t" +
