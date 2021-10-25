@@ -56,6 +56,14 @@ export const targetTypes = [
     value: 'VTarget',
     label: 'contents.targetTypes.vtarget',
   },
+  {
+    value: 'Image',
+    label: 'contents.targetTypes.imageTarget',
+  },
+  {
+    value: 'VR',
+    label: 'contents.targetTypes.vr',
+  },
 ]
 
 /**

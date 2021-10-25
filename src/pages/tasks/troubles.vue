@@ -87,12 +87,14 @@ export default {
     }
   },
   methods: {
-    changedSearchParams(searchParams) {
-      this.searchTroubles(searchParams)
+    /**
+     * searchMixin에서 emitChangedSearchParams 실행시 changedSearchParams 사용
+     */
+    changedSearchParams() {
+      this.searchTroubles()
     },
-    async searchTroubles(searchParams) {
-      const { list, total } = await resultService.searchTroubles(searchParams)
-      this.troublesPage = searchParams === undefined ? 1 : searchParams.page
+    async searchTroubles() {
+      const { list, total } = await resultService.searchTroubles()
       this.troublesList = list
       this.troublesTotal = total
     },
@@ -101,11 +103,22 @@ export default {
     },
     showAll() {},
     showMine() {},
+    /**
+     * @description 데이터 조회 조건 초기화
+     * @author YongHo Kim <yhkim@virnect.com>
+     */
+    refreshParams() {
+      this.troubleSearch = ''
+      this.troublesPage = 1
+
+      this.searchParams.mine = false
+    },
   },
   beforeMount() {
     workspaceService.watchActiveWorkspace(this, () => {
-      this.searchTroubles({ page: 1 })
-      this.troubleSearch = ''
+      this.refreshParams()
+      // searchMixin.js: emitChangedSearchParams 실행 > 현재 페이지의 changedSearchParams 실행
+      this.emitChangedSearchParams()
     })
   },
 }

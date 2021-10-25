@@ -51,5 +51,36 @@ export default {
       ctx.font = font
       return ctx.measureText(text).width
     },
+    /**
+     * @author YongHo Kim <yhkim@virnect.com>
+     * @description 선택한 파일의 조건을 확인하고 조건에 부합하는 파일이라면 true를 반환, 아니라면 false를 반환
+     * @param {object} file
+     * @returns {boolean} 조건에 부합하는 파일인지 확인하고 결과를 리턴
+     */
+    isImageFile(file) {
+      const isImage =
+        file.raw.type === 'image/jpeg' || file.raw.type === 'image/png'
+      let message = ''
+      if (!isImage) {
+        message = this.$t('members.setting.image.notAllowFileExtension')
+        this.$notify.error({
+          message,
+          position: 'bottom-left',
+          duration: 2000,
+        })
+        return false
+      }
+      const isLimitSize = file.raw.size / 1024 / 1024 < 5 // 서버에서 제한한 파일의 크기 5MB
+      if (!isLimitSize) {
+        message = this.$t('members.setting.image.notAllowFileSize')
+        this.$notify.error({
+          message,
+          position: 'bottom-left',
+          duration: 2000,
+        })
+        return false
+      }
+      return isImage && isLimitSize
+    },
   },
 }

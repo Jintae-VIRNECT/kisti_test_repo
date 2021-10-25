@@ -42,7 +42,12 @@ module.exports = async () => {
       '@nuxtjs/style-resources',
       '@nuxtjs/axios',
     ],
-    plugins: ['@/plugins/element-ui', '@/plugins/axios', '@/plugins/context'],
+    plugins: [
+      '@/plugins/element-ui',
+      '@/plugins/axios',
+      '@/plugins/context',
+      '@plugins/vee-validate',
+    ],
     /*
      ** Customize style
      */
@@ -66,7 +71,7 @@ module.exports = async () => {
       '~@virnect': resolve(__dirname, './node_modules/@virnect'),
     },
     build: {
-      transpile: ['@virnect/platform-auth'],
+      transpile: ['@virnect/platform-auth', 'vee-validate/dist/rules'],
     },
     /**
      * env

@@ -8,7 +8,11 @@
       "processPublished": "작업 등록",
       "processUnpublished": "작업 미등록",
       "globalIssue": "이슈",
-      "workIssue": "이슈"
+      "workIssue": "이슈",
+      "target": "타겟",
+      "mode": "모드",
+      "share": "공유",
+      "edit": "편집"
     },
     "sort": {
       "title": "정렬",
@@ -21,7 +25,9 @@
       "updatedDesc": "최신 보고순"
     },
     "keyword": {
-      "title": "검색"
+      "title": "검색",
+      "contentTitle": "콘텐츠 이름",
+      "projectTitle": "프로젝트 이름"
     }
   }
 }

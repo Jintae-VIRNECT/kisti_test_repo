@@ -48,6 +48,11 @@ export default {
     async getMemberList() {
       this.loading = true
       this.members = await workspaceService.getNewMembers()
+      // 게스트 멤버는 uuid 값을 사용자 계정 값으로 보여준다.
+      this.members.map(member => {
+        if (member.role === 'GUEST') member.email = member.uuid
+      })
+
       this.loading = false
     },
   },

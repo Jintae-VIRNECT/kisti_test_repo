@@ -8,7 +8,11 @@
       "processPublished": "Add Task",
       "processUnpublished": "Remove Task",
       "globalIssue": "Issues",
-      "workIssue": "Issues"
+      "workIssue": "Issues",
+      "target": "Target",
+      "mode": "Mode",
+      "share": "Share",
+      "edit": "Edit"
     },
     "sort": {
       "title": "Sort",
@@ -21,7 +25,9 @@
       "updatedDesc": "New to Old Report"
     },
     "keyword": {
-      "title": "Search"
+      "title": "Search",
+      "contentTitle": "Content Name",
+      "projectTitle": "Project Name"
     }
   }
 }

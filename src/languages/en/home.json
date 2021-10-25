@@ -1,7 +1,7 @@
 {
   "home": {
     "banner": {
-      "sub": "Connect Work Space and People",
+      "sub": "Connect Work, Space and People",
       "main": "%{company} Workstation",
       "desc": "Experience true systematic management through VIRNECT products",
       "desc_op": "Welcome to %{company} Workstation"
@@ -12,7 +12,7 @@
         "nickname": "Nickname",
         "email": "Account",
         "role": "Role",
-        "joinDate": "Date"
+        "joinDate": "Since"
       },
       "empty": "Invite members to your Workstation"
     },
@@ -28,7 +28,7 @@
       "task": "Task",
       "paper": "Paper",
       "issue": "Issue",
-      "empty": "There is no report made"
+      "empty": "Nothing reported"
     },
     "profile": {
       "title": "My Profile",

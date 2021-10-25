@@ -18,33 +18,27 @@ export default {
           this.searchParams = {
             ...this.searchParams,
             search: keyword && keyword.value,
-            filter: filter && filter.value.join(','),
+            filter: filter && this.filterSetValue(filter),
             sort: sort && sort.value,
             page: page && page.value,
             ...customParams,
           }
-          // null 삭제
+          // null 값 삭제
           Object.keys(this.searchParams).forEach(key => {
             if (!this.searchParams[key]) delete this.searchParams[key]
           })
-          this.changedSearchParams(this.searchParams)
+
+          // 각 페이지에서 선언되어 있는 changedSearchParams 실행
+          this.changedSearchParams()
         })
       }
     },
-  },
-  async mounted() {
-    await new Promise(_ => setTimeout(_, 100)) // ssr bug
-    const { filter, sort, keyword, page, table, mine } = this.$refs
-
-    if (keyword)
-      keyword.$on('change', val =>
-        this.emitChangedSearchParams({ search: val }),
-      )
-    if (sort)
-      sort.$on('change', val => this.emitChangedSearchParams({ sort: val }))
-    if (page)
-      page.$on('change', val => this.emitChangedSearchParams({ page: val }))
-    if (filter) {
+    /**
+     * @description filter ref의 $on 이벤트 메소드. filter 드롭다운 메뉴에서 특정 메뉴클릭시, 'ALL'메뉴 선택유무 판단 후 각 emitChangedSearchParams 함수 실행.
+     * @param {HTMLElement} filter
+     * @param {HTMLElement} page
+     */
+    filterRefEvent(filter, page) {
       filter.$on('change', () => {
         const last = filter.myValue[filter.myValue.length - 1]
         if (last === 'ALL' || !filter.myValue.length) {
@@ -55,6 +49,41 @@ export default {
         page.myPage = 1
         this.emitChangedSearchParams()
       })
+    },
+    /**
+     * @description filter ref의 Array타입인 value 값을 꺼내어 String 값으로 반환.
+     * @param {HTMLElement} filter
+     * @returns {string} 선택한 filter 값. ex) "VR, QR"
+     */
+    filterSetValue(filter) {
+      if (!filter.length) return filter.value.join(',')
+      else {
+        let result = {}
+        filter.map(f => {
+          result[f.$vnode.key] = f.value.join(',')
+        })
+        return result
+      }
+    },
+  },
+  async mounted() {
+    await new Promise(_ => setTimeout(_, 100)) // ssr bug
+    // 공통 동작
+    const { filter, sort, keyword, page, table, mine } = this.$refs
+
+    // 각 컴포넌트에 이벤트 리스너 적용
+    if (keyword)
+      keyword.$on('change', val =>
+        this.emitChangedSearchParams({ search: val }),
+      )
+    if (sort)
+      sort.$on('change', val => this.emitChangedSearchParams({ sort: val }))
+    if (page)
+      page.$on('change', val => this.emitChangedSearchParams({ page: val }))
+    if (filter) {
+      filter.length > 1
+        ? filter.map(f => this.filterRefEvent(f, page))
+        : this.filterRefEvent(filter, page)
     }
     if (table) {
       table.$on('sort-change', ({ prop, order }) => {
@@ -69,6 +98,7 @@ export default {
       mine.$on('change', label => {
         if (label === this.$t('common.all')) this.searchParams.mine = false
         else this.searchParams.mine = true
+        page.myPage = 1
         this.emitChangedSearchParams()
       })
     }

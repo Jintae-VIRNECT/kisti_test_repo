@@ -1,8 +1,8 @@
 <template>
   <el-dialog
-    class="member-setting-modal"
+    class="onpremise-member-setting-modal"
     :visible.sync="showMe"
-    :title="$t('members.setting.title')"
+    :title="$t('members.onpremiseSetting.title')"
     width="628px"
     top="11vh"
     :close-on-click-modal="false"
@@ -10,7 +10,7 @@
     <div>
       <h6>{{ $t('members.setting.info') }}</h6>
       <dl>
-        <dt>{{ $t('members.setting.nickname') }}</dt>
+        <dt>{{ $t('members.onpremiseSetting.nickname') }}</dt>
         <dd class="column-user">
           <VirnectThumbnail :size="28" :image="cdn(data.profile)" />
           <span>{{ data.nickname }}</span>
@@ -139,7 +139,7 @@ export default {
     canKick() {
       return this.$isOnpremise
         ? this.activeWorkspace.role === 'MASTER' &&
-            this.data.userType === 'MEMBER_USER'
+            ['WORKSPACE_ONLY_USER', 'GUEST_USER'].includes(this.data.userType)
         : this.data.role !== 'MASTER' &&
             this.activeWorkspace.role !== 'MEMBER' &&
             this.activeWorkspace.role !== this.data.role
@@ -154,7 +154,7 @@ export default {
     },
     async submit() {
       try {
-        await workspaceService.updateMembersRole(this.form)
+        await workspaceService.updateMembersInfo(this.form)
         this.$message.success({
           message: this.$t('members.setting.message.updateSuccess'),
           duration: 2000,
@@ -191,7 +191,7 @@ export default {
 </script>
 
 <style lang="scss">
-#__nuxt .member-setting-modal {
+#__nuxt .onpremise-member-setting-modal {
   .el-dialog__body {
     overflow-y: scroll;
   }

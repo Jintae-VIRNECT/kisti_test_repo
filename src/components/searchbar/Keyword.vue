@@ -2,7 +2,7 @@
   <div class="searchbar__keyword">
     <el-input
       v-model="myValue"
-      :placeholder="$t('searchbar.keyword.title')"
+      :placeholder="$t(`searchbar.keyword.${placeholder}`)"
       @change="change"
     />
     <img src="~assets/images/icon/ic-search.svg" />
@@ -14,6 +14,10 @@ export default {
   props: {
     value: String,
     options: Array,
+    placeholder: {
+      type: String,
+      default: 'title',
+    },
   },
   watch: {
     value(val) {
@@ -26,6 +30,7 @@ export default {
   data() {
     return {
       myValue: this.value,
+      holderText: this.$t(`searchbar.keyword.${this.placeholder}`),
     }
   },
   methods: {

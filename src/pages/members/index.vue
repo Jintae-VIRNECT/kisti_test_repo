@@ -40,11 +40,12 @@
           v-for="member in membersList"
           :key="member.uuid"
         >
-          <MemberProfileCard
-            :data="member"
-            @refresh="searchMembers(searchParams)"
-          />
+          <MemberProfileCard :data="member" @refresh="searchMembers()" />
         </el-col>
+        <template slot="empty">
+          <img src="~assets/images/empty/img-member-empty.jpg" />
+          <p>{{ $t('home.memberList.empty') }}</p>
+        </template>
       </el-row>
       <SearchbarPage
         ref="page"
@@ -55,6 +56,7 @@
     <MemberAddModal
       v-if="showAddModal"
       :membersTotal="membersTotal"
+      @refresh="searchMembers()"
       @close="closeMemberAddModal"
     />
   </div>
@@ -96,48 +98,61 @@ export default {
     closeMemberAddModal() {
       this.showAddModal = false
     },
-    changedSearchParams(searchParams) {
-      this.searchMembers(searchParams)
+    /**
+     * searchMixin에서 emitChangedSearchParams 실행시 changedSearchParams 사용
+     */
+    changedSearchParams() {
+      // 워크스테이션 정보 갱신
+      this.getWorkspacePlansInfo()
+
+      this.searchMembers()
     },
-    async searchMembers(searchParams) {
+    async searchMembers() {
       this.loading = true
-      const { list, total } = await workspaceService.searchMembers(searchParams)
-      this.membersPage = searchParams === undefined ? 1 : searchParams.page
+      const { list, total } = await workspaceService.searchMembers(
+        this.searchParams,
+      )
       this.membersList = list
       this.membersTotal = total
       this.loading = false
     },
+    /**
+     * 워크스페이스 플랜 정보 업데이트
+     */
     async getWorkspacePlansInfo() {
       await this.$store.dispatch('plan/getPlansInfo')
     },
     addMember() {
-      if (this.$isOnpremise) {
-        this.$router.push('/members/create')
-      } else {
-        this.showAddModal = true
-      }
+      this.showAddModal = true
+    },
+    /**
+     * @description 데이터 조회 조건 초기화
+     * @author YongHo Kim <yhkim@virnect.com>
+     */
+    refreshParams() {
+      this.memberSort.value = 'role,asc'
+      this.memberFilter.value = ['ALL']
+      this.memberSearch = ''
+      this.membersPage = 1
     },
   },
   beforeMount() {
-    this.searchMembers({ page: 1 })
-    this.getWorkspacePlansInfo()
-
+    // searchMixin.js: emitChangedSearchParams 실행 > index.vue:changedSearchParams 실행
+    this.emitChangedSearchParams()
     workspaceService.watchActiveWorkspace(this, () => {
-      this.searchMembers({ page: 1 })
-      this.getWorkspacePlansInfo()
-
-      // 검색 필터 초기화
-      this.memberSort.value = 'role,asc'
-      this.memberFilter.value = ['ALL']
+      this.refreshParams()
+      this.emitChangedSearchParams()
     })
   },
   mounted() {
     // modal query
     const { path, query } = this.$router.currentRoute
+
     if (query.modal && query.modal === 'memberAdd') {
       this.showAddModal = true
       this.$router.replace(path)
     }
+    // searchMixin.js에서도 mounted 실행
   },
 }
 </script>
@@ -149,6 +164,8 @@ export default {
   }
   .members-list {
     margin-right: -28px;
+    display: inline-flex;
+    flex-wrap: wrap;
   }
   .el-col.el-col-24.profile {
     width: 320px;

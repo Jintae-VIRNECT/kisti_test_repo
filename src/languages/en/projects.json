@@ -1,0 +1,119 @@
+{
+  "projects": {
+    "allprojects": {
+      "title": "All Projects",
+      "column": {
+        "name": "Name",
+        "tracking": "Tracking",
+        "mode": "Mode",
+        "uploader": "Uploader",
+        "sharedStatus": "Share",
+        "Size": "Size",
+        "createdDate": "Update"
+      },
+      "empty": "There is no registered project"
+    },
+    "sharedStatus": {
+      "shared": "Activate",
+      "noShared": "Deactivate"
+    },
+    "storage": {
+      "info": {
+        "title": "Storage Info",
+        "allVolume": "All Volume",
+        "allUseVolume": "Total Usage Volume",
+        "projectUseVolume": "Project Usage Volume",
+        "freeVolume": "Remaining Volume"
+      }
+    },
+    "targetTypes": {
+      "all": "All",
+      "qr": "QR Target",
+      "vtarget": "V Target",
+      "imageTarget": "Image Target",
+      "vr": "VR Target"
+    },
+    "sharedTypes": {
+      "all": "All",
+      "member": "Member",
+      "selectMember": "Designated Member",
+      "uploader": "Uploader",
+      "private": "Manager"
+    },
+    "editTypes": {
+      "all": "All",
+      "member": "Member",
+      "selectMember": "Designated Member",
+      "uploader": "Uploader",
+      "manager": "Manager"
+    },
+    "modeTypes": {
+      "all": "All",
+      "twoDimensinal": "2D",
+      "threeDimensinal": "3D",
+      "twoOrThreeDimensinal": "3D+2D"
+    },
+    "info": {
+      "title": "Project Info",
+      "project": {
+        "title": "Project",
+        "name": "Name",
+        "tracking": "Tracking",
+        "mode": "Content Mode",
+        "sceneGroup": "Scene Group",
+        "scene": "Scene",
+        "object": "Objects",
+        "asset": "Asset",
+        "filesize": "File Size",
+        "update": "Update",
+        "shared": "Shared",
+        "selectMember": "Designated Member",
+        "searchMember": "Member Search",
+        "edit": "Edit"
+      },
+      "target": {
+        "title": "Target",
+        "targetType": "Target Type",
+        "targetSize": "Target Size",
+        "width": "Width",
+        "height": "Height",
+        "noImage": "There is no registered target image"
+      },
+      "activity": {
+        "title": "Activity",
+        "nickname": "{nickname}'s",
+        "update": "Updateded a project.",
+        "upload": "Uploaded a project.",
+        "edit": "Changed the permission to edit information to {member}.",
+        "shared": "Changed the sharing status to {member}.",
+        "moveTrash": "Moved the project to the Trash.",
+        "backup": "Moved the deleted project to the project list.",
+        "download": "Downloaded the project.",
+        "empty": "No activity history",
+        "delete": "Deleted the project."
+      },
+      "message": {
+        "moveTrash": "Move to trash",
+        "moveTrashSure": "Are you sure you want to move the project to the Trash?",
+        "moveTrashSuccess": "The project has been moved to the Trash.",
+        "delete": "Delete selected project",
+        "deleteSure": "Are you sure you want to delete the selected project? <br>Deleted projects are not restored.",
+        "deleteSuccess": "The project has been deleted.",
+        "deleteFail": "Failed to delete project. Please try again after a while.",
+        "deleteNotExist": "The selected project does not exist in the workspace. Please check again.",
+        "updateShareSuccess": "Project share status has changed",
+        "updateShareFail": "Failed to change project share state.",
+        "updateShareMemberSuccess": "The project share designation member has been set.",
+        "updateShareMemberFail": "Failed to set project share designation member.",
+        "updateShareMemberNotExist": "Only workspace members can be set as shared designated members.",
+        "updateEditSuccess": "Changed project editing permission settings.",
+        "updateEditFail": "Failed to change project edit permission settings.",
+        "updateEditMemberSuccess": "The project edit designation member has been set.",
+        "updateEditMemberFail": "The project edit designation member failed.",
+        "updateEditMemberNotExist": "Only workspace members can be set as edit-designated members.",
+        "updateNotExist": "The selected project does not exist in the workspace. Please check again.",
+        "backup": "Moved the deleted project to the project list."
+      }
+    }
+  }
+}

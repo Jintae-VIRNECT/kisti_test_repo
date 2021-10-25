@@ -4,7 +4,7 @@
       "title": "전체 콘텐츠 목록",
       "myContents": "내 콘텐츠",
       "delete": "삭제",
-      "workspaceContentsList": "워크스페이스 콘텐츠 목록",
+      "workspaceContentsList": "전체 콘텐츠 목록",
       "column": {
         "id": "콘텐츠 ID",
         "name": "콘텐츠 이름",
@@ -21,7 +21,9 @@
     },
     "targetTypes": {
       "qr": "QR 타겟",
-      "vtarget": "V 타겟"
+      "vtarget": "V 타겟",
+      "imageTarget": "이미지 타겟",
+      "vr": "VR 타겟"
     },
     "info": {
       "title": "콘텐츠 정보",

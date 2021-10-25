@@ -5,6 +5,7 @@
     "contents": "Contents",
     "tasks": "Tasks",
     "workspaceSetting": "Workspace Settings",
+    "projects": "Projects",
     "collapse": {
       "workspace": {
         "title": "Workspace list",

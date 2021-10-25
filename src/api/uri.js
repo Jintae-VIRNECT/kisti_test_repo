@@ -27,10 +27,18 @@ export default {
   MEMBER_LIST_ALL: ['GET', '/workspaces/{workspaceId}/members/simple'],
   // 워크스페이스 사용자 상세 조회
   MEMBER_INFO: ['GET', '/workspaces/{workspaceId}/members/info'],
-  // 워크스페이스 사용자 - 멤버 권한 설정
-  MEMBER_ROLE_UPDATE: ['POST', '/workspaces/{workspaceId}/members/info'],
+  // 워크스페이스 전용 계정 아이디 조회
+  MEMBER_ID_CHECK: ['GET', '/users/members/exist'],
+  // 워크스페이스 사용자 정보 설정 (플랜, 닉네임, 역할 )
+  MEMBER_INFO_UPDATE: ['POST', '/workspaces/{workspaceId}/members/info'],
+  // 워크스페이스 전용계정/게스트계정 프로필 이미지 변경
+  MEMBER_PROFILE_UPDATE: ['POST', '/workspaces/{workspaceId}/members/profile'],
   // 워크스페이스 사용자 - 멤버 내보내기
   MEMBER_KICK: ['DELETE', '/workspaces/{workspaceId}/members/info'],
+  // 워크세페이스 게스트 삭제
+  MEMBER_GUEST_DELETE: ['DELETE', '/workspaces/{workspaceId}/members/guest'],
+  // 워크스페이스 게스트 생성
+  MEMBER_GUEST_CREATE: ['POST', '/workspaces/{workspaceId}/members/guest'],
   // 워크스페이스 사용자 - 멤버 초대하기
   MEMBERS_INVITE: ['POST', '/workspaces/{workspaceId}/invite'],
   // 워크스페이스 사용자 활동 조회
@@ -104,6 +112,13 @@ export default {
   TROUBLES_LIST: ['GET', '/tasks/troubleMemos'],
   // 트러블 메모 상세 조회
   TROUBLE_INFO: ['GET', '/tasks/troubleMemo/{troubleMemoId}'],
+  /**
+   * Projects
+   */
+  // 프로젝트 목록 조회
+  PROJECTS_LIST: ['GET', '/contents/projects'],
+  // 프로젝트 상세 정보 조회
+  PROJECT_INFO: ['GET', '/contents/projects/{projectUUID}'],
 
   /**
    * onpremise

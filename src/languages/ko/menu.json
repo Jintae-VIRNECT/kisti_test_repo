@@ -5,6 +5,7 @@
     "contents": "콘텐츠 관리",
     "tasks": "작업 관리",
     "workspaceSetting": "워크스페이스 설정",
+    "projects": "프로젝트",
     "collapse": {
       "workspace": {
         "title": "워크스페이스 목록",

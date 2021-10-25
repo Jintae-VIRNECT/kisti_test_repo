@@ -5,6 +5,7 @@
     popper-class="member-plan-select__dropdown"
     multiple
     collapse-tags
+    :disabled="activeWorkspace.role !== 'MASTER' || isGuest"
     @change="change"
   >
     <el-option :value="false" :label="$t('members.setting.givePlansEmpty')" />
@@ -22,11 +23,22 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
 export default {
   props: {
     value: Boolean,
     label: String,
     amount: Number,
+    role: String,
+    isGuest: {
+      type: Boolean,
+      default: false,
+    },
+  },
+  computed: {
+    ...mapGetters({
+      activeWorkspace: 'auth/activeWorkspace',
+    }),
   },
   data() {
     return {

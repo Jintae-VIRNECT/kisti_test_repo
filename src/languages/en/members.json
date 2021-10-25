@@ -4,7 +4,8 @@
     "role": {
       "master": "MASTER",
       "manager": "MANAGER",
-      "member": "MEMBER"
+      "member": "MEMBER",
+      "guest": "GUEST"
     },
     "card": {
       "profile": "Profile",
@@ -20,17 +21,56 @@
       "addMember": "Add Member"
     },
     "setting": {
-      "title": "Worksapce Member Settings",
+      "title": "Member Details",
       "info": "Member Details",
-      "nickname": "Member Nickname",
       "email": "Member Account",
+      "account": "Account",
+      "personalAccount": "Persnal Account",
+      "workspaceAccount": "Workstation Dedicated Account",
       "setting": "Member Settings",
       "role": "Role",
       "roleDesc": "Manager is entitled to invite members and access member settings.",
+      "workspaceRole": "Role",
+      "workspaceRoleDesc": "Workspace Role",
       "givePlans": "Plan",
       "givePlansDesc": "A plan needs to be allocated to use the product.",
       "givePlansEmpty": "Not allocated",
+      "directInput": "Direct Input",
       "kick": "Remove",
+      "submit": "Edit",
+      "guestRoleDesc": "Guests cannot act as administrators.",
+      "image": {
+        "title": "Profile Image",
+        "edit": "Edit Profile Image",
+        "success": "Successfully uploaded image",
+        "fail": "Failed to upload image file",
+        "notAllowFileExtension": "Unsupported file type",
+        "notAllowFileSize": "Unsupported file size"
+      },
+      "nickname": {
+        "title": "Nickname",
+        "caution": "Please enter 20 characters or less. You can use Korean English special characters (excluding (>), (<)) and spaces.",
+        "success": "Successfully updated your nickname",
+        "fail": "Failed to edit your nickname please try again later"
+      },
+      "guest": {
+        "title": "Guest",
+        "id": "Guest ID"
+      },
+      "password": {
+        "title": "Password",
+        "placeholder": "Please enter a new password",
+        "caution": "Your password must be between 8 and 20 characters long. Your password needs to be included with at least 3 of following character types. Also your password must not contain consecutive numbers and more than four of same characters.",
+        "success": "Successfully updated your password",
+        "fail": "Failed to edit your nickname please try again later"
+      },
+      "delete": {
+        "title": "Delete",
+        "account": "Delete Account",
+        "guest": "Delete Guest",
+        "placeholder": "Enter confirmation phrase",
+        "desc": "Please enter a 'Delete Account'."
+      },
       "message": {
         "notHaveAnyPlan": "At least one plan must be allocated to Workspace members.",
         "updateFail": "Failed to update member details from the Workspace please try again later.",
@@ -75,15 +115,20 @@
     "add": {
       "title": "Add Workspace Members",
       "desc": "Sending a Workspace member invitation email to the email address you entered. A member is added if this member accepts the invitation. You can allocate plans whenever you prefer from the [member settings].",
-      "addUser": "Add Members",
+      "addUser": "Add",
       "email": "Email",
-      "emailDesc": "Please enter the VIRNECT member's email address of the person you want to invite and send an invitation. By accepting your invitation the member can become one of your Workspace member and use products together.",
       "emailPlaceholder": "Enter email address of invitee",
       "available": "You can add <i>{n}</i> more members.",
       "addMember": "Add Members",
-      "submit": "Send Invitation",
+      "submit": "Invitation",
+      "tab": {
+        "invitation": "Account Invitation",
+        "create": "Account creation",
+        "guest": "Guest registration"
+      },
       "message": {
         "inviteFail": "Failed to invite a member to Workspace please try again later.",
+        "createSuccess": "{n} guests have been registered.",
         "inviteSuccess": "The invitation email has been sent. The member is added when this member accepts your invitation.",
         "notHaveAnyPlan": "At least one plan must be allocated when inviting new Workspace members.",
         "enoughPlan": "No plans available to assign to Workspace members please purchase plans and invite them again.",
@@ -94,19 +139,34 @@
         "memberWithdrawal": "Email accounts with a history of withdrawal cannot be invited."
       }
     },
+    "invitation": {
+      "title": "Personal Account Invitation",
+      "desc": "Do you want to use virnect products and services with other users? <br>",
+      "list": "Personal Account Invitation List"
+    },
     "create": {
+      "new": "New Member",
       "title": "Add Workspace member",
-      "form": "Enter account creation info",
-      "info": "Account creation info",
-      "addMember": "Add account",
-      "createMember": "Create account",
+      "form": "Account to be created",
+      "info": "Information of account to be created",
+      "addMember": "Add Account",
+      "createMember": "Create Account",
       "id": "ID",
       "idPlaceholder": "Enter the ID of the account to be created.",
+      "idCheck": "Check availability",
       "password": "Password",
       "passwordPlaceholder": "Please enter your password for the account to be created.",
+      "workspaceMemberTitle": "Create Workspace-Only Accounts",
+      "workspaceMemberDesc": "Create your own member account. The registration account uses the service through the registered workspace.",
+      "workspaceMemberList": "Account Creation List",
+      "workspaceMember": "Create Workspace Member",
+      "workspaceTooltip": "Current Number of Members + Number of Additional Members / Workspace Member Limit Number",
+      "submit": "Create",
+      "reEnter": "Re-enter",
       "caution": {
-        "createId": "Enter your ID and password to create a new workspace member account. \n<u>You must allocate at least one plan you have when creating an account.</u>",
-        "validId": "You can choose between 4 and 20 characters of english letters and numbers for the <u>ID</u.",
+        "createId": "Enter your ID and password to create a new workspace member account.<br><u>You must allocate at least one plan you have when creating an account.</u>",
+        "validUserId": "You can choose between 4 and 20 characters of english letters and numbers for the ID",
+        "validId": "You can choose between 4 and 20 characters of english letters and numbers for the <u>ID</u>.",
         "validPassword": "Your password must be between 8 and 20 characters long. Your password needs to be included with at least 3 of following character types. <br>- Uppercase letter <br>- Lowercase letter<br>- Number <br>- Special character ( . ! @ # $ % ). <br>Also your password must not contain consecutive numbers and more than four of same characters.",
         "canModify": "Logged in user can change the password and account details updated during account registration."
       },
@@ -114,9 +174,29 @@
         "successTitle": "Adding member completed",
         "successContent": "The account is created based on the information entered. You may use the service using the created account. Please let the user know of setting up the password recovery question & answer ",
         "idDuplicated": "This ID is already registered, please enter a different ID.",
+        "notCheckId": "There are accounts that did not check availability.",
         "notHaveAnyPlan": "You need to allocate at least one plan to the account you are creating.",
-        "fail": "Failed to add a member, please try again later. If a same problem occurs please contact a network adminitrator."
+        "fail": "Failed to add a member, please try again later. If a same problem occurs, please contact a network adminitrator.",
+        "usableId": "It's a usable ID."
       }
+    },
+    "guest": {
+      "title": "Add Workspace Guest",
+      "desc": "Guest is an arbitrary member who can use the product by assigning a plan like a member. <br> Anyone can use the service below through the guest. ",
+      "removeDesc": "Users who are not logged in to an open room will access it via the Join link. A Remote Plan is required to add guest.",
+      "viewDesc": "Open content is downloaded and experienced by non-login users.",
+      "settings": "Guest settings",
+      "remoteTabName": "Remote Plan",
+      "viewTabName": "View Plan",
+      "remoteTab": {
+        "title": "Add Remote plan assignment guest"
+      },
+      "viewTab": {
+        "title": "Add View plan assignment guest"
+      },
+      "numberOfGuest": "Number of additional guest",
+      "noHavePlans": "No remaining plans.",
+      "submit": "Registration"
     },
     "activity": {
       "title": "Recent Activity",
@@ -129,6 +209,10 @@
         "reportedDate": "Report",
         "link": "Shortcuts"
       }
+    },
+    "onpremiseSetting": {
+      "title": "Worksapce Member Settings",
+      "nickname": "Member Nickname"
     }
   }
 }
