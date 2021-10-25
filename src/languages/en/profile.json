@@ -100,6 +100,7 @@
       "month": "Month",
       "day": "Day",
       "submit": "Edit",
+      "ageLimit": "Users under the age of 14 cannot sign up and use the service.",
       "message": {
         "success": "Successfully updated your date of birth",
         "fail": "Failed to update your date of birth please try again later"

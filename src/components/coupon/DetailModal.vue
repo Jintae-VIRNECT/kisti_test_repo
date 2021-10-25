@@ -5,6 +5,7 @@
     :visible.sync="visible"
     width="628px"
     :before-close="handleClose"
+    :close-on-click-modal="false"
   >
     <el-row>
       <el-col :span="8">
@@ -72,11 +73,12 @@ export default {
   },
   computed: {
     items() {
-      return (!this.coupon.applyItemId
-        ? this.allTickets
-        : this.allTickets.filter(
-            ticket => ticket.id === this.coupon.applyItemId,
-          )
+      return (
+        !this.coupon.applyItemId
+          ? this.allTickets
+          : this.allTickets.filter(
+              ticket => ticket.id === this.coupon.applyItemId,
+            )
       ).map(ticket => {
         if (ticket.productType.id === 'product') {
           ticket.product = ticket.productType.name.toLowerCase()

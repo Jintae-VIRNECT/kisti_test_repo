@@ -1,12 +1,9 @@
-RELEASE
+# RELEASE 1.4.1
 
-New Features
-워크스페이스 나가기 기능 추가
+## 🐛 Bugfix
 
-Bug Fixes
-워크스페이스 생성 기능 장애 해결
+- [[DPLA-3502](https://virtualconnection.atlassian.net/browse/DPLA-3502)] 생년월일 수정 시 만 14세 이하로 설정 불가 처리
+- [[DPLA-3443](https://virtualconnection.atlassian.net/browse/DPLA-3443)] 기입력된 계정정보 변경 시 기입력된 글자를 마우스 드레그하면 팝업창 닫힘 처리
+- [[DPLA-3576](https://virtualconnection.atlassian.net/browse/DPLA-3576)] 보안 설정 - 현재기기 문구가 다국어 변경시 함께 바뀌도록 작업완료
 
-Limitation
-워크스페이스 생성은 로그인 시에만 가능
-
-Copyright (C) 2020, VIRNECT CO., LTD. - All Rights Reserved
+Copyright (C) 2021, VIRNECT CO., LTD. - All Rights Reserved
