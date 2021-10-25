@@ -35,7 +35,7 @@ export default {
   async beforeRouteEnter(to, from, next) {
     const authInfo = await auth.init()
     if (!auth.isLogin) {
-      auth.login()
+      await auth.login()
     } else {
       const res = await getLicense({ userId: authInfo.account.uuid })
       const workspaces = res.myPlanInfoList.filter(
@@ -43,6 +43,7 @@ export default {
       )
       if (workspaces.length === 0) {
         next(vm => {
+          location.href = window.urls.remote
           vm.license = false
           vm.init(authInfo)
         })

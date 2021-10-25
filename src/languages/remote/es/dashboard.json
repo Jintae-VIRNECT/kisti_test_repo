@@ -1,0 +1,25 @@
+{
+  "chart": {
+	"my_collabo_list": "Lista de mi Colabo",
+	"total_collabo_list": "Lista de Colabo general",
+	"daily_collabo_title": "Colabo diaria",
+	"daily_collabo_description": "Se muestran los detalles de Colabo diaria que se efectuó durante un período determinado",
+	"daily_total_collabo_count": "Frecuencia de Colabo general por día",
+	"daily_total_collabo_time": "Horas de Colabo general por día",
+	"daily_my_collabo_count": "Frecuencia de mi Colabo por día",
+	"daily_my_collabo_time": "Horas de mi Colabo por día",
+	"collabo_count_by_time": "Colabo completado por hora",
+	"monthly_collabo_title": "Colabo por mes",
+	"monthly_collabo_description": "Se muestran los detalles de Colabo efectuada durante un período determinado.",
+	"collabo_count_by_day": "Colabo completada por día",
+	"monthly_total_collabo_count": "Frecuencia de Colabo general por mes",
+	"monthly_total_collabo_time": "Horas de Colabo general por mes",
+	"monthly_my_collabo_count": "Frecuencia de mi Colabo por mes",
+	"monthly_my_collabo_time": "Horas de mi Colabo por mes",
+	"collabo_day": "Día",
+	"collabo_hour": "Hora",
+	"collabo_minute": "Minuto",
+	"collabo_count": "Veces",
+	"count": "{count}"
+  }
+}

@@ -1,14 +1,15 @@
 import Cookies from 'js-cookie'
 
-const order = ['en', 'ko', 'ja', 'zh-CN', 'zh-TW']
+const order = ['en', 'ko', 'ja', 'zh-CN', 'zh-TW', 'es']
 const shortLang = new Map([
   ['en', 'en'],
   ['en-us', 'en'],
   ['ko', 'ko'],
   ['ko-kr', 'ko'],
   ['ja', 'ja'],
-  // ['zh-CN', 'zh-CN'],
-  // ['zh-TW', 'zh-TW'],
+  ['zh-CN', 'zh-CN'],
+  ['zh-TW', 'zh-TW'],
+  ['es', 'es'],
 ])
 
 const cookieOption = {
