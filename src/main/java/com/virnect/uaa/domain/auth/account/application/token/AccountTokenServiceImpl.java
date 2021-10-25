@@ -7,6 +7,7 @@ import java.util.Date;
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -20,16 +21,17 @@ import lombok.extern.slf4j.Slf4j;
 import com.virnect.uaa.domain.auth.account.dto.ClientGeoIPInfo;
 import com.virnect.uaa.domain.auth.account.dto.request.TokenRefreshRequest;
 import com.virnect.uaa.domain.auth.account.dto.response.RefreshTokenResponse;
-import com.virnect.uaa.domain.auth.account.error.AuthenticationErrorCode;
-import com.virnect.uaa.domain.auth.account.error.exception.UserAuthenticationServiceException;
+import com.virnect.uaa.domain.auth.common.error.AuthenticationErrorCode;
+import com.virnect.uaa.domain.auth.common.exception.UserAuthenticationServiceException;
 import com.virnect.uaa.domain.user.dao.user.UserRepository;
 import com.virnect.uaa.domain.user.domain.User;
 import com.virnect.uaa.global.common.ClientUserAgentInformationParser;
-import com.virnect.uaa.global.security.token.JwtPayload;
-import com.virnect.uaa.global.security.token.JwtProvider;
+import com.virnect.uaa.domain.auth.security.token.JwtPayload;
+import com.virnect.uaa.domain.auth.security.token.JwtProvider;
 
 @Slf4j
 @Service
+@Transactional
 @RequiredArgsConstructor
 public class AccountTokenServiceImpl implements AccountTokenService {
 	private final ObjectMapper objectMapper;

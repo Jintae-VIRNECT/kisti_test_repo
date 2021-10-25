@@ -50,6 +50,19 @@ public class ClientUserAgentInformationParser {
 		return clientGeoIPInfo;
 	}
 
+	public ClientGeoIPInfo getClientGeoIPInformation(String ip, String userAgent) {
+		GeoIPInfo geoIPInfo = getUserLocationByIp(ip);
+		String deviceDetails = getDeviceDetails(userAgent);
+		ClientGeoIPInfo clientGeoIPInfo = new ClientGeoIPInfo();
+		clientGeoIPInfo.setIp(ip);
+		clientGeoIPInfo.setLocation(geoIPInfo.getLocation());
+		clientGeoIPInfo.setCountry(geoIPInfo.getCountry());
+		clientGeoIPInfo.setCountryCode(geoIPInfo.getCountryCode());
+		clientGeoIPInfo.setUserAgent(userAgent);
+		clientGeoIPInfo.setDeviceDetails(deviceDetails);
+		return clientGeoIPInfo;
+	}
+
 	/**
 	 * Ip 기반으로 Geolocation 정보 추출
 	 *

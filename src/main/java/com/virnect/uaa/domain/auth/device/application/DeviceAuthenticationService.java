@@ -18,8 +18,8 @@ import com.vdurmont.semver4j.Semver;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import com.virnect.uaa.domain.auth.account.error.AuthenticationErrorCode;
-import com.virnect.uaa.domain.auth.account.error.exception.DeviceAuthenticationServiceException;
+import com.virnect.uaa.domain.auth.common.error.AuthenticationErrorCode;
+import com.virnect.uaa.domain.auth.common.exception.DeviceAuthenticationServiceException;
 import com.virnect.uaa.domain.auth.device.dao.DeviceAccessLogRepository;
 import com.virnect.uaa.domain.auth.device.dao.DeviceAuthRepository;
 import com.virnect.uaa.domain.auth.device.dao.DeviceRepository;

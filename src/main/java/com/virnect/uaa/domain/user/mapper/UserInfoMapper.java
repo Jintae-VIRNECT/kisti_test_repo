@@ -1,5 +1,7 @@
 package com.virnect.uaa.domain.user.mapper;
 
+import static com.virnect.uaa.domain.user.domain.UserType.*;
+
 import java.time.LocalDateTime;
 
 import org.mapstruct.AfterMapping;
@@ -47,6 +49,10 @@ public abstract class UserInfoMapper {
 	@Mapping(target = "enabled", constant = "true")
 	public abstract UserInfoResponse toUserInfoResponse(SecessionUser secessionUser);
 
+	@BeanMapping(
+		nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE,
+		nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS
+	)
 	@Mapping(target = "user.id", ignore = true)
 	@Mapping(target = "user.uuid", ignore = true)
 	@Mapping(target = "user.serviceInfo", ignore = true)
@@ -98,6 +104,13 @@ public abstract class UserInfoMapper {
 			&& !user.isAccountPasswordInitialized()
 		) {
 			user.setAccountPasswordInitialized(true);
+		}
+	}
+
+	@AfterMapping
+	protected void seatUserInformationConvert(User user, @MappingTarget UserInfoResponse userInfoResponse) {
+		if (user.getUserType() == GUEST_USER) {
+			userInfoResponse.setEmail("");
 		}
 	}
 }

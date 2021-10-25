@@ -51,6 +51,7 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-mail'
     implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-server'
     runtimeOnly 'mysql:mysql-connector-java'
+    runtimeOnly 'com.h2database:h2'
     testImplementation('org.springframework.boot:spring-boot-starter-test') {
         exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
     }
@@ -138,16 +139,22 @@ dependencies {
 
 test {
     useJUnitPlatform()
+    systemProperty("spring.active.profiles", "test")
+    systemProperty("VIRNECT_ENV","test")
 }
 
 
 // querydsl 적용
-def querydslSrcDir = 'src/main/generated'
+def querydslDir= "$buildDir/generated/querydsl"
 
 querydsl {
     library = "com.querydsl:querydsl-apt"
     jpa = true
-    querydslSourcesDir = querydslSrcDir
+    querydslSourcesDir = querydslDir
+}
+
+sourceSets {
+    main.java.srcDir querydslDir
 }
 
 compileQuerydsl {
@@ -158,13 +165,6 @@ configurations {
     querydsl.extendsFrom compileClasspath
 }
 
-sourceSets {
-    main {
-        java {
-            srcDirs = ['src/main/java', querydslSrcDir]
-        }
-    }
-}
 
 
 //License Reporting Configuration

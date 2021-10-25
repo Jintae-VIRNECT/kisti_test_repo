@@ -29,13 +29,13 @@ import com.virnect.uaa.domain.user.exception.UserServiceException;
 
 @Slf4j
 @Service
-@Profile(value = {"dev", "local", "develop", "onpremise"})
+@Profile(value = {"dev", "local", "develop", "onpremise", "test"})
 @RequiredArgsConstructor
 public class MinioFileService implements FileService {
 	private final MinioClient minioClient;
 	@Value("${minio.bucket:virnect-platform}")
 	private String bucket;
-	@Value("${minio.resource:profile}")
+	@Value("${minio.resource:user/profile}")
 	private String resourceDir;
 
 	@Override
@@ -97,7 +97,7 @@ public class MinioFileService implements FileService {
 		log.info("[MINIO_DELETE_BEGIN]");
 		log.info("[MINIO_DELETE] - {}", url);
 
-		if (url.equals("default")) {
+		if (url.equalsIgnoreCase("default")) {
 			log.info("[MINIO_DELETE_SKIP_DEFAULT_IMAGE]");
 			log.info("[MINIO_DELETE_END]");
 			return true;

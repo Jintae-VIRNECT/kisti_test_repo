@@ -18,8 +18,8 @@ import lombok.extern.slf4j.Slf4j;
 import com.virnect.uaa.domain.auth.account.application.token.AccountTokenService;
 import com.virnect.uaa.domain.auth.account.dto.request.TokenRefreshRequest;
 import com.virnect.uaa.domain.auth.account.dto.response.RefreshTokenResponse;
-import com.virnect.uaa.domain.auth.account.error.AuthenticationErrorCode;
-import com.virnect.uaa.domain.auth.account.error.exception.UserAuthenticationServiceException;
+import com.virnect.uaa.domain.auth.common.error.AuthenticationErrorCode;
+import com.virnect.uaa.domain.auth.common.exception.UserAuthenticationServiceException;
 import com.virnect.uaa.global.common.ApiResponse;
 
 @Slf4j

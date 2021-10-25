@@ -18,6 +18,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import springfox.documentation.annotations.ApiIgnore;
 
 import com.virnect.uaa.domain.user.application.UserInformationFindService;
 import com.virnect.uaa.domain.user.dto.request.EmailFindRequest;
@@ -58,7 +59,7 @@ public class UserInfoFindController {
 	@ApiOperation(value = "계정 정보 찾기 - 비밀번호 재설정 코드 보내기", notes = "비밀번호를 찾기 위해 재설정 코드를 보내는 api 입니다.")
 	@PostMapping("/find/password/auth")
 	public ResponseEntity<ApiResponse<UserPasswordFindAuthCodeResponse>> findUserPasswordAuthCodeRequestHandler(
-		@RequestBody @Valid UserPasswordFindAuthCodeRequest passwordAuthCodeRequest, Locale locale, BindingResult result
+		@RequestBody @Valid UserPasswordFindAuthCodeRequest passwordAuthCodeRequest, @ApiIgnore Locale locale, BindingResult result
 	) {
 		if (result.hasErrors()) {
 			result.getAllErrors().forEach(message -> log.error(PARAMETER_LOG_MESSAGE, message));

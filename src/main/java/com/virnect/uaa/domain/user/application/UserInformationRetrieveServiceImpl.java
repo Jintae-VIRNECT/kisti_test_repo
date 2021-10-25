@@ -7,10 +7,12 @@ import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import lombok.RequiredArgsConstructor;
@@ -37,13 +39,14 @@ import com.virnect.uaa.domain.user.exception.UserServiceException;
 import com.virnect.uaa.domain.user.mapper.UserAccessDeviceInfoMapper;
 import com.virnect.uaa.domain.user.mapper.UserInfoMapper;
 import com.virnect.uaa.global.common.ApiResponse;
-import com.virnect.uaa.global.security.token.JwtPayload;
-import com.virnect.uaa.global.security.token.JwtProvider;
+import com.virnect.uaa.domain.auth.security.token.JwtPayload;
+import com.virnect.uaa.domain.auth.security.token.JwtProvider;
 import com.virnect.uaa.infra.rest.workspace.WorkspaceRestService;
 import com.virnect.uaa.infra.rest.workspace.dto.WorkspaceInfoListResponse;
 
 @Slf4j
 @Service
+@Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class UserInformationRetrieveServiceImpl implements UserInformationRetrieveService {
 	private final SecessionUserRepository secessionUserRepository;
@@ -96,6 +99,7 @@ public class UserInformationRetrieveServiceImpl implements UserInformationRetrie
 		return new UserDetailsInfoResponse(userInfoResponse, myWorkspaceInfoList.getData().getWorkspaceList());
 	}
 
+	@Cacheable(value = "userInfo", key = "#uuid")
 	@Override
 	public UserInfoResponse findUserInformationByUserUUID(String uuid) {
 		Optional<SecessionUser> secessionUserInformation = secessionUserRepository.findByUserUUID(uuid);

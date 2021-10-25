@@ -17,7 +17,7 @@ public class ClientSessionInfo {
 		this.createdAtTime = System.currentTimeMillis();
 	}
 
-	public static ClientSessionInfo firstConnectInfo() {
+	public static ClientSessionInfo createFirstConnectInfo() {
 		return new ClientSessionInfo(null, 0L, 0L);
 	}
 

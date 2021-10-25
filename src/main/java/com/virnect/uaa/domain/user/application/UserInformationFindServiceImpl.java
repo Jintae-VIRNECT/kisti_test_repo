@@ -11,6 +11,7 @@ import java.util.stream.Collectors;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.thymeleaf.context.Context;
 
 import lombok.RequiredArgsConstructor;
@@ -37,6 +38,7 @@ import com.virnect.uaa.infra.email.context.MailMessageContext;
 
 @Slf4j
 @Service
+@Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class UserInformationFindServiceImpl implements UserInformationFindService {
 	private final UserRepository userRepository;
@@ -66,6 +68,7 @@ public class UserInformationFindServiceImpl implements UserInformationFindServic
 		return new UserEmailFindResponse(findEmailMaskingResult);
 	}
 
+	@Transactional
 	@Override
 	public UserPasswordFindAuthCodeResponse sendPasswordResetEmail(
 		UserPasswordFindAuthCodeRequest passwordAuthCodeRequest,
@@ -119,18 +122,25 @@ public class UserInformationFindServiceImpl implements UserInformationFindServic
 		}
 	}
 
+	@Transactional
 	@Override
 	public UserPasswordFindCodeCheckResponse verifyPasswordResetCode(
 		UserPasswordFindAuthCodeCheckRequest authCodeCheckRequest
 	) {
 		PasswordInitAuthCode passwordInitAuthCode = userPasswordAuthCodeRepository.findById(
-			authCodeCheckRequest.getEmail())
+				authCodeCheckRequest.getEmail())
 			.orElseThrow(() -> new UserServiceException(UserAccountErrorCode.ERR_PASSWORD_INIT_CODE_NOT_FOUND));
 
-		if (passwordInitAuthCode.getCode().equals(authCodeCheckRequest.getCode())) {
+		log.info(
+			"Password Initialize Info Check : REQ:[{}] SERVER:[{}] -> RESULT:[{}]",
+			authCodeCheckRequest.getCode(),
+			passwordInitAuthCode.getCode(),
+			authCodeCheckRequest.getCode().equals(passwordInitAuthCode.getCode())
+		);
+
+		if (!passwordInitAuthCode.getCode().equals(authCodeCheckRequest.getCode())) {
 			throw new UserServiceException(UserAccountErrorCode.ERR_PASSWORD_INIT_CODE_NOT_FOUND);
 		}
-		log.info("Password Initialize Info Check : [{}]", passwordInitAuthCode);
 
 		userPasswordAuthCodeRepository.deleteById(authCodeCheckRequest.getEmail());
 
@@ -138,6 +148,7 @@ public class UserInformationFindServiceImpl implements UserInformationFindServic
 			passwordInitAuthCode.getUuid(), passwordInitAuthCode.getEmail(), true);
 	}
 
+	@Transactional
 	@Override
 	public UserPasswordChangeResponse renewalPreviousPassword(
 		UserPasswordChangeRequest passwordChangeRequest
