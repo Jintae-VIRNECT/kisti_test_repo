@@ -29,6 +29,7 @@
     "confirm_force_logout_complete": "is logged out.",
     "confirm_force_logout_received": "You have been forced to log out by the master.",
     "confirm_force_logout_unavailable": "has accessed the collaboration and cannot log out.",
+    "confirm_video_restrict_join": "[Video Restriction Mode] Connect to the collabo room.\nThe camera can be remotely controlled by the leader.\nIf you select [Connect], you agree to camera control.",
 
     "history": "Recent history",
     "remote": "Remote Collabo",
@@ -64,6 +65,7 @@
     "setting_mic_test": "mic settings",
     "setting_mic_test_description": "Are you having a trouble with your mic? Let's find out by saying any words out loud and we will play back to you.",
     "setting_inout_device": "I/O device",
+    "setting_video_device_choice": "Video device settings",
     "setting_input_device": "Input device",
     "setting_output_device": "Output device",
     "setting_language_choice": "Language selection",
@@ -75,6 +77,8 @@
     "setting_record_resolution_tooltip": "When setting the resolution of 720p (HD) or higher, <br>please be aware that the service depends on the PC's performance.",
     "setting_record_setting_description":"The changes are applied at the start of recording.",
     "setting_server_record":"Server recording settings",
+    "setting_auto_server_record":"Automatic Server Recording",
+    "setting_use_auto_server_record":"Enable automatic recording",
     "setting_video": "Video settings",
     "setting_video_choice": "Camera",
     "setting_video_resolution": "Input resolution",
@@ -169,9 +173,14 @@
     "go_workspace_member": "Move to Workspace member list",
 
     "loading_prepare_remote":"Preparing to create a Collabo room",
+    "loading_prepare_join_remote":"Preparing to join a Collabo room",
+    "loading_prepare_remote_open":"Preparing to create a Open room",
+    "loading_prepare_join_remote_open":"Preparing to join a Open room",
     "loading_checking_device":"Checking device connection status...",
 
     "cookie": "We use cookies and usage statistics to improve our service and customer experience. To learn more, <br>please check out our <a href='https://virnect.com/policy#10' target='_blank'>policy</a>. By clicking \"OK\" or continuing the use of site, you consent to the collection of cookies and usage statistics.",
+    "cookie_mobile": "We use cookies and usage statistics to improve our service and customer experience.<br>To learn more, please check out our <a href='https://virnect.com/policy#10' target='_blank'>policy</a>. By clicking \"OK\" or continuing the use of site, you consent to the collection of cookies and usage statistics.",
+
 
     "confirm_duplicated_session_logout": "Another device is already logged in.\nPlease close the other party's connection to continue.",
     "confirm_duplicated_session_joined":"Another device is already collaborating.\nPlease try again after the other person ends the Collabo.",
@@ -180,6 +189,21 @@
     "workspace_update_failed": "Failed to change workspace.\nplease try it again.",
     "auth_status_failed": "Failed to authenticate, \nplease try it again.",
 
-    "profile_size_limit_exceed":"Upload limit(20MB) capacity exceeded.​​"
+    "profile_size_limit_exceed":"Upload limit(20MB) capacity exceeded.​​",
+
+
+    "workspace_member_group":"Favorites",
+    "workspace_group_empty":"No favorites have been created.",
+    "workspace_add_member_group":"Add to Favorites",
+    "workspace_member_group_name":"Favorites name​",
+    "workspace_add_and_update_member_group":"Add/Edit Favorites",
+    "workspace_member_group_max_description":"Up to 10 favorite groups can be created.",
+    "workspace_member_group_name_valid1":"Please enter a Favorite name.​",
+    "workspace_member_group_name_valid2":"Type in more than 2 letters for Favorites name​.",
+    "workspace_member_group_member":"Favorite member",
+    "workspace_member_group_member_no_selection" :"Do not select​",
+    "workspace_member_group_count_valid":"Please select at least 1 member.",
+
+    "workspace_select":"Select Workspace"
   }
 }

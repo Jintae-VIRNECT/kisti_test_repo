@@ -2,7 +2,7 @@
   color: #fff;
 }
 
-.popover.card-menu__popover{
+.popover.card-menu__popover {
   min-width: 4.286em;
   max-width: 8.72em;
   margin-top: 0.428em;
@@ -22,11 +22,32 @@
       background-color: rgba($color_bg_item, 0.3);
     }
   }
-  
-  > .popover--body .card-menu__group-btn:disabled{
+
+  > .popover--body .card-menu__group-btn:disabled {
     opacity: 0.2;
     &:hover {
       background-color: initial;
+    }
+  }
+}
+
+@include responsive-mobile {
+  .popover.card-menu__popover {
+    min-width: 12.1rem;
+    background-color: #606a77; //@추가 color
+    border: none; //@추가 color
+
+    .popover--body .card-menu__group-btn {
+      @include fontLevel(100);
+      width: 12.1rem;
+      height: 4rem;
+      padding: 0;
+      padding-left: 2rem;
+
+      &:hover,
+      &:disabled {
+        opacity: 0.4;
+      }
     }
   }
 }

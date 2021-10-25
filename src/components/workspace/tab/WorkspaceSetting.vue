@@ -1,56 +1,69 @@
 <template>
-  <section class="tab-view">
-    <div class="setting-wrapper offsetwidth">
-      <div class="setting-nav">
-        <div class="setting-nav__header">{{ $t('workspace.setting') }}</div>
-        <div
-          class="setting-nav__menu"
-          v-for="(menu, idx) of menus"
-          :key="menu.key"
-          :class="{ active: tabIdx === idx }"
-          @click="tabChange(idx)"
-        >
-          {{ menu.text }}
+  <div style="display:flex; flex:1;">
+    <section v-if="!isMobileSize" class="tab-view">
+      <div class="setting-wrapper offsetwidth">
+        <div class="setting-nav">
+          <div class="setting-nav__header">{{ $t('workspace.setting') }}</div>
+          <div
+            class="setting-nav__menu"
+            v-for="(menu, idx) of menus"
+            :key="menu.key"
+            :class="{ active: tabIdx === idx }"
+            @click="tabChange(idx)"
+          >
+            {{ menu.text }}
+          </div>
+        </div>
+
+        <div class="setting-view">
+          <div class="setting-view__header">
+            {{ menus[tabIdx].text }}
+          </div>
+
+          <div class="setting-view__body">
+            <template v-if="menus[tabIdx].key === 'video'">
+              <set-video
+                :videoDevices="videoDevices"
+                ref="videoDevices"
+              ></set-video>
+            </template>
+
+            <template v-else-if="menus[tabIdx].key === 'audio'">
+              <set-audio
+                :micDevices="micDevices"
+                :speakerDevices="speakerDevices"
+              ></set-audio>
+
+              <mic-test> </mic-test>
+            </template>
+
+            <template v-else-if="menus[tabIdx].key === 'record'">
+              <set-record v-if="!isTablet && useLocalRecording"></set-record>
+              <set-server-record v-if="useRecording"></set-server-record>
+            </template>
+            <template v-else-if="menus[tabIdx].key === 'language'">
+              <set-language></set-language>
+            </template>
+            <template v-else-if="menus[tabIdx].key === 'translate'">
+              <set-translate></set-translate>
+            </template>
+            <template v-else-if="menus[tabIdx].key === 'feature'">
+              <set-feature></set-feature>
+            </template>
+          </div>
         </div>
       </div>
-
-      <div class="setting-view">
-        <div class="setting-view__header">{{ menus[tabIdx].text }}</div>
-
-        <div class="setting-view__body">
-          <template v-if="menus[tabIdx].key === 'video'">
-            <set-video
-              :videoDevices="videoDevices"
-              ref="videoDevices"
-            ></set-video>
-          </template>
-
-          <template v-else-if="menus[tabIdx].key === 'audio'">
-            <set-audio
-              :micDevices="micDevices"
-              :speakerDevices="speakerDevices"
-            ></set-audio>
-
-            <mic-test> </mic-test>
-          </template>
-
-          <template v-else-if="menus[tabIdx].key === 'record'">
-            <set-record v-if="!isTablet && useLocalRecording"></set-record>
-            <set-server-record v-if="useRecording"></set-server-record>
-          </template>
-          <template v-else-if="menus[tabIdx].key === 'language'">
-            <set-language></set-language>
-          </template>
-          <template v-else-if="menus[tabIdx].key === 'translate'">
-            <set-translate></set-translate>
-          </template>
-          <template v-else-if="menus[tabIdx].key === 'feature'">
-            <set-feature></set-feature>
-          </template>
-        </div>
-      </div>
-    </div>
-  </section>
+    </section>
+    <workspace-mobile-setting
+      v-else
+      :menus="menus"
+      :tabIdx="tabIdx"
+      :videoDevices="videoDevices"
+      :micDevices="micDevices"
+      :speakerDevices="speakerDevices"
+      @tabChange="tabChange"
+    ></workspace-mobile-setting>
+  </div>
 </template>
 <script>
 import SetVideo from './setting/WorkspaceSetVideo'
@@ -70,6 +83,7 @@ export default {
     SetRecord: () => import('./setting/WorkspaceSetRecord'),
     SetServerRecord: () => import('./setting/WorkspaceSetServerRecord'),
     SetFeature: () => import('./setting/WorkspaceSetFeature'),
+    WorkspaceMobileSetting: () => import('./setting/WorkspaceMobileSetting'),
   },
   data() {
     return {
@@ -93,35 +107,55 @@ export default {
         {
           key: 'video',
           text: this.$t('workspace.setting_video'),
-        },
-        {
-          key: 'audio',
-          text: this.$t('workspace.setting_audio'),
+          mobileText: this.$t('workspace.setting_video_device_choice'),
         },
       ]
+      if (!this.isMobileSize) {
+        menu.push({
+          key: 'audio',
+          text: this.$t('workspace.setting_audio'),
+        })
+      }
       if (!this.isTablet && (this.useLocalRecording || this.useRecording)) {
         menu.push({
           key: 'record',
           text: this.$t('workspace.setting_record'),
+          mobileText: this.$t('workspace.setting_server_record'),
         })
       }
+
       menu.push({
         key: 'language',
         text: this.$t('workspace.setting_language'),
+        mobileText: this.$t('workspace.setting_language_choice'),
       })
       if (this.useTranslate) {
         menu.push({
           key: 'translate',
           text: this.$t('workspace.setting_translate'),
+          mobileText: this.$t('workspace.setting_translate'),
         })
       }
       if (this.restrictedMode.audio || this.restrictedMode.video) {
         menu.push({
           key: 'feature',
           text: this.$t('workspace.setting_function'),
+          mobileText: this.$t('workspace.setting_camera_control'),
         })
       }
       return menu
+    },
+  },
+  watch: {
+    menus: {
+      handler(curMenus, prevMenus) {
+        //PC <-> 모바일 화면 전환간 menu변경시
+        //이전에 참조하고 있던 메뉴 유지
+        const prevMenu = prevMenus[this.tabIdx].key
+        const newMenuIdx = curMenus.findIndex(menu => menu.key === prevMenu)
+        this.tabIdx = newMenuIdx >= 0 ? newMenuIdx : 0
+      },
+      deep: true,
     },
   },
   methods: {

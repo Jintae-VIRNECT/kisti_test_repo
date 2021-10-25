@@ -37,7 +37,19 @@
     "manual": "マニュアルダウンロード",
     "force_logout": "遠隔終了",
     "retry":"リトライ",
-    "leave_exit": "終了"
+    "leave_exit": "終了",
+    "add_group_bookmark":"コラボグループの追加​",
+    "member":"メンバー",
+    "member_group_bookmark":"コラボグループ",
+    "connect":"接続",
+    "modify":"変更​",
+    "delete":"削除​",
+    "copy_url":"URLをコピー​",
+    "send_email":"メール転送​",
+    "join_sec":"接続 ({time} 秒)",
+    "request_again":"再要求",
+    "connect_web":"Web接続​",
+    "run_app":"App実行"
   },
   "date": {
     "lastday": "[昨日] A",
@@ -70,7 +82,8 @@
     "call_timeout": "協業に接続してから{time}分になりました。<br>協業を継続しますか？",
     "unsupport_feature": "この機能は後日の予定です。",
     "access_remove": "選択したメンバーの参加権限を削除します。",
-    "access_removed": "参加権限を削除します。"
+    "access_removed": "参加権限を削除します。",
+    "please_allow_popup":"ポップアップを遮断することを許可してください。"
   },
   "alarm": {
     "no_alarm": "受信通知がありません。",

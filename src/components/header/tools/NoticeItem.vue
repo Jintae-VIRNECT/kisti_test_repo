@@ -101,7 +101,7 @@ export default {
   },
   filters: {
     noticeDate(date) {
-      return dayjs(date).format('YYYY.MM.DD A HH:mm')
+      return dayjs(date).format('YYYY.MM.DD A h:mm')
     },
   },
   computed: {
@@ -241,6 +241,57 @@ export default {
         height: 1.571rem;
         background: url(~assets/image/material_link.svg) 50%/22px no-repeat;
         content: '';
+      }
+    }
+  }
+}
+
+@include responsive-mobile {
+  .notice-item::before {
+    width: 100%;
+    height: 1.5px;
+    background-color: $new_color_line_border;
+  }
+  .notice-item__close {
+    top: 1rem;
+    right: 0.4rem;
+    opacity: 1;
+  }
+  .notice-item__image {
+    margin-right: 1rem;
+  }
+  .notice-item__info {
+    @include fontLevel(50);
+    color: $new_color_text_sub;
+    > em {
+      color: $new_color_text_blue;
+    }
+  }
+  .notice-item__description {
+    color: $new_color_text_main;
+    @include fontLevel(100);
+  }
+  //날짜
+  .notice-item__date {
+    margin-top: 0.4rem;
+    color: $new_color_text_sub_description;
+    @include fontLevel(50);
+  }
+  //수락/거절 버튼
+  .notice-item__buttons {
+    display: flex;
+    margin-top: 1.2rem;
+    > .btn.small {
+      width: 8rem;
+      min-width: 8rem;
+      height: 3.6rem;
+      padding: 0;
+      color: $new_color_text_main;
+      background-color: $new_color_bg_button_primary;
+      border-radius: 0.4rem;
+      @include fontLevel(100);
+      &.btn.sub {
+        background-color: $new_color_bg_button_sub;
       }
     }
   }

@@ -73,11 +73,6 @@
     </div>
     <div class="main-video__empty" v-if="!loaded">
       <transition name="opacity">
-        <!-- 영상 연결중 -->
-        <!-- <div class="main-video__empty-inner" v-if="resolutions.length > 0">
-          <img src="~assets/image/img_video_connecting.svg" />
-          <p>{{ $t('service.stream_connecting') }}</p>
-        </div> -->
         <!-- 영상이 없을 경우 -->
         <div class="main-video__empty-inner" v-if="resolutions.length === 0">
           <img src="~assets/image/img_novideo.svg" />
@@ -85,12 +80,6 @@
           <p class="inner-discription">
             {{ $t('service.stream_no_worker') }}
           </p>
-          <!-- <p v-else-if="isLeader" class="inner-discription">
-            {{ $t('service.stream_choose_stream') }}
-          </p>
-          <p v-else class="inner-discription">
-            {{ $t('service.stream_no_stream') }}
-          </p> -->
         </div>
         <div class="main-video__empty-inner" v-else>
           <img src="~assets/image/call/img_select_video.svg" />
@@ -134,7 +123,7 @@
 import { mapActions, mapGetters } from 'vuex'
 import { ROLE } from 'configs/remote.config'
 import { ACTION } from 'configs/view.config'
-import { CAMERA, FLASH, DEVICE } from 'configs/device.config'
+import { CAMERA, FLASH } from 'configs/device.config'
 
 import Pointing from './StreamPointing'
 import VideoTools from './MainVideoTools'

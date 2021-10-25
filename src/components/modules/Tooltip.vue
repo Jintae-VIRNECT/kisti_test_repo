@@ -49,8 +49,7 @@ export default {
       default: 'auto',
     },
     customClass: {
-      type: String,
-      default: '',
+      type: [String, Array],
     },
     effect: {
       type: String,
@@ -84,19 +83,23 @@ export default {
       if (this.isTablet) {
         if (e.type === 'mouseenter') return
         this.show = true
+        this.$emit('active')
         clearTimeout(this.timeout)
         if (!this.guide) {
           this.timeout = setTimeout(() => {
             clearTimeout(this.timeout)
             this.show = false
+            this.$emit('hide')
           }, 2000)
         } else {
           this.timeout = setTimeout(() => {
             clearTimeout(this.timeout)
             this.show = false
+            this.$emit('hide')
           }, 5000)
         }
       } else {
+        this.$emit('active')
         this.show = true
       }
       this.$nextTick(() => {

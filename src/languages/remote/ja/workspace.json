@@ -29,6 +29,8 @@
     "confirm_force_logout_complete": "がログアウトしました。",
     "confirm_force_logout_received": "マスターによって強制的にログアウトされます。",
     "confirm_force_logout_unavailable": "はコラボレーションにアクセスしたため、ログアウトできません。",
+    "confirm_video_restrict_join":"[映像制限モード]コラボレーションルームに接続します。\nリーダーによって、リモートでカメラが制御されることがあります。\n[接続]を選択すると、カメラ制御の合意されます。",
+
 
     "history": "最近履歴",
     "remote": "リモート協業",
@@ -64,6 +66,7 @@
     "setting_mic_test": "マイクテスト",
     "setting_mic_test_description": "マイクに問題がありますか？ テストをスタートし、話しかけてください。 音声を繰り返します。",
     "setting_inout_device": "入出力装置",
+    "setting_video_device_choice": "映像装置設定",
     "setting_input_device": "入力装置",
     "setting_output_device": "出力装置",
     "setting_language_choice": "言語選択",
@@ -75,6 +78,8 @@
     "setting_record_resolution_tooltip": "720p(HD)級以上の解像度設定時、PCの性能によってサービスが<br>円滑でない恐れがあります。",
     "setting_record_setting_description": "修正された設定値は、録画開始時点に適用されます。",
     "setting_server_record": "サーバー録画設定",
+    "setting_auto_server_record":"自動サーバー録画",
+    "setting_use_auto_server_record":"自動録画使用",
     "setting_video": "Video設定",
     "setting_video_choice": "カメラ",
     "setting_video_resolution": "入力解像度",
@@ -169,10 +174,14 @@
     "go_workspace_member": "ワークスペースメンバーリスト移動",
 
     "loading_prepare_remote":"コラボルームを作成する準備",
+    "loading_prepare_join_remote":"コラボルームに参加する準備",
+    "loading_prepare_remote_open":"オープンルームを作成する準備",
+    "loading_prepare_join_remote_open":"オープンルームに参加する準備",
     "loading_checking_device":"デバイスの接続状態を確認し中...",
 
     "cookie": "VIRNECT はVIRNECT のサービスを運営し、改善のためクッキーおよび利用統計を使用しています。 詳細を調べるには、<br> 当社の <a href='https://virnect.com/policy#10' target='_blank'>取扱方針</a>をご確認ください。 「確認」をクリック、サイトの使用を継続することはクッキーおよび利用統計収集に同意することになります。",
-
+    "cookie_mobile": "VIRNECT はVIRNECT のサービスを運営し、改善のためクッキーおよび利用統計を使用しています。<br>詳細を調べるには、 当社の <a href='https://virnect.com/policy#10' target='_blank'>取扱方針</a>をご確認ください。 「確認」をクリック、サイトの使用を継続することはクッキーおよび利用統計収集に同意することになります。",
+    
     "confirm_duplicated_session_logout": "他のデバイスですでにログイン中です。\n続行するには、相手の接続を終了させてください。",
     "confirm_duplicated_session_joined":"他のデバイスですでにコラボ中です。\n相手がコラボを終了した後に再度お試しください。",
     "confirm_duplicated_session_logout_received":"同じアカウントで他のデバイスでログインしました。",
@@ -181,6 +190,21 @@
     "auth_status_failed": "認証に失敗しました。\nもう一度試してください。",
 
 
-    "profile_size_limit_exceed":"アップロード制限容量(20MB)を超えました。​"
+    "profile_size_limit_exceed":"アップロード制限容量(20MB)を超えました。​",
+
+
+    "workspace_member_group":"コラボグループ",
+    "workspace_group_empty":"コラボグループメンバー",
+    "workspace_add_member_group":"コラボグループの追加",
+    "workspace_member_group_name":"コラボグループ名​",
+    "workspace_add_and_update_member_group":"コラボグループの追加/修正​",
+    "workspace_member_group_max_description":"最大10個のコラボグループの作成が可能です。​",
+    "workspace_member_group_name_valid1":"コラボグループ名を入力してください。",
+    "workspace_member_group_name_valid2":"コラボグループ名​は２字以上入力してください。",
+    "workspace_member_group_member":"コラボグループメンバー",
+    "workspace_member_group_member_no_selection" :"選択しない​",
+    "workspace_member_group_count_valid":"メンバーを1人以上選択してください。",
+
+    "workspace_select":"ワークスペース選択"
   }
 }

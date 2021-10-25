@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="75px" height="75px" viewBox="0 0 75 75" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>77516CB2-3B96-4BB6-82E5-3C9499CE9CE6@1x</title>
+    <defs>
+        <filter x="-15.4%" y="-14.6%" width="130.9%" height="129.2%" filterUnits="objectBoundingBox" id="filter-1">
+            <feOffset dx="2" dy="2" in="SourceAlpha" result="shadowOffsetOuter1"></feOffset>
+            <feGaussianBlur stdDeviation="1.5" in="shadowOffsetOuter1" result="shadowBlurOuter1"></feGaussianBlur>
+            <feColorMatrix values="0 0 0 0 0.0679064764   0 0 0 0 0.0679064764   0 0 0 0 0.0679064764  0 0 0 0.148792614 0" type="matrix" in="shadowBlurOuter1" result="shadowMatrixOuter1"></feColorMatrix>
+            <feMerge>
+                <feMergeNode in="shadowMatrixOuter1"></feMergeNode>
+                <feMergeNode in="SourceGraphic"></feMergeNode>
+            </feMerge>
+        </filter>
+        <linearGradient x1="15.7153097%" y1="0%" x2="63.5613842%" y2="68.6028082%" id="linearGradient-2">
+            <stop stop-color="#FFFFFF" offset="0%"></stop>
+            <stop stop-color="#000000" offset="100%"></stop>
+        </linearGradient>
+    </defs>
+    <g id="seat-멤버-초대" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="SEA_0210-_Android-Webbrowser-접속-_퍼블릭서비스" transform="translate(-142.000000, -105.000000)">
+            <g id="image_appicon" transform="translate(112.000000, 88.000000)">
+                <g id="Group-3" transform="translate(5.000000, 5.000000)">
+                    <g id="img_logo_symbol" transform="translate(25.000000, 12.000000)">
+                        <g id="logo" transform="translate(3.386880, 1.693440)">
+                            <g filter="url(#filter-1)">
+                                <g id="Group"></g>
+                                <polygon id="Fill-13" fill="#1F7FFA" points="23.6530076 70.5418902 57.0994793 51.4907987 57.0994793 40.2239835 23.6530076 59.360015 23.6530076 59.3732279 9.8298711 51.5077867 9.8298711 35.80333 33.4541363 22.3677142 23.6376783 16.7692264 0.00191615421 30.2105048 0 30.2105048 0 30.2123924 0 30.2123924 0 30.2123924 0 57.0968367 23.6530076 70.5400027"></polygon>
+                                <polygon id="Fill-16" fill="#7EBAFC" points="66.9293504 30.2248502 33.461801 11.1794214 23.6376783 16.7684714 47.2696082 30.2399507 47.2830213 30.2324005 57.0994793 35.8139003 57.0994793 51.4862686 57.0841501 51.4957063 43.2801751 59.3460471 19.6539937 45.8349292 9.82412263 51.5051441 43.2763428 70.5298099 66.9140212 57.0847564"></polygon>
+                                <polygon id="Fill-18" fill="#C7DEFF" points="33.4619926 0 9.82431425 13.4431659 9.8262304 13.4450535 9.82431425 13.4431659 9.82431425 51.5038228 19.6541853 57.0947604 19.6541853 19.0341035 19.6522692 19.032216 19.6541853 19.0341035 33.4619926 11.1818752 47.2697998 19.0341035 47.2697998 45.8487084 57.0996709 40.2256823 57.0996709 13.4431659"></polygon>
+                                <polygon id="Fill-20" fill="#1F7FFA" points="9.83006271 35.8027637 9.83006271 35.8027637 33.454328 22.367148 23.6378699 16.7686602 0.00210776963 30.2099386 0.000191615422 30.2099386 0.000191615422 30.2118261 0.000191615422 30.2118261 0.000191615422 30.2118261"></polygon>
+                            </g>
+                            <g>
+                                <g id="Group"></g>
+                                <path d="M0.000191615423,30.2099386 L0.00210776963,30.2099386 L9.824,24.623 L9.82431425,13.4431659 L33.4619926,-2.13162821e-13 L57.0996709,13.4431659 L57.099,24.63 L66.9293504,30.2248502 L66.9140212,57.0847564 L43.2763428,70.5298099 L33.467,64.951 L23.6530076,70.5418902 L23.6530076,70.5400027 L2.87769808e-13,57.0968367 L0.000191615423,30.2099386 Z M23.638,16.768 L23.6378699,16.7686602 L33.4541363,22.3677142 L19.654,30.215 L19.654,45.835 L33.476,53.739 L47.269,45.847 L47.2696082,30.2399507 L23.638,16.768 Z" id="Combined-Shape" fill="url(#linearGradient-2)" style="mix-blend-mode: screen;" opacity="0"></path>
+                            </g>
+                        </g>
+                        <rect id="tr" x="0" y="0" width="74.51136" height="74.51136"></rect>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

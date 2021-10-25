@@ -85,6 +85,9 @@ export default {
         this.$refs['contentScrollbar'].reset()
       }
     },
+    isMobileSize() {
+      this.responsiveReset()
+    },
   },
   methods: {
     onScroll(scrollX, scrollY) {
@@ -128,6 +131,10 @@ export default {
         this.$refs['contentScrollbar'].reset()
         this.isScrolled = false
       }
+    },
+    responsiveReset() {
+      if (this.$refs['contentScrollbar'])
+        this.scrollH = this.$refs['contentScrollbar'].offsetHeight
     },
   },
 

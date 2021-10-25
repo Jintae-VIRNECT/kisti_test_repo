@@ -21,13 +21,13 @@ import { mapGetters } from 'vuex'
 import { downloadFile } from 'api/http/file'
 import JSZip from 'jszip'
 import FileSaver from 'file-saver'
-import { getFile } from 'utils/file'
+import { getFile, downloadByURL } from 'utils/file'
 import toastMixin from 'mixins/toast'
+import confirmMixin from 'mixins/confirm'
 
-import { downloadByURL } from 'utils/file'
 export default {
   name: 'ChatFileDownload',
-  mixins: [toastMixin],
+  mixins: [toastMixin, confirmMixin],
   data() {
     return {
       chunk: [],
@@ -66,7 +66,13 @@ export default {
             downloadByURL(res)
           }
         } catch (err) {
-          this.toastError(this.$t('confirm.network_error'))
+          if (err === 'popup_blocked') {
+            this.confirmDefault(this.$t('confirm.please_allow_popup'))
+          } else {
+            if (err.code) {
+              this.toastError(this.$t('confirm.network_error'))
+            }
+          }
         }
       } else {
         this.zip = new JSZip()
@@ -80,7 +86,9 @@ export default {
             })
             await this.get(res.name, res.url)
           } catch (err) {
-            this.toastError(this.$t('confirm.network_error'))
+            if (err.code) {
+              this.toastError(this.$t('confirm.network_error'))
+            }
           }
         }
         this.zip.generateAsync({ type: 'blob' }).then(content => {

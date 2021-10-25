@@ -6,11 +6,11 @@
     
     "stream_connecting": "영상 연결 중…",
     "stream_no_video": "출력 할 영상이 없습니다.",
-    "stream_no_worker": "접속중인 작업자가 없습니다.",
+    "stream_no_worker": "접속중인 참가자가 없습니다.",
     "stream_choose_stream": "공유할 참가자 영상을 선택해 주세요.",
     "stream_no_stream": "공유된 영상이 없습니다.",
     "stream_stop": "영상을 정지하였습니다.",
-    "stream_background": "작업자의 Remote App이<br />백그라운드 상태입니다.",
+    "stream_background": "참가자의 Remote App이<br />백그라운드 상태입니다.",
     "stream_stoped": "참가자의 영상이 일시정지 상태입니다.",
     "stream_off": "카메라 꺼짐",
     "stream_choice": "참가자 리스트에서 영상을<br> 선택해 주세요.",
@@ -18,14 +18,14 @@
     "stream_choice_share_description": "공유 시, 포인팅 기능을 사용할 수 있습니다.",
 
     "toast_leave_leader": "리더가 협업을 종료했습니다.",
-    "toast_leave_worker": "작업자가 협업을 종료했습니다.",
+    "toast_leave_worker": "참가자가 협업을 종료했습니다.",
     "toast_exit_ar": "AR 공유를 종료하시겠습니까?",
     "toast_exit_drawing": "협업보드를 종료하시겠습니까?",
     "toast_cannot_leave_ar": "AR 공유 중에는 다른 메뉴로 이동할 수 없습니다.",
     "toast_cannot_invite_drawing": "협업 보드가 활성화되어 있지 않습니다.",
     "toast_cannot_invite_ar": "AR 공유가 활성화되어 있지 않습니다.",
     "toast_refused_ar": "상대방이 AR 기능을 거절했습니다. 통화를 다시 수립해야 AR 기능을 사용할 수 있습니다.",
-    "toast_no_worker": "작업자가 존재하지 않습니다.",
+    "toast_no_worker": "참가자가 존재하지 않습니다.",
     "toast_current_stream": "본인 영상입니다.",
     "toast_unsupport_ar": "AR 기능을 사용할 수 없는 장치입니다.",
     "toast_request_permission": "상대방에게 AR 기능 허가를 요청했습니다. 잠시만 기다려주세요.",
@@ -34,6 +34,7 @@
     "toast_no_sharing": "전체 공유 중인 영상이 없습니다.",
     "toast_video_restrict_mode": "영상 제한 모드입니다.<br> 참가자 모두 카메라가 꺼진 상태로 접속합니다.",
     "toast_drawing_end" : "협업 보드 공유가 종료되었습니다.",
+    "toast_captured_image_uploaded" :"<em>{name}</em>님의 캡처 이미지가 협업보드로 업로드 되었습니다",
 
     "participant_mute": "음소거",
     "participant_mute_cancel": "음소거 해제",
@@ -69,7 +70,6 @@
     "share_save": "해당 저작된 이미지를 저장하시겠습니까?​",
     "share_notready": "이미지를 공유하고 있습니다.",
     "share_delete_real": "정말로 삭제하시겠습니까?",
-    "share_locked": "암호화된 파일은 지원하지 않습니다.",
 
     "drawing_dblclick": "파일을 더블클릭하면 <br />상대방에게 공유를 시작합니다.",
     "drawing_drag": "이미지 또는 PDF 파일을 여기 끌어다 놓거나 <br /> '불러오기'버튼을 사용하세요.",
@@ -218,6 +218,7 @@
     "record_server_end_message":"서버 녹화를 종료합니다.",
     "record_server_over_max_count":"현재 실행 가능한 서버 녹화 개수가 초과 되었습니다. \n잠시후에 다시 시도해 주세요.",
     "record_server_no_storage":"서버에 녹화 파일을 저장할 수 있는 공간이 부족합니다. \n관리자에게 문의 해주세요.",
+    "record_server_start_auto_record_message":"서버 녹화를 자동으로 시작합니다.​",
 
     "reconnect_network_connecting": "네트워크 연결 중…",
     "reconnect_room_connecting": "협업 재연결 중…",
@@ -241,6 +242,17 @@
     "spot_networ_error" : "네트워크/서버 문제로 Spot 연결이 종료되었습니다.​\n재연결을 하시겠습니까?​",
     "spot_connecting" : "Spot 연결 중…",
     "spot_reconnecting" : "Spot 재연결 중…",
-    "spot_battery_warning" : "Spot 배터리 잔량이 {battery}% 남았습니다."
+    "spot_battery_warning" : "Spot 배터리 잔량이 {battery}% 남았습니다.",
+    "encrypted_file_unsupport" : "암호화된 파일은 지원하지 않습니다.",
+
+    "guest_invite_url":"접속 URL",
+    "guest_invite_with_url":"URL 초대하기",
+    "guest_invite_send_email":"E-mail 전송하기",
+    "guest_invite_description":"접속 URL을 통해 협업 참여시, 비회원 권한으로 참가합니다.",
+    "guest_invite_url_copied":"접속 URL을 복사했습니다.",
+    "guest_invite_email_transport_succeed":"접속 URL을 이메일로 전송하였습니다.",
+    "guest_invite_email_transport_failed":"이메일 전송에 실패하였습니다.",
+    "guest_invite_email_please_input_email_address":"메일 주소를 입력해주세요.",
+    "guest_invite_email_validation_failed": "올바른 이메일 형식이 아닙니다."
   }
 }

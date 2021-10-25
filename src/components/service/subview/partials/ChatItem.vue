@@ -4,6 +4,7 @@
       class="chat-item__profile"
       v-if="!hideProfile"
       :image="chat.profile"
+      :thumbStyle="{ width: '2.143rem', height: '2.143rem' }"
     ></profile>
     <div class="chat-item__body" :class="[chat.type, { hidden: hideProfile }]">
       <div class="chat-item__body--chatbox">
@@ -78,9 +79,10 @@ import { translate as doTranslate } from 'plugins/remote/translate'
 import { downloadByURL } from 'utils/file'
 import { checkFileType } from 'utils/fileTypes'
 import toastMixin from 'mixins/toast'
+import confirmMixin from 'mixins/confirm'
 export default {
   name: 'ChatItem',
-  mixins: [toastMixin],
+  mixins: [toastMixin, confirmMixin],
   components: {
     Profile,
   },
@@ -254,7 +256,13 @@ export default {
           downloadByURL(res)
         }
       } catch (err) {
-        this.toastError(this.$t('confirm.network_error'))
+        if (err === 'popup_blocked') {
+          this.confirmDefault(this.$t('confirm.please_allow_popup'))
+        } else {
+          if (err.code) {
+            this.toastError(this.$t('confirm.network_error'))
+          }
+        }
       }
     },
     async doTranslateText() {

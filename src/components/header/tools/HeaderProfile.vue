@@ -1,39 +1,59 @@
 <template>
   <popover
     placement="bottom-end"
-    width="21.429rem"
+    :width="width"
     trigger="click"
     popperClass="popover-profile"
+    @visible="setVisible"
   >
     <profile
+      :class="{ visible }"
       slot="reference"
+      :profileMenu="true"
       :image="account.profile"
       :size="30"
-      :thumbStyle="{ width: '2.143rem', height: '2.143rem' }"
+      :thumbStyle="thumbStyle"
     ></profile>
     <div>
+      <div class="popover-profile__tools">
+        <stream size="4rem"></stream>
+        <mic size="4rem"></mic>
+        <speaker size="4rem"></speaker>
+      </div>
       <div class="popover-profile__myinfo">
         <profile
           :image="account.profile"
           :mainText="account.nickname"
           :subText="account.email"
+          :thumbStyle="myInfothumbStyle"
         ></profile>
       </div>
-      <div class="popover-profile__link">
-        <button @click="link(urlLink)">
-          {{ $t('common.workstation') }}
-        </button>
-      </div>
-      <div class="popover-profile__link" v-if="!!dashboardLink">
-        <button @click="link(dashboardLink)">
-          {{ $t('common.dashboard') }}
-        </button>
-      </div>
-      <div class="popover-profile__link" v-if="useLocalRecording && !isSafari">
-        <button @click="fileList">{{ $t('common.local_record_file') }}</button>
-      </div>
-      <div class="popover-profile__link">
-        <button @click="logout">{{ $t('button.logout') }}</button>
+
+      <div class="popover-profile__linklist">
+        <template v-if="!isGuest">
+          <div class="popover-profile__link">
+            <button @click="link(urlLink)">
+              {{ $t('common.workstation') }}
+            </button>
+          </div>
+          <div class="popover-profile__link" v-if="!!dashboardLink">
+            <button @click="link(dashboardLink)">
+              {{ $t('common.dashboard') }}
+            </button>
+          </div>
+          <div
+            class="popover-profile__link"
+            v-if="useLocalRecording && !isSafari"
+          >
+            <button @click="fileList">
+              {{ $t('common.local_record_file') }}
+            </button>
+          </div>
+        </template>
+
+        <div class="popover-profile__link">
+          <button @click="logout">{{ $t('button.logout') }}</button>
+        </div>
       </div>
       <div class="popover-profile__version">{{ `web v${$version}` }}</div>
     </div>
@@ -46,11 +66,48 @@ import Popover from 'Popover'
 import Profile from 'Profile'
 import auth from 'utils/auth'
 import { URLS } from 'configs/env.config'
+import Stream from '../tools/Stream'
+import Mic from '../tools/Mic'
+import Speaker from '../tools/Speaker'
+
+const defaultPopoverWidth = '21.429rem'
+const mobilePopoeverWidth = '26.5rem'
+const DEFAULT_THUMBSTYLE_SIZE = { width: '2.143rem', height: '2.143rem' }
+const MOBILE_THUMBSTYLE_SIZE = { width: '4.0rem', height: '4.0rem' }
+const DEFAULT_MYINFO_THUMBSTYLE_SIZE = { width: '5.143rem', height: '5.143rem' }
+const MOBILE_MYINFO_THUMBSTYLE_SIZE = { width: '4.2rem', height: '4.2rem' }
+
 export default {
   name: 'HeaderProfile',
   components: {
     Popover,
     Profile,
+    Stream,
+    Mic,
+    Speaker,
+  },
+  data() {
+    return {
+      thumbStyle: {
+        width: DEFAULT_THUMBSTYLE_SIZE,
+        height: DEFAULT_THUMBSTYLE_SIZE,
+      },
+      myInfothumbStyle: {
+        width: DEFAULT_MYINFO_THUMBSTYLE_SIZE,
+        height: DEFAULT_MYINFO_THUMBSTYLE_SIZE,
+      },
+      visible: false,
+      width: defaultPopoverWidth,
+    }
+  },
+  props: {
+    isGuest: {
+      type: Boolean,
+      default: false,
+    },
+    guestAccount: {
+      type: Object,
+    },
   },
   computed: {
     ...mapGetters(['account', 'useStorage', 'useLocalRecording']),
@@ -65,6 +122,15 @@ export default {
       }
     },
   },
+  watch: {
+    isMobileSize: {
+      immediate: true,
+      handler: function(newVal) {
+        if (newVal) this.setResponsiveMobile()
+        else this.setResponsiveDefault()
+      },
+    },
+  },
   methods: {
     link(url) {
       window.open(url)
@@ -74,8 +140,8 @@ export default {
     },
     logout() {
       this.$eventBus.$emit('popover:close')
-      this.$nextTick(() => {
-        auth.logout()
+      this.$nextTick(async () => {
+        await auth.logout()
         // auth.login()
       })
     },
@@ -92,10 +158,24 @@ export default {
         window.open(`${window.urls.minio}/guide/remote_web_user_guide.pdf`)
       }
     },
+    setVisible(visible) {
+      this.visible = visible
+    },
+    setResponsiveMobile() {
+      this.width = mobilePopoeverWidth
+      this.thumbStyle = MOBILE_THUMBSTYLE_SIZE
+      this.myInfothumbStyle = MOBILE_MYINFO_THUMBSTYLE_SIZE
+    },
+    setResponsiveDefault() {
+      this.width = defaultPopoverWidth
+      this.thumbStyle = DEFAULT_THUMBSTYLE_SIZE
+      this.myInfothumbStyle = DEFAULT_MYINFO_THUMBSTYLE_SIZE
+    },
   },
 
   /* Lifecycles */
   mounted() {},
+  beforeDestroy() {},
 }
 </script>
 <style lang="scss">
@@ -110,6 +190,9 @@ export default {
   > .popover--body {
     padding: 0;
   }
+}
+.popover-profile__tools {
+  display: none;
 }
 .popover-profile__myinfo {
   margin-bottom: 0.429rem;
@@ -145,5 +228,67 @@ export default {
   font-size: 0.857rem;
   text-align: center;
   border-top: solid 1px rgba($color_line_border, 0.06);
+}
+
+@include responsive-mobile {
+  .popover.popover-profile {
+    background-color: $new_color_bg_popover;
+    border: none;
+  }
+  .popover-profile__tools {
+    display: flex;
+    align-items: center;
+    height: 6.9rem;
+    padding-left: 2rem;
+    border-bottom: 1.5px solid $new_color_line_border;
+
+    .toggle-button.toggle-header {
+      margin-right: 1.6rem;
+      background-color: $new_color_bg_icon;
+      background-size: 110%;
+      border-radius: 0.9rem;
+    }
+  }
+  .popover-profile__myinfo {
+    display: flex;
+    align-items: center;
+    height: 7.45rem;
+    padding: 0;
+    padding-left: 2rem;
+    border-bottom: 1.5px solid $new_color_line_border;
+
+    .profile {
+      align-items: center;
+      .profile--text > .profile--maintext {
+        margin: 0;
+        color: $new_color_text_main;
+        @include fontLevel(100);
+      }
+      .profile--text > .profile--subtext {
+        color: $new_color_text_sub;
+        @include fontLevel(75);
+      }
+    }
+  }
+  .popover-profile__linklist {
+    padding: 0.6rem 0;
+  }
+  .popover-profile__link {
+    padding-top: 0.7rem;
+    padding-bottom: 0.7rem;
+    > button {
+      @include fontLevel(100);
+      color: $new_color_text_main;
+    }
+  }
+  .popover-profile__version {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 4rem;
+    color: $new_color_text_blue;
+    border-top: 1.5px solid $new_color_line_border;
+    @include fontLevel(50);
+  }
 }
 </style>

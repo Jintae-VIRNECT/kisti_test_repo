@@ -25,15 +25,21 @@
 
 <script>
 import { mapActions, mapGetters } from 'vuex'
+
 import confirmMixin from 'mixins/confirm'
 import touchMixin from 'mixins/touch'
 import toastMixin from 'mixins/toast'
+import errorMsgMixin from 'mixins/errorMsg'
+
 import { base64ToBlob } from 'utils/file'
 import { drawingUpload } from 'api/http/drawing'
+
 import { DRAWING } from 'configs/remote.config'
+import { ERROR } from 'configs/error.config'
+
 export default {
   name: 'ShareHistoryImage',
-  mixins: [confirmMixin, touchMixin, toastMixin],
+  mixins: [confirmMixin, touchMixin, toastMixin, errorMsgMixin],
   components: {},
   data() {
     return {
@@ -87,12 +93,14 @@ export default {
           this.toastDefault(this.$t('alarm.file_uploaded'))
         }
       } catch (err) {
-        if (err.code === 7017) {
-          this.toastError(this.$t('alarm.file_storage_capacity_full'))
-        } else if (err.code === 7003) {
-          this.toastError(this.$t('service.file_extension_unsupport'))
+        if (err.code === ERROR.FILE_STORAGE_CAPACITY_FULL) {
+          this.showErrorToast(err.code)
+        } else if (err.code === ERROR.FILE_EXTENSION_UNSUPPORT) {
+          this.showErrorToast(err.code)
         } else {
-          this.toastError(this.$t('confirm.network_error'))
+          if (err.code) {
+            this.toastError(this.$t('confirm.network_error'))
+          }
         }
         return false
       }

@@ -4,6 +4,7 @@
     placement="bottom-start"
     :width="0"
     popperClass="header-lnb-selector"
+    @visible="toggleActive"
   >
     <vue2-scrollbar>
       <ul class="header-lnb-selector__layer">
@@ -16,6 +17,12 @@
             @click="changeSelect(work)"
             :class="{ active: work.uuid === workspace.uuid }"
           >
+            <profile
+              class="header-lnb-selector__profile"
+              :group="true"
+              :image="work.profile"
+              :thumbStyle="{ width: '3rem', height: '3rem' }"
+            ></profile>
             <span
               class="header-lnb-selector__check"
               :class="{ active: work.uuid === workspace.uuid }"
@@ -24,12 +31,20 @@
             <!-- <p class="header-lnb-selector__description">
               워크스테이션 멤버: {{ option.member }}명
             </p> -->
+            <span
+              class="header-lnb-selector__mobilecheck"
+              :class="{ active: work.uuid === workspace.uuid }"
+            ></span>
           </button>
         </li>
       </ul>
     </vue2-scrollbar>
 
-    <button slot="reference" class="header-workspace-selector">
+    <button
+      slot="reference"
+      class="header-workspace-selector"
+      :class="{ selected: workspaceSelectorFocused }"
+    >
       {{ workspace.title }}
     </button>
   </popover>
@@ -37,15 +52,18 @@
 
 <script>
 import Popover from 'Popover'
+import Profile from 'Profile'
 import { mapGetters, mapActions } from 'vuex'
 export default {
   name: 'LnbSelector',
   components: {
     Popover,
+    Profile,
   },
   data() {
     return {
       popoverWidth: '14rem',
+      workspaceSelectorFocused: false,
     }
   },
   computed: {
@@ -71,6 +89,10 @@ export default {
       )
       console.log(workspaceId, workspace)
       this.changeSelect(workspace)
+    },
+
+    toggleActive(visible) {
+      this.workspaceSelectorFocused = visible
     },
   },
 

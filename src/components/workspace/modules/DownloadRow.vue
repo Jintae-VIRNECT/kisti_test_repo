@@ -26,9 +26,13 @@ import { downloadFile } from 'api/http/file'
 import { getRoomInfo } from 'api/http/room'
 import { downloadByURL } from 'utils/file'
 import toastMixin from 'mixins/toast'
+import errorMsgMixin from 'mixins/errorMsg'
+
+import { ERROR } from 'configs/error.config'
+
 export default {
   name: 'DownloadRow',
-  mixins: [toastMixin],
+  mixins: [toastMixin, errorMsgMixin],
   props: {
     file: {
       type: Object,
@@ -77,12 +81,14 @@ export default {
           workspaceId: this.workspace.uuid,
         })
       } catch (err) {
-        if (err.code && err.code === 4002) {
-          this.toastError(this.$t('workspace.remote_already_removed'))
+        if (err && err.code === ERROR.REMOTE_ALREADY_REMOVED) {
+          this.showErrorToast(err.code)
           this.$eventBus.$emit('close:roominfo')
           return
         } else {
-          this.toastError(this.$t('confirm.network_error'))
+          if (err.code) {
+            this.toastError(this.$t('confirm.network_error'))
+          }
         }
       }
 
@@ -96,7 +102,9 @@ export default {
 
         downloadByURL(res)
       } catch (err) {
-        this.toastError(this.$t('confirm.network_error'))
+        if (err.code) {
+          this.toastError(this.$t('confirm.network_error'))
+        }
       }
     },
   },

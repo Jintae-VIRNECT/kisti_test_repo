@@ -1,4 +1,9 @@
-import { getAccount, tokenRequest, getSettingInfo } from 'api/http/account'
+import {
+  getAccount,
+  tokenRequest,
+  getSettingInfo,
+  logout,
+} from 'api/http/account'
 import Cookies from 'js-cookie'
 import clonedeep from 'lodash.clonedeep'
 import jwtDecode from 'jwt-decode'
@@ -40,7 +45,7 @@ let changingWorkspaceId //변경 요청 중인 workspaceId 변경 완료 응답 
 /**
  * 메소드
  */
-function setTokensToCookies(response) {
+export function setTokensToCookies(response) {
   const cookieOption = {
     expires: response.expireIn / 3600000,
     domain:
@@ -407,6 +412,9 @@ export const getConfigs = async () => {
   const ALLOW_NO_DEVICE = res.data.ALLOW_NO_DEVICE || false
   delete res.data.ALLOW_NO_DEVICE
 
+  const SPOT_CONTROL_ACTIVE = res.data.SPOT_CONTROL_ACTIVE || false
+  delete res.data.SPOT_CONTROL_ACTIVE
+
   debug('URLS::', res.data)
 
   setHttpOptions(res.data['api'], TIMEOUT)
@@ -416,6 +424,7 @@ export const getConfigs = async () => {
     TIMEOUT,
     ALLOW_NO_AUDIO,
     ALLOW_NO_DEVICE,
+    SPOT_CONTROL_ACTIVE,
   })
   setUrls(res.data)
 }
@@ -534,7 +543,14 @@ class Auth {
     location.href = `${URLS['console']}/?continue=${location.href}`
     return this
   }
-  logout(redirect = true) {
+  async logout(redirect = true) {
+    if (myInfo.uuid && Cookies.get('accessToken')) {
+      await logout({
+        uuid: myInfo.uuid,
+        accessToken: Cookies.get('accessToken'),
+      })
+    }
+
     endLoginStatus() //로그아웃 상태 업데이트
     cookieClear()
     isLogin = false

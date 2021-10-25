@@ -1,6 +1,7 @@
 export default {
   /* Account */
   LOGIN: ['POST', 'https://192.168.6.3:8073/auth/signin'],
+  LOGOUT: ['POST', '/auth/signout'],
   TOKEN: ['POST', '/auth/oauth/token'],
   ACCOUNT: ['GET', '/users/info', { initing: true }],
   USER_INFO: ['GET', '/users/{userId}', { initing: true }],
@@ -23,6 +24,29 @@ export default {
   INVITABLE_MEMBER_LIST: [
     'GET',
     '/remote/members/{workspaceId}/{sessionId}/{userId}',
+  ],
+
+  /* Workspace - Member Group */
+  PRIVATE_MEMBER_GROUP_LIST: [
+    'GET',
+    '/remote/members/favorite-group/{workspaceId}',
+  ],
+  PRIVATE_MEMBER_GROUP_LIST_ITEM: [
+    'GET',
+    '/remote/members/favorite-group/{workspaceId}/{groupId}',
+  ],
+
+  CREATE_PRIVATE_MEMBER_GROUP: [
+    'POST',
+    '/remote/members/favorite-group/{workspaceId}/{userId}',
+  ],
+  DELETE_PRIVATE_MEMBER_GROUP: [
+    'DELETE',
+    '/remote/members/favorite-group/{workspaceId}/{userId}/{groupId}',
+  ],
+  UPDATE_PRIVATE_MEMBER_GROUP: [
+    'PUT',
+    '/remote/members/favorite-group/{workspaceId}/{userId}/{groupId}',
   ],
 
   /* Workspace - Room */
@@ -111,6 +135,20 @@ export default {
 
   /* MESSAGE FORCE LOGOUT */
   FORCE_LOGOUT: ['POST', '/remote/message/push/forced-logout'],
+
+  /* guest(seat) 멤버 초대 관련 API */
+  JOIN_AS_GUEST: ['POST', '/remote/guest/room/{workspaceId}/{sessionId}/join'],
+
+  GUEST_INFO: ['GET', '/remote/invitation/guest/{workspaceId}'],
+  GUEST_ROOM_INFO: ['GET', '/remote/guest/room/{workspaceId}/{sessionId}'],
+  WORKSPACE_INFO: ['GET', '/workspaces/{workspaceId}/info'],
+
+  /* MAIL */
+  SEND_MAIL: ['POST', '/messages/mail'],
+
+  /* 다운로드 서버 */
+  LATEST_APP_INFO: ['GET', '/download/list/{productName}'],
+  DOWNLOAD_APP: ['GET', '/download/app/{uuid}'],
 }
 
 export const wsUri = {

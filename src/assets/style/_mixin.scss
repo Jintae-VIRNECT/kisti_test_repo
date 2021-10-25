@@ -127,6 +127,34 @@
     -webkit-mask-size: 100%;
     // border-radius: 50%;
   }
+
+  @include responsive-mobile {
+    //유저 default 썸네일 이미지
+    &:before {
+      width: 100%;
+      height: 100%;
+      background-image: url("~assets/image/icon_user_profile_new.svg");
+    }
+
+    //헤더 프로필 메뉴
+    &.profile-menu {
+      background: none;
+      &:before {
+        width: 77%;
+        height: 77%;
+        background-image: url("~assets/image/icon_user_profile_menu_new_.svg");
+      }
+    }
+
+    //원격협업 항목 deafult 썸네일
+    &.group {
+      &:before {
+        width: 110%;
+        height: 110%;
+        background-image: url("~assets/image/icon_user_remote_new.svg");
+      }
+    }
+  }
 }
 @mixin profileMask($innerColor, $borderWidth, $borderColor) {
   position: relative;
@@ -261,3 +289,133 @@ root div에 theme 설정
     border-color: rgb(31, 31, 31);
 }
 */
+
+@mixin svg-icon($path, $height, $width, $color) {
+  width: $width;
+  height: $height;
+  background-color: $color;
+  background-size: cover;
+  mask-image: url($path);
+  -webkit-mask-size: contain;
+  mask-size: contain;
+  -webkit-mask-position: center;
+  mask-position: center;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+}
+
+@mixin responsive-widecard {
+  padding-right: 1.2rem;
+  padding-left: 1.5rem;
+  background-color: $new_color_bg_item;
+  border-radius: 0.6rem;
+  &.selected {
+    border-color: $new_color_bg_button_primary;
+  }
+  .profile .profile--text {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    max-width: 65%;
+    .profile--role__mobile {
+      display: block;
+      margin-right: 0.6rem;
+      margin-left: 0;
+      color: #58a3f7;
+      border-color: #58a3f7;
+    }
+    .profile--maintext {
+      @include fontLevel(100);
+      color: $new_color_text_main;
+    }
+    .profile--subtext {
+      @include fontLevel(75);
+      color: $new_color_text_sub;
+    }
+  }
+
+  .profile--role {
+    display: none;
+  }
+}
+
+@mixin mobile-popover-btn($height) {
+  width: 3.8rem;
+  height: $height;
+  background: none;
+  &:before {
+    position: absolute;
+    top: 0;
+    right: 0;
+    left: 6px;
+    width: 100%;
+    width: $height;
+    height: 100%;
+    background-image: url(~assets/image/ic_more_vertical_24.svg);
+    background-repeat: no-repeat;
+    background-position-x: 50%;
+    background-position-y: 50%;
+    background-size: calc($height * 0.9);
+    border-radius: 50%;
+    transition: background-color 0.3s;
+    content: "";
+  }
+  &:hover {
+    &:before {
+      background-color: $new_color_bg_hover;
+    }
+  }
+}
+
+@mixin responsive-popover {
+  &.popover {
+    background-color: #606a77; //@추가 color
+    border: none; //@추가 color
+  }
+  .groupcard-popover {
+    padding: 0;
+
+    .group-pop__button {
+      @include fontLevel(100);
+      width: 12.1rem;
+      height: 4rem;
+      padding: 0;
+      padding-left: 2rem;
+    }
+  }
+}
+
+@mixin responsive-check-toggle {
+  max-width: 100%;
+  padding: 1.3rem 1.1rem;
+  @include fontLevel(100);
+  background-color: #171b1f;
+  border: none;
+  .check-text {
+    color: $new_color_text_main;
+  }
+  .check-toggle {
+    width: 1.8rem;
+    height: 1.8rem;
+    border: 2px solid #979797;
+  }
+  &.toggle {
+    background: $new_color_bg_button_primary;
+    .check-toggle {
+      border-color: white;
+      &::after {
+        top: 0.263rem;
+        width: 1rem;
+        border-color: $new_color_bg_button_primary;
+        border-width: 2px;
+      }
+    }
+  }
+}
+
+//반응형 모바일 (360px) ~ 767px
+@mixin responsive-mobile {
+  @media screen and (max-width: $responsive_m_max) {
+    @content;
+  }
+}

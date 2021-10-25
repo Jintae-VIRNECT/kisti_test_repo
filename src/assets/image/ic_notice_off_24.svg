@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="24px" height="24px" viewBox="0 0 24 24" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>ic_main_alarm_off</title>
+    <defs>
+        <path d="M10.5,15.5 C10.5,16.875 9.375,18 8,18 C6.6125,18 5.5,16.875 5.5,15.5 L5.5,15.5 Z M1.06396444,0.880816105 L16.0654361,15.8822878 L15.0014717,16.9462522 L12.555,14.5 L1,14.5 L1,13 L2.5,11.5 L2.5,7 L2.5043672,6.77879286 C2.53101735,6.10503926 2.67886779,5.46244159 2.92671817,4.8722002 L2.40024393e-12,1.94478055 L1.06396444,0.880816105 Z M8,-9.09494702e-13 C8.82842712,-9.09494702e-13 9.5,0.671572875 9.5,1.5 L9.50017618,1.70708232 C11.8085909,2.36006936 13.5,4.4825098 13.5,7 L13.5,7 L13.5,11.185 L4.82268935,2.5100555 C5.32602549,2.15322198 5.89197637,1.87889942 6.50083278,1.70679702 L6.5,1.5 L6.50686658,1.35553999 C6.57955132,0.594888083 7.22030388,-9.09494702e-13 8,-9.09494702e-13 Z" id="path-1"></path>
+    </defs>
+    <g id="Remote_Main_Mobile" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Icon" transform="translate(-135.000000, -410.000000)">
+            <g id="24-x-24" transform="translate(36.000000, 346.000000)">
+                <g id="ic_alarm-copy" transform="translate(81.000000, 46.000000)">
+                    <g id="ic_alarm" transform="translate(18.000000, 18.000000)">
+                        <rect id="tr" x="0" y="0" width="24" height="24"></rect>
+                        <g id="icon-/-20px-/-ic_notifications_20" transform="translate(4.000000, 3.000000)">
+                            <mask id="mask-2" fill="white">
+                                <use xlink:href="#path-1"></use>
+                            </mask>
+                            <g id="shape" fill-rule="nonzero"></g>
+                            <rect id="🎨-Color" fill="#FFFFFF" mask="url(#mask-2)" x="-16.289447" y="-14.6544647" width="48" height="48"></rect>
+                        </g>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

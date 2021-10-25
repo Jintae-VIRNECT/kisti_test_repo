@@ -1,9 +1,13 @@
 <template>
-  <div class="card" :style="{ width: cardWidth, height: cardHeight }">
+  <div
+    class="card"
+    :style="{ width: cardWidth, height: cardHeight }"
+    @click="onMobileJoin"
+  >
     <popover
       v-if="menu"
       trigger="click"
-      placement="bottom-start"
+      :placement="placement"
       :popperClass="popoverClass"
       width="auto"
       :scrollHide="true"
@@ -20,6 +24,7 @@
 
 <script>
 import Popover from 'Popover'
+
 export default {
   name: 'Card',
   components: {
@@ -42,9 +47,10 @@ export default {
       type: String,
       default: '',
     },
-  },
-  data() {
-    return {}
+    placement: {
+      type: String,
+      default: 'bottom-start',
+    },
   },
   computed: {
     cardWidth() {
@@ -62,15 +68,18 @@ export default {
       }
     },
   },
-  methods: {},
-
-  /* Lifecycles */
-  mounted() {},
+  methods: {
+    onMobileJoin() {
+      if (this.isMobileSize) this.$emit('mobileJoin')
+    },
+  },
 }
 </script>
 
 <style lang="scss" scoped>
 @import '~assets/style/vars';
+@import '~assets/style/mixin';
+
 .card {
   position: relative;
   padding: 2.143em;
@@ -105,6 +114,17 @@ export default {
     &:before {
       background-color: rgba(#fff, 0.05);
     }
+  }
+}
+@include responsive-mobile {
+  .card > .popover--wrapper {
+    top: 50%;
+    right: 0.2rem;
+    z-index: 99;
+    transform: translateY(-50%);
+  }
+  .card__button {
+    @include mobile-popover-btn(3.2rem);
   }
 }
 </style>

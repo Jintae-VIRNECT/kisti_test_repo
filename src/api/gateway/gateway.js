@@ -126,8 +126,18 @@ const sender = async function(constant, params, headers = {}, custom) {
         err.message.toLowerCase() in networkError ||
         err.message.toLowerCase().includes('timeout of')
       ) {
+        const position =
+          window.vue.isMobileSize || window.vue.$route.name === 'service'
+            ? 'top-center'
+            : 'bottom-center'
+
+        const className = window.vue.isMobileSize
+          ? ['remote-toast', 'mobile']
+          : ['remote-toast']
+
         window.vue.$toasted.error(window.vue.$t('confirm.network_error'), {
-          position: 'bottom-center',
+          position,
+          className,
           duration: 5000,
           action: {
             icon: 'close',
@@ -182,7 +192,7 @@ const errorHandler = function(err) {
         // console.error(error.message)
         // "Unexpected Server Error, Please contact Administrator"
         break
-      case 8003:
+      // case 8003:
       case 8005:
         // console.error(error.message)
         cookieClear()

@@ -13,7 +13,7 @@ function getDefaultState() {
     nickname: null,
     serviceInfo: null,
     userType: null,
-    roleType: '', // 'LEADER' / 'EXPERT' / 'WORKER'
+    roleType: '', // 'LEADER' / 'EXPERT' / 'WORKER' / GUEST
     licenseEmpty: true,
     statusSessionId: '',
   }

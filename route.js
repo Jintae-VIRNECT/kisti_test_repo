@@ -17,6 +17,9 @@ const acceptLang = req => {
 
 const extraHtml = fs.readFileSync('./dist/extra/index.html', 'utf8')
 const remoteHtml = fs.readFileSync('./dist/remote/index.html', 'utf8')
+const ieHtmlEn = fs.readFileSync('./static/ie/en.html', 'utf8')
+const ieHtmlKr = fs.readFileSync('./static/ie/kr.html', 'utf8')
+
 let extra = {
   en: extraHtml,
   ko: extraHtml,
@@ -50,15 +53,41 @@ function IsAllowBrowser(req) {
   return ((isChrome || isEdge || isChromeMobile) && !isSamsung) || isSafari
 }
 
-function IsMobileBrowser(req) {
+/**
+ * 사용할 수 없는 모바일 기기를 체크
+ * @param {Object} req
+ * @param {Boolean} checkChromeMobile 크롬 모바일 체크여부
+ * @returns {Boolean} 사용할 수 없는 모바일 기기 여부
+ */
+function IsMobileBrowser(req, checkChromeMobile = true) {
   const userAgent = req.headers['user-agent'] || ''
-  const isChromeMobile =
-    userAgent.includes('Mobile') ||
+  const isMobile =
     userAgent.includes('CriOS') ||
     userAgent.includes('mobileApp') ||
     userAgent.includes('iPhone')
 
-  return isChromeMobile
+  if (checkChromeMobile) return isMobile || userAgent.includes('Mobile')
+
+  return isMobile
+}
+
+function IsIE(req) {
+  const userAgent = req.headers['user-agent'] || ''
+  return userAgent.includes('Trident')
+}
+
+function RouteSupportOrIE(req, res) {
+  const isIE = IsIE(req)
+  if (isIE) {
+    const lang = acceptLang(req)
+    if (lang === 'ko') {
+      res.send(ieHtmlKr)
+    } else {
+      res.send(ieHtmlEn)
+    }
+  } else {
+    res.redirect('/support')
+  }
 }
 
 router.get('/healthcheck', function(req, res) {
@@ -69,13 +98,11 @@ router.get('/healthcheck', function(req, res) {
 if (config.getEnv() === 'onpremise') {
   router.get('/spot-control', function(req, res) {
     const lang = acceptLang(req)
-    // res.send(extra[lang])
     res.send(remote[lang])
   })
 
   router.get('/spot-error', function(req, res) {
     const lang = acceptLang(req)
-    // res.send(extra[lang])
     res.send(remote[lang])
   })
 }
@@ -83,29 +110,42 @@ if (config.getEnv() === 'onpremise') {
 router.get('/home', function(req, res) {
   if (IsAllowBrowser(req)) {
     if (IsMobileBrowser(req)) {
-      res.redirect('/support')
+      RouteSupportOrIE(req, res)
     } else {
       const lang = acceptLang(req)
       res.send(remote[lang])
-      // res.sendFile(path.join(__dirname, '/dist/remote/index.html'))
     }
   } else {
-    res.redirect('/support')
+    RouteSupportOrIE(req, res)
     return
   }
 })
 
-router.get('/service', function(req, res) {
+router.get('/connectioninfo', function(req, res) {
   if (IsAllowBrowser(req)) {
-    if (IsMobileBrowser(req)) {
-      res.redirect('/support')
+    const checkChromeMobile = false
+    if (IsMobileBrowser(req, checkChromeMobile)) {
+      RouteSupportOrIE(req, res)
     } else {
-      // res.sendFile(path.join(__dirname, '/dist/remote/index.html'))
       const lang = acceptLang(req)
       res.send(remote[lang])
     }
   } else {
-    res.redirect('/support')
+    RouteSupportOrIE(req, res)
+    return
+  }
+})
+
+router.get('/qr', function(req, res) {
+  if (IsAllowBrowser(req)) {
+    if (IsMobileBrowser(req)) {
+      RouteSupportOrIE(req, res)
+    } else {
+      const lang = acceptLang(req)
+      res.send(remote[lang])
+    }
+  } else {
+    RouteSupportOrIE(req, res)
     return
   }
 })
@@ -145,6 +185,15 @@ router.get('/configs', function(req, res) {
 
 router.get('/pdf.worker', function(req, res) {
   res.sendFile(path.join(__dirname, '/static/js/pdf.worker.js'))
+})
+
+//pwa service worker
+router.get('/sw.js', function(req, res) {
+  res.sendFile(path.join(__dirname, '/static/js/sw.js'))
+})
+
+router.get('/manifest.json', function(req, res) {
+  res.sendFile(path.join(__dirname, '/static/manifest.json'))
 })
 
 router.get('/record', function(req, res) {

@@ -108,7 +108,7 @@ export default {
   methods: {
     beforeClose() {
       this.location = null
-      if (this.mainView) {
+      if (this.mainView && this.mainView.connectionId) {
         this.$call.sendStopLocation([this.mainView.connectionId])
       }
       this.$eventBus.$emit('map:closed')

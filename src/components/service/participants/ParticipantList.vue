@@ -15,8 +15,16 @@
           @kickout="kickout(participant.id)"
         ></participant-video>
         <article v-if="!openRoom && isLeader && !isMaxLength" key="append">
-          <div class="participant-video more" @click="more">
+          <div class="participant-video append more" @click="more">
             <p>{{ $t('service.participant_invite') }}</p>
+          </div>
+        </article>
+        <article v-else-if="openRoom && !isGuest && !isMaxLength" key="append">
+          <div
+            class="participant-video append guest"
+            @click="showGuestInviteModal"
+          >
+            <p>{{ $t('service.guest_invite_url') }}</p>
           </div>
         </article>
       </transition-group>
@@ -68,6 +76,9 @@ export default {
     isLeader() {
       return this.account.roleType === ROLE.LEADER
     },
+    isGuest() {
+      return this.account.roleType === ROLE.GUEST
+    },
     isMaxLength() {
       return this.participants.length === maxParticipants
     },
@@ -85,12 +96,6 @@ export default {
             }
           })
         } else if (newVal < oldVal) {
-          // let idx = this.participants.findIndex(
-          //   session => session.uuid === this.mainView.uuid,
-          // )
-          // if (idx < 0) {
-          //   this.setMainSession(this.sessions[0])
-          // }
           this.$nextTick(() => {
             if (this.$refs['sessionListScrollbar']) {
               this.$refs['sessionListScrollbar'].scrollToX(
@@ -133,6 +138,9 @@ export default {
     },
     more() {
       this.invite = !this.invite
+    },
+    showGuestInviteModal() {
+      this.$eventBus.$emit('guestInvite:show', true)
     },
     async kickout(participantId) {
       const params = {

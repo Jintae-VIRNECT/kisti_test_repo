@@ -22,7 +22,7 @@ import { mapGetters, mapActions } from 'vuex'
 import Tooltip from 'Tooltip'
 import ToggleButton from 'ToggleButton'
 export default {
-  name: 'Mic',
+  name: 'Chat',
   components: {
     Tooltip,
     ToggleButton,
@@ -45,7 +45,9 @@ export default {
       this.toggleChat(!this.chatBox)
     },
     listChange() {
-      if (!this.chatBox) {
+      if (this.chatBox) return
+
+      if (this.chatList.length > 1) {
         this.active = true
       }
     },

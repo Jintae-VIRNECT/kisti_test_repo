@@ -104,3 +104,11 @@
     background-color: rgba($color_bg_item, 0.5);
   }
 }
+
+@include responsive-mobile {
+  .history {
+    .show-empty__image {
+      height: 23rem;
+    }
+  }
+}
