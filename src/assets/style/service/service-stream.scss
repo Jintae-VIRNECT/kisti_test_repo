@@ -262,6 +262,23 @@
     }
   }
 
+  .main-video__zoom--level {
+    position: fixed;
+    top: 8.2rem;
+    left: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 6.2rem;
+    height: 3rem;
+    color: $new_color_text_main;
+    background-color: rgba(0, 0, 0, 0.4);
+    border: 1.5px solid white;
+    border-radius: 15px;
+    transform: translateX(-50%);
+    @include fontLevel(100);
+  }
+
   .main-video__empty-inner {
     > img {
       width: 9.6rem;

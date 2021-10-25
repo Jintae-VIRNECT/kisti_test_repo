@@ -12,6 +12,11 @@
         hidden: !loaded || emptyStream,
       }"
     >
+      <pinch-zoom-layer
+        v-if="isMobileSize"
+        @zoomLevelChanged="onZoomLevelChanged"
+      ></pinch-zoom-layer>
+
       <!-- 메인 비디오 뷰 -->
       <video
         ref="mainVideo"
@@ -63,10 +68,18 @@
 
         <!-- 포인팅 -->
         <pointing
-          v-if="viewForce"
+          v-if="viewForce && viewAction === ACTION.STREAM_POINTING"
           :videoSize="videoSize"
           class="main-video__pointing"
         ></pointing>
+
+        <!-- zoom 레벨 표시(모바일) -->
+        <div
+          v-if="isMobileSize && showZoomLevel"
+          class="main-video__zoom--level"
+        >
+          <span>{{ zoomLevel }}</span>
+        </div>
 
         <!-- 디바이스 컨트롤 뷰 -->
         <template v-if="allowTools">
@@ -152,9 +165,11 @@ export default {
     Pointing,
     VideoTools,
     Fullscreen,
+    PinchZoomLayer: () => import('./partials/PinchZoomLayer'),
   },
   data() {
     return {
+      ACTION: Object.freeze(ACTION),
       status: 'good', // good, normal, bad
       hoverTools: false,
       loaded: false,
@@ -172,6 +187,9 @@ export default {
       hideFullBtn: false,
 
       backInterval: null,
+
+      showZoomLevel: false,
+      zoomLevel: 'x1.0',
     }
   },
   computed: {
@@ -495,6 +513,16 @@ export default {
       setTimeout(() => {
         this.optimizeVideoSize()
       }, 500)
+    },
+    onZoomLevelChanged(zoomLevel) {
+      clearTimeout(this.timeoutId)
+      this.timeoutId = null
+
+      this.showZoomLevel = true
+      this.zoomLevel = `x${zoomLevel}`
+      this.timeoutId = setTimeout(() => {
+        this.showZoomLevel = false
+      }, 2000)
     },
   },
 
