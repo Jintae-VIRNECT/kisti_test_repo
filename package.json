@@ -1,8 +1,7 @@
 {
   "name": "account",
-  "version": "1.4.0",
+  "version": "1.4.1",
   "description": "Virnect Account",
-  "author": "SangBaek-VIRNECT <lsb@virnect.com>",
   "private": true,
   "scripts": {
     "dev": "cross-env VIRNECT_ENV=local nuxt",
