@@ -4,7 +4,6 @@
       class="dashboard-tab__nav"
       :class="{ fix: !!fix, nolicense: !(hasWorkspace && !expireLicense) }"
     >
-      <!-- <ul class="flex offsetwidth"> -->
       <ul class="flex">
         <tab-button
           v-for="tab of tabComponents"
@@ -25,7 +24,11 @@
 import TabButton from 'components/partials/TabButton'
 import TabBoard from 'components/tab/TabBoard'
 import TabCollabo from 'components/tab/TabCollabo'
+import TabWorkspaceSubGroup from 'components/tab/TabWorkspaceSubGroup'
 import TabRefreshButton from 'components/partials/TabRefreshButton'
+import { WORKSPACE_ROLE } from 'configs/status.config'
+import { getMemberInfo } from 'api/http/member'
+
 import { mapGetters } from 'vuex'
 export default {
   name: 'DashBoardTab',
@@ -34,6 +37,7 @@ export default {
     TabRefreshButton,
     board: TabBoard,
     collabo: TabCollabo,
+    subGroup: TabWorkspaceSubGroup,
   },
   props: {
     fix: {
@@ -44,10 +48,12 @@ export default {
   data() {
     return {
       component: 'board',
+      isMaster: false,
     }
   },
   computed: {
     ...mapGetters(['expireLicense']),
+
     hasWorkspace() {
       if (this.workspace && this.workspace.uuid && this.hasLicense) {
         return true
@@ -56,7 +62,7 @@ export default {
       }
     },
     tabComponents() {
-      return [
+      const tabs = [
         {
           name: 'board',
           text: this.$t('common.dashboard'),
@@ -74,6 +80,27 @@ export default {
           },
         },
       ]
+      const subGroupTab = {
+        name: 'subGroup',
+        text: this.$t('그룹 설정'),
+        images: {
+          off: require('assets/image/tab/ic_workspace_sub_group_off.svg'),
+          on: require('assets/image/tab/ic_workspace_sub_group_on.svg'),
+        },
+      }
+
+      if (this.isMaster) {
+        tabs.push(subGroupTab)
+      }
+
+      return tabs
+    },
+  },
+  watch: {
+    workspace(val, oldVal) {
+      if (val.uuid && val.uuid !== oldVal.uuid) {
+        this.checkMaster()
+      }
     },
   },
   methods: {
@@ -84,6 +111,22 @@ export default {
         this.$emit('tabChange')
       })
     },
+
+    async checkMaster() {
+      const memberInfo = await getMemberInfo({
+        userId: this.account.uuid,
+        workspaceId: this.workspace.uuid,
+      })
+
+      if (memberInfo.role === WORKSPACE_ROLE.MASTER) {
+        this.isMaster = true
+      } else {
+        this.isMaster = false
+      }
+    },
+  },
+  mounted() {
+    this.checkMaster()
   },
 }
 </script>

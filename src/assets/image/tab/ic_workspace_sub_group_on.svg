@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="28px" height="28px" viewBox="0 0 28 28" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>7B6A740D-24B9-4E2D-8FF3-A8739683F2F0@1x</title>
+    <defs>
+        <path d="M20.8,8.75 L14,8.75 L12.3,7 L7.2,7 C6.265,7 5.5085,7.7875 5.5085,8.75 L5.5,19.25 C5.5,20.2125 6.265,21 7.2,21 L20.8,21 C21.735,21 22.5,20.2125 22.5,19.25 L22.5,10.5 C22.5,9.5375 21.735,8.75 20.8,8.75 Z M16.55,11.375 C17.485,11.375 18.25,12.1625 18.25,13.125 C18.25,14.0875 17.485,14.875 16.55,14.875 C15.615,14.875 14.85,14.0875 14.85,13.125 C14.85,12.1625 15.615,11.375 16.55,11.375 Z M19.95,18.375 L13.15,18.375 L13.15,17.5 C13.15,16.33625 15.4195,15.75 16.55,15.75 C17.6805,15.75 19.95,16.33625 19.95,17.5 L19.95,18.375 Z" id="path-1"></path>
+    </defs>
+    <g id="Design_v-2.2" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="WSG_0010-_그룹-설정-_리스트-없음" transform="translate(-592.000000, -101.000000)">
+            <g id="menu_Remote" transform="translate(320.000000, 90.000000)">
+                <g id="03" transform="translate(272.000000, 6.000000)">
+                    <g id="Group-8" transform="translate(0.000000, 4.000000)">
+                        <g id="icon_group_on" transform="translate(0.000000, 1.000000)">
+                            <rect id="tr" x="0" y="0" width="28" height="28"></rect>
+                            <mask id="mask-2" fill="white">
+                                <use xlink:href="#path-1"></use>
+                            </mask>
+                            <use id="icon/file/folder_shared_24px" fill="#0F75F5" fill-rule="nonzero" xlink:href="#path-1"></use>
+                        </g>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

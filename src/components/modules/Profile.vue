@@ -141,14 +141,14 @@ export default {
   }
 }
 .profile--maintext {
-  color: #fafafa;
+  color: #262626;
   font-weight: 500;
   font-size: 1.071em;
   line-height: 1.429em;
   @include ellipsis;
 }
 .profile--subtext {
-  color: #b7b7b7;
+  color: #757f91;
   @include ellipsis;
 }
 

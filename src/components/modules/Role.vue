@@ -26,13 +26,13 @@ export default {
   height: 1.43rem;
   margin: auto 0 auto 0.857rem;
   padding: 0.357em 0.714em;
-  color: $color_primary_400;
+  color: #539fff;
   font-weight: 500;
   font-size: 0.857rem;
   font-family: 'Roboto';
   line-height: 0.857rem;
   text-transform: capitalize;
-  border: solid 1px $color_primary_400;
+  border: solid 1px #6aacff;
   border-radius: 0.857rem;
 
   &.card {
