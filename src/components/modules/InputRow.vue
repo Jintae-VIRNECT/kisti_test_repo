@@ -55,6 +55,7 @@ export default {
       inputText: '',
     }
   },
+  
   props: {
     value: {
       type: String,
