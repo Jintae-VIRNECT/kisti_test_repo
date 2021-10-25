@@ -12,7 +12,9 @@ import lombok.ToString;
 @ToString
 public enum TargetType {
     QR("QR"),
-    VTarget("VTarget");
+    VTarget("VTarget"),
+    VR("VR"),
+    Image("Image");
 
     private String message;
 

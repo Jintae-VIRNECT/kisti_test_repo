@@ -95,7 +95,7 @@ import com.virnect.process.global.common.ResponseMessage;
 import com.virnect.process.global.error.ErrorCode;
 import com.virnect.process.global.util.AES256EncryptUtils;
 import com.virnect.process.global.util.QRcodeGenerator;
-import com.virnect.process.infra.file.FileUploadService;
+import com.virnect.process.infra.file.upload.FileUploadService;
 
 /**
  * Project: PF-ProcessManagement
@@ -165,7 +165,6 @@ public class TaskService {
 		 *
 		 */
 		// 공정 생성 요청 처리
-		log.info("CREATE THE PROCESS requestBody ---> {}", registerNewProcess.toString());
 
 		// 1. 컨텐츠 메타데이터 가져오기
 		ApiResponse<ContentRestDto> contentApiResponse = this.contentRestService.getContentMetadata(
@@ -235,7 +234,9 @@ public class TaskService {
 			}
 
 			// 3-1-5. 타겟 등록
-			addTargetToProcess(newProcess, registerNewProcess.getTargetSize(), registerNewProcess.getTargetType());
+			String imgPath = contentDuplicate.getData().getTargets().get(0).getImgPath();
+			addTargetToProcess(
+				newProcess, registerNewProcess.getTargetSize(), registerNewProcess.getTargetType(), imgPath);
 			//addTargetToProcess(newProcess, registerNewProcess.getTargetSize(), registerNewProcess.getTargetType());
 
 			ApiResponse<ContentRestDto> duplicatedContent = this.contentRestService.getContentMetadata(
@@ -351,7 +352,9 @@ public class TaskService {
 	 * @param newProcess
 	 * @param targetType
 	 */
-	private void addTargetToProcess(Process newProcess, float targetSize, final TargetType targetType) {
+	private void addTargetToProcess(
+		Process newProcess, float targetSize, final TargetType targetType, String targetPath
+	) {
 		// 타겟데이터
 		try {
 			String targetData = UUID.randomUUID().toString();
@@ -368,11 +371,20 @@ public class TaskService {
 			String imgPath = null;
 			if (targetType.equals(TargetType.QR)) {
 				// 컨텐츠 서버에 담겨진 QR코드 경로는 원본 값을 QR코드로 만든 것이다.
-				imgPath = getImgPath(targetData); //= this.fileUploadService.base64ImageUpload(targetData);
+				imgPath = getImgPath(
+					targetData,
+					newProcess.getWorkspaceUUID()
+				); //= this.fileUploadService.base64ImageUpload(targetData);
 			}
 			if (targetType.equals(TargetType.VTarget)) {
 				//imgPath = fileUploadUrl + fileUploadPath + defaultVTarget;defaultVTarget
-				imgPath = fileUploadService.getFilePath("virnect_target.png");
+				imgPath = fileUploadService.getDefaultReportImagePath("virnect_target.png");
+			}
+			if (targetType.equals(TargetType.VR)) {
+				imgPath = null;
+			}
+			if (targetType.equals(TargetType.Image)) {
+				imgPath = targetPath;
 			}
 
 			// 컨텐츠 서버에 담겨진 targetData (= Make에서 제공하는 targetData) 는 AES256인코딩 후 URL인코딩을 한 값이다.
@@ -675,7 +687,9 @@ public class TaskService {
 			/*
 			복제된 컨텐츠는 타겟정보가 없다. 따라서 클라이언트에서 받는다.
 			*/
-			addTargetToProcess(newProcess, duplicateRequest.getTargetSize(), duplicateRequest.getTargetType());
+			addTargetToProcess(newProcess, duplicateRequest.getTargetSize(), duplicateRequest.getTargetType(),
+				contentDuplicate.getData().getPath()
+			);
 
 			// addSubProcessOnProcess에 들어갈 객체
 			ProcessRegisterRequest registerNewProcess = new ProcessRegisterRequest();
@@ -940,7 +954,7 @@ public class TaskService {
 		// 2. 동기화 이슈 가져오기
 		if (uploadWorkResult.getIssues() != null && uploadWorkResult.getIssues().size() > 0) {
 			List<WorkResultSyncRequest.IssueResult> issueResultList = uploadWorkResult.getIssues();
-			syncIssue(issueResultList);
+			syncIssue(issueResultList,null);//todo: 워크스페이스 식별자 요청 파라미터 추가 필요
 		}
 
 		// TODO : 응답을 동기화 결과 반환해야 함..
@@ -988,7 +1002,10 @@ public class TaskService {
 				updateProcess.set(true);
 
 				if (subProcessWorkResult.getSteps() != null) {
-					syncJobWork(subProcessWorkResult.getSteps(), subProcessWorkResult.getSyncUserUUID());
+					syncJobWork(
+						subProcessWorkResult.getSteps(), subProcessWorkResult.getSyncUserUUID(),
+						process.getWorkspaceUUID()
+					);
 				}
 			} else {
 				throw new ProcessServiceException(ErrorCode.ERR_WORKER_NOT_EQUAL_SYNC);
@@ -1003,7 +1020,9 @@ public class TaskService {
 	}
 
 	// 스텝 내용 동기화
-	private void syncJobWork(List<WorkResultSyncRequest.JobWorkResult> jobWorkResults, String syncUserUUID) {
+	private void syncJobWork(
+		List<WorkResultSyncRequest.JobWorkResult> jobWorkResults, String syncUserUUID, String workspaceUUID
+	) {
 		log.info("WORKER:[{}] Job Result Synchronized Begin", syncUserUUID);
 		jobWorkResults.forEach(jobWorkResult -> {
 			Job job = this.jobRepository.findById(jobWorkResult.getId()).
@@ -1013,30 +1032,34 @@ public class TaskService {
 			jobRepository.save(job);
 
 			if (jobWorkResult.getReports() != null) {
-				syncReportWork(jobWorkResult.getReports());
+				syncReportWork(jobWorkResult.getReports(), workspaceUUID);
 			}
 			if (jobWorkResult.getIssues() != null) {
-				syncIssueWork(jobWorkResult.getIssues(), syncUserUUID, job);
+				syncIssueWork(jobWorkResult.getIssues(), syncUserUUID, job, workspaceUUID);
 			}
 		});
 	}
 
 	// 페이퍼 내용 동기화
-	private void syncReportWork(List<WorkResultSyncRequest.ReportWorkResult> reportWorkResults) {
+	private void syncReportWork(
+		List<WorkResultSyncRequest.ReportWorkResult> reportWorkResults, String workspaceUUID
+	) {
 		reportWorkResults.forEach(reportWorkResult -> {
 			if (reportWorkResult.getActions() != null) {
-				syncReportItemWork(reportWorkResult.getActions());
+				syncReportItemWork(reportWorkResult.getActions(), workspaceUUID);
 			}
 		});
 	}
 
 	// 페이퍼의 행동 동기화
-	private void syncReportItemWork(List<WorkResultSyncRequest.ReportItemWorkResult> reportItemWorkResults) {
+	private void syncReportItemWork(
+		List<WorkResultSyncRequest.ReportItemWorkResult> reportItemWorkResults, String workspaceUUID
+	) {
 		reportItemWorkResults.forEach(reportItemWorkResult -> {
 			Item item = this.itemRepository.findById(reportItemWorkResult.getId())
 				.orElseThrow(() -> new ProcessServiceException(ErrorCode.ERR_PROCESS_WORK_RESULT_SYNC));
 			if (!StringUtils.isEmpty(reportItemWorkResult.getPhotoFile())) {
-				item.setPath(getFileUploadUrl(reportItemWorkResult.getPhotoFile()));
+				item.setPath(getFileUploadUrl(reportItemWorkResult.getPhotoFile(), workspaceUUID));
 			}
 			item.setAnswer(reportItemWorkResult.getAnswer());
 			item.setResult(reportItemWorkResult.getResult() == null ? INIT_RESULT : reportItemWorkResult.getResult());
@@ -1046,7 +1069,8 @@ public class TaskService {
 
 	// 작업 이슈 동기화
 	private void syncIssueWork(
-		List<WorkResultSyncRequest.WorkIssueResult> workIssueResults, String syncUserUUID, Job job
+		List<WorkResultSyncRequest.WorkIssueResult> workIssueResults, String syncUserUUID, Job job,
+		String workspaceUUID
 	) {
 		// insert
 		workIssueResults.forEach(workIssueResult -> {
@@ -1055,7 +1079,7 @@ public class TaskService {
 				.workerUUID(syncUserUUID)
 				.build();
 			if (!StringUtils.isEmpty(workIssueResult.getPhotoFile())) {
-				issue.setPath(getFileUploadUrl(workIssueResult.getPhotoFile()));
+				issue.setPath(getFileUploadUrl(workIssueResult.getPhotoFile(), workspaceUUID));
 			}
 			issue.setJob(job);
 			this.issueRepository.save(issue);
@@ -1063,7 +1087,7 @@ public class TaskService {
 	}
 
 	// 트러블메모 동기화
-	private void syncIssue(List<WorkResultSyncRequest.IssueResult> issueResults) {
+	private void syncIssue(List<WorkResultSyncRequest.IssueResult> issueResults, String workspaceUUID) {
 		// insert
 		issueResults.forEach(issueResult -> {
 			Issue issue = Issue.globalIssueBuilder()
@@ -1071,7 +1095,7 @@ public class TaskService {
 				.workerUUID(issueResult.getWorkerUUID())
 				.build();
 			if (!StringUtils.isEmpty(issueResult.getPhotoFile())) {
-				issue.setPath(getFileUploadUrl(issueResult.getPhotoFile()));
+				issue.setPath(getFileUploadUrl(issueResult.getPhotoFile(), workspaceUUID));
 			}
 			log.info("IssueResult: {}", issueResult);
 			log.info("WorkerUUID: [{}]", issueResult.getWorkerUUID());
@@ -1332,7 +1356,20 @@ public class TaskService {
 		processInfoResponse.setIssuesTotal(this.processRepository.getCountIssuesInProcess(process.getId()));
 		processInfoResponse.setSubTaskAssign(this.getSubProcessesAssign(process));
 		processInfoResponse.setTargets(targetResponseList);
+		processInfoResponse.setContentSize(getContentInfoByUUID(process.getContentUUID()).getContentSize());
 		return new ApiResponse<>(processInfoResponse);
+	}
+
+	private ContentInfoResponse getContentInfoByUUID(String contentUUID) {
+		ApiResponse<ContentInfoResponse> apiResponse = contentRestService.getContentInfo(contentUUID);
+		if (apiResponse.getCode() != 200 || apiResponse.getData() == null) {
+			log.error(
+				"[GET CONTENT INFO BY UUID] content uuid : {}, response code : {}, message : {}", contentUUID,
+				apiResponse.getCode(), apiResponse.getMessage()
+			);
+			throw new ProcessServiceException(ErrorCode.ERR_NOT_FOUND_CONTENT);
+		}
+		return apiResponse.getData();
 	}
 
 	/**
@@ -1350,43 +1387,6 @@ public class TaskService {
 			//Process updateSourceProcess = this.processRepository.getProcessInfo(editProcessRequest.getProcessId()).orElseThrow(() -> new ProcessServiceException(ErrorCode.ERR_NOT_FOUND_PROCESS));
 			Process updateSourceProcess = this.processRepository.findById(editProcessRequest.getTaskId())
 				.orElseThrow(() -> new ProcessServiceException(ErrorCode.ERR_NOT_FOUND_PROCESS));
-
-			//워크스페이스 설정 검증 - TASK_UPDATE_ROLE_SETTING
-			WorkspaceSettingInfoListResponse workspaceSettingInfoListResponse = getWorkspaceSettingInfoListResponse(
-				updateSourceProcess.getWorkspaceUUID());
-			if (workspaceSettingInfoListResponse == null) {
-				throw new ProcessServiceException(ErrorCode.ERR_OWNERSHIP);
-			}
-			Optional<WorkspaceSettingInfoResponse> workspaceSettingInfoResponseOptional = workspaceSettingInfoListResponse
-				.getWorkspaceSettingInfoList()
-				.stream()
-				.filter(workspaceSettingInfoResponse -> workspaceSettingInfoResponse.getSettingName()
-					.equals("TASK_UPDATE_ROLE_SETTING"))
-				.findAny();
-
-			//설정 값이 있을 때만 검사
-			//기본값은 마스터 또는 매니저 . UNUSED또는 MASTER_OR_MANAGER인 경우에는 기본값에 따름.
-			if (workspaceSettingInfoResponseOptional.isPresent()) {
-				String settingValue = workspaceSettingInfoResponseOptional.get().getSettingValue();
-				AllMemberInfoResponse workspaceUserInfoResponse = getWorkspaceUserInfoResponse(
-					updateSourceProcess.getWorkspaceUUID(), editProcessRequest.getActorUUID());
-				if (workspaceUserInfoResponse == null) {
-					throw new ProcessServiceException(ErrorCode.ERR_OWNERSHIP);
-				}
-				String requestUserWorkspaceRole = workspaceUserInfoResponse.getRole();
-				log.info(
-					"[TASK UPDATE] workspace setting value : [{}], user workspace role : [{}]", settingValue,
-					requestUserWorkspaceRole
-				);
-				//마스터인 유저만 허용하는 경우
-				if (settingValue.equals("MASTER") && !requestUserWorkspaceRole.equals("MASTER")) {
-					throw new ProcessServiceException(ErrorCode.ERR_OWNERSHIP);
-				}
-				//마스터 또는 매니저 유저만 허용하는 경우
-				if (settingValue.equals("MASTER_OR_MANAGER") && !requestUserWorkspaceRole.matches("MASTER|MANAGER")) {
-					throw new ProcessServiceException(ErrorCode.ERR_OWNERSHIP);
-				}
-			}
 /*
             if (!updateSourceProcess.getContentManagerUUID().equals(editProcessRequest.getActorUUID()))
                 throw new ProcessServiceException(ErrorCode.ERR_OWNERSHIP);*/
@@ -1436,40 +1436,18 @@ public class TaskService {
 		Process process = this.processRepository.findById(processId)
 			.orElseThrow(() -> new ProcessServiceException(ErrorCode.ERR_NOT_FOUND_PROCESS));
 
-		//워크스페이스 기능 설정 검증 -> TASK_DELETE_ROLE_SETTING
-		WorkspaceSettingInfoListResponse workspaceSettingInfoListResponse = getWorkspaceSettingInfoListResponse(
-			process.getWorkspaceUUID());
-		if (workspaceSettingInfoListResponse == null) {
-			throw new ProcessServiceException(ErrorCode.ERR_OWNERSHIP);
-		}
-		Optional<WorkspaceSettingInfoResponse> workspaceSettingInfoResponseOptional = workspaceSettingInfoListResponse.getWorkspaceSettingInfoList()
-			.stream()
-			.filter(workspaceSettingInfoResponse -> workspaceSettingInfoResponse.getSettingName()
-				.equals("TASK_DELETE_ROLE_SETTING"))
-			.findAny();
+		//권한 체크 - 사용자가 해당 워크스페이스의 매니저 또는 마스터 일때만 작업을 삭제할 수 있음
+		ApiResponse<MemberListResponse> workspaceResponse = this.workspaceRestService.getWorkspaceUserList(
+			process.getWorkspaceUUID(), 50);
 
-		//설정 값이 있을 때만 검사
-		//기본값은 마스터 또는 매니저 . UNUSED또는 MASTER_OR_MANAGER인 경우에는 기본값에 따름.
-		if (workspaceSettingInfoResponseOptional.isPresent()) {
-			String settingValue = workspaceSettingInfoResponseOptional.get().getSettingValue();
-			AllMemberInfoResponse workspaceUserInfoResponse = getWorkspaceUserInfoResponse(
-				process.getWorkspaceUUID(), checkProcessOwnerRequest.getActorUUID());
-			if (workspaceUserInfoResponse == null) {
-				throw new ProcessServiceException(ErrorCode.ERR_OWNERSHIP);
-			}
-			String requestUserWorkspaceRole = workspaceUserInfoResponse.getRole();
-			log.info(
-				"[TASK DELETE] workspace setting value : [{}], user workspace role : [{}]", settingValue,
-				requestUserWorkspaceRole
-			);
-			//마스터인 유저만 허용하는 경우
-			if (settingValue.equals("MASTER") && !requestUserWorkspaceRole.equals("MASTER")) {
-				throw new ProcessServiceException(ErrorCode.ERR_OWNERSHIP);
-			}
-			//마스터 또는 매니저 유저만 허용하는 경우
-			if (settingValue.equals("MASTER_OR_MANAGER") && !requestUserWorkspaceRole.matches("MASTER|MANAGER")) {
-				throw new ProcessServiceException(ErrorCode.ERR_OWNERSHIP);
-			}
+		MemberListResponse memberListResponse = workspaceResponse.getData();
+
+		List<String> memberUUIDList = memberListResponse.getMemberInfoList().stream()
+			.filter(
+				memberInfoDTO -> memberInfoDTO.getRole().equals("MASTER") || memberInfoDTO.getRole().equals("MANAGER"))
+			.map(memberInfoDTO -> memberInfoDTO.getUuid()).collect(Collectors.toList());
+		if (!memberUUIDList.contains(actorUUID)) {
+			throw new ProcessServiceException(ErrorCode.ERR_OWNERSHIP);
 		}
 
 		// 삭제 조건 중 컨텐츠의 작업 전환상태를 NO로 만들어야 삭제조건에 부합하므로 미리 조건처리함.
@@ -1537,7 +1515,7 @@ public class TaskService {
 		return apiResponse.getData();
 	}
 
-	private WorkspaceSettingInfoListResponse getWorkspaceSettingInfoListResponse(String workspaceUUID) {
+	/*private WorkspaceSettingInfoListResponse getWorkspaceSettingInfoListResponse(String workspaceUUID) {
 		ApiResponse<WorkspaceSettingInfoListResponse> apiResponse = workspaceRestService.getWorkspaceSettingList(
 			workspaceUUID, "WORKSTATION");
 		if (apiResponse.getCode() != 200) {
@@ -1545,7 +1523,7 @@ public class TaskService {
 			return null;
 		}
 		return apiResponse.getData();
-	}
+	}*/
 
 	/**
 	 * 워크스페이스 내 사용자 검색(닉네임, 이메일)
@@ -1606,10 +1584,11 @@ public class TaskService {
 	 * base64로 인코딩된 이미지 파일 업로드
 	 *
 	 * @param base64EncodedImage - upload file
+	 * @param workspaceUUID
 	 * @return - file path
 	 */
-	private String getFileUploadUrl(String base64EncodedImage) {
-		return Optional.of(fileUploadService.base64ImageUpload(base64EncodedImage))
+	private String getFileUploadUrl(String base64EncodedImage, String workspaceUUID) {
+		return Optional.of(fileUploadService.base64ImageUpload(base64EncodedImage, workspaceUUID))
 			.orElseThrow(() -> new ProcessServiceException(ErrorCode.ERR_PROCESS_WORK_RESULT_SYNC));
 	}
 
@@ -1617,9 +1596,10 @@ public class TaskService {
 	 * 이미지 업로드 후 업로드 경로 반환
 	 *
 	 * @param targetData
+	 * @param workspaceUUID
 	 * @return
 	 */
-	private String getImgPath(String targetData) {
+	private String getImgPath(String targetData, String workspaceUUID) {
 
 		String qrString = "";
 
@@ -1638,7 +1618,7 @@ public class TaskService {
 			e.printStackTrace();
 		}
 
-		String imgPath = this.fileUploadService.base64ImageUpload(qrString);
+		String imgPath = this.fileUploadService.base64ImageUpload(qrString, workspaceUUID);
 
 		return imgPath;
 	}
