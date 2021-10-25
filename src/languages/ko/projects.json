@@ -112,7 +112,8 @@
         "updateEditMemberFail": "프로젝트 편집 지정 멤버에 실패했습니다.",
         "updateEditMemberNotExist": "워크스페이스 멤버만 편집 지정 멤버로 설정할 수 있습니다.",
         "updateNotExist": "워크스페이스에 선택하신 프로젝트가 존재하지 않습니다. 다시 확인해 주세요.",
-        "backup": "삭제된 프로젝트를 프로젝트 목록으로 이동했습니다."
+        "backup": "삭제된 프로젝트를 프로젝트 목록으로 이동했습니다.",
+        "emptySelectMember": "지정 멤버를 선택해주세요."
       }
     }
   }
