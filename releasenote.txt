@@ -1,8 +1,7 @@
 RELEASE
 
 New Features
-v1.3.8.0
-footer update
+-
 
 회사소개서 업데이트
 비회원 초대
@@ -11,6 +10,11 @@ v1.2.26.3
 비밀번호 5번 실패시 차단
 Bug Fixes
 -
+v1.3.8.1
+https://virtualconnection.atlassian.net/browse/DPLA-3446
+https://virtualconnection.atlassian.net/browse/DPLA-3473
+https://virtualconnection.atlassian.net/browse/DPLA-3475
+https://virtualconnection.atlassian.net/browse/DPLA-3472
 
 
 Copyright (C) 2020, VIRNECT CO., LTD. - All Rights Reserved

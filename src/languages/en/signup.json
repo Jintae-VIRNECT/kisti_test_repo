@@ -44,7 +44,7 @@
       "title": "How did you hear about us?",
       "select": "Select options",
       "placeholder": "Tell us where you heard about us",
-      "other": "Type Here"
+      "other": "Other"
     },
     "subscriptionPathLists": [
       "Web search",
