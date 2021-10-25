@@ -1,7 +1,7 @@
 package com.virnect.workspace.api;
 
 import com.virnect.workspace.application.workspaceuser.WorkspaceUserService;
-import com.virnect.workspace.dto.onpremise.MemberAccountCreateRequest;
+import com.virnect.workspace.domain.workspace.Role;
 import com.virnect.workspace.dto.request.*;
 import com.virnect.workspace.dto.response.*;
 import com.virnect.workspace.exception.WorkspaceException;
@@ -49,6 +49,9 @@ public class WorkspaceUserController {
             @ApiImplicitParam(name = "workspaceId", value = "워크스페이스 식별자", defaultValue = "45ea004001c56a3380d48168b9db0492", required = true),
             @ApiImplicitParam(name = "search", value = "검색어(닉네임, 이메일)", dataType = "string", allowEmptyValue = true, defaultValue = ""),
             @ApiImplicitParam(name = "filter", value = "사용자 필터(MASTER, MANAGER, MEMBER) 또는 (REMOTE, MAKE, VIEW)", dataType = "string", allowEmptyValue = true, defaultValue = ""),
+            @ApiImplicitParam(name = "role", value = "워크스페이스 역할 필터(MASTER, MANAGER, MEMBER, GUEST)", dataType = "string", allowEmptyValue = true, paramType = "query", allowMultiple = true),
+            @ApiImplicitParam(name = "userType", value = "사용자 계정 타입 필터(USER, WORKSPACE_ONLY_USER, GUEST_USER)", dataType = "string", allowEmptyValue = true, defaultValue = ""),
+            @ApiImplicitParam(name = "plan", value = "제품 라이선스 플랜 필터(REMOTE, MAKE, VIEW)", dataType = "string", allowEmptyValue = true, defaultValue = ""),
             @ApiImplicitParam(name = "page", value = "size 대로 나눠진 페이지를 조회할 번호", paramType = "query", defaultValue = "0"),
             @ApiImplicitParam(name = "size", value = "페이징 사이즈", dataType = "number", paramType = "query", defaultValue = "20"),
             @ApiImplicitParam(name = "sort", value = "정렬 옵션 데이터(role, joinDate, email, nickname)", paramType = "query", defaultValue = "role,desc"),
@@ -57,12 +60,16 @@ public class WorkspaceUserController {
     public ResponseEntity<ApiResponse<WorkspaceUserInfoListResponse>> getMembers(
             @PathVariable("workspaceId") String workspaceId,
             @RequestParam(value = "search", required = false) String search,
-            @RequestParam(value = "filter", required = false) String filter, @ApiIgnore PageRequest pageable
+            @RequestParam(value = "filter", required = false) String filter,
+            @RequestParam(value = "role", required = false) List<Role> role,
+            @RequestParam(value = "userType", required = false) String userType,
+            @RequestParam(value = "plan", required = false) String plan,
+            @ApiIgnore PageRequest pageable
     ) {
         if (!StringUtils.hasText(workspaceId)) {
             throw new WorkspaceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
-        WorkspaceUserInfoListResponse responseMessage = workspaceUserService.getMembers(workspaceId, search, filter, pageable);
+        WorkspaceUserInfoListResponse responseMessage = workspaceUserService.getMembers(workspaceId, search, filter, role, userType, plan, pageable);
         return ResponseEntity.ok(new ApiResponse<>(responseMessage));
     }
 
@@ -86,8 +93,8 @@ public class WorkspaceUserController {
     }
 
     @ApiOperation(
-            value = "워크스페이스 멤버 권한 설정",
-            notes = "워크스페이스 내의 권한은 마스터 유저만 설정 가능하고 워크스페이스 내의 플랜은 마스터, 매니저유저만 가능합니다."
+            value = "워크스페이스 소속 유저 정보 편집",
+            notes = "워크스페이스 소속 유저의 정보, 플랜, 역할 정보를 편집합니다. 편집의 권한은 워크스페이스 설정에 따라 달라질 수 있습니다."
     )
     @ApiImplicitParams({
             @ApiImplicitParam(name = "workspaceId", value = "워크스페이스 uuid", dataType = "string", defaultValue = "4d6eab0860969a50acbfa4599fbb5ae8", paramType = "path", required = true)
@@ -100,8 +107,7 @@ public class WorkspaceUserController {
         if (!StringUtils.hasText(workspaceId) || bindingResult.hasErrors()) {
             throw new WorkspaceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
-        ApiResponse<Boolean> apiResponse = workspaceUserService.reviseMemberInfo(
-                workspaceId, memberUpdateRequest, locale);
+        ApiResponse<Boolean> apiResponse = workspaceUserService.reviseMemberInfo(workspaceId, memberUpdateRequest, locale);
         return ResponseEntity.ok(apiResponse);
     }
 
@@ -285,8 +291,7 @@ public class WorkspaceUserController {
         return ResponseEntity.ok(new ApiResponse<>(response));
     }
 
-    @Profile("onpremise")
-    @ApiOperation(value = "워크스페이스 멤버 계정 생성", tags = "on-premise only")
+    @ApiOperation(value = "워크스페이스 전용 계정 생성")
     @ApiImplicitParam(name = "workspaceId", value = "워크스페이스 식별자", dataType = "string", defaultValue = "4d6eab0860969a50acbfa4599fbb5ae8", paramType = "path", required = true)
     @PostMapping("/{workspaceId}/members/account")
     public ResponseEntity<ApiResponse<WorkspaceMemberInfoListResponse>> createWorkspaceMemberAccount(
@@ -306,8 +311,7 @@ public class WorkspaceUserController {
         return ResponseEntity.ok(new ApiResponse<>(response));
     }
 
-    @Profile("onpremise")
-    @ApiOperation(value = "워크스페이스 멤버 계정 삭제 및 내보내기", tags = "on-premise only")
+    @ApiOperation(value = "워크스페이스 전용 계정 삭제 및 내보내기")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "workspaceId", value = "워크스페이스 식별자", dataType = "string", defaultValue = "4d6eab0860969a50acbfa4599fbb5ae8", paramType = "path", required = true)
     })
@@ -327,12 +331,12 @@ public class WorkspaceUserController {
         return ResponseEntity.ok(new ApiResponse<>(response));
     }
 
-    @Profile("onpremise")
-    @ApiOperation(value = "워크스페이스 멤버 비밀번호 재설정", tags = "on-premise only")
+    @ApiOperation(value = "워크스페이스 전용계정 비밀번호 재설정")
+    @ApiImplicitParam(name = "workspaceId", value = "워크스페이스 식별자", dataType = "string", defaultValue = "4d6eab0860969a50acbfa4599fbb5ae8", paramType = "path", required = true)
     @PostMapping("/{workspaceId}/members/password")
     public ResponseEntity<ApiResponse<WorkspaceMemberPasswordChangeResponse>> memberPasswordChangeRequest(
             @PathVariable("workspaceId") String workspaceId,
-            @RequestBody WorkspaceMemberPasswordChangeRequest passwordChangeRequest,
+            @RequestBody @Valid WorkspaceMemberPasswordChangeRequest passwordChangeRequest,
             BindingResult bindingResult
     ) {
         if (bindingResult.hasErrors()) {
@@ -344,4 +348,65 @@ public class WorkspaceUserController {
         WorkspaceMemberPasswordChangeResponse response = workspaceUserService.memberPasswordChange(passwordChangeRequest, workspaceId);
         return ResponseEntity.ok(new ApiResponse<>(response));
     }
+
+    @ApiOperation(value = "워크스페이스 시트 계정 생성")
+    @ApiImplicitParam(name = "workspaceId", value = "워크스페이스 식별자", dataType = "string", defaultValue = "4d6eab0860969a50acbfa4599fbb5ae8", paramType = "path", required = true)
+    @PostMapping("/{workspaceId}/members/guest")
+    public ResponseEntity<ApiResponse<WorkspaceMemberInfoListResponse>> createWorkspaceMemberAccount(
+            @PathVariable("workspaceId") String workspaceId,
+            @RequestBody @Valid MemberGuestCreateRequest memberGuestCreateRequest, BindingResult bindingResult
+    ) {
+        if (bindingResult.hasErrors()) {
+            bindingResult.getAllErrors()
+                    .forEach(
+                            objectError -> log.error("[CREATE WORKSPACE GUEST MEMBER] Error message : [{}]", objectError));
+            throw new WorkspaceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
+        }
+        WorkspaceMemberInfoListResponse response = workspaceUserService.createWorkspaceMemberGuest(
+                workspaceId,
+                memberGuestCreateRequest
+        );
+        return ResponseEntity.ok(new ApiResponse<>(response));
+    }
+
+    @ApiOperation(value = "워크스페이스 게스트 계정 삭제 및 내보내기")
+    @ApiImplicitParam(name = "workspaceId", value = "워크스페이스 식별자", dataType = "string", defaultValue = "4d6eab0860969a50acbfa4599fbb5ae8", paramType = "path", required = true)
+    @DeleteMapping("/{workspaceId}/members/guest")
+    public ResponseEntity<ApiResponse<MemberSeatDeleteResponse>> deleteWorkspaceMemberAccount(
+            @PathVariable("workspaceId") String workspaceId,
+            @RequestBody @Valid MemberGuestDeleteRequest memberGuestDeleteRequest, BindingResult bindingResult
+    ) {
+        if (bindingResult.hasErrors()) {
+            bindingResult.getAllErrors()
+                    .forEach(
+                            objectError -> log.error("[DELETE WORKSPACE GUEST MEMBER] Error message : [{}]", objectError));
+            throw new WorkspaceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
+        }
+        MemberSeatDeleteResponse response = workspaceUserService.deleteWorkspaceMemberSeat(
+                workspaceId,
+                memberGuestDeleteRequest
+        );
+        return ResponseEntity.ok(new ApiResponse<>(response));
+    }
+
+    @ApiOperation(value = "워크스페이스 전용계정/시트계정 프로필 이미지 변경")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "workspaceId", value = "워크스페이스 식별자", dataType = "string", defaultValue = "4d6eab0860969a50acbfa4599fbb5ae8", paramType = "path", required = true),
+            @ApiImplicitParam(name = "profile", value = "워크스페이스 프로필", dataType = "__file", paramType = "form"),
+    })
+    @PostMapping("/{workspaceId}/members/profile")
+    public ResponseEntity<ApiResponse<MemberProfileUpdateResponse>> deleteWorkspaceMemberAccount(
+            @PathVariable("workspaceId") String workspaceId,
+            @ModelAttribute @Valid MemberProfileUpdateRequest memberProfileUpdateRequest, BindingResult bindingResult
+    ) {
+        if (bindingResult.hasErrors()) {
+            bindingResult.getAllErrors()
+                    .forEach(
+                            objectError -> log.error("[UPDATE WORKSPACE USER PROFILE] Error message : [{}]", objectError));
+            throw new WorkspaceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
+        }
+        MemberProfileUpdateResponse response = workspaceUserService.updateWorkspaceUserProfile(workspaceId, memberProfileUpdateRequest);
+        return ResponseEntity.ok(new ApiResponse<>(response));
+    }
+
 }

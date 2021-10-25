@@ -25,8 +25,9 @@ public class WorkspaceRole extends TimeEntity {
     @Column(name = "workspace_role_id")
     private Long id;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "role", nullable = false)
-    private String role;
+    private Role role;
 
     @Lob
     @Column(name = "description")

@@ -28,7 +28,7 @@ import okhttp3.OkHttpClient;
  * EMAIL: ljk@virnect.com
  * DESCRIPTION:
  */
-@Profile({"local", "develop", "onpremise"})
+@Profile({"local", "develop", "onpremise","test"})
 @Configuration
 public class MinioConfiguration {
 

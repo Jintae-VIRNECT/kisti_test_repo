@@ -1,7 +1,6 @@
 package com.virnect.workspace.application.workspace;
 
 import com.virnect.workspace.application.license.LicenseRestService;
-import com.virnect.workspace.application.message.MessageRestService;
 import com.virnect.workspace.application.user.UserRestService;
 import com.virnect.workspace.dao.history.HistoryRepository;
 import com.virnect.workspace.dao.setting.SettingRepository;
@@ -13,24 +12,22 @@ import com.virnect.workspace.dto.onpremise.*;
 import com.virnect.workspace.dto.request.WorkspaceCreateRequest;
 import com.virnect.workspace.dto.rest.UserInfoRestResponse;
 import com.virnect.workspace.event.cache.UserWorkspacesDeleteEvent;
+import com.virnect.workspace.event.mail.MailContextHandler;
 import com.virnect.workspace.exception.WorkspaceException;
-import com.virnect.workspace.global.common.RedirectProperty;
 import com.virnect.workspace.global.common.mapper.rest.RestMapStruct;
 import com.virnect.workspace.global.common.mapper.workspace.WorkspaceMapStruct;
 import com.virnect.workspace.global.constant.Permission;
-import com.virnect.workspace.global.constant.Role;
 import com.virnect.workspace.global.constant.UUIDType;
 import com.virnect.workspace.global.error.ErrorCode;
 import com.virnect.workspace.global.util.RandomStringTokenUtil;
+import com.virnect.workspace.infra.file.DefaultFile;
 import com.virnect.workspace.infra.file.FileService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
-import org.thymeleaf.spring5.SpringTemplateEngine;
 
 import java.io.IOException;
 
@@ -49,8 +46,8 @@ public class OnWorkspaceServiceImpl extends WorkspaceService {
 
     private static final int MAX_HAVE_WORKSPACE_AMOUNT = 49; //최대 생성 가능한 워크스페이스 수
 
-    public OnWorkspaceServiceImpl(WorkspaceRepository workspaceRepository, WorkspaceUserRepository workspaceUserRepository, WorkspaceUserPermissionRepository workspaceUserPermissionRepository, UserRestService userRestService, MessageRestService messageRestService, FileService fileUploadService, SpringTemplateEngine springTemplateEngine, HistoryRepository historyRepository, MessageSource messageSource, LicenseRestService licenseRestService, RedirectProperty redirectProperty, WorkspaceMapStruct workspaceMapStruct, RestMapStruct restMapStruct, ApplicationEventPublisher applicationEventPublisher, SettingRepository settingRepository, WorkspaceCustomSettingRepository workspaceCustomSettingRepository, WorkspaceRoleRepository workspaceRoleRepository, WorkspacePermissionRepository workspacePermissionRepository) {
-        super(workspaceRepository, workspaceUserRepository, workspaceUserPermissionRepository, userRestService, messageRestService, fileUploadService, springTemplateEngine, historyRepository, messageSource, licenseRestService, redirectProperty, workspaceMapStruct, restMapStruct, applicationEventPublisher, settingRepository, workspaceCustomSettingRepository);
+    public OnWorkspaceServiceImpl(WorkspaceRepository workspaceRepository, WorkspaceUserRepository workspaceUserRepository, WorkspaceUserPermissionRepository workspaceUserPermissionRepository, UserRestService userRestService, FileService fileUploadService, HistoryRepository historyRepository, LicenseRestService licenseRestService, WorkspaceMapStruct workspaceMapStruct, RestMapStruct restMapStruct, ApplicationEventPublisher applicationEventPublisher, SettingRepository settingRepository, WorkspaceCustomSettingRepository workspaceCustomSettingRepository, MailContextHandler mailContextHandler, WorkspaceRoleRepository workspaceRoleRepository, WorkspacePermissionRepository workspacePermissionRepository) {
+        super(workspaceRepository, workspaceUserRepository, workspaceUserPermissionRepository, userRestService, fileUploadService, historyRepository, licenseRestService, workspaceMapStruct, restMapStruct, applicationEventPublisher, settingRepository, workspaceCustomSettingRepository, mailContextHandler);
         this.workspaceRepository = workspaceRepository;
         this.fileUploadService = fileUploadService;
         this.workspaceUserRepository = workspaceUserRepository;
@@ -94,22 +91,22 @@ public class OnWorkspaceServiceImpl extends WorkspaceService {
         }
 
         //워크스페이스 생성
-        String uuid = RandomStringTokenUtil.generate(UUIDType.UUID_WITH_SEQUENCE, 0);
+        String workspaceId = RandomStringTokenUtil.generate(UUIDType.WORKSPACE_UUID, 0);
         String pinNumber = RandomStringTokenUtil.generate(UUIDType.PIN_NUMBER, 0);
 
         String profile;
         if (workspaceCreateRequest.getProfile() != null) {
             try {
-                profile = fileUploadService.upload(workspaceCreateRequest.getProfile());
+                profile = fileUploadService.upload(workspaceCreateRequest.getProfile(), workspaceId);
             } catch (IOException e) {
                 throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_CREATE_INVALID_PROFILE);
             }
         } else {
-            profile = fileUploadService.getFileUrl("workspace-profile.png");
+            profile = fileUploadService.getDefaultFileUrl(DefaultFile.WORKSPACE_PROFILE_IMG.getFileName());
         }
 
         Workspace newWorkspace = Workspace.builder()
-                .uuid(uuid)
+                .uuid(workspaceId)
                 .userId(workspaceCreateRequest.getUserId())
                 .name(workspaceCreateRequest.getName())
                 .description(workspaceCreateRequest.getDescription())
@@ -127,7 +124,7 @@ public class OnWorkspaceServiceImpl extends WorkspaceService {
         workspaceUserRepository.save(newWorkspaceUser);
 
         // 워크스페이스 권한 할당
-        WorkspaceRole workspaceRole = workspaceRoleRepository.findById(Role.MASTER.getValue()).orElseThrow(() -> new WorkspaceException(ErrorCode.ERR_WORKSPACE_ROLE_NOT_FOUND));
+        WorkspaceRole workspaceRole = workspaceRoleRepository.findByRole(Role.MASTER).orElseThrow(() -> new WorkspaceException(ErrorCode.ERR_WORKSPACE_ROLE_NOT_FOUND));
         WorkspacePermission workspacePermission = workspacePermissionRepository.findById(Permission.ALL.getValue()).orElseThrow(() -> new WorkspaceException(ErrorCode.ERR_WORKSPACE_PERMISSION_NOT_FOUND));
         WorkspaceUserPermission newWorkspaceUserPermission = WorkspaceUserPermission.builder()
                 .workspaceRole(workspaceRole)

@@ -1,31 +1,29 @@
 package com.virnect.workspace.application.workspaceuser;
 
 import com.virnect.workspace.application.license.LicenseRestService;
-import com.virnect.workspace.application.message.MessageRestService;
 import com.virnect.workspace.application.user.UserRestService;
 import com.virnect.workspace.dao.setting.WorkspaceCustomSettingRepository;
 import com.virnect.workspace.dao.workspace.*;
-import com.virnect.workspace.domain.setting.SettingName;
-import com.virnect.workspace.domain.setting.SettingValue;
-import com.virnect.workspace.domain.setting.WorkspaceCustomSetting;
-import com.virnect.workspace.domain.workspace.*;
-import com.virnect.workspace.dto.onpremise.MemberAccountCreateInfo;
-import com.virnect.workspace.dto.onpremise.MemberAccountCreateRequest;
-import com.virnect.workspace.dto.request.MemberAccountDeleteRequest;
+import com.virnect.workspace.domain.workspace.Role;
+import com.virnect.workspace.domain.workspace.Workspace;
+import com.virnect.workspace.domain.workspace.WorkspaceRole;
+import com.virnect.workspace.domain.workspace.WorkspaceUserPermission;
+import com.virnect.workspace.dto.request.MemberUpdateRequest;
 import com.virnect.workspace.dto.request.WorkspaceInviteRequest;
-import com.virnect.workspace.dto.request.WorkspaceMemberPasswordChangeRequest;
-import com.virnect.workspace.dto.response.WorkspaceMemberInfoListResponse;
-import com.virnect.workspace.dto.response.WorkspaceMemberPasswordChangeResponse;
-import com.virnect.workspace.dto.response.WorkspaceUserInfoResponse;
-import com.virnect.workspace.dto.rest.*;
+import com.virnect.workspace.dto.rest.MyLicenseInfoListResponse;
+import com.virnect.workspace.dto.rest.MyLicenseInfoResponse;
+import com.virnect.workspace.dto.rest.UserInfoModifyRequest;
+import com.virnect.workspace.dto.rest.UserInfoRestResponse;
+import com.virnect.workspace.event.history.HistoryAddEvent;
+import com.virnect.workspace.event.mail.MailContextHandler;
 import com.virnect.workspace.exception.WorkspaceException;
 import com.virnect.workspace.global.common.ApiResponse;
-import com.virnect.workspace.global.common.RedirectProperty;
 import com.virnect.workspace.global.common.mapper.rest.RestMapStruct;
-import com.virnect.workspace.global.constant.LicenseProduct;
-import com.virnect.workspace.global.constant.Permission;
 import com.virnect.workspace.global.error.ErrorCode;
+
 import lombok.extern.slf4j.Slf4j;
+
+import org.slf4j.MDC;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Profile;
@@ -33,11 +31,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 import org.springframework.web.servlet.view.RedirectView;
-import org.thymeleaf.spring5.SpringTemplateEngine;
 
 import java.io.IOException;
-import java.time.LocalDateTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
+import java.util.stream.Collectors;
 
 /**
  * Project: PF-Workspace
@@ -50,439 +49,250 @@ import java.util.*;
 @Service
 @Profile("onpremise")
 public class OffWorkspaceUserServiceImpl extends WorkspaceUserService {
-    private static final String serviceID = "workspace-server";
-    private final WorkspaceRepository workspaceRepository;
-    private final WorkspaceUserRepository workspaceUserRepository;
-    private final WorkspaceRoleRepository workspaceRoleRepository;
-    private final WorkspacePermissionRepository workspacePermissionRepository;
-    private final WorkspaceUserPermissionRepository workspaceUserPermissionRepository;
-    private final UserRestService userRestService;
-    private final LicenseRestService licenseRestService;
-    private final RestMapStruct restMapStruct;
-    private final WorkspaceCustomSettingRepository workspaceCustomSettingRepository;
+	private static final String serviceID = "workspace-server";
+	private final WorkspaceRepository workspaceRepository;
+	private final WorkspaceUserRepository workspaceUserRepository;
+	private final WorkspaceRoleRepository workspaceRoleRepository;
+	private final WorkspacePermissionRepository workspacePermissionRepository;
+	private final WorkspaceUserPermissionRepository workspaceUserPermissionRepository;
+	private final UserRestService userRestService;
+	private final LicenseRestService licenseRestService;
+	private final RestMapStruct restMapStruct;
+	private final WorkspaceCustomSettingRepository workspaceCustomSettingRepository;
+	private final MessageSource messageSource;
+	private final ApplicationEventPublisher applicationEventPublisher;
 
-    public OffWorkspaceUserServiceImpl(WorkspaceRepository workspaceRepository, WorkspaceUserRepository workspaceUserRepository, WorkspaceRoleRepository workspaceRoleRepository, WorkspaceUserPermissionRepository workspaceUserPermissionRepository, UserRestService userRestService, MessageRestService messageRestService, SpringTemplateEngine springTemplateEngine, MessageSource messageSource, LicenseRestService licenseRestService, RedirectProperty redirectProperty, RestMapStruct restMapStruct, ApplicationEventPublisher applicationEventPublisher, WorkspacePermissionRepository workspacePermissionRepository, WorkspaceCustomSettingRepository workspaceCustomSettingRepository) {
-        super(workspaceRepository, workspaceUserRepository, workspaceRoleRepository, workspaceUserPermissionRepository, userRestService, messageRestService, springTemplateEngine, messageSource, licenseRestService, redirectProperty, restMapStruct, applicationEventPublisher, workspaceCustomSettingRepository);
-        this.workspaceRepository = workspaceRepository;
-        this.workspaceUserRepository = workspaceUserRepository;
-        this.workspaceRoleRepository = workspaceRoleRepository;
-        this.workspacePermissionRepository = workspacePermissionRepository;
-        this.workspaceUserPermissionRepository = workspaceUserPermissionRepository;
-        this.userRestService = userRestService;
-        this.licenseRestService = licenseRestService;
-        this.restMapStruct = restMapStruct;
-        this.workspaceCustomSettingRepository = workspaceCustomSettingRepository;
-    }
+	public OffWorkspaceUserServiceImpl(
+		WorkspaceRepository workspaceRepository, WorkspaceUserRepository workspaceUserRepository,
+		WorkspaceRoleRepository workspaceRoleRepository,
+		WorkspaceUserPermissionRepository workspaceUserPermissionRepository, UserRestService userRestService,
+		MessageSource messageSource, LicenseRestService licenseRestService, RestMapStruct restMapStruct,
+		ApplicationEventPublisher applicationEventPublisher,
+		WorkspaceCustomSettingRepository workspaceCustomSettingRepository, MailContextHandler mailContextHandler,
+		WorkspacePermissionRepository workspacePermissionRepository
+	) {
+		super(
+			workspaceRepository, workspaceUserRepository, workspaceRoleRepository, workspaceUserPermissionRepository,
+			userRestService, messageSource, licenseRestService, restMapStruct, applicationEventPublisher,
+			workspaceCustomSettingRepository, mailContextHandler, workspacePermissionRepository
+		);
+		this.workspaceRepository = workspaceRepository;
+		this.workspaceUserRepository = workspaceUserRepository;
+		this.workspaceRoleRepository = workspaceRoleRepository;
+		this.workspacePermissionRepository = workspacePermissionRepository;
+		this.workspaceUserPermissionRepository = workspaceUserPermissionRepository;
+		this.userRestService = userRestService;
+		this.licenseRestService = licenseRestService;
+		this.restMapStruct = restMapStruct;
+		this.workspaceCustomSettingRepository = workspaceCustomSettingRepository;
+		this.messageSource = messageSource;
+		this.applicationEventPublisher = applicationEventPublisher;
+	}
 
+	@Override
+	@Transactional
+	public ApiResponse<Boolean> reviseMemberInfo(
+		String workspaceId, MemberUpdateRequest memberUpdateRequest, Locale locale
+	) {
+		String requestUserId = MDC.get("userId") == null ? memberUpdateRequest.getRequestUserId() : MDC.get("userId");
+		log.info(
+			"[REVISE MEMBER INFO][{}] workspace uuid >> [{}], Update request info >> [{}].", requestUserId, workspaceId,
+			memberUpdateRequest.toString()
+		);
+		//1-1. 요청 워크스페이스 조회
+		Workspace workspace = workspaceRepository.findByUuid(workspaceId)
+			.orElseThrow(() -> new WorkspaceException(ErrorCode.ERR_WORKSPACE_NOT_FOUND));
 
-    @Override
-    @Transactional
-    public WorkspaceMemberInfoListResponse createWorkspaceMemberAccount(
-            String workspaceId, MemberAccountCreateRequest memberAccountCreateRequest
-    ) {
-        //1. 요청한 사람의 권한 체크
-        Workspace workspace = workspaceRepository.findByUuid(workspaceId).orElseThrow(() -> new WorkspaceException(ErrorCode.ERR_WORKSPACE_NOT_FOUND));
-        WorkspaceUserPermission requestUserPermission = workspaceUserPermissionRepository.findByWorkspaceUser_WorkspaceAndWorkspaceUser_UserId(workspace, memberAccountCreateRequest.getUserId()).orElseThrow(() -> new WorkspaceException(ErrorCode.ERR_WORKSPACE_USER_NOT_FOUND));
-        Optional<WorkspaceCustomSetting> workspaceCustomSettingOptional = workspaceCustomSettingRepository.findByWorkspace_UuidAndSetting_Name(workspaceId, SettingName.PRIVATE_USER_MANAGEMENT_ROLE_SETTING);
-        memberAccountCreateRequest.getMemberAccountCreateRequest().forEach(memberAccountCreateInfo -> {
-            if (workspaceCustomSettingOptional.isPresent()) {
-                if (workspaceCustomSettingOptional.get().getValue() == SettingValue.UNUSED || workspaceCustomSettingOptional.get().getValue() == SettingValue.MASTER_OR_MANAGER) {
-                    if (!checkWorkspaceRole(SettingValue.MASTER_OR_MANAGER, requestUserPermission.getWorkspaceRole().getRole(), memberAccountCreateInfo.getRole())) {
-                        throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_INVALID_PERMISSION);
-                    }
-                }
-                if (workspaceCustomSettingOptional.get().getValue() == SettingValue.MASTER) {
-                    if (!checkWorkspaceRole(SettingValue.MASTER, requestUserPermission.getWorkspaceRole().getRole(), memberAccountCreateInfo.getRole())) {
-                        throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_INVALID_PERMISSION);
-                    }
-                }
-                if (workspaceCustomSettingOptional.get().getValue() == SettingValue.MASTER_OR_MANAGER_OR_MEMBER) {
-                    if (!checkWorkspaceRole(SettingValue.MASTER_OR_MANAGER_OR_MEMBER, requestUserPermission.getWorkspaceRole().getRole(), memberAccountCreateInfo.getRole())) {
-                        throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_INVALID_PERMISSION);
-                    }
-                }
-            } else {
-                if (!checkWorkspaceRole(SettingValue.MASTER_OR_MANAGER, requestUserPermission.getWorkspaceRole().getRole(), memberAccountCreateInfo.getRole())) {
-                    throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_INVALID_PERMISSION);
-                }
-            }
-        });
+		//1-2. 요청 유저 권한 조회
+		WorkspaceUserPermission requestUserPermission = workspaceUserPermissionRepository.findByWorkspaceUser_WorkspaceAndWorkspaceUser_UserId(
+			workspace, requestUserId)
+			.orElseThrow(() -> new WorkspaceException(ErrorCode.ERR_WORKSPACE_USER_NOT_FOUND));
+		WorkspaceUserPermission updateUserPermission = workspaceUserPermissionRepository.findByWorkspaceUser_WorkspaceAndWorkspaceUser_UserId(
+			workspace, memberUpdateRequest.getUserId())
+			.orElseThrow(() -> new WorkspaceException(ErrorCode.ERR_WORKSPACE_USER_NOT_FOUND));
 
+		UserInfoRestResponse masterUser = getUserInfoRequest(workspace.getUserId());
+		UserInfoRestResponse updateUser = getUserInfoRequest(memberUpdateRequest.getUserId());//수정 대상 유저
+		UserInfoRestResponse requestUser = getUserInfoRequest(requestUserId);
 
-        List<String> responseLicense = new ArrayList<>();
-        List<WorkspaceUserInfoResponse> workspaceUserInfoResponseList = new ArrayList<>();
+		//2. 사용자 닉네임 변경
+		if (StringUtils.hasText(memberUpdateRequest.getNickname()) && !updateUser.getNickname()
+			.equals(memberUpdateRequest.getNickname())) {
+			log.info(
+				"[REVISE MEMBER INFO] Revise User Nickname Info. Current User Nickname >> [{}], Updated User Nickname >> [{}].",
+				updateUser.getNickname(), memberUpdateRequest.getNickname()
+			);
+			//2-1. 유저 타입 확인
+			if (updateUser.getUserType().equals("USER")) {
+				throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_USER_INFO_UPDATE_USER_TYPE);
+			}
+			//2-2. 권한 확인
+			checkUserInfoUpdatePermission(requestUserPermission, updateUserPermission, workspaceId);
+			//2-3. 변경 요청
+			modifyUserInfoByUserId(
+				memberUpdateRequest.getUserId(), new UserInfoModifyRequest(memberUpdateRequest.getNickname()));
 
-        for (MemberAccountCreateInfo memberAccountCreateInfo : memberAccountCreateRequest.getMemberAccountCreateRequest()) {
-            //1-1. 사용자에게 최소 1개 이상의 라이선스를 부여했는지 체크
-            userLicenseValidCheck(memberAccountCreateInfo.isPlanRemote(), memberAccountCreateInfo.isPlanMake(),
-                    memberAccountCreateInfo.isPlanView()
-            );
+		}
+		//3. 사용자 권한 변경
+		if (StringUtils.hasText(memberUpdateRequest.getRole()) && !updateUserPermission.getWorkspaceRole()
+			.getRole()
+			.name()
+			.equals(memberUpdateRequest.getRole())) {
+			log.info(
+				"[REVISE MEMBER INFO] Revise User Role Info. Current User Role >> [{}], Updated User Role >> [{}].",
+				updateUserPermission.getWorkspaceRole().getRole(), memberUpdateRequest.getRole()
+			);
+			//3-1. 유저 타입 확인
+			if (updateUser.getUserType().equals("GUEST_USER")) {
+				throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_USER_INFO_UPDATE_USER_TYPE);
+			}
 
-            //2. user-server 멤버 정보 등록 api 요청
-            RegisterMemberRequest registerMemberRequest = new RegisterMemberRequest();
-            registerMemberRequest.setEmail(memberAccountCreateInfo.getId());
-            registerMemberRequest.setPassword(memberAccountCreateInfo.getPassword());
-            UserInfoRestResponse userInfoRestResponse = userRestService.registerMemberRequest(
-                    registerMemberRequest,
-                    serviceID
-            )
-                    .getData();
+			//3-2. 요청 유저 권한 체크
+			checkUserRoleUpdatePermission(requestUserPermission, updateUserPermission, workspaceId);
+			//3-3. 권한 정보 변경
+			//1-3. 요청 권한 조회
+			WorkspaceRole workspaceRole = workspaceRoleRepository.findByRole(
+				Role.valueOf(memberUpdateRequest.getRole()))
+				.orElseThrow(() -> new WorkspaceException(ErrorCode.ERR_WORKSPACE_ROLE_NOT_FOUND));
+			updateUserPermission.setWorkspaceRole(workspaceRole);
+			workspaceUserPermissionRepository.save(updateUserPermission);
 
-            if (userInfoRestResponse == null || !StringUtils.hasText(userInfoRestResponse.getUuid())) {
-                log.error("[CREATE WORKSPACE MEMBER ACCOUNT] USER SERVER Member Register fail.");
-                throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_USER_ACCOUNT_CREATE_FAIL);
-            }
-            log.info(
-                    "[CREATE WORKSPACE MEMBER ACCOUNT] USER SERVER account register success. Create UUID : [{}], Create Date : [{}]",
-                    userInfoRestResponse.getUuid(), userInfoRestResponse.getCreatedDate()
-            );
+			//3-4. 변경 성공 메일 발송 - 온프라미스는 하지 않음
 
-            //3. license-server grant api 요청 -> 실패시 user-server 롤백 api 요청
-            if (memberAccountCreateInfo.isPlanRemote()) {
-                MyLicenseInfoResponse myLicenseInfoResponse = licenseRestService.grantWorkspaceLicenseToUser(
-                        workspaceId, userInfoRestResponse.getUuid(), "REMOTE").getData();
-                if (myLicenseInfoResponse == null || !StringUtils.hasText(myLicenseInfoResponse.getProductName())) {
-                    log.error(
-                            "[CREATE WORKSPACE MEMBER ACCOUNT] LICENSE SERVER license grant fail. Request User UUID : [{}], Product License : [{}]",
-                            userInfoRestResponse.getUuid(), "REMOTE"
-                    );
-                    UserDeleteRestResponse userDeleteRestResponse = userRestService.userDeleteRequest(
-                            userInfoRestResponse.getUuid(), serviceID).getData();
-                    log.error(
-                            "[CREATE WORKSPACE MEMBER ACCOUNT] LICENSE SERVER license grant fail >>>> USER SERVER account delete process. Request User UUID : [{}], Delete Date : [{}]",
-                            userDeleteRestResponse.getUserUUID(), userDeleteRestResponse.getDeletedDate()
-                    );
-                    throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_USER_LICENSE_GRANT_FAIL);
-                }
-                log.info(
-                        "[CREATE WORKSPACE MEMBER ACCOUNT] LICENSE SERVER license grant success. Request User UUID : [{}], Product License : [{}]",
-                        userInfoRestResponse.getUuid(), myLicenseInfoResponse.getProductName()
-                );
-                responseLicense.add("REMOTE");
-            }
-            if (memberAccountCreateInfo.isPlanMake()) {
-                MyLicenseInfoResponse myLicenseInfoResponse = licenseRestService.grantWorkspaceLicenseToUser(
-                        workspaceId, userInfoRestResponse.getUuid(), "MAKE").getData();
-                if (myLicenseInfoResponse == null || !StringUtils.hasText(myLicenseInfoResponse.getProductName())) {
-                    log.error(
-                            "[CREATE WORKSPACE MEMBER ACCOUNT] LICENSE SERVER license grant fail. Request User UUID : [{}], Product License : [{}]",
-                            userInfoRestResponse.getUuid(), "REMOTE"
-                    );
-                    UserDeleteRestResponse userDeleteRestResponse = userRestService.userDeleteRequest(
-                            userInfoRestResponse.getUuid(), serviceID).getData();
-                    log.error(
-                            "[CREATE WORKSPACE MEMBER ACCOUNT] LICENSE SERVER license grant fail >>>> USER SERVER account delete process. Request User UUID : [{}], Delete Date : [{}]",
-                            userDeleteRestResponse.getUserUUID(), userDeleteRestResponse.getDeletedDate()
-                    );
-                    throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_USER_LICENSE_GRANT_FAIL);
-                }
-                log.info(
-                        "[CREATE WORKSPACE MEMBER ACCOUNT] LICENSE SERVER license grant success. Request User UUID : [{}], Product License : [{}]",
-                        userInfoRestResponse.getUuid(), myLicenseInfoResponse.getProductName()
-                );
-                responseLicense.add("MAKE");
-            }
-            if (memberAccountCreateInfo.isPlanView()) {
-                MyLicenseInfoResponse myLicenseInfoResponse = licenseRestService.grantWorkspaceLicenseToUser(
-                        workspaceId, userInfoRestResponse.getUuid(), "VIEW").getData();
-                if (myLicenseInfoResponse == null || !StringUtils.hasText(myLicenseInfoResponse.getProductName())) {
-                    log.error(
-                            "[CREATE WORKSPACE MEMBER ACCOUNT] LICENSE SERVER license grant fail. Request User UUID : [{}], Product License : [{}]",
-                            userInfoRestResponse.getUuid(), "REMOTE"
-                    );
-                    UserDeleteRestResponse userDeleteRestResponse = userRestService.userDeleteRequest(
-                            userInfoRestResponse.getUuid(), serviceID).getData();
-                    log.error(
-                            "[CREATE WORKSPACE MEMBER ACCOUNT] LICENSE SERVER license grant fail >>>> USER SERVER account delete process. Request User UUID : [{}], Delete Date : [{}]",
-                            userDeleteRestResponse.getUserUUID(), userDeleteRestResponse.getDeletedDate()
-                    );
-                    throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_USER_LICENSE_GRANT_FAIL);
-                }
-                log.info(
-                        "[CREATE WORKSPACE MEMBER ACCOUNT] LICENSE SERVER license grant success. Request User UUID : [{}], Product License : [{}]",
-                        userInfoRestResponse.getUuid(), myLicenseInfoResponse.getProductName()
-                );
-                responseLicense.add("VIEW");
-            }
+			//3-5. 변경 성공 히스토리 저장
+			String message;
+			if (updateUserPermission.getWorkspaceRole().getRole() == Role.MANAGER) {
+				message = messageSource.getMessage(
+					"WORKSPACE_SET_MANAGER", new String[] {masterUser.getNickname(), updateUser.getNickname()}, locale);
+			} else {
+				message = messageSource.getMessage(
+					"WORKSPACE_SET_MEMBER", new String[] {masterUser.getNickname(), updateUser.getNickname()}, locale);
+			}
+			applicationEventPublisher.publishEvent(
+				new HistoryAddEvent(message, requestUserId, workspace));
 
-            //4. workspace 권한 및 소속 부여
-            WorkspaceUser newWorkspaceUser = WorkspaceUser.builder()
-                    .userId(userInfoRestResponse.getUuid())
-                    .workspace(workspace)
-                    .build();
-            WorkspaceRole workspaceRole = workspaceRoleRepository.findByRole(memberAccountCreateInfo.getRole().toUpperCase()).orElseThrow(() -> new WorkspaceException(ErrorCode.ERR_WORKSPACE_ROLE_NOT_FOUND));
-            WorkspacePermission workspacePermission = workspacePermissionRepository.findById(Permission.ALL.getValue()).orElseThrow(() -> new WorkspaceException(ErrorCode.ERR_WORKSPACE_PERMISSION_NOT_FOUND));
-            WorkspaceUserPermission newWorkspaceUserPermission = WorkspaceUserPermission.builder()
-                    .workspaceUser(newWorkspaceUser)
-                    .workspacePermission(workspacePermission)
-                    .workspaceRole(workspaceRole)
-                    .build();
+			//3-6. 권한이 변경된 사용자 캐싱 데이터 삭제
+			//applicationEventPublisher.publishEvent(new UserWorkspacesDeleteEvent(memberUpdateRequest.getUserId()));
+		}
 
-            workspaceUserRepository.save(newWorkspaceUser);
-            workspaceUserPermissionRepository.save(newWorkspaceUserPermission);
+		//4. 사용자 제품 라이선스 유형 변경
+		MyLicenseInfoListResponse myLicenseInfoListResponse = getMyLicenseInfoRequestHandler(
+			workspaceId, memberUpdateRequest.getUserId());
+		List<String> currentProductList = myLicenseInfoListResponse.getLicenseInfoList()
+			.stream()
+			.map(MyLicenseInfoResponse::getProductName)
+			.collect(Collectors.toList());
 
-            log.info(
-                    "[CREATE WORKSPACE MEMBER ACCOUNT] Workspace add user success. Request User UUID : [{}], Role : [{}], JoinDate : [{}]",
-                    userInfoRestResponse.getUuid(), workspaceRole.getRole(), newWorkspaceUser.getCreatedDate()
-            );
+		if (memberUpdateRequest.existLicenseUpdate(currentProductList)) {
+			log.info(
+				"[REVISE MEMBER INFO] Revise License Info. Current License Product Info >> [{}], ",
+				org.apache.commons.lang.StringUtils.join(currentProductList, ",")
+			);
+			//4-1. 유저 타입 체크
+			if (updateUser.getUserType().equals("GUEST_USER")
+				|| updateUserPermission.getWorkspaceRole().getRole() == Role.GUEST) {
+				throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_USER_INFO_UPDATE_USER_TYPE);
+			}
+			//4-2. 요청 유저 권한 체크
+			checkUserLicenseUpdatePermission(requestUserPermission, updateUserPermission, workspaceId);
 
-            //5. response
-            WorkspaceUserInfoResponse memberInfoResponse = restMapStruct.userInfoRestResponseToWorkspaceUserInfoResponse(userInfoRestResponse);
-            memberInfoResponse.setRole(newWorkspaceUserPermission.getWorkspaceRole().getRole());
-            memberInfoResponse.setRoleId(newWorkspaceUserPermission.getWorkspaceRole().getId());
-            memberInfoResponse.setJoinDate(newWorkspaceUser.getCreatedDate());
-            memberInfoResponse.setLicenseProducts(responseLicense.toArray(new String[0]));
-            workspaceUserInfoResponseList.add(memberInfoResponse);
-        }
+			//4-3. 제품 라이선스 부여/해제 요청
+			List<String> addedProductList = new ArrayList<>();
+			List<String> removedProductList = new ArrayList<>();
+			if (memberUpdateRequest.getLicenseRemote() != null && memberUpdateRequest.getLicenseRemote()
+				&& !currentProductList.contains("REMOTE")) {
+				grantWorkspaceLicenseToUser(workspace.getUuid(), updateUser.getUuid(), "REMOTE");
+				addedProductList.add("REMOTE");
+			}
 
-        return new WorkspaceMemberInfoListResponse(workspaceUserInfoResponseList);
-    }
+			if (memberUpdateRequest.getLicenseRemote() != null && !memberUpdateRequest.getLicenseRemote()
+				&& currentProductList.contains("REMOTE")) {
+				revokeWorkspaceLicenseToUser(workspace.getUuid(), updateUser.getUuid(), "REMOTE");
+				removedProductList.add("REMOTE");
+			}
 
-    /*
-    하위유저는 상위유저 또는 동급유저에 대한 권한이 없으므로 이에 대해 체크한다.
-    단 멤버유저의 경우 동급유저(멤버)에 대한 권한을 허용한다.
-     */
-    private boolean checkWorkspaceRole(SettingValue settingValue, String requestUserRole, String responseUserRole) {
-        log.info("[WORKSPACE ROLE CHECK] setting value : [{}], request user role : [{}] , response user role : [{}]", settingValue, requestUserRole, responseUserRole);
-        //요청자가 마스터 -> 대상자는 매니저, 멤버
-        if (settingValue == SettingValue.MASTER) {
-            if (!requestUserRole.equals("MASTER") || !responseUserRole.matches("MANAGER|MEMBER")) {
-                return false;
-            }
+			if (memberUpdateRequest.getLicenseMake() != null && memberUpdateRequest.getLicenseMake()
+				&& !currentProductList.contains("MAKE")) {
+				grantWorkspaceLicenseToUser(workspace.getUuid(), updateUser.getUuid(), "MAKE");
+				addedProductList.add("MAKE");
+			}
 
-        }
-        //요청자가 마스터 -> 대상자는 매니저, 멤버
-        //요청자가 매니저 -> 대상자는 멤버
-        if (settingValue == SettingValue.MASTER_OR_MANAGER) {
-            if (requestUserRole.equals("MASTER") && !responseUserRole.matches("MANAGER|MEMBER")) {
-                return false;
-            }
-            if (requestUserRole.equals("MANAGER") && !responseUserRole.equals("MEMBER")) {
-                return false;
-            }
-            if (requestUserRole.equals("MEMBER")) {
-                return false;
-            }
-        }
-        //요청자가 마스터  -> 대상자는 매니저, 멤버
-        //요청자가 매니저 -> 대상자는 멤버
-        //요청자가 멤버 -> 대상자는 멤버
-        if (settingValue == SettingValue.MASTER_OR_MANAGER_OR_MEMBER) {
-            if (requestUserRole.equals("MASTER") && !responseUserRole.matches("MANAGER|MEMBER")) {
-                return false;
-            }
-            if (requestUserRole.equals("MANAGER") && !responseUserRole.equals("MEMBER")) {
-                return false;
-            }
-            if (requestUserRole.equals("MEMBER") && !responseUserRole.equals("MEMBER")) {
-                return false;
-            }
-        }
-        return true;
-    }
+			if (memberUpdateRequest.getLicenseMake() != null && !memberUpdateRequest.getLicenseMake()
+				&& currentProductList.contains("MAKE")) {
+				revokeWorkspaceLicenseToUser(workspace.getUuid(), updateUser.getUuid(), "MAKE");
+				removedProductList.add("MAKE");
+			}
+			if (memberUpdateRequest.getLicenseView() != null && memberUpdateRequest.getLicenseView()
+				&& !currentProductList.contains("VIEW")) {
+				grantWorkspaceLicenseToUser(workspace.getUuid(), updateUser.getUuid(), "VIEW");
+				addedProductList.add("VIEW");
+			}
 
-    @Override
-    @Transactional
-    public boolean deleteWorkspaceMemberAccount(
-            String workspaceId, MemberAccountDeleteRequest memberAccountDeleteRequest
-    ) {
-        //1. 요청한 사람의 권한 체크
-        checkWorkspaceAndUserRole(workspaceId, memberAccountDeleteRequest.getUserId(), new String[]{"MASTER"});
+			if (memberUpdateRequest.getLicenseView() != null && !memberUpdateRequest.getLicenseView()
+				&& currentProductList.contains("VIEW")) {
+				revokeWorkspaceLicenseToUser(workspace.getUuid(), updateUser.getUuid(), "VIEW");
+				removedProductList.add("VIEW");
+			}
 
-        //1-1. user-server로 권한 체크
-        UserInfoRestResponse userInfoRestResponse = userRestService.getUserInfoByUserId(
-                memberAccountDeleteRequest.getUserId()).getData();
-        if (userInfoRestResponse == null || !StringUtils.hasText(userInfoRestResponse.getUuid())) {
-            log.error(
-                    "[DELETE WORKSPACE MEMBER ACCOUNT] USER SERVER account not found. Request user UUID : [{}]",
-                    memberAccountDeleteRequest.getUserId()
-            );
-            throw new WorkspaceException(ErrorCode.ERR_UNEXPECTED_SERVER_ERROR);
-        }
-        UserInfoAccessCheckRequest userInfoAccessCheckRequest = new UserInfoAccessCheckRequest();
-        userInfoAccessCheckRequest.setEmail(userInfoRestResponse.getEmail());
-        userInfoAccessCheckRequest.setPassword(memberAccountDeleteRequest.getUserPassword());
-        UserInfoAccessCheckResponse userInfoAccessCheckResponse = userRestService.userInfoAccessCheckRequest(
-                memberAccountDeleteRequest.getUserId(), userInfoAccessCheckRequest).getData();
-        if (userInfoAccessCheckResponse == null || !userInfoAccessCheckResponse.isAccessCheckResult()) {
-            log.error(
-                    "[DELETE WORKSPACE MEMBER ACCOUNT] USER SERVER account invalid. Request user UUID : [{}]",
-                    memberAccountDeleteRequest.getUserId()
-            );
-            throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_INVALID_PERMISSION);
-        }
+			//4-4. 라이선스 변경 히스토리 저장
+			if (!addedProductList.isEmpty()) {
+				String message = messageSource.getMessage(
+					"WORKSPACE_GRANT_LICENSE", new String[] {requestUser.getNickname(), updateUser.getNickname(),
+						org.apache.commons.lang.StringUtils.join(addedProductList, ",")}, locale);
+				applicationEventPublisher.publishEvent(new HistoryAddEvent(message, updateUser.getUuid(), workspace));
+			}
 
-        //2. license-sever revoke api 요청
-        MyLicenseInfoListResponse myLicenseInfoListResponse = licenseRestService.getMyLicenseInfoRequestHandler(
-                workspaceId, memberAccountDeleteRequest.getDeleteUserId()).getData();
+			if (!removedProductList.isEmpty()) {
+				String message = messageSource.getMessage(
+					"WORKSPACE_REVOKE_LICENSE", new String[] {requestUser.getNickname(), updateUser.getNickname(),
+						org.apache.commons.lang.StringUtils.join(removedProductList, ",")}, locale);
+				applicationEventPublisher.publishEvent(new HistoryAddEvent(message, updateUser.getUuid(), workspace));
+			}
+			log.info(
+				"[REVISE MEMBER INFO] Revise License Result Info. Removed License Product Info >> [{}], Added License Product Info >> [{}].",
+				org.apache.commons.lang.StringUtils.join(removedProductList, ","),
+				org.apache.commons.lang.StringUtils.join(addedProductList, ",")
+			);
 
-        if (myLicenseInfoListResponse.getLicenseInfoList() != null && !myLicenseInfoListResponse.getLicenseInfoList()
-                .isEmpty()) {
-            myLicenseInfoListResponse.getLicenseInfoList().forEach(myLicenseInfoResponse -> {
-                Boolean revokeResult = licenseRestService.revokeWorkspaceLicenseToUser(
-                        workspaceId,
-                        memberAccountDeleteRequest.getDeleteUserId(),
-                        myLicenseInfoResponse.getProductName()
-                ).getData();
-                if (!revokeResult) {
-                    log.error(
-                            "[DELETE WORKSPACE MEMBER ACCOUNT] LICENSE SERVER license revoke fail. Request user UUID : [{}], Product License [{}]",
-                            memberAccountDeleteRequest.getUserId(),
-                            myLicenseInfoResponse.getProductName()
-                    );
-                    throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_USER_LICENSE_REVOKE_FAIL);
-                }
-                log.info(
-                        "[DELETE WORKSPACE MEMBER ACCOUNT] LICENSE SERVER license revoke success. Request user UUID : [{}], Product License [{}]",
-                        memberAccountDeleteRequest.getUserId(),
-                        myLicenseInfoResponse.getProductName()
-                );
-            });
-        }
+			//4-5. 라이선스 변경 성공 메일 전송 - 온프라미스는 하지 않음.
+		}
+		return new ApiResponse<>(true);
+	}
 
-        //3. user-server에 멤버 삭제 api 요청 -> 실패시 grant api 요청
-        UserDeleteRestResponse userDeleteRestResponse = userRestService.userDeleteRequest(
-                memberAccountDeleteRequest.getDeleteUserId(), serviceID).getData();
-        if (userDeleteRestResponse == null || !StringUtils.hasText(userDeleteRestResponse.getUserUUID())) {
-            log.error("[DELETE WORKSPACE MEMBER ACCOUNT] USER SERVER delete user fail.");
-            if (myLicenseInfoListResponse.getLicenseInfoList() != null
-                    && !myLicenseInfoListResponse.getLicenseInfoList().isEmpty()) {
-                myLicenseInfoListResponse.getLicenseInfoList().forEach(myLicenseInfoResponse -> {
-                    MyLicenseInfoResponse grantResult = licenseRestService.grantWorkspaceLicenseToUser(
-                            workspaceId, memberAccountDeleteRequest.getDeleteUserId(),
-                            myLicenseInfoResponse.getProductName()
-                    ).getData();
-                    log.error(
-                            "[DELETE WORKSPACE MEMBER ACCOUNT] USER SERVER delete user fail. >>>> LICENSE SERVER license revoke process. Request user UUID : [{}], Product License [{}]",
-                            memberAccountDeleteRequest.getDeleteUserId(), grantResult.getProductName()
-                    );
-                });
-            }
-            throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_USER_ACCOUNT_DELETE_FAIL);
-        }
-        log.info(
-                "[DELETE WORKSPACE MEMBER ACCOUNT] USER SERVER delete user success. Request user UUID : [{}],Delete Date [{}]",
-                userDeleteRestResponse.getUserUUID(), userDeleteRestResponse.getDeletedDate()
-        );
+	@Override
+	public ApiResponse<Boolean> inviteWorkspace(
+		String workspaceId, WorkspaceInviteRequest workspaceInviteRequest, Locale locale
+	) {
+		return null;
+	}
 
-        //4. workspace-sever 권한 및 소속 해제
-        Optional<Workspace> workspace = workspaceRepository.findByUuid(workspaceId);
-        WorkspaceUser workspaceUser = workspaceUserRepository.findByUserIdAndWorkspace(
-                memberAccountDeleteRequest.getDeleteUserId(), workspace.get());
-        workspaceUserPermissionRepository.deleteAllByWorkspaceUser(workspaceUser);
-        workspaceUserRepository.deleteById(workspaceUser.getId());
+	@Override
+	public RedirectView inviteWorkspaceAccept(String sessionCode, String lang) throws IOException {
+		return null;
+	}
 
-        log.info(
-                "[DELETE WORKSPACE MEMBER ACCOUNT] Workspace delete user success. Request User UUID : [{}], Delete User UUID : [{}], DeleteDate : [{}]",
-                memberAccountDeleteRequest.getUserId(), memberAccountDeleteRequest.getDeleteUserId(), LocalDateTime.now()
-        );
-        return true;
-    }
+	@Override
+	public RedirectView inviteWorkspaceReject(String sessionCode, String lang) {
+		return null;
+	}
 
+	private void checkFileSize(long requestSize) {
+		if (requestSize < 0 || requestSize > (long)3145728) {
+			log.error(
+				"[UPLOAD FILE SIZE CHECK] Acceptable File size : [{}], Present File size : [{}] ",
+				3145728, requestSize
+			);
+			throw new WorkspaceException(ErrorCode.ERR_NOT_ALLOW_FILE_SIZE);
+		}
+	}
 
-    /**
-     * 워크스페이스 멤버 비밀번호 변경
-     *
-     * @param passwordChangeRequest - 비밀번호 변경 요청 정보
-     * @param workspaceId           - 워크스페이스 식별자 정보
-     * @return - 워크스페이스 멤버 비밀번호 변경 처리 결과
-     */
-    @Override
-    @Transactional
-    public WorkspaceMemberPasswordChangeResponse memberPasswordChange(
-            WorkspaceMemberPasswordChangeRequest passwordChangeRequest,
-            String workspaceId
-    ) {
-        checkWorkspaceAndUserRole(
-                workspaceId, passwordChangeRequest.getMasterUUID(), new String[]{"MASTER"});
-        MemberUserPasswordChangeRequest changeRequest = new MemberUserPasswordChangeRequest(
-                passwordChangeRequest.getMemberUUID(), passwordChangeRequest.getPassword()
-        );
-
-        ApiResponse<MemberUserPasswordChangeResponse> responseMessage = userRestService.memberUserPasswordChangeRequest(
-                serviceID, changeRequest
-        );
-
-        if (responseMessage.getCode() != 200 || !responseMessage.getData().isChanged()) {
-            log.error("[USER SERVER PASSWORD CHANGE REST RESULT] - [code: {}, data:{}, message: {}]",
-                    responseMessage.getCode(), responseMessage.getData() == null ? "" : responseMessage.getData(),
-                    responseMessage.getMessage()
-            );
-            throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_USER_PASSWORD_CHANGE);
-        }
-
-        return new WorkspaceMemberPasswordChangeResponse(
-                passwordChangeRequest.getMasterUUID(),
-                responseMessage.getData().getUuid(),
-                responseMessage.getData().getPasswordChangedDate()
-        );
-
-    }
-
-    private Workspace checkWorkspaceAndUserRole(String workspaceId, String userId, String[] role) {
-        Workspace workspace = workspaceRepository.findByUuid(workspaceId).orElseThrow(() -> new WorkspaceException(ErrorCode.ERR_WORKSPACE_NOT_FOUND));
-        WorkspaceUserPermission workspaceUserPermission = workspaceUserPermissionRepository.findByWorkspaceUser_WorkspaceAndWorkspaceUser_UserId(workspace, userId).orElseThrow(() -> new WorkspaceException(ErrorCode.ERR_WORKSPACE_USER_NOT_FOUND));
-
-        log.info(
-                "[CHECK WORKSPACE USER ROLE] Acceptable User Workspace Role : {}, Present User Role : [{}]",
-                Arrays.toString(role),
-                workspaceUserPermission.getWorkspaceRole().getRole()
-        );
-        if (Arrays.stream(role).noneMatch(workspaceUserPermission.getWorkspaceRole().getRole()::equals)) {
-            throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_INVALID_PERMISSION);
-        }
-        return workspace;
-    }
-
-    @Override
-    public ApiResponse<Boolean> inviteWorkspace(String workspaceId, WorkspaceInviteRequest workspaceInviteRequest, Locale locale) {
-        return null;
-    }
-
-    @Override
-    public RedirectView inviteWorkspaceAccept(String sessionCode, String lang) throws IOException {
-        return null;
-    }
-
-    @Override
-    public RedirectView inviteWorkspaceReject(String sessionCode, String lang) {
-        return null;
-    }
-
-    private List<String> userLicenseValidCheck(boolean planRemote, boolean planMake, boolean planView) {
-        if (!planRemote && !planMake && !planView) {
-            throw new WorkspaceException(ErrorCode.ERR_INCORRECT_USER_LICENSE_INFO);
-        }
-        List<String> licenseProductList = new ArrayList<>();
-        if (planRemote) {
-            licenseProductList.add(LicenseProduct.REMOTE.toString());
-        }
-        if (planMake) {
-            licenseProductList.add(LicenseProduct.MAKE.toString());
-        }
-        if (planView) {
-            licenseProductList.add(LicenseProduct.VIEW.toString());
-        }
-        return licenseProductList;
-    }
-
-    private void checkFileSize(long requestSize) {
-        if (requestSize < 0 || requestSize > (long) 3145728) {
-            log.error(
-                    "[UPLOAD FILE SIZE CHECK] Acceptable File size : [{}], Present File size : [{}] ",
-                    3145728, requestSize
-            );
-            throw new WorkspaceException(ErrorCode.ERR_NOT_ALLOW_FILE_SIZE);
-        }
-    }
-
-    private void checkFileExtension(String requestExtension, String allowExtension) {
-        if (!StringUtils.hasText(requestExtension) || !allowExtension.contains(requestExtension.toLowerCase())) {
-            log.error(
-                    "[UPLOAD FILE EXTENSION CHECK] Acceptable File extension : [{}], Present File extension : [{}] ",
-                    allowExtension, requestExtension
-            );
-            throw new WorkspaceException(ErrorCode.ERR_NOT_ALLOW_FILE_EXTENSION);
-        }
-    }
+	private void checkFileExtension(String requestExtension, String allowExtension) {
+		if (!StringUtils.hasText(requestExtension) || !allowExtension.contains(requestExtension.toLowerCase())) {
+			log.error(
+				"[UPLOAD FILE EXTENSION CHECK] Acceptable File extension : [{}], Present File extension : [{}] ",
+				allowExtension, requestExtension
+			);
+			throw new WorkspaceException(ErrorCode.ERR_NOT_ALLOW_FILE_EXTENSION);
+		}
+	}
 }

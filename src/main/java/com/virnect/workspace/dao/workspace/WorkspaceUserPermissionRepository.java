@@ -1,5 +1,6 @@
 package com.virnect.workspace.dao.workspace;
 
+import com.virnect.workspace.domain.workspace.Role;
 import com.virnect.workspace.domain.workspace.Workspace;
 import com.virnect.workspace.domain.workspace.WorkspaceUser;
 import com.virnect.workspace.domain.workspace.WorkspaceUserPermission;
@@ -24,7 +25,7 @@ public interface WorkspaceUserPermissionRepository extends JpaRepository<Workspa
     List<WorkspaceUserPermission> findByWorkspaceUser_Workspace(Workspace workspace);
     @Transactional
     void deleteAllByWorkspaceUser(WorkspaceUser workspaceUser);
-    List<WorkspaceUserPermission> findByWorkspaceUser_WorkspaceAndWorkspaceRole_Role(Workspace workspace, String role);
+    List<WorkspaceUserPermission> findByWorkspaceUser_WorkspaceAndWorkspaceRole_Role(Workspace workspace, Role role);
     List<WorkspaceUserPermission> findByWorkspaceUser_UserId(String userId);
 
 }

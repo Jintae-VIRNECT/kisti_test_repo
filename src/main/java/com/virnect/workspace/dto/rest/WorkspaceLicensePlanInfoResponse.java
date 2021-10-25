@@ -1,16 +1,16 @@
 package com.virnect.workspace.dto.rest;
 
-import java.time.LocalDateTime;
-import java.util.List;
-
+import com.virnect.workspace.domain.rest.LicenseProductStatus;
+import com.virnect.workspace.domain.rest.LicenseStatus;
+import com.virnect.workspace.domain.rest.PlanStatus;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
 import lombok.Setter;
 
-import com.virnect.workspace.domain.rest.LicenseProductStatus;
-import com.virnect.workspace.domain.rest.LicenseStatus;
-import com.virnect.workspace.domain.rest.PlanStatus;
+import java.time.LocalDateTime;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * Project: PF-Workspace
@@ -42,7 +42,7 @@ public class WorkspaceLicensePlanInfoResponse {
     @ApiModelProperty(value = "라이선스 플랜 상태", position = 8, example = "ACTIVE")
     private PlanStatus planStatus;
     @ApiModelProperty(value = "플랜 제품별 정보 라이선스 정보", position = 9)
-    private List<LicenseProductInfoResponse> licenseProductInfoList;
+    private List<LicenseProductInfoResponse> licenseProductInfoList = Collections.emptyList();
 
     @Getter
     @Setter

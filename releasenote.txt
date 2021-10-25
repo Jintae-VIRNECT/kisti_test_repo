@@ -1,12 +1,12 @@
 RELEASE
 
 New Features
-- 없음
+- 워크스페이스 식별자 생성방식 변경 (DEV-662)
 
 Bug Fixes
-- 없음
+- 구축형 유저 정보 수정 시 메일 전송 제외 (DEV-658)
 
 Limitation
-- 워크스페이스 이름, 설명 최대 입력 사이즈 변경 (DPLA-3255)
+- 없음
 
 Copyright (C) 2020, VIRNECT CO., LTD. - All Rights Reserved

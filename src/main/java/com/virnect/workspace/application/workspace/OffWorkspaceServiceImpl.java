@@ -1,41 +1,57 @@
 package com.virnect.workspace.application.workspace;
 
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.List;
+
+import org.apache.commons.io.FilenameUtils;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.context.annotation.Profile;
+import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
+
+import lombok.extern.slf4j.Slf4j;
+
 import com.virnect.workspace.application.license.LicenseRestService;
-import com.virnect.workspace.application.message.MessageRestService;
 import com.virnect.workspace.application.user.UserRestService;
 import com.virnect.workspace.dao.history.HistoryRepository;
 import com.virnect.workspace.dao.setting.SettingRepository;
 import com.virnect.workspace.dao.setting.WorkspaceCustomSettingRepository;
-import com.virnect.workspace.dao.workspace.*;
-import com.virnect.workspace.domain.workspace.*;
+import com.virnect.workspace.dao.workspace.WorkspacePermissionRepository;
+import com.virnect.workspace.dao.workspace.WorkspaceRepository;
+import com.virnect.workspace.dao.workspace.WorkspaceRoleRepository;
+import com.virnect.workspace.dao.workspace.WorkspaceSettingRepository;
+import com.virnect.workspace.dao.workspace.WorkspaceUserPermissionRepository;
+import com.virnect.workspace.dao.workspace.WorkspaceUserRepository;
+import com.virnect.workspace.domain.workspace.Role;
+import com.virnect.workspace.domain.workspace.Workspace;
+import com.virnect.workspace.domain.workspace.WorkspacePermission;
+import com.virnect.workspace.domain.workspace.WorkspaceRole;
+import com.virnect.workspace.domain.workspace.WorkspaceSetting;
+import com.virnect.workspace.domain.workspace.WorkspaceUser;
+import com.virnect.workspace.domain.workspace.WorkspaceUserPermission;
 import com.virnect.workspace.dto.WorkspaceInfoDTO;
-import com.virnect.workspace.dto.onpremise.*;
+import com.virnect.workspace.dto.onpremise.WorkspaceCustomSettingResponse;
+import com.virnect.workspace.dto.onpremise.WorkspaceFaviconUpdateRequest;
+import com.virnect.workspace.dto.onpremise.WorkspaceFaviconUpdateResponse;
+import com.virnect.workspace.dto.onpremise.WorkspaceLogoUpdateRequest;
+import com.virnect.workspace.dto.onpremise.WorkspaceLogoUpdateResponse;
+import com.virnect.workspace.dto.onpremise.WorkspaceTitleUpdateRequest;
+import com.virnect.workspace.dto.onpremise.WorkspaceTitleUpdateResponse;
 import com.virnect.workspace.dto.request.WorkspaceCreateRequest;
 import com.virnect.workspace.dto.rest.UserInfoRestResponse;
 import com.virnect.workspace.event.cache.UserWorkspacesDeleteEvent;
+import com.virnect.workspace.event.mail.MailContextHandler;
 import com.virnect.workspace.exception.WorkspaceException;
-import com.virnect.workspace.global.common.RedirectProperty;
 import com.virnect.workspace.global.common.mapper.rest.RestMapStruct;
 import com.virnect.workspace.global.common.mapper.workspace.WorkspaceMapStruct;
 import com.virnect.workspace.global.constant.Permission;
-import com.virnect.workspace.global.constant.Role;
 import com.virnect.workspace.global.constant.UUIDType;
 import com.virnect.workspace.global.error.ErrorCode;
 import com.virnect.workspace.global.util.RandomStringTokenUtil;
+import com.virnect.workspace.infra.file.DefaultFile;
 import com.virnect.workspace.infra.file.FileService;
-import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.io.FilenameUtils;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.context.MessageSource;
-import org.springframework.context.annotation.Profile;
-import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
-import org.thymeleaf.spring5.SpringTemplateEngine;
-
-import java.io.IOException;
-import java.util.Arrays;
-import java.util.List;
 
 /**
  * Project: PF-Workspace
@@ -48,7 +64,6 @@ import java.util.List;
 @Service
 @Profile("onpremise")
 public class OffWorkspaceServiceImpl extends WorkspaceService {
-    private static final String serviceID = "workspace-server";
     private final WorkspaceRepository workspaceRepository;
     private final WorkspaceUserPermissionRepository workspaceUserPermissionRepository;
     private final FileService fileUploadService;
@@ -62,13 +77,13 @@ public class OffWorkspaceServiceImpl extends WorkspaceService {
     @Value("${workspace.on-premise.max-have-workspace-amount}")
     private int maxHaveWorkspaceAmount;//최대 생성 가능한 워크스페이스 수
 
-    public OffWorkspaceServiceImpl(WorkspaceRepository workspaceRepository, WorkspaceUserRepository workspaceUserRepository, WorkspaceRoleRepository workspaceRoleRepository, WorkspacePermissionRepository workspacePermissionRepository, WorkspaceUserPermissionRepository workspaceUserPermissionRepository, UserRestService userRestService, MessageRestService messageRestService, FileService fileUploadService, SpringTemplateEngine springTemplateEngine, HistoryRepository historyRepository, MessageSource messageSource, LicenseRestService licenseRestService, RedirectProperty redirectProperty, WorkspaceMapStruct workspaceMapStruct, RestMapStruct restMapStruct, ApplicationEventPublisher applicationEventPublisher, WorkspaceSettingRepository workspaceSettingRepository, WorkspaceCustomSettingRepository workspaceCustomSettingRepository, SettingRepository settingRepository) {
-        super(workspaceRepository, workspaceUserRepository, workspaceUserPermissionRepository, userRestService, messageRestService, fileUploadService, springTemplateEngine, historyRepository, messageSource, licenseRestService, redirectProperty, workspaceMapStruct, restMapStruct, applicationEventPublisher, settingRepository, workspaceCustomSettingRepository);
+    public OffWorkspaceServiceImpl(WorkspaceRepository workspaceRepository, WorkspaceUserRepository workspaceUserRepository, WorkspaceUserPermissionRepository workspaceUserPermissionRepository, UserRestService userRestService, FileService fileUploadService, HistoryRepository historyRepository, LicenseRestService licenseRestService, WorkspaceMapStruct workspaceMapStruct, RestMapStruct restMapStruct, ApplicationEventPublisher applicationEventPublisher, SettingRepository settingRepository, WorkspaceCustomSettingRepository workspaceCustomSettingRepository, MailContextHandler mailContextHandler, WorkspaceSettingRepository workspaceSettingRepository, WorkspaceRoleRepository workspaceRoleRepository, WorkspacePermissionRepository workspacePermissionRepository) {
+        super(workspaceRepository, workspaceUserRepository, workspaceUserPermissionRepository, userRestService, fileUploadService, historyRepository, licenseRestService, workspaceMapStruct, restMapStruct, applicationEventPublisher, settingRepository, workspaceCustomSettingRepository, mailContextHandler);
         this.workspaceRepository = workspaceRepository;
         this.workspaceUserPermissionRepository = workspaceUserPermissionRepository;
         this.fileUploadService = fileUploadService;
-        this.workspaceSettingRepository = workspaceSettingRepository;
         this.workspaceUserRepository = workspaceUserRepository;
+        this.workspaceSettingRepository = workspaceSettingRepository;
         this.workspaceRoleRepository = workspaceRoleRepository;
         this.workspaceMapStruct = workspaceMapStruct;
         this.applicationEventPublisher = applicationEventPublisher;
@@ -96,20 +111,20 @@ public class OffWorkspaceServiceImpl extends WorkspaceService {
             throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_CREATE_MAX_CREATE);
         }
         //워크스페이스 생성
-        String uuid = RandomStringTokenUtil.generate(UUIDType.UUID_WITH_SEQUENCE, 0);
+        String workspaceId = RandomStringTokenUtil.generate(UUIDType.WORKSPACE_UUID, 0);
         String pinNumber = RandomStringTokenUtil.generate(UUIDType.PIN_NUMBER, 0);
         String profile;
         if (workspaceCreateRequest.getProfile() != null) {
             try {
-                profile = fileUploadService.upload(workspaceCreateRequest.getProfile());
+                profile = fileUploadService.upload(workspaceCreateRequest.getProfile(), workspaceId);
             } catch (IOException e) {
                 throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_CREATE_INVALID_PROFILE);
             }
         } else {
-            profile = fileUploadService.getFileUrl("workspace-profile.png");
+            profile = fileUploadService.getDefaultFileUrl(DefaultFile.WORKSPACE_PROFILE_IMG.getFileName());
         }
         Workspace newWorkspace = Workspace.builder()
-                .uuid(uuid)
+                .uuid(workspaceId)
                 .userId(workspaceCreateRequest.getUserId())
                 .name(workspaceCreateRequest.getName())
                 .description(workspaceCreateRequest.getDescription())
@@ -124,7 +139,7 @@ public class OffWorkspaceServiceImpl extends WorkspaceService {
                 .build();
         workspaceUserRepository.save(newWorkspaceUser);
         // 워크스페이스 권한 할당
-        WorkspaceRole workspaceRole = workspaceRoleRepository.findById(Role.MASTER.getValue()).orElseThrow(() -> new WorkspaceException(ErrorCode.ERR_WORKSPACE_ROLE_NOT_FOUND));
+        WorkspaceRole workspaceRole = workspaceRoleRepository.findByRole(Role.MASTER).orElseThrow(() -> new WorkspaceException(ErrorCode.ERR_WORKSPACE_ROLE_NOT_FOUND));
         WorkspacePermission workspacePermission = workspacePermissionRepository.findById(Permission.ALL.getValue()).orElseThrow(() -> new WorkspaceException(ErrorCode.ERR_WORKSPACE_PERMISSION_NOT_FOUND));
         WorkspaceUserPermission newWorkspaceUserPermission = WorkspaceUserPermission.builder()
                 .workspaceRole(workspaceRole)
@@ -142,14 +157,14 @@ public class OffWorkspaceServiceImpl extends WorkspaceService {
             String workspaceId, WorkspaceFaviconUpdateRequest workspaceFaviconUpdateRequest
     ) {
         //1. 권한 체크
-        Workspace workspace = checkWorkspaceAndUserRole(workspaceId, workspaceFaviconUpdateRequest.getUserId(), new String[]{"MASTER"});
+        Workspace workspace = checkWorkspaceAndUserRole(workspaceId, workspaceFaviconUpdateRequest.getUserId(), new Role[]{Role.MASTER});
         List<WorkspaceSetting> workspaceSettingList = workspaceSettingRepository.findAll();
         WorkspaceSetting workspaceSetting = workspaceSettingList.stream().findFirst()
                 .orElseThrow(() -> new WorkspaceException(ErrorCode.ERR_UNEXPECTED_SERVER_ERROR));
 
         //2. 파비콘 확장자, 사이즈 체크
         if (workspaceFaviconUpdateRequest.getFavicon() == null) {
-            String favicon = fileUploadService.getFileUrl("virnect-default-favicon.ico");
+            String favicon = fileUploadService.getDefaultFileUrl(DefaultFile.WORKSPACE_DEFAULT_FAVICON.getFileName());
             workspaceSetting.setFavicon(favicon);
             workspaceSettingRepository.save(workspaceSetting);
             WorkspaceFaviconUpdateResponse workspaceFaviconUpdateResponse = new WorkspaceFaviconUpdateResponse();
@@ -164,7 +179,7 @@ public class OffWorkspaceServiceImpl extends WorkspaceService {
 
         //3. 파비콘 업로드
         try {
-            String favicon = fileUploadService.upload(workspaceFaviconUpdateRequest.getFavicon());
+            String favicon = fileUploadService.upload(workspaceFaviconUpdateRequest.getFavicon(), workspaceId);
             workspaceSetting.setFavicon(favicon);
             workspaceSettingRepository.save(workspaceSetting);
 
@@ -205,7 +220,7 @@ public class OffWorkspaceServiceImpl extends WorkspaceService {
     ) {
         //1. 권한 체크
         Workspace workspace = checkWorkspaceAndUserRole(
-                workspaceId, workspaceLogoUpdateRequest.getUserId(), new String[]{"MASTER"});
+                workspaceId, workspaceLogoUpdateRequest.getUserId(), new Role[]{Role.MASTER});
         List<WorkspaceSetting> workspaceSettingList = workspaceSettingRepository.findAll();
         WorkspaceSetting workspaceSetting = workspaceSettingList.stream().findFirst()
                 .orElseThrow(() -> new WorkspaceException(ErrorCode.ERR_UNEXPECTED_SERVER_ERROR));
@@ -221,7 +236,7 @@ public class OffWorkspaceServiceImpl extends WorkspaceService {
             checkFileExtension(defaultExtension, allowExtension);
 
             try {
-                String logo = fileUploadService.upload(workspaceLogoUpdateRequest.getDefaultLogo());
+                String logo = fileUploadService.upload(workspaceLogoUpdateRequest.getDefaultLogo(), workspaceId);
                 workspaceSetting.setDefaultLogo(logo);
             } catch (IOException e) {
                 log.error("[UPDATE WORKSPACE LOGO] Logo Image upload fail. Error message >> [{}]", e.getMessage());
@@ -230,7 +245,7 @@ public class OffWorkspaceServiceImpl extends WorkspaceService {
                 return workspaceLogoUpdateResponse;
             }
         } else {
-            String logoDefault = fileUploadService.getFileUrl("virnect-default-logo.png");
+            String logoDefault = fileUploadService.getDefaultFileUrl(DefaultFile.WORKSPACE_DEFAULT_LOGO_IMG.getFileName());
             workspaceSetting.setDefaultLogo(logoDefault);
             workspaceSettingRepository.save(workspaceSetting);
 
@@ -244,7 +259,7 @@ public class OffWorkspaceServiceImpl extends WorkspaceService {
             checkFileExtension(greyExtension, allowExtension);
 
             try {
-                String logo = fileUploadService.upload(workspaceLogoUpdateRequest.getGreyLogo());
+                String logo = fileUploadService.upload(workspaceLogoUpdateRequest.getGreyLogo(), workspaceId);
                 workspaceSetting.setGreyLogo(logo);
             } catch (IOException e) {
                 log.error("[UPDATE WORKSPACE LOGO] Logo Image upload fail. Error message >> [{}]", e.getMessage());
@@ -261,7 +276,7 @@ public class OffWorkspaceServiceImpl extends WorkspaceService {
             checkFileExtension(whiteExtension, allowExtension);
 
             try {
-                String logo = fileUploadService.upload(workspaceLogoUpdateRequest.getWhiteLogo());
+                String logo = fileUploadService.upload(workspaceLogoUpdateRequest.getWhiteLogo(), workspaceId);
                 workspaceSetting.setWhiteLogo(logo);
             } catch (IOException e) {
                 log.error("[UPDATE WORKSPACE LOGO] Logo Image upload fail. Error message >> [{}]", e.getMessage());
@@ -270,7 +285,7 @@ public class OffWorkspaceServiceImpl extends WorkspaceService {
                 return workspaceLogoUpdateResponse;
             }
         } else {
-            String logoWhite = fileUploadService.getFileUrl("virnect-white-logo.png");
+            String logoWhite = fileUploadService.getDefaultFileUrl(DefaultFile.WORKSPACE_WHITE_LOGO_IMG.getFileName());
             workspaceSetting.setWhiteLogo(logoWhite);
         }
 
@@ -289,7 +304,7 @@ public class OffWorkspaceServiceImpl extends WorkspaceService {
     ) {
         //1. 권한 체크
         Workspace workspace = checkWorkspaceAndUserRole(
-                workspaceId, workspaceTitleUpdateRequest.getUserId(), new String[]{"MASTER"});
+                workspaceId, workspaceTitleUpdateRequest.getUserId(), new Role[]{Role.MASTER});
         List<WorkspaceSetting> workspaceSettingList = workspaceSettingRepository.findAll();
         WorkspaceSetting workspaceSetting = workspaceSettingList.stream().findFirst()
                 .orElseThrow(() -> new WorkspaceException(ErrorCode.ERR_UNEXPECTED_SERVER_ERROR));
@@ -320,16 +335,16 @@ public class OffWorkspaceServiceImpl extends WorkspaceService {
         return workspaceCustomSettingResponse;
     }
 
-    private Workspace checkWorkspaceAndUserRole(String workspaceId, String userId, String[] role) {
+    private Workspace checkWorkspaceAndUserRole(String workspaceId, String userId, Role[] roles) {
         Workspace workspace = workspaceRepository.findByUuid(workspaceId).orElseThrow(() -> new WorkspaceException(ErrorCode.ERR_WORKSPACE_NOT_FOUND));
         WorkspaceUserPermission workspaceUserPermission = workspaceUserPermissionRepository.findByWorkspaceUser_WorkspaceAndWorkspaceUser_UserId(workspace, userId).orElseThrow(() -> new WorkspaceException(ErrorCode.ERR_WORKSPACE_USER_NOT_FOUND));
 
         log.info(
                 "[CHECK WORKSPACE USER ROLE] Acceptable User Workspace Role : {}, Present User Role : [{}]",
-                Arrays.toString(role),
+                Arrays.toString(roles),
                 workspaceUserPermission.getWorkspaceRole().getRole()
         );
-        if (Arrays.stream(role).noneMatch(workspaceUserPermission.getWorkspaceRole().getRole()::equals)) {
+        if (Arrays.stream(roles).noneMatch(role -> role == workspaceUserPermission.getWorkspaceRole().getRole())) {
             throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_INVALID_PERMISSION);
         }
         return workspace;
