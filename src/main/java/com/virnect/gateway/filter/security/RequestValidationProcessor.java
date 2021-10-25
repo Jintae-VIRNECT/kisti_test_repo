@@ -10,33 +10,39 @@ import org.springframework.http.server.reactive.ServerHttpRequest;
 public class RequestValidationProcessor {
 	private static final Logger logger = LoggerFactory.getLogger(RequestValidationProcessor.class);
 
-	public static boolean isSkipUrl(ServerHttpRequest request) {
+	public static boolean isAuthenticationIgnoreUrl(ServerHttpRequest request) {
 		String requestUrlPath = request.getURI().getPath();
-		logger.info("RequestValidationProcessing - permitAllUrl :: Skip Url Check about [{}]", requestUrlPath);
-		return requestUrlPath.startsWith("/auth") ||
+
+		boolean isSkipUrlMatched = requestUrlPath.startsWith("/auth") ||
 			requestUrlPath.startsWith("/v1/auth") ||
 			requestUrlPath.startsWith("/admin") ||
 			requestUrlPath.startsWith("/users/find") ||
 			requestUrlPath.startsWith("/licenses/allocate/check") ||
 			requestUrlPath.startsWith("/licenses/allocate") ||
 			requestUrlPath.startsWith("/licenses/deallocate") ||
+			requestUrlPath.startsWith("/download/list") ||
 			requestUrlPath.contains("/licenses/deallocate") ||
 			requestUrlPath.contains("/licenses/sdk/authentication") ||
 			requestUrlPath.contains("/workspaces/setting") ||
 			requestUrlPath.matches("^/workspaces/([a-zA-Z0-9]+)/invite/accept$") ||
+			requestUrlPath.matches("^/remote/invitation/guest/([a-zA-Z0-9]+)$") ||
 			requestUrlPath.matches("^/workspaces/invite/[a-zA-Z0-9]+/(accept|reject).*$");
+		if (isSkipUrlMatched) {
+			logger.info("[RequestValidationProcessing] - permitAllUrl :: Skip Url Check about [{}]", requestUrlPath);
+		}
+		return isSkipUrlMatched;
 	}
 
-	public static boolean isRequestAuthenticationProcessSkip(ServerHttpRequest request) {
-		return isSkipUrl(request) || hostNameCheck(request) || allowedOfficeInternalAPKDeployRequest(request);
+	public static boolean process(ServerHttpRequest request) {
+		return isAuthenticationIgnoreUrl(request) || hostNameCheck(request) || allowedOfficeInternalAPKDeployRequest(request);
 	}
 
 	private static boolean hostNameCheck(ServerHttpRequest request) {
 		if (request.getHeaders().getHost() != null) {
 			String hostName = request.getHeaders().getHost().getHostName();
-			logger.debug("RequestValidationProcessing - Request HostName Check -> [{}]", hostName);
+			logger.debug("[RequestValidationProcessing] - Request HostName Check -> [{}]", hostName);
 			if (hostName.equals("192.168.6.3")) {
-				logger.info("RequestValidationProcessing - Request HostName Check Success. : -> [{}]", hostName);
+				logger.info("[RequestValidationProcessing] - Request HostName Check Success. : -> [{}]", hostName);
 				return true;
 			}
 		}
@@ -46,8 +52,8 @@ public class RequestValidationProcessor {
 	private static boolean allowedOfficeInternalAPKDeployRequest(ServerHttpRequest request) {
 		String requestUrlPath = request.getURI().getPath();
 		if (requestUrlPath.startsWith("/download/app")) {
-			logger.info(
-				"RequestValidationProcessing - allowedOfficeInternalAPKDeployRequest :: Skip Url Check about [{}]",
+			logger.debug(
+				"[RequestValidationProcessing] - allowedOfficeInternalAPKDeployRequest :: Skip Url Check about [{}]",
 				requestUrlPath
 			);
 
@@ -59,13 +65,13 @@ public class RequestValidationProcessor {
 			}
 
 			logger.debug(
-				"RequestValidationProcessing - allowedOfficeInternalAPKDeployRequest :: RemoteAddress Check -> [{}]",
+				"[RequestValidationProcessing] - allowedOfficeInternalAPKDeployRequest :: RemoteAddress Check -> [{}]",
 				clientIp
 			);
 
 			if (clientIp.equals("121.162.3.204")) {
 				logger.info(
-					"RequestValidationProcessing - allowedOfficeInternalAPKDeployRequest :: RemoteAddress Check Success. : -> [{}]",
+					"[RequestValidationProcessing] - allowedOfficeInternalAPKDeployRequest :: RemoteAddress Check Success. : -> [{}]",
 					clientIp
 				);
 				return true;
@@ -76,18 +82,30 @@ public class RequestValidationProcessor {
 	}
 
 	public static boolean isSwaggerApiDocsUrl(ServerHttpRequest request) {
-		logger.debug(
-			"RequestValidationProcessing - SwaggerUrl :: Skip Url Check about [{}]", request.getURI().getPath());
-		return request.getURI().getPath().contains("/v2/api-docs");
+		boolean isSwaggerApiDocsUrl = request.getURI().getPath().contains("/v2/api-docs");
+		if (isSwaggerApiDocsUrl) {
+			logger.info(
+				"[RequestValidationProcessing] - SwaggerUrl :: Skip Url Check about [{}]", request.getURI().getPath());
+		}
+		return isSwaggerApiDocsUrl;
 	}
 
 	public static boolean isSessionAuthenticationRequest(ServerHttpRequest request) {
-		logger.info("RequestValidationProcessing - Session :: Session Cookie Exist Check");
-		return request.getCookies().keySet().stream().anyMatch(key -> key.contains("VSESSION"));
+		boolean isSessionAuthenticatedRequest = request.getCookies()
+			.keySet()
+			.stream()
+			.anyMatch(key -> key.contains("VSESSION"));
+		if (isSessionAuthenticatedRequest) {
+			logger.info("[RequestValidationProcessing] - Session :: Session Cookie Exist Check => True");
+		}
+		return isSessionAuthenticatedRequest;
 	}
 
 	public static boolean isJwtAuthenticationRequest(ServerHttpRequest request) {
-		logger.info("RequestValidationProcessing - Jwt :: Authorization Header Bearer Token Exist Check");
-		return request.getHeaders().containsKey(HttpHeaders.AUTHORIZATION);
+		boolean isJwtAuthenticatedRequest = request.getHeaders().containsKey(HttpHeaders.AUTHORIZATION);
+		if (isJwtAuthenticatedRequest) {
+			logger.info("[RequestValidationProcessing] - Jwt :: Authorization Header Bearer Token Exist Check => True");
+		}
+		return isJwtAuthenticatedRequest;
 	}
 }

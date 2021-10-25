@@ -17,12 +17,12 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Configuration
-@Profile({"!staging","!production"})
+@Profile(value = {"develop","onpremise"})
 public class CorsFilterConfiguration {
 
 	@PostConstruct
 	public void init(){
-		log.info("CorsFilterConfiguration - [PassCorsRoutePredicateHandlerMapping,CorsPassResponseHeaderRewriteFilter] Active");
+		log.info("[CorsFilterConfiguration] - [PassCorsRoutePredicateHandlerMapping,CorsPassResponseHeaderRewriteFilter] Active");
 	}
 
 	@Bean

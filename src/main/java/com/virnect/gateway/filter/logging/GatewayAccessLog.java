@@ -15,7 +15,7 @@ final class GatewayAccessLog {
 	static final DateTimeFormatter DATE_TIME_FORMATTER =
 		DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss z");
 	static final String COMMON_LOG_FORMAT =
-		"[{}] - {} - [{}] \"{} {} [{}] [{}]\" [{}] [{} ms] [{}]";
+		"[{}] - {} - [{}] - \"{} {} [{}] [{}]\" - [{}] - [{} ms] - [{}]";
 	static final String MISSING = "-";
 	final String zonedDateTime;
 	String address = MISSING;
@@ -77,6 +77,7 @@ final class GatewayAccessLog {
 		this.userAgent = userAgent;
 		return this;
 	}
+
 
 	long duration() {
 		return System.currentTimeMillis() - startTime;

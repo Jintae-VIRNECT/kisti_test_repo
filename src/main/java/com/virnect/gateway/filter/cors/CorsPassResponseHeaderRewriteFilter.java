@@ -4,6 +4,8 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import javax.annotation.PostConstruct;
+
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
 import org.springframework.cloud.gateway.filter.GlobalFilter;
 import org.springframework.http.HttpHeaders;
@@ -18,6 +20,11 @@ import reactor.core.publisher.Mono;
 public class CorsPassResponseHeaderRewriteFilter implements GlobalFilter {
 	private final List<String> ALL = Collections.singletonList("*");
 
+	@PostConstruct
+	public void init() {
+		log.info("[CorsPassResponseHeaderRewriteFilter] => Active");
+	}
+
 	@Override
 	public Mono<Void> filter(
 		ServerWebExchange exchange,
@@ -30,14 +37,14 @@ public class CorsPassResponseHeaderRewriteFilter implements GlobalFilter {
 	protected void rewriteHeaders(ServerWebExchange exchange) {
 		final HttpHeaders responseHeaders = exchange.getResponse().getHeaders();
 		final String origin = exchange.getRequest().getHeaders().getOrigin();
-		final String host = fetchAddressFromRequest(exchange.getRequest());
+//		final String host = fetchAddressFromRequest(exchange.getRequest());
 		responseHeaders.setAccessControlAllowOrigin(origin);
 		responseHeaders.setAccessControlExposeHeaders(Collections.singletonList(HttpHeaders.SET_COOKIE));
 		responseHeaders.setAccessControlAllowHeaders(ALL);
 		responseHeaders.setAccessControlAllowMethods(Arrays.asList(HttpMethod.values()));
 		responseHeaders.setAccessControlAllowCredentials(true);
 
-		log.info("responseHeader Rewrite : " + responseHeaders.values());
+//		log.info("responseHeader Rewrite : " + responseHeaders.values());
 	}
 
 	protected String fetchAddressFromRequest(ServerHttpRequest request) {
