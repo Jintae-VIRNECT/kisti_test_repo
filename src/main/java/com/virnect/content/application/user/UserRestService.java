@@ -21,7 +21,7 @@ import com.virnect.content.global.common.ApiResponse;
  * DESCRIPTION: User Server Rest Client Service
  */
 
-@FeignClient(name = "user-server")
+@FeignClient(name = "account-server")
 public interface UserRestService {
 
 	@GetMapping("/users/{userUUID}")

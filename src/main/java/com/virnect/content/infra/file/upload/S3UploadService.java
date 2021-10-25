@@ -4,24 +4,24 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.time.LocalDate;
 import java.util.Base64;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
-import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.amazonaws.AmazonServiceException;
+import com.amazonaws.SdkClientException;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.amazonaws.services.s3.model.CopyObjectRequest;
+import com.amazonaws.services.s3.model.DeleteObjectRequest;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.google.common.io.Files;
@@ -45,130 +45,85 @@ import com.virnect.content.global.error.ErrorCode;
 @RequiredArgsConstructor
 public class S3UploadService implements FileUploadService {
 	private final AmazonS3 amazonS3Client;
-
-	private static final String CONTENT_DIRECTORY = "contents";
+	private static final String PROJECT_DIRECTORY = "project";
+	private static final String CONTENT_DIRECTORY = "content";
 	private static final String REPORT_DIRECTORY = "report";
 	private static final String REPORT_FILE_EXTENSION = ".png";
-	private static final String VTARGET_FILE_NAME = "virnect_target.png";
+	private static final String V_TARGET_DEFAULT_NAME = "virnect_target.png";
 
 	@Value("${cloud.aws.s3.bucket.name}")
 	private String bucketName;
-	@Value("${cloud.aws.s3.bucket.resource}")
-	private String bucketResource;
-	@Value("#{'${upload.allowed-extension}'.split(',')}")
+
+	@Value("${file.prefix}")
+	private String prefix;
+
+	@Value("#{'${file.allowed-extension}'.split(',')}")
 	private List<String> allowedExtension;
 
-	private String upload(MultipartFile file, String fileName) throws IOException {
-		log.info("[AWS S3 UPLOADER] - UPLOAD BEGIN");
-		if (file.getSize() <= 0) {
+	@Override
+	public void deleteByFileUrl(String fileUrl) {
+		if (!StringUtils.hasText(fileUrl)) {
+			return;
+		}
+		log.info("[AWS S3 FILE DELETE] DELETE BEGIN. URL : {}", fileUrl);
+		String[] fileSplit = fileUrl.split(prefix);
+		String objectName = fileSplit[fileSplit.length - 1];
+
+		if (fileUrl.contains(V_TARGET_DEFAULT_NAME)) {
+			log.info("[MINIO FILE DELETE] DEFAULT FILE SKIP. KEY : {}", objectName);
+			return;
+		}
+		DeleteObjectRequest deleteObjectRequest = new DeleteObjectRequest(bucketName, objectName);
+		log.info("[AWS S3 FILE DELETE] DELETE REQUEST. BUCKET : {}, KEY : {}", bucketName, objectName);
+		try {
+			amazonS3Client.deleteObject(deleteObjectRequest);
+			log.info("[AWS S3 FILE DELETE] DELETE SUCCESS.");
+		} catch (SdkClientException e) {
+			log.info("[AWS S3 FILE DELETE] DELETE FAIL. ERROR MESSAGE : {}", e.getMessage());
+			//throw new ContentServiceException(ErrorCode.ERR_DELETE_CONTENT);
+		}
+	}
+
+	@Override
+	public String uploadByBase64Image(
+		String base64Image, String fileDir, String workspaceUUID, String fileName
+	) {
+		log.info("[AWS S3 BASE64 UPLOAD] UPLOAD BEGIN. DIR : {}, NAME : {}", fileDir, fileName);
+		byte[] image = Base64.getDecoder().decode(base64Image);
+		log.info("[AWS S3 BASE64 UPLOAD] UPLOAD FILE SIZE : {} (byte)", image.length);
+		if (image.length <= 0) {
 			throw new ContentServiceException(ErrorCode.ERR_CONTENT_UPLOAD);
 		}
-		String fileExtension = String.format(
-			".%s", Files.getFileExtension(Objects.requireNonNull(file.getOriginalFilename())));
 
-		if (!allowedExtension.contains(fileExtension)) {
-			log.error("[FILE_UPLOAD_SERVICE] [UNSUPPORTED_FILE] [{}]", file.getOriginalFilename());
-			throw new ContentServiceException(ErrorCode.ERR_UNSUPPORTED_FILE_EXTENSION);
-		}
-
-		/*
-		File uploadFile = convert(file)
-			.orElseThrow(() -> {
-				log.info("MultipartFile -> File 변환 실패");
-				return new ContentServiceException(ErrorCode.ERR_CONTENT_UPLOAD);
-			});
-
-		String saveFileName = String.format("%s%s/%s%s", bucketResource, CONTENT_DIRECTORY, fileName, fileExtension);
-		String uploadFileUrl = putS3(uploadFile, saveFileName);
-		// S3에서 다운로드 받은 파일
-		File downlodedFile = new File("upload/" + uploadFile.getName());
-
-		removeNewFile(uploadFile);
-		removeNewFile(downlodedFile);
-
-		return uploadFileUrl;
-*/
-		String saveFileName = String.format("%s%s/%s%s", bucketResource, CONTENT_DIRECTORY, fileName, fileExtension);
-		ObjectMetadata metadata = new ObjectMetadata();
-		metadata.setContentLength(file.getSize());
-		metadata.setContentType(MediaType.APPLICATION_OCTET_STREAM_VALUE);
-
-		amazonS3Client.putObject(
-			new PutObjectRequest(bucketName, saveFileName, file.getInputStream(), metadata).withCannedAcl(
-				CannedAccessControlList.PublicRead));
-		return amazonS3Client.getUrl(bucketName, saveFileName).toString();
-
-	}
-
-	@Override
-	public boolean delete(String url) {
-		if (url.equals("default") || FilenameUtils.getName(url).equals(VTARGET_FILE_NAME)) {
-			log.info("기본 이미지는 삭제하지 않습니다. FILE PATH >> [{}]", url);
-		} else {
-			//String resourceEndPoint = String.format("%s%s", bucketResource, CONTENT_DIRECTORY);
-			//            String resourceEndPoint = String.format("%s/%s", bucketName, bucketResource);
-			//String key = url.split(String.format("/%s/%s", bucketResource, CONTENT_DIRECTORY))[1];
-			String key = bucketResource + CONTENT_DIRECTORY + "/" + FilenameUtils.getName(url);
-			amazonS3Client.deleteObject(bucketName, key);
-			//amazonS3Client.deleteObject(resourceEndPoint, key);
-
-			log.info(FilenameUtils.getName(url) + " 파일이 AWS S3(" + bucketName + "/" + key + ")에서 삭제되었습니다.");
-		}
-		return true;
-	}
-
-	@Override
-	public String base64ImageUpload(String base64Image) {
-		byte[] image = Base64.getDecoder().decode(base64Image);
-		String randomFileName = String.format(
-			"%s_%s%s", LocalDate.now().toString(), RandomStringUtils.randomAlphanumeric(10).toLowerCase(),
-			REPORT_FILE_EXTENSION
-		);
 		ObjectMetadata objectMetadata = new ObjectMetadata();
 		objectMetadata.setContentType(MediaType.APPLICATION_OCTET_STREAM_VALUE);
 		objectMetadata.setContentLength(image.length);
-		objectMetadata.setHeader("filename", randomFileName);
-		objectMetadata.setContentDisposition(String.format("attachment; filename=\"%s\"", randomFileName));
+		objectMetadata.setHeader("filename", fileName);
+		objectMetadata.setContentDisposition(String.format("attachment; filename=\"%s\"", fileName));
 
-		String s3FileKey = String.format("%s%s/%s", bucketResource, REPORT_DIRECTORY, randomFileName);
+		String objectName = String.format("workspace/%s/%s/%s", workspaceUUID, fileDir, fileName);
 		PutObjectRequest putObjectRequest = new PutObjectRequest(
-			bucketName, s3FileKey, new ByteArrayInputStream(image), objectMetadata);
+			bucketName, objectName, new ByteArrayInputStream(image), objectMetadata);
 		putObjectRequest.withCannedAcl(CannedAccessControlList.PublicRead);
+		log.info(
+			"[AWS S3 BASE64 UPLOAD] UPLOAD REQUEST. BUCKET : {}, KEY : {}, CONTENT TYPE : {}", bucketName, objectName,
+			MediaType.APPLICATION_OCTET_STREAM_VALUE
+		);
 		amazonS3Client.putObject(putObjectRequest);
-		log.info("[AWS S3 FILE INPUT STREAM UPLOADER] - UPLOAD END");
-		String url = amazonS3Client.getUrl(bucketName, s3FileKey)
-			.toExternalForm();
-		log.info("[AWS S3 RESOURCE URL: {}]", url);
-		log.info("[AWS CDN URL: {}]", s3FileKey);
+		log.info("[AWS S3 BASE64 UPLOAD] UPLOAD SUCCESS.");
+		String url = amazonS3Client.getUrl(bucketName, objectName).toExternalForm();
+		log.info("[AWS S3 BASE64 UPLOAD] UPLOADED URL : {}", url);
 		return url;
-
-        /*File convertImage = new File(randomFileName);
-        try (FileOutputStream fos = new FileOutputStream(convertImage)) {
-            fos.write(image);
-            String saveFileName = String.format("%s%s/%s", bucketResource, REPORT_DIRECTORY, randomFileName);
-            String uploadFileUrl = putS3(convertImage, saveFileName);
-            removeNewFile(convertImage);
-            return uploadFileUrl;
-        } catch (Exception e) {
-            log.error(e.getMessage());
-            throw new ContentServiceException(ErrorCode.ERR_CONTENT_UPLOAD);
-        }*/
 	}
 
-	/**
-	 * multipart file 을 input stream 으로 s3에 업로드
-	 *
-	 * @param file     - 업로드하고자하는 MultipartFile
-	 * @param fileName - 저장하고자 하는 파일 명
-	 * @return - s3 파일 url
-	 * @throws IOException
-	 */
 	@Override
-	public String uploadByFileInputStream(MultipartFile file, String fileName) throws IOException {
-		log.info("[AWS S3 FILE INPUT STREAM UPLOADER] - UPLOAD BEGIN");
+	public String uploadByFileInputStream(
+		MultipartFile file, String fileDir, String workspaceUUID, String fileNameWithoutExtension
+	) {
+		log.info("[AWS S3 FILE UPLOAD] UPLOAD BEGIN. DIR : {}, NAME : {}", fileDir, fileNameWithoutExtension);
 
 		// 1. 파일 크기 확인
-		log.info("[AWS S3 FILE INPUT STREAM UPLOADER] - UPLOAD FILE SIZE >> " + file.getSize());
+		log.info("[AWS S3 FILE UPLOAD] UPLOAD FILE SIZE : {} (byte)", file.getSize());
 		if (file.getSize() <= 0) {
 			throw new ContentServiceException(ErrorCode.ERR_CONTENT_UPLOAD);
 		}
@@ -177,31 +132,40 @@ public class S3UploadService implements FileUploadService {
 		String fileExtension = String.format(
 			".%s", Files.getFileExtension(Objects.requireNonNull(file.getOriginalFilename())));
 
-		if (!allowedExtension.contains(fileExtension)) {
-			log.error("[AWS S3 FILE INPUT STREAM UPLOADER] [UNSUPPORTED_FILE] [{}]", file.getOriginalFilename());
-			throw new ContentServiceException(ErrorCode.ERR_UNSUPPORTED_FILE_EXTENSION);
+		if (fileDir.equals(CONTENT_DIRECTORY) || fileDir.equals(PROJECT_DIRECTORY)) {
+			if (!allowedExtension.contains(fileExtension)) {
+				log.info("[AWS S3 FILE UPLOAD] UNSUPPORTED FILE. NAME : {}", file.getOriginalFilename());
+				throw new ContentServiceException(ErrorCode.ERR_UNSUPPORTED_FILE_EXTENSION);
+			}
 		}
 
 		// 3. 파일 메타데이터 생성
 		ObjectMetadata objectMetadata = new ObjectMetadata();
-		objectMetadata.setContentType(MediaType.APPLICATION_OCTET_STREAM_VALUE);
+		objectMetadata.setContentType(file.getContentType());
 		objectMetadata.setContentLength(file.getSize());
-		objectMetadata.setHeader("filename", fileName + fileExtension);
-		objectMetadata.setContentDisposition(String.format("attachment; filename=\"%s\"", fileName + fileExtension));
+		objectMetadata.setHeader("filename", fileNameWithoutExtension + fileExtension);
+		objectMetadata.setContentDisposition(
+			String.format("attachment; filename=\"%s\"", fileNameWithoutExtension + fileExtension));
 
+		String objectName = String.format("workspace/%s/%s%s", fileDir, fileNameWithoutExtension, fileExtension);
+		if (StringUtils.hasText(workspaceUUID)) {
+			objectName = String.format(
+				"workspace/%s/%s/%s%s", workspaceUUID, fileDir, fileNameWithoutExtension, fileExtension);
+		}
 		// 4. 스트림으로 aws s3에 업로드
 		try {
-			String s3FileKey = String.format("%s%s/%s%s", bucketResource, CONTENT_DIRECTORY, fileName, fileExtension);
-
 			PutObjectRequest putObjectRequest = new PutObjectRequest(
-				bucketName, s3FileKey, file.getInputStream(), objectMetadata
-			).withCannedAcl(CannedAccessControlList.PublicRead);
+				bucketName, objectName, file.getInputStream(), objectMetadata).withCannedAcl(
+				CannedAccessControlList.PublicRead);
+			log.info(
+				"[AWS S3 FILE UPLOAD] UPLOAD REQUEST. BUCKET : {}, KEY : {}, CONTENT TYPE : {}", bucketName, objectName,
+				file.getContentType()
+			);
 			amazonS3Client.putObject(putObjectRequest);
-			log.info("[AWS S3 FILE INPUT STREAM UPLOADER] - UPLOAD END");
-			String url = amazonS3Client.getUrl(bucketName, s3FileKey)
+			log.info("[AWS S3 FILE UPLOAD] UPLOAD SUCCESS.");
+			String url = amazonS3Client.getUrl(bucketName, objectName)
 				.toExternalForm();
-			log.info("[AWS S3 RESOURCE URL: {}]", url);
-			log.info("[AWS CDN URL: {}]", s3FileKey);
+			log.info("[AWS S3 FILE UPLOAD] UPLOADED URL : {}", url);
 			return url;
 		} catch (AmazonServiceException e) {
 			log.error("Caught an AmazonServiceException from PUT requests, rejected reasons:");
@@ -210,6 +174,10 @@ public class S3UploadService implements FileUploadService {
 			log.error("AWS Error Code:    {}", e.getErrorCode());
 			log.error("Error Type:        {}", e.getErrorType());
 			log.error("Request ID:        {}", e.getRequestId());
+			throw new ContentServiceException(ErrorCode.ERR_CONTENT_UPLOAD);
+		} catch (IOException e) {
+			log.error("Caught an AmazonServiceException from PUT requests, rejected reasons:");
+			log.error("Error Message:     {}", e.getMessage());
 			throw new ContentServiceException(ErrorCode.ERR_CONTENT_UPLOAD);
 		}
 	}
@@ -250,15 +218,32 @@ public class S3UploadService implements FileUploadService {
 	}
 
 	@Override
-	public String copyByFileObject(String sourceFileName, String destinationFileName) {
-		String sourceObjectName = String.format("%s%s/%s", bucketResource, CONTENT_DIRECTORY, sourceFileName);
-		String destinationObjectName = String.format("%s%s/%s", bucketResource, CONTENT_DIRECTORY, destinationFileName);
-		log.info("[COPY FILE REQUEST] SOURCE : {}, DESTINATION : {}", sourceObjectName, destinationObjectName);
+	public String copyByFileObject(
+		String sourceFileUrl, String destinationFileDir,
+		String destinationWorkspaceUUID, String destinationFileNameWithoutExtension
+	) {
+		log.info(
+			"[MINIO FILE COPY] COPY BEGIN. URL : {}, DESTINATION DIR : {}, DESTINATION NAME : {}", sourceFileUrl,
+			destinationFileDir, destinationFileNameWithoutExtension
+		);
+		String[] fileSplit = sourceFileUrl.split(prefix);
+		String sourceObjectName = fileSplit[fileSplit.length - 1];
+		String sourceFileExtension = sourceFileUrl.substring(sourceFileUrl.lastIndexOf(".") + 1); //Ares
+		String destinationObjectName = String.format(
+			"workspace/%s/%s/%s.%s", destinationWorkspaceUUID, destinationFileDir, destinationFileNameWithoutExtension,
+			sourceFileExtension
+		);
 
 		CopyObjectRequest copyObjRequest = new CopyObjectRequest(
 			bucketName, sourceObjectName, bucketName, destinationObjectName);
-		amazonS3Client.copyObject(copyObjRequest);
+		log.info("[MINIO FILE COPY] COPY REQUEST. BUCKET : {}, SOURCE KEY : {}, DESTINATION KEY : {}", bucketName,
+			sourceObjectName, destinationObjectName
+		);
 
-		return amazonS3Client.getUrl(bucketName, destinationObjectName).toString();
+		amazonS3Client.copyObject(copyObjRequest);
+		log.info("[MINIO FILE COPY] COPY SUCCESS.");
+		String url = amazonS3Client.getUrl(bucketName, destinationObjectName).toString();
+		log.info("[MINIO FILE COPY] COPIED URL : {}", url);
+		return url;
 	}
 }
