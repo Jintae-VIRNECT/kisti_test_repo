@@ -1,9 +1,9 @@
 <template>
-  <section class="remote-layout">
+  <section class="remote-layout guest">
     <template v-if="serviceMode === 'web'">
       <header-section></header-section>
       <vue2-scrollbar
-        classes="remote-wrapper"
+        classes="remote-wrapper guest"
         ref="wrapperScroller"
         :onMaxScroll="handleMaxScroll"
       >
