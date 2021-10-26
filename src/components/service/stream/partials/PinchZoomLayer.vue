@@ -1,5 +1,7 @@
 <template>
-  <div class="pinchzoom-layer" ref="pinchzoom-layer"></div>
+  <div class="pinchzoom-layer-container">
+    <div class="pinchzoom-layer" ref="pinchzoom-layer"></div>
+  </div>
 </template>
 
 <script>
@@ -10,7 +12,6 @@ import toastMixin from 'mixins/toast'
 
 //Zoom.vue와 중복되는 로직들이 있지만, 디벨롭 브랜치와 컨플릭트 최소화 하기 위해 별도 믹스인으로 공통분류 하지 않았음.
 //머지 후 리펙토링 필요
-
 export default {
   mixins: [toastMixin],
   data() {
@@ -48,30 +49,8 @@ export default {
         this.pinchZoom.options.maxZoom = newVal
       }
     },
-    isMobileSize: {
-      immediate: true,
-      handler: function(newVal) {
-        if (newVal) {
-          this.$nextTick(() => {
-            const el = this.$refs['pinchzoom-layer']
-            this.pinchZoom = new PinchZoom(el, {
-              minZoom: 1,
-              maxZoom: this.zoomMax,
-              onZoomUpdate: (object, event) => {
-                if (event) event.preventDefault()
-                this.change(object.zoomFactor)
-              },
-            })
-          })
-        } else {
-          this.pinchZoom = null
-        }
-      },
-    },
-    watch: {
-      cameraStatus(level) {
-        this.cameraListener(level)
-      },
+    cameraStatus(level) {
+      this.cameraListener(level)
     },
   },
   methods: {
@@ -117,10 +96,29 @@ export default {
       this.$call.sendCameraZoom(level, [this.mainView.connectionId])
     },
   },
+  created() {
+    this.$nextTick(() => {
+      const el = this.$refs['pinchzoom-layer']
+      this.pinchZoom = new PinchZoom(el, {
+        minZoom: 1,
+        maxZoom: this.zoomMax,
+        onZoomUpdate: (object, event) => {
+          if (event) event.preventDefault()
+          this.change(object.zoomFactor)
+        },
+      })
+    })
+  },
 }
 </script>
 
 <style lang="scss">
+.pinchzoom-layer-container {
+  position: absolute;
+  z-index: 1;
+  width: 100%;
+  height: 100%;
+}
 .pinch-zoom-container {
   position: absolute !important;
   z-index: 1;

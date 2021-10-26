@@ -13,7 +13,9 @@
       }"
     >
       <pinch-zoom-layer
-        v-if="isMobileSize"
+        v-if="
+          isMobileSize && viewForce && viewAction !== ACTION.STREAM_POINTING
+        "
         @zoomLevelChanged="onZoomLevelChanged"
       ></pinch-zoom-layer>
 
