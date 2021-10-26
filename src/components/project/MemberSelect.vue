@@ -53,6 +53,7 @@
 
         <el-button
           type="is-disabled"
+          :disabled="disabledSelect"
           @click="$emit('update:updateProjectMember', propsKey)"
         >
           {{ $t('common.apply') }}
@@ -122,9 +123,9 @@ export default {
       return this.memberPermissions !== 'SPECIFIC_MEMBER'
     },
     getLabelName() {
-      return this.members.filter(
+      return this.members.find(
         member => member.value === this.selectMemberArray[0],
-      )[0].label
+      ).label
     },
   },
   methods: {
@@ -143,9 +144,9 @@ export default {
       // 선택한 유저 수가 0명 이상일 때,
       if (this.selectMemberArray.length) {
         // 선택된 유저 리스트에서 첫 유저의 프로필 사진을 대표 라벨 이미지로 보여주기
-        this.labelImg = this.members.filter(
+        this.labelImg = this.members.find(
           member => member.value === this.selectMemberArray[0],
-        )[0].img
+        ).img
       }
     },
   },

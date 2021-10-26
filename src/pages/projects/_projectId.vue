@@ -99,7 +99,7 @@ export default {
     )
 
     // 지정 멤버 드롭다운 메뉴에 들어갈 멤버 리스트를 불러옵니다.
-    const { list } = await workspaceService.searchMembers()
+    const list = await workspaceService.allMembers()
 
     return {
       project: project,
