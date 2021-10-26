@@ -119,6 +119,8 @@ export default {
   PROJECTS_LIST: ['GET', '/contents/projects'],
   // 프로젝트 상세 정보 조회
   PROJECT_INFO: ['GET', '/contents/projects/{projectUUID}'],
+  // 프로젝트 상태 수정
+  PROJECT_UPDATE: ['PUT', '/contents/projects/{projectUUID}'],
 
   /**
    * onpremise

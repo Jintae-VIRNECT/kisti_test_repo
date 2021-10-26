@@ -63,4 +63,18 @@ export default {
     })
     return new Project(data)
   },
+  /**
+   * 프로젝트 상태 변경
+   * @param {String} projectUUID
+   * @param {Object} form
+   */
+  async updateProject(projectUUID, form) {
+    return await api('PROJECT_UPDATE', {
+      route: { projectUUID },
+      params: {
+        userUUID: myProfileGetter().uuid,
+        ...form,
+      },
+    })
+  },
 }

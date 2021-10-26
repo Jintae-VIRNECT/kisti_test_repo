@@ -99,7 +99,7 @@ export default {
     )
 
     // 지정 멤버 드롭다운 메뉴에 들어갈 멤버 리스트를 불러옵니다.
-    const { list } = await workspaceService.searchMembers({ role: 'MEMBER' })
+    const { list } = await workspaceService.searchMembers()
 
     return {
       project: project,
@@ -140,14 +140,14 @@ export default {
       // ex) selectOptions: 멤버, 지정멤버.. 등 드롭메뉴 옵션 리스트, memberPermission:드롭메뉴에서 선택한 권한, selectMembers: [선택한 지정 멤버 유저 리스트]
       forms: [
         {
-          key: 'shared',
+          key: 'share',
           name: 'projects.info.project.shared',
           selectOptions: [],
           memberPermission: null,
           selectMembers: [],
         },
         {
-          key: 'edited',
+          key: 'edit',
           name: 'projects.info.project.edit',
           selectOptions: [],
           memberPermission: null,
@@ -261,7 +261,7 @@ export default {
     this.forms.map(form => {
       form.selectOptions = types
 
-      const isMemberSpecitic = form.key === 'shared'
+      const isMemberSpecitic = form.key === 'share'
       form.memberPermission = isMemberSpecitic
         ? this.project.sharePermission
         : this.project.editPermission
