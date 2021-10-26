@@ -47,11 +47,30 @@ public class WorkspaceInviteRequest {
         @ApiModelProperty(value = "planView", position = 4)
         @NotNull(message = "초대할 유저의 뷰 플랜 부여 여부는 필수값입니다.")
         private boolean planView;
+
+        @Override
+        public String toString() {
+            return "UserInfo{" +
+                    "email='" + email + '\'' +
+                    ", role='" + role + '\'' +
+                    ", planRemote=" + planRemote +
+                    ", planMake=" + planMake +
+                    ", planView=" + planView +
+                    '}';
+        }
     }
 
     @ApiModelProperty(hidden = true)
     public boolean existMasterUserInvite() {
         return userInfoList.stream().anyMatch(userInfo -> userInfo.getRole().equals(Role.MASTER.name()));
+    }
+
+    @Override
+    public String toString() {
+        return "WorkspaceInviteRequest{" +
+                "userId='" + userId + '\'' +
+                ", userInfoList=" + userInfoList +
+                '}';
     }
 }
 
