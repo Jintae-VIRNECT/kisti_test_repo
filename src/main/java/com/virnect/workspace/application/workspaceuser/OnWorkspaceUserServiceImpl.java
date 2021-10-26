@@ -1,55 +1,18 @@
 package com.virnect.workspace.application.workspaceuser;
 
-import java.time.Duration;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Optional;
-import java.util.stream.Collectors;
-
-import org.slf4j.MDC;
-import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.context.MessageSource;
-import org.springframework.context.annotation.Profile;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.StringUtils;
-import org.springframework.web.servlet.view.RedirectView;
-import org.thymeleaf.context.Context;
-
-import lombok.extern.slf4j.Slf4j;
-
 import com.virnect.workspace.application.license.LicenseRestService;
 import com.virnect.workspace.application.user.UserRestService;
 import com.virnect.workspace.dao.cache.UserInviteRepository;
 import com.virnect.workspace.dao.setting.WorkspaceCustomSettingRepository;
-import com.virnect.workspace.dao.workspace.WorkspacePermissionRepository;
-import com.virnect.workspace.dao.workspace.WorkspaceRepository;
-import com.virnect.workspace.dao.workspace.WorkspaceRoleRepository;
-import com.virnect.workspace.dao.workspace.WorkspaceUserPermissionRepository;
-import com.virnect.workspace.dao.workspace.WorkspaceUserRepository;
+import com.virnect.workspace.dao.workspace.*;
 import com.virnect.workspace.domain.redis.UserInvite;
 import com.virnect.workspace.domain.setting.SettingName;
 import com.virnect.workspace.domain.setting.SettingValue;
 import com.virnect.workspace.domain.setting.WorkspaceCustomSetting;
-import com.virnect.workspace.domain.workspace.Role;
-import com.virnect.workspace.domain.workspace.Workspace;
-import com.virnect.workspace.domain.workspace.WorkspacePermission;
-import com.virnect.workspace.domain.workspace.WorkspaceRole;
-import com.virnect.workspace.domain.workspace.WorkspaceUser;
-import com.virnect.workspace.domain.workspace.WorkspaceUserPermission;
+import com.virnect.workspace.domain.workspace.*;
 import com.virnect.workspace.dto.request.MemberUpdateRequest;
 import com.virnect.workspace.dto.request.WorkspaceInviteRequest;
-import com.virnect.workspace.dto.rest.InviteUserDetailInfoResponse;
-import com.virnect.workspace.dto.rest.InviteUserInfoResponse;
-import com.virnect.workspace.dto.rest.MyLicenseInfoListResponse;
-import com.virnect.workspace.dto.rest.MyLicenseInfoResponse;
-import com.virnect.workspace.dto.rest.UserInfoModifyRequest;
-import com.virnect.workspace.dto.rest.UserInfoRestResponse;
-import com.virnect.workspace.dto.rest.WorkspaceLicensePlanInfoResponse;
+import com.virnect.workspace.dto.rest.*;
 import com.virnect.workspace.event.history.HistoryAddEvent;
 import com.virnect.workspace.event.invite.InviteSessionDeleteEvent;
 import com.virnect.workspace.event.mail.MailContextHandler;
@@ -64,6 +27,21 @@ import com.virnect.workspace.global.constant.RedirectPath;
 import com.virnect.workspace.global.constant.UUIDType;
 import com.virnect.workspace.global.error.ErrorCode;
 import com.virnect.workspace.global.util.RandomStringTokenUtil;
+import lombok.extern.slf4j.Slf4j;
+import org.slf4j.MDC;
+import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.context.MessageSource;
+import org.springframework.context.annotation.Profile;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
+import org.springframework.web.servlet.view.RedirectView;
+import org.thymeleaf.context.Context;
+
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Project: PF-Workspace
@@ -405,36 +383,40 @@ public class OnWorkspaceUserServiceImpl extends WorkspaceUserService {
 		long requestRemoteAmount = userInfoList.stream().filter(WorkspaceInviteRequest.UserInfo::isPlanRemote).count();
 		long requestMakeAmount = userInfoList.stream().filter(WorkspaceInviteRequest.UserInfo::isPlanMake).count();
 		long requestViewAmount = userInfoList.stream().filter(WorkspaceInviteRequest.UserInfo::isPlanView).count();
-
-		if (requestRemoteAmount > 0 || requestMakeAmount > 0 || requestViewAmount > 0) {
-			Integer unUsedRemoteAmount = workspaceLicensePlanInfoResponse.getLicenseProductInfoList()
-				.stream()
-				.filter(licenseProductInfoResponse -> licenseProductInfoResponse.getProductName().equals("REMOTE"))
-				.map(WorkspaceLicensePlanInfoResponse.LicenseProductInfoResponse::getUnUseLicenseAmount)
-				.findFirst()
-				.orElseThrow(() -> new WorkspaceException(ErrorCode.ERR_WORKSPACE_INVITE_NON_LICENSE));
-			if (requestRemoteAmount > unUsedRemoteAmount) {
-				throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_INVITE_NON_LICENSE);
-			}
-			Integer unUsedMakeAmount = workspaceLicensePlanInfoResponse.getLicenseProductInfoList()
-				.stream()
-				.filter(licenseProductInfoResponse -> licenseProductInfoResponse.getProductName().equals("MAKE"))
-				.map(WorkspaceLicensePlanInfoResponse.LicenseProductInfoResponse::getUnUseLicenseAmount)
-				.findFirst()
-				.orElseThrow(() -> new WorkspaceException(ErrorCode.ERR_WORKSPACE_INVITE_NON_LICENSE));
-			if (requestMakeAmount > unUsedMakeAmount) {
-				throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_INVITE_NON_LICENSE);
-			}
-			Integer unUsedViewAmount = workspaceLicensePlanInfoResponse.getLicenseProductInfoList()
-				.stream()
-				.filter(licenseProductInfoResponse -> licenseProductInfoResponse.getProductName().equals("VIEW"))
-				.map(WorkspaceLicensePlanInfoResponse.LicenseProductInfoResponse::getUnUseLicenseAmount)
-				.findFirst()
-				.orElseThrow(() -> new WorkspaceException(ErrorCode.ERR_WORKSPACE_INVITE_NON_LICENSE));
-			if (requestViewAmount > unUsedViewAmount) {
-				throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_INVITE_NON_LICENSE);
-			}
-		}
+        log.info("[WORKSPACE INVITE USER] Request license amount. remote : {}, make : {}, view : {}", requestRemoteAmount, requestMakeAmount, requestViewAmount);
+        if (requestRemoteAmount > 0) {
+            Integer unUsedRemoteAmount = workspaceLicensePlanInfoResponse.getLicenseProductInfoList()
+                    .stream()
+                    .filter(licenseProductInfoResponse -> licenseProductInfoResponse.getProductName().equals("REMOTE"))
+                    .map(WorkspaceLicensePlanInfoResponse.LicenseProductInfoResponse::getUnUseLicenseAmount)
+                    .findFirst()
+                    .orElseThrow(() -> new WorkspaceException(ErrorCode.ERR_WORKSPACE_INVITE_NON_LICENSE));
+            if (requestRemoteAmount > unUsedRemoteAmount) {
+                throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_INVITE_NON_LICENSE);
+            }
+        }
+        if (requestMakeAmount > 0) {
+            Integer unUsedMakeAmount = workspaceLicensePlanInfoResponse.getLicenseProductInfoList()
+                    .stream()
+                    .filter(licenseProductInfoResponse -> licenseProductInfoResponse.getProductName().equals("MAKE"))
+                    .map(WorkspaceLicensePlanInfoResponse.LicenseProductInfoResponse::getUnUseLicenseAmount)
+                    .findFirst()
+                    .orElseThrow(() -> new WorkspaceException(ErrorCode.ERR_WORKSPACE_INVITE_NON_LICENSE));
+            if (requestMakeAmount > unUsedMakeAmount) {
+                throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_INVITE_NON_LICENSE);
+            }
+        }
+        if (requestViewAmount > 0) {
+            Integer unUsedViewAmount = workspaceLicensePlanInfoResponse.getLicenseProductInfoList()
+                    .stream()
+                    .filter(licenseProductInfoResponse -> licenseProductInfoResponse.getProductName().equals("VIEW"))
+                    .map(WorkspaceLicensePlanInfoResponse.LicenseProductInfoResponse::getUnUseLicenseAmount)
+                    .findFirst()
+                    .orElseThrow(() -> new WorkspaceException(ErrorCode.ERR_WORKSPACE_INVITE_NON_LICENSE));
+            if (requestViewAmount > unUsedViewAmount) {
+                throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_INVITE_NON_LICENSE);
+            }
+        }
 	}
 
 	/**
