@@ -318,11 +318,19 @@ export default {
           id: sceneGroups[index].id,
         }))
       }
+
       // 공통
       this.activeSubForms = this.subForm.map(form => form.id)
       this.workerList = await workspaceService.allMembers()
+      // clearValidate: 검증 메시지 제거
       this.$refs.mainForm.clearValidate()
       this.$refs.subForm.forEach(form => form.clearValidate())
+    },
+    closed() {
+      this.$refs.mainForm.resetFields()
+      this.$refs.subForm.forEach(form => form.resetFields())
+      this.mainForm.worker = ''
+      this.mainForm.position = ''
     },
     async validate() {
       try {
