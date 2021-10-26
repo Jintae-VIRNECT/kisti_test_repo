@@ -183,6 +183,7 @@ public class WorkspaceUserController {
             @ApiIgnore Locale locale,
             BindingResult bindingResult
     ) {
+        log.info("[WORKSPACE INVITE USER] Request - {}", workspaceInviteRequest.toString());
         if (!StringUtils.hasText(workspaceId) || bindingResult.hasErrors()) {
             throw new WorkspaceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
