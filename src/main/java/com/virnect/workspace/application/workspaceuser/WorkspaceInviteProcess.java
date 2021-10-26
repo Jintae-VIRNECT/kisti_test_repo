@@ -2,7 +2,7 @@ package com.virnect.workspace.application.workspaceuser;
 
 import com.virnect.workspace.event.history.HistoryAddEvent;
 import com.virnect.workspace.event.invite.InviteSessionDeleteEvent;
-import com.virnect.workspace.event.mail.MailSendEvent;
+import com.virnect.workspace.event.message.MailSendEvent;
 import com.virnect.workspace.global.constant.Mail;
 import lombok.Builder;
 import org.springframework.context.ApplicationEventPublisher;

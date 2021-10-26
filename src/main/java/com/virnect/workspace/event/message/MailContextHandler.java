@@ -1,4 +1,4 @@
-package com.virnect.workspace.event.mail;
+package com.virnect.workspace.event.message;
 
 import com.virnect.workspace.dto.request.WorkspaceInviteRequest;
 import com.virnect.workspace.dto.rest.InviteUserDetailInfoResponse;

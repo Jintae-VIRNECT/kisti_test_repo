@@ -1,4 +1,4 @@
-package com.virnect.workspace.event.mail;
+package com.virnect.workspace.event.message;
 
 import com.virnect.workspace.global.constant.Mail;
 import lombok.Getter;

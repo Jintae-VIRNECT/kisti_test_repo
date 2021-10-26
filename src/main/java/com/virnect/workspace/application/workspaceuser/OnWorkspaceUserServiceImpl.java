@@ -1,6 +1,7 @@
 package com.virnect.workspace.application.workspaceuser;
 
 import com.virnect.workspace.application.license.LicenseRestService;
+import com.virnect.workspace.application.message.MessageRestService;
 import com.virnect.workspace.application.user.UserRestService;
 import com.virnect.workspace.dao.cache.UserInviteRepository;
 import com.virnect.workspace.dao.setting.WorkspaceCustomSettingRepository;
@@ -15,8 +16,8 @@ import com.virnect.workspace.dto.request.WorkspaceInviteRequest;
 import com.virnect.workspace.dto.rest.*;
 import com.virnect.workspace.event.history.HistoryAddEvent;
 import com.virnect.workspace.event.invite.InviteSessionDeleteEvent;
-import com.virnect.workspace.event.mail.MailContextHandler;
-import com.virnect.workspace.event.mail.MailSendEvent;
+import com.virnect.workspace.event.message.MailContextHandler;
+import com.virnect.workspace.event.message.MailSendEvent;
 import com.virnect.workspace.exception.WorkspaceException;
 import com.virnect.workspace.global.common.ApiResponse;
 import com.virnect.workspace.global.common.RedirectProperty;
@@ -78,7 +79,8 @@ public class OnWorkspaceUserServiceImpl extends WorkspaceUserService {
 		ApplicationEventPublisher applicationEventPublisher,
 		WorkspaceCustomSettingRepository workspaceCustomSettingRepository, MailContextHandler mailContextHandler,
 		WorkspacePermissionRepository workspacePermissionRepository, UserInviteRepository userInviteRepository,
-		RedirectProperty redirectProperty
+		RedirectProperty redirectProperty,
+		MessageRestService messageRestService
 	) {
 		super(
 			workspaceRepository, workspaceUserRepository, workspaceRoleRepository, workspaceUserPermissionRepository,

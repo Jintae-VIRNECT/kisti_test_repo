@@ -1,6 +1,8 @@
 package com.virnect.workspace.application.message;
 
 import com.virnect.workspace.dto.rest.MailRequest;
+import com.virnect.workspace.dto.rest.PushResponse;
+import com.virnect.workspace.dto.rest.PushSendRequest;
 import com.virnect.workspace.global.common.ApiResponse;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -17,4 +19,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 public interface MessageRestService {
     @PostMapping(value = "/messages/mail")
     ApiResponse sendMail(@RequestBody MailRequest mailSendRequest);
+
+    @PostMapping(value = "/messages/push")
+    ApiResponse<PushResponse> sendPush(@RequestBody PushSendRequest pushSendRequest);
 }

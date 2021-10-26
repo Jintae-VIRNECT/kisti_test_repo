@@ -25,7 +25,7 @@ public class MemberAccountCreateRequest {
     @Valid
     private List<MemberAccountCreateInfo> memberAccountCreateRequest;
 
-    //시트 권한으로 전용 계정을 생성 할 수 없음
+    //게스트 권한으로 전용 계정을 생성 할 수 없음
     public boolean existSeatRoleUser() {
         return memberAccountCreateRequest.stream().anyMatch(memberAccountCreateInfo -> memberAccountCreateInfo.getRole().equals(Role.GUEST.name()));
     }

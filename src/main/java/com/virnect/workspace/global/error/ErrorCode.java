@@ -38,7 +38,7 @@ public enum ErrorCode {
     ERR_WORKSPACE_USER_INFO_UPDATE_MASTER_PLAN(1021, "Workspace user info update fail. Master user plan is only available for master user."),
     ERR_WORKSPACE_USER_INFO_UPDATE_USER_TYPE(1022, "Workspace user info update fail. User type that can not be update information."),
 
-    //워크스페이스 시트 계정 관련 에러
+    //워크스페이스 게스트 계정 관련 에러
     ERR_WORKSPACE_GUEST_USER_CREATE(1030, "Workspace guest user create fail."),
     ERR_WORKSPACE_GUEST_USER_CREATE_LACK_LICENSE(1031, "Workspace guest user create fail. Workspace license plan is lack"),
     ERR_WORKSPACE_GUEST_USER_DELETE(1032, "Workspace guest user delete fail."),

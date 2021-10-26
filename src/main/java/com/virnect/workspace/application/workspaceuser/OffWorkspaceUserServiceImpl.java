@@ -15,7 +15,7 @@ import com.virnect.workspace.dto.rest.MyLicenseInfoResponse;
 import com.virnect.workspace.dto.rest.UserInfoModifyRequest;
 import com.virnect.workspace.dto.rest.UserInfoRestResponse;
 import com.virnect.workspace.event.history.HistoryAddEvent;
-import com.virnect.workspace.event.mail.MailContextHandler;
+import com.virnect.workspace.event.message.MailContextHandler;
 import com.virnect.workspace.exception.WorkspaceException;
 import com.virnect.workspace.global.common.ApiResponse;
 import com.virnect.workspace.global.common.mapper.rest.RestMapStruct;

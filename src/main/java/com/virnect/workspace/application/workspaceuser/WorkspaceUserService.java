@@ -82,8 +82,9 @@ import com.virnect.workspace.dto.rest.UserProfileUpdateResponse;
 import com.virnect.workspace.dto.rest.WorkspaceLicensePlanInfoResponse;
 import com.virnect.workspace.event.cache.UserWorkspacesDeleteEvent;
 import com.virnect.workspace.event.history.HistoryAddEvent;
-import com.virnect.workspace.event.mail.MailContextHandler;
-import com.virnect.workspace.event.mail.MailSendEvent;
+import com.virnect.workspace.event.message.MailContextHandler;
+import com.virnect.workspace.event.message.MailSendEvent;
+import com.virnect.workspace.event.message.GuestUserDeletedEvent;
 import com.virnect.workspace.exception.WorkspaceException;
 import com.virnect.workspace.global.common.ApiResponse;
 import com.virnect.workspace.global.common.CustomPageHandler;
@@ -1333,11 +1334,11 @@ public abstract class WorkspaceUserService {
 	}
 
 	/**
-	 * 워크스페이스 시트 계정 생성
+	 * 워크스페이스 게스트 계정 생성
 	 *
 	 * @param workspaceId              - 요청 워크스페이스 식별자
-	 * @param memberGuestCreateRequest - 시트 계정 생성 요청 정보
-	 * @return - 생성된 시트 계정 목록
+	 * @param memberGuestCreateRequest - 게스트 계정 생성 요청 정보
+	 * @return - 생성된 게스트 계정 목록
 	 */
 	@Transactional
 	public WorkspaceMemberInfoListResponse createWorkspaceMemberGuest(
@@ -1361,7 +1362,7 @@ public abstract class WorkspaceUserService {
 				+ memberGuestCreateRequest.getPlanView();
 		checkWorkspaceMaxUserAmount(workspaceId, requestGuestUserAmount, workspaceLicensePlanInfoResponse);
 
-		//3. 시트 계정 생성
+		//3. 게스트 계정 생성
 		List<WorkspaceUserInfoResponse> workspaceMemberInfoList = new ArrayList<>();
 		GuestMemberRegistrationRequest guestMemberRegistrationRequest = new GuestMemberRegistrationRequest();
 		guestMemberRegistrationRequest.setMasterUserUUID(workspace.getUserId());
@@ -1372,7 +1373,7 @@ public abstract class WorkspaceUserService {
 			//라이선스 할당
 			grantWorkspaceLicenseToUser(workspaceId, userInfoRestResponse.getUuid(), "REMOTE");
 			grantWorkspaceLicenseToUser(workspaceId, userInfoRestResponse.getUuid(), "VIEW");
-			//시트 멤버 저장
+			//게스트 멤버 저장
 			WorkspaceUser workspaceUser = WorkspaceUser.builder()
 				.userId(userInfoRestResponse.getUuid())
 				.workspace(workspace)
@@ -1402,7 +1403,7 @@ public abstract class WorkspaceUserService {
 			UserInfoRestResponse userInfoRestResponse = guestMemberRegistrationRequest(guestMemberRegistrationRequest);
 			//라이선스 할당
 			grantWorkspaceLicenseToUser(workspaceId, userInfoRestResponse.getUuid(), "REMOTE");
-			//시트 멤버 저장
+			//게스트 멤버 저장
 			WorkspaceUser workspaceUser = WorkspaceUser.builder()
 				.userId(userInfoRestResponse.getUuid())
 				.workspace(workspace)
@@ -1432,7 +1433,7 @@ public abstract class WorkspaceUserService {
 			UserInfoRestResponse userInfoRestResponse = guestMemberRegistrationRequest(guestMemberRegistrationRequest);
 			//라이선스 할당
 			grantWorkspaceLicenseToUser(workspaceId, userInfoRestResponse.getUuid(), "VIEW");
-			//시트 멤버 저장
+			//게스트 멤버 저장
 			WorkspaceUser workspaceUser = WorkspaceUser.builder()
 				.userId(userInfoRestResponse.getUuid())
 				.workspace(workspace)
@@ -1479,9 +1480,9 @@ public abstract class WorkspaceUserService {
 	}
 
 	/**
-	 * 시트 계정 생성 시 라이선스 갯수 검증
+	 * 게스트 계정 생성 시 라이선스 갯수 검증
 	 *
-	 * @param memberGuestCreateRequest         - 시트 계정 생성 요청 정보
+	 * @param memberGuestCreateRequest         - 게스트 계정 생성 요청 정보
 	 * @param workspaceLicensePlanInfoResponse - 워크스페이스 라이선스 정보
 	 */
 	private void checkGuestMemberCreateLicense(
@@ -1518,7 +1519,7 @@ public abstract class WorkspaceUserService {
 	}
 
 	/**
-	 * 시트 계정 생성, 삭제, 정보편집에 대한 권한 검증
+	 * 게스트 계정 생성, 삭제, 정보편집에 대한 권한 검증
 	 *
 	 * @param workspace     - 검증 대상 워크스페이스 정보
 	 * @param requestUserId - 계정 생성 요청 유저 식별자
@@ -1603,7 +1604,7 @@ public abstract class WorkspaceUserService {
 	}
 
 	/**
-	 * 워크스페이스 시트 계정 삭제 및 워크스페이스에서 내보내기
+	 * 워크스페이스 게스트 계정 삭제 및 워크스페이스에서 내보내기
 	 *
 	 * @param workspaceId             - 삭제 대상 워크스페이스 식별자
 	 * @param memberGuestDeleteRequest - 삭제 대상 유저 및 삭제 요청 유저 정보
@@ -1618,7 +1619,7 @@ public abstract class WorkspaceUserService {
 			.orElseThrow(() -> new WorkspaceException(ErrorCode.ERR_WORKSPACE_NOT_FOUND));
 		checkGuestMemberManagementPermission(workspace, memberGuestDeleteRequest.getRequestUserId());
 
-		//1-2. 요청받은 유저가 시트유저인지 체크
+		//1-2. 요청받은 유저가 게스트 유저인지 체크
 		WorkspaceUserPermission deleteUserPermission = workspaceUserPermissionRepository.findByWorkspaceUser_WorkspaceAndWorkspaceUser_UserId(
 			workspace, memberGuestDeleteRequest.getUserId())
 			.orElseThrow(() -> new WorkspaceException(ErrorCode.ERR_WORKSPACE_USER_NOT_FOUND));
@@ -1634,31 +1635,38 @@ public abstract class WorkspaceUserService {
 		MyLicenseInfoListResponse myLicenseInfoListResponse = getMyLicenseInfoRequestHandler(
 			workspaceId, memberGuestDeleteRequest.getUserId());
 		if (!myLicenseInfoListResponse.getLicenseInfoList().isEmpty()) {
-			List<String> productList = myLicenseInfoListResponse.getLicenseInfoList()
-				.stream()
-				.map(MyLicenseInfoResponse::getProductName)
-				.collect(Collectors.toList());
-			productList.forEach(
-				productName -> revokeWorkspaceLicenseToUser(workspaceId, memberGuestDeleteRequest.getUserId(),
-					productName
+			myLicenseInfoListResponse.getLicenseInfoList()
+				.forEach(myLicenseInfoResponse -> revokeWorkspaceLicenseToUser(workspaceId,
+					memberGuestDeleteRequest.getUserId(), myLicenseInfoResponse.getProductName()
 				));
 		}
 
-		//3. 시트 유저 삭제 요청
+		//3. 게스트 유저 삭제 요청
 		GuestMemberDeleteRequest guestMemberDeleteRequest = new GuestMemberDeleteRequest();
 		guestMemberDeleteRequest.setMasterUUID(workspace.getUserId());
 		guestMemberDeleteRequest.setGuestUserUUID(deleteUserPermission.getWorkspaceUser().getUserId());
-		UserDeleteRestResponse userDeleteRestResponse = guestMemberDeleteRequest(guestMemberDeleteRequest);
+		guestUserDeleteRequestSend(guestMemberDeleteRequest);
 
 		//4. 웤스 서버에서 삭제
 		WorkspaceUser workspaceUser = deleteUserPermission.getWorkspaceUser();
 		workspaceUserPermissionRepository.delete(deleteUserPermission);
 		workspaceUserRepository.delete(workspaceUser);
 
+		//5. remote 협업 종료를 위해 게스트 삭제 푸시 이벤트 발행
+		List<String> guestUserProducts = myLicenseInfoListResponse.getLicenseInfoList()
+			.stream()
+			.map(MyLicenseInfoResponse::getProductName)
+			.collect(Collectors.toList());
+		if (guestUserProducts.contains("REMOTE")) {
+			applicationEventPublisher.publishEvent(
+				new GuestUserDeletedEvent(workspaceId, memberGuestDeleteRequest.getRequestUserId(),
+					memberGuestDeleteRequest.getUserId(), guestUserProducts
+				));
+		}
 		return new MemberSeatDeleteResponse(true, memberGuestDeleteRequest.getUserId(), LocalDateTime.now());
 	}
 
-	private UserDeleteRestResponse guestMemberDeleteRequest(GuestMemberDeleteRequest guestMemberDeleteRequest) {
+	private void guestUserDeleteRequestSend(GuestMemberDeleteRequest guestMemberDeleteRequest) {
 		ApiResponse<UserDeleteRestResponse> apiResponse = userRestService.guestMemberDeleteRequest(
 			guestMemberDeleteRequest, "workspace-server");
 		if (apiResponse.getCode() != 200 || apiResponse.getData() == null) {
@@ -1674,7 +1682,6 @@ public abstract class WorkspaceUserService {
 				guestMemberDeleteRequest.getGuestUserUUID(), guestMemberDeleteRequest.getMasterUUID(),
 				apiResponse.getData().getUserUUID(), apiResponse.getData().getDeletedDate()
 			);
-			return apiResponse.getData();
 		}
 	}
 

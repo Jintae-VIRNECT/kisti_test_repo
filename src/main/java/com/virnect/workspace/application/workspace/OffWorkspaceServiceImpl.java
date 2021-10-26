@@ -42,7 +42,7 @@ import com.virnect.workspace.dto.onpremise.WorkspaceTitleUpdateResponse;
 import com.virnect.workspace.dto.request.WorkspaceCreateRequest;
 import com.virnect.workspace.dto.rest.UserInfoRestResponse;
 import com.virnect.workspace.event.cache.UserWorkspacesDeleteEvent;
-import com.virnect.workspace.event.mail.MailContextHandler;
+import com.virnect.workspace.event.message.MailContextHandler;
 import com.virnect.workspace.exception.WorkspaceException;
 import com.virnect.workspace.global.common.mapper.rest.RestMapStruct;
 import com.virnect.workspace.global.common.mapper.workspace.WorkspaceMapStruct;
