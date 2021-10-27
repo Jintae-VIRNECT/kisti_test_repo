@@ -42,17 +42,6 @@
         <mobile-upload-button @uploaded="onFileUploaded"></mobile-upload-button>
       </template>
     </div>
-    <!-- <div class="footer-modal-container">
-      <mobile-participant-modal
-        :visible.sync="isParticipantModalShow"
-        :beforeClose="beforeClose"
-      ></mobile-participant-modal>
-      <mobile-share-file-list-modal
-        ref="file-list"
-        :modalShow.sync="isFileListModalShow"
-        :fileList="fileList"
-      ></mobile-share-file-list-modal>
-    </div> -->
   </footer>
 </template>
 
@@ -79,8 +68,6 @@ export default {
     MobileMoreButton,
     MobileCaptureButton,
     MobileFlashButton,
-    //MobileParticipantModal: () => import('../modal/MobileParticipantModal'),
-    //MobileShareFileListModal: () => import('../modal/MobileShareFileListModal'),
     MobileUploadButton,
     MobileFileListButton,
     MobileDownloadButton,
@@ -89,8 +76,6 @@ export default {
   data() {
     return {
       VIEW: Object.freeze(VIEW),
-      //isParticipantModalShow: false,
-      //isFileListModalShow: false,
       fileList: [],
       fileListNotice: false,
     }
@@ -107,20 +92,15 @@ export default {
   methods: {
     ...mapActions(['addHistory']),
     openParticipantModal() {
-      //this.isParticipantModalShow = true
       this.$emit('participantModalShow')
     },
     openFileListModal() {
       this.fileListNotice = false
       this.$emit('openFileListModal')
-      //this.isFileListModalShow = true
     },
     onFileUploaded() {
       this.getFileList()
     },
-    // beforeClose() {
-    //   this.isParticipantModalShow = false
-    // },
     async getFileList() {
       const res = await drawingList({
         sessionId: this.roomInfo.sessionId,
