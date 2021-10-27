@@ -4,6 +4,7 @@ import java.util.List;
 
 import javax.validation.Valid;
 
+import org.slf4j.MDC;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.CollectionUtils;
@@ -160,18 +161,19 @@ public class ProjectController {
 
 	@ApiOperation(value = "프로젝트 삭제", notes = "프로젝트를 삭제합니다.")
 	@ApiImplicitParams({
-		@ApiImplicitParam(name = "projectUUIDList", value = "프로젝트 식별자 목록", dataType = "string", paramType = "query", required = true, example = "", allowMultiple = true),
+		@ApiImplicitParam(name = "projectUUID", value = "프로젝트 식별자", dataType = "string", paramType = "path", required = true, example = "7a2a56ef-e349-42ca-abb6-96a99f2ce6f9"),
+		@ApiImplicitParam(name = "Authorization", value = "인증 헤더", required = true, dataType = "string", paramType = "header", defaultValue = "Bearer "),
 	})
-	@DeleteMapping
+	@DeleteMapping("/{projectUUID}")
 	public ResponseEntity<ApiResponse<ProjectDeleteResponse>> deleteProject(
-		@RequestParam("projectUUIDList") List<String> projectUUIDList
+		@PathVariable("projectUUID") String projectUUID
 	) {
-		log.info(
-			"[PROJECT DELETE] REQ projectUUIDList : {}", String.join(",", projectUUIDList));
-		if (CollectionUtils.isEmpty(projectUUIDList)) {
+		String userUUID = MDC.get("userUUID");
+		log.info("[PROJECT DELETE] REQ projectUUID : {}, userUUID : {}", projectUUID, userUUID);
+		if (!StringUtils.hasText(projectUUID) || !StringUtils.hasText(userUUID)) {
 			throw new ContentServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
 		}
-		ProjectDeleteResponse responseMessage = projectService.deleteProject(projectUUIDList);
+		ProjectDeleteResponse responseMessage = projectService.deleteProject(projectUUID, userUUID);
 		return ResponseEntity.ok(new ApiResponse<>(responseMessage));
 	}
 

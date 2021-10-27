@@ -1,7 +1,11 @@
 package com.virnect.content.infra.file.download;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.util.List;
 import java.util.Map;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
@@ -138,6 +142,26 @@ public class S3FileDownloadService implements FileDownloadService {
 			return IOUtils.toByteArray(objectInputStream);
 		} catch (AmazonS3Exception | IOException e) {
 			log.error("Error Message:     {}", e.getMessage());
+			throw new ContentServiceException(ErrorCode.ERR_CONTENT_DOWNLOAD);
+		}
+	}
+
+	@Override
+	public byte[] multipleFileDownload(List<String> fileUrlList) {
+		try (ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+			 ZipOutputStream zipOutputStream = new ZipOutputStream(byteArrayOutputStream)) {
+			for (String fileUrl : fileUrlList) {
+				String[] fileSplit = fileUrl.split("/");
+				String fileName = fileSplit[fileSplit.length - 1];
+				byte[] fileStream = getFileStreamBytes(fileUrl);
+				zipOutputStream.putNextEntry(new ZipEntry(fileName));
+				zipOutputStream.write(fileStream);
+				zipOutputStream.closeEntry();
+			}
+			zipOutputStream.finish();
+			return byteArrayOutputStream.toByteArray();
+		} catch (IOException e) {
+			log.error(e.getMessage());
 			throw new ContentServiceException(ErrorCode.ERR_CONTENT_DOWNLOAD);
 		}
 	}

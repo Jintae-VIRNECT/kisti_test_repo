@@ -188,7 +188,8 @@ public class ProjectService {
 				REPORT_FILE_EXTENSION
 			);
 			targetPath = fileUploadService.uploadByBase64Image(qrString, REPORT_DIRECTORY,
-				projectUploadRequest.getWorkspaceUUID(), randomFileName);
+				projectUploadRequest.getWorkspaceUUID(), randomFileName
+			);
 		}
 		if (projectUploadRequest.getTarget().getType() == TargetType.VTarget) {
 			targetPath = fileDownloadService.getDefaultImagePath(REPORT_DEFAULT_DIRECTORY, "virnect_target.png");
@@ -345,8 +346,8 @@ public class ProjectService {
 			workspaceUUID, sharePermissionList, editPermissionList, modeList, targetTypeList, search, pageable);
 
 		//2. 프로젝트 조회 - 멤버 권한이 아닌경우 필터링이 요청이 없는 경우 필터링 된 모든 프로젝트를 볼 수 있음
-		MemberInfoDTO memberInfoResponse = getMemberInfoResponse(workspaceUUID, userUUID);
-		if (!memberInfoResponse.getRole().equals("MEMBER")) {
+		String userRole = getWorkspaceUserRole(workspaceUUID, userUUID);
+		if (!userRole.equals("MEMBER")) {
 			List<ProjectInfoResponse> projectInfoResponseList = filteredProjectPage.stream()
 				.map(project -> generateProjectResponse(project))
 				.collect(Collectors.toList());
@@ -469,7 +470,7 @@ public class ProjectService {
 	 * @param userUUID - 대상 유저 식별자
 	 * @return - 워크스페이스 유저 정보
 	 */
-	private MemberInfoDTO getMemberInfoResponse(String workspaceUUID, String userUUID) {
+	private String getWorkspaceUserRole(String workspaceUUID, String userUUID) {
 		ApiResponse<MemberInfoDTO> apiResponse = workspaceRestService.getMemberInfo(workspaceUUID, userUUID);
 		if (apiResponse.getCode() != 200 || apiResponse.getData() == null || !StringUtils.hasText(
 			apiResponse.getData().getUuid())) {
@@ -479,7 +480,7 @@ public class ProjectService {
 			);
 			throw new ContentServiceException(ErrorCode.ERR_UNEXPECTED_SERVER_ERROR);
 		}
-		return apiResponse.getData();
+		return apiResponse.getData().getRole();
 	}
 
 	/**
@@ -494,8 +495,8 @@ public class ProjectService {
 			.orElseThrow(() -> new ContentServiceException(ErrorCode.ERR_PROJECT_NOT_FOUND));
 
 		//2. 프로젝트 공유 권한 체크
-		MemberInfoDTO memberInfoResponse = getMemberInfoResponse(project.getWorkspaceUUID(), userUUID);
-		if (!checkUserProjectSharePermission(project, userUUID, memberInfoResponse.getRole())) {
+		String userRole = getWorkspaceUserRole(project.getWorkspaceUUID(), userUUID);
+		if (!checkUserProjectSharePermission(project, userUUID, userRole)) {
 			throw new ContentServiceException(ErrorCode.ERR_PROJECT_ACCESS_INVALID_SHARE_PERMISSION);
 		}
 
@@ -504,37 +505,47 @@ public class ProjectService {
 	}
 
 	@Transactional
-	public ProjectDeleteResponse deleteProject(List<String> projectUUIDList) {
-		List<Project> projectList = projectRepository.findByUuidIn(projectUUIDList);
-
-		for (Project project : projectList) {
-			//project 리소스 삭제
-			String projectPath = project.getPath();
-			fileUploadService.deleteByFileUrl(projectPath);
-
-			//target 리소스 삭제
-			ProjectTarget projectTarget = project.getProjectTarget();
-			String targetPath = projectTarget.getPath();
-			if (projectTarget.getType() == TargetType.Image || projectTarget.getType() == TargetType.QR) {
-				fileUploadService.deleteByFileUrl(targetPath);
-			}
-
-			//target 정보 삭제
-			projectTargetRepository.delete(projectTarget);
-
-			//mode 정보 삭제
-			projectModeRepository.deleteAll(project.getProjectModeList());
-
-			//공유 유저 정보 삭제
-			projectShareUerRepository.deleteAll(project.getProjectShareUserList());
-
-			//편집 유저 정보 삭제
-			projectEditUserRepository.deleteAll(project.getProjectEditUserList());
-
-			//project 정보 삭제
-			projectRepository.delete(project);
+	public ProjectDeleteResponse deleteProject(String projectUUID, String userUUID) {
+		//1-1. 프로젝트 유효성 체크
+		Project project = projectRepository.findByUuid(projectUUID)
+			.orElseThrow(() -> new ContentServiceException(ErrorCode.ERR_PROJECT_NOT_FOUND));
+		//1-2. 워크스페이스 체크 & 워크스페이스 내 유저 권한 조회
+		String userRole = getWorkspaceUserRole(project.getWorkspaceUUID(), userUUID);
+		//1-3. 공유 권한 체크
+		if (!checkUserProjectSharePermission(project, userUUID, userRole)) {
+			throw new ContentServiceException(ErrorCode.ERR_PROJECT_DELETE_INVALID_SHARE_PERMISSION);
 		}
-		return new ProjectDeleteResponse(true, LocalDateTime.now());
+		//1-4. 편집 권한 체크
+		if (!checkUserProjectEditPermission(project, userUUID, userRole)) {
+			throw new ContentServiceException(ErrorCode.ERR_PROJECT_DELETE_INVALID_EDIT_PERMISSION);
+		}
+
+		//2. 삭제
+		//project 리소스 삭제
+		fileUploadService.deleteByFileUrl(project.getPath());
+
+		//target 리소스 삭제
+		if (project.getProjectTarget().getType() == TargetType.Image
+			|| project.getProjectTarget().getType() == TargetType.QR) {
+			fileUploadService.deleteByFileUrl(project.getProjectTarget().getPath());
+		}
+
+		//target 정보 삭제
+		projectTargetRepository.delete(project.getProjectTarget());
+
+		//mode 정보 삭제
+		projectModeRepository.deleteAll(project.getProjectModeList());
+
+		//공유 유저 정보 삭제
+		projectShareUerRepository.deleteAll(project.getProjectShareUserList());
+
+		//편집 유저 정보 삭제
+		projectEditUserRepository.deleteAll(project.getProjectEditUserList());
+
+		//project 삭제
+		projectRepository.delete(project);
+
+		return new ProjectDeleteResponse(true, projectUUID, LocalDateTime.now());
 	}
 
 	@Transactional
@@ -543,16 +554,16 @@ public class ProjectService {
 		Project project = projectRepository.findByUuid(projectUUID)
 			.orElseThrow(() -> new ContentServiceException(ErrorCode.ERR_PROJECT_NOT_FOUND));
 
-		MemberInfoDTO memberInfoResponse = getMemberInfoResponse(
+		String userRole = getWorkspaceUserRole(
 			project.getWorkspaceUUID(), projectUpdateRequest.getUserUUID());
 		//업데이트 요청 사용자 공유 권한 체크
 		if (!checkUserProjectSharePermission(
-			project, projectUpdateRequest.getUserUUID(), memberInfoResponse.getRole())) {
+			project, projectUpdateRequest.getUserUUID(), userRole)) {
 			throw new ContentServiceException(ErrorCode.ERR_PROJECT_UPDATE_INVALID_SHARE_PERMISSION);
 		}
 		//업데이트 요청 사용자 편집 권한 체크
 		if (!checkUserProjectEditPermission(
-			project, projectUpdateRequest.getUserUUID(), memberInfoResponse.getRole())) {
+			project, projectUpdateRequest.getUserUUID(), userRole)) {
 			throw new ContentServiceException(ErrorCode.ERR_PROJECT_UPDATE_INVALID_EDIT_PERMISSION);
 		}
 
@@ -607,43 +618,31 @@ public class ProjectService {
 
 		//프로젝트 공유정보 변경
 		if (projectUpdateRequest.getShare() != null) {
+			projectShareUerRepository.deleteAll(project.getProjectShareUserList());
 			project.setSharePermission(projectUpdateRequest.getShare().getPermission());
-			if (project.getSharePermission() == SharePermission.SPECIFIC_MEMBER
-				&& projectUpdateRequest.getShare().getPermission() != SharePermission.SPECIFIC_MEMBER) {
-				List<ProjectShareUser> oldProjectShareUserList = project.getProjectShareUserList();
-				projectShareUerRepository.deleteAll(oldProjectShareUserList);
+			if (!CollectionUtils.isEmpty(projectUpdateRequest.getShare().getUserList())) {
+				List<ProjectShareUser> newProjectShareUserList = projectUpdateRequest.getShare().getUserList()
+					.stream()
+					.map(userUUID -> ProjectShareUser.builder()
+						.userUUID(userUUID)
+						.project(project)
+						.build())
+					.collect(Collectors.toList());
+				projectShareUerRepository.saveAll(newProjectShareUserList);
 			}
 		}
 
-		//프로젝트 공유 멤버 정보 변경
-		if (projectUpdateRequest.isShareUsersUpdate()) {
-			List<ProjectShareUser> newProjectShareUserList = projectUpdateRequest.getShare().getUserList()
-				.stream()
-				.map(userUUID -> ProjectShareUser.builder()
-					.userUUID(userUUID)
-					.project(project)
-					.build())
-				.collect(Collectors.toList());
-			projectShareUerRepository.saveAll(newProjectShareUserList);
-		}
-
-		//프로젝트 편집 정보 변경
+		//프로젝트 편집정보 변경
 		if (projectUpdateRequest.getEdit() != null) {
+			projectEditUserRepository.deleteAll(project.getProjectEditUserList());
 			project.setEditPermission(projectUpdateRequest.getEdit().getPermission());
-			if (project.getEditPermission() == EditPermission.SPECIFIC_MEMBER
-				&& projectUpdateRequest.getEdit().getPermission() != EditPermission.SPECIFIC_MEMBER) {
-				List<ProjectEditUser> oldProjectEditUserList = project.getProjectEditUserList();
-				projectEditUserRepository.deleteAll(oldProjectEditUserList);
+			if (!CollectionUtils.isEmpty(projectUpdateRequest.getEdit().getUserList())) {
+				List<ProjectEditUser> newProjectEditUserList = projectUpdateRequest.getEdit().getUserList()
+					.stream()
+					.map(userUUID -> ProjectEditUser.builder().userUUID(userUUID).project(project).build())
+					.collect(Collectors.toList());
+				projectEditUserRepository.saveAll(newProjectEditUserList);
 			}
-		}
-
-		//프로젝트 편집 멤버 정보 변경
-		if (projectUpdateRequest.isEditUsersUpdate()) {
-			List<ProjectEditUser> newProjectEditUserList = projectUpdateRequest.getEdit().getUserList()
-				.stream()
-				.map(userUUID -> ProjectEditUser.builder().userUUID(userUUID).project(project).build())
-				.collect(Collectors.toList());
-			projectEditUserRepository.saveAll(newProjectEditUserList);
 		}
 
 		ProjectTarget projectTarget = project.getProjectTarget();
@@ -660,7 +659,8 @@ public class ProjectService {
 				projectTarget.setPath(null);
 			}
 			if (projectUpdateRequest.getTarget().getType() == TargetType.VTarget) {
-				String targetPath = fileDownloadService.getDefaultImagePath(REPORT_DEFAULT_DIRECTORY, "virnect_target.png");
+				String targetPath = fileDownloadService.getDefaultImagePath(
+					REPORT_DEFAULT_DIRECTORY, "virnect_target.png");
 				projectTarget.setPath(targetPath);
 			}
 			if (projectUpdateRequest.getTarget().getType() == TargetType.QR) {
@@ -670,7 +670,8 @@ public class ProjectService {
 					REPORT_FILE_EXTENSION
 				);
 				String targetPath = fileUploadService.uploadByBase64Image(qrString, REPORT_DIRECTORY,
-					project.getWorkspaceUUID(), randomFileName);
+					project.getWorkspaceUUID(), randomFileName
+				);
 				projectTarget.setPath(targetPath);
 			}
 			if (projectUpdateRequest.getTarget().getType() == TargetType.Image) {
@@ -718,12 +719,20 @@ public class ProjectService {
 	 * @param userRole - 요청 유저 워크스페이스 내 권한
 	 */
 	private boolean checkUserProjectEditPermission(Project project, String userUUID, String userRole) {
+		List<String> projectEditUserUUIDList = project.getProjectEditUserList()
+			.stream()
+			.map(ProjectEditUser::getUserUUID)
+			.collect(Collectors.toList());
+		log.info(
+			"[CHECK USER EDIT PERMISSION] edit permission : [{}], project uploader : [{}], project specific edit users: [{}], request user role : [{}]",
+			project.getEditPermission(), project.getUserUUID(),
+			String.join(",", projectEditUserUUIDList), userRole
+		);
+
 		if (project.getEditPermission() == EditPermission.SPECIFIC_MEMBER) {
 			if (!userRole.equals("MASTER") && !userRole.equals("MANAGER")
 				&& !project.getUserUUID().equals(userUUID)
-				&& project.getProjectShareUserList()
-				.stream()
-				.noneMatch(projectShareUser -> projectShareUser.getUserUUID().equals(userUUID))) {
+				&& !projectEditUserUUIDList.contains(userUUID)) {
 				return false;
 			}
 		}
@@ -753,6 +762,15 @@ public class ProjectService {
 	 * @param userRole - 요청 유저 워크스페이스 내 권한
 	 */
 	private boolean checkUserProjectSharePermission(Project project, String userUUID, String userRole) {
+		List<String> projectShareUserUUIDList = project.getProjectShareUserList()
+			.stream()
+			.map(ProjectShareUser::getUserUUID)
+			.collect(Collectors.toList());
+		log.info(
+			"[CHECK USER SHARE PERMISSION] share permission : [{}], project uploader : [{}], project specific share users : [{}], request user role : [{}]",
+			project.getSharePermission(), project.getUserUUID(),
+			String.join(",", projectShareUserUUIDList), userRole
+		);
 		if (project.getSharePermission() == SharePermission.SPECIFIC_MEMBER) {
 			if (!userRole.equals("MASTER") && !userRole.equals("MANAGER")
 				&& !project.getUserUUID().equals(userUUID)
@@ -767,7 +785,6 @@ public class ProjectService {
 				&& !project.getUserUUID().equals(userUUID)) {
 				return false;
 			}
-
 		}
 		if (project.getSharePermission() == SharePermission.MANAGER) {
 			if (!userRole.equals("MASTER") && !userRole.equals("MANAGER")) {
@@ -780,47 +797,32 @@ public class ProjectService {
 	public ResponseEntity<byte[]> downloadProjectByUUIDList(
 		List<String> projectUUIDList, String userUUID, String workspaceUUID
 	) {
-		MemberInfoDTO memberInfoResponse = getMemberInfoResponse(workspaceUUID, userUUID);
-		//다운로드 권한 체크
-		List<Project> projectList = new ArrayList<>();
+		//1. 워크스페이스 체크
+		String userRole = getWorkspaceUserRole(workspaceUUID, userUUID);
+		List<ProjectDownloadHitEvent> projectDownloadHitEventList = new ArrayList<>();
 		for (String projectUUID : projectUUIDList) {
+			//1-2. 프로젝트 식별자 체크
 			Project project = projectRepository.findByUuid(projectUUID)
 				.orElseThrow(() -> new ContentServiceException(ErrorCode.ERR_PROJECT_NOT_FOUND));
-			if (!checkUserProjectSharePermission(project, userUUID, memberInfoResponse.getRole())) {
+			//1-3. 공유 권한 체크
+			if (!checkUserProjectSharePermission(project, userUUID, userRole)) {
 				throw new ContentServiceException(ErrorCode.ERR_PROJECT_DOWNLOAD_INVALID_SHARE_PERMISSION);
 			}
-			projectList.add(project);
+			//1-4. 프로젝트 다운로드 이벤트 생성
+			projectDownloadHitEventList.add(new ProjectDownloadHitEvent(project, userUUID));
 		}
 
-		//단일 파일이면 그대로 리턴.
+		//2. 단일 파일 다운로드
 		if (projectUUIDList.size() == 1) {
-			return fileDownloadService.fileDownload(projectList.get(0).getPath(), null);
+			ResponseEntity<byte[]> responseEntity = fileDownloadService.fileDownload(projectDownloadHitEventList.get(0).getProject().getPath(), null);
+			applicationEventPublisher.publishEvent(projectDownloadHitEventList.get(0));
+			return responseEntity;
 		}
 
-		//복수개의 파일이면 zip
-		byte[] bytes = new byte[0];
-		try (ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-			 ZipOutputStream zipOutputStream = new ZipOutputStream(byteArrayOutputStream)) {
-			for (Project project : projectList) {
-				String[] fileSplit = project.getPath().split("/");
-				String fileName = fileSplit[fileSplit.length - 1];
-				byte[] fileStream = fileDownloadService.getFileStreamBytes(project.getPath());
-				zipOutputStream.putNextEntry(new ZipEntry(fileName));
-				zipOutputStream.write(fileStream);
-				zipOutputStream.closeEntry();
-
-			}
-			zipOutputStream.finish();
-			bytes = byteArrayOutputStream.toByteArray();
-		} catch (IOException e) {
-			log.error(e.getMessage());
-			throw new ContentServiceException(ErrorCode.ERR_PROJECT_DOWNLOAD);
-		}
-
-		//다운로드 기록 이벤트
-		for (Project project : projectList) {
-			applicationEventPublisher.publishEvent(new ProjectDownloadHitEvent(project, userUUID));
-		}
+		//3. 여러 파일 다운로드
+		List<String> projectFilePathList = projectDownloadHitEventList.stream().map(projectDownloadHitEvent -> projectDownloadHitEvent.getProject().getPath()).collect(Collectors.toList());
+		byte[] bytes = fileDownloadService.multipleFileDownload(projectFilePathList);
+		projectDownloadHitEventList.forEach(applicationEventPublisher::publishEvent);
 
 		String zipFileName = String.format("%s_%s", LocalDate.now().toString(), "projects.zip");
 		HttpHeaders httpHeaders = new HttpHeaders();

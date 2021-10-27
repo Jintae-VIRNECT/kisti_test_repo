@@ -97,10 +97,14 @@ dependencies {
 
     // feign oktthp
     implementation 'io.github.openfeign:feign-okhttp'
+
     // map struct
     implementation "org.mapstruct:mapstruct:${mapstructVersion}"
     annotationProcessor "org.mapstruct:mapstruct-processor:${mapstructVersion}"
     testAnnotationProcessor "org.mapstruct:mapstruct-processor:${mapstructVersion}"
+
+    // Json web token
+    implementation 'io.jsonwebtoken:jjwt:0.9.1'
 }
 
 test {

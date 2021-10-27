@@ -1,11 +1,15 @@
 package com.virnect.content.infra.file.download;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
@@ -32,6 +36,7 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import com.virnect.content.domain.project.Project;
 import com.virnect.content.exception.ContentServiceException;
 import com.virnect.content.global.error.ErrorCode;
 
@@ -169,6 +174,26 @@ public class MinioDownloadService implements FileDownloadService {
 			return IOUtils.toByteArray((InputStream)objectResponse);
 		} catch (ErrorResponseException | InsufficientDataException | InternalException | InvalidKeyException | InvalidResponseException | NoSuchAlgorithmException | ServerException | XmlParserException | IOException exception) {
 			log.error(exception.getMessage());
+			throw new ContentServiceException(ErrorCode.ERR_CONTENT_DOWNLOAD);
+		}
+	}
+
+	@Override
+	public byte[] multipleFileDownload(List<String> fileUrlList) {
+		try (ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+			 ZipOutputStream zipOutputStream = new ZipOutputStream(byteArrayOutputStream)) {
+			for (String fileUrl : fileUrlList) {
+				String[] fileSplit = fileUrl.split("/");
+				String fileName = fileSplit[fileSplit.length - 1];
+				byte[] fileStream = getFileStreamBytes(fileUrl);
+				zipOutputStream.putNextEntry(new ZipEntry(fileName));
+				zipOutputStream.write(fileStream);
+				zipOutputStream.closeEntry();
+			}
+			zipOutputStream.finish();
+			return byteArrayOutputStream.toByteArray();
+		} catch (IOException e) {
+			log.error(e.getMessage());
 			throw new ContentServiceException(ErrorCode.ERR_CONTENT_DOWNLOAD);
 		}
 	}

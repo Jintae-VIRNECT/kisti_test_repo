@@ -1,4 +1,4 @@
-package com.virnect.content.global.common;
+package com.virnect.content.global.filter;
 
 import java.io.IOException;
 
@@ -10,6 +10,8 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 
+import org.springframework.core.annotation.Order;
+
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -19,6 +21,7 @@ import lombok.extern.slf4j.Slf4j;
  */
 
 @Slf4j
+@Order(1)
 public class ReadableRequestWrapperFilter implements Filter {
 	@Override
 	public void init(FilterConfig filterConfig) throws ServletException {

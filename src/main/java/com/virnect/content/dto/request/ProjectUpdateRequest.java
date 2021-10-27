@@ -55,16 +55,6 @@ public class ProjectUpdateRequest {
 	}
 
 	@ApiModelProperty(hidden = true)
-	public boolean isShareUsersUpdate() {
-		return share != null && !CollectionUtils.isEmpty(share.getUserList());
-	}
-
-	@ApiModelProperty(hidden = true)
-	public boolean isEditUsersUpdate() {
-		return edit != null && !CollectionUtils.isEmpty(edit.getUserList());
-	}
-
-	@ApiModelProperty(hidden = true)
 	public boolean isTargetWidthUpdate() {
 		return target != null && target.getWidth() > 0;
 	}

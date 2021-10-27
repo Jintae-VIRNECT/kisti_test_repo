@@ -1,5 +1,7 @@
 package com.virnect.content.infra.file.download;
 
+import java.util.List;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.lang.Nullable;
 import org.springframework.web.multipart.MultipartFile;
@@ -19,4 +21,6 @@ public interface FileDownloadService {
 	long getFileSize(String fileUrl);
 
 	byte[] getFileStreamBytes(String fileUrl);
+
+	byte[] multipleFileDownload(List<String> fileUrlList);
 }
