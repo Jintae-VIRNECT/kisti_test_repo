@@ -2,20 +2,11 @@
   <div class="ar-tools tools">
     <template v-if="isMobileSize">
       <div class="mobile-tools-container ar" :class="{ active: toolbarActive }">
-        <undo
-          :disableTooltip="true"
-          :disabled="!(canDrawing || canPointing)"
-        ></undo>
-        <redo
-          :disableTooltip="true"
-          :disabled="!(canDrawing || canPointing)"
-        ></redo>
-        <clear
-          :disableTooltip="true"
-          :disabled="!(canDrawing || canPointing)"
-        ></clear>
+        <undo :disableTooltip="true" :disabled="!canDrawingOrPointing"></undo>
+        <redo :disableTooltip="true" :disabled="!canDrawingOrPointing"></redo>
+        <clear :disableTooltip="true" :disabled="!canDrawingOrPointing"></clear>
         <div class="division"></div>
-        <color :disabled="!(canDrawing || canPointing)"></color>
+        <color :disabled="!canDrawingOrPointing"></color>
       </div>
       <button
         class="tools-toggle-btn"
@@ -45,11 +36,11 @@
         <line-mode :disabled="!canDrawing"></line-mode>
         <line-width :disabled="!canDrawing"></line-width>
       </template>
-      <color :disabled="!(canDrawing || canPointing)"></color>
+      <color :disabled="!canDrawingOrPointing"></color>
       <div class="division"></div>
-      <undo :disabled="!(canDrawing || canPointing)"></undo>
-      <redo :disabled="!(canDrawing || canPointing)"></redo>
-      <clear :disabled="!(canDrawing || canPointing)"></clear>
+      <undo :disabled="!canDrawingOrPointing"></undo>
+      <redo :disabled="!canDrawingOrPointing"></redo>
+      <clear :disabled="!canDrawingOrPointing"></clear>
     </template>
   </div>
 </template>
@@ -115,6 +106,9 @@ export default {
       } else {
         return false
       }
+    },
+    canDrawingOrPointing() {
+      return this.canDrawing || this.canPointing
     },
   },
   methods: {
