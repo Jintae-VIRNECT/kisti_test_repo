@@ -5,6 +5,11 @@
     </nav>
     <template>
       <component :is="component"></component>
+      <button
+        class="guest-join btn"
+        @click="joinAsGuest"
+        v-html="joinText"
+      ></button>
     </template>
   </div>
 </template>
@@ -16,6 +21,19 @@ export default {
   name: 'WorkspaceTab',
   components: {
     setting: WorkspaceSetting,
+  },
+  props: {
+    fix: {
+      type: [Number, Boolean],
+      default: false,
+    },
+    inited: {
+      type: Boolean,
+      default: false,
+    },
+    joinText: {
+      type: String,
+    },
   },
   data() {
     return {
@@ -32,16 +50,10 @@ export default {
       ]
     },
   },
-  props: {
-    fix: {
-      type: [Number, Boolean],
-      default: false,
-    },
-    inited: {
-      type: Boolean,
-      default: false,
+  methods: {
+    joinAsGuest() {
+      this.$emit('joinAsGuest')
     },
   },
-  methods: {},
 }
 </script>

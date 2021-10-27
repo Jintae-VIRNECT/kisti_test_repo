@@ -53,6 +53,12 @@ export default {
         clearInterval(this.timerId)
       }
     },
+    joinText: {
+      immediate: true,
+      handler(newVal) {
+        this.$emit('joinText', newVal)
+      },
+    },
   },
   methods: {
     initGuestMember() {
