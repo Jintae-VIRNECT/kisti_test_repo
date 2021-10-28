@@ -220,6 +220,7 @@ export default {
       this.searchParams.mine = false
 
       this.changeMemberFilerOptions()
+      this.getWorkspacePlansInfo()
     },
     /**
      * @description 유저권한별 공유/편집 드롭다운메뉴 필터링 메소드
@@ -240,16 +241,23 @@ export default {
         ? memberRoleFilter.options.filter(type => type.value !== 'MANAGER')
         : memberRoleFilter.options
     },
+    /**
+     * 워크스페이스 플랜 정보 조회
+     */
+    async getWorkspacePlansInfo() {
+      await this.$store.dispatch('plan/getPlansInfo')
+    },
   },
   computed: {
     ...mapGetters({
       activeWorkspace: 'auth/activeWorkspace',
     }),
   },
-  beforeMount() {
+  async beforeMount() {
     // searchMixin.js: emitChangedSearchParams 실행 > 현재 페이지의 changedSearchParams 실행
     this.emitChangedSearchParams()
     this.changeMemberFilerOptions()
+    this.getWorkspacePlansInfo()
     workspaceService.watchActiveWorkspace(this, () => {
       this.refreshParams()
       this.emitChangedSearchParams()

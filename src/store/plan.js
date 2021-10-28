@@ -4,6 +4,7 @@ export default {
   state: () => ({
     plansInfo: {
       storage: {},
+      project: {},
       viewCount: {},
       callTime: {},
       remote: {},

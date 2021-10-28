@@ -25,10 +25,10 @@
     />
     <ProjectPopupItem
       :title="$t('projects.storage.info.projectUseVolume')"
-      :byte="30"
+      :byte="plansInfo.project.current"
       color="#007cfe"
     />
-    <el-button type="primary" slot="reference">
+    <el-button type="primary" slot="reference" @click="setInnerProgressbar">
       {{ $t('projects.storage.info.freeVolume') }} :
       {{ plansInfo.storage.remain }} GB
     </el-button>
@@ -55,12 +55,6 @@ export default {
     }),
   },
   methods: {
-    rate(now, max) {
-      const rate = now / max
-      if (isNaN(rate)) return 0
-      else if (rate === Infinity) return 100
-      else return rate * 100
-    },
     // 스토리지 el-progress의 inner Bar 엘레먼트를 2개 추가생성합니다.
     innerProgressBarCreate() {
       const [progressBar] = this.$refs.storagePopup.$el.children
@@ -75,22 +69,15 @@ export default {
 
       progressOuter.appendChild(this.progressInnerAllUse)
       progressOuter.appendChild(this.progressInnerAllVolume)
-
-      // 엘레먼트 생성 후, inner bar들의 width 길이설정 함수 실행.
-      this.$nextTick(() => {
-        this.setInnerProgressbar()
-      })
     },
     // progressBar의 각 용량별 width를 지정해줍니다.
     setInnerProgressbar() {
-      // TODO: 추후 프로젝트 스토리지 정보를 받아서 아래의 width값을 변경해주자. -> plan.js DAO에서 퍼센티지 반환필요.
-      this.ProjectUseVolume = 30
-      this.progressInnerAllUse.style.width = '60%'
+      this.ProjectUseVolume = this.plansInfo.project.percent
+      this.progressInnerAllUse.style.width = `${this.plansInfo.storage.percent}%`
       this.progressInnerAllVolume.style.width = '100%'
     },
   },
   mounted() {
-    this.$store.dispatch('plan/getPlansInfo')
     this.innerProgressBarCreate()
   },
 }
