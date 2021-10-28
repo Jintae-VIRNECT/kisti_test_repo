@@ -72,6 +72,8 @@
       v-if="isOnpremise && !isMobileSize"
       :visible.sync="positionMapVisible"
     ></map-modal>
+
+    <!-- PC, 모바일 공통 사용 -->
     <guest-invite-modal :visible.sync="guestInviteModalVisible">
     </guest-invite-modal>
     <invite-modal :visible.sync="inviteModalVisible"></invite-modal>
