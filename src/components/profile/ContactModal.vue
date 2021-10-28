@@ -101,7 +101,6 @@ export default {
           ? `${this.form.code}-${this.form.phone.replace(/-/g, '')}`
           : '',
       }
-      console.log(form)
       try {
         await profileService.updateMyProfile(form)
         this.$notify.success({
@@ -118,6 +117,9 @@ export default {
           duration: 2000,
         })
       }
+    },
+    closed() {
+      this.$refs.form.clearValidate()
     },
   },
 }
