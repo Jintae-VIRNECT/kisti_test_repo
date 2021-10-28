@@ -90,7 +90,6 @@ export default {
       this.pdfFile = {}
     },
     addPdfHistory(data) {
-      console.log(this.$refs['sharing_' + data.objectName][0])
       this.$refs['sharing_' + data.objectName][0].addPdfHistory(data.index + 1)
       this.backToFileList()
       this.close()

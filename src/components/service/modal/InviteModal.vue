@@ -171,8 +171,6 @@ export default {
       this.$emit('update:visible', false)
     },
     kickoutConfirm({ participant, idx }) {
-      console.log(participant, idx)
-
       this.serviceConfirmCancel(
         this.$t('service.participant_kick_confirm', {
           name: participant.nickName,
