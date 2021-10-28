@@ -1,5 +1,6 @@
 <template>
   <full-screen-modal
+    class="service-mobile-guest-invite-modal"
     :title="$t('service.guest_invite_url')"
     :visible="visible"
     @close="close"
@@ -114,6 +115,10 @@ export default {
 
 <style lang="scss">
 @import '~assets/style/mixin';
+.service-mobile-guest-invite-modal.fullscreen-modal {
+  z-index: 102;
+}
+
 .mobile-guest-invite {
   padding: 2rem 1.6rem;
   .guest-invite-input__container:first-child {

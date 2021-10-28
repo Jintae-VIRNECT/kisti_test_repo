@@ -126,7 +126,6 @@ export default {
   data() {
     return {
       selection: [],
-      visibleFlag: false,
       users: [],
       loading: false,
       currentUser: [],
@@ -157,7 +156,6 @@ export default {
         this.init()
       } else {
         this.selection = []
-        this.visibleFlag = false
         this.users = []
         this.loading = false
       }
@@ -262,9 +260,13 @@ export default {
         this.addMember(this.selection)
 
         this.toastNotify(this.$t('service.invite_success'))
-        this.$nextTick(() => {
-          this.visibleFlag = false
-        })
+
+        //PC환경에서만 협업 초대 후 창이 닫히도록 처리한다.
+        if (!this.isMobileSize) {
+          this.$nextTick(() => {
+            this.$emit('update:visible', false)
+          })
+        }
       }
     },
   },

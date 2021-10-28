@@ -26,6 +26,7 @@ export const ACTION = {
   //협업 보드
   DRAWING_LINE: 'line', //그리기 모드
   DRAWING_TEXT: 'text', //텍스트 모드
+  DRAWING_LOCK: 'lock', //드로잉 락
 
   //AR 공유
   AR_POINTING: 'arPointing', //포인팅

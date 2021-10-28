@@ -1,10 +1,19 @@
 <template>
   <section class="guest-welcome">
     <div class="guest-welcome__body">
-      <p class="guest-welcome__nickname" v-html="welcomeText"></p>
-      <div class="guest-welcome__name">
-        {{ $t('guest.guest_join_description_2') }}
-      </div>
+      <p
+        v-if="!isExpired"
+        class="guest-welcome__nickname"
+        v-html="welcomeText"
+      ></p>
+      <div
+        class="guest-welcome__name"
+        v-html="
+          isExpired
+            ? $t('guest.guest_time_expired_description')
+            : $t('guest.guest_join_description_2')
+        "
+      ></div>
       <button class="btn join" @click="joinAsGuest" v-html="joinText"></button>
     </div>
   </section>
@@ -46,12 +55,22 @@ export default {
         return this.$t('button.join_sec', { time: this.remainTime })
       }
     },
+    isExpired() {
+      if (this.remainTime <= 0) return true
+      else return false
+    },
   },
   watch: {
     remainTime() {
       if (this.remainTime <= 0) {
         clearInterval(this.timerId)
       }
+    },
+    joinText: {
+      immediate: true,
+      handler(newVal) {
+        this.$emit('joinText', newVal)
+      },
     },
   },
   methods: {

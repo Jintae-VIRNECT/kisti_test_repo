@@ -92,6 +92,7 @@
     "openvidu-browser": "^2.17.0",
     "optimize-css-assets-webpack-plugin": "^5.0.3",
     "path-browserify": "^1.0.1",
+    "pinch-zoom-js": "^2.3.4",
     "pkg": "^4.4.2",
     "prettier": "^1.19.1",
     "process": "^0.11.10",

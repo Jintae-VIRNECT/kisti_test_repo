@@ -96,6 +96,8 @@ export default {
           this.confirmDefault(this.$t('service.record_server_over_max_count'))
         } else if (e.code === 1002) {
           this.confirmDefault(this.$t('service.record_server_no_storage'))
+        } else {
+          this.toastDefault(this.$t('service.record_server_start_failed'))
         }
 
         this.stopServerRecord()

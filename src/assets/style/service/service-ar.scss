@@ -129,3 +129,27 @@
   text-align: center;
   user-select: none;
 }
+
+@include responsive-mobile {
+  .ar-view {
+    height: 100%;
+  }
+  .ar-video__select {
+    z-index: 3;
+    .ar-video__select-inner {
+      > img {
+        width: 5.4rem;
+        height: 5.4rem;
+      }
+      > p {
+        margin-top: 5px;
+        @include fontLevel(600);
+      }
+      > .description {
+        width: 21.2rem;
+        margin-top: 6px;
+        @include fontLevel(75);
+      }
+    }
+  }
+}

@@ -38,6 +38,7 @@ export default {
   },
   methods: {
     changeToggle() {
+      this.$emit('click')
       if (this.disabled) {
         this.$emit('check:disable')
         return

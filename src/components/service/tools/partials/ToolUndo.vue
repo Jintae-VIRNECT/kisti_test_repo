@@ -3,6 +3,7 @@
     :text="$t('service.tool_undo')"
     :disabled="!isAvailable"
     :active="status"
+    :disableTooltip="disableTooltip"
     :src="require('assets/image/ic-tool-undo.svg')"
     @click.stop="clickHandler"
   ></tool-button>

@@ -1,8 +1,9 @@
 <template>
   <full-screen-modal
+    v-show="modalShow"
+    :visible="true"
     class="service-mobile-participant-modal"
     :title="$t('workspace.info_remote_member')"
-    :visible="visible"
     @close="close"
   >
     <participant-video
@@ -34,8 +35,8 @@
     <mobile-select-view
       :visible.sync="selectview"
       :isLeader="isLeader"
-      @share="share"
-      @normal="normal"
+      @share="onShare"
+      @normal="onNormal"
       @mute="mute"
       @kickout="kickout"
     ></mobile-select-view>
@@ -62,8 +63,9 @@ export default {
       type: Boolean,
       dafault: true,
     },
-    beforeClose: {
-      type: Function,
+    modalShow: {
+      type: Boolean,
+      dafault: true,
     },
   },
   data() {
@@ -71,7 +73,15 @@ export default {
   },
   methods: {
     close() {
-      this.beforeClose()
+      this.$emit('update:modalShow', false)
+    },
+    onShare() {
+      this.share()
+      this.close()
+    },
+    onNormal() {
+      this.normal()
+      this.close()
     },
     showInviteModalWithEventBus() {
       this.$eventBus.$emit('inviteModal:show', true)

@@ -149,7 +149,8 @@
 }
 
 @include responsive-mobile {
-  .service-mobile-inviteroom-modal {
+  .service-mobile-inviteroom-modal.fullscreen-modal {
+    z-index: 102;
     .fullscreen-modal--body {
       display: flex;
     }
@@ -170,6 +171,9 @@
       background-color: $new_color_bg_button_primary;
       border-radius: 0.4rem;
       @include fontLevel(200);
+      &:disabled {
+        opacity: 0.4;
+      }
     }
   }
 

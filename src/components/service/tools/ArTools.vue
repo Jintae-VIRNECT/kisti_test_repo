@@ -1,17 +1,47 @@
 <template>
   <div class="ar-tools tools">
-    <ar-pointing :disabled="leaderDrawing"></ar-pointing>
-    <template v-if="isLeader">
-      <ar-capture></ar-capture>
-      <div class="division"></div>
-      <line-mode :disabled="!canDrawing"></line-mode>
-      <line-width :disabled="!canDrawing"></line-width>
+    <template v-if="isMobileSize">
+      <div class="mobile-tools-container ar" :class="{ active: toolbarActive }">
+        <undo :disableTooltip="true" :disabled="!canDrawingOrPointing"></undo>
+        <redo :disableTooltip="true" :disabled="!canDrawingOrPointing"></redo>
+        <clear :disableTooltip="true" :disabled="!canDrawingOrPointing"></clear>
+        <div class="division"></div>
+        <color :disabled="!canDrawingOrPointing"></color>
+      </div>
+      <button
+        class="tools-toggle-btn"
+        :class="{ active: toolbarActive }"
+        @click="toggle"
+      >
+        <img src="~assets/image/call/icn_dropdown_new.svg" alt="dropdown" />
+      </button>
+
+      <ar-capture
+        v-if="viewAction !== ACTION.AR_DRAWING"
+        :disableTooltip="true"
+        class="mobile-ar-tools-btn"
+      ></ar-capture>
+      <ar-pointing
+        :disableTooltip="true"
+        class="mobile-ar-tools-btn"
+        v-if="viewAction === ACTION.AR_DRAWING"
+        :disabled="leaderDrawing"
+      ></ar-pointing>
     </template>
-    <color :disabled="!(canDrawing || canPointing)"></color>
-    <div class="division"></div>
-    <undo :disabled="!(canDrawing || canPointing)"></undo>
-    <redo :disabled="!(canDrawing || canPointing)"></redo>
-    <clear :disabled="!(canDrawing || canPointing)"></clear>
+    <template v-else>
+      <ar-pointing :disabled="leaderDrawing"></ar-pointing>
+      <template v-if="isLeader">
+        <ar-capture></ar-capture>
+        <div class="division"></div>
+        <line-mode :disabled="!canDrawing"></line-mode>
+        <line-width :disabled="!canDrawing"></line-width>
+      </template>
+      <color :disabled="!canDrawingOrPointing"></color>
+      <div class="division"></div>
+      <undo :disabled="!canDrawingOrPointing"></undo>
+      <redo :disabled="!canDrawingOrPointing"></redo>
+      <clear :disabled="!canDrawingOrPointing"></clear>
+    </template>
   </div>
 </template>
 
@@ -44,10 +74,12 @@ export default {
   },
   data() {
     return {
+      toolbarActive: false,
       active: 'pointing',
       isRecording: false,
       LEADER: ROLE.LEADER,
       leaderDrawing: false,
+      ACTION: Object.freeze(ACTION),
     }
   },
   computed: {
@@ -75,10 +107,16 @@ export default {
         return false
       }
     },
+    canDrawingOrPointing() {
+      return this.canDrawing || this.canPointing
+    },
   },
   methods: {
     setDrawing(val) {
       this.leaderDrawing = val
+    },
+    toggle() {
+      this.toolbarActive = !this.toolbarActive
     },
   },
 

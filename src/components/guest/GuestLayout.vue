@@ -1,9 +1,9 @@
 <template>
-  <section class="remote-layout">
+  <section class="remote-layout guest">
     <template v-if="serviceMode === 'web'">
       <header-section></header-section>
       <vue2-scrollbar
-        classes="remote-wrapper"
+        classes="remote-wrapper guest"
         ref="wrapperScroller"
         :onMaxScroll="handleMaxScroll"
       >
@@ -44,6 +44,7 @@ import GuestMobile from './GuestMobile'
 import DeviceDenied from '../workspace/modal/WorkspaceDeviceDenied'
 
 import auth, { setTokensToCookies } from 'utils/auth'
+import { initAudio } from 'plugins/remote/tts/audio'
 
 export default {
   name: 'GuestLayout',
@@ -162,6 +163,13 @@ export default {
     showDeviceDenied() {
       this.showDenied = true
     },
+    scrollToBottom() {
+      this.$nextTick(() => {
+        this.$refs['wrapperScroller'].scrollToY(
+          this.$refs['wrapperScroller'].$el.scrollHeight,
+        )
+      })
+    },
   },
 
   async created() {
@@ -174,6 +182,9 @@ export default {
   },
 
   async mounted() {
+    initAudio()
+    this.$eventBus.$on('settingTabChanged', this.scrollToBottom)
+
     try {
       //파라미터 유효성 체크
       if (this.workspaceId === undefined || this.sessionId === undefined) {
@@ -202,6 +213,7 @@ export default {
     }
   },
   beforeDestroy() {
+    this.$eventBus.$off('settingTabChanged', this.scrollToBottom)
     this.$eventBus.$off('initGuestMember', this.initGuestMember)
     this.$eventBus.$off('updateServiceMode', this.updateServiceMode)
     this.$eventBus.$off('devicedenied:show', this.showDeviceDenied)

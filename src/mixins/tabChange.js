@@ -101,6 +101,10 @@ export default {
         return
       }
 
+      //협업보드 notice 초기화
+      if (type === VIEW.DRAWING)
+        this.SET_TAB_MENU_NOTICE({ index: this.DRAWING_INDEX, notice: false })
+
       const isLeader = this.account.roleType === ROLE.LEADER
       isLeader ? this.goTabAsLeader(type) : this.goTabAsNotLeader(type)
     },

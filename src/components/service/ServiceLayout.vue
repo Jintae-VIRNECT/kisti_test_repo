@@ -56,7 +56,13 @@
       </div> -->
       <!-- <component :is="viewComponent"></component> -->
     </div>
-    <mobile-footer v-if="isMobileSize"></mobile-footer>
+    <mobile-footer
+      v-if="isMobileSize"
+      @getFileList="onGetFileList"
+      @openFileListModal="onOpenFileListModal"
+      @participantModalShow="onParticipantModalShow"
+      @addPdfHistory="mobileAddPdfHistory"
+    ></mobile-footer>
     <reconnect-modal :visible.sync="connectVisible"></reconnect-modal>
     <setting-modal></setting-modal>
     <record-list v-if="useLocalRecording"></record-list>
@@ -69,6 +75,19 @@
     <guest-invite-modal :visible.sync="guestInviteModalVisible">
     </guest-invite-modal>
     <invite-modal :visible.sync="inviteModalVisible"></invite-modal>
+
+    <!-- 모바일에서만 필요 -->
+    <mobile-participant-modal
+      v-if="isMobileSize"
+      :modalShow.sync="isParticipantModalShow"
+    ></mobile-participant-modal>
+    <mobile-share-file-list-modal
+      v-if="isMobileSize"
+      ref="file-list"
+      :modalShow.sync="isFileListModalShow"
+      :fileList="fileList"
+      @rendered="onFileListRendered"
+    ></mobile-share-file-list-modal>
   </section>
 </template>
 
@@ -118,6 +137,8 @@ export default {
     MobileFooter: () => import('./tools/MobileFooter'),
     GuestInviteModal: () => import('./modal/GuestInviteModal'),
     InviteModal: () => import('./modal/InviteModal'),
+    MobileParticipantModal: () => import('./modal/MobileParticipantModal'),
+    MobileShareFileListModal: () => import('./modal/MobileShareFileListModal'),
   },
   data() {
     return {
@@ -129,6 +150,11 @@ export default {
       positionMapVisible: false,
       guestInviteModalVisible: false,
       inviteModalVisible: false,
+
+      fileList: [],
+      isFileListModalShow: false,
+      isParticipantModalShow: false,
+      fileListCallback: () => {},
     }
   },
   computed: {
@@ -279,6 +305,29 @@ export default {
     },
     toggleInviteModal(flag) {
       this.inviteModalVisible = flag
+    },
+    onGetFileList(fileList) {
+      this.fileList = fileList
+    },
+    onOpenFileListModal() {
+      this.isFileListModalShow = true
+    },
+    onParticipantModalShow() {
+      this.isParticipantModalShow = true
+    },
+    mobileAddPdfHistory(data) {
+      //mobile-share-file-list-modal 컴포넌트가 생성되기 전에 호출 되므로,
+      //아직 컴포넌트 dom이 추가되지 않았다면 callback으로 등록시켜 논 후 해당 컴포넌트가 랜더링 된 후
+      //이벤트수신 시 콜백을 실행하도록 한다.
+      if (this.$refs['file-list']) this.$refs['file-list'].addPdfHistory(data)
+      else
+        this.fileListCallback = () => {
+          this.fileListCallback = () => {}
+          this.$refs['file-list'].addPdfHistory(data)
+        }
+    },
+    onFileListRendered() {
+      this.fileListCallback()
     },
   },
 

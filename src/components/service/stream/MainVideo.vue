@@ -1,5 +1,8 @@
 <template>
   <div class="main-video">
+    <p v-if="viewForce" class="main-video__sharing-user">
+      {{ mainView.nickname }}
+    </p>
     <div
       class="main-video__box"
       @mouseenter="hoverTools = true"
@@ -9,6 +12,13 @@
         hidden: !loaded || emptyStream,
       }"
     >
+      <pinch-zoom-layer
+        v-if="
+          isMobileSize && viewForce && viewAction !== ACTION.STREAM_POINTING
+        "
+        @zoomLevelChanged="onZoomLevelChanged"
+      ></pinch-zoom-layer>
+
       <!-- 메인 비디오 뷰 -->
       <video
         ref="mainVideo"
@@ -30,7 +40,11 @@
               class="btn small main-video__sharing-button active"
               @click="cancelSharing"
             >
-              {{ $t('button.stream_sharing_cancel') }}
+              {{
+                isMobileSize
+                  ? $t('button.stream_sharing')
+                  : $t('button.stream_sharing_cancel')
+              }}
             </button>
             <button v-else class="btn small main-video__sharing-button">
               {{ $t('button.stream_sharing') }}
@@ -39,8 +53,12 @@
         </transition>
 
         <!-- 녹화 시간 정보 -->
-        <div class="main-video__recording">
-          <div class="main-video__recording--time" v-if="serverTimer">
+        <div
+          v-if="serverTime"
+          class="main-video__recording"
+          :class="{ 'sharing-on': viewForce }"
+        >
+          <div class="main-video__recording--time">
             <p class="server">
               {{ serverTime | timeFilter }}
             </p>
@@ -52,15 +70,23 @@
 
         <!-- 포인팅 -->
         <pointing
-          v-if="viewForce"
+          v-if="viewForce && viewAction === ACTION.STREAM_POINTING"
           :videoSize="videoSize"
           class="main-video__pointing"
         ></pointing>
 
+        <!-- zoom 레벨 표시(모바일) -->
+        <div
+          v-if="isMobileSize && showZoomLevel"
+          class="main-video__zoom--level"
+        >
+          <span>{{ zoomLevel }}</span>
+        </div>
+
         <!-- 디바이스 컨트롤 뷰 -->
         <template v-if="allowTools">
           <transition name="opacity">
-            <video-tools v-if="hoverTools"></video-tools>
+            <video-tools v-if="hoverTools && !isMobileSize"></video-tools>
           </transition>
         </template>
         <transition name="opacity">
@@ -141,9 +167,11 @@ export default {
     Pointing,
     VideoTools,
     Fullscreen,
+    PinchZoomLayer: () => import('./partials/PinchZoomLayer'),
   },
   data() {
     return {
+      ACTION: Object.freeze(ACTION),
       status: 'good', // good, normal, bad
       hoverTools: false,
       loaded: false,
@@ -161,6 +189,9 @@ export default {
       hideFullBtn: false,
 
       backInterval: null,
+
+      showZoomLevel: false,
+      zoomLevel: 'x1.0',
     }
   },
   computed: {
@@ -484,6 +515,16 @@ export default {
       setTimeout(() => {
         this.optimizeVideoSize()
       }, 500)
+    },
+    onZoomLevelChanged(zoomLevel) {
+      clearTimeout(this.timeoutId)
+      this.timeoutId = null
+
+      this.showZoomLevel = true
+      this.zoomLevel = `x${zoomLevel}`
+      this.timeoutId = setTimeout(() => {
+        this.showZoomLevel = false
+      }, 2000)
     },
   },
 
