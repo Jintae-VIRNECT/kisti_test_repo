@@ -5,6 +5,25 @@
   height: calc(100% - #{$tool_height});
 }
 
+.drawing-box__exit-btn {
+  position: absolute;
+  top: 1.642rem;
+  right: 1.642rem;
+  z-index: 1;
+  display: block;
+  width: 2.714rem; //24px
+  height: 2.714rem; //24px
+  background: url(~assets/image/ic_close_24.svg);
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 1.714rem;
+  border-radius: 3px;
+
+  &:hover {
+    background-color: rgba(0, 0, 0, 0.3);
+  }
+}
+
 .drawing-canvas {
   position: relative;
   top: 50%;
@@ -60,6 +79,10 @@
   .drawing-box {
     height: 100%;
     background-color: $new_color_bg;
+  }
+
+  .drawing-box__exit-btn {
+    display: none;
   }
 
   .drawing-box__empty-inner {

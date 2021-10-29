@@ -1,5 +1,10 @@
 <template>
   <div class="drawing-canvas">
+    <button
+      v-if="showExitButton"
+      class="drawing-box__exit-btn"
+      @click="exitDrawing"
+    ></button>
     <canvas id="drawingCanvas" ref="drawingCanvas"></canvas>
     <canvas id="cursorCanvas"></canvas>
     <div
@@ -33,6 +38,9 @@ export default {
   name: 'DrawingCanvas',
   props: {
     file: Object,
+    showExitButton: {
+      type: Boolean,
+    },
   },
   mixins: [
     MixinToast,
@@ -324,6 +332,10 @@ export default {
         cancelAnimationFrame(this.resizeObserveIntervalId)
         this.resizeObserveIntervalId = null
       }
+    },
+
+    exitDrawing() {
+      this.$emit('exitDrawing')
     },
   },
   /* Lifecycles */
