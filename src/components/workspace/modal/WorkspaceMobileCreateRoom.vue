@@ -5,15 +5,22 @@
     :visible="visible"
     @close="close"
   >
-    <section class="mobile-createroom__selected" v-if="selection.length > 0">
+    <section class="mobile-createroom__selected">
       <div class="selected-header">
         <h1>{{ $t('workspace.create_remote_selected') }}</h1>
         <p class="selected-status">
           {{ `${onlineMemeberOfSelection}/${selection.length}` }}
         </p>
-        <button></button>
+        <button
+          class="user-list-toggle-btn"
+          :class="{
+            off: !selectedListVisible,
+          }"
+          @click="toggleSelectedListVisible"
+        ></button>
       </div>
       <profile-list
+        v-if="selection.length > 0 && selectedListVisible"
         :users="selection"
         :remove="true"
         :showNickname="true"
@@ -55,7 +62,9 @@ export default {
   },
   mixins: [confirmMixin],
   data() {
-    return {}
+    return {
+      selectedListVisible: false,
+    }
   },
   props: {
     visible: {
@@ -101,6 +110,7 @@ export default {
       this.beforeClose()
     },
     selectUser(user) {
+      if (this.selection.length >= 0) this.selectedListVisible = true
       this.$emit('userSelect', user)
     },
     inviteRefresh() {
@@ -125,6 +135,11 @@ export default {
         imageUrl: '',
         open: false,
       })
+    },
+    toggleSelectedListVisible() {
+      if (!this.selectedListVisible && this.selection.length === 0) return
+      this.selectedListVisible = !this.selectedListVisible
+      this.$eventBus.$emit('scrollHeightReset')
     },
   },
 }

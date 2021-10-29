@@ -3,6 +3,7 @@
     :text="$t('service.tool_redo')"
     :active="status"
     :disabled="!isAvailable"
+    :disableTooltip="disableTooltip"
     :src="require('assets/image/ic-tool-redo.svg')"
     @click.stop="clickHandler"
   ></tool-button>

@@ -62,6 +62,7 @@
     "file_add": "파일추가",
     "file_maxsize": "20MB이하의 파일을 공유할 수 있습니다.",
     "file_type": "지원하지 않는 업로드 파일 형식입니다.",
+    "file_upload_mobile_guide": "하단의 파일 업로드 버튼을 통해 공유할<br/> 파일을 업로드 할 수 있습니다.",
     "share_list": "공유목록",
     "share_current": "공유중",
     "share_loading": "변환중",
@@ -204,6 +205,7 @@
     "record_local_list": "로컬 녹화 목록",
     "record_blocked": "참가자 로컬 녹화 사용이 허용되지 않았습니다.",
     "record_server": "서버 녹화",
+    "record_server_end": "서버 녹화 종료",
     "record_start_message": "로컬 화면 녹화를 시작합니다. 녹화를 종료하시려면 버튼을 한번 더 클릭하거나 [ESC]키를 누르세요.",
     "record_fail_memory": "PC의 용량이 부족하여 녹화를 중지합니다.​ 진행 중이던 녹화파일은 저장되지 않습니다.​",
     "record_end_message": "로컬 녹화가 완료되었습니다. 녹화파일 메뉴에서 파일을 확인해 주세요.",
@@ -227,6 +229,7 @@
 
     "camera_control": "카메라 제어",
     "camera_control_allow": "카메라 제어 허용",
+    "camera_control_limit": "카메라 제어 제한",
     "camera_control_every_on": "카메라 전체 켜기",
     "camera_control_every_off": "카메라 전체 끄기",
 
@@ -239,6 +242,7 @@
     "map_cannot_use_gps":"위치 정보 기능을 사용할 수 없는 장치입니다.",
     "map_timeout":"GPS 정보를 확인할 수 없습니다. 요청한 참가자에게 GPS 기능 사용여부를 확인해 주세요.",
 
+    "spot_control": "Spot 조작",
     "spot_networ_error" : "네트워크/서버 문제로 Spot 연결이 종료되었습니다.​\n재연결을 하시겠습니까?​",
     "spot_connecting" : "Spot 연결 중…",
     "spot_reconnecting" : "Spot 재연결 중…",

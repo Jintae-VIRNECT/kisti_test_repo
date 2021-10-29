@@ -3,7 +3,8 @@
     :text="$t('button.remove_all')"
     :disabled="!isAvailable"
     :active="status"
-    :src="require('assets/image/ic-tool-delete-all.svg')"
+    :disableTooltip="disableTooltip"
+    :src="iconImage"
     @click.stop="clickHandler"
   ></tool-button>
 </template>
@@ -28,6 +29,11 @@ export default {
       } else {
         return this.available
       }
+    },
+    iconImage() {
+      return this.isMobileSize
+        ? require('assets/image/call/ic-tool-delete-all_new.svg')
+        : require('assets/image/ic-tool-delete-all.svg')
     },
   },
   watch: {

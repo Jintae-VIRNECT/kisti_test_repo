@@ -28,12 +28,23 @@
     </div>
     <div class="drawing-box__empty" v-show="show === 'default'">
       <div class="drawing-box__empty-inner">
-        <img src="~assets/image/call/img_file.svg" />
-        <p v-html="$t('service.drawing_drag')"></p>
-        <p class="description">
-          {{ $t('service.file_maxsize') }}
-        </p>
-        <button class="btn" @click="addFile">
+        <img :src="emptyDefaultImgPath" />
+        <p
+          v-html="
+            isMobileSize
+              ? $t('service.file_maxsize')
+              : $t('service.drawing_drag')
+          "
+        ></p>
+        <p
+          class="description"
+          v-html="
+            isMobileSize
+              ? $t('service.file_upload_mobile_guide')
+              : $t('service.file_maxsize')
+          "
+        ></p>
+        <button v-if="!isMobileSize" class="btn" @click="addFile">
           {{ $t('service.drawing_import') }}
         </button>
       </div>
@@ -70,6 +81,11 @@ export default {
       } else {
         return 'default'
       }
+    },
+    emptyDefaultImgPath() {
+      return this.isMobileSize
+        ? require('assets/image/call/img_file_new.svg')
+        : require('assets/image/call/img_file.svg')
     },
   },
   watch: {
@@ -117,19 +133,20 @@ export default {
         target,
       )
     },
-    refreshCanvas() {
-      const imgId = parseInt(
-        Date.now()
-          .toString()
-          .substr(-9),
-      )
-      this.addHistory({
-        id: imgId,
-        fileName: this.shareFile.fileName,
-        oriName: this.shareFile.oriName,
-        img: this.shareFile.img,
-      })
-    },
+    //미사용 함수
+    // refreshCanvas() {
+    //   const imgId = parseInt(
+    //     Date.now()
+    //       .toString()
+    //       .substr(-9),
+    //   )
+    //   this.addHistory({
+    //     id: imgId,
+    //     fileName: this.shareFile.fileName,
+    //     oriName: this.shareFile.oriName,
+    //     img: this.shareFile.img,
+    //   })
+    // },
     addFile() {
       this.$eventBus.$emit('addFile')
     },

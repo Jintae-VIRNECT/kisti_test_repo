@@ -17,6 +17,8 @@ export const CALL_STREAM = 'CALL_STREAM'
 export const CALL_SPEAKER = 'CALL_SPEAKER'
 export const CALL_MIC = 'CALL_MIC'
 export const MUTE_ON_OFF = 'MUTE_ON_OFF'
+export const SET_TAB_MENU_NOTICE = 'SET_TAB_MENU_NOTICE'
+export const SET_ALLOW_CAMERA_CONTROL = 'SET_ALLOW_CAMERA_CONTROL'
 
 // tools
 export const TOOL_DRAWING_COLOR = 'TOOL_DRAWING_COLOR'
@@ -45,6 +47,7 @@ export const SETTINGS = {
 }
 export const ALLOW_RESET = 'ALLOW_RESET'
 export const TOGGLE_CHAT = 'TOGGLE_CHAT'
+export const SET_CHAT_ACTIVE = 'SET_CHAT_ACTIVE'
 export const SET_DEVICE = 'SET_DEVICE'
 export const SET_IS_MOBILE_SIZE = 'SET_IS_MOBILE_SIZE'
 export const SET_IS_TABLET_SIZE = 'SET_IS_TABLET_SIZE'

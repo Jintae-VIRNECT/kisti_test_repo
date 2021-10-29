@@ -3,6 +3,7 @@
     :text="$t('service.tool_clear')"
     :disabled="!isAvailable"
     :active="status"
+    :disableTooltip="disableTooltip"
     :src="require('assets/image/ic-tool-delete.svg')"
     @click.stop="clickHandler"
   ></tool-button>

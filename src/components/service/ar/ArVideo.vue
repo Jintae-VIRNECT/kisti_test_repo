@@ -21,10 +21,13 @@
           <div class="ar-video__select-inner">
             <img src="~assets/image/call/ic-ar-field.svg" />
             <p>{{ $t('service.ar_area') }}</p>
-            <p
-              class="description"
-              v-html="$t('service.ar_area_description')"
-            ></p>
+            <p class="description">
+              {{
+                isMobileSize
+                  ? $t('service.ar_area_setting')
+                  : $t('service.ar_area_description')
+              }}
+            </p>
           </div>
         </button>
       </transition>

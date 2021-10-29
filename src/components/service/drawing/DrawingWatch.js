@@ -45,16 +45,21 @@ export default {
     viewAction(value) {
       if (this.view !== VIEW.DRAWING) return
       if (this.canvas) {
-        this.canvas.isDrawingMode = value === ACTION.DRAWING_LINE
-        this.canvas.freeDrawingCursor =
-          value === ACTION.DRAWING_TEXT ? 'text' : 'default'
-        this.canvas.defaultCursor =
-          value === ACTION.DRAWING_TEXT ? 'text' : 'default'
-        // let cursor
-        // if (value === 'text') {
-        //   cursor = 'text'
-        // }
-        // this.canvas.defaultCursor = cursor
+        //모바일 드로잉 락 모드
+        if (value === ACTION.DRAWING_LOCK) {
+          this.canvas.isDrawingMode = false
+          this.canvas.freeDrawingCursor = 'default'
+          this.canvas.defaultCursor = 'default'
+        } else {
+          //드로잉 모드
+          this.canvas.isDrawingMode = value === ACTION.DRAWING_LINE
+          //커서 설정
+          this.canvas.freeDrawingCursor =
+            value === ACTION.DRAWING_TEXT ? 'text' : 'default'
+          this.canvas.defaultCursor =
+            value === ACTION.DRAWING_TEXT ? 'text' : 'default'
+        }
+
         this.canvas.renderAll()
       }
     },

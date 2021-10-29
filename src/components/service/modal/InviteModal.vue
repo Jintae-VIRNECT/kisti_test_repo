@@ -1,83 +1,99 @@
 <template>
-  <modal
-    :title="$t('service.invite_title')"
-    width="50.857em"
-    height="60.143em"
-    :showClose="true"
-    :visible.sync="visibleFlag"
-    :beforeClose="beforeClose"
-    customClass="service-invite"
-  >
-    <div class="invite-modal__body">
-      <div class="invite-modal__current">
-        <div class="invite-modal__current-title">
-          <p>
-            {{ $t('service.invite_unconnected_list') }}
-          </p>
-          <tooltip
-            customClass="tooltip-guide"
-            :content="$t('service.invite_unconnected_remove')"
-            placement="right"
-            effect="blue"
-            :guide="true"
-          >
-            <img
-              slot="body"
-              class="setting__tooltip--icon"
-              src="~assets/image/ic_tool_tip.svg"
-            />
-          </tooltip>
-        </div>
-
-        <div class="invite-modal__current-list">
-          <figure
-            class="invite-modal__current-user"
-            v-for="(user, idx) of currentUser"
-            :key="user.uuid"
-          >
-            <tooltip :content="user.nickname || user.nickName">
-              <div class="invite-modal__profile" slot="body">
-                <profile
-                  :image="user ? user.profile : 'default'"
-                  :thumbStyle="{ width: '3.714em', height: '3.714em' }"
-                ></profile>
-                <button
-                  class="invite-modal__current-kickout"
-                  @click="kickoutConfirm(user, idx)"
-                >
-                  {{ $t('button.kickout') }}
-                </button>
-              </div>
-              <span>{{ user.nickname || user.nickName }}</span>
+  <div>
+    <modal
+      :title="$t('service.invite_title')"
+      width="50.857em"
+      height="60.143em"
+      :showClose="true"
+      :visible.sync="visiblePcFlag"
+      :beforeClose="beforeClose"
+      customClass="service-invite"
+    >
+      <div class="invite-modal__body">
+        <div class="invite-modal__current">
+          <div class="invite-modal__current-title">
+            <p>
+              {{ $t('service.invite_unconnected_list') }}
+            </p>
+            <tooltip
+              customClass="tooltip-guide"
+              :content="$t('service.invite_unconnected_remove')"
+              placement="right"
+              effect="blue"
+              :guide="true"
+            >
+              <img
+                slot="body"
+                class="setting__tooltip--icon"
+                src="~assets/image/ic_tool_tip.svg"
+              />
             </tooltip>
-          </figure>
+          </div>
+
+          <div class="invite-modal__current-list">
+            <figure
+              class="invite-modal__current-user"
+              v-for="(user, idx) of currentUser"
+              :key="user.uuid"
+            >
+              <tooltip :content="user.nickname || user.nickName">
+                <div class="invite-modal__profile" slot="body">
+                  <profile
+                    :image="user ? user.profile : 'default'"
+                    :thumbStyle="{ width: '3.714em', height: '3.714em' }"
+                  ></profile>
+                  <button
+                    class="invite-modal__current-kickout"
+                    @click="kickoutConfirm({ participant: user, idx })"
+                  >
+                    {{ $t('button.kickout') }}
+                  </button>
+                </div>
+                <span>{{ user.nickname || user.nickName }}</span>
+              </tooltip>
+            </figure>
+          </div>
         </div>
+        <room-invite
+          :users="users"
+          :selection="selection"
+          :total="users.length"
+          :loading="loading"
+          @userSelect="selectUser"
+          @inviteRefresh="init"
+        ></room-invite>
       </div>
-      <room-invite
-        :users="users"
-        :selection="selection"
-        :total="users.length"
-        :loading="loading"
-        @userSelect="selectUser"
-        @inviteRefresh="init"
-      ></room-invite>
-    </div>
-    <div slot="footer" class="invite-modal__footer">
-      <p
-        class="invite-modal__selected-title"
-        v-html="
-          $t('service.invite_selected', {
-            num: selection.length,
-            max: maxSelect,
-          })
-        "
-      ></p>
-      <profile-list :users="selection" size="2.143em"></profile-list>
-      <button class="btn" :disabled="selection.length === 0" @click="invite">
-        {{ $t('service.invite_require') }}
-      </button>
-    </div>
-  </modal>
+      <div slot="footer" class="invite-modal__footer">
+        <p
+          class="invite-modal__selected-title"
+          v-html="
+            $t('service.invite_selected', {
+              num: selection.length,
+              max: maxSelect,
+            })
+          "
+        ></p>
+        <profile-list :users="selection" size="2.143em"></profile-list>
+        <button class="btn" :disabled="selection.length === 0" @click="invite">
+          {{ $t('service.invite_require') }}
+        </button>
+      </div>
+    </modal>
+    <mobile-invite-modal
+      :visible.sync="visibleMobileFlag"
+      :maxSelect="maxSelect"
+      :roomInfo="roomInfo"
+      :users="users"
+      :currentUser="currentUserWithFlag"
+      :selection="selection"
+      :beforeClose="beforeClose"
+      :loading="loading"
+      @userSelect="selectUser"
+      @inviteRefresh="init"
+      @invite="invite"
+      @kickout="kickoutConfirm"
+    ></mobile-invite-modal>
+  </div>
 </template>
 
 <script>
@@ -86,6 +102,7 @@ import Profile from 'Profile'
 import ProfileList from 'ProfileList'
 import RoomInvite from 'components/workspace/partials/ModalCreateRoomInvite'
 import Tooltip from 'Tooltip'
+import MobileInviteModal from './MobileInviteModal.vue'
 
 import { mapGetters, mapActions } from 'vuex'
 import toastMixin from 'mixins/toast'
@@ -93,20 +110,22 @@ import confirmMixin from 'mixins/confirm'
 import { inviteRoom, kickoutMember, invitableList } from 'api/http/member'
 import { getRoomInfo as roomInfo } from 'api/http/room'
 import { memberSort } from 'utils/sort'
+import responsiveModalVisibleMixin from 'mixins/responsiveModalVisible'
+
 export default {
   name: 'InviteModal',
-  mixins: [toastMixin, confirmMixin],
+  mixins: [toastMixin, confirmMixin, responsiveModalVisibleMixin],
   components: {
     Modal,
     Profile,
     ProfileList,
     RoomInvite,
     Tooltip,
+    MobileInviteModal,
   },
   data() {
     return {
       selection: [],
-      visibleFlag: false,
       users: [],
       loading: false,
       currentUser: [],
@@ -124,6 +143,12 @@ export default {
     maxSelect() {
       return this.roomInfo.maxUserCount - this.currentLength
     },
+    currentUserWithFlag() {
+      return this.currentUser.map(user => {
+        user.currentInvited = true
+        return user
+      })
+    },
   },
   watch: {
     visible(flag) {
@@ -131,11 +156,10 @@ export default {
         this.init()
       } else {
         this.selection = []
-        this.visibleFlag = false
         this.users = []
         this.loading = false
       }
-      this.visibleFlag = flag
+      this.setVisiblePcOrMobileFlag(flag)
     },
   },
   methods: {
@@ -146,7 +170,7 @@ export default {
     beforeClose() {
       this.$emit('update:visible', false)
     },
-    kickoutConfirm(participant, idx) {
+    kickoutConfirm({ participant, idx }) {
       this.serviceConfirmCancel(
         this.$t('service.participant_kick_confirm', {
           name: participant.nickName,
@@ -234,9 +258,13 @@ export default {
         this.addMember(this.selection)
 
         this.toastNotify(this.$t('service.invite_success'))
-        this.$nextTick(() => {
-          this.visibleFlag = false
-        })
+
+        //PC환경에서만 협업 초대 후 창이 닫히도록 처리한다.
+        if (!this.isMobileSize) {
+          this.$nextTick(() => {
+            this.$emit('update:visible', false)
+          })
+        }
       }
     },
   },

@@ -1,7 +1,7 @@
 <template>
   <div class="main-body ar">
     <ar-tools></ar-tools>
-    <menus></menus>
+    <menus v-if="!isMobileSize"></menus>
     <ar-view></ar-view>
   </div>
 </template>

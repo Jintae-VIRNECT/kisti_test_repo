@@ -87,7 +87,6 @@ export default {
       const workspace = this.workspaceList.find(
         workspace => workspace.uuid === workspaceId,
       )
-      console.log(workspaceId, workspace)
       this.changeSelect(workspace)
     },
 

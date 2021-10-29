@@ -13,7 +13,7 @@
         </ul>
       </nav>
 
-      <div class="setting-view">
+      <div class="setting-view" :class="menus[tabIdx].key">
         <div class="setting-view__header">{{ menus[tabIdx].mobileText }}</div>
 
         <div class="setting-view__body">
@@ -98,6 +98,9 @@ export default {
   methods: {
     tabChange(idx) {
       this.$emit('tabChange', idx)
+      this.$nextTick(() => {
+        this.$eventBus.$emit('settingTabChanged')
+      })
     },
   },
 }

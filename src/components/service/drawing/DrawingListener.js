@@ -2,6 +2,7 @@ import { fabric } from 'plugins/remote/fabric.custom'
 import { ahexToRGBA } from 'utils/color'
 import { getReceiveParams, calcPosition } from 'utils/drawing'
 import { SIGNAL, DRAWING } from 'configs/remote.config'
+import { mapMutations } from 'vuex'
 
 export default {
   data() {
@@ -21,9 +22,11 @@ export default {
         //   path: [] / {},
         // }]
       },
+      DRAWING_INDEX: 1,
     }
   },
   methods: {
+    ...mapMutations(['SET_TAB_MENU_NOTICE']),
     drawingListener({ data, receive }) {
       if (data.type === DRAWING.FILE_SHARE) {
         this.receivedList[receive.from.connectionId] = []
@@ -36,6 +39,10 @@ export default {
 
       if (receive.from.connectionId === this.myInfo.connectionId) return //본인 시그날 데이터는 제외
       // if (this.account.roleType === ROLE.LEADER) return
+
+      //본인의 드로잉이 아닌 경우, 현재 탭이 드로잉 탭이 아닌 경우 : 협업보드 탭에 notice를 표시
+      if (!this.isDrawingView)
+        this.SET_TAB_MENU_NOTICE({ index: this.DRAWING_INDEX, notice: true })
 
       //드로잉 시그날 외에 시그날 데이터 제외
       if (

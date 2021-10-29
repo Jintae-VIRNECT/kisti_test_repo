@@ -6,18 +6,18 @@
         `toggle-header__small header-tools__chatbox ${chatBox ? 'visible' : ''}`
       "
       :description="`${$t('common.chatting')} on/off`"
-      size="2.429rem"
-      :activeSrc="require('assets/image/call/ic_chat_toggle.svg')"
-      :inactiveSrc="require('assets/image/call/ic_chat_toggle.svg')"
+      :size="iconSize"
+      :activeSrc="chatIcon"
+      :inactiveSrc="chatIcon"
       @action="toggle"
       :toggle="chatBox"
-      :active="active"
+      :active="chatActive"
     ></toggle-button>
   </tooltip>
 </template>
 
 <script>
-import { mapGetters, mapActions } from 'vuex'
+import { mapGetters, mapActions, mapMutations } from 'vuex'
 
 import Tooltip from 'Tooltip'
 import ToggleButton from 'ToggleButton'
@@ -33,15 +33,26 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['chatBox', 'chatList']),
+    ...mapGetters(['chatBox', 'chatList', 'chatActive']),
+    iconSize() {
+      if (this.isMobileSize) return '3.6rem'
+      else return '2.429rem'
+    },
+    chatIcon() {
+      if (this.isMobileSize)
+        return require('assets/image/call/ic_chat_toggle_new.svg')
+      else return require('assets/image/call/ic_chat_toggle.svg')
+    },
   },
   watch: {
     'chatList.length': 'listChange',
   },
   methods: {
+    ...mapMutations(['SET_CHAT_ACTIVE']),
     ...mapActions(['toggleChat']),
     toggle() {
-      this.active = false
+      //this.active = false
+      this.SET_CHAT_ACTIVE(false)
       this.toggleChat(!this.chatBox)
     },
     listChange() {
@@ -49,6 +60,7 @@ export default {
 
       if (this.chatList.length > 1) {
         this.active = true
+        this.SET_CHAT_ACTIVE(true)
       }
     },
   },

@@ -2,7 +2,7 @@
   <tooltip
     :content="text"
     :placement="placement"
-    :active="disableActive ? !active : true"
+    :active="disableTooltip ? false : disableActive ? !active : true"
     :customClass="customClass"
   >
     <button
@@ -33,6 +33,10 @@ export default {
     placement: {
       type: String,
       default: 'bottom',
+    },
+    disableTooltip: {
+      type: Boolean,
+      default: false,
     },
     disableActive: {
       type: Boolean,

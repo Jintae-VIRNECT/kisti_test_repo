@@ -3,15 +3,11 @@
     :visible.sync="visibleFlag"
     :dimClose="false"
     :showClose="false"
-    width="30.714em"
+    :width="modalWidth"
     class="spot-reconnect"
   >
     <div class="spot-reconnect__layout">
-      <img
-        class="spot-reconnect__img"
-        :src="require('assets/image/spot/img_spot_connect.svg')"
-        alt=""
-      />
+      <img class="spot-reconnect__img" :src="imgSrc" alt="" />
 
       <div class="spot-reconnect__body">
         <p class="reconnect-title">
@@ -68,6 +64,17 @@ export default {
       }
 
       this.visibleFlag = !!flag
+    },
+  },
+  computed: {
+    modalWidth() {
+      if (this.isMobileSize) return '28.8rem'
+      return '430px'
+    },
+    imgSrc() {
+      if (this.isMobileSize)
+        return require('assets/image/spot/img_spot_connect_mobile.svg')
+      return require('assets/image/spot/img_spot_connect.svg')
     },
   },
   methods: {

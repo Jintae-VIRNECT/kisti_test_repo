@@ -182,6 +182,7 @@
     "file_choice_num": "{number}個",
     "file_remove": "ファイル削除",
     "file_upload": "ファイルアップロード",
+    "file_upload_mobile_guide": "下段のファイルアップロードボタンから<br/>共有するファイルをアップロードできます。",
     "file_upload_maxnum": "ファイルは1個ずつアップロードしてください。",
     "file_upload_maxsize": "添付容量を超えました。",
     "file_image_notsupport": "該当画像は支援されません。",
@@ -204,6 +205,7 @@
     "record_local_list": "ローカル録画リスト",
     "record_blocked": "参加者ローカル録画使用が許可されていません。",
     "record_server": "サーバー録画",
+    "record_server_end": "サーバー録画終了",
     "record_start_message": "ローカル画面録画を開始します。録画を終了するには、ボタンをもう一度クリック、又は[ESC]キーを押してください。",
     "record_fail_memory": "PCの容量が不足して録画を中止します。進行中録画ファイルは保存されません。​",
     "record_end_message": "ローカル録画が完了しました。録画ファイルメニューからファイルをご確認ください。",
@@ -227,6 +229,7 @@
 
     "camera_control": "カメラ制御",
     "camera_control_allow": "カメラ制御許容",
+    "camera_control_limit": "カメラ制御制限",
     "camera_control_every_on": "全体カメラオン",
     "camera_control_every_off": "全体カメラオフ",
 
@@ -239,6 +242,7 @@
     "map_cannot_use_gps":"位置情報機能を使用できない機械です。",
     "map_timeout":"GPS情報を確認できません。要請した参加者にGPS機能を使用しているかどうかを確認してください。",
     
+    "spot_control": "Spot制御",
     "spot_networ_error" : "ネットワーク/サーバの問題でSpotの接続が終了しました。\n再接続をしますか？",
     "spot_connecting" : "Spot接続中...",
     "spot_reconnecting" : "Spot再接続中...",

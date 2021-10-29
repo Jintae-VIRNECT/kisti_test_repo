@@ -108,7 +108,7 @@ body {
   }
 }
 
-.error-body-button__container{
+.error-body-button__container {
   button {
     width: 18em;
     height: 3.571em;
@@ -165,7 +165,25 @@ body {
   color: $color_primary;
 }
 
-
-.c-remote-y{
+.c-remote-y {
   color: #fdc32e;
+}
+
+@include responsive-mobile {
+  .error {
+    background: url("~assets/image/support/img_support_bg_mobile.svg")
+      $color_bg_display;
+  }
+
+  .error-body--mobile {
+    margin-bottom: 26px;
+  }
+
+  .error-body-button__container {
+    button {
+      width: 172px;
+      height: 50px;
+      @include fontLevel(100);
+    }
+  }
 }

@@ -130,3 +130,56 @@
     border-radius: 2px;
   }
 }
+
+@include responsive-mobile {
+  .mobile-header-service {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+  }
+  .mobile-header-info {
+    max-width: 66.6%;
+    margin-left: 1.6rem;
+
+    h1 {
+      margin-bottom: 0.2rem;
+      color: $new_color_text_main;
+      text-align: start;
+      @include ellipsis;
+      @include fontLevel(100);
+    }
+  }
+  .mobile-header-tools {
+    display: flex;
+    align-items: center;
+    margin-right: 1.6rem;
+    pointer-events: all;
+
+    .header-tools__chatbox.toggle-button.toggle-header__small {
+      margin-right: 0.4rem;
+      background-position: center;
+      background-size: 3.6rem;
+    }
+
+    .header-tools__chatbox {
+      position: relative;
+      &.active::after {
+        position: absolute;
+        top: 3px;
+        right: 1px;
+        width: 0.6rem;
+        height: 0.6rem;
+        background-color: #ff0014;
+        border-radius: 50%;
+        content: "";
+      }
+    }
+
+    .mobile-header-tools__leave {
+      width: 3.6rem;
+      height: 3.6rem;
+      background: url(~assets/image/call/gnb_ic_callout_new.svg) center/3.6rem
+        no-repeat;
+    }
+  }
+}

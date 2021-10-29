@@ -12,13 +12,15 @@
       />
       <p
         class="guest-mobile__logo--text"
-        v-html="$t('guest.guest_install_mobile_app_description')"
+        v-html="'* ' + $t('guest.guest_install_mobile_app_description')"
       ></p>
       <br />
       <p
         v-if="isOnpremise"
         class="guest-mobile__logo--text"
-        v-html="$t('guest.guest_install_mobile_app_download_description')"
+        v-html="
+          '* ' + $t('guest.guest_install_mobile_app_download_description')
+        "
       ></p>
     </section>
     <main class="guest-mobile__buttons">
@@ -34,10 +36,9 @@
         {{ $t('button.download') }}
       </button>
 
-      <!-- @TODO ykmo 2021-09-15 모바일 반응형 정식 릴리즈 전까지 숨김 처리 -->
-      <!-- <button class="guest-mobile__buttons--linkweb" @click="accessWeb">
+      <button class="guest-mobile__buttons--linkweb" @click="accessWeb">
         {{ $t('button.connect_web') }}
-      </button> -->
+      </button>
     </main>
   </div>
 </template>
@@ -154,11 +155,13 @@ export default {
 </script>
 
 <style lang="scss">
+@import '~assets/style/mixin';
+
 .guest-mobile {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
+  // display: flex;
+  // flex-direction: column;
+  // align-items: center;
+  //justify-content: center;
   width: 100%;
   height: 100%;
   background: linear-gradient(
@@ -169,19 +172,24 @@ export default {
   border-radius: 0px;
 }
 .guest-mobile__logo {
+  //margin-bottom: 116.9994px;
+  position: fixed;
+  top: 12.6%;
+  left: 50%;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  margin-bottom: 116.9994px;
+  width: 26.4rem;
+  transform: translateX(-50%);
 }
 
 .guest-mobile__logo--img {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 100.0006px;
-  height: 100.0006px;
+  width: 8.8rem;
+  height: 8.8rem;
   margin-bottom: 6px;
   background-image: linear-gradient(
       -225deg,
@@ -199,34 +207,36 @@ export default {
 }
 
 .guest-mobile__logo--type {
-  width: 126px;
-  height: 39.6004px;
-  margin-bottom: 17.4006px;
+  width: 11.1rem;
+  height: 3.5rem;
+  margin-bottom: 2.6rem;
 }
 
 .guest-mobile__logo--text {
-  color: rgb(174, 182, 194);
-  font-weight: 500;
-  font-size: 14px;
-  line-height: 20px;
-  letter-spacing: 0px;
+  color: $new_color_text_sub;
+  @include fontLevel(100);
   white-space: pre-line;
   text-align: center;
 }
 
 .guest-mobile__buttons {
+  position: fixed;
+  bottom: 7.8%;
+  left: 50%;
   display: flex;
   flex-direction: column;
   justify-content: center;
+  transform: translateX(-50%);
 
   a,
   button {
-    width: 220.0002px;
-    height: 48.0004px;
-
-    margin-bottom: 16.0006px;
+    width: 22rem;
+    height: 4.8rem;
+    margin-top: 1.6rem;
+    color: rgb(255, 255, 255);
     border-radius: 6px;
     box-shadow: 0px 6px 14px 0px rgba(0, 0, 0, 0.2);
+    @include fontLevel(150);
   }
 }
 
@@ -242,34 +252,17 @@ export default {
 }
 
 .guest-mobile__buttons--runapp {
-  width: 220.0002px;
-  height: 48.0004px;
-  color: rgb(255, 255, 255);
-
-  font-weight: 500;
-  font-size: 14.9996px;
-  letter-spacing: 0px;
   text-align: center;
-  background: rgb(59, 146, 243);
+  background: $new_color_bg_button_highlighted;
   border-radius: 6px;
 }
 
 .guest-mobile__buttons--download {
-  color: rgb(255, 255, 255);
-
-  font-weight: 500;
-  font-size: 14.9996px;
-  letter-spacing: 0px;
-  background: rgb(62, 69, 79);
+  background: $new_color_bg_button_sub3;
 }
 
 .guest-mobile__buttons--linkweb {
-  color: rgb(255, 255, 255);
-
-  font-weight: 500;
-  font-size: 14.9996px;
-  letter-spacing: 0px;
-  background: #616872;
+  background: $new_color_bg_button_sub;
   border-radius: 6px;
 }
 </style>
