@@ -46,6 +46,8 @@ import DeviceDenied from '../workspace/modal/WorkspaceDeviceDenied'
 import auth, { setTokensToCookies } from 'utils/auth'
 import { initAudio } from 'plugins/remote/tts/audio'
 
+import { initAudio } from 'plugins/remote/tts/audio'
+
 export default {
   name: 'GuestLayout',
   async beforeRouteEnter(to, from, next) {
@@ -147,7 +149,7 @@ export default {
     showGuestExpiredAlarm() {
       this.confirmDefault(this.$t('guest.guest_license_expired'), {
         action: () => {
-          location.href = `${URLS['console']}/?continue=${location.href}`
+          location.href = `${URLS['console']}`
         },
       })
     },
@@ -188,10 +190,12 @@ export default {
     try {
       //파라미터 유효성 체크
       if (this.workspaceId === undefined || this.sessionId === undefined) {
-        location.href = `${URLS['console']}/?continue=${location.href}`
+        location.href = `${URLS['console']}`
         console.error('invalid params')
         return
       }
+
+      initAudio()
 
       this.$eventBus.$on('initGuestMember', this.initGuestMember)
       this.$eventBus.$on('updateServiceMode', this.updateServiceMode)

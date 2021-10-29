@@ -131,8 +131,13 @@ export default {
       }
     },
     groupNameInvalidMessage() {
-      if (this.groupNameInput.length < 2) {
+      const inputLength = this.groupNameInput.length
+      if (inputLength === 0) {
         return this.$t('workspace.workspace_member_group_name_valid1')
+      } else if (inputLength < 2 && inputLength > 0) {
+        return this.$t('workspace.workspace_member_group_name_valid2')
+      } else if (this.selection.length < 1) {
+        return this.$t('workspace.workspace_member_group_count_valid')
       } else {
         return this.$t('workspace.remote_name_valid2')
       }
@@ -152,7 +157,7 @@ export default {
       this.setVisiblePcOrMobileFlag(flag)
     },
     groupNameInput() {
-      if (this.groupNameInput.length < 2) {
+      if (this.groupNameInput.length < 2 || this.selection.length < 1) {
         this.groupNameInValid = true
       }
     },
@@ -161,6 +166,13 @@ export default {
     },
     groupMembers() {
       this.loading = false
+    },
+    selection() {
+      if (this.selection.length < 1) {
+        this.groupNameInValid = true
+      } else {
+        this.groupNameInValid = false
+      }
     },
   },
 

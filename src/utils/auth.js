@@ -1,4 +1,9 @@
-import { getAccount, tokenRequest, getSettingInfo } from 'api/http/account'
+import {
+  getAccount,
+  tokenRequest,
+  getSettingInfo,
+  logout,
+} from 'api/http/account'
 import Cookies from 'js-cookie'
 import clonedeep from 'lodash.clonedeep'
 import jwtDecode from 'jwt-decode'
@@ -538,7 +543,14 @@ class Auth {
     location.href = `${URLS['console']}/?continue=${location.href}`
     return this
   }
-  logout(redirect = true) {
+  async logout(redirect = true) {
+    if (myInfo.uuid && Cookies.get('accessToken')) {
+      await logout({
+        uuid: myInfo.uuid,
+        accessToken: Cookies.get('accessToken'),
+      })
+    }
+
     endLoginStatus() //로그아웃 상태 업데이트
     cookieClear()
     isLogin = false

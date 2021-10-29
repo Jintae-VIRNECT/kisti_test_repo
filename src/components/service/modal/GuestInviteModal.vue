@@ -77,6 +77,8 @@ import { mapGetters } from 'vuex'
 import MobileGuestInviteModal from './MobileGuestInviteModal'
 import LabelInputButton from './partials/LabelInputButton'
 
+import { validEmail } from 'utils/regexp.js'
+
 export default {
   name: 'GuestInviteModal',
   mixins: [toastMixin, responsiveModalVisibleMixin],
@@ -145,6 +147,13 @@ export default {
       try {
         if (this.emailAddress.length === 0) return
 
+        if (!validEmail(this.emailAddress)) {
+          this.toastDefault(
+            this.$t('service.guest_invite_email_validation_failed'),
+          )
+          return
+        }
+
         await sendEmail({
           receivers: [this.emailAddress],
           sender: this.emailSender,
@@ -174,8 +183,13 @@ export default {
     getMailBody(target) {
       const newLine = target === 'mailto' ? '%0D%0A' : '<br>'
 
-      const webUrl = this.getInviteUrl('web')
-      const qrUrl = this.getInviteUrl('qr')
+      let webUrl = this.getInviteUrl('web')
+      let qrUrl = this.getInviteUrl('qr')
+
+      if (target === 'mailto') {
+        webUrl = webUrl.replaceAll('&', '%26')
+        qrUrl = qrUrl.replaceAll('&', '%26')
+      }
 
       const msg =
         `[${this.emailSubject}] ${newLine}` +
@@ -206,7 +220,6 @@ export default {
     font-size: 0.9286rem;
   }
 }
-
 .guest-invite--divider {
   width: 100%;
   margin-top: 2.0714rem;

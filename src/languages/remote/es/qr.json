@@ -1,0 +1,11 @@
+{
+  "qr":{
+	"qr_login": "Acceso QR",
+	"qr_login_description": "Puede iniciar sesión con códigos QR de manera sencilla en vidrio inteligente.",
+	"qr_login_how_to": "Cómo iniciar sesión mediante códigos QR",
+	"qr_login_how_to_description_1": "1. Abra la App VIRNECT Remote en el vidrio inteligente que quiere usar.",
+	"qr_login_how_to_description_2": "2. Presione el botón [Iniciar sesión con QR] encontrado en la parte inferior de la pantalla.",
+	"qr_login_how_to_description_3": "3. Apunte el código QR para que se muestre en la pantalla. Después de escáner el código QR, podrá iniciar sesión.",
+	"qr_login_how_to_description_4": "*Solamente para los dispositivos que soportan códigos QR"
+  }
+}

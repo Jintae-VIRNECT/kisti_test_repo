@@ -46,6 +46,7 @@ app.post('/tts', express.json(), function(req, res) {
 initHelmet(app).then(() => {
   app.use(express.static(path.join(__dirname, 'dist')))
   app.use(express.static(path.join(__dirname, 'record')))
+  app.use('/static', express.static(path.join(__dirname, 'static')))
 
   app.use(route)
 

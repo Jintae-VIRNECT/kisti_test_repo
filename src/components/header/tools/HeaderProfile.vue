@@ -140,8 +140,8 @@ export default {
     },
     logout() {
       this.$eventBus.$emit('popover:close')
-      this.$nextTick(() => {
-        auth.logout()
+      this.$nextTick(async () => {
+        await auth.logout()
         // auth.login()
       })
     },

@@ -199,8 +199,10 @@
     "workspace_add_and_update_member_group":"Add/Edit Favorites",
     "workspace_member_group_max_description":"Up to 10 favorite groups can be created.",
     "workspace_member_group_name_valid1":"Please enter a Favorite name.​",
+    "workspace_member_group_name_valid2":"Type in more than 2 letters for Favorites name​.",
     "workspace_member_group_member":"Favorite member",
     "workspace_member_group_member_no_selection" :"Do not select​",
+    "workspace_member_group_count_valid":"Please select at least 1 member.",
 
     "workspace_select":"Select Workspace"
   }

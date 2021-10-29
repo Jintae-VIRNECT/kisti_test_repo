@@ -70,8 +70,8 @@ export default {
       //로그아웃 및 로그인 페이지로 리디렉트
       const cancel = {
         text: this.$t('button.leave_exit'),
-        action: () => {
-          auth.logout()
+        action: async () => {
+          await auth.logout()
         },
       }
       this.confirmCancel(text, confirm, cancel, option)
@@ -82,7 +82,7 @@ export default {
     //원격 종료 : 기접속자 원격종료 요청
     //종료 : 신규 로그인 시도자 로그아웃 및 로그인페이지로 리디렉트
     //기접속자 협업 중인 경우 - 팝업 알림 후 로그아웃 및 로그인 페이지로 리디렉트
-    onDuplicatedRegistration({ currentStatus, userId }, socket) {
+    async onDuplicatedRegistration({ currentStatus, userId }, socket) {
       //로그인 된 기 접속자가 있는 경우 : 팝업으로 강제 로그아웃 실행 여부 확인
       //로그아웃인 경우는 발생하지 않아야 하지만 예외경우 포함시킴
       if (currentStatus === 'LOGIN' || currentStatus === 'LOGOUT') {
@@ -105,11 +105,11 @@ export default {
           )
         }
         //취소 : 로그인 시도했던 사용자 로그아웃 처리 및 로그인 페이지로 리디렉트
-        const cancelAction = () => {
+        const cancelAction = async () => {
           //(REGISTER)
           //A) 로그인 => 기존 워크스페이스
           //B) 워크스페이스 목록 => 워크스페이스 선택 하는 경우
-          auth.logout() //1) 일관성 있게 로그아웃 후 로그인 페이지로 리디렉트
+          await auth.logout() //1) 일관성 있게 로그아웃 후 로그인 페이지로 리디렉트
         }
 
         const confirm = {
@@ -127,7 +127,7 @@ export default {
       //협업 중인 경우 : 팝업 띄운 후 로그인 페이지로 리디렉트
       else if (currentStatus === 'JOIN') {
         const redirect = false
-        auth.logout(redirect) //바로 로그아웃 처리하고, 리디렉트는 팝업 엑션에서 실행한다
+        await auth.logout(redirect) //바로 로그아웃 처리하고, 리디렉트는 팝업 엑션에서 실행한다
 
         const text = this.$t('workspace.confirm_duplicated_session_joined')
         const action = () =>
@@ -137,8 +137,8 @@ export default {
     },
 
     //중복 로그인으로 인해 신규접속자로 부터 원격종료 이벤트 수신한 경우 - 로그아웃 처리 후 팝업 클릭 시 로그인 페이지 이동
-    onRemoteExitReceived() {
-      auth.logout(false) //바로 로그아웃 처리
+    async onRemoteExitReceived() {
+      await auth.logout(false) //바로 로그아웃 처리
       //팝업 표시 후 리디렉트 실행
       this.confirmDefault(
         this.$t('workspace.confirm_duplicated_session_logout_received'),
@@ -151,11 +151,11 @@ export default {
     },
 
     //구축형 - 마스터로 부터 강제로그아웃 이벤트 수신한 경우 - 로그아웃 처리후 팝업 클릭 시 로그인 페이지로 이동
-    onForceLogoutReceived() {
+    async onForceLogoutReceived() {
       if (!this.isOnpremise) return
       this.debug('force logout received')
       const redirect = false
-      auth.logout(redirect)
+      await auth.logout(redirect)
 
       //로그아웃 처리
       const action = () =>

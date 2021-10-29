@@ -202,8 +202,7 @@ export default {
   mounted() {
     if (!this.useRecording) return
     this.setServerRecordStatus('STOP')
-    if (!this.account.roleType === ROLE.LEADER) return
-
+    if (this.account.roleType !== ROLE.LEADER) return
     this.$eventBus.$on('serverRecord', this.toggleServerRecord)
     this.checkServerRecordings()
 

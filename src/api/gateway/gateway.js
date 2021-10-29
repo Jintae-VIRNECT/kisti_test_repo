@@ -192,7 +192,7 @@ const errorHandler = function(err) {
         // console.error(error.message)
         // "Unexpected Server Error, Please contact Administrator"
         break
-      case 8003:
+      // case 8003:
       case 8005:
         // console.error(error.message)
         cookieClear()

@@ -198,8 +198,10 @@
     "workspace_add_and_update_member_group":"즐겨찾기 추가/수정",
     "workspace_member_group_max_description":"최대 10개 즐겨찾기 그룹의 생성이 가능합니다.",
     "workspace_member_group_name_valid1":"즐겨찾기 이름을 입력해주세요.",
+    "workspace_member_group_name_valid2":"즐겨찾기 이름은 2자 이상 입력해 주세요.",
     "workspace_member_group_member":"즐겨찾기 멤버",
     "workspace_member_group_member_no_selection" :"선택 없음",
+    "workspace_member_group_count_valid":"멤버를 1명 이상 선택해 주세요.",
 
     "workspace_select": "워크스페이스 선택"
   }

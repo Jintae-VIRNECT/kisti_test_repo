@@ -1,6 +1,7 @@
 export default {
   /* Account */
   LOGIN: ['POST', 'https://192.168.6.3:8073/auth/signin'],
+  LOGOUT: ['POST', '/auth/signout'],
   TOKEN: ['POST', '/auth/oauth/token'],
   ACCOUNT: ['GET', '/users/info', { initing: true }],
   USER_INFO: ['GET', '/users/{userId}', { initing: true }],
@@ -148,7 +149,6 @@ export default {
   /* 다운로드 서버 */
   LATEST_APP_INFO: ['GET', '/download/list/{productName}'],
   DOWNLOAD_APP: ['GET', '/download/app/{uuid}'],
-  ALL_APP_LIST: ['GET', '/download/app/list'],
 }
 
 export const wsUri = {

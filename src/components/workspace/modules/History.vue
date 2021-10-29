@@ -235,6 +235,9 @@ export default {
   .card-item:last-of-type {
     // flex-grow: 0.6;
   }
+  .card-item.info-mobile {
+    display: none;
+  }
 }
 
 .widecard-tools {
