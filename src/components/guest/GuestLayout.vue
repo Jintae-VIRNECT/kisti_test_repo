@@ -46,8 +46,6 @@ import DeviceDenied from '../workspace/modal/WorkspaceDeviceDenied'
 import auth, { setTokensToCookies } from 'utils/auth'
 import { initAudio } from 'plugins/remote/tts/audio'
 
-import { initAudio } from 'plugins/remote/tts/audio'
-
 export default {
   name: 'GuestLayout',
   async beforeRouteEnter(to, from, next) {
@@ -184,7 +182,6 @@ export default {
   },
 
   async mounted() {
-    initAudio()
     this.$eventBus.$on('settingTabChanged', this.scrollToBottom)
 
     try {
