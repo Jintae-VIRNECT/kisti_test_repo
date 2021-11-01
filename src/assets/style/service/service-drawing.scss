@@ -5,10 +5,13 @@
   height: calc(100% - #{$tool_height});
 }
 
-.drawing-box__exit-btn {
+.drawing-box__exit-btn-tooltip {
   position: absolute;
   top: 1.642rem;
   right: 1.642rem;
+}
+
+.drawing-box__exit-btn {
   z-index: 1;
   display: block;
   width: 2.714rem; //24px
