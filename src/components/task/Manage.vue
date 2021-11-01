@@ -242,6 +242,7 @@ export default {
   },
   watch: {
     'mainForm.schedule'(date) {
+      this.$refs.subForm.forEach(form => form.resetFields())
       this.subForm.forEach(form => {
         if (!form.schedule.length) form.schedule = date
       })
