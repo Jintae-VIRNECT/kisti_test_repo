@@ -581,7 +581,7 @@ public class ProjectService {
 			//최대 업로드 사용량 체크
 			long projectFileSize = fileDownloadService.getFileSize(projectUpdateRequest.getProject());
 			if (!checkWorkspaceMaxStorage(
-				projectUpdateRequest.getUserUUID(), projectFileSize - project.getSize()
+				project.getWorkspaceUUID(), projectFileSize - project.getSize()
 			)) {
 				throw new ContentServiceException(ErrorCode.ERR_PROJECT_UPLOAD_MAX_STORAGE);
 			}
