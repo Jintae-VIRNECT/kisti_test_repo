@@ -8,7 +8,6 @@ import javax.persistence.*;
 import java.time.LocalDateTime;
 
 import com.virnect.data.domain.BaseTimeEntity;
-import com.virnect.data.domain.room.RoomStatus;
 
 //@DynamicUpdate
 @Entity
@@ -71,6 +70,10 @@ public class File extends BaseTimeEntity {
     @Column(name = "height")
     private Integer height;
 
+    @Column(name = "file_convert_status")
+    @Enumerated(EnumType.STRING)
+    private FileConvertStatus fileConvertStatus;
+
     /*@ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "type_id")
     private Type type;*/
@@ -87,7 +90,8 @@ public class File extends BaseTimeEntity {
         Long size,
         FileType fileType,
         Integer width,
-        Integer height
+        Integer height,
+        FileConvertStatus fileConvertStatus
     ) {
         this.workspaceId = workspaceId;
         this.sessionId = sessionId;
@@ -103,6 +107,7 @@ public class File extends BaseTimeEntity {
         this.downloadHits = 0L;
         this.deleted = false;
         this.expired = false;
+        this.fileConvertStatus = fileConvertStatus;
         this.expirationDate = LocalDateTime.now().plusDays(7);
     }
 }

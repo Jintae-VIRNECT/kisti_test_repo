@@ -54,19 +54,21 @@ public class CustomFileRepositoryImpl extends QuerydslRepositorySupport implemen
 	}
 
 	@Override
-	public Page<File> findShareFileByWorkspaceAndSessionId(
+	public Page<File> findShareFileByWorkspaceAndSessionIdAndFileType(
 		String workspaceId,
 		String sessionId,
 		boolean paging,
-		Pageable pageable
+		Pageable pageable,
+		FileType fileType
 	) {
 		JPQLQuery<File> queryResult = query
 			.selectFrom(file)
 			.where(
 				file.workspaceId.eq(workspaceId),
 				file.sessionId.eq(sessionId),
-				file.fileType.eq(FileType.SHARE),
+				file.fileType.eq(fileType),
 				file.objectName.contains("thumbnail").not(),
+				file.objectName.contains("buffer0.bin").not(),
 				file.deleted.eq(false)
 			).distinct();
 		long totalCount = queryResult.fetchCount();
@@ -93,8 +95,7 @@ public class CustomFileRepositoryImpl extends QuerydslRepositorySupport implemen
 				file.sessionId.eq(sessionId),
 				file.deleted.eq(deleted),
 				file.objectName.contains("thumbnail").not(),
-				file.fileType.ne(FileType.RECORD),
-				file.fileType.ne(FileType.PROFILE)
+				file.fileType.eq(FileType.FILE)
 			).distinct();
 		long totalCount = queryResult.fetchCount();
 		List<File> results;
@@ -105,4 +106,19 @@ public class CustomFileRepositoryImpl extends QuerydslRepositorySupport implemen
 		}
 		return new PageImpl<>(results, pageable, totalCount);
 	}
+
+	@Override
+	public List<File> findShareFilesAll(
+		String workspaceId,
+		String sessionId
+	) {
+		return query.selectFrom(file)
+			.where(
+				file.workspaceId.eq(workspaceId),
+				file.sessionId.eq(sessionId),
+				file.deleted.eq(false),
+				file.fileType.eq(FileType.SHARE).or(file.fileType.eq(FileType.OBJECT))
+			).fetch();
+	}
+
 }

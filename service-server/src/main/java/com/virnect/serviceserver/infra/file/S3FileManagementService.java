@@ -268,7 +268,8 @@ public class S3FileManagementService implements IFileManagementService {
         String objectName = String.format("%s_%s", LocalDate.now(), RandomStringUtils.randomAlphabetic(20));
         StringBuilder objectPath = new StringBuilder();
         switch (fileType) {
-            case FILE: {
+            case FILE:
+            case SHARE: {
                 // check file size
                 if (file.getSize() > MAX_FILE_SIZE) {
                     LogMessage.formedError(
@@ -318,6 +319,14 @@ public class S3FileManagementService implements IFileManagementService {
                         + "objectName: " + objectName
         );
         return new UploadResult(objectName, ErrorCode.ERR_SUCCESS);
+    }
+
+    @Override
+    public UploadResult objectFileUpload(InputStream inputStream, String dirPath, String fileOriginalName, String objectName, String objectPath) throws
+        IOException,
+        NoSuchAlgorithmException,
+        InvalidKeyException {
+        return null;
     }
 
     @Override

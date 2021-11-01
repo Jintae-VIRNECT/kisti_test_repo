@@ -1,9 +1,5 @@
 package com.virnect.serviceserver.serviceremote.api;
 
-import java.io.IOException;
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
@@ -29,26 +25,26 @@ import lombok.extern.slf4j.Slf4j;
 import springfox.documentation.annotations.ApiIgnore;
 
 import com.virnect.data.domain.file.FileType;
+import com.virnect.data.dto.request.PageRequest;
+import com.virnect.data.dto.request.file.FileUploadRequest;
+import com.virnect.data.dto.request.file.RecordFileUploadRequest;
+import com.virnect.data.dto.request.file.RoomProfileUpdateRequest;
+import com.virnect.data.dto.response.ResultResponse;
+import com.virnect.data.dto.response.file.FileDeleteResponse;
+import com.virnect.data.dto.response.file.FileDetailInfoListResponse;
+import com.virnect.data.dto.response.file.FileInfoListResponse;
+import com.virnect.data.dto.response.file.FilePreSignedResponse;
 import com.virnect.data.dto.response.file.FileStorageInfoResponse;
+import com.virnect.data.dto.response.file.FileUploadResponse;
+import com.virnect.data.dto.response.file.RoomProfileUpdateResponse;
+import com.virnect.data.dto.response.file.ShareFileInfoListResponse;
+import com.virnect.data.dto.response.file.ShareFileUploadResponse;
 import com.virnect.data.error.ErrorCode;
 import com.virnect.data.error.exception.RestServiceException;
 import com.virnect.data.global.common.ApiResponse;
 import com.virnect.data.infra.utils.LogMessage;
 import com.virnect.serviceserver.global.config.property.RemoteStorageProperties;
 import com.virnect.serviceserver.serviceremote.application.FileService;
-import com.virnect.data.dto.request.file.FileUploadRequest;
-import com.virnect.data.dto.request.file.RecordFileUploadRequest;
-import com.virnect.data.dto.request.file.RoomProfileUpdateRequest;
-import com.virnect.data.dto.request.PageRequest;
-import com.virnect.data.dto.response.ResultResponse;
-import com.virnect.data.dto.response.file.FileDeleteResponse;
-import com.virnect.data.dto.response.file.FileDetailInfoListResponse;
-import com.virnect.data.dto.response.file.FileInfoListResponse;
-import com.virnect.data.dto.response.file.FilePreSignedResponse;
-import com.virnect.data.dto.response.file.FileUploadResponse;
-import com.virnect.data.dto.response.file.RoomProfileUpdateResponse;
-import com.virnect.data.dto.response.file.ShareFileInfoListResponse;
-import com.virnect.data.dto.response.file.ShareFileUploadResponse;
 
 @Slf4j
 @RestController
@@ -67,7 +63,7 @@ public class FileRestController {
         @ApiImplicitParam(name = "workspaceId", value = "워크스페이스 식별자", dataType = "string", paramType = "form", required = true, defaultValue = "48acaade22f3e2bba74bb6f1c44389a9"),
         @ApiImplicitParam(name = "sessionId", value = "원격협업 세션", dataType = "string", paramType = "form", required = true, defaultValue = "ses_JRG7p1fFox"),
         @ApiImplicitParam(name = "userId", value = "업로드 사용자 고유 식별자", dataType = "string", paramType = "form", required = true, defaultValue = "4218059539d944fca0a27fc5a57ce05b"),
-        @ApiImplicitParam(name = "file", value = "업로드 파일", dataType = "__file", paramType = "form", required = true),
+        @ApiImplicitParam(name = "file", value = "업로드 파일", dataType = "__file", paramType = "form", required = true)
     })
     @PostMapping(value = "file/upload", headers = {
         "content-type=multipart/*"}, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
@@ -97,7 +93,7 @@ public class FileRestController {
         @ApiImplicitParam(name = "workspaceId", value = "워크스페이스 식별자", dataType = "string", paramType = "form", required = true, defaultValue = "48acaade22f3e2bba74bb6f1c44389a9"),
         @ApiImplicitParam(name = "sessionId", value = "원격협업 세션", dataType = "string", paramType = "form", required = true, defaultValue = "ses_JRG7p1fFox"),
         @ApiImplicitParam(name = "userId", value = "업로드 사용자 고유 식별자", dataType = "string", paramType = "form", required = true, defaultValue = "4218059539d944fca0a27fc5a57ce05b"),
-        @ApiImplicitParam(name = "file", value = "업로드 파일", dataType = "__file", paramType = "form", required = true),
+        @ApiImplicitParam(name = "file", value = "업로드 파일", dataType = "__file", paramType = "form", required = true)
     })
     @PostMapping(value = "record/upload", headers = {
         "content-type=multipart/*"}, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
@@ -126,8 +122,7 @@ public class FileRestController {
     @ApiImplicitParams({
         @ApiImplicitParam(value = "변경할 프로필 이미지", name = "profile", paramType = "form", dataType = "__file", required = true)
     })
-    @PostMapping(value = "file/{workspaceId}/{sessionId}/profile", headers = {
-        "content-type=multipart/*"}, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PostMapping(value = "file/{workspaceId}/{sessionId}/profile", headers = {"content-type=multipart/*"}, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<ApiResponse<RoomProfileUpdateResponse>> profileUploadRequestHandler(
         @ModelAttribute @Valid RoomProfileUpdateRequest roomProfileUpdateRequest,
         @PathVariable("workspaceId") String workspaceId,
@@ -183,7 +178,7 @@ public class FileRestController {
         @ApiImplicitParam(name = "workspaceId", value = "워크스페이스 식별자", dataType = "string", paramType = "path", required = true),
         @ApiImplicitParam(name = "sessionId", value = "원격협업 세션", dataType = "string", paramType = "path", required = true),
         @ApiImplicitParam(name = "userId", value = "다운로드 사용자 고유 식별자", dataType = "string", paramType = "query", required = true),
-        @ApiImplicitParam(name = "objectName", value = "다운로드 파일 고유 이름", dataType = "string", paramType = "query", required = true),
+        @ApiImplicitParam(name = "objectName", value = "다운로드 파일 고유 이름", dataType = "string", paramType = "query", required = true)
     })
     @GetMapping(value = "file/download/url/{workspaceId}/{sessionId}")
     public ResponseEntity<ApiResponse<FilePreSignedResponse>> fileDownloadUrlRequestHandler(
@@ -221,7 +216,7 @@ public class FileRestController {
         @ApiImplicitParam(name = "workspaceId", value = "워크스페이스 식별자", dataType = "string", paramType = "path", required = true),
         @ApiImplicitParam(name = "sessionId", value = "원격협업 세션", dataType = "string", paramType = "path", required = true),
         @ApiImplicitParam(name = "userId", value = "다운로드 사용자 고유 식별자", dataType = "string", paramType = "query", required = true),
-        @ApiImplicitParam(name = "objectName", value = "다운로드 파일 고유 이름", dataType = "string", paramType = "query", required = true),
+        @ApiImplicitParam(name = "objectName", value = "다운로드 파일 고유 이름", dataType = "string", paramType = "query", required = true)
     })
     @GetMapping(value = "file/record/download/url/{workspaceId}/{sessionId}")
     public ResponseEntity<ApiResponse<FilePreSignedResponse>> recordFileDownloadUrlRequestHandler(
@@ -259,7 +254,7 @@ public class FileRestController {
         @ApiImplicitParam(name = "size", value = "페이징 사이즈", dataType = "number", paramType = "query", defaultValue = "10"),
         @ApiImplicitParam(name = "page", value = "size 대로 나눠진 페이지를 조회할 번호(Index 0 부터 시작)", paramType = "query", defaultValue = "0"),
         @ApiImplicitParam(name = "sort", value = "정렬 옵션 데이터(createdDate, ASC or DESC)", paramType = "query", defaultValue = "createdDate, DESC"),
-        @ApiImplicitParam(name = "deleted", value = "삭제 파일 필터 옵션 (YES, NO)", dataType = "boolean", defaultValue = "false"),
+        @ApiImplicitParam(name = "deleted", value = "삭제 파일 필터 옵션 (YES, NO)", dataType = "boolean", defaultValue = "false")
     })
     @GetMapping("file")
     public ResponseEntity<ApiResponse<FileInfoListResponse>> getFileList(
@@ -299,7 +294,7 @@ public class FileRestController {
         @ApiImplicitParam(name = "size", value = "페이징 사이즈(최대 20)", dataType = "number", paramType = "query", defaultValue = "10"),
         @ApiImplicitParam(name = "page", value = "size 대로 나눠진 페이지를 조회할 번호(Index 0 부터 시작)", paramType = "query", defaultValue = "0"),
         @ApiImplicitParam(name = "sort", value = "정렬 옵션 데이터(createdDate, ASC or DESC)", paramType = "query", defaultValue = "createdDate, DESC"),
-        @ApiImplicitParam(name = "deleted", value = "삭제 파일 필터 옵션 (YES, NO)", dataType = "boolean", defaultValue = "false"),
+        @ApiImplicitParam(name = "deleted", value = "삭제 파일 필터 옵션 (YES, NO)", dataType = "boolean", defaultValue = "false")
     })
     @GetMapping(value = "file/record/info")
     public ResponseEntity<ApiResponse<FileDetailInfoListResponse>> getDetailFileList(
@@ -373,7 +368,7 @@ public class FileRestController {
     @ApiImplicitParams({
         @ApiImplicitParam(name = "objectName", value = "다운로드 파일 고유 이름", dataType = "string", paramType = "query", required = true),
     })
-    @GetMapping(value = "file/guide/")
+    @GetMapping(value = "file/guide")
     public ResponseEntity<ApiResponse<String>> fileDownloadUrlRequestHandler(
         @RequestParam(name = "objectName") String objectName
     ) {
@@ -400,13 +395,15 @@ public class FileRestController {
         @ApiImplicitParam(name = "sessionId", value = "원격협업 세션", dataType = "string", paramType = "form", required = true, defaultValue = "ses_JRG7p1fFox"),
         @ApiImplicitParam(name = "userId", value = "업로드 사용자 고유 식별자", dataType = "string", paramType = "form", required = true, defaultValue = "4218059539d944fca0a27fc5a57ce05b"),
         @ApiImplicitParam(name = "file", value = "업로드 파일", dataType = "__file", paramType = "form", required = true),
+        @ApiImplicitParam(name = "fileType", value = "업로드 파일 타입", dataType = "string", paramType = "query", required = true)
     })
     @PostMapping(value = "file/upload/share", headers = {
         "content-type=multipart/*"}, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<ApiResponse<ShareFileUploadResponse>> shareFileUploadRequestHandler(
         @ModelAttribute @Valid FileUploadRequest fileUploadRequest,
         BindingResult result,
-        HttpServletRequest httpServletRequest
+        HttpServletRequest httpServletRequest,
+        @RequestParam FileType fileType
     ) throws Exception {
         LogMessage.formedInfo(
             TAG,
@@ -421,7 +418,7 @@ public class FileRestController {
         /*if (!remoteStorageProperties.isEnabled()) {
             throw new RestServiceException(ErrorCode.ERR_STORAGE_NOT_SUPPORTED);
         }*/
-        ApiResponse<ShareFileUploadResponse> responseData = fileService.uploadShareFile(fileUploadRequest, httpServletRequest);
+        ApiResponse<ShareFileUploadResponse> responseData = fileService.uploadShareFile(fileUploadRequest, httpServletRequest, fileType);
         return ResponseEntity.ok(responseData);
     }
 
@@ -432,6 +429,7 @@ public class FileRestController {
         @ApiImplicitParam(name = "page", value = "size 대로 나눠진 페이지를 조회할 번호(Index 0 부터 시작)", paramType = "query", defaultValue = "0"),
         @ApiImplicitParam(name = "sort", value = "정렬 옵션 데이터(createdDate, ASC or DESC)", paramType = "query", defaultValue = "createdDate, DESC"),
         @ApiImplicitParam(name = "deleted", value = "삭제 파일 필터 옵션 (YES, NO)", dataType = "boolean", defaultValue = "false"),
+        @ApiImplicitParam(name = "fileType", value = "업로드 파일 타입", dataType = "string", paramType = "query", required = true)
     })
     @GetMapping("file/share")
     public ResponseEntity<ApiResponse<ShareFileInfoListResponse>> getShareFileList(
@@ -439,7 +437,8 @@ public class FileRestController {
         @RequestParam(value = "sessionId") String sessionId,
         @RequestParam(name = "paging") boolean paging,
         @RequestParam(value = "deleted", required = false, defaultValue = "false") boolean deleted,
-        @ApiIgnore PageRequest pageRequest
+        @ApiIgnore PageRequest pageRequest,
+        @RequestParam FileType fileType
     ) {
         LogMessage.formedInfo(
             TAG,
@@ -460,7 +459,8 @@ public class FileRestController {
             workspaceId,
             sessionId,
             paging,
-            pageRequest.ofSortBy()
+            pageRequest.ofSortBy(),
+            fileType
         );
         return ResponseEntity.ok(responseData);
     }
@@ -470,7 +470,7 @@ public class FileRestController {
         @ApiImplicitParam(name = "workspaceId", value = "워크스페이스 식별자", dataType = "string", paramType = "path", required = true),
         @ApiImplicitParam(name = "sessionId", value = "원격협업 세션", dataType = "string", paramType = "path", required = true),
         @ApiImplicitParam(name = "userId", value = "다운로드 사용자 고유 식별자", dataType = "string", paramType = "query", required = true),
-        @ApiImplicitParam(name = "objectName", value = "다운로드 파일 고유 이름", dataType = "string", paramType = "query", required = true),
+        @ApiImplicitParam(name = "objectName", value = "다운로드 파일 고유 이름", dataType = "string", paramType = "query", required = true)
     })
     @GetMapping(value = "file/download/url/share/{workspaceId}/{sessionId}")
     public ResponseEntity<ApiResponse<FilePreSignedResponse>> shareFileDownloadUrlRequestHandler(
@@ -560,8 +560,7 @@ public class FileRestController {
         ApiResponse<FileDeleteResponse> responseData = fileService.removeShareFiles(
             workspaceId,
             sessionId,
-            leaderUserId,
-            FileType.SHARE
+            leaderUserId
         );
         return ResponseEntity.ok(responseData);
     }
@@ -584,5 +583,4 @@ public class FileRestController {
         ApiResponse<FileStorageInfoResponse> responseData = fileService.checkRemoteStorageCapacity(workspaceId);
         return ResponseEntity.ok(responseData);
     }
-
 }

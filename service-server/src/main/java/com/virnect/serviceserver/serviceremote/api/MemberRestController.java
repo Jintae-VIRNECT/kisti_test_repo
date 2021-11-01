@@ -39,7 +39,7 @@ public class MemberRestController {
         @ApiImplicitParam(name = "filter", value = "사용자 필터(MASTER, MANAGER, MEMBER)", dataType = "string", allowEmptyValue = true),
         @ApiImplicitParam(name = "page", value = "size 대로 나눠진 페이지를 조회할 번호(Index 0 부터 시작)", dataType = "Integer", paramType = "query", defaultValue = "0"),
         @ApiImplicitParam(name = "size", value = "Paging Data Size", dataType = "number", paramType = "query", defaultValue = "20"),
-        @ApiImplicitParam(name = "sort", value = "Sort Option", paramType = "query", defaultValue = "role, desc"),
+        @ApiImplicitParam(name = "sort", value = "Sort Option", paramType = "query", defaultValue = "role, desc")
     })
     @GetMapping(value = "members/{workspaceId}")
     public ResponseEntity<ApiResponse<WorkspaceMemberInfoListResponse>> getMembersByWorkspaceId(
@@ -77,7 +77,7 @@ public class MemberRestController {
         @ApiImplicitParam(name = "page", value = "size 대로 나눠진 페이지를 조회할 번호(Index 0 부터 시작)", dataType = "Integer", paramType = "query", defaultValue = "0"),
         @ApiImplicitParam(name = "size", value = "Paging Data Size", dataType = "number", paramType = "query", defaultValue = "20"),
         @ApiImplicitParam(name = "sort", value = "Sort Option", paramType = "query", defaultValue = "role, desc"),
-        @ApiImplicitParam(name = "accessTypeFilter", value = "로그인상태 필터 여부", dataType = "boolean", allowEmptyValue = true, defaultValue = "false"),
+        @ApiImplicitParam(name = "accessTypeFilter", value = "로그인상태 필터 여부", dataType = "boolean", allowEmptyValue = true, defaultValue = "false")
     })
     @GetMapping(value = "members/{workspaceId}/{userId}")
     public ResponseEntity<ApiResponse<MemberInfoListResponse>> getMembersByWorkspaceIdAndUserId(
@@ -118,7 +118,7 @@ public class MemberRestController {
         @ApiImplicitParam(name = "filter", value = "사용자 필터(MASTER, MANAGER, MEMBER)", dataType = "string", allowEmptyValue = true),
         @ApiImplicitParam(name = "page", value = "size 대로 나눠진 페이지를 조회할 번호(Index 0 부터 시작)", dataType = "Integer", paramType = "query", defaultValue = "0"),
         @ApiImplicitParam(name = "size", value = "Paging Data Size", dataType = "number", paramType = "query", defaultValue = "20"),
-        @ApiImplicitParam(name = "sort", value = "Sort Option", paramType = "query", defaultValue = "role, desc"),
+        @ApiImplicitParam(name = "sort", value = "Sort Option", paramType = "query", defaultValue = "role, desc")
     })
     @GetMapping(value = "members/{workspaceId}/{sessionId}/{userId}")
     public ResponseEntity<ApiResponse<MemberInfoListResponse>> getMembersByWorkspaceIdAndSessionIdAndUserId(

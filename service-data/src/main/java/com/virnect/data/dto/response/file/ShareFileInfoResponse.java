@@ -7,6 +7,8 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
 import lombok.Setter;
 
+import com.virnect.data.domain.file.FileConvertStatus;
+
 @Getter
 @Setter
 @ApiModel
@@ -33,11 +35,12 @@ public class ShareFileInfoResponse {
 	private LocalDateTime createdDate; //upload date?
 	@ApiModelProperty(value = "파일 만료 일자", notes = "만료일자 정보입니다.", position = 9, example = "2020-02-15 16:32:13")
 	private LocalDateTime expirationDate;
-
 	@ApiModelProperty(value = "파일 해상도(넓이)", notes = "파일 해상도 입니다(넓이)", position = 10, example = "120")
 	private Integer width;
 	@ApiModelProperty(value = "파일 해상도(높이)", notes = "파일 해상도 입니다(높이)", position = 11, example = "70")
 	private Integer height;
-	@ApiModelProperty(value = "썸네일 다운로드 url", notes = "썸네일 다운로드 url", position = 4, example = "url")
+	@ApiModelProperty(value = "썸네일 다운로드 url", notes = "썸네일 다운로드 url", position = 12, example = "url")
 	private String thumbnailDownloadUrl;
+	@ApiModelProperty(value = "파일 변환 상태", notes = "Object 파일의 파일변환 상태입니다", position = 13, example = "CONVERTING")
+	private FileConvertStatus fileConvertStatus;
 }

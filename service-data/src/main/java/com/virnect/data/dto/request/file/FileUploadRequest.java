@@ -11,6 +11,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import com.virnect.data.domain.DeviceType;
+import com.virnect.data.domain.file.FileType;
 
 @Getter
 @Setter
