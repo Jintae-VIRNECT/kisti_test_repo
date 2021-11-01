@@ -14,7 +14,7 @@
     >
       <pinch-zoom-layer
         v-if="
-          isLeader &&
+          (isLeader || mainView.id === account.uuid) &&
             isMobileSize &&
             viewForce &&
             viewAction !== ACTION.STREAM_POINTING
