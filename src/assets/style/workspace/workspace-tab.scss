@@ -194,6 +194,8 @@
 
     //헤더
     .tab-view .tab-view__header {
+      display: flex;
+      align-items: center;
       width: initial;
       max-width: initial;
       height: 1.8rem;
@@ -206,6 +208,7 @@
       //워크스페이스 선택 이후의 타이틀은 다시 표시
       &.workspace-selected {
         display: block;
+        max-width: 45%;
         margin-right: 0.6rem;
         color: rgba($new_color_text_main, 0.8);
         @include fontLevel(200);
@@ -213,8 +216,11 @@
     }
 
     .tab-view__count {
+      width: auto;
+      min-width: 3.429rem;
       height: 2rem;
       margin-top: 0;
+      padding: 0 0.8rem;
       color: $new_color_text_main;
       background-color: $new_color_bg_icon;
       border-radius: 1.2rem;
@@ -236,7 +242,8 @@
 
     //검색, 새로고침 버튼
     .tab-view .tab-view__header .tab-view__tools {
-      top: -12%;
+      //top: -12%;
+      top: unset;
       justify-content: flex-end;
       width: 100%;
       margin-top: 0;
