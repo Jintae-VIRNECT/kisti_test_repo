@@ -1,6 +1,6 @@
 {
   "name": "workstation",
-  "version": "1.4.0.1",
+  "version": "1.4.3",
   "description": "Virnect Workstation",
   "author": "Yongho-VIRNECT, seyoung-VIRNECT",
   "private": true,
@@ -19,7 +19,7 @@
     "@nuxtjs/style-resources": "^1.0.0",
     "@virnect/components": "^1.8.8",
     "@virnect/logger": "^1.0.2",
-    "@virnect/platform-auth": "^1.0.2",
+    "@virnect/platform-auth": "^1.0.5",
     "@virnect/ui-assets": "^1.8.8",
     "axios": "^0.19.2",
     "billboard.js": "^1.12.10",

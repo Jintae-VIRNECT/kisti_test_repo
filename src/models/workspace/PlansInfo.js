@@ -41,6 +41,10 @@ export default class PlansInfo extends Model {
       remain: mb2gb(json.maxStorageSize - json.currentUsageStorage),
       percent: rate(json.currentUsageStorage, json.maxStorageSize),
     }
+    this.project = {
+      current: mb2gb(json.currentProjectStorageUsage),
+      percent: rate(json.currentProjectStorageUsage, json.maxStorageSize),
+    }
     this.viewCount = {
       current: json.currentUsageDownloadHit,
       default: json.defaultDownloadHit,
