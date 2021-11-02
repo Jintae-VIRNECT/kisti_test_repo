@@ -22,7 +22,7 @@
           <span>{{ $t('members.add.tab.invitation') }}</span>
         </button>
         <button
-          v-if="false"
+          v-if="$isOnpremise"
           @click="showTab('create')"
           class="member-add-modal__tab-button"
           :class="{
@@ -51,7 +51,7 @@
           @updated="updated"
         />
         <MemberAddCreatePane
-          v-if="false"
+          v-show="tabName === 'create'"
           :membersTotal.sync="membersTotal"
           :maximum.sync="maximum"
           @updated="updated"
@@ -78,9 +78,7 @@ export default {
   data() {
     return {
       showMe: true,
-      // TODO: 추후 전용계정 기획이 보충되면, onpremise의 탭이 create가 기본이되도록 설정하기.
-      // tabName: this.$isOnpremise ? 'create' : 'invite',
-      tabName: this.$isOnpremise ? 'guest' : 'invite',
+      tabName: this.$isOnpremise ? 'create' : 'invite',
       maximum: 49,
     }
   },
