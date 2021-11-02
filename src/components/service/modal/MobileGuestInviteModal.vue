@@ -129,8 +129,8 @@ export default {
 .mobile-guest-invite__header {
   display: flex;
   align-items: center;
-  height: 6.2rem;
-  padding: 0 1.6rem;
+  //height: 6.2rem;
+  padding: 1.2rem 1.6rem;
   background-color: $new_color_bg;
   border-top: solid 1px $new_color_sub_border;
 

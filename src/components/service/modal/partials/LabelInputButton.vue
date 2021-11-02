@@ -191,7 +191,8 @@ export default {
     }
   }
   .guest-invite-input__input {
-    height: 4.8rem;
+    height: unset;
+    min-height: 4.8rem;
     padding: 0.6rem 0.6rem 0.6rem 1.6rem;
     background-color: $new_color_bg;
     border: none;
@@ -211,8 +212,13 @@ export default {
         color: $new_color_text_sub_description;
       }
     }
-    > .btn {
+    > .btn,
+    .btn.not-primary {
+      width: auto;
       min-width: 8.7rem;
+      height: auto;
+      padding: 0.8rem 1.5rem;
+      white-space: unset;
       @include fontLevel(100);
     }
   }
