@@ -90,6 +90,10 @@ public class Project extends BaseTimeEntity {
 	List<ProjectEditUser> projectEditUserList = new ArrayList<>();
 
 	@NotAudited
+	@OneToMany(mappedBy = "project")
+	List<ProjectActivityLog> projectActivityLogList = new ArrayList<>();
+
+	@NotAudited
 	@OneToOne(mappedBy = "project")
 	ProjectTarget projectTarget;
 
