@@ -1,7 +1,7 @@
-# RELEASE 1.4.2
+# RELEASE 1.4.3
 
 ## 🚨 Hotfix
 
-- [[DEV-1154](https://virtualconnection.atlassian.net/browse/DEV-1154)] ID 설명은 4자리로 되어있으나 4자리 생성이 불가
+- [[DEV-1171](https://virtualconnection.atlassian.net/browse/DEV-1171)] 퍼블릭 / 프라이빗에서 전용계정 생성탭 숨기기
 
 Copyright (C) 2021, VIRNECT CO., LTD. - All Rights Reserved
