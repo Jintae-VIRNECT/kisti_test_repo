@@ -59,14 +59,12 @@ function IsAllowBrowser(req) {
  * @param {Boolean} checkChromeMobile 크롬 모바일 체크여부
  * @returns {Boolean} 사용할 수 없는 모바일 기기 여부
  */
-function IsMobileBrowser(req, checkChromeMobile = true) {
+function IsMobileBrowser(req) {
   const userAgent = req.headers['user-agent'] || ''
   const isMobile =
     userAgent.includes('CriOS') ||
     userAgent.includes('mobileApp') ||
     userAgent.includes('iPhone')
-
-  if (checkChromeMobile) return isMobile || userAgent.includes('Mobile')
 
   return isMobile
 }
@@ -123,8 +121,7 @@ router.get('/home', function(req, res) {
 
 router.get('/connectioninfo', function(req, res) {
   if (IsAllowBrowser(req)) {
-    const checkChromeMobile = false
-    if (IsMobileBrowser(req, checkChromeMobile)) {
+    if (IsMobileBrowser(req)) {
       RouteSupportOrIE(req, res)
     } else {
       const lang = acceptLang(req)
