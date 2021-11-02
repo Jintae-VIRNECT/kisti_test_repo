@@ -1,7 +1,7 @@
-# RELEASE 1.4.3
+# RELEASE 1.4.4
 
 ## 🚨 Hotfix
 
-- [[DEV-1171](https://virtualconnection.atlassian.net/browse/DEV-1171)] 퍼블릭 / 프라이빗에서 전용계정 생성탭 숨기기
+- [[DEV-1178](https://virtualconnection.atlassian.net/browse/DEV-1178)] 구축형에서만 전용계정 생성탭 재표시
 
 Copyright (C) 2021, VIRNECT CO., LTD. - All Rights Reserved
