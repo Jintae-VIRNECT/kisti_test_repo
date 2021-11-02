@@ -8,7 +8,7 @@ for (const rule in defaultRules) {
   extend(rule, { ...defaultRules[rule] }) // eslint-disable-line
 }
 function idCheck(id) {
-  if (!/^[A-Za-z]{1}[A-Za-z0-9]{4,20}$/i.test(id)) {
+  if (!/^[A-Za-z]{1}[A-Za-z0-9]{3,20}$/i.test(id)) {
     return false
   }
   return true

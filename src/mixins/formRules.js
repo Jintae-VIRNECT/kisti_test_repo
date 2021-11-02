@@ -13,7 +13,7 @@ export default {
           },
           {
             validator: (rule, value, callback) => {
-              if (!/^[A-Za-z]{1}[A-Za-z0-9]{4,20}$/i.test(value)) {
+              if (!/^[A-Za-z]{1}[A-Za-z0-9]{3,20}$/i.test(value)) {
                 callback(new Error(' '))
               }
               callback()

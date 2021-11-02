@@ -1,23 +1,7 @@
-# RELEASE 1.4.0
-
-## ✨ Features
-
-- [[DEVCENTER-4779](https://virtualconnection.atlassian.net/browse/DEVCENTER-4779)] 멤버 유형 추가
-
-## 🐛 Bugfix
-
-- [[DEVCENTER-5029](https://virtualconnection.atlassian.net/browse/DEVCENTER-5029)] fix: 다국어 변경시의 plans 영역, input placeholder, 오타 등 수정
-- [[DPLA-2980](https://virtualconnection.atlassian.net/browse/DPLA-2980)] fix: 탭으로 필터 후 워크스페이스 변경 시 리스트 노출 오류
+# RELEASE 1.4.2
 
 ## 🚨 Hotfix
 
-- [[DPLA-2980](https://virtualconnection.atlassian.net/browse/DPLA-2980)] 탭으로 필터 후 워크스페이스 변경 시 리스트 노출 오류 리오픈 처리
-
-## ♻️ Refactor
-
-- [[DEVCENTER-5046](https://virtualconnection.atlassian.net/browse/DEVCENTER-5046)]전용 계정 생성에서 영문으로 변경시 생성 버튼이 내려가는 현상 개선
-- [[DEVCENTER-5035](https://virtualconnection.atlassian.net/browse/DEVCENTER-5035)] 국문일 때 멤버 리스트 디자인 깨지는 현상 개선
-- [[DEVCENTER-4997](https://virtualconnection.atlassian.net/browse/DEVCENTER-4997)] ui-assets, component 모듈 v1.8.8 로 업그레이드
-- [[DEVCENTER-5014](https://virtualconnection.atlassian.net/browse/DEVCENTER-5014)] VirnectHeader 컴포넌트에서 Link, 계정관리 기능 삭제하기
+- [[DEV-1154](https://virtualconnection.atlassian.net/browse/DEV-1154)] ID 설명은 4자리로 되어있으나 4자리 생성이 불가
 
 Copyright (C) 2021, VIRNECT CO., LTD. - All Rights Reserved
