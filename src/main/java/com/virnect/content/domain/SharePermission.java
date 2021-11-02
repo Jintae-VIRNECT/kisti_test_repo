@@ -8,8 +8,6 @@ package com.virnect.content.domain;
  * DESCRIPTION:
  */
 public enum SharePermission {
-	//YES, //ALL_MEMBER
-	//NO, //UPLOADER
 	MEMBER,
 	SPECIFIC_MEMBER,
 	UPLOADER,

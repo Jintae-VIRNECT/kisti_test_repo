@@ -3,6 +3,8 @@ package com.virnect.content.dto.rest;
 import lombok.Getter;
 import lombok.Setter;
 
+import com.virnect.content.domain.rest.Role;
+
 /**
  * @author jiyong.heo
  * @project PF-ProcessManagement
@@ -17,16 +19,16 @@ public class MemberInfoDTO {
 	private String name;
 	private String nickName;
 	private String profile;
-	private String role;
+	private Role role;
 
 	@Override
 	public String toString() {
-		return "UserInfoResponseDto{" +
+		return "MemberInfoDTO{" +
 			"uuid='" + uuid + '\'' +
-			"uuid='" + name + '\'' +
-			"uuid='" + nickName + '\'' +
-			"uuid='" + profile + '\'' +
-			"uuid='" + role + '\'' +
+			", name='" + name + '\'' +
+			", nickName='" + nickName + '\'' +
+			", profile='" + profile + '\'' +
+			", role=" + role +
 			'}';
 	}
 }

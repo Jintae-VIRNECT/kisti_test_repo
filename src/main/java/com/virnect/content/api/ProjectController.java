@@ -87,7 +87,7 @@ public class ProjectController {
 		return ResponseEntity.ok(new ApiResponse<>(responseMessage));
 	}
 
-	@ApiOperation(value = "프로젝트 다운로드", notes = "프로젝트를 다운로드합니다. 공유 권한이 있는 사용자만 다운로드할 수 있습니다. \n 프로젝트 식별자로 다운로드 할 수 있습니다.")
+	@ApiOperation(value = "프로젝트 다운로드", notes = "프로젝트를 다운로드합니다.")
 	@ApiImplicitParams({
 		@ApiImplicitParam(name = "projectUUIDList", value = "프로젝트 식별자 목록", dataType = "string", paramType = "query", required = true, example = "", allowMultiple = true),
 		@ApiImplicitParam(name = "userUUID", value = "다운로드 요청 유저 식별자", dataType = "string", paramType = "query", required = true, example = "498b1839dc29ed7bb2ee90ad6985c608"),
@@ -109,7 +109,7 @@ public class ProjectController {
 		return projectService.downloadProjectByUUIDList(projectUUIDList, userUUID, workspaceUUID);
 	}
 
-	@ApiOperation(value = "프로젝트 목록 조회", notes = "프로젝트 목록을 조회합니다. 공유 권한이 있는 프로젝트만 확인할 수 있습니다.")
+	@ApiOperation(value = "프로젝트 목록 조회", notes = "프로젝트 목록을 조회합니다.")
 	@ApiImplicitParams({
 		@ApiImplicitParam(name = "workspaceUUID", value = "워크스페이스 식별자", dataType = "string", paramType = "query", required = true, example = "4d6eab0860969a50acbfa4599fbb5ae8"),
 		@ApiImplicitParam(name = "userUUID", value = "목록 조회 요청 유저 식별자", dataType = "string", paramType = "query", required = true, example = "498b1839dc29ed7bb2ee90ad6985c608"),
@@ -143,7 +143,7 @@ public class ProjectController {
 		return ResponseEntity.ok(new ApiResponse<>(responseMessage));
 	}
 
-	@ApiOperation(value = "프로젝트 상세 정보 조회", notes = "프로젝트 상세정보를 조회합니다. 공유 권한이 있는 사용자만 확인할 수 있습니다.")
+	@ApiOperation(value = "프로젝트 상세 정보 조회", notes = "프로젝트 상세정보를 조회합니다.")
 	@ApiImplicitParams({
 		@ApiImplicitParam(name = "projectUUID", value = "프로젝트 식별자", dataType = "string", paramType = "path", required = true, example = "3e0e1203-9816-46b6-8b28-608f61db6f0a"),
 		@ApiImplicitParam(name = "userUUID", value = "목록 조회 요청 유저 식별자", dataType = "string", paramType = "query", required = true, example = "498b1839dc29ed7bb2ee90ad6985c608")
@@ -155,7 +155,7 @@ public class ProjectController {
 		if (!StringUtils.hasText(projectUUID) || !StringUtils.hasText(userUUID)) {
 			throw new ContentServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
 		}
-		ProjectInfoResponse responseMessage = projectService.getProjectInfo(projectUUID, userUUID);
+		ProjectInfoResponse responseMessage = projectService.getProjectAfterCheckShareNEditPermission(projectUUID, userUUID);
 		return ResponseEntity.ok(new ApiResponse<>(responseMessage));
 	}
 
