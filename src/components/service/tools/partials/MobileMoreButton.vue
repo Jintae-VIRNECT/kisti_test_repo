@@ -175,14 +175,15 @@ export default {
       @include fontLevel(75);
 
       li {
-        img {
-          margin-right: 0.8rem;
-          margin-bottom: 0.3rem;
-        }
         display: flex;
         align-items: center;
-        height: 4rem;
+        //height: 4rem;
+        padding: 0.8rem 0;
         cursor: pointer;
+      }
+      li > img {
+        margin-right: 0.8rem;
+        //margin-bottom: 0.3rem;
       }
     }
   }

@@ -6,7 +6,7 @@
 
 .toasted-container {
   position: fixed;
-  z-index: 101;
+  z-index: 102;
   // fix for min-height bug in IE
   display: flex;
   flex-direction: column;
@@ -406,7 +406,7 @@
 }
 .toasted-container {
   position: fixed;
-  z-index: 101;
+  z-index: 102;
 }
 .toasted-container,
 .toasted-container.full-width {

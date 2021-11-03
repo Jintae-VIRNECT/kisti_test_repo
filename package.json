@@ -117,7 +117,7 @@
     "vue-styleguidist": "^4.14.0",
     "vue-template-compiler": "^2.6.11",
     "vue-toasted": "^1.1.28",
-    "vue2-perfect-scrollbar": "^1.5.0",
+    "vue2-perfect-scrollbar": "^1.5.2",
     "vue2-scrollbar": "^0.0.3",
     "vuex": "^3.1.2",
     "webpack": "^5.24.4",
