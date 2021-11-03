@@ -1,5 +1,16 @@
 <template>
   <div class="drawing-canvas">
+    <tooltip
+      v-if="showExitButton"
+      :content="`${$t('service.drawing')} ${$t('button.exit')}`"
+      customClass="drawing-box__exit-btn-tooltip"
+    >
+      <button
+        slot="body"
+        class="drawing-box__exit-btn"
+        @click="exitDrawing"
+      ></button>
+    </tooltip>
     <canvas id="drawingCanvas" ref="drawingCanvas"></canvas>
     <canvas id="cursorCanvas"></canvas>
     <div
@@ -26,13 +37,20 @@ import DrawingAction from './DrawingAction'
 
 import MixinToast from 'mixins/toast'
 import { hexToRGBA } from 'utils/color'
+import Tooltip from 'Tooltip'
 
 const MOBILE_FIX_LINE_SIZE = 3
 
 export default {
   name: 'DrawingCanvas',
+  components: {
+    Tooltip,
+  },
   props: {
     file: Object,
+    showExitButton: {
+      type: Boolean,
+    },
   },
   mixins: [
     MixinToast,
@@ -324,6 +342,10 @@ export default {
         cancelAnimationFrame(this.resizeObserveIntervalId)
         this.resizeObserveIntervalId = null
       }
+    },
+
+    exitDrawing() {
+      this.$emit('exitDrawing')
     },
   },
   /* Lifecycles */
