@@ -47,6 +47,7 @@
               :end-placeholder="$t('task.manage.scheduleEnd')"
               format="yyyy. MM. dd.  HH:mm"
               time-arrow-control
+              @change="changedSchedule"
             />
           </el-form-item>
           <el-form-item class="horizon" :label="$t('task.manage.taskWorker')">
@@ -241,12 +242,6 @@ export default {
     },
   },
   watch: {
-    'mainForm.schedule'(date) {
-      this.$refs.subForm.forEach(form => form.resetFields())
-      this.subForm.forEach(form => {
-        if (!form.schedule.length) form.schedule = date
-      })
-    },
     'mainForm.worker'(worker) {
       if (worker && worker !== this.$t('task.manage.subTaskWorkerSelected')) {
         this.subForm.forEach(form => (form.worker = worker))
@@ -306,6 +301,7 @@ export default {
             dayjs.utc(subTask.startDate).local().toDate(),
             dayjs.utc(subTask.endDate).local().toDate(),
           ],
+
           worker: subTask.workerUUID,
         }))
       }
@@ -390,6 +386,18 @@ export default {
           showClose: true,
         })
       }
+    },
+    changedSchedule(date) {
+      // 하위작업 필드 초기화
+      this.$refs.subForm.forEach(form => {
+        form.resetFields()
+      })
+
+      this.subForm.forEach(form => {
+        if (!form.schedule.length) {
+          form.schedule = date
+        }
+      })
     },
   },
 }
