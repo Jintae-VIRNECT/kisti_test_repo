@@ -1,7 +1,7 @@
-# RELEASE 1.4.4
+# RELEASE 1.4.6
 
 ## 🚨 Hotfix
 
-- [[DEV-1178](https://virtualconnection.atlassian.net/browse/DEV-1178)] 구축형에서만 전용계정 생성탭 재표시
+- [DEV-1193] 전체 작업 목록 > 작업 추가 생성 시 오류 처리
 
 Copyright (C) 2021, VIRNECT CO., LTD. - All Rights Reserved
