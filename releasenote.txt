@@ -1,7 +1,7 @@
-# RELEASE 1.4.4
+# RELEASE 1.4.5
 
-## 🚨 Hotfix
+## 🐛 Bugfix
 
-- [[DEV-1178](https://virtualconnection.atlassian.net/browse/DEV-1178)] 구축형에서만 전용계정 생성탭 재표시
+- docker build test
 
 Copyright (C) 2021, VIRNECT CO., LTD. - All Rights Reserved
