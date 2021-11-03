@@ -16,7 +16,7 @@ import com.virnect.content.global.common.PageMetadataResponse;
  */
 @Getter
 @Setter
-public class MemberListResponse {
-	private List<MemberInfoDTO> memberInfoList;
+public class WorkspaceUserListResponse {
+	private List<WorkspaceUserResponse> memberInfoList;
 	private PageMetadataResponse pageMeta;
 }

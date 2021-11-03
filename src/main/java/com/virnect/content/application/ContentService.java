@@ -2,16 +2,11 @@ package com.virnect.content.application;
 
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -26,9 +21,6 @@ import java.util.stream.Collectors;
 
 import javax.imageio.ImageIO;
 
-import org.apache.commons.fileupload.FileItem;
-import org.apache.commons.fileupload.disk.DiskFileItem;
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
@@ -37,7 +29,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.multipart.commons.CommonsMultipartFile;
 
 import com.querydsl.core.Tuple;
 
@@ -78,8 +69,6 @@ import com.virnect.content.dto.response.ContentUploadResponse;
 import com.virnect.content.dto.response.SceneGroupInfoListResponse;
 import com.virnect.content.dto.response.SceneGroupInfoResponse;
 import com.virnect.content.dto.rest.LicenseInfoResponse;
-import com.virnect.content.dto.rest.MemberInfoDTO;
-import com.virnect.content.dto.rest.MemberListResponse;
 import com.virnect.content.dto.rest.MyLicenseInfoListResponse;
 import com.virnect.content.dto.rest.MyLicenseInfoResponse;
 import com.virnect.content.dto.rest.ProcessInfoResponse;
@@ -87,6 +76,8 @@ import com.virnect.content.dto.rest.UserInfoListResponse;
 import com.virnect.content.dto.rest.UserInfoResponse;
 import com.virnect.content.dto.rest.WorkspaceInfoListResponse;
 import com.virnect.content.dto.rest.WorkspaceInfoResponse;
+import com.virnect.content.dto.rest.WorkspaceUserListResponse;
+import com.virnect.content.dto.rest.WorkspaceUserResponse;
 import com.virnect.content.exception.ContentServiceException;
 import com.virnect.content.global.common.ApiResponse;
 import com.virnect.content.global.common.PageMetadataResponse;
@@ -993,11 +984,11 @@ public class ContentService {
 	}
 
 	private ApiResponse<UserInfoListResponse> getUserInfo(String search, String workspaceId) {
-		ApiResponse<MemberListResponse> userList = workspaceRestService.getSimpleWorkspaceUserList(workspaceId);
+		ApiResponse<WorkspaceUserListResponse> userList = workspaceRestService.getSimpleWorkspaceUserList(workspaceId);
 		List<String> userUUIDs = new ArrayList<>();
 
-		for (MemberInfoDTO dto : userList.getData().getMemberInfoList()) {
-			userUUIDs.add(dto.getUuid());
+		for (WorkspaceUserResponse worksapceUser : userList.getData().getMemberInfoList()) {
+			userUUIDs.add(worksapceUser.getUuid());
 		}
 
 		ApiResponse<UserInfoListResponse> userInfoListResult = this.userRestService.getUserInfoSearchNickName(

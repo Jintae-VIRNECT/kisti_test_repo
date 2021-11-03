@@ -17,6 +17,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import com.virnect.content.domain.BaseTimeEntity;
+import com.virnect.content.dto.rest.WorkspaceUserResponse;
 
 /**
  * Project: PF-ContentManagement
@@ -36,8 +37,8 @@ public class ProjectActivityLog extends BaseTimeEntity {
 	@Column(name = "id")
 	private Long id;
 
-	@Column(name = "activity", nullable = false)
-	private String activity;
+	@Column(name = "message", nullable = false)
+	private String message;
 
 	@Column(name = "user_id", nullable = false)
 	private Long userId;
@@ -45,8 +46,11 @@ public class ProjectActivityLog extends BaseTimeEntity {
 	@Column(name = "user_uuid", nullable = false)
 	private String userUUID;
 
+	@Column(name = "user_name", nullable = false)
+	private String userName;
+
 	@Column(name = "user_nickname", nullable = false)
-	private String userNickName;
+	private String userNickname;
 
 	@Column(name = "user_profile_image", nullable = false)
 	private String userProfileImage;
@@ -55,16 +59,18 @@ public class ProjectActivityLog extends BaseTimeEntity {
 	@JoinColumn(name = "project_id")
 	private Project project;
 
-	@Builder
+	@Builder(builderMethodName = "projectActivityLogBuilder")
 	public ProjectActivityLog(
-		String activity, Long userId, String userUUID, String userNickName, String userProfileImage,
-		Project project
+		String message,
+		Project project,
+		WorkspaceUserResponse workspaceUserInfo
 	) {
-		this.activity = activity;
-		this.userId = userId;
-		this.userUUID = userUUID;
-		this.userNickName = userNickName;
-		this.userProfileImage = userProfileImage;
+		this.message = message;
+		this.userId = workspaceUserInfo.getId();
+		this.userUUID = workspaceUserInfo.getUuid();
+		this.userName = workspaceUserInfo.getName();
+		this.userNickname = workspaceUserInfo.getNickName();
+		this.userProfileImage = workspaceUserInfo.getProfile();
 		this.project = project;
 	}
 }

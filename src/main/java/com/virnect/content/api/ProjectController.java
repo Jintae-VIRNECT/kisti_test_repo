@@ -1,6 +1,7 @@
 package com.virnect.content.api;
 
 import java.util.List;
+import java.util.Locale;
 
 import javax.validation.Valid;
 
@@ -33,6 +34,7 @@ import com.virnect.content.domain.SharePermission;
 import com.virnect.content.domain.TargetType;
 import com.virnect.content.dto.request.ProjectUpdateRequest;
 import com.virnect.content.dto.request.ProjectUploadRequest;
+import com.virnect.content.dto.response.ProjectActivityLogListResponse;
 import com.virnect.content.dto.response.ProjectDeleteResponse;
 import com.virnect.content.dto.response.ProjectInfoListResponse;
 import com.virnect.content.dto.response.ProjectInfoResponse;
@@ -73,7 +75,7 @@ public class ProjectController {
 		return ResponseEntity.ok(new ApiResponse<>(responseMessage));
 	}
 
-	@ApiOperation(value = "프로젝트 정보 수정", notes = "프로젝트 상세정보를 수정합니다. 공유/편집 권한이 모두 있는 사용자만 수정할 수 있습니다.")
+	@ApiOperation(value = "프로젝트 정보 수정", notes = "프로젝트 상세정보를 수정합니다.")
 	@PutMapping("/{projectUUID}")
 	public ResponseEntity<ApiResponse<ProjectUpdateResponse>> updateProjectInfo(
 		@PathVariable("projectUUID") String projectUUID,
@@ -146,7 +148,7 @@ public class ProjectController {
 	@ApiOperation(value = "프로젝트 상세 정보 조회", notes = "프로젝트 상세정보를 조회합니다.")
 	@ApiImplicitParams({
 		@ApiImplicitParam(name = "projectUUID", value = "프로젝트 식별자", dataType = "string", paramType = "path", required = true, example = "3e0e1203-9816-46b6-8b28-608f61db6f0a"),
-		@ApiImplicitParam(name = "userUUID", value = "목록 조회 요청 유저 식별자", dataType = "string", paramType = "query", required = true, example = "498b1839dc29ed7bb2ee90ad6985c608")
+		@ApiImplicitParam(name = "userUUID", value = "조회 요청 유저 식별자", dataType = "string", paramType = "query", required = true, example = "498b1839dc29ed7bb2ee90ad6985c608")
 	})
 	@GetMapping("/{projectUUID}")
 	public ResponseEntity<ApiResponse<ProjectInfoResponse>> getProjectInfo(
@@ -155,7 +157,8 @@ public class ProjectController {
 		if (!StringUtils.hasText(projectUUID) || !StringUtils.hasText(userUUID)) {
 			throw new ContentServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
 		}
-		ProjectInfoResponse responseMessage = projectService.getProjectAfterCheckShareNEditPermission(projectUUID, userUUID);
+		ProjectInfoResponse responseMessage = projectService.getProjectAfterCheckShareNEditPermission(
+			projectUUID, userUUID);
 		return ResponseEntity.ok(new ApiResponse<>(responseMessage));
 	}
 
@@ -177,4 +180,26 @@ public class ProjectController {
 		return ResponseEntity.ok(new ApiResponse<>(responseMessage));
 	}
 
+	@ApiOperation(value = "프로젝트의 활동 이력 조회", notes = "프로젝트의 활동 이력을 조회합니다.")
+	@ApiImplicitParams({
+		@ApiImplicitParam(name = "projectUUID", value = "프로젝트 식별자", dataType = "string", paramType = "path", required = true, example = "5ec24619-d59c-4a96-bc61-206cc24be83b"),
+		@ApiImplicitParam(name = "Authorization", value = "인증 헤더", required = true, dataType = "string", paramType = "header", defaultValue = "Bearer "),
+		@ApiImplicitParam(name = "size", value = "페이징 사이즈", dataType = "number", paramType = "query", defaultValue = "10"),
+		@ApiImplicitParam(name = "page", value = "size 대로 나눠진 페이지를 조회할 번호(1부터 시작)", paramType = "query", defaultValue = "1"),
+		@ApiImplicitParam(name = "sort", value = "정렬 옵션 ", paramType = "query", defaultValue = "createdDate,desc"),
+	})
+	@GetMapping("/{projectUUID}/activities")
+	public ResponseEntity<ApiResponse<ProjectActivityLogListResponse>> getProjectActivityLogs(
+		@PathVariable("projectUUID") String projectUUID, @ApiIgnore PageRequest pageRequest
+	) {
+		String userUUID = MDC.get("userUUID");
+		log.info("[GET PROJECT ACTIVITY LOG] REQ projectUUID : {}, userUUID : {}", projectUUID, userUUID);
+		if (!StringUtils.hasText(projectUUID) || !StringUtils.hasText(userUUID)) {
+			throw new ContentServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
+		}
+		ProjectActivityLogListResponse responseMessage = projectService.getProjectActivityLogs(projectUUID, userUUID,
+			pageRequest.of()
+		);
+		return ResponseEntity.ok(new ApiResponse<>(responseMessage));
+	}
 }

@@ -7,6 +7,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
+import java.util.Locale;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -35,6 +36,7 @@ import com.virnect.content.application.license.LicenseRestService;
 import com.virnect.content.application.user.UserRestService;
 import com.virnect.content.application.workspace.WorkspaceRestService;
 import com.virnect.content.dao.content.ContentRepository;
+import com.virnect.content.dao.project.ProjectActivityLogRepository;
 import com.virnect.content.dao.project.ProjectEditUserRepository;
 import com.virnect.content.dao.project.ProjectModeRepository;
 import com.virnect.content.dao.project.ProjectRepository;
@@ -45,6 +47,8 @@ import com.virnect.content.domain.Mode;
 import com.virnect.content.domain.SharePermission;
 import com.virnect.content.domain.TargetType;
 import com.virnect.content.domain.project.Project;
+import com.virnect.content.domain.project.ProjectActivity;
+import com.virnect.content.domain.project.ProjectActivityLog;
 import com.virnect.content.domain.project.ProjectEditUser;
 import com.virnect.content.domain.project.ProjectMode;
 import com.virnect.content.domain.project.ProjectShareUser;
@@ -53,15 +57,18 @@ import com.virnect.content.domain.rest.Role;
 import com.virnect.content.dto.request.ProjectUpdateRequest;
 import com.virnect.content.dto.request.ProjectUploadRequest;
 import com.virnect.content.dto.request.PropertyInfoDTO;
+import com.virnect.content.dto.response.ProjectActivityLogListResponse;
+import com.virnect.content.dto.response.ProjectActivityLogResponse;
 import com.virnect.content.dto.response.ProjectDeleteResponse;
 import com.virnect.content.dto.response.ProjectInfoListResponse;
 import com.virnect.content.dto.response.ProjectInfoResponse;
 import com.virnect.content.dto.response.ProjectTargetInfoResponse;
 import com.virnect.content.dto.response.ProjectUpdateResponse;
 import com.virnect.content.dto.rest.LicenseInfoResponse;
-import com.virnect.content.dto.rest.MemberInfoDTO;
+import com.virnect.content.dto.rest.WorkspaceUserResponse;
 import com.virnect.content.dto.rest.MyLicenseInfoListResponse;
 import com.virnect.content.dto.rest.UserInfoResponse;
+import com.virnect.content.event.ProjectActivityLogEvent;
 import com.virnect.content.event.ProjectDownloadHitEvent;
 import com.virnect.content.exception.ContentServiceException;
 import com.virnect.content.global.common.ApiResponse;
@@ -96,6 +103,7 @@ public class ProjectService {
 	private final WorkspaceRestService workspaceRestService;
 	private final UserRestService userRestService;
 	private final ApplicationEventPublisher applicationEventPublisher;
+	private final ProjectActivityLogRepository projectActivityLogRepository;
 
 	private static final String PROJECT_DIRECTORY = "project";
 	private static final String REPORT_DIRECTORY = "report";
@@ -113,6 +121,9 @@ public class ProjectService {
 		String fileName = projectUploadRequest.getProject()
 			.substring(projectUploadRequest.getProject().lastIndexOf("/") + 1);
 		long projectFileSize = fileDownloadService.getFileSize(projectUploadRequest.getProject());
+		//1-1. 요청 유저 워크스페이스 체크
+		WorkspaceUserResponse workspaceUserInfo = getWorkspaceUserInfo(
+			projectUploadRequest.getWorkspaceUUID(), projectUploadRequest.getUserUUID());
 		//1-2. 업로드 사용자의 MAKE 라이선스 체크
 		if (!checkUserHaveMAKELicense(projectUploadRequest.getUserUUID(), projectUploadRequest.getWorkspaceUUID())) {
 			throw new ContentServiceException(ErrorCode.ERR_PROJECT_UPLOAD_INVALID_LICENSE);
@@ -209,10 +220,15 @@ public class ProjectService {
 			.build();
 		projectTargetRepository.save(projectTarget);
 
-		//3. 응답
+		//3. 활동 이력 저장
+		applicationEventPublisher.publishEvent(
+			new ProjectActivityLogEvent(
+				ProjectActivity.UPLOAD, null, project, workspaceUserInfo, Locale.KOREAN));
+
+		//4. 응답
 		ProjectInfoResponse projectInfoResponse = generateProjectResponse(project);
 		projectInfoResponse.setModeList(projectUploadRequest.getModeList());
-		ProjectTargetInfoResponse projectTargetInfoResponse = projectResponseMapper.projectTargetToTargetInfoResponse(
+		ProjectTargetInfoResponse projectTargetInfoResponse = projectResponseMapper.projectTargetToResponse(
 			projectTarget);
 		projectInfoResponse.setTargetInfo(projectTargetInfoResponse);
 		return projectInfoResponse;
@@ -344,7 +360,7 @@ public class ProjectService {
 			workspaceUUID, sharePermissionList, editPermissionList, modeList, targetTypeList, search, pageable);
 
 		//2. 프로젝트 조회 - 매니저 또는 마스터 권한인 경우 필터링 된 모든 프로젝트를 볼 수 있음
-		Role userRole = getWorkspaceUserRole(workspaceUUID, userUUID);
+		Role userRole = getWorkspaceUserInfo(workspaceUUID, userUUID).getRole();
 		if (userRole == Role.MASTER || userRole == Role.MANAGER) {
 			List<ProjectInfoResponse> projectInfoResponseList = filteredProjectPage.stream()
 				.map(this::generateProjectResponse)
@@ -387,7 +403,7 @@ public class ProjectService {
 	 * @return - 프로젝트 상세 정보 dto
 	 */
 	private ProjectInfoResponse generateProjectResponse(Project project) {
-		ProjectInfoResponse projectInfoResponse = projectResponseMapper.projectToProjectInfoResponse(project);
+		ProjectInfoResponse projectInfoResponse = projectResponseMapper.projectToResponse(project);
 		//모드 정보
 		projectInfoResponse.setModeList(
 			project.getProjectModeList().stream().map(ProjectMode::getMode).collect(Collectors.toList()));
@@ -407,7 +423,7 @@ public class ProjectService {
 				.collect(Collectors.toList()));
 		}
 		//타겟 정보
-		ProjectTargetInfoResponse projectTargetInfoResponse = projectResponseMapper.projectTargetToTargetInfoResponse(
+		ProjectTargetInfoResponse projectTargetInfoResponse = projectResponseMapper.projectTargetToResponse(
 			project.getProjectTarget());
 		projectInfoResponse.setTargetInfo(projectTargetInfoResponse);
 
@@ -458,8 +474,8 @@ public class ProjectService {
 	 * @param userUUID - 대상 유저 식별자
 	 * @return - 워크스페이스 유저 정보
 	 */
-	private Role getWorkspaceUserRole(String workspaceUUID, String userUUID) {
-		ApiResponse<MemberInfoDTO> apiResponse = workspaceRestService.getMemberInfo(workspaceUUID, userUUID);
+	private WorkspaceUserResponse getWorkspaceUserInfo(String workspaceUUID, String userUUID) {
+		ApiResponse<WorkspaceUserResponse> apiResponse = workspaceRestService.getMemberInfo(workspaceUUID, userUUID);
 		if (apiResponse.getCode() != 200 || apiResponse.getData() == null || !StringUtils.hasText(
 			apiResponse.getData().getUuid())) {
 			log.error(
@@ -468,7 +484,7 @@ public class ProjectService {
 			);
 			throw new ContentServiceException(ErrorCode.ERR_UNEXPECTED_SERVER_ERROR);
 		}
-		return apiResponse.getData().getRole();
+		return apiResponse.getData();
 	}
 
 	@Transactional
@@ -477,7 +493,7 @@ public class ProjectService {
 		Project project = projectRepository.findByUuid(projectUUID)
 			.orElseThrow(() -> new ContentServiceException(ErrorCode.ERR_PROJECT_NOT_FOUND));
 		//1-2. 워크스페이스 체크 & 워크스페이스 내 유저 권한 조회
-		Role userRole = getWorkspaceUserRole(project.getWorkspaceUUID(), userUUID);
+		Role userRole = getWorkspaceUserInfo(project.getWorkspaceUUID(), userUUID).getRole();
 		//1-3. 편집 권한 체크
 		if (!isProjectEditPermission(project, userUUID, userRole)) {
 			throw new ContentServiceException(ErrorCode.ERR_PROJECT_DELETE_INVALID_PERMISSION);
@@ -523,7 +539,7 @@ public class ProjectService {
 			.orElseThrow(() -> new ContentServiceException(ErrorCode.ERR_PROJECT_NOT_FOUND));
 
 		//1-2. 워크스페이스 체크 & 워크스페이스 내 유저 권한 조회
-		Role userRole = getWorkspaceUserRole(project.getWorkspaceUUID(), userUUID);
+		Role userRole = getWorkspaceUserInfo(project.getWorkspaceUUID(), userUUID).getRole();
 
 		//1-3. 공유권한, 편집권한 체크
 		if (!isProjectSharePermission(project, userUUID, userRole) && !isProjectEditPermission(
@@ -541,12 +557,12 @@ public class ProjectService {
 		Project project = projectRepository.findByUuid(projectUUID)
 			.orElseThrow(() -> new ContentServiceException(ErrorCode.ERR_PROJECT_NOT_FOUND));
 
-		Role userRole = getWorkspaceUserRole(
+		WorkspaceUserResponse workspaceUserInfo = getWorkspaceUserInfo(
 			project.getWorkspaceUUID(), projectUpdateRequest.getUserUUID());
 
 		//업데이트 요청 사용자 편집 권한 체크
 		if (!isProjectEditPermission(
-			project, projectUpdateRequest.getUserUUID(), userRole)) {
+			project, projectUpdateRequest.getUserUUID(), workspaceUserInfo.getRole())) {
 			throw new ContentServiceException(ErrorCode.ERR_PROJECT_UPDATE_INVALID_PERMISSION);
 		}
 
@@ -613,6 +629,12 @@ public class ProjectService {
 					.collect(Collectors.toList());
 				projectShareUerRepository.saveAll(newProjectShareUserList);
 			}
+			applicationEventPublisher.publishEvent(
+				new ProjectActivityLogEvent(
+					ProjectActivity.UPDATE_SHARE_PERMISSION,
+					new String[] {projectUpdateRequest.getShare().getPermission().name()}, project, workspaceUserInfo,
+					Locale.KOREAN
+				));
 		}
 
 		//프로젝트 편집정보 변경
@@ -676,6 +698,11 @@ public class ProjectService {
 		//프로젝트 업로드 사용자 변경
 		project.setUserUUID(projectUpdateRequest.getUserUUID());
 		projectRepository.save(project);
+
+		//프로젝트 활동 이력 저장
+		applicationEventPublisher.publishEvent(
+			new ProjectActivityLogEvent(
+				ProjectActivity.UPDATE, null, project, workspaceUserInfo, Locale.KOREAN));
 
 		return new ProjectUpdateResponse(true, projectUUID, projectUpdateRequest.getUserUUID(), LocalDateTime.now());
 	}
@@ -769,35 +796,44 @@ public class ProjectService {
 		List<String> projectUUIDList, String userUUID, String workspaceUUID
 	) {
 		//1. 워크스페이스 체크
-		Role userRole = getWorkspaceUserRole(workspaceUUID, userUUID);
-		List<ProjectDownloadHitEvent> projectDownloadHitEventList = new ArrayList<>();
+		WorkspaceUserResponse workspaceUserInfo = getWorkspaceUserInfo(workspaceUUID, userUUID);
+
+		List<Project> projectList = new ArrayList<>();
 		for (String projectUUID : projectUUIDList) {
 			//1-2. 프로젝트 식별자 체크
 			Project project = projectRepository.findByUuid(projectUUID)
 				.orElseThrow(() -> new ContentServiceException(ErrorCode.ERR_PROJECT_NOT_FOUND));
 			//1-3. 공유 권한 체크
-			if (!isProjectSharePermission(project, userUUID, userRole) && !isProjectEditPermission(
-				project, userUUID, userRole)) {
+			if (!isProjectSharePermission(project, userUUID, workspaceUserInfo.getRole()) && !isProjectEditPermission(
+				project, userUUID, workspaceUserInfo.getRole())) {
 				throw new ContentServiceException(ErrorCode.ERR_PROJECT_DOWNLOAD_INVALID_PERMISSION);
 			}
-			//1-4. 프로젝트 다운로드 이벤트 생성
-			projectDownloadHitEventList.add(new ProjectDownloadHitEvent(project, userUUID));
+			projectList.add(project);
 		}
 
 		//2. 단일 파일 다운로드
-		if (projectUUIDList.size() == 1) {
-			ResponseEntity<byte[]> responseEntity = fileDownloadService.fileDownload(
-				projectDownloadHitEventList.get(0).getProject().getPath(), null);
-			applicationEventPublisher.publishEvent(projectDownloadHitEventList.get(0));
+		if (projectList.size() == 1) {
+			Project project = projectList.get(0);
+			ResponseEntity<byte[]> responseEntity = fileDownloadService.fileDownload(project.getPath(), null);
+			applicationEventPublisher.publishEvent(new ProjectDownloadHitEvent(project, userUUID));
+			applicationEventPublisher.publishEvent(
+				new ProjectActivityLogEvent(ProjectActivity.DOWNLOAD, null, project, workspaceUserInfo,
+					Locale.KOREAN
+				));
 			return responseEntity;
 		}
 
-		//3. 여러 파일 다운로드
-		List<String> projectFilePathList = projectDownloadHitEventList.stream()
-			.map(projectDownloadHitEvent -> projectDownloadHitEvent.getProject().getPath())
-			.collect(Collectors.toList());
+		//3. 멀티 파일 다운로드
+		List<String> projectFilePathList = projectList.stream().map(Project::getPath).collect(Collectors.toList());
 		byte[] bytes = fileDownloadService.multipleFileDownload(projectFilePathList);
-		projectDownloadHitEventList.forEach(applicationEventPublisher::publishEvent);
+
+		projectList.forEach(project -> {
+			applicationEventPublisher.publishEvent(new ProjectDownloadHitEvent(project, userUUID));
+			applicationEventPublisher.publishEvent(
+				new ProjectActivityLogEvent(ProjectActivity.DOWNLOAD, null, project, workspaceUserInfo,
+					Locale.KOREAN
+				));
+		});
 
 		String zipFileName = String.format("%s_%s", LocalDate.now().toString(), "projects.zip");
 		HttpHeaders httpHeaders = new HttpHeaders();
@@ -805,5 +841,37 @@ public class ProjectService {
 		httpHeaders.setContentDispositionFormData("attachment", zipFileName);
 		httpHeaders.setContentLength(bytes.length);
 		return new ResponseEntity<>(bytes, httpHeaders, HttpStatus.OK);
+	}
+
+	@Transactional
+	public ProjectActivityLogListResponse getProjectActivityLogs(
+		String projectUUID, String userUUID, Pageable pageable
+	) {
+		//1. 프로젝트 조회
+		Project project = projectRepository.findByUuid(projectUUID)
+			.orElseThrow(() -> new ContentServiceException(ErrorCode.ERR_PROJECT_NOT_FOUND));
+
+		//1-2. 워크스페이스 체크 & 워크스페이스 내 유저 권한 조회
+		WorkspaceUserResponse workspaceUserInfo = getWorkspaceUserInfo(project.getWorkspaceUUID(), userUUID);
+
+		//1-3. 공유권한, 편집권한 체크
+		if (!isProjectSharePermission(project, userUUID, workspaceUserInfo.getRole()) && !isProjectEditPermission(
+			project, userUUID, workspaceUserInfo.getRole())) {
+			throw new ContentServiceException(ErrorCode.ERR_PROJECT_ACCESS_INVALID_PERMISSION);
+		}
+
+		//2. 활동이력 조회
+		Page<ProjectActivityLog> projectActivityLogPage = projectActivityLogRepository.findByProject(project, pageable);
+		List<ProjectActivityLogResponse> projectActivityLogResponseList = projectActivityLogPage.stream()
+			.map(projectResponseMapper::projectActivityLogToResponse)
+			.collect(Collectors.toList());
+		PageMetadataResponse pageMetadataResponse = PageMetadataResponse.builder()
+			.currentPage(pageable.getPageNumber())
+			.currentSize(pageable.getPageSize())
+			.totalPage(projectActivityLogPage.getTotalPages())
+			.totalElements(projectActivityLogPage.getTotalElements())
+			.build();
+
+		return new ProjectActivityLogListResponse(projectActivityLogResponseList, pageMetadataResponse);
 	}
 }

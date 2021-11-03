@@ -38,15 +38,22 @@ dependencyManagement {
 }
 
 dependencies {
+    // Mapstuct
+    implementation "org.mapstruct:mapstruct:${mapstructVersion}"
+    annotationProcessor "org.mapstruct:mapstruct-processor:${mapstructVersion}"
+    testAnnotationProcessor "org.mapstruct:mapstruct-processor:${mapstructVersion}"
+
+    // Lombok
+    compileOnly 'org.projectlombok:lombok'
+    annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
+    annotationProcessor 'org.projectlombok:lombok'
+
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     implementation 'org.springframework.data:spring-data-envers'
     implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-client'
-    compileOnly 'org.projectlombok:lombok'
     runtimeOnly 'mysql:mysql-connector-java'
-    annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
-    annotationProcessor 'org.projectlombok:lombok'
     testImplementation('org.springframework.boot:spring-boot-starter-test') {
         exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
     }
@@ -98,10 +105,6 @@ dependencies {
     // feign oktthp
     implementation 'io.github.openfeign:feign-okhttp'
 
-    // map struct
-    implementation "org.mapstruct:mapstruct:${mapstructVersion}"
-    annotationProcessor "org.mapstruct:mapstruct-processor:${mapstructVersion}"
-    testAnnotationProcessor "org.mapstruct:mapstruct-processor:${mapstructVersion}"
 
     // Json web token
     implementation 'io.jsonwebtoken:jjwt:0.9.1'
