@@ -6,7 +6,7 @@
     </div>
 
     <div class="mobile-header-tools">
-      <chat></chat>
+      <chat :tooltipActive="false"></chat>
       <button class="mobile-header-tools__leave" @click.once="leave"></button>
     </div>
   </div>

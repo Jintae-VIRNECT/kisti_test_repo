@@ -1,5 +1,5 @@
 <template>
-  <tooltip :content="`${$t('common.chatting')} on/off`">
+  <tooltip :active="tooltipActive" :content="`${$t('common.chatting')} on/off`">
     <toggle-button
       slot="body"
       :customClass="
@@ -26,6 +26,12 @@ export default {
   components: {
     Tooltip,
     ToggleButton,
+  },
+  props: {
+    tooltipActive: {
+      type: Boolean,
+      default: true,
+    },
   },
   data() {
     return {
