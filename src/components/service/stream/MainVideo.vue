@@ -14,7 +14,10 @@
     >
       <pinch-zoom-layer
         v-if="
-          isMobileSize && viewForce && viewAction !== ACTION.STREAM_POINTING
+          (isLeader || mainView.id === account.uuid) &&
+            isMobileSize &&
+            viewForce &&
+            viewAction !== ACTION.STREAM_POINTING
         "
         @zoomLevelChanged="onZoomLevelChanged"
       ></pinch-zoom-layer>
@@ -70,7 +73,7 @@
 
         <!-- 포인팅 -->
         <pointing
-          v-if="viewForce && viewAction === ACTION.STREAM_POINTING"
+          v-if="viewForce"
           :videoSize="videoSize"
           class="main-video__pointing"
         ></pointing>
@@ -271,7 +274,7 @@ export default {
       }
       if (
         this.viewForce === true &&
-        this.account.roleType === ROLE.LEADER &&
+        this.isLeader &&
         this.viewAction !== ACTION.STREAM_POINTING
       ) {
         if (

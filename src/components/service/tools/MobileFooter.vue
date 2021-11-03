@@ -192,10 +192,10 @@ export default {
 
     > button {
       position: relative;
-      width: 8.7rem;
+      min-width: 8.7rem;
       //height: 2.8rem;
       margin: 0 0.3rem;
-      padding: 0.4rem;
+      padding: 0.4rem 1.2rem;
       color: $new_color_text_main;
       border-radius: 1.4rem;
       pointer-events: all;

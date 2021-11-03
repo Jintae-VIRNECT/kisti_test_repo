@@ -30,7 +30,7 @@
     background-color: $new_color_bg; //@color 수정 필요
 
     &.service {
-      z-index: 2;
+      z-index: 3;
       height: 7.4rem;
       background: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0));
       pointer-events: none;
