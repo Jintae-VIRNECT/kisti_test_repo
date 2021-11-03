@@ -1,7 +1,7 @@
-# RELEASE 1.4.5
+# RELEASE 1.4.6
 
-## 🐛 Bugfix
+## 🚨 Hotfix
 
-- docker build test
+- [DEV-1193] 전체 작업 목록 > 작업 추가 생성 시 오류 처리
 
 Copyright (C) 2021, VIRNECT CO., LTD. - All Rights Reserved
