@@ -58,7 +58,14 @@ pipeline {
             sh 'count=`docker ps -a | grep pf-download-onpremise | wc -l`; if [ ${count} -gt 0 ]; then echo "Running STOP&DELETE"; docker stop pf-download-onpremise && docker rm pf-download-onpremise; else echo "Not Running STOP&DELETE"; fi;'
             sh 'docker run -p 18086:8086 --restart=always  -e "CONFIG_SERVER=http://192.168.6.3:6383" -e "VIRNECT_ENV=onpremise" -d --name=pf-download-onpremise pf-download'
             sh 'wget http://localhost:8086/v2/api-docs -O /var/lib/jenkins/Swagger-Diff/Diff/${SERVICE_NAME}_new.json'
-            sh "curl -H \"Content-Type: application/json\" --data '{\"summary\": \"Swagger Change\",\"sections\" : [{ \"facts\": [{\"name\": \"Swagger Service\" ,\"value\": \"'\"$REPO_NAME\"'\"},{\"name\": \"Information\",\"value\": \"'\"`java -jar /var/lib/jenkins/Swagger-Diff/Jar/swagger-diff.jar -old /var/lib/jenkins/Swagger-Diff/Diff/${SERVICE_NAME}_old.json -new /var/lib/jenkins/Swagger-Diff/Diff/${SERVICE_NAME}_new.json`\"'\"}],\"markdown\": true}]}' 'https://virtualconnect.webhook.office.com/webhookb2/9b126938-3d1f-4493-98bb-33f25285af65@d70d3a32-a4b8-4ac8-93aa-8f353de411ef/IncomingWebhook/864150903f604b4a8c57ec558197ce45/d0ac2f62-c503-4802-8bf9-f6368d7f39f8' && rm -f /var/lib/jenkins/Swagger-Diff/Diff/${SERVICE_NAME}_*"
+            sh "if [ `diff  /var/lib/jenkins/Swagger-Diff/Diff/${SERVICE_NAME}_old.json   /var/lib/jenkins/Swagger-Diff/Diff/${SERVICE_NAME}_new.json | wc -l` -gt 0 ];\
+                        then \
+                              echo 'Swagger Changed.'; \
+                              curl -H \"Content-Type: application/json\" --data '{\"summary\": \"Swagger Change\",\"sections\" : [{ \"facts\": [{\"name\": \"Swagger Service\" ,\"value\": \"'\"$REPO_NAME\"'\"},{\"name\": \"Information\",\"value\": \"'\"`java -jar /var/lib/jenkins/Swagger-Diff/Jar/swagger-diff.jar -old /var/lib/jenkins/Swagger-Diff/Diff/${SERVICE_NAME}_old.json -new /var/lib/jenkins/Swagger-Diff/Diff/${SERVICE_NAME}_new.json`\"'\"}],\"markdown\": true}]}' 'https://virtualconnect.webhook.office.com/webhookb2/9b126938-3d1f-4493-98bb-33f25285af65@d70d3a32-a4b8-4ac8-93aa-8f353de411ef/IncomingWebhook/864150903f604b4a8c57ec558197ce45/d0ac2f62-c503-4802-8bf9-f6368d7f39f8'; \
+                              rm -f /var/lib/jenkins/Swagger-Diff/Diff/${SERVICE_NAME}_old.json /var/lib/jenkins/Swagger-Diff/Diff/${SERVICE_NAME}_new.json; \
+                         else \
+                              echo 'It has not changed.'; \
+                fi"
             catchError() {
                sh "if [ `docker images | grep pf-download | grep -v 103505534696 | grep -v server | wc -l` -gt 3 ]; then docker rmi  -f \$(docker images | grep \"pf-download\" | grep -v \\${GIT_TAG} | grep -v \"latest\" | awk \'{print \$3}\'); else echo \"Just One Images...\"; fi;"
             }
