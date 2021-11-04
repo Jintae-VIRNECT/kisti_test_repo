@@ -1,7 +1,7 @@
-# RELEASE 1.4.3
+# RELEASE 1.4.6
 
 ## 🚨 Hotfix
 
-- [[DEV-1171](https://virtualconnection.atlassian.net/browse/DEV-1171)] 퍼블릭 / 프라이빗에서 전용계정 생성탭 숨기기
+- [DEV-1193] 전체 작업 목록 > 작업 추가 생성 시 오류 처리
 
 Copyright (C) 2021, VIRNECT CO., LTD. - All Rights Reserved
