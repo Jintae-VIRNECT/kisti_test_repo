@@ -51,9 +51,9 @@ pipeline {
                         sh 'docker run -p 18322:8322  --restart=always  -e "CONFIG_SERVER=http://192.168.6.3:6383" -e "VIRNECT_ENV=onpremise" -d --name=pf-account-onpremise pf-account'
                         sh 'wget http://localhost:8322/v2/api-docs -O /var/lib/jenkins/Swagger-Diff/Diff/${SERVICE_NAME}_new.json'
                         sh "if [ `diff  /var/lib/jenkins/Swagger-Diff/Diff/${SERVICE_NAME}_old.json   /var/lib/jenkins/Swagger-Diff/Diff/${SERVICE_NAME}_new.json | wc -l` -ge 1 ];\
-                        then 
+                        then \
                              echo 'It has not changed.'; \
-                        else 
+                        else \
                              curl -H \"Content-Type: application/json\" --data '{\"summary\": \"Swagger Change\",\"sections\" : [{ \"facts\": [{\"name\": \"Swagger Service\" ,\"value\": \"'\"$REPO_NAME\"'\"},{\"name\": \"Information\",\"value\": \"'\"`java -jar /var/lib/jenkins/Swagger-Diff/Jar/swagger-diff.jar -old /var/lib/jenkins/Swagger-Diff/Diff/${SERVICE_NAME}_old.json -new /var/lib/jenkins/Swagger-Diff/Diff/${SERVICE_NAME}_new.json`\"'\"}],\"markdown\": true}]}' 'https://virtualconnect.webhook.office.com/webhookb2/9b126938-3d1f-4493-98bb-33f25285af65@d70d3a32-a4b8-4ac8-93aa-8f353de411ef/IncomingWebhook/864150903f604b4a8c57ec558197ce45/d0ac2f62-c503-4802-8bf9-f6368d7f39f8'; \
                              rm -f /var/lib/jenkins/Swagger-Diff/Diff/${SERVICE_NAME}_old.json /var/lib/jenkins/Swagger-Diff/Diff/${SERVICE_NAME}_new.json; \
                         fi"
