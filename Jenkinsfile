@@ -50,7 +50,7 @@ pipeline {
                         sh 'count=`docker ps -a | grep pf-account-onpremise | wc -l`; if [ ${count} -gt 0 ]; then echo "Running STOP&DELETE"; docker stop pf-account-onpremise && docker rm pf-account-onpremise; else echo "Not Running STOP&DELETE"; fi;'
                         sh 'docker run -p 18322:8322  --restart=always  -e "CONFIG_SERVER=http://192.168.6.3:6383" -e "VIRNECT_ENV=onpremise" -d --name=pf-account-onpremise pf-account'
                         sh 'wget http://localhost:8322/v2/api-docs -O /var/lib/jenkins/Swagger-Diff/Diff/${SERVICE_NAME}_new.json'
-                        sh "if [ \`diff  /var/lib/jenkins/Swagger-Diff/Diff/${SERVICE_NAME}_old.json   /var/lib/jenkins/Swagger-Diff/Diff/${SERVICE_NAME}_new.json\` -gt 0];\
+                        sh "if [ \`diff  /var/lib/jenkins/Swagger-Diff/Diff/${SERVICE_NAME}_old.json   /var/lib/jenkins/Swagger-Diff/Diff/${SERVICE_NAME}_new.json\` \-gt 0];\
                             then \
                                 echo 'It hasn't changed.' \
                             else \
