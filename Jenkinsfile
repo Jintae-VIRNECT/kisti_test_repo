@@ -59,6 +59,7 @@ pipeline {
                                 else 
                                      echo "It has not changed."
                                      rm -f /var/lib/jenkins/Swagger-Diff/Diff/${SERVICE_NAME}_old.json /var/lib/jenkins/Swagger-Diff/Diff/${SERVICE_NAME}_new.json
+                            
 
                         '''
                         catchError {
