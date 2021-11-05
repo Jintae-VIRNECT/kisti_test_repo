@@ -57,7 +57,7 @@ pipeline {
                                      rm -f /var/lib/jenkins/Swagger-Diff/Diff/${SERVICE_NAME}_old.json /var/lib/jenkins/Swagger-Diff/Diff/${SERVICE_NAME}_new.json
                                 else 
                                      echo "Swagger Changed."
-                                     curl -H "Content-Type: application/json" --data 
+                                     curl -H "Content-Type: application/json" --data \
                                      '{summary": "Swagger Change",  
                                                   "sections" : [
                                                       { "facts": [{"name": "Swagger Service" ,"value": "'"$REPO_NAME"'"}, 
