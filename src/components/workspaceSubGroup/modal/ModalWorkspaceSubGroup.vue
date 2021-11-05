@@ -1,6 +1,6 @@
 <template>
   <modal
-    :title="$t('workspace.workspace_add_and_update_member_group')"
+    :title="$t('subgroup.add_and_delete')"
     width="50.8571rem"
     height="60.8571rem"
     :showClose="true"
@@ -10,8 +10,8 @@
   >
     <div class="member-group">
       <input-row
-        :title="$t('workspace.workspace_member_group_name')"
-        :placeholder="$t('workspace.workspace_member_group_name')"
+        :title="$t('subgroup.group_name')"
+        :placeholder="$t('subgroup.group_name')"
         :value.sync="groupNameInput"
         :valid.sync="groupNameInValid"
         validate="validName"
@@ -27,18 +27,12 @@
         :users="users"
         :selection="selection"
         :total="users.length"
-        :loading="loading"
+        :loading="modalLoading"
         @userSelect="selectUser"
         @inviteRefresh="refreshUser"
       ></member-list>
-      <button
-        class="btn save-group"
-        :disabled="selection.length === 0 || groupNameInValid"
-        @click="save"
-      >
-        {{ $t('button.confirm') }} {{ '(' + selection.length }}/{{
-          this.maxSelect + ')'
-        }}
+      <button class="btn save-group" :disabled="saveDisable" @click="save">
+        {{ $t('button.confirm') }} {{ '(' + selection.length + ')' }}
       </button>
     </div>
   </modal>
@@ -49,17 +43,12 @@ import Modal from 'Modal'
 import MemberList from '../partials/WorkspaceSubGroupMemberList'
 import InputRow from 'InputRow'
 
-// import {
-//   createPrivateMemberGroup,
-//   updatePrivateMemberGroup,
-// } from 'api/http/member'
+import { createSubGroup, updateSubGroup } from 'api/http/subGroup'
 
 import toastMixin from 'mixins/toast'
 import errorMsgMixin from 'mixins/errorMsg'
 
 import { maxParticipants } from 'utils/callOptions'
-
-// import { ERROR } from 'configs/error.config'
 
 export default {
   name: 'ModalWorkspaceSubGroup',
@@ -94,6 +83,10 @@ export default {
       type: Array,
       default: () => [],
     },
+    modalLoading: {
+      type: Boolean,
+      default: false,
+    },
   },
   data() {
     return {
@@ -103,6 +96,7 @@ export default {
       maxSelect: maxParticipants,
       groupNameInput: '',
       groupNameInValid: true,
+      isSaving: false,
     }
   },
   computed: {
@@ -114,11 +108,21 @@ export default {
       }
     },
     groupNameInvalidMessage() {
-      if (this.groupNameInput.length < 2) {
-        return this.$t('workspace.workspace_member_group_name_valid1')
+      const inputLength = this.groupNameInput.length
+      if (inputLength === 0) {
+        return this.$t('subgroup.error_enter_group_name')
+      } else if (inputLength < 2 && inputLength > 0) {
+        return this.$t('subgroup.error_please_input_more_two_letter')
+      } else if (this.selection.length < 1) {
+        return this.$t('subgroup.error_please_select_at_least_one_member')
       } else {
-        return this.$t('workspace.remote_name_valid2')
+        return this.$t('subgroup.error_please_input_without_name')
       }
+    },
+    saveDisable() {
+      return (
+        this.selection.length === 0 || this.groupNameInValid || this.isSaving
+      )
     },
   },
   watch: {
@@ -135,15 +139,20 @@ export default {
       }
     },
     groupNameInput() {
-      if (this.groupNameInput.length < 2) {
+      if (this.groupNameInput.length < 2 || this.selection.length < 1) {
         this.groupNameInValid = true
       }
     },
-    users() {
-      this.loading = false
-    },
-    groupMembers() {
-      this.loading = false
+    selection() {
+      if (this.selection.length < 1) {
+        this.groupNameInValid = true
+      } else {
+        this.groupNameInValid = false
+      }
+
+      if (this.groupNameInput.length < 2) {
+        this.groupNameInValid = true
+      }
     },
   },
 
@@ -158,10 +167,6 @@ export default {
     selectUser(user) {
       const idx = this.selection.findIndex(select => user.uuid === select.uuid)
       if (idx < 0) {
-        if (this.selection.length >= this.maxSelect) {
-          this.toastNotify(this.$t('service.invite_max'))
-          return
-        }
         this.selection.push(user)
       } else {
         this.selection.splice(idx, 1)
@@ -176,45 +181,46 @@ export default {
       }
 
       this.$emit('refresh', this.groupId)
+      this.loading = false
     },
     async save() {
-      //   try {
-      //     const userIds = this.selection.map(member => member.uuid)
-      //     userIds.push(this.account.uuid)
-      //     if (this.groupId) {
-      //       await this.updatePrivateMemberGroup(userIds)
-      //     } else {
-      //       await this.createPrivateMemberGroup(userIds)
-      //     }
-      //     //정상 저장시 모달창 close
-      //     this.$emit('update:visible', false)
-      //   } catch (err) {
-      //     if (err.code === ERROR.WORKSPACE_MEMBER_GROUP_MAX_OVER) {
-      //       this.showErrorToast(err.code)
-      //     } else {
-      //       if (err.code) {
-      //         this.toastError(this.$t('confirm.network_error'))
-      //       }
-      //     }
-      //     console.error(err)
-      //   }
-      // },
-      // async updatePrivateMemberGroup(userIds) {
-      //   await updatePrivateMemberGroup({
-      //     workspaceId: this.workspace.uuid,
-      //     userId: this.account.uuid,
-      //     groupId: this.groupId,
-      //     groupName: this.groupNameInput,
-      //     memberList: userIds,
-      //   })
-      // },
-      // async createPrivateMemberGroup(userIds) {
-      //   await createPrivateMemberGroup({
-      //     workspaceId: this.workspace.uuid,
-      //     userId: this.account.uuid,
-      //     groupName: this.groupNameInput,
-      //     memberList: userIds,
-      //   })
+      this.isSaving = true
+      try {
+        const userIds = this.selection.map(member => member.uuid)
+        if (this.groupId) {
+          await this.updateSubGroup(userIds)
+        } else {
+          await this.createSubGroup(userIds)
+        }
+        //정상 저장시 모달창 close
+        this.$emit('update:visible', false)
+      } catch (err) {
+        if (err.code === 4030) {
+          this.toastError(
+            this.$t('subgroup.error_there_are_already_configured_members'),
+          )
+        } else {
+          console.error(err)
+        }
+      }
+      this.isSaving = false
+    },
+    async createSubGroup(userIds) {
+      await createSubGroup({
+        workspaceId: this.workspace.uuid,
+        userId: this.account.uuid,
+        groupName: this.groupNameInput,
+        memberList: userIds,
+      })
+    },
+    async updateSubGroup(userIds) {
+      await updateSubGroup({
+        groupId: this.groupId,
+        workspaceId: this.workspace.uuid,
+        userId: this.account.uuid,
+        groupName: this.groupNameInput,
+        memberList: userIds,
+      })
     },
   },
 }
@@ -260,7 +266,7 @@ export default {
       cursor: default;
 
       color: rgba(255, 255, 255, 0.4);
-      font-size: 15px;
+      font-size: 1.0714rem;
 
       font-weight: 500;
       text-align: center;

@@ -1,0 +1,25 @@
+{
+  "subgroup":{
+    "setting":"그룹 설정",
+    "description":"워크스페이스의 하위 그룹을 설정합니다. (최대 10개)",
+    "etc_member_count":"미설정 멤버 :",
+    "add_group":"그룹 추가",
+    "group_name":"그룹명",
+    "group_member":"그룹 멤버",
+    "member":"멤버",
+    "update":"수정",
+    "delete":"삭제",
+    "add_and_delete":"그룹 추가/수정",
+    "error_enter_group_name":"그룹명을 입력해 주세요.",
+    "error_same_group_name_exists":"동일 그룹명이 있습니다.",
+    "error_please_select_at_least_one_member":"멤버를 1명 이상 선택해 주세요.",
+    "error_please_input_more_two_letter":"그룹 이름은 2자 이상 입력해 주세요.",
+    "error_there_are_already_configured_members":"이미 설정된 멤버가 있습니다.",
+    "error_please_input_without_name":"특수 문자는 협업 이름에서 제외시켜주세요.",
+    "all":"전체",
+    "etc":"기타",
+    "create_select_member_list": "선택 가능한 멤버 리스트",
+    "invite_max": "선택가능 멤버 명수를 초과했습니다.",
+    "no_group":"생성된 그룹이 없습니다."
+  }
+}

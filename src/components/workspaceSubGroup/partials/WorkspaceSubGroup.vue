@@ -12,7 +12,7 @@
     </div>
 
     <div class="sub-group-item member-list">
-      <p class="label">{{ $t('그룹 멤버') }} :</p>
+      <p class="label">{{ $t('subgroup.group_member') }} :</p>
       <profile-list
         style="min-height: 0px"
         :users="subGroup.remoteGroupMemberResponses"
@@ -24,10 +24,10 @@
 
     <div class="sub-group__tools">
       <button @click="updateGroup" class="update" :class="{ hover: isHover }">
-        {{ $t('수정') }}
+        {{ $t('subgroup.update') }}
       </button>
       <button @click="deleteGroup" class="delete" :class="{ hover: isHover }">
-        {{ $t('삭제') }}
+        {{ $t('subgroup.delete') }}
       </button>
     </div>
   </div>
@@ -83,11 +83,9 @@ export default {
   computed: {},
   methods: {
     updateGroup() {
-      console.log('update group')
       this.$emit('updategroup', this.subGroup.groupId)
     },
     deleteGroup() {
-      console.log('delete group')
       this.$emit('deletegroup', this.subGroup.groupId)
     },
   },
@@ -171,6 +169,17 @@ export default {
     &:before {
       background-color: #adb3bd;
     }
+  }
+}
+
+.otheruser-popover {
+  border: solid 1px #c2c6ce;
+  .profile {
+    width: fit-content;
+  }
+  background-color: #ffffff;
+  .profilelist-user__name {
+    color: #757f91;
   }
 }
 

@@ -82,7 +82,7 @@ export default {
       ]
       const subGroupTab = {
         name: 'subGroup',
-        text: this.$t('그룹 설정'),
+        text: this.$t('subgroup.setting'),
         images: {
           off: require('assets/image/tab/ic_workspace_sub_group_off.svg'),
           on: require('assets/image/tab/ic_workspace_sub_group_on.svg'),
@@ -100,6 +100,11 @@ export default {
     workspace(val, oldVal) {
       if (val.uuid && val.uuid !== oldVal.uuid) {
         this.checkMaster()
+      }
+    },
+    isMaster(cur, prev) {
+      if (cur === false && prev === true) {
+        this.component = 'board'
       }
     },
   },

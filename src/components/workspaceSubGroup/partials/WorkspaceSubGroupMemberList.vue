@@ -2,7 +2,7 @@
   <section class="sub-group-member">
     <div class="sub-group-member__header">
       <p class="sub-group-member__title">
-        {{ $t('workspace.create_select_member_list') }}
+        {{ $t('subgroup.create_select_member_list') }}
         <span class="sub-group-member__number">{{ totalNum }}</span>
       </p>
       <icon-button

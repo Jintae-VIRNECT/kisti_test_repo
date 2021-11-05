@@ -1,0 +1,25 @@
+{
+  "subgroup":{
+    "setting":"群組設置​",
+    "description":"設置工作區的子組。（最多 10 個）",
+    "etc_member_count":"未配置成員：​",
+    "add_group":"添加群組​",
+    "group_name":"團隊名字​",
+    "group_member":"組員",
+    "member":"成員​",
+    "update":"調整​",
+    "delete":"刪除​",
+    "add_and_delete":"添加/修改組​",
+    "error_enter_group_name":"請輸入小組名稱。​",
+    "error_same_group_name_exists":"存在相同的組名。​",
+    "error_please_select_at_least_one_member":"請至少選擇 1 位成員。​",
+    "error_please_input_more_two_letter":"團隊名稱請輸入2字以上。​",
+    "error_there_are_already_configured_members":"已經有配置的成員。",
+    "error_please_input_without_name":"合作名稱中應排除特殊字元。",
+    "all":"全部",
+    "etc":"等等",
+    "create_select_member_list": "可選擇的成員名單",
+    "invite_max": "已經超出可以選擇的成員人數。",
+    "no_group":"尚未創建任何組。"
+  }
+}
