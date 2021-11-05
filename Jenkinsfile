@@ -55,7 +55,7 @@ pipeline {
                                 then 
                                      echo 'Swagger Changed.'
                                      curl -H "Content-Type: application/json" --data \
-                                     \'{summary": "Swagger Change", \ 
+                                     \'{summary": "Swagger Change",  
                                                   "sections" : [
                                                       { "facts": [{"name": "Swagger Service" ,"value": "\'"$REPO_NAME"\'"}, \
                                                                   {"name": "Information","value": "\'"`java -jar /var/lib/jenkins/Swagger-Diff/Jar/swagger-diff.jar -old /var/lib/jenkins/Swagger-Diff/Diff/${SERVICE_NAME}_old.json -new /var/lib/jenkins/Swagger-Diff/Diff/${SERVICE_NAME}_new.json`"\'"}],"markdown": true}]}\' \
