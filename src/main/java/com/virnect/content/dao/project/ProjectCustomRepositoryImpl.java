@@ -6,6 +6,7 @@ import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.support.QuerydslRepositorySupport;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
@@ -21,6 +22,7 @@ import com.virnect.content.domain.project.Project;
 import com.virnect.content.domain.project.QProject;
 import com.virnect.content.domain.project.QProjectMode;
 import com.virnect.content.domain.project.QProjectTarget;
+import com.virnect.content.global.common.PageRequest;
 
 /**
  * Project: PF-ContentManagement
@@ -45,10 +47,10 @@ public class ProjectCustomRepositoryImpl extends QuerydslRepositorySupport imple
 	}
 
 	@Override
-	public Page<Project> getFilteredProjectPage(
+	public Page<Project> getProjectListByFilterList(
 		String workspaceUUID,
 		List<SharePermission> sharePermissionList, List<EditPermission> editPermissionList, List<Mode> modeList,
-		List<TargetType> targetTypeList, String search, Pageable pageable
+		List<TargetType> targetTypeList, String search, PageRequest pageRequest
 	) {
 		QProject qProject = QProject.project;
 		JPQLQuery<Project> query = from(qProject)
@@ -66,9 +68,13 @@ public class ProjectCustomRepositoryImpl extends QuerydslRepositorySupport imple
 			query = query.join(qProject.projectTarget, qProjectTarget).where(qProjectTarget.type.in(targetTypeList));
 		}
 
-		List<Project> resultProjectList = getQuerydsl().applyPagination(pageable, query).fetch();
+		Sort.Order order = pageRequest.of().getSort().getOrderFor("target");
+		if (order != null) {
+			pageRequest.setSort("projectTarget.type," + order.getDirection());
+		}
+		List<Project> resultProjectList = getQuerydsl().applyPagination(pageRequest.of(), query).fetch();
 
-		return new PageImpl<>(resultProjectList, pageable, query.fetchCount());
+		return new PageImpl<>(resultProjectList, pageRequest.of(), query.fetchCount());
 	}
 
 	private BooleanExpression eqSearch(String search) {
@@ -79,17 +85,21 @@ public class ProjectCustomRepositoryImpl extends QuerydslRepositorySupport imple
 	}
 
 	@Override
-	public Page<Project> getProjectPageByProjectList(
-		List<Project> projectList, Pageable pageable
+	public Page<Project> getProjectListByProjectIdList(
+		List<Long> projectIdList, PageRequest pageRequest
 	) {
 		QProject qProject = QProject.project;
 		JPQLQuery<Project> query = from(qProject)
 			.select(qProject)
-			.where(qProject.in(projectList));
+			.where(qProject.id.in(projectIdList));
 
-		List<Project> resultProjectList = getQuerydsl().applyPagination(pageable, query).fetch();
+		Sort.Order order = pageRequest.of().getSort().getOrderFor("target");
+		if (order != null) {
+			pageRequest.setSort("projectTarget.type," + order.getDirection());
+		}
+		List<Project> resultProjectList = getQuerydsl().applyPagination(pageRequest.of(), query).fetch();
 
-		return new PageImpl<>(resultProjectList, pageable, query.fetchCount());
+		return new PageImpl<>(resultProjectList, pageRequest.of(), query.fetchCount());
 
 	}
 

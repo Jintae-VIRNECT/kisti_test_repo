@@ -10,6 +10,7 @@ import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Index;
 import javax.persistence.Lob;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
@@ -40,7 +41,12 @@ import com.virnect.content.domain.SharePermission;
 @Setter
 @Audited
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Table(name = "project")
+@Table(name = "project", indexes = {
+	@Index(name = "idx_uuid", columnList = "uuid"),
+	@Index(name = "idx_name", columnList = "name"),
+	@Index(name = "idx_user_uuid", columnList = "user_uuid"),
+	@Index(name = "idx_workspace_uuid", columnList = "workspace_uuid")
+})
 public class Project extends BaseTimeEntity {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)

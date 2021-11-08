@@ -3,6 +3,7 @@ package com.virnect.content.dto.request;
 import java.util.List;
 
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 
 import org.springframework.util.CollectionUtils;
 
@@ -11,6 +12,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import com.virnect.content.domain.Mode;
+import com.virnect.content.domain.project.UpdateType;
 
 /**
  * Project: PF-ContentManagement
@@ -22,6 +24,9 @@ import com.virnect.content.domain.Mode;
 @Getter
 @Setter
 public class ProjectUpdateRequest {
+	@ApiModelProperty(value = "업데이트 타입", example = "UPDATE", position = 0, required = true)
+	@NotNull
+	private UpdateType type;
 	@ApiModelProperty(value = "업데이트 유저 식별자", example = "498b1839dc29ed7bb2ee90ad6985c608", position = 1, required = true)
 	@NotBlank
 	private String userUUID;

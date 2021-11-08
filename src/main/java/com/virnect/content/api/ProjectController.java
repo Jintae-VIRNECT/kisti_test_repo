@@ -1,7 +1,6 @@
 package com.virnect.content.api;
 
 import java.util.List;
-import java.util.Locale;
 
 import javax.validation.Valid;
 
@@ -138,9 +137,9 @@ public class ProjectController {
 		if (!StringUtils.hasText(workspaceUUID) || !StringUtils.hasText(userUUID)) {
 			throw new ContentServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
 		}
-		ProjectInfoListResponse responseMessage = projectService.getProjectList(
+		ProjectInfoListResponse responseMessage = projectService.getProjectListByUserRole(
 			workspaceUUID, userUUID, sharePermissionList, editPermissionList, modeList, targetTypeList, search,
-			pageRequest.of()
+			pageRequest
 		);
 		return ResponseEntity.ok(new ApiResponse<>(responseMessage));
 	}
