@@ -319,22 +319,24 @@ export default {
       // 공통
       this.activeSubForms = this.subForm.map(form => form.id)
       this.workerList = await workspaceService.allMembers()
-      // clearValidate: 검증 메시지 제거
-      this.$refs.mainForm.clearValidate()
-      this.$refs.subForm.forEach(form => form.clearValidate())
     },
     closed() {
+      // clearValidate: 검증 메시지 제거
       this.$refs.mainForm.resetFields()
-      this.$refs.subForm.forEach(form => form.resetFields())
       this.mainForm.worker = ''
       this.mainForm.position = ''
+      if (this.$refs.subForm !== undefined)
+        this.$refs.subForm.forEach(form => form.resetFields())
     },
     async validate() {
       try {
-        await Promise.all([
-          this.$refs.mainForm.validate(),
-          ...this.$refs.subForm.map(form => form.validate()),
-        ])
+        await this.$refs.mainForm.validate()
+        if (this.$refs.subForm !== undefined) {
+          await Promise.all([
+            ...this.$refs.subForm.map(form => form.validate()),
+          ])
+        }
+
         return true
       } catch (e) {
         return false
@@ -388,6 +390,8 @@ export default {
       }
     },
     changedSchedule(date) {
+      if (this.$refs.subForm === undefined) return false
+
       // 하위작업 필드 초기화
       this.$refs.subForm.forEach(form => {
         form.resetFields()
