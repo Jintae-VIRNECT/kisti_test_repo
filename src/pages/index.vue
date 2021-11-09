@@ -4,7 +4,7 @@
       <h3 v-html="$t('home.visual.title')" />
       <p v-html="$t('home.visual.desc')" />
     </div>
-    <div class="ribbon" v-html="$t('home.notice')" />
+    <div class="ribbon" v-html="$t('home.notice')" v-if="!$isOnpremise" />
     <el-tabs v-model="activeTab" @tab-click="tabClick">
       <el-tab-pane
         v-for="(product, name) in products"
@@ -48,12 +48,6 @@ export default {
       isMobile: false,
       snbTop: 0,
       didScroll: 0,
-      products: {
-        remote: [],
-        make: [],
-        view: [],
-        track: [],
-      },
       // TODO: 추후 Track 버전을 서버에서 전달받아 URL에 넣어주기.
       trackDownloadUrl: 'http://track.virnect.com/1.2.0/download/download/',
     }
@@ -72,6 +66,23 @@ export default {
     },
     async '$i18n.locale'() {
       this.products[this.activeTab] = await this.loadList(this.activeTab)
+    },
+  },
+  computed: {
+    products() {
+      if (!this.$isOnpremise)
+        return {
+          remote: [],
+          make: [],
+          view: [],
+          track: [],
+        }
+      else
+        return {
+          remote: [],
+          make: [],
+          view: [],
+        }
     },
   },
   filters,
@@ -116,13 +127,22 @@ export default {
     },
   },
   mounted() {
-    this.activeTab =
-      {
-        '/remote': 'remote',
-        '/make': 'make',
-        '/view': 'view',
-        '/track': 'track',
-      }[this.redirectPath] || 'remote'
+    if (!this.$isOnpremise) {
+      this.activeTab =
+        {
+          '/remote': 'remote',
+          '/make': 'make',
+          '/view': 'view',
+          '/track': 'track',
+        }[this.redirectPath] || 'remote'
+    } else {
+      this.activeTab =
+        {
+          '/remote': 'remote',
+          '/make': 'make',
+          '/view': 'view',
+        }[this.redirectPath] || 'make'
+    }
     window.addEventListener('scroll', this.snbNav)
   },
   beforeDestroy() {

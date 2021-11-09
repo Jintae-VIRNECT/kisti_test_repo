@@ -6,6 +6,7 @@
   "private": true,
   "scripts": {
     "dev": "cross-env VIRNECT_ENV=local nuxt",
+    "dev:onpremise": "cross-env VIRNECT_ENV=onpremise nuxt",
     "build:develop": "cross-env NODE_ENV=develop VIRNECT_ENV=local nuxt build --modern=server",
     "build:production": "cross-env NODE_ENV=production VIRNECT_ENV=local nuxt build --modern=server",
     "deploy": "cross-env NODE_ENV=$VIRNECT_ENV VIRNECT_ENV=$VIRNECT_ENV CONFIG_SERVER=$CONFIG_SERVER nuxt start --modern=server",
@@ -18,10 +19,10 @@
   "dependencies": {
     "@nuxtjs/axios": "^5.10.3",
     "@nuxtjs/style-resources": "^1.0.0",
-    "@virnect/components": "^1.8.3",
+    "@virnect/components": "1.8.8",
     "@virnect/logger": "^1.0.2",
-    "@virnect/platform-auth": "^1.0.2",
-    "@virnect/ui-assets": "1.8.1",
+    "@virnect/platform-auth": "^1.0.5",
+    "@virnect/ui-assets": "1.8.8",
     "axios": "^0.19.2",
     "cross-env": "^7.0.2",
     "dayjs": "^1.8.28",

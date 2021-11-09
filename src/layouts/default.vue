@@ -1,21 +1,23 @@
 <template>
-  <div>
+  <div :class="{ onpremise: $isOnpremise }">
     <VirnectHeader
       :env="$env"
       :subTitle="$t('home.title')"
       :showStatus="showSection"
       :userInfo="auth.myInfo"
       :urls="$url"
+      :logo="{ default: logo }"
       @logout="$store.commit('auth/LOGOUT')"
     />
     <main>
       <nuxt />
     </main>
-    <VirnectFooter />
+    <VirnectFooter v-if="!$isOnpremise" />
   </div>
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
 export default {
   middleware: ['default'],
   head() {
@@ -35,9 +37,12 @@ export default {
     }
   },
   computed: {
-    auth() {
-      return this.$store.getters['auth/auth']
-    },
+    ...mapGetters({
+      auth: 'auth/auth',
+      title: 'layout/title',
+      logo: 'layout/logo',
+      favicon: 'layout/favicon',
+    }),
   },
   beforeMount() {
     this.$store.dispatch('auth/getAuth')
