@@ -45,6 +45,8 @@ pipeline {
                     steps {
                         sh 'count=`docker ps -a | grep pf-webdownload | wc -l`; if [ ${count} -gt 0 ]; then echo "Running STOP&DELETE"; docker stop pf-webdownload && docker rm pf-webdownload; else echo "Not Running STOP&DELETE"; fi;'
                         sh 'docker run -p 8833:8833 --restart=always -e "CONFIG_SERVER=http://192.168.6.3:6383" -e "VIRNECT_ENV=develop" -d --name=pf-webdownload pf-webdownload'
+                        sh 'count=`docker ps | grep pf-webdownload-onpremise | wc -l`; if [ ${count} -gt 0 ]; then echo "Running STOP&DELETE"; docker stop pf-webdownload-onpremise && docker rm pf-webdownload-onpremise; else echo "Not Running STOP&DELETE"; fi;'
+                        sh 'docker run -p 18833:8833 --restart=always -e "CONFIG_SERVER=http://192.168.6.3:6383" -e "VIRNECT_ENV=onpremise" -d --name=pf-webdownload-onpremise pf-webdownload'
                         catchError {
                             sh "if [ `docker images | grep pf-webdownload | grep -v 103505534696 | grep -v server | wc -l` -gt 2 ]; then docker rmi  -f \$(docker images | grep \"pf-webdownload\" | grep -v server | grep -v \\${GIT_TAG} | grep -v \"latest\" | awk \'{print \$3}\'); else echo \"Just One Images...\"; fi;"
                         }
