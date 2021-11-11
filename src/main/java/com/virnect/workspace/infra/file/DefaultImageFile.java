@@ -7,19 +7,19 @@ package com.virnect.workspace.infra.file;
  * EMAIL: ljk@virnect.com
  * DESCRIPTION:
  */
-public enum DefaultFile {
+public enum DefaultImageFile {
 	WORKSPACE_PROFILE_IMG("workspace-profile.png"),
 	WORKSPACE_DEFAULT_LOGO_IMG("virnect-default-logo.png"),
 	WORKSPACE_WHITE_LOGO_IMG("virnect-white-logo.png"),
 	WORKSPACE_DEFAULT_FAVICON("virnect-default-favicon.ico");
 
-	private final String fileName;
+	private final String name;
 
-	DefaultFile(String fileName) {
-		this.fileName = fileName;
+	DefaultImageFile(String name) {
+		this.name = name;
 	}
 
-	public String getFileName() {
-		return fileName;
+	public String getName() {
+		return name;
 	}
 }

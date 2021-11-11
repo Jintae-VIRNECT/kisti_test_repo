@@ -12,24 +12,9 @@ import org.springframework.web.multipart.MultipartFile;
  * DESCRIPTION: File Upload Interface for LocalFileUpload and AWS FileUpload
  */
 public interface FileService {
-    /**
-     * 파일 업로드 처리
-     * @param file -  파일 업로드 요청
-     * @param workspaceUUID
-     * @return - 업로드된 파일 url
-     */
     String upload(MultipartFile file, String workspaceUUID) throws IOException;
 
-    /**
-     * 업로드 된 파일 삭제 요청
-     * @param url - 업로드된 파일 url
-     */
     void delete(final String url);
 
-    /**
-     * 업로드 된 파일 url 조회
-     * @param fileName
-     * @return
-     */
-    String getDefaultFileUrl(String fileName);
+    String getDefaultFileUrl(DefaultImageFile defaultImageFile);
 }
