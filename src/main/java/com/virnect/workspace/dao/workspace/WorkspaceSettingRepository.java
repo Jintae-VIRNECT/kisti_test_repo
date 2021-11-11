@@ -11,5 +11,6 @@ import com.virnect.workspace.domain.workspace.WorkspaceSetting;
  * EMAIL: ljk@virnect.com
  * DESCRIPTION:
  */
-public interface WorkspaceSettingRepository extends JpaRepository<WorkspaceSetting,Long> {
+public interface WorkspaceSettingRepository extends JpaRepository<WorkspaceSetting, Long> {
+	WorkspaceSetting findFirstByOrderByIdAsc();
 }

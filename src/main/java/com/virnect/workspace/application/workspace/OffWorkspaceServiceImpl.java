@@ -50,7 +50,7 @@ import com.virnect.workspace.global.constant.Permission;
 import com.virnect.workspace.global.constant.UUIDType;
 import com.virnect.workspace.global.error.ErrorCode;
 import com.virnect.workspace.global.util.RandomStringTokenUtil;
-import com.virnect.workspace.infra.file.DefaultFile;
+import com.virnect.workspace.infra.file.DefaultImageFile;
 import com.virnect.workspace.infra.file.FileService;
 
 /**
@@ -121,7 +121,7 @@ public class OffWorkspaceServiceImpl extends WorkspaceService {
                 throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_CREATE_INVALID_PROFILE);
             }
         } else {
-            profile = fileUploadService.getDefaultFileUrl(DefaultFile.WORKSPACE_PROFILE_IMG.getFileName());
+            profile = fileUploadService.getDefaultFileUrl(DefaultImageFile.WORKSPACE_PROFILE_IMG);
         }
         Workspace newWorkspace = Workspace.builder()
                 .uuid(workspaceId)
@@ -164,7 +164,7 @@ public class OffWorkspaceServiceImpl extends WorkspaceService {
 
         //2. 파비콘 확장자, 사이즈 체크
         if (workspaceFaviconUpdateRequest.getFavicon() == null) {
-            String favicon = fileUploadService.getDefaultFileUrl(DefaultFile.WORKSPACE_DEFAULT_FAVICON.getFileName());
+            String favicon = fileUploadService.getDefaultFileUrl(DefaultImageFile.WORKSPACE_DEFAULT_FAVICON);
             workspaceSetting.setFavicon(favicon);
             workspaceSettingRepository.save(workspaceSetting);
             WorkspaceFaviconUpdateResponse workspaceFaviconUpdateResponse = new WorkspaceFaviconUpdateResponse();
@@ -245,7 +245,7 @@ public class OffWorkspaceServiceImpl extends WorkspaceService {
                 return workspaceLogoUpdateResponse;
             }
         } else {
-            String logoDefault = fileUploadService.getDefaultFileUrl(DefaultFile.WORKSPACE_DEFAULT_LOGO_IMG.getFileName());
+            String logoDefault = fileUploadService.getDefaultFileUrl(DefaultImageFile.WORKSPACE_DEFAULT_LOGO_IMG);
             workspaceSetting.setDefaultLogo(logoDefault);
             workspaceSettingRepository.save(workspaceSetting);
 
@@ -285,7 +285,7 @@ public class OffWorkspaceServiceImpl extends WorkspaceService {
                 return workspaceLogoUpdateResponse;
             }
         } else {
-            String logoWhite = fileUploadService.getDefaultFileUrl(DefaultFile.WORKSPACE_WHITE_LOGO_IMG.getFileName());
+            String logoWhite = fileUploadService.getDefaultFileUrl(DefaultImageFile.WORKSPACE_WHITE_LOGO_IMG);
             workspaceSetting.setWhiteLogo(logoWhite);
         }
 

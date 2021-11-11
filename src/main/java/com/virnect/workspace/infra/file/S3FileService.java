@@ -88,7 +88,7 @@ public class S3FileService implements FileService {
 		String[] fileSplit = fileUrl.split(prefix);
 		String objectName = fileSplit[fileSplit.length - 1];
 
-		if (fileUrl.contains(DefaultFile.WORKSPACE_PROFILE_IMG.getFileName())) {
+		if (fileUrl.contains(DefaultImageFile.WORKSPACE_PROFILE_IMG.getName())) {
 			log.info("Not Delete Default File Info >> bucket : {}, object : {}", bucket, objectName);
 		} else {
 			amazonS3Client.deleteObject(bucket, objectName);
@@ -98,8 +98,7 @@ public class S3FileService implements FileService {
 	}
 
 	@Override
-	public String getDefaultFileUrl(String fileName) {
-		String objectName = String.format("workspace/%s", fileName);
-		return amazonS3Client.getUrl(bucket, objectName).toExternalForm();
+	public String getDefaultFileUrl(DefaultImageFile defaultImageFile) {
+		return prefix + "workspace/" + defaultImageFile.getName();
 	}
 }
