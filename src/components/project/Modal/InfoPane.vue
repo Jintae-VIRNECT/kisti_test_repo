@@ -33,7 +33,7 @@
       </div>
       <div>
         <dt>{{ $t('projects.info.project.update') }}</dt>
-        <dd>{{ project.updatedDate | localTimeFormat }}</dd>
+        <dd>{{ project.createdDate | localTimeFormat }}</dd>
       </div>
     </dl>
     <!-- 프로젝트 공유/편집 정보 -->

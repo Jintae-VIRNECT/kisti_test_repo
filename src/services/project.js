@@ -46,7 +46,7 @@ export default {
 
     return {
       list: data.projectInfoList.map(project => new Project(project)),
-      total: data.pageMeta.totalElements,
+      pageMeta: data.pageMeta,
     }
   },
   /**

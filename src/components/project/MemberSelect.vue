@@ -136,7 +136,7 @@ export default {
     // 선택한 지정 멤버 리스트에서, 첫 번째 인덱스 멤버를 삭제한다. 라벨의 X 버튼 클릭시 실행.
     deleteFirstUser() {
       if (this.selectMemberArray.length) {
-        this.selectMemberArray.shift()
+        this.selectMemberArray = this.selectMemberArray.slice(1)
         this.setLabelImage()
       }
     },
@@ -151,6 +151,9 @@ export default {
     },
   },
   watch: {
+    memberPermission(v) {
+      this.memberPermissions = v
+    },
     memberPermissions(v) {
       this.$emit('update:memberPermission', v)
 
@@ -161,6 +164,10 @@ export default {
         // 지정 멤버를 제외한 메뉴 선택시, 지정 멤버 리스트를 비웁니다.
         this.selectMemberArray = []
       }
+    },
+    selectMembers(v) {
+      this.selectMemberArray = v
+      this.selectChange()
     },
     selectMemberArray(v) {
       this.$emit('update:selectMembers', v)

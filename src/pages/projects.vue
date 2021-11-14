@@ -126,7 +126,6 @@
 
 <script>
 import workspaceService from '@/services/workspace'
-import projectService from '@/services/project'
 import { mapGetters } from 'vuex'
 import searchMixin from '@/mixins/search'
 import columnsMixin from '@/mixins/columns'
@@ -135,23 +134,17 @@ import { projectFilterList, memberRoleFilter } from '@/models/project/Project'
 
 export default {
   mixins: [searchMixin, columnsMixin, utils],
-  async asyncData({ query }) {
-    const projectsSearch = query.search || ''
-    const { list, total } = await projectService.searchProjects({
-      search: projectsSearch,
-    })
-    return {
-      projectsList: list,
-      projectsTotal: total,
-      projectsSearch,
-    }
-  },
   data() {
     return {
       loading: false,
       projectFilterList,
+      projectsSearch: '',
+      projectsSort: 'createdDate,desc',
       projectsPage: 1,
       canRemove: false,
+      projectsList: [],
+      projectsTotal: 0,
+      pageMeta: {},
     }
   },
   methods: {
@@ -162,14 +155,40 @@ export default {
       this.searchProjects()
     },
     async searchProjects() {
+      this.projectsSort = this.searchParams.sort || this.projectsSort
       // this.searchParams 는 searchMixin에서 가져와 사용
-      const { list, total } = await projectService.searchProjects(
-        Object.assign({}, this.searchParams),
+      const { list, pageMeta } = await this.$store.dispatch(
+        'project/getProjectList',
+        Object.assign(
+          {},
+          {
+            ...this.searchParams,
+            sort: this.projectsSort,
+          },
+        ),
       )
       this.projectsList = list
-      this.projectsTotal = total
+      this.pageMeta = pageMeta
+      this.projectsTotal = pageMeta.totalElements
     },
     rowClick(row) {
+      // 현재 프로젝트 리스트 목록을 store에 저장합니다.
+      this.$store.dispatch('project/setProjectState', {
+        list: this.projectsList,
+        pageMeta: this.pageMeta,
+        searchParams: Object.assign(
+          {},
+          {
+            ...this.searchParams,
+            sort: this.projectsSort,
+          },
+        ),
+      })
+      // 클릭한 프로젝트가, 페이징된 프로젝트 목록에서 몇 번째 인덱스인지 계산.
+      this.$store.commit('project/SET_CURRENT_INDEX', row.uuid)
+      // 클릭한 프로젝트까지의 총 프로젝트 갯수를 저장.
+      this.$store.commit('project/SET_CURRENT_TOTAL_ELEMENTS')
+
       this.$router.push(`/projects/${row.uuid}`)
     },
     selectionChanged(selection) {
@@ -214,6 +233,7 @@ export default {
      */
     refreshParams() {
       this.projectFilterList.map(filter => (filter.type.value = ['ALL']))
+      this.projectsSort = 'createdDate,desc'
       this.projectsSearch = ''
       this.projectsPage = 1
 
