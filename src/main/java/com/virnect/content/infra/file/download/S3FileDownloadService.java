@@ -134,6 +134,7 @@ public class S3FileDownloadService implements FileDownloadService {
 
 	@Override
 	public byte[] getFileStreamBytes(String fileUrl) {
+		log.info("[AWS S3 FILE DOWNLOAD] URL : {}", fileUrl);
 		String[] fileSplit = fileUrl.split(prefix);
 		String objectName = fileSplit[fileSplit.length - 1];
 		GetObjectRequest getObjectRequest = new GetObjectRequest(bucketName, objectName);
@@ -151,6 +152,7 @@ public class S3FileDownloadService implements FileDownloadService {
 		try (ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
 			 ZipOutputStream zipOutputStream = new ZipOutputStream(byteArrayOutputStream)) {
 			for (String fileUrl : fileUrlList) {
+				log.info("[AWS S3 FILE DOWNLOAD] URL : {}", fileUrl);
 				String[] fileSplit = fileUrl.split("/");
 				String fileName = fileSplit[fileSplit.length - 1];
 				byte[] fileStream = getFileStreamBytes(fileUrl);

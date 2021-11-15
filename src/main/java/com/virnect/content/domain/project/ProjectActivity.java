@@ -10,10 +10,7 @@ package com.virnect.content.domain.project;
 public enum ProjectActivity {
 	UPLOAD,
 	UPDATE,
-	OVERWRITE,
 	UPDATE_SHARE_PERMISSION,
 	UPDATE_EDIT_PERMISSION,
-	OVERWRITE_SHARE_PERMISSION,
-	OVERWRITE_EDIT_PERMISSION,
 	DOWNLOAD,
 }

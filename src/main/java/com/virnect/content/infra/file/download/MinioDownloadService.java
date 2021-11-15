@@ -36,7 +36,6 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import com.virnect.content.domain.project.Project;
 import com.virnect.content.exception.ContentServiceException;
 import com.virnect.content.global.error.ErrorCode;
 
@@ -164,6 +163,7 @@ public class MinioDownloadService implements FileDownloadService {
 
 	@Override
 	public byte[] getFileStreamBytes(String fileUrl) {
+		log.info("[MINIO FILE DOWNLOAD] URL : {}", fileUrl);
 		String[] fileSplit = fileUrl.split(prefix);
 		String objectName = fileSplit[fileSplit.length - 1];
 		GetObjectArgs getObjectArgs = GetObjectArgs.builder()
@@ -183,6 +183,7 @@ public class MinioDownloadService implements FileDownloadService {
 		try (ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
 			 ZipOutputStream zipOutputStream = new ZipOutputStream(byteArrayOutputStream)) {
 			for (String fileUrl : fileUrlList) {
+				log.info("[MINIO FILE DOWNLOAD] URL : {}", fileUrl);
 				String[] fileSplit = fileUrl.split("/");
 				String fileName = fileSplit[fileSplit.length - 1];
 				byte[] fileStream = getFileStreamBytes(fileUrl);

@@ -7,7 +7,6 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
-import java.util.Locale;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -53,7 +52,6 @@ import com.virnect.content.domain.project.ProjectEditUser;
 import com.virnect.content.domain.project.ProjectMode;
 import com.virnect.content.domain.project.ProjectShareUser;
 import com.virnect.content.domain.project.ProjectTarget;
-import com.virnect.content.domain.project.UpdateType;
 import com.virnect.content.domain.rest.Role;
 import com.virnect.content.dto.request.ProjectUpdateRequest;
 import com.virnect.content.dto.request.ProjectUploadRequest;
@@ -224,8 +222,7 @@ public class ProjectService {
 
 		//3. 활동 이력 저장
 		applicationEventPublisher.publishEvent(
-			new ProjectActivityLogEvent(
-				ProjectActivity.UPLOAD, null, project, workspaceUserInfo, Locale.KOREAN));
+			new ProjectActivityLogEvent(ProjectActivity.UPLOAD, null, project, workspaceUserInfo));
 
 		//4. 응답
 		ProjectInfoResponse projectInfoResponse = generateProjectResponse(project);
@@ -379,7 +376,9 @@ public class ProjectService {
 		}
 		//2-2. 멤버인 경우 제한된 프로젝트 조회 가능.
 		List<Long> filteredProjectIdList = projectList.stream()
-			.filter(project -> isProjectSharePermission(project, userUUID, userRole) || isProjectEditPermission(project, userUUID, userRole))
+			.filter(project -> isProjectSharePermission(project, userUUID, userRole) || isProjectEditPermission(project,
+				userUUID, userRole
+			))
 			.map(Project::getId).collect(Collectors.toList());
 
 		Page<Project> filteredProjectList = projectRepository.getProjectListByProjectIdList(
@@ -521,6 +520,9 @@ public class ProjectService {
 		//편집 유저 정보 삭제
 		projectEditUserRepository.deleteAll(project.getProjectEditUserList());
 
+		//활동 이력 삭제
+		projectActivityLogRepository.deleteAll(project.getProjectActivityLogList());
+
 		//project 삭제
 		projectRepository.delete(project);
 
@@ -584,11 +586,15 @@ public class ProjectService {
 			)) {
 				throw new ContentServiceException(ErrorCode.ERR_PROJECT_UPLOAD_MAX_STORAGE);
 			}
+			//구 프로젝트파일 삭제
+			fileUploadService.deleteByFileUrl(project.getPath());
+			//업데이트 프로젝트 파일 업로드
 			String newProjectPath = fileUploadService.copyByFileObject(
 				projectUpdateRequest.getProject(), PROJECT_DIRECTORY, project.getWorkspaceUUID(), projectUUID);
-			fileUploadService.deleteByFileUrl(projectUpdateRequest.getProject());//원본파일 삭제
-			fileUploadService.deleteByFileUrl(project.getPath());//구 프로젝트파일 삭제
 			project.setPath(newProjectPath);
+			//업데이트 원본파일 삭제
+			fileUploadService.deleteByFileUrl(projectUpdateRequest.getProject());
+
 		}
 
 		//프로젝트 구성정보 변경
@@ -629,24 +635,12 @@ public class ProjectService {
 					.collect(Collectors.toList());
 				projectShareUerRepository.saveAll(newProjectShareUserList);
 			}
-			if (projectUpdateRequest.getType() == UpdateType.UPDATE) {
-				applicationEventPublisher.publishEvent(
-					new ProjectActivityLogEvent(
-						ProjectActivity.UPDATE_SHARE_PERMISSION,
-						new String[] {projectUpdateRequest.getShare().getPermission().name()}, project,
-						workspaceUserInfo,
-						Locale.KOREAN
-					));
-			}
-			if (projectUpdateRequest.getType() == UpdateType.OVERWRITE) {
-				applicationEventPublisher.publishEvent(
-					new ProjectActivityLogEvent(
-						ProjectActivity.OVERWRITE_SHARE_PERMISSION,
-						new String[] {projectUpdateRequest.getShare().getPermission().name()}, project,
-						workspaceUserInfo,
-						Locale.KOREAN
-					));
-			}
+			applicationEventPublisher.publishEvent(
+				new ProjectActivityLogEvent(
+					ProjectActivity.UPDATE_SHARE_PERMISSION,
+					new String[] {projectUpdateRequest.getShare().getPermission().name()}, project,
+					workspaceUserInfo
+				));
 
 		}
 
@@ -661,24 +655,12 @@ public class ProjectService {
 					.collect(Collectors.toList());
 				projectEditUserRepository.saveAll(newProjectEditUserList);
 			}
-			if (projectUpdateRequest.getType() == UpdateType.UPDATE) {
-				applicationEventPublisher.publishEvent(
-					new ProjectActivityLogEvent(
-						ProjectActivity.UPDATE_EDIT_PERMISSION,
-						new String[] {projectUpdateRequest.getEdit().getPermission().name()}, project,
-						workspaceUserInfo,
-						Locale.KOREAN
-					));
-			}
-			if (projectUpdateRequest.getType() == UpdateType.OVERWRITE) {
-				applicationEventPublisher.publishEvent(
-					new ProjectActivityLogEvent(
-						ProjectActivity.OVERWRITE_EDIT_PERMISSION,
-						new String[] {projectUpdateRequest.getEdit().getPermission().name()}, project,
-						workspaceUserInfo,
-						Locale.KOREAN
-					));
-			}
+			applicationEventPublisher.publishEvent(
+				new ProjectActivityLogEvent(
+					ProjectActivity.UPDATE_EDIT_PERMISSION,
+					new String[] {projectUpdateRequest.getEdit().getPermission().name()}, project,
+					workspaceUserInfo
+				));
 		}
 
 		ProjectTarget projectTarget = project.getProjectTarget();
@@ -731,16 +713,9 @@ public class ProjectService {
 		projectRepository.save(project);
 
 		//프로젝트 활동 이력 저장
-		if (projectUpdateRequest.getType() == UpdateType.UPDATE) {
-			applicationEventPublisher.publishEvent(
-				new ProjectActivityLogEvent(
-					ProjectActivity.UPDATE, null, project, workspaceUserInfo, Locale.KOREAN));
-		}
-		if (projectUpdateRequest.getType() == UpdateType.OVERWRITE) {
-			applicationEventPublisher.publishEvent(
-				new ProjectActivityLogEvent(
-					ProjectActivity.OVERWRITE, null, project, workspaceUserInfo, Locale.KOREAN));
-		}
+		applicationEventPublisher.publishEvent(
+			new ProjectActivityLogEvent(
+				ProjectActivity.UPDATE, null, project, workspaceUserInfo));
 
 		return new ProjectUpdateResponse(true, projectUUID, projectUpdateRequest.getUserUUID(), LocalDateTime.now());
 	}
@@ -855,9 +830,7 @@ public class ProjectService {
 			ResponseEntity<byte[]> responseEntity = fileDownloadService.fileDownload(project.getPath(), null);
 			applicationEventPublisher.publishEvent(new ProjectDownloadHitEvent(project, userUUID));
 			applicationEventPublisher.publishEvent(
-				new ProjectActivityLogEvent(ProjectActivity.DOWNLOAD, null, project, workspaceUserInfo,
-					Locale.KOREAN
-				));
+				new ProjectActivityLogEvent(ProjectActivity.DOWNLOAD, null, project, workspaceUserInfo));
 			return responseEntity;
 		}
 
@@ -868,9 +841,7 @@ public class ProjectService {
 		projectList.forEach(project -> {
 			applicationEventPublisher.publishEvent(new ProjectDownloadHitEvent(project, userUUID));
 			applicationEventPublisher.publishEvent(
-				new ProjectActivityLogEvent(ProjectActivity.DOWNLOAD, null, project, workspaceUserInfo,
-					Locale.KOREAN
-				));
+				new ProjectActivityLogEvent(ProjectActivity.DOWNLOAD, null, project, workspaceUserInfo));
 		});
 
 		String zipFileName = String.format("%s_%s", LocalDate.now().toString(), "projects.zip");
