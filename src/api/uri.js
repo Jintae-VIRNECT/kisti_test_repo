@@ -121,6 +121,8 @@ export default {
   PROJECT_INFO: ['GET', '/contents/projects/{projectUUID}'],
   // 프로젝트 상태 수정
   PROJECT_UPDATE: ['PUT', '/contents/projects/{projectUUID}'],
+  // 프로젝트 삭제 요청
+  PROJECT_DELETE: ['DELETE', '/contents/projects/{projectUUID}'],
 
   /**
    * onpremise

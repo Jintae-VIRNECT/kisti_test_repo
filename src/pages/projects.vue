@@ -126,6 +126,7 @@
 
 <script>
 import workspaceService from '@/services/workspace'
+import projectService from '@/services/project'
 import { mapGetters } from 'vuex'
 import searchMixin from '@/mixins/search'
 import columnsMixin from '@/mixins/columns'
@@ -208,6 +209,11 @@ export default {
         return false
       }
       try {
+        const selectedProjects = this.$refs.table.selection.map(
+          project => project.uuid,
+        )
+        await projectService.deleteProject(selectedProjects)
+
         this.$message.success({
           message: this.$t('projects.info.message.deleteSuccess'),
           duration: 2000,
@@ -219,7 +225,8 @@ export default {
             this.$message.error({
               message:
                 this.$t('projects.info.message.deleteFail') +
-                `\n(${e.msg} / contentUUID: ${e.contentUUID})`,
+                `<br>(${e.message} / projectUUID: ${e.projectUUID})`,
+              dangerouslyUseHTMLString: true,
               duration: 4000,
               showClose: true,
             })

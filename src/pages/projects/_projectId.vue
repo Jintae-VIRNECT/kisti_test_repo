@@ -262,17 +262,22 @@ export default {
         return false
       }
       try {
+        await projectService.deleteProject([this.project.uuid])
+
         this.$message.success({
           message: this.$t('projects.info.message.deleteSuccess'),
           duration: 2000,
           showClose: true,
         })
         this.$emit('updated')
+        this.$store.dispatch('project/clearAllProjectData')
         this.$router.replace('/projects')
       } catch (errors) {
         const e = errors[0]
         this.$message.error({
-          message: this.$t('projects.info.message.deleteFail') + `\n(${e})`,
+          message:
+            this.$t('projects.info.message.deleteFail') + `<br>(${e.message})`,
+          dangerouslyUseHTMLString: true,
           duration: 2000,
           showClose: true,
         })

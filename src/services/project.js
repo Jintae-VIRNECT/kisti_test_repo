@@ -1,4 +1,4 @@
-import { api } from '@/plugins/axios'
+import { api, allSettled } from '@/plugins/axios'
 import { store } from '@/plugins/context'
 
 // model
@@ -76,5 +76,31 @@ export default {
         ...form,
       },
     })
+  },
+  /**
+   * @description 프로젝트 삭제
+   * @param {Array} projectUUIDList
+   */
+  async deleteProject(projectUUIDList) {
+    const promises = projectUUIDList.map(projectUUID => {
+      return api('PROJECT_DELETE', {
+        route: { projectUUID: projectUUID },
+      })
+    })
+
+    const errors = []
+
+    await allSettled(promises).then(results =>
+      results.forEach((result, i) => {
+        if (result.status === 'rejected') {
+          const { reason } = result
+          errors.push({
+            message: `Error ` + reason.message,
+            projectUUID: projectUUIDList[i],
+          })
+        }
+      }),
+    )
+    if (errors.length) throw errors
   },
 }

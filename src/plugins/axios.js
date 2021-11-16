@@ -71,6 +71,17 @@ export async function api(name, option = {}) {
   }
 }
 
+export function allSettled(iterable) {
+  const onFulfill = v => ({ status: 'fulfilled', value: v })
+  const onReject = v => ({ status: 'rejected', reason: v })
+
+  return Promise.all(
+    Array.from(iterable).map(p =>
+      Promise.resolve(p).then(onFulfill).catch(onReject),
+    ),
+  )
+}
+
 export default function ({ $config, $axios }, inject) {
   // Create a custom axios instance
   axios = $axios.create({
