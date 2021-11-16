@@ -43,12 +43,18 @@ module.exports = async () => {
       '@nuxtjs/style-resources',
       '@nuxtjs/axios',
     ],
-    plugins: ['@/plugins/element-ui', '@/plugins/axios', '@/plugins/context'],
+    plugins: [
+      '@/plugins/element-ui',
+      '@/plugins/axios',
+      '@/plugins/context',
+      '@/plugins/virnectComponents',
+    ],
     /*
      ** Customize style
      */
     styleResources: {
       scss: [
+        '@virnect/ui-assets/stylesheets/abstracts/_vars.scss',
         '@virnect/ui-assets/stylesheets/abstracts/_mixins.scss',
         resolve(__dirname, 'src/assets/css/_vars.scss'),
       ],
@@ -64,13 +70,13 @@ module.exports = async () => {
     srcDir: resolve(__dirname, 'src'),
     components: [
       { path: '~/components' },
-      { prefix: 'virnect', path: '@virnect/components' },
+      // { prefix: 'virnect', path: '@virnect/components' },
     ],
     alias: {
       '~@virnect': resolve(__dirname, './node_modules/@virnect'),
     },
     build: {
-      transpile: ['@virnect/platform-auth'],
+      transpile: ['@virnect/platform-auth', '@virnect/components'],
     },
     /**
      * env

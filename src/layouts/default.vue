@@ -6,7 +6,7 @@
       :showStatus="showSection"
       :userInfo="auth.myInfo"
       :urls="$url"
-      :logo="{ default: logo }"
+      @isMobile="isMobile"
       @logout="$store.commit('auth/LOGOUT')"
     />
     <main>
@@ -32,7 +32,7 @@ export default {
     return {
       showSection: {
         profile: true,
-        link: true,
+        portal: true,
       },
     }
   },
@@ -43,6 +43,11 @@ export default {
       logo: 'layout/logo',
       favicon: 'layout/favicon',
     }),
+  },
+  methods: {
+    isMobile(str) {
+      this.$store.commit('mobile/IS_MOBILE', str)
+    },
   },
   beforeMount() {
     this.$store.dispatch('auth/getAuth')
@@ -59,7 +64,6 @@ export default {
     // 언어 선택 쿼리
     const lang = this.$route.query.lang
     if (this.$i18n.locales.includes(lang)) {
-      this.$store.dispatch('CHANGE_LANG', lang)
       this.$i18n.locale = lang
     }
   },
