@@ -77,10 +77,6 @@ export default {
     changeActiveWorkspace(workspace) {
       this.$store.commit('auth/SET_ACTIVE_WORKSPACE', workspace.uuid)
     },
-    test() {
-      console.log(this.$router)
-      this.$router.push('/start')
-    },
   },
   mounted() {
     this.$store.dispatch('auth/getAuth')

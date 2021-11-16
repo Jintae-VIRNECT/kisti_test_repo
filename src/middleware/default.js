@@ -55,6 +55,17 @@ export default async function ({ req, res, store, redirect, error, $config }) {
           activeWorkspaceId = myWorkspaces[0].uuid
         }
         store.commit('auth/SET_ACTIVE_WORKSPACE', activeWorkspaceId)
+
+        // 게스트의 경우 토큰 삭제
+        if (store.getters['auth/activeWorkspace'].role === 'GUEST') {
+          res.setHeader('Set-Cookie', ['accessToken=null', 'refreshToken=null'])
+          return redirect(
+            `${url.console}?continue=${encodeURIComponent(
+              req.headers.referer || req.headers.host,
+            )}`,
+          )
+        }
+
         // onrpemise
         if ($config.VIRNECT_ENV === 'onpremise') {
           if (
