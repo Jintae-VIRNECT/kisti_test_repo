@@ -43,7 +43,7 @@
         />
       </template>
 
-      <figure v-if="isEmpty">
+      <figure v-if="isEmpty && !isLoading">
         <img src="~assets/images/No_file@2x.png" />
         <figcaption>
           <p class="desc">설치 파일이 등록되지 않았습니다.</p>
@@ -90,6 +90,7 @@ export default {
       window.history.replaceState({}, null, tab)
       if (!this.products[tab].length) {
         this.products[tab] = await this.loadList(tab)
+        this.isEmpty = this.products[tab].length === 0 ? true : false
       }
     },
     async '$i18n.locale'() {
@@ -105,7 +106,6 @@ export default {
   methods: {
     tabClick(product) {
       this.activeTab = product
-      this.isEmpty = this.products[product].length === 0 ? true : false
     },
     storeId(productName) {
       return app => {
@@ -118,6 +118,7 @@ export default {
       const { appInfoList } = await this.$api('APP_LIST', {
         route: { productName },
       })
+      this.isEmpty = this.products[this.activeTab].length === 0 ? true : false
       if (!this.$isOnpremise) {
         return appInfoList.map(this.storeId(productName))
       } else return appInfoList
@@ -148,7 +149,6 @@ export default {
     setTimeout(() => {
       this.isLoading = false
     }, 400)
-    this.isEmpty = this.products[this.activeTab].length === 0 ? true : false
   },
 }
 </script>
