@@ -22,6 +22,7 @@ module.exports = {
   },
   // collectCoverage: true,
   // collectCoverageFrom: ['**/*.{js,vue}'],
+  coverageReporters: ['text', 'cobertura'],
   transform: {
     '^.+\\.js$': 'babel-jest',
     '^.+\\.vue$': 'vue-jest',
