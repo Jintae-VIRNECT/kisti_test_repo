@@ -204,6 +204,7 @@
     "workspace_member_group_member":"コラボグループメンバー",
     "workspace_member_group_member_no_selection" :"選択しない​",
     "workspace_member_group_count_valid":"メンバーを1人以上選択してください。",
+    "workspace_member_sub_group_etc":"等グループ",
 
     "workspace_select":"ワークスペース選択"
   }

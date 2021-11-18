@@ -33,7 +33,7 @@
           <div class="invite-modal__current-list">
             <figure
               class="invite-modal__current-user"
-              v-for="(user, idx) of currentUser"
+              v-for="user of currentUser"
               :key="user.uuid"
             >
               <tooltip :content="user.nickname || user.nickName">
@@ -44,7 +44,7 @@
                   ></profile>
                   <button
                     class="invite-modal__current-kickout"
-                    @click="kickoutConfirm({ participant: user, idx })"
+                    @click="kickoutConfirm({ participant: user })"
                   >
                     {{ $t('button.kickout') }}
                   </button>
@@ -56,6 +56,7 @@
         </div>
         <room-invite
           :users="users"
+          :subGroups="invitableSubGroups"
           :selection="selection"
           :total="users.length"
           :loading="loading"
@@ -84,6 +85,7 @@
       :maxSelect="maxSelect"
       :roomInfo="roomInfo"
       :users="users"
+      :subGroups="invitableSubGroups"
       :currentUser="currentUserWithFlag"
       :selection="selection"
       :beforeClose="beforeClose"
@@ -107,7 +109,12 @@ import MobileInviteModal from './MobileInviteModal.vue'
 import { mapGetters, mapActions } from 'vuex'
 import toastMixin from 'mixins/toast'
 import confirmMixin from 'mixins/confirm'
-import { inviteRoom, kickoutMember, invitableList } from 'api/http/member'
+import {
+  inviteRoom,
+  kickoutMember,
+  invitableList,
+  getSubGroups,
+} from 'api/http/member'
 import { getRoomInfo as roomInfo } from 'api/http/room'
 import { memberSort } from 'utils/sort'
 import responsiveModalVisibleMixin from 'mixins/responsiveModalVisible'
@@ -130,6 +137,8 @@ export default {
       loading: false,
       currentUser: [],
       currentLength: 0,
+      subGroups: [],
+      invitableSubGroups: [],
     }
   },
   props: {
@@ -151,7 +160,7 @@ export default {
     },
   },
   watch: {
-    visible(flag) {
+    async visible(flag) {
       if (flag) {
         this.init()
       } else {
@@ -160,6 +169,12 @@ export default {
         this.loading = false
       }
       this.setVisiblePcOrMobileFlag(flag)
+    },
+    subGroups() {
+      this.updateInvitableSubGroups()
+    },
+    users() {
+      this.updateInvitableSubGroups()
     },
   },
   methods: {
@@ -170,7 +185,7 @@ export default {
     beforeClose() {
       this.$emit('update:visible', false)
     },
-    kickoutConfirm({ participant, idx }) {
+    kickoutConfirm({ participant }) {
       this.serviceConfirmCancel(
         this.$t('service.participant_kick_confirm', {
           name: participant.nickName,
@@ -179,7 +194,7 @@ export default {
           text: this.$t('button.confirm'),
           action: () => {
             this.$emit('kickout')
-            this.kickout(participant.uuid, idx)
+            this.kickout(participant.uuid)
           },
         },
         {
@@ -187,7 +202,7 @@ export default {
         },
       )
     },
-    async kickout(participantId, idx) {
+    async kickout(participantId) {
       const params = {
         sessionId: this.roomInfo.sessionId,
         workspaceId: this.workspace.uuid,
@@ -195,13 +210,12 @@ export default {
         participantId,
       }
       const res = await kickoutMember(params)
+
       if (res.result === true) {
         this.toastNotify(this.$t('confirm.access_removed'))
-
-        this.currentUser.slice(idx, 1)[0]
-        this.init()
         this.removeMember(participantId)
       }
+
       this.init()
     },
     selectUser(user) {
@@ -219,6 +233,7 @@ export default {
     init() {
       this.getInviteList()
       this.getRoomInfo()
+      this.getSubGroups()
     },
     async getInviteList() {
       this.loading = true
@@ -242,6 +257,14 @@ export default {
       )
       this.currentUser = unloadUsers
     },
+    async getSubGroups() {
+      const res = await getSubGroups({
+        workspaceId: this.workspace.uuid,
+        userId: this.account.uuid,
+        etcText: this.$t('workspace.workspace_member_sub_group_etc'),
+      })
+      this.subGroups = res.groupInfoResponseList
+    },
     async invite() {
       const participantIds = []
       for (let select of this.selection) {
@@ -259,13 +282,23 @@ export default {
 
         this.toastNotify(this.$t('service.invite_success'))
 
-        //PC환경에서만 협업 초대 후 창이 닫히도록 처리한다.
-        if (!this.isMobileSize) {
-          this.$nextTick(() => {
-            this.$emit('update:visible', false)
-          })
-        }
+        this.$nextTick(() => {
+          this.$emit('update:visible', false)
+        })
       }
+    },
+    updateInvitableSubGroups() {
+      const clonedSubGroups = JSON.parse(JSON.stringify(this.subGroups))
+      this.invitableSubGroups = clonedSubGroups.map(subGroup => {
+        subGroup.remoteGroupMemberResponses = subGroup.remoteGroupMemberResponses.filter(
+          member => {
+            return this.users.some(user => {
+              return user.uuid === member.uuid
+            })
+          },
+        )
+        return subGroup
+      })
     },
   },
 
