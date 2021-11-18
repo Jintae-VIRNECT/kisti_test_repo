@@ -10,5 +10,6 @@ package com.virnect.content.domain.rest;
 public enum Role {
 	MASTER,
 	MANAGER,
-	MEMBER
+	MEMBER,
+	GUEST
 }
