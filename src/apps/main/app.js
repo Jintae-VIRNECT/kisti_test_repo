@@ -31,6 +31,13 @@ import 'element/message-box.css'
 import 'element/dialog.css'
 
 import 'assets/css/common.scss'
+
+import * as Virnect from '@virnect/components'
+import 'assets/css/_components.scss'
+Object.entries(Virnect).map(([componentName, component]) => {
+  Vue.component(`Virnect${componentName}`, component)
+})
+
 import 'assets/css/_override.scss'
 
 sync(store, router)

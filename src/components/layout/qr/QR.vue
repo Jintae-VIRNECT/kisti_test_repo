@@ -1,6 +1,6 @@
 <template>
   <section>
-    <Header
+    <VirnectHeader
       v-if="$env !== 'onpremise'"
       :showStatus="showStatus"
       :userInfo="userInfo"
@@ -9,7 +9,7 @@
       :subTitle="$t('qrLogin.title')"
       @logout="logout"
     />
-    <Header
+    <VirnectHeader
       v-else
       :showStatus="showStatus"
       :userInfo="userInfo"
@@ -27,19 +27,13 @@
         :subTitle="$t('qrLogin.title')"
       />
     </transition>
-    <Footer :urls="$urls" v-if="$env !== 'onpremise'" />
+    <VirnectFooter :urls="$urls" v-if="$env !== 'onpremise'" />
   </section>
 </template>
 
 <script>
 import auth from '@virnect/platform-auth'
-import { Header } from '@virnect/components'
-import { Footer } from '@virnect/components'
 export default {
-  components: {
-    Header,
-    Footer,
-  },
   props: {
     showStatus: Object,
     auth: Object,

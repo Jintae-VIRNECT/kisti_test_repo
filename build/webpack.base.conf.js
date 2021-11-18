@@ -77,6 +77,7 @@ const config = {
     modules: ['node_modules'],
     alias: {
       '@': resolve(__dirname, '../src'),
+      '~': resolve(__dirname, '../src'),
       virnect: resolve(__dirname, '../node_modules/@virnect'),
       root: resolve(__dirname, '../'),
       api: join(__dirname, '../src/api'),
@@ -89,8 +90,9 @@ const config = {
       languages: join(__dirname, '../src/languages'),
       configs: join(__dirname, '../configs'),
       router: join(__dirname, '../src/router'),
-      stores: join(__dirname, '../src/stores'),
+      stores: join(__dirname, '../src/store'),
       element: join(__dirname, '../theme/'),
+      tests: join(__dirname, '../tests/'),
     },
   },
   module: {

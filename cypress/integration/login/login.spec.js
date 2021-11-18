@@ -28,6 +28,7 @@ describe('example to-do app', () => {
     cy.get('.all-terms').click()
     // 광고 수신 차단
     cy.get('.marketing-check').click()
+    // 다음페이지-회원가입
     cy.get('.next-btn').click()
 
     // 회원가입

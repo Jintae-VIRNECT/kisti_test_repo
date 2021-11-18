@@ -1,11 +1,13 @@
 {
   "presets": [
-    ["env"], "stage-2", "es2015"
+    ["@babel/preset-env", {"targets": {"node": "current"}}]
   ],
-  "plugins": [
-    ["transform-runtime", {
-      "regenerator": true
-    }]
-  ],
+  "env": {
+    "test": {
+      "presets": [
+        ["@babel/preset-env", {"targets": {"node": "current"}}]
+      ]
+    }
+  },
   "comments": true
 }
