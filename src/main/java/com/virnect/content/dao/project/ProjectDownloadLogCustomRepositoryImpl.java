@@ -25,7 +25,7 @@ public class ProjectDownloadLogCustomRepositoryImpl extends QuerydslRepositorySu
 	}
 
 	@Override
-	public long deleteAllContentDownloadLogByWorkspaceUUID(String workspaceUUID) {
+	public long deleteAllProjectDownloadLogByWorkspaceUUID(String workspaceUUID) {
 		QProjectDownloadLog qProjectDownloadLog = QProjectDownloadLog.projectDownloadLog;
 		return delete(qProjectDownloadLog).where(qProjectDownloadLog.workspaceUUID.eq(workspaceUUID)).execute();
 	}

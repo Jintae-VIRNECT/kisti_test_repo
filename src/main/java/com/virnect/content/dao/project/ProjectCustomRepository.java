@@ -29,4 +29,7 @@ public interface ProjectCustomRepository {
 	Page<Project> getProjectListByProjectIdList(List<Long> projectIdList, PageRequest pageRequest);
 
 	long calculateTotalStorageAmountByWorkspaceId(String workspaceId);
+
+	long deleteAllProjectByProjectList(List<Project> projectList);
+
 }

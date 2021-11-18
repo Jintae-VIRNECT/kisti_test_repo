@@ -28,6 +28,7 @@ import lombok.Setter;
 import com.virnect.content.domain.BaseTimeEntity;
 import com.virnect.content.domain.EditPermission;
 import com.virnect.content.domain.SharePermission;
+import com.virnect.content.domain.TargetType;
 
 /**
  * Project: PF-ContentManagement
@@ -120,5 +121,9 @@ public class Project extends BaseTimeEntity {
 		this.userUUID = userUUID;
 		this.workspaceUUID = workspaceUUID;
 		this.properties = properties;
+	}
+
+	public boolean isFileTypeTarget() {
+		return projectTarget.getType() == TargetType.Image || projectTarget.getType() == TargetType.QR;
 	}
 }

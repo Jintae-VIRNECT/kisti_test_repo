@@ -22,8 +22,6 @@ public interface ContentRepository extends JpaRepository<Content, Long>, Content
 	@Transactional(readOnly = true)
 	Optional<Content> findByUuid(String contentUUID);
 
-	Optional<Content> findByTargetList(String contentUUID);
-
 	long countByConverted(YesOrNo yesOrNo);
 
 	long countByShared(YesOrNo yesOrNo);
@@ -32,27 +30,4 @@ public interface ContentRepository extends JpaRepository<Content, Long>, Content
 
 	@Transactional
 	Long deleteByUuid(String contentUUID);
-
-	Boolean existsByUuid(String uuid);
-
-	@Transactional(readOnly = true)
-	Page<Content> findByNameIsContainingOrUserUUIDIsIn(
-		String contentName, List<String> userUUIDList, Pageable pageable
-	);
-
-	Page<Content> findByWorkspaceUUIDAndNameIsContainingOrUserUUIDIsIn(
-		String workspaceUUID, String contentName, List<String> userUUIDList, Pageable pageable
-	);
-
-	Page<Content> findByWorkspaceUUID(String workspaceUUID, Pageable pageable);
-
-	List<Content> findByWorkspaceUUID(String workspaceUUID);
-
-	//    @Transactional(readOnly = true)
-	//    List<Content> findByStatus(ContentStatus contentStatus);
-
-	//    Page<Content> findByStatus(ContentStatus contentStatus, Pageable pageable);
-
-	//    @Transactional(readOnly = true)
-	//    long countByStatus(ContentStatus status);
 }

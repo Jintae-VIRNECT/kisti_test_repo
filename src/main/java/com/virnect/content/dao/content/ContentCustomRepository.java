@@ -27,11 +27,11 @@ public interface ContentCustomRepository {
 
 	Long getWorkspaceStorageSize(String workspaceUUID);
 
-	Long getWorkspaceDownload(String workspaceUUID);
-
 	List<Tuple> countByUsers(String workspaceUUID, List<String> userUUIDList);
 
 	Long calculateTotalStorageAmountByWorkspaceId(String workspaceId);
 
 	long deleteAllContentByWorkspaceUUID(String workspaceUUID);
+
+	List<Content> findContentAndTargetListByWorkspaceUUID(String workspaceUUID);
 }

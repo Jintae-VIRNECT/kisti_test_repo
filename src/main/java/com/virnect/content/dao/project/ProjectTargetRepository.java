@@ -13,5 +13,5 @@ import com.virnect.content.domain.project.ProjectTarget;
  * DESCRIPTION:
  */
 @Repository
-public interface ProjectTargetRepository extends JpaRepository<ProjectTarget, Long> {
+public interface ProjectTargetRepository extends JpaRepository<ProjectTarget, Long>, ProjectTargetCustomRepository {
 }

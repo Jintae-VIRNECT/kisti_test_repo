@@ -16,7 +16,8 @@ import com.virnect.content.domain.project.ProjectActivityLog;
  * DESCRIPTION:
  */
 @Repository
-public interface ProjectActivityLogRepository extends JpaRepository<ProjectActivityLog, Long> {
+public interface ProjectActivityLogRepository
+	extends JpaRepository<ProjectActivityLog, Long>, ProjectActivityLogCustomRepository {
 	Page<ProjectActivityLog> findByProject(Project project, Pageable pageable);
 
 }

@@ -369,11 +369,12 @@ public class ContentController {
             @PathVariable("workspaceUUID") String workspaceUUID,
             @RequestHeader("serviceID") String requestServiceID
     ) {
+         log.info("[ALL CONTENT DELETE] REQ SERVICE ID : {}, WORKSPACE UUID : {}", requestServiceID, workspaceUUID);
         if (!StringUtils.hasText(workspaceUUID) || !StringUtils.hasText(requestServiceID) || !requestServiceID.equals(
                 "user-server")) {
             throw new ContentServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
-        ContentSecessionResponse responseMessage = contentService.deleteAllContentInfo(workspaceUUID);
+        ContentSecessionResponse responseMessage = contentService.deleteAllContent(workspaceUUID);
         return ResponseEntity.ok(new ApiResponse<>(responseMessage));
     }
 }

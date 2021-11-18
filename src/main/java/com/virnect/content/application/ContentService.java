@@ -39,10 +39,15 @@ import com.virnect.content.application.license.LicenseRestService;
 import com.virnect.content.application.process.ProcessRestService;
 import com.virnect.content.application.user.UserRestService;
 import com.virnect.content.application.workspace.WorkspaceRestService;
-import com.virnect.content.dao.TypeRepository;
 import com.virnect.content.dao.content.ContentRepository;
 import com.virnect.content.dao.contentdonwloadlog.ContentDownloadLogRepository;
+import com.virnect.content.dao.project.ProjectActivityLogRepository;
+import com.virnect.content.dao.project.ProjectDownloadLogRepository;
+import com.virnect.content.dao.project.ProjectEditUserRepository;
+import com.virnect.content.dao.project.ProjectModeRepository;
 import com.virnect.content.dao.project.ProjectRepository;
+import com.virnect.content.dao.project.ProjectShareUerRepository;
+import com.virnect.content.dao.project.ProjectTargetRepository;
 import com.virnect.content.dao.scenegroup.SceneGroupRepository;
 import com.virnect.content.dao.target.TargetRepository;
 import com.virnect.content.domain.Content;
@@ -51,6 +56,7 @@ import com.virnect.content.domain.Target;
 import com.virnect.content.domain.TargetType;
 import com.virnect.content.domain.Types;
 import com.virnect.content.domain.YesOrNo;
+import com.virnect.content.domain.project.Project;
 import com.virnect.content.dto.PropertiesInfo;
 import com.virnect.content.dto.request.ContentDeleteRequest;
 import com.virnect.content.dto.request.ContentInfoRequest;
@@ -109,15 +115,19 @@ public class ContentService {
 	private final ContentRepository contentRepository;
 	private final SceneGroupRepository sceneGroupRepository;
 	private final TargetRepository targetRepository;
-	private final TypeRepository typeRepository;
 	private final ContentDownloadLogRepository contentDownloadLogRepository;
 	private final UserRestService userRestService;
 	private final ProcessRestService processRestService;
 	private final WorkspaceRestService workspaceRestService;
 	private final LicenseRestService licenseRestService;
-	private final MetadataService metadataService;
 	private final ModelMapper modelMapper;
 	private final ProjectRepository projectRepository;
+	private final ProjectDownloadLogRepository projectDownloadLogRepository;
+	private final ProjectTargetRepository projectTargetRepository;
+	private final ProjectModeRepository projectModeRepository;
+	private final ProjectShareUerRepository projectShareUerRepository;
+	private final ProjectEditUserRepository projectEditUserRepository;
+	private final ProjectActivityLogRepository projectActivityLogRepository;
 
 	private static final String V_TARGET_DEFAULT_NAME = "virnect_target.png";
 	private static final String REPORT_DEFAULT_DIRECTORY = "workspace/report/";
@@ -1186,26 +1196,73 @@ public class ContentService {
 	 * @return
 	 */
 	@Transactional
-	public ContentSecessionResponse deleteAllContentInfo(String workspaceUUID) {
-		List<Content> contentList = contentRepository.findByWorkspaceUUID(workspaceUUID);
+	public ContentSecessionResponse deleteAllContent(String workspaceUUID) {
+		List<Content> contentList = contentRepository.findContentAndTargetListByWorkspaceUUID(workspaceUUID);
 
-		// 1. Content download log 삭제
+		// 1-1. Content File, Target File 삭제
+		deleteAllContentAndTargetFile(contentList);
+
+		// 1-2. Content download log 삭제
 		contentDownloadLogRepository.deleteAllContentDownloadLogByWorkspaceUUID(workspaceUUID);
 
-		// 2. Scene Group 삭제
+		// 1-3. Scene Group 삭제
 		sceneGroupRepository.deleteAllSceneGroupInfoByContent(contentList);
 
-		// 3. Target 삭제
+		// 1-4. Target 삭제
 		targetRepository.deleteAllTargetInfoByContent(contentList);
 
-		// 4. Content File 삭제
-		contentList.parallelStream()
-			.forEach(content -> fileUploadService.deleteByFileUrl(content.getPath()));
-
-		// 4. Content 삭제
+		// 1-5. Content 삭제
 		contentRepository.deleteAllContentByWorkspaceUUID(workspaceUUID);
 
+		List<Project> projectList = projectRepository.findByWorkspaceUUID(workspaceUUID);
+
+		// 2-1. Project File, Target File 삭제
+		deleteAllProjectAndTargetFile(projectList);
+
+		// 2-2. Download log 삭제
+		projectDownloadLogRepository.deleteAllProjectDownloadLogByWorkspaceUUID(workspaceUUID);
+
+		// 2-3. Target 삭제
+		projectTargetRepository.deleteAllTargetByProjectList(projectList);
+
+		// 2-4. Mode 삭제
+		projectModeRepository.deleteAllModeByProjectList(projectList);
+
+		// 2-5. 공유 유저 삭제
+		projectShareUerRepository.deleteAllShareUserByProjectList(projectList);
+
+		// 2-6. 편집 유저 삭제
+		projectEditUserRepository.deleteAllEditShareUserByProjectList(projectList);
+
+		// 2-7. 활동 이력 삭제
+		projectActivityLogRepository.deleteAllProjectActivityByProjectList(projectList);
+
+		// 2-8. Project 삭제
+		projectRepository.deleteAllProjectByProjectList(projectList);
+
 		return new ContentSecessionResponse(workspaceUUID, true, LocalDateTime.now());
+	}
+
+	private void deleteAllProjectAndTargetFile(List<Project> projectList) {
+		projectList.parallelStream().forEach(project -> {
+			fileUploadService.deleteByFileUrl(project.getPath());
+			if (project.isFileTypeTarget()) {
+				fileUploadService.deleteByFileUrl(project.getProjectTarget().getPath());
+			}
+		});
+	}
+
+	private void deleteAllContentAndTargetFile(List<Content> contentList) {
+		contentList.parallelStream()
+			.forEach(content -> {
+					fileUploadService.deleteByFileUrl(content.getPath());
+					content.getTargetList().forEach(target -> {
+						if (target.getType() == TargetType.Image || target.getType() == TargetType.QR) {
+							fileUploadService.deleteByFileUrl(target.getImgPath());
+						}
+					});
+				}
+			);
 	}
 
 	@Transactional

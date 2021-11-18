@@ -34,5 +34,5 @@ public class ProjectActivityLogResponse {
 	@ApiModelProperty(value = "활동 내용", position = 7, example = "")
 	private final String message;
 	@ApiModelProperty(value = "활동 일자", position = 8, example = "")
-	private final LocalDateTime createdDate = LocalDateTime.now();
+	private final LocalDateTime createdDate;
 }

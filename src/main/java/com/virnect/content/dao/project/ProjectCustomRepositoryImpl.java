@@ -5,7 +5,6 @@ import java.util.Optional;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.support.QuerydslRepositorySupport;
 import org.springframework.util.CollectionUtils;
@@ -129,5 +128,11 @@ public class ProjectCustomRepositoryImpl extends QuerydslRepositorySupport imple
 			return totalStorageUsage;
 		}
 		return 0L;
+	}
+
+	@Override
+	public long deleteAllProjectByProjectList(List<Project> projectList) {
+		QProject qProject = QProject.project;
+		return delete(qProject).where(qProject.in(projectList)).execute();
 	}
 }

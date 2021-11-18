@@ -139,7 +139,7 @@ public class ProjectService {
 			projectUploadRequest.getWorkspaceUUID(),
 			projectUUID
 		);
-		fileUploadService.deleteByFileUrl(projectUploadRequest.getProject());//원본파일 삭제
+		//fileUploadService.deleteByFileUrl(projectUploadRequest.getProject());//원본파일 삭제
 
 		String properties = "";
 		ObjectMapper objectMapper = new ObjectMapper();
@@ -498,32 +498,30 @@ public class ProjectService {
 			throw new ContentServiceException(ErrorCode.ERR_PROJECT_DELETE_INVALID_PERMISSION);
 		}
 
-		//2. 삭제
-		//project 리소스 삭제
+		//2-1. Project File 삭제
 		fileUploadService.deleteByFileUrl(project.getPath());
 
-		//target 리소스 삭제
-		if (project.getProjectTarget().getType() == TargetType.Image
-			|| project.getProjectTarget().getType() == TargetType.QR) {
+		//2-2. Target File 삭제
+		if (project.isFileTypeTarget()) {
 			fileUploadService.deleteByFileUrl(project.getProjectTarget().getPath());
 		}
 
-		//target 정보 삭제
+		//2-3. Target 삭제
 		projectTargetRepository.delete(project.getProjectTarget());
 
-		//mode 정보 삭제
+		//2-4. Mode 삭제
 		projectModeRepository.deleteAll(project.getProjectModeList());
 
-		//공유 유저 정보 삭제
+		//2-5. 공유 유저 삭제
 		projectShareUerRepository.deleteAll(project.getProjectShareUserList());
 
-		//편집 유저 정보 삭제
+		//2-6. 편집 유저 삭제
 		projectEditUserRepository.deleteAll(project.getProjectEditUserList());
 
-		//활동 이력 삭제
+		//2-7. 활동 이력 삭제
 		projectActivityLogRepository.deleteAll(project.getProjectActivityLogList());
 
-		//project 삭제
+		//2-8. project 삭제
 		projectRepository.delete(project);
 
 		return new ProjectDeleteResponse(true, projectUUID, LocalDateTime.now());
@@ -668,7 +666,7 @@ public class ProjectService {
 		//프로젝트 타겟 타입 정보 변경
 		if (projectUpdateRequest.getTarget() != null) {
 			//기존 타겟 삭제
-			if (projectTarget.getType() == TargetType.Image || projectTarget.getType() == TargetType.QR) {
+			if (project.isFileTypeTarget()) {
 				fileUploadService.deleteByFileUrl(projectTarget.getPath());
 			}
 			//새로운 타겟 타입 등록
