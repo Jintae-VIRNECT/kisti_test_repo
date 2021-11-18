@@ -13,6 +13,8 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.web.server.ServerWebExchange;
 
+import com.google.common.collect.ImmutableList;
+
 import lombok.extern.slf4j.Slf4j;
 import reactor.core.publisher.Mono;
 
@@ -37,14 +39,16 @@ public class CorsPassResponseHeaderRewriteFilter implements GlobalFilter {
 	protected void rewriteHeaders(ServerWebExchange exchange) {
 		final HttpHeaders responseHeaders = exchange.getResponse().getHeaders();
 		final String origin = exchange.getRequest().getHeaders().getOrigin();
-//		final String host = fetchAddressFromRequest(exchange.getRequest());
 		responseHeaders.setAccessControlAllowOrigin(origin);
-		responseHeaders.setAccessControlExposeHeaders(Collections.singletonList(HttpHeaders.SET_COOKIE));
+		responseHeaders.setAccessControlExposeHeaders(
+			ImmutableList.of(
+				HttpHeaders.SET_COOKIE, HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN,
+				HttpHeaders.AUTHORIZATION, HttpHeaders.CONTENT_DISPOSITION,
+				HttpHeaders.ACCESS_CONTROL_ALLOW_CREDENTIALS
+			));
 		responseHeaders.setAccessControlAllowHeaders(ALL);
 		responseHeaders.setAccessControlAllowMethods(Arrays.asList(HttpMethod.values()));
 		responseHeaders.setAccessControlAllowCredentials(true);
-
-//		log.info("responseHeader Rewrite : " + responseHeaders.values());
 	}
 
 	protected String fetchAddressFromRequest(ServerHttpRequest request) {
