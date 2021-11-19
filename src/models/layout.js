@@ -37,3 +37,12 @@ export const sideBottomMenus = [
     label: 'menu.workspaceSetting',
   },
 ]
+
+export const sideOnpremiseBottomMenus = [
+  {
+    path: '/workspace/setting',
+    collapse: 'collapseSettings',
+    image: require('assets/images/icon/ic-setting.svg'),
+    label: 'menu.workspaceSetting',
+  },
+]

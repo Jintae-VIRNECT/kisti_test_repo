@@ -20,7 +20,7 @@
       </template>
     </VirnectHeader>
     <div>
-      <LayoutTheSidebar :menus="sideMenus" :bottomMenus="sideBottomMenus" />
+      <LayoutTheSidebar :menus="menus" :bottomMenus="bottomMenus" />
       <main>
         <nuxt />
       </main>
@@ -29,7 +29,11 @@
 </template>
 
 <script>
-import { sideMenus, sideBottomMenus } from '@/models/layout'
+import {
+  sideMenus,
+  sideBottomMenus,
+  sideOnpremiseBottomMenus,
+} from '@/models/layout'
 import { mapGetters } from 'vuex'
 
 export default {
@@ -59,8 +63,10 @@ export default {
         profile: true,
         portal: true,
       },
-      sideMenus,
-      sideBottomMenus,
+      menus: sideMenus,
+      bottomMenus: this.$isOnpremise
+        ? sideOnpremiseBottomMenus
+        : sideBottomMenus,
     }
   },
   computed: {

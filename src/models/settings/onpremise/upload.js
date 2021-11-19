@@ -1,17 +1,17 @@
-export const install = [
+export const upload = [
   {
-    label: 'home.install.remote',
-    path: '/remote',
+    label: 'VIRNECT Remote',
+    key: 'remote',
     image: require('@virnect/ui-assets/images/products/logo-Remote.svg'),
   },
   {
-    label: 'home.install.make',
-    path: '/make',
+    label: 'VIRNECT Make',
+    key: 'make',
     image: require('@virnect/ui-assets/images/products/logo-Make.svg'),
   },
   {
-    label: 'home.install.view',
-    path: '/view',
+    label: 'VIRNECT View',
+    key: 'view',
     image: require('@virnect/ui-assets/images/products/logo-View.svg'),
   },
 ]

@@ -5,16 +5,16 @@ export default {
   remote: {
     value: 'remote',
     label: 'Remote',
-    logo: require('assets/images/logo/logo-remote.svg'),
+    logo: require('@virnect/ui-assets/images/products/logo-Remote.svg'),
   },
   make: {
     value: 'make',
     label: 'Make',
-    logo: require('assets/images/logo/logo-make.svg'),
+    logo: require('@virnect/ui-assets/images/products/logo-Make.svg'),
   },
   view: {
     value: 'view',
     label: 'View',
-    logo: require('assets/images/logo/logo-view.svg'),
+    logo: require('@virnect/ui-assets/images/products/logo-View.svg'),
   },
 }

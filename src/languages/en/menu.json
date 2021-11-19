@@ -24,6 +24,10 @@
         "list": "All Tasks",
         "results": "Reports",
         "troubles": "Trouble Memo(TM)"
+      },
+      "settings":{
+        "info": "Workspace Infomation",
+        "download": "Download management"
       }
     }
   }

@@ -61,6 +61,20 @@ export default {
             message: this.$t('invalid.format', [this.$t('members.add.email')]),
           },
         ],
+        file: [
+          {
+            required: true,
+            message: ' ',
+            trigger: 'blur',
+          },
+        ],
+        version: [
+          {
+            required: true,
+            message: ' ',
+            trigger: 'blur',
+          },
+        ],
       },
     }
   },

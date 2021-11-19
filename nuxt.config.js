@@ -46,7 +46,8 @@ module.exports = async () => {
       '@/plugins/element-ui',
       '@/plugins/axios',
       '@/plugins/context',
-      '@plugins/vee-validate',
+      '@/plugins/vee-validate',
+      '@/plugins/virnectComponents',
     ],
     /*
      ** Customize style
@@ -71,7 +72,11 @@ module.exports = async () => {
       '~@virnect': resolve(__dirname, './node_modules/@virnect'),
     },
     build: {
-      transpile: ['@virnect/platform-auth', 'vee-validate/dist/rules'],
+      transpile: [
+        '@virnect/platform-auth',
+        '@virnect/components',
+        'vee-validate/dist/rules',
+      ],
     },
     /**
      * env

@@ -24,6 +24,10 @@
         "list": "전체 작업 목록",
         "results": "작업 보고 관리",
         "troubles": "트러블 메모(TM)"
+      },
+      "settings":{
+        "info": "워크스페이스 정보",
+        "download": "다운로드 관리"
       }
     }
   }

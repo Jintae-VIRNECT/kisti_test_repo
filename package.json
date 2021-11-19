@@ -17,10 +17,9 @@
   "dependencies": {
     "@nuxtjs/axios": "^5.10.3",
     "@nuxtjs/style-resources": "^1.0.0",
-    "@virnect/components": "^1.8.8",
+    "@virnect/components": "^1.9.7",
     "@virnect/logger": "^1.0.2",
     "@virnect/platform-auth": "^1.0.5",
-    "@virnect/ui-assets": "^1.8.8",
     "axios": "^0.19.2",
     "billboard.js": "^1.12.10",
     "cross-env": "^7.0.2",
