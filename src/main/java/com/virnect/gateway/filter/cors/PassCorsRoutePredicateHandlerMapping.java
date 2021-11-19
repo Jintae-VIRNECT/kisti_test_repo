@@ -2,10 +2,9 @@ package com.virnect.gateway.filter.cors;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 import java.util.Objects;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.cloud.gateway.config.GlobalCorsProperties;
 import org.springframework.cloud.gateway.handler.FilteringWebHandler;
 import org.springframework.cloud.gateway.handler.RoutePredicateHandlerMapping;
@@ -26,7 +25,14 @@ import reactor.core.publisher.Mono;
 public class PassCorsRoutePredicateHandlerMapping extends RoutePredicateHandlerMapping {
 	private static final WebHandler REQUEST_HANDLED_HANDLER = exchange -> Mono.empty();
 	private final CorsProcessor corsProcessor = new CorsCustomProcessor();
-
+	private final List<String> exposedHeaders = ImmutableList.of(
+		HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN,
+		HttpHeaders.ACCESS_CONTROL_ALLOW_CREDENTIALS,
+		HttpHeaders.SET_COOKIE,
+		HttpHeaders.AUTHORIZATION,
+		HttpHeaders.CONTENT_DISPOSITION,
+		HttpHeaders.CONTENT_LENGTH
+	);
 
 	public PassCorsRoutePredicateHandlerMapping(
 		FilteringWebHandler webHandler,
@@ -42,19 +48,16 @@ public class PassCorsRoutePredicateHandlerMapping extends RoutePredicateHandlerM
 		return getHandlerInternal(exchange).map(handler -> {
 			ServerHttpRequest request = exchange.getRequest();
 			String clientIp = request.getHeaders().getFirst("X-Forwarded-For");
-			if(clientIp == null){
+			if (clientIp == null) {
 				clientIp = Objects.requireNonNull(request.getRemoteAddress()).getAddress().getHostAddress();
 			}
 			String origin = exchange.getRequest().getHeaders().getOrigin();
 			if (hasCorsConfigurationSource(handler) || CorsUtils.isPreFlightRequest(request)) {
 				CorsConfiguration corsConfiguration = new CorsConfiguration();
-				corsConfiguration.setAllowedOrigins(Arrays.asList(clientIp,origin));
+				corsConfiguration.setAllowedOrigins(Arrays.asList(clientIp, origin));
 				corsConfiguration.setAllowedHeaders(Collections.singletonList(CorsConfiguration.ALL));
 				corsConfiguration.setAllowedMethods(Collections.singletonList(CorsConfiguration.ALL));
-				corsConfiguration.setExposedHeaders(
-					ImmutableList.of(HttpHeaders.SET_COOKIE, HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN,
-						HttpHeaders.ACCESS_CONTROL_ALLOW_CREDENTIALS
-					));
+				corsConfiguration.setExposedHeaders(exposedHeaders);
 				corsConfiguration.setAllowCredentials(true);
 				boolean isValid = this.corsProcessor.process(corsConfiguration, exchange);
 				if (!isValid || CorsUtils.isPreFlightRequest(request)) {
