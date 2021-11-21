@@ -138,6 +138,7 @@ export default {
   },
   beforeMount() {
     // searchMixin.js: emitChangedSearchParams 실행 > index.vue:changedSearchParams 실행
+    this.refreshParams()
     this.emitChangedSearchParams()
     workspaceService.watchActiveWorkspace(this, () => {
       this.refreshParams()
