@@ -6,26 +6,22 @@
       :key="index"
     >
       <el-col :span="4">
-        <VirnectThumbnail :size="36" :image="activity.img" />
+        <VirnectThumbnail :size="36" :image="activity.userProfileImage" />
       </el-col>
       <el-col :span="21">
         <dl>
           <dt>
             {{
               $t('projects.info.activity.nickname', {
-                nickname: activity.nickname,
+                nickname: activity.userNickname,
               })
             }}
           </dt>
           <dd>
-            {{
-              $t(`${activityLabel(activity)}`, {
-                member: activity.member,
-              })
-            }}
+            {{ activity.message }}
           </dd>
           <span>
-            {{ activity.updated | localTimeFormat }}
+            {{ activity.createdDate | localTimeFormat }}
           </span>
         </dl>
         <el-divider />
@@ -35,13 +31,19 @@
       <img src="~assets/images/empty/img-content-empty.jpg" />
       <p>{{ $t('projects.info.activity.empty') }}</p>
     </div>
+    <infinite-loading
+      v-if="activityList.length"
+      @infinite="infiniteHandler"
+    ></infinite-loading>
   </el-row>
 </template>
 
 <script>
-import { activityTypes } from '@/models/project/Project'
+import filters from '@/mixins/filters'
+import { activityTypes } from '@/models/project/ProjectActivityLog'
 
 export default {
+  mixins: [filters],
   props: {
     activityList: Array,
   },
@@ -53,10 +55,15 @@ export default {
   },
   methods: {
     // 유저의 활동 타입에 따라, 맞는 label 값 반환.
-    activityLabel(activity) {
-      return activityTypes.find(a => {
-        return a.value === activity.value
-      }).label
+    infiniteHandler($state) {
+      const activityCount = this.activityList.length
+      this.$emit('update:updateProjectActivityLogs')
+
+      setTimeout(() => {
+        activityCount !== this.activityList.length
+          ? $state.loaded()
+          : $state.complete()
+      }, 500)
     },
   },
 }

@@ -19,6 +19,7 @@ export default class Project extends Model {
         children: new Properties(json.property).tree(),
       },
     ]
+    this.workspaceUUID = json.workspaceUUID
     this.uploaderUUID = json.uploaderUUID
     this.uploaderName = json.uploaderName
     this.uploaderProfile =
@@ -122,44 +123,6 @@ export const memberRoleFilter = {
     },
   ],
 }
-
-/**
- * 프로젝트 활동정보 타입
- */
-export const activityTypes = [
-  {
-    value: 'UPDATE',
-    label: 'projects.info.activity.update',
-  },
-  {
-    value: 'UPLOAD',
-    label: 'projects.info.activity.upload',
-  },
-  {
-    value: 'EDIT',
-    label: 'projects.info.activity.edit',
-  },
-  {
-    value: 'SHARED',
-    label: 'projects.info.activity.shared',
-  },
-  {
-    value: 'TRASH',
-    label: 'projects.info.activity.moveTrash',
-  },
-  {
-    value: 'DELETE',
-    label: 'projects.info.activity.delete',
-  },
-  {
-    value: 'BACKUP',
-    label: 'projects.info.activity.backup',
-  },
-  {
-    value: 'DOWNLOAD',
-    label: 'projects.info.activity.download',
-  },
-]
 
 // 콘텐츠, 타겟, 공유/편집 필터정보 리스트
 export const projectFilterList = [

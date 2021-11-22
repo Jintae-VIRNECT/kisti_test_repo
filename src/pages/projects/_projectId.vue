@@ -50,7 +50,7 @@
       </el-col>
       <!-- 왼쪽 Tabs 끝 -->
       <!-- 오른쪽 Tabs 시작 -->
-      <el-col :span="9" class="infos">
+      <el-col :span="9" class="infos" ref="projectModal">
         <el-tabs v-model="activeTab">
           <el-tab-pane
             v-for="tab in tabs"
@@ -77,6 +77,7 @@
         <ProjectModalActivityPane
           v-show="activeTab === 'activity'"
           :activityList="activityList"
+          @update:updateProjectActivityLogs="updateProjectActivityLogs"
         />
       </el-col>
       <!-- 오른쪽 Tabs 끝 -->
@@ -103,8 +104,14 @@ export default {
     // 지정 멤버 드롭다운 메뉴에 들어갈 멤버 리스트를 불러옵니다.
     const list = await workspaceService.allMembers()
 
+    const projectActivityLogs = await projectService.searchProjectActivities(
+      params.projectId,
+      { page: 1 },
+    )
     return {
       project: project,
+      activityList: projectActivityLogs.list,
+      activityPageMeta: projectActivityLogs.pageMeta,
       members: list.map(({ profile, nickname, uuid }) => {
         return {
           img: profile,
@@ -160,58 +167,8 @@ export default {
         childern: 'childern',
       },
       // 활동 탭의 활동 리스트 데이터.
-      activityList: [
-        {
-          img: 'https://192.168.6.3:2838/virnect-platform/profile/2021-06-15_VByqxZGplpVkdlGpucmL.jpg',
-          value: 'UPDATE',
-          nickname: 'User1',
-          updated: '2020-05-26T10:43:20',
-        },
-        {
-          img: 'https://192.168.6.3:2838/virnect-platform/profile/2021-06-15_VByqxZGplpVkdlGpucmL.jpg',
-          value: 'UPLOAD',
-          nickname: 'User2',
-          updated: '2020-05-26T10:43:20',
-        },
-        {
-          img: 'https://192.168.6.3:2838/virnect-platform/profile/2021-06-15_VByqxZGplpVkdlGpucmL.jpg',
-          value: 'EDIT',
-          nickname: 'User3',
-          updated: '2020-05-26T10:43:20',
-          member: '멤버',
-        },
-        {
-          img: 'https://192.168.6.3:2838/virnect-platform/profile/2021-06-15_VByqxZGplpVkdlGpucmL.jpg',
-          value: 'SHARED',
-          nickname: 'User4',
-          updated: '2020-05-26T10:43:20',
-          member: '지정 멤버',
-        },
-        {
-          img: 'https://192.168.6.3:2838/virnect-platform/profile/2021-06-15_VByqxZGplpVkdlGpucmL.jpg',
-          value: 'TRASH',
-          nickname: 'User5',
-          updated: '2020-05-26T10:43:20',
-        },
-        {
-          img: 'https://192.168.6.3:2838/virnect-platform/profile/2021-06-15_VByqxZGplpVkdlGpucmL.jpg',
-          value: 'DELETE',
-          nickname: 'User5',
-          updated: '2020-05-26T10:43:20',
-        },
-        {
-          img: 'https://192.168.6.3:2838/virnect-platform/profile/2021-06-15_VByqxZGplpVkdlGpucmL.jpg',
-          value: 'BACKUP',
-          nickname: 'User5',
-          updated: '2020-05-26T10:43:20',
-        },
-        {
-          img: 'https://192.168.6.3:2838/virnect-platform/profile/2021-06-15_VByqxZGplpVkdlGpucmL.jpg',
-          value: 'DOWNLOAD',
-          nickname: 'User5',
-          updated: '2020-05-26T10:43:20',
-        },
-      ],
+      activityList: [],
+      activityPageMeta: {},
       loading: false,
       // 현재 모달창에서 보고있는 프로젝트 페이징 수
       modalProjectCurrentPage: 0,
@@ -228,6 +185,7 @@ export default {
     project(v) {
       this.setSelectOptionsAndSelectMembers()
       history.replaceState(null, null, `/projects/${v.uuid}`)
+      this.initProjectActivitys()
     },
     projectsList: {
       deep: true,
@@ -372,6 +330,29 @@ export default {
       this.modaltotal = this.totalElements
       this.modalSearchParams = this.searchParams
     },
+    updateProjectActivityLogs() {
+      this.getActivitiesLogs({
+        page: this.activityPageMeta.currentPage + 1,
+      })
+    },
+    async getActivitiesLogs({ page = this.activityPageMeta.currentPage }) {
+      const projectActivityLogs = await projectService.searchProjectActivities(
+        this.project.uuid,
+        { page },
+      )
+      this.activityPageMeta = projectActivityLogs.pageMeta
+      this.activityList.push(...projectActivityLogs.list)
+    },
+    initProjectActivitys() {
+      this.$nextTick(() => {
+        this.$refs.projectModal.$el.scrollTo({
+          top: 0,
+          behavior: 'smooth',
+        })
+      })
+      this.activityList = []
+      this.getActivitiesLogs({ page: 1 })
+    },
   },
   computed: {
     ...mapGetters({
@@ -433,8 +414,7 @@ export default {
     },
   },
   beforeMount() {
-    // this.$store.commit('auth/SET_ACTIVE_WORKSPACE', this.project.workspaceUUID)
-
+    this.$store.commit('auth/SET_ACTIVE_WORKSPACE', this.project.workspaceUUID)
     this.setSelectOptionsAndSelectMembers()
   },
   mounted() {

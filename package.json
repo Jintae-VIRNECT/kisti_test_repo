@@ -30,7 +30,8 @@
     "nuxt": "^2.0.0",
     "nuxt-helmet": "^2.0.0",
     "nuxt-i18n": "6.21.1",
-    "vee-validate": "^3.4.11"
+    "vee-validate": "^3.4.11",
+    "vue-infinite-loading": "^2.4.5"
   },
   "devDependencies": {
     "@virnect/eslint-config": "^1.0.0",

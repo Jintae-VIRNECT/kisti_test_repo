@@ -3,6 +3,7 @@ import { store } from '@/plugins/context'
 
 // model
 import Project from '@/models/project/Project'
+import ProjectActivityLog from '@/models/project/ProjectActivityLog'
 
 function activeWorkspaceGetter() {
   return store.getters['auth/activeWorkspace']
@@ -102,5 +103,29 @@ export default {
       }),
     )
     if (errors.length) throw errors
+  },
+  /**
+   * @description 프로젝트의 활동 이력 조회
+   * @param {String} projectUUID
+   * @param {Object} form
+   */
+  async searchProjectActivities(projectUUID, form) {
+    console.log('form', form)
+    const data = await api('PROJECT_ACTIVITIES', {
+      route: { projectUUID },
+      params: {
+        userUUID: myProfileGetter().uuid,
+        size: 10,
+        sort: 'createdDate,desc',
+        ...form,
+      },
+    })
+
+    return {
+      list: data.projectActivityLogList.map(
+        activityLog => new ProjectActivityLog(activityLog),
+      ),
+      pageMeta: data.pageMeta,
+    }
   },
 }

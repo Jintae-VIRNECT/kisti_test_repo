@@ -123,6 +123,8 @@ export default {
   PROJECT_UPDATE: ['PUT', '/contents/projects/{projectUUID}'],
   // 프로젝트 삭제 요청
   PROJECT_DELETE: ['DELETE', '/contents/projects/{projectUUID}'],
+  // 프로젝트의 활동 이력 조회요청
+  PROJECT_ACTIVITIES: ['GET', '/contents/projects/{projectUUID}/activities'],
 
   /**
    * onpremise

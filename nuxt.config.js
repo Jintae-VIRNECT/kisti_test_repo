@@ -48,6 +48,7 @@ module.exports = async () => {
       '@/plugins/context',
       '@/plugins/vee-validate',
       '@/plugins/virnectComponents',
+      '@/plugins/vue-infinite-loading',
     ],
     /*
      ** Customize style
