@@ -115,6 +115,14 @@ export default {
           // AR 영역이 설정되었습니다.
           return
         }
+        if (val === ACTION.AR_3D) {
+          this.addChat({
+            status: 'ar-3d',
+            type: 'system',
+          })
+          // 3D 컨텐츠 모드를 시작합니다.
+          return
+        }
       }
     },
     allowLocalRecord(val, bVal) {

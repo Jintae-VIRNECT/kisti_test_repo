@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="110px" height="110px" viewBox="0 0 110 110" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>547CD125-28EC-430A-80E9-C28657550A2D@2x</title>
+    <defs>
+        <linearGradient x1="50%" y1="1.20465472%" x2="50%" y2="100%" id="linearGradient-1">
+            <stop stop-color="#FFFFFF" stop-opacity="0.1" offset="0%"></stop>
+            <stop stop-color="#FFFFFF" stop-opacity="0.143284042" offset="22.4356627%"></stop>
+            <stop stop-color="#FFFFFF" stop-opacity="0.4" offset="100%"></stop>
+        </linearGradient>
+        <linearGradient x1="29.982973%" y1="19.5739113%" x2="66.563644%" y2="73.7902773%" id="linearGradient-2">
+            <stop stop-color="#94BFF4" offset="0%"></stop>
+            <stop stop-color="#3D6FCF" offset="100%"></stop>
+        </linearGradient>
+        <linearGradient x1="50%" y1="100%" x2="50%" y2="0%" id="linearGradient-3">
+            <stop stop-color="#A3C3FF" offset="0%"></stop>
+            <stop stop-color="#C2DAFF" offset="100%"></stop>
+        </linearGradient>
+        <linearGradient x1="50%" y1="0%" x2="50%" y2="100%" id="linearGradient-4">
+            <stop stop-color="#74A2FF" offset="0%"></stop>
+            <stop stop-color="#AEC8FF" offset="100%"></stop>
+        </linearGradient>
+    </defs>
+    <g id="3D-Object-공유" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="3DO_0041-_3D-파일-출력-진행-중_리더-권한_-Mobile-Web-" transform="translate(-125.000000, -224.000000)">
+            <g id="3D_loding" transform="translate(79.000000, 224.000000)">
+                <g transform="translate(46.000000, 0.000000)">
+                    <rect id="tr" x="0" y="0" width="110" height="110"></rect>
+                    <g id="Group-3" transform="translate(13.000000, 3.000000)">
+                        <path d="M69.1866582,62.1072264 L82.8971669,70.1704123 L69.1866582,62.1072264 Z" id="Path-20-Copy" stroke="#FFFFFF" stroke-width="2" opacity="0.400000006" stroke-linecap="round" stroke-linejoin="round"></path>
+                        <path d="M0.743340622,62.1072264 L14.4538494,70.1704123 L0.743340622,62.1072264 Z" id="Path-20-Copy-3" stroke="#FFFFFF" stroke-width="2" opacity="0.400000006" stroke-linecap="round" stroke-linejoin="round" transform="translate(7.598595, 66.138819) scale(-1, 1) translate(-7.598595, -66.138819) "></path>
+                        <line x1="41.9327538" y1="14.6658888" x2="41.9327538" y2="4.1560845e-13" id="Path-21" stroke="#FFFFFF" stroke-width="2" opacity="0.400000006" stroke-linecap="round"></line>
+                        <polygon id="Path-18-Copy" fill="url(#linearGradient-1)" points="12.4713833 86.7240685 41.845506 70.1704123 71.1691242 86.7240685 41.845506 103.277725"></polygon>
+                        <polygon id="Path-15" fill="url(#linearGradient-2)" points="41.8202538 45.7779221 41.8202538 80.2982161 71.1691242 63.0380691 71.1691242 29.3066384"></polygon>
+                        <polygon id="Path-15" fill="#2C5BBE" points="41.8202538 45.8145364 41.8202538 64.9906774 58.1236513 55.4026069 58.1236513 36.6646822"></polygon>
+                        <polygon id="Path-15-Copy" fill="#83AAF4" transform="translate(27.145819, 54.802427) scale(-1, 1) translate(-27.145819, -54.802427) " points="12.4713833 45.7779221 12.4713833 80.2982161 41.8202538 63.0380691 41.8202538 29.3066384"></polygon>
+                        <polygon id="Path-18" fill="url(#linearGradient-3)" points="12.4713833 29.3066384 41.845506 12.7529822 71.1691242 29.3066384 41.845506 45.8602947"></polygon>
+                        <polygon id="Path-18" fill="url(#linearGradient-4)" points="25.5168563 36.6646822 41.8342815 27.4690698 58.1236513 36.6646822 41.8342815 45.8602947"></polygon>
+                        <polygon id="Path-15-Copy-2" fill="#4A78D9" transform="translate(33.668555, 50.827680) scale(-1, 1) translate(-33.668555, -50.827680) " points="25.5168563 45.8145364 25.5168563 64.9906774 41.8202538 55.4026069 41.8202538 36.6646822"></polygon>
+                        <path d="M41.8202538,13.9010807 L70.1691242,29.8907066 L70.1691242,62.4660576 L41.8202538,79.138102 L13.4713833,62.4660576 L13.4713833,29.8907066 L41.8202538,13.9010807 Z" id="Path-20" stroke="#FFFFFF" stroke-width="2"></path>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

@@ -146,35 +146,8 @@ export default {
   },
 }
 </script>
-<style>
-.share-list__left-enter-active,
-.share-list__left-leave-active,
-.share-list__right-enter-active,
-.share-list__right-leave-active {
-  transition: left ease 0.4s;
-}
-.share-list__left-enter {
-  left: -100%;
-}
-.share-list__left-enter-to {
-  left: 0;
-}
-.share-list__left-leave {
-  left: 0;
-}
-.share-list__left-leave-to {
-  left: -100%;
-}
-.share-list__right-enter {
-  left: 100%;
-}
-.share-list__right-enter-to {
-  left: 0;
-}
-.share-list__right-leave {
-  left: 0;
-}
-.share-list__right-leave-to {
-  left: 100%;
-}
+<style lang="scss">
+@import '~assets/style/mixin';
+
+@include share-list-transition;
 </style>

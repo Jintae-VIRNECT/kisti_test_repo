@@ -5,10 +5,14 @@
         class="mobile-tools-container drawing"
         :class="{ active, leader: isLeader }"
       >
-        <undo :disableTooltip="true"></undo>
-        <redo :disableTooltip="true"></redo>
-        <clear :disableTooltip="true"></clear>
-        <clear-all v-if="isLeader" :disableTooltip="true"></clear-all>
+        <undo :disableTooltip="true" :disabled="!toolStatus.undo"></undo>
+        <redo :disableTooltip="true" :disabled="!toolStatus.redo"></redo>
+        <clear :disableTooltip="true" :disabled="!toolStatus.clear"></clear>
+        <clear-all
+          v-if="isLeader"
+          :disableTooltip="true"
+          :disabled="!toolStatus.clearAll"
+        ></clear-all>
         <div class="division"></div>
         <color :disableTooltip="true"></color>
         <drawing-lock @click="onDrawingLock"></drawing-lock>
@@ -24,10 +28,10 @@
       <text-size></text-size>
       <color></color>
       <div class="division"></div>
-      <undo></undo>
-      <redo></redo>
-      <clear></clear>
-      <clear-all v-if="isLeader"></clear-all>
+      <undo :disabled="!toolStatus.undo"></undo>
+      <redo :disabled="!toolStatus.redo"></redo>
+      <clear :disabled="!toolStatus.clear"></clear>
+      <clear-all v-if="isLeader" :disabled="!toolStatus.clearAll"></clear-all>
     </template>
   </div>
 </template>
@@ -48,6 +52,7 @@ import {
 import { ROLE } from 'configs/remote.config'
 import { mapActions } from 'vuex'
 import { ACTION } from 'configs/view.config'
+import toolStatusMixin from 'mixins/toolStatus'
 
 export default {
   name: 'DrawingTools',
@@ -63,6 +68,7 @@ export default {
     ClearAll,
     DrawingLock,
   },
+  mixins: [toolStatusMixin],
   data() {
     return {
       active: false,
@@ -91,7 +97,11 @@ export default {
   },
 
   /* Lifecycles */
-  beforeDestroy() {},
-  mounted() {},
+  created() {
+    this.activateToolStatusUpdateListener()
+  },
+  beforeDestroy() {
+    this.deactivateToolStatusUpdateListener()
+  },
 }
 </script>

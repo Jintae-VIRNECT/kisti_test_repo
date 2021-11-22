@@ -331,6 +331,9 @@
   &.ar::before {
     background-image: url(~assets/image/call/ic_chat_ar.svg);
   }
+  &.ar-3d::before {
+    background-image: url(~assets/image/call/chat/icon_3D_object.svg);
+  }
   &.board::before {
     background-image: url(~assets/image/call/ic_chat_board.svg);
   }

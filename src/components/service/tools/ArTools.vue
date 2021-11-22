@@ -1,12 +1,32 @@
 <template>
   <div class="ar-tools tools">
+    <!-- mobile -->
     <template v-if="isMobileSize">
-      <div class="mobile-tools-container ar" :class="{ active: toolbarActive }">
-        <undo :disableTooltip="true" :disabled="!canDrawingOrPointing"></undo>
-        <redo :disableTooltip="true" :disabled="!canDrawingOrPointing"></redo>
-        <clear :disableTooltip="true" :disabled="!canDrawingOrPointing"></clear>
-        <div class="division"></div>
-        <color :disabled="!canDrawingOrPointing"></color>
+      <div
+        class="mobile-tools-container ar"
+        :class="{ 'ar-3d': is3dContentsMode, active: toolbarActive }"
+      >
+        <undo
+          v-if="!is3dContentsMode"
+          :disableTooltip="true"
+          :disabled="!canDrawingOrPointing || !toolStatus.undo"
+        ></undo>
+        <redo
+          v-if="!is3dContentsMode"
+          :disableTooltip="true"
+          :disabled="!canDrawingOrPointing || !toolStatus.redo"
+        ></redo>
+        <clear
+          :disableTooltip="true"
+          :disabled="
+            (!canDrawingOrPointing && !is3dContentClearble) || !toolStatus.clear
+          "
+        ></clear>
+        <div v-if="!is3dContentsMode" class="division"></div>
+        <color
+          v-if="!is3dContentsMode"
+          :disabled="!canDrawingOrPointing"
+        ></color>
       </div>
       <button
         class="tools-toggle-btn"
@@ -17,30 +37,47 @@
       </button>
 
       <ar-capture
-        v-if="viewAction !== ACTION.AR_DRAWING"
+        v-if="
+          viewAction !== ACTION.AR_DRAWING && isLeader && !isMainViewHololens
+        "
         :disableTooltip="true"
         class="mobile-ar-tools-btn"
+        :disabled="toolDeactivated"
       ></ar-capture>
       <ar-pointing
+        v-if="viewAction !== ACTION.AR_POINTING && !isMainViewHololens"
+        :disableTooltip="true"
+        :disabled="leaderDrawing || toolDeactivated"
+        class="mobile-ar-tools-btn"
+      ></ar-pointing>
+      <ar-3d-content
+        v-if="!is3dContentsMode && isLeader && !isMainViewHololens"
         :disableTooltip="true"
         class="mobile-ar-tools-btn"
-        v-if="viewAction === ACTION.AR_DRAWING"
-        :disabled="leaderDrawing"
-      ></ar-pointing>
+        :disabled="toolDeactivated"
+      ></ar-3d-content>
     </template>
+    <!-- pc -->
     <template v-else>
-      <ar-pointing :disabled="leaderDrawing"></ar-pointing>
+      <ar-pointing :disabled="leaderDrawing || toolDeactivated"></ar-pointing>
       <template v-if="isLeader">
-        <ar-capture></ar-capture>
+        <ar-3d-content
+          :disabled="!isMainViewHololens && toolDeactivated"
+        ></ar-3d-content>
+        <ar-capture :disabled="toolDeactivated"></ar-capture>
         <div class="division"></div>
-        <line-mode :disabled="!canDrawing"></line-mode>
-        <line-width :disabled="!canDrawing"></line-width>
+        <line-mode :disabled="!canDrawing || isMainViewHololens"></line-mode>
+        <line-width :disabled="!canDrawing || isMainViewHololens"></line-width>
       </template>
-      <color :disabled="!canDrawingOrPointing"></color>
+      <color :disabled="!canDrawingOrPointing || isMainViewHololens"></color>
       <div class="division"></div>
-      <undo :disabled="!canDrawingOrPointing"></undo>
-      <redo :disabled="!canDrawingOrPointing"></redo>
-      <clear :disabled="!canDrawingOrPointing"></clear>
+      <undo :disabled="!canDrawingOrPointing || !toolStatus.undo"></undo>
+      <redo :disabled="!canDrawingOrPointing || !toolStatus.redo"></redo>
+      <clear
+        :disabled="
+          (!canDrawingOrPointing && !is3dContentClearble) || !toolStatus.clear
+        "
+      ></clear>
     </template>
   </div>
 </template>
@@ -49,6 +86,7 @@
 import {
   ArPointing,
   ArCapture,
+  Ar3dContent,
   LineMode,
   LineWidth,
   Color,
@@ -58,13 +96,16 @@ import {
 } from './partials'
 import { mapGetters } from 'vuex'
 import { ACTION } from 'configs/view.config'
-import { ROLE } from 'configs/remote.config'
+import { ROLE, AR_3D_FILE_SHARE_STATUS } from 'configs/remote.config'
+import { DEVICE } from 'configs/device.config'
+import toolStatusMixin from 'mixins/toolStatus'
 
 export default {
   name: 'ArTools',
   components: {
     ArPointing,
     ArCapture,
+    Ar3dContent,
     LineMode,
     LineWidth,
     Color,
@@ -72,6 +113,7 @@ export default {
     Redo,
     Clear,
   },
+  mixins: [toolStatusMixin],
   data() {
     return {
       toolbarActive: false,
@@ -83,7 +125,12 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['viewAction']),
+    ...mapGetters([
+      'mainView',
+      'viewAction',
+      'ar3dShareStatus',
+      'share3dContent',
+    ]),
     isLeader() {
       return this.account.roleType === ROLE.LEADER
     },
@@ -110,6 +157,41 @@ export default {
     canDrawingOrPointing() {
       return this.canDrawing || this.canPointing
     },
+    is3dContentsMode() {
+      if (this.viewAction === ACTION.AR_3D) return true
+      return false
+    },
+    is3dContentClearble() {
+      if (
+        this.is3dContentsMode &&
+        this.ar3dShareStatus === AR_3D_FILE_SHARE_STATUS.COMPLETE &&
+        this.share3dContent.objectName
+      )
+        return true
+      else return false
+    },
+    toolDeactivated() {
+      if (
+        (this.is3dContentsMode &&
+          this.ar3dShareStatus === AR_3D_FILE_SHARE_STATUS.START) ||
+        this.isMainViewHololens
+      )
+        return true
+      else return false
+    },
+    isMainViewHololens() {
+      if (this.mainView.deviceType === DEVICE.HOLOLENS) return true
+      else return false
+    },
+  },
+  watch: {
+    viewAction(val) {
+      if ([ACTION.AR_POINTING, ACTION.AR_DRAWING, ACTION.AR_3D].includes(val)) {
+        this.setUndoAvailable(false)
+        this.setRedoAvailable(false)
+        this.setClearAvailable(false)
+      }
+    },
   },
   methods: {
     setDrawing(val) {
@@ -125,11 +207,15 @@ export default {
     if (!this.isLeader) {
       this.$eventBus.$on('leaderDrawing', this.setDrawing)
     }
+
+    this.activateToolStatusUpdateListener()
   },
   beforeDestroy() {
     if (!this.isLeader) {
       this.$eventBus.$off('leaderDrawing', this.setDrawing)
     }
+
+    this.deactivateToolStatusUpdateListener()
   },
 }
 </script>

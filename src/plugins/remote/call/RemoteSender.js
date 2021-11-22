@@ -219,6 +219,23 @@ const arPointing = (type, params = {}, target = null) => {
 }
 
 /**
+ * AR 3D Content share
+ * @param {String} type remote.config.AR_3D
+ * @param {*} params
+ * @param {*} target
+ */
+const ar3dContentShare = (type, params = {}, target = null) => {
+  if (!_.session) return
+
+  params.type = type
+  _.session.signal({
+    data: JSON.stringify(params),
+    to: target,
+    type: SIGNAL.AR_3D,
+  })
+}
+
+/**
  * @TARGET
  * request screen capture permission
  * @param {Object} params
@@ -424,6 +441,7 @@ export default {
   arFeatureStart,
   arFeatureStop,
   arPointing,
+  ar3dContentShare,
   capturePermission,
   arDrawing,
   camera,

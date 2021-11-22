@@ -16,12 +16,24 @@
             @pdfView="pdfView(file)"
           ></sharing-pdf>
           <sharing-image
-            v-else
+            v-else-if="!checkIs3d(file.name)"
             :key="'sharing_' + file.objectName"
             :fileInfo="file"
             @shareImage="shareImage"
           ></sharing-image>
+          <sharing-3d-object
+            v-else
+            :key="'sharing_3d_' + file.objectName"
+            :shared="isShareStart"
+            :fileInfo="file"
+            @3dFileListUpdate="on3dFileListUpdated"
+            @get3dFileList="get3dFileList"
+          ></sharing-3d-object>
         </template>
+        <sharing-file-spinner
+          v-if="uploadingFile"
+          :fileName="uploadingFile"
+        ></sharing-file-spinner>
       </ul>
     </transition>
     <transition name="mobile-file-list__right">
@@ -37,15 +49,39 @@
 <script>
 import SharingImage from '../share/partials/SharingImage'
 import SharingPdf from '../share/partials/SharingPdf'
+import Sharing3dObject from '../ar/3dcontents/Sharing3dObject'
 import PdfView from '../share/partials/SharePdfView'
-
 import FullScreenModal from 'FullScreenModal'
+import toastMixin from 'mixins/toast'
+
+import {
+  SIGNAL,
+  AR_3D_CONTENT_SHARE,
+  AR_3D_FILE_SHARE_STATUS,
+  FILE_TYPE,
+  ACCEPTABLE_FILE_TYPE,
+} from 'configs/remote.config'
+import { mapGetters, mapMutations } from 'vuex'
+import SharingFileSpinner from '../share/partials/SharingFileSpinner.vue'
+import { remoteFileList } from 'api/http/drawing'
+
 export default {
-  components: { FullScreenModal, SharingImage, SharingPdf, PdfView },
+  mixins: [toastMixin],
+  components: {
+    FullScreenModal,
+    SharingImage,
+    SharingPdf,
+    Sharing3dObject,
+    PdfView,
+    SharingFileSpinner,
+  },
   props: {
     modalShow: {
       type: Boolean,
       dafault: true,
+    },
+    uploadingFile: {
+      type: String,
     },
     fileList: {
       type: Array,
@@ -55,7 +91,11 @@ export default {
   data() {
     return {
       pdfFile: {},
+      isShareStart: false,
     }
+  },
+  computed: {
+    ...mapGetters(['ar3dShareStatus', 'share3dContent', 'roomInfo']),
   },
   watch: {
     fileList: {
@@ -69,8 +109,47 @@ export default {
         }
       },
     },
+    ar3dShareStatus: {
+      immediate: true,
+      handler(newVal) {
+        if (
+          newVal === AR_3D_FILE_SHARE_STATUS.START ||
+          newVal === AR_3D_FILE_SHARE_STATUS.COMPLETE
+        ) {
+          this.isShareStart = true
+        } else if (
+          newVal === AR_3D_FILE_SHARE_STATUS.CANCEL ||
+          newVal === AR_3D_FILE_SHARE_STATUS.ERROR
+        ) {
+          this.isShareStart = false
+          this.SHOW_3D_CONTENT({})
+          //출력 취소 문구 출력
+          this.toastDefault(this.$t('service.ar_3d_load_cancel'))
+        } else if (newVal === '') {
+          this.isShareStart = false
+        }
+      },
+    },
+    share3dContent(newVal) {
+      if (newVal) this.close()
+    },
   },
   methods: {
+    checkIs3d(fileName) {
+      const ext = this.getFileExt(fileName)
+      if (ACCEPTABLE_FILE_TYPE.OBJECT.includes(ext)) return true
+      else return false
+    },
+    getFileExt(fileName) {
+      const fileNameLength = fileName.length
+      const extDot = fileName.lastIndexOf('.')
+      const attachedFileType = fileName
+        .substring(extDot + 1, fileNameLength)
+        .toLowerCase()
+
+      return attachedFileType
+    },
+    ...mapMutations(['SHOW_3D_CONTENT', 'SET_AR_3D_SHARE_STATUS']),
     close() {
       this.$emit('update:modalShow', false)
       //this.$emit('update:visible', false)
@@ -94,6 +173,51 @@ export default {
       this.backToFileList()
       this.close()
     },
+
+    on3dFileListUpdated(fileList) {
+      this.$emit('3dFileListUpdate', fileList)
+    },
+
+    async get3dFileList() {
+      //3D 파일 목록 조회 API 호출
+      const res = await remoteFileList({
+        fileType: FILE_TYPE.OBJECT,
+        sessionId: this.roomInfo.sessionId,
+        workspaceId: this.workspace.uuid,
+      })
+
+      this.on3dFileListUpdated(res.fileInfoList)
+    },
+
+    //3D 파일 공유 : 랜더링하는 참가자로부터 상태 수신 : start, cancel, complete, error
+    setFileShareStatus(event) {
+      if (!event.data) return
+      const { status, type } = JSON.parse(event.data)
+      if (type !== AR_3D_CONTENT_SHARE.FILE_SHARE) return
+
+      this.SET_AR_3D_SHARE_STATUS(status)
+      /*
+      AR_3D_FILE_SHARE_STATUS.START:
+        -선택했던/공유했던 3D 파일 활성화
+        -로딩화면 표출
+        -툴, 탭 비활성화
+      AR_3D_FILE_SHARE_STATUS.CANCEL:
+        -선택했던/공유했던 3D 파일 비활성화
+        -툴, 탭 활성화
+      AR_3D_FILE_SHARE_STATUS.COMPLETE:
+        -로딩화면 제거
+        -툴, 탭 활성화
+      AR_3D_FILE_SHARE_STATUS.ERROR:
+        -선택했던/공유했던 3D 파일 비활성화
+        -툴, 탭 활성화
+      */
+    },
+  },
+  created() {
+    this.$eventBus.$on(SIGNAL.AR_3D, this.setFileShareStatus)
+  },
+  beforeDestroy() {
+    this.$eventBus.$off(SIGNAL.AR_3D, this.setFileShareStatus)
   },
 }
 </script>

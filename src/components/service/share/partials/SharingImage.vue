@@ -32,7 +32,7 @@ import confirmMixin from 'mixins/confirm'
 import toastMixin from 'mixins/toast'
 import touchMixin from 'mixins/touch'
 import { ROLE, DRAWING } from 'configs/remote.config'
-import { drawingRemove } from 'api/http/drawing'
+import { remoteFileRemove } from 'api/http/drawing'
 export default {
   name: 'SharingImage',
   mixins: [confirmMixin, toastMixin, touchMixin],
@@ -90,7 +90,7 @@ export default {
     },
     async remove() {
       try {
-        await drawingRemove({
+        await remoteFileRemove({
           workspaceId: this.workspace.uuid,
           sessionId: this.roomInfo.sessionId,
           leaderUserId: this.account.uuid,

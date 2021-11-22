@@ -3,18 +3,21 @@ import http from 'api/gateway'
 /**
  * 협업보드 파일 업로드
  * @param {File} file
+ * @param {String} fileType
  * @param {String} sessionId
  * @param {String} userId
  * @param {String} workspaceId
  */
-export const drawingUpload = async ({
+export const remoteFileUpload = async ({
   file,
+  fileType,
   sessionId,
   userId,
   workspaceId,
 }) => {
-  const returnVal = await http('DRAWING_UPLOAD', {
+  const returnVal = await http('REMOTE_FILE_UPLOAD', {
     file,
+    fileType,
     sessionId,
     userId,
     workspaceId,
@@ -30,8 +33,9 @@ export const drawingUpload = async ({
  * @query {String} sort
  * @query {String} sessionId
  * @query {String} workspaceId
+ * @param {String} fileType
  */
-export const drawingList = async ({
+export const remoteFileList = async ({
   deleted = false,
   page = 0,
   size = 10,
@@ -39,8 +43,9 @@ export const drawingList = async ({
   sort = 'createdDate,DESC',
   sessionId,
   workspaceId,
+  fileType,
 }) => {
-  const returnVal = await http('DRAWING_LIST', {
+  const returnVal = await http('REMOTE_FILE_LIST', {
     deleted,
     page,
     paging,
@@ -48,6 +53,7 @@ export const drawingList = async ({
     sort,
     sessionId,
     workspaceId,
+    fileType,
   })
   return returnVal
 }
@@ -58,13 +64,13 @@ export const drawingList = async ({
  * @query {String} objectName
  * @query {String} userId
  */
-export const drawingDownload = async ({
+export const remoteFileDownload = async ({
   sessionId,
   workspaceId,
   objectName,
   userId,
 }) => {
-  const returnVal = await http('DRAWING_DOWNLOAD', {
+  const returnVal = await http('REMOTE_FILE_DOWNLOAD', {
     sessionId,
     workspaceId,
     objectName,
@@ -79,13 +85,13 @@ export const drawingDownload = async ({
  * @query {String} leaderUserId
  * @query {String} objectName
  */
-export const drawingRemove = async ({
+export const remoteFileRemove = async ({
   workspaceId,
   sessionId,
   leaderUserId,
   objectName,
 }) => {
-  const returnVal = await http('DRAWING_REMOVE', {
+  const returnVal = await http('REMOTE_FILE_REMOVE', {
     workspaceId,
     sessionId,
     leaderUserId,
@@ -95,16 +101,17 @@ export const drawingRemove = async ({
 }
 
 /**
+ * 미사용
  * 협업보드 공유 파일 전체 삭제
  * @path {String} workspaceId
  * @path {String} sessionId
  * @query {String} userId
  */
-export const drawingRemoveAll = async ({ workspaceId, sessionId, userId }) => {
-  const returnVal = await http('DRAWING_REMOVE_ALL', {
-    workspaceId,
-    sessionId,
-    userId,
-  })
-  return returnVal
-}
+// export const remoteFileRemoveAll = async ({ workspaceId, sessionId, userId }) => {
+//   const returnVal = await http('REMOTE_FILE_REMOVE_ALL', {
+//     workspaceId,
+//     sessionId,
+//     userId,
+//   })
+//   return returnVal
+// }

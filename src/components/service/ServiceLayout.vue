@@ -7,12 +7,23 @@
       </transition>
 
       <transition name="share">
+        <!-- 협업보드 파일/공유 목록 -->
         <share v-if="!isMobileSize" v-show="currentView === 'drawing'"></share>
+      </transition>
+
+      <transition name="share">
+        <!-- 3d공유 파일 목록 ui : 리더만 표시-->
+        <share-3d
+          v-if="!isMobileSize && isLeader && currentView === 'ar'"
+          v-show="viewAction === ACTION.AR_3D"
+        ></share-3d>
       </transition>
 
       <main
         class="main-wrapper"
-        :class="{ shareview: currentView === 'drawing' }"
+        :class="{
+          shareview: currentView === 'drawing' || isLeaderAr3dContentsMode,
+        }"
       >
         <transition name="main">
           <stream-view
@@ -60,8 +71,12 @@
       v-if="isMobileSize"
       @getFileList="onGetFileList"
       @openFileListModal="onOpenFileListModal"
+      @get3dFileList="onGet3dFileList"
+      @open3dFileListModal="onOpen3dFileListModal"
       @participantModalShow="onParticipantModalShow"
       @addPdfHistory="mobileAddPdfHistory"
+      @uploading="onUploading"
+      @uploaded="onUploaded"
     ></mobile-footer>
     <reconnect-modal :visible.sync="connectVisible"></reconnect-modal>
     <setting-modal></setting-modal>
@@ -88,8 +103,16 @@
       ref="file-list"
       :modalShow.sync="isFileListModalShow"
       :fileList="fileList"
+      :uploadingFile="uploadingFile"
       @rendered="onFileListRendered"
     ></mobile-share-file-list-modal>
+    <mobile-3d-file-list-modal
+      v-if="isMobileSize"
+      :modalShow.sync="is3dFileListModalShow"
+      :uploadingFile="uploadingFile"
+      :fileList="ar3dFileList"
+      @3dFileListUpdate="on3dFileListUpdate"
+    ></mobile-3d-file-list-modal>
   </section>
 </template>
 
@@ -99,7 +122,7 @@ import SubView from './subview/SubView'
 import UserList from './participants/ParticipantList'
 import { ROLE } from 'configs/remote.config'
 import { CAMERA } from 'configs/device.config'
-import { VIEW } from 'configs/view.config'
+import { VIEW, ACTION } from 'configs/view.config'
 import { URLS } from 'configs/env.config'
 import localRecorderMixin from 'mixins/localRecorder'
 import serverRecordMixin from 'mixins/serverRecorder'
@@ -141,9 +164,13 @@ export default {
     InviteModal: () => import('./modal/InviteModal'),
     MobileParticipantModal: () => import('./modal/MobileParticipantModal'),
     MobileShareFileListModal: () => import('./modal/MobileShareFileListModal'),
+    Mobile3dFileListModal: () => import('./modal/MobileShareFileListModal'),
+    Share3d: () => import('./ar/3dcontents/Share3D'),
   },
   data() {
     return {
+      ACTION: Object.freeze(ACTION),
+
       showDenied: false,
       callTimeout: null,
       isFullScreen: false,
@@ -157,6 +184,11 @@ export default {
       isFileListModalShow: false,
       isParticipantModalShow: false,
       fileListCallback: () => {},
+
+      is3dFileListModalShow: false,
+      ar3dFileList: [],
+
+      uploadingFile: '',
     }
   },
   computed: {
@@ -169,6 +201,7 @@ export default {
       'restrictedRoom',
       'useLocalRecording',
       'coworkTimeout',
+      'viewAction',
     ]),
     isLeader() {
       return this.account.roleType === ROLE.LEADER
@@ -191,6 +224,13 @@ export default {
           this.isFullScreen &&
           (this.currentView === 'stream' || this.currentView === 'screen'),
       }
+    },
+    isLeaderAr3dContentsMode() {
+      return (
+        this.isLeader &&
+        this.currentView === 'ar' &&
+        this.viewAction === ACTION.AR_3D
+      )
     },
   },
   watch: {
@@ -314,6 +354,12 @@ export default {
     onOpenFileListModal() {
       this.isFileListModalShow = true
     },
+    onGet3dFileList(fileList) {
+      this.ar3dFileList = fileList
+    },
+    onOpen3dFileListModal() {
+      this.is3dFileListModalShow = true
+    },
     onParticipantModalShow() {
       this.isParticipantModalShow = true
     },
@@ -330,6 +376,15 @@ export default {
     },
     onFileListRendered() {
       this.fileListCallback()
+    },
+    on3dFileListUpdate(fileList) {
+      this.ar3dFileList = fileList
+    },
+    onUploading(fileName) {
+      this.uploadingFile = fileName
+    },
+    onUploaded() {
+      this.uploadingFile = ''
     },
   },
 

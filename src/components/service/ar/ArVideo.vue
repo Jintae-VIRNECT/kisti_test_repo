@@ -3,6 +3,9 @@
     <div class="ar-video__box">
       <video
         class="ar-video__stream"
+        :class="{
+          active: is3dPositionPicking,
+        }"
         ref="arVideo"
         :srcObject.prop="mainView.stream"
         @play="mediaPlay"
@@ -31,11 +34,19 @@
           </div>
         </button>
       </transition>
+      <transition name="opacity">
+        <slot></slot>
+      </transition>
       <ar-pointing
         class="ar-pointing"
         :videoSize="videoSize"
         v-if="currentAction === 'pointing' && canPointing"
       ></ar-pointing>
+      <ar-3d
+        class="ar-3d-pointing"
+        :videoSize="videoSize"
+        v-if="currentAction === '3d' && isLeader"
+      ></ar-3d>
     </div>
   </div>
 </template>
@@ -43,15 +54,18 @@
 <script>
 import { mapGetters, mapActions } from 'vuex'
 import { VIEW, ACTION } from 'configs/view.config'
-import { AR_DRAWING } from 'configs/remote.config'
+import { ROLE, AR_DRAWING } from 'configs/remote.config'
 import toastMixin from 'mixins/toast'
 
 import ArPointing from './ArPointing'
+import Ar3d from './Ar3d'
+
 export default {
   name: 'ARVideo',
   mixins: [toastMixin],
   components: {
     ArPointing,
+    Ar3d,
   },
   props: {
     canPointing: {
@@ -70,7 +84,13 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['mainView', 'view', 'viewAction', 'resolutions']),
+    ...mapGetters([
+      'mainView',
+      'view',
+      'viewAction',
+      'resolutions',
+      'is3dPositionPicking',
+    ]),
     currentAction() {
       if (this.view !== VIEW.AR) return ''
       if (this.viewAction === ACTION.AR_AREA) {
@@ -79,6 +99,8 @@ export default {
         return 'pointing'
       } else if (this.viewAction === ACTION.AR_DRAWING) {
         return 'drawing'
+      } else if (this.viewAction === ACTION.AR_3D) {
+        return '3d'
       } else {
         return ''
       }
@@ -94,6 +116,10 @@ export default {
         }
       }
       return this.resolutions[idx]
+    },
+    isLeader() {
+      if (this.account.roleType === ROLE.LEADER) return true
+      else return false
     },
   },
   watch: {
@@ -134,6 +160,8 @@ export default {
         this.toastDefault(this.$t('service.ar_area_setting'))
       } else if (val === 'drawing') {
         this.toastDefault(this.$t('service.ar_area_success'))
+      } else if (val === '3d') {
+        this.toastDefault(this.$t('service.ar_3d_start'))
       }
     },
   },

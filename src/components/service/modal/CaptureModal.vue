@@ -45,8 +45,8 @@ import { VIEW } from 'configs/view.config'
 import { ERROR } from 'configs/error.config'
 
 import { base64ToBlob } from 'utils/file'
-import { drawingUpload } from 'api/http/drawing'
-import { DRAWING, ROLE } from 'configs/remote.config'
+import { remoteFileUpload } from 'api/http/drawing'
+import { DRAWING, ROLE, FILE_TYPE } from 'configs/remote.config'
 import toastMixin from 'mixins/toast'
 import errorMsgMixin from 'mixins/errorMsg'
 
@@ -156,8 +156,9 @@ export default {
 
       let res = null
       try {
-        res = await drawingUpload({
+        res = await remoteFileUpload({
           file: file,
+          fileType: FILE_TYPE.SHARE,
           sessionId: this.roomInfo.sessionId,
           userId: this.account.uuid,
           workspaceId: this.workspace.uuid,

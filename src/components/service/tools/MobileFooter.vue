@@ -16,6 +16,7 @@
       </button>
     </div>
     <div class="footer-button-container">
+      <!-- 실시간 공유 -->
       <template v-if="view === VIEW.STREAM">
         <mobile-more-button
           @selectMember="openParticipantModal"
@@ -25,6 +26,8 @@
         ></mobile-capture-button>
         <mobile-flash-button></mobile-flash-button>
       </template>
+
+      <!-- 협업보드 -->
       <template v-else-if="view === VIEW.DRAWING">
         <!-- 협업보드 종료 버튼 리더에게만 표시 -->
         <mobile-drawing-exit-button
@@ -32,14 +35,30 @@
           @exitDrawing="onExitDrawing"
         ></mobile-drawing-exit-button>
         <mobile-file-list-button
-          :disabled="fileList.length === 0"
+          :disabled="fileList.length === 0 && uploadingFile === ''"
           @openFileListModal="openFileListModal"
           :notice="fileListNotice"
         ></mobile-file-list-button>
         <mobile-download-button
           :disabled="historyList.length === 0"
         ></mobile-download-button>
-        <mobile-upload-button @uploaded="onFileUploaded"></mobile-upload-button>
+        <mobile-upload-button
+          @uploading="onFileUploading"
+          @uploaded="onFileUploaded"
+        ></mobile-upload-button>
+      </template>
+
+      <!-- ar 공유 & 3d 공유 -->
+      <template v-else-if="view === VIEW.AR && viewAction === ACTION.AR_3D">
+        <mobile-file-list-button
+          :disabled="ar3dFileList.length === 0 && uploadingFile === ''"
+          @openFileListModal="open3dFileListModal"
+        ></mobile-file-list-button>
+        <mobile-upload-button
+          :fileType="FILE_TYPE.OBJECT"
+          @uploading="onFileUploading"
+          @uploaded="on3dFileUploaded"
+        ></mobile-upload-button>
       </template>
     </div>
   </footer>
@@ -57,10 +76,10 @@ import MobileDrawingExitButton from './partials/MobileDrawingExitButton'
 
 import fileShareEventQueueMixin from 'mixins/fileShareEventQueue'
 
-import { drawingList, drawingDownload } from 'api/http/drawing'
+import { remoteFileList, remoteFileDownload } from 'api/http/drawing'
 import { mapGetters, mapActions } from 'vuex'
-import { VIEW } from 'configs/view.config'
-import { SIGNAL, DRAWING, ROLE } from 'configs/remote.config'
+import { VIEW, ACTION } from 'configs/view.config'
+import { SIGNAL, DRAWING, ROLE, FILE_TYPE } from 'configs/remote.config'
 
 export default {
   mixins: [tabChangeMixin, fileShareEventQueueMixin],
@@ -73,20 +92,54 @@ export default {
     MobileDownloadButton,
     MobileDrawingExitButton,
   },
+  props: {
+    fetchedFileList: {
+      type: Array,
+    },
+    fetchedAr3dFileList: {
+      type: Array,
+    },
+  },
   data() {
     return {
+      FILE_TYPE: Object.freeze(FILE_TYPE),
+      ACTION: Object.freeze(ACTION),
       VIEW: Object.freeze(VIEW),
       fileList: [],
+      ar3dFileList: [],
       fileListNotice: false,
+      uploadingFile: '',
     }
   },
   computed: {
-    ...mapGetters(['mainView', 'historyList', 'roomInfo', 'myInfo']),
+    ...mapGetters([
+      'mainView',
+      'historyList',
+      'roomInfo',
+      'myInfo',
+      'viewAction',
+    ]),
     isMainViewOn() {
       return this.mainView && this.mainView.id && this.mainView.video
     },
     isLeader() {
       return this.account.roleType === ROLE.LEADER
+    },
+  },
+  watch: {
+    viewAction: {
+      immediate: true,
+      handler(newVal) {
+        if (newVal === ACTION.AR_3D) {
+          this.get3dFileList()
+        }
+      },
+    },
+    fetchedFileList(newVal) {
+      this.fileList = newVal
+    },
+    fetchedAr3dFileList(newVal) {
+      this.ar3dFileList = newVal
     },
   },
   methods: {
@@ -98,16 +151,42 @@ export default {
       this.fileListNotice = false
       this.$emit('openFileListModal')
     },
+    open3dFileListModal() {
+      this.$emit('open3dFileListModal')
+    },
     onFileUploaded() {
+      this.uploadingFile = ''
+      this.$emit('uploaded')
       this.getFileList()
     },
+    //협업보드 파일 목록 조회
     async getFileList() {
-      const res = await drawingList({
+      const res = await remoteFileList({
+        fileType: FILE_TYPE.SHARE,
         sessionId: this.roomInfo.sessionId,
         workspaceId: this.workspace.uuid,
       })
       this.fileList = res.fileInfoList
       this.$emit('getFileList', res.fileInfoList)
+    },
+    onFileUploading(fileName) {
+      this.uploadingFile = fileName
+      this.$emit('uploading', this.uploadingFile)
+    },
+    on3dFileUploaded() {
+      this.uploadingFile = ''
+      this.$emit('uploaded')
+      this.get3dFileList()
+    },
+    //ar 3d 공유 파일 목록 조회
+    async get3dFileList() {
+      const res = await remoteFileList({
+        fileType: FILE_TYPE.OBJECT,
+        sessionId: this.roomInfo.sessionId,
+        workspaceId: this.workspace.uuid,
+      })
+      this.ar3dFileList = res.fileInfoList
+      this.$emit('get3dFileList', res.fileInfoList)
     },
     signalDrawing({ data, receive }) {
       if (data.type === DRAWING.ADDED || data.type === DRAWING.DELETED) {
@@ -129,7 +208,7 @@ export default {
           //this.$refs['file-list'].addPdfHistory(data)
           this.$emit('addPdfHistory', data)
         } else {
-          const res = await drawingDownload({
+          const res = await remoteFileDownload({
             sessionId: this.roomInfo.sessionId,
             workspaceId: this.workspace.uuid,
             objectName: data.objectName,

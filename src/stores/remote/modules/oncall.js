@@ -10,6 +10,8 @@ import {
   CALL_SPEAKER,
   SET_TAB_MENU_NOTICE,
   SET_ALLOW_CAMERA_CONTROL,
+  SET_IS_3D_POSITION_PICKING,
+  SET_AR_3D_SHARE_STATUS,
 } from '../mutation-types'
 
 import { reset } from 'utils/callOptions'
@@ -24,12 +26,14 @@ const state = {
   action: ACTION.STREAM_DEFAULT,
   // stream: default, pointing
   // drawing: line, text, lock
-  // ar: pointing, area, drawing
+  // ar: pointing, area, drawing, 3d
 
   allowCameraControlFlag: false,
 
   mic: false,
   speaker: true,
+  is3dPositionPicking: false,
+  ar3dShareStatus: '',
 
   settingModal: false,
   recordModal: false,
@@ -107,6 +111,12 @@ const mutations = {
   [SET_ALLOW_CAMERA_CONTROL](state, flag) {
     state.allowCameraControlFlag = flag
   },
+  [SET_IS_3D_POSITION_PICKING](state, flag) {
+    state.is3dPositionPicking = flag
+  },
+  [SET_AR_3D_SHARE_STATUS](state, status) {
+    state.ar3dShareStatus = status
+  },
 }
 const actions = {
   showModalSetting({ commit }, flag) {
@@ -125,6 +135,8 @@ const getters = {
   usingStt: state => state.usingStt,
   tabMenus: state => state.tabMenus,
   allowCameraControlFlag: state => state.allowCameraControlFlag,
+  is3dPositionPicking: state => state.is3dPositionPicking,
+  ar3dShareStatus: state => state.ar3dShareStatus,
 }
 
 export default {

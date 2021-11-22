@@ -4,7 +4,7 @@
       type="file"
       ref="uploadFile"
       style="display:none;"
-      accept="image/gif,image/bmp,image/jpeg,image/png,application/pdf"
+      :accept="acceptType"
       @change="fileChangeHandler"
     />
   </button>
@@ -12,13 +12,29 @@
 
 <script>
 import shareFileUploadMixin from 'mixins/shareFileUpload'
-
+import { FILE_TYPE } from 'configs/remote.config'
 export default {
   mixins: [shareFileUploadMixin],
+  props: {
+    fileType: {
+      type: String,
+      default: FILE_TYPE.SHARE,
+    },
+  },
+  computed: {
+    acceptType() {
+      if (this.fileType === FILE_TYPE.SHARE) {
+        return `image/gif,image/bmp,image/jpeg,image/png,application/pdf`
+      } else {
+        return ''
+      }
+    },
+  },
   methods: {
     fileChangeHandler(event) {
       const file = event.target.files[0]
-      this.loadFile(file, () => this.$emit('uploaded'))
+      this.$emit('uploading', file.name)
+      this.loadFile(file, () => this.$emit('uploaded'), this.fileType)
     },
     upload() {
       this.$refs['uploadFile'].click()

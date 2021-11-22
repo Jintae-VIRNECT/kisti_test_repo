@@ -1,13 +1,16 @@
 import { mapGetters, mapActions, mapMutations } from 'vuex'
 import toastMixin from 'mixins/toast'
 import configmMixin from 'mixins/confirm'
-import { VIEW } from 'configs/view.config'
+import { VIEW, ACTION } from 'configs/view.config'
+import { DEVICE } from 'configs/device.config'
 import {
   DRAWING,
   SIGNAL,
   AR_FEATURE,
   CAPTURE_PERMISSION,
   ROLE,
+  AR_3D_FILE_SHARE_STATUS,
+  AR_3D_CONTENT_SHARE,
 } from 'configs/remote.config'
 import { getResolutionScale } from 'utils/settingOptions'
 
@@ -28,6 +31,8 @@ export default {
       'viewForce',
       'video',
       'tabMenus',
+      'viewAction',
+      'ar3dShareStatus',
     ]),
     hasLeader() {
       const idx = this.participants.findIndex(
@@ -35,6 +40,14 @@ export default {
       )
       if (idx < 0) return false
       return true
+    },
+    isAr3dLoading() {
+      if (
+        this.viewAction === ACTION.AR_3D &&
+        this.ar3dShareStatus === AR_3D_FILE_SHARE_STATUS.START
+      )
+        return true
+      else return false
     },
   },
   watch: {
@@ -91,11 +104,13 @@ export default {
     },
   },
   methods: {
-    ...mapActions(['setView', 'addChat', 'showImage']),
+    ...mapActions(['setView', 'addChat', 'showImage', 'setAction']),
     ...mapMutations(['updateParticipant', 'SET_TAB_MENU_NOTICE']),
 
     goTab(type) {
-      if (type === this.view) return
+      if (type === this.view) return //현재 탭과 동일한 경우
+
+      if (this.isAr3dLoading) return //3d 컨텐츠 로딩 중 이동 불가
 
       if (this.checkDisconnected()) {
         return
@@ -253,6 +268,23 @@ export default {
       }
 
       this.setView(VIEW.AR)
+
+      //AR 공유 기기가 홀로렌즈인 경우 : 3d 공유 기능모드로만 사용
+      if (this.mainView.deviceType === DEVICE.HOLOLENS) {
+        this.activate3dShareMode()
+      }
+    },
+    activate3dShareMode() {
+      this.setAction(ACTION.AR_3D)
+
+      const targetUserId = this.mainView.id
+
+      this.toastDefault(this.$t('service.chat_ar_3d_start'))
+
+      //시그널 전송 : start 3D contents share
+      this.$call.sendAr3dSharing(AR_3D_CONTENT_SHARE.START_SHARE, {
+        targetUserId,
+      })
     },
     showArRejected() {
       this.toastDefault(this.$t('service.toast_refused_ar'))

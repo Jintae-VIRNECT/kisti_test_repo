@@ -14,7 +14,7 @@ import toolMixin from './toolMixin'
 import { VIEW, ACTION } from 'configs/view.config'
 
 export default {
-  name: 'ToolLineMode',
+  name: 'ToolArCapture',
   mixins: [toolMixin],
   computed: {
     active() {

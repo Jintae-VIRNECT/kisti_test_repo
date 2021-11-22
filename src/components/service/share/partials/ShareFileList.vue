@@ -28,6 +28,11 @@
             :fileInfo="file"
           ></sharing-image>
         </template>
+        <!-- 업로드 로딩 역할 -->
+        <sharing-file-spinner
+          v-if="uploadingFileName"
+          :fileName="uploadingFileName"
+        ></sharing-file-spinner>
       </ol>
     </vue2-scrollbar>
   </div>
@@ -37,13 +42,14 @@
 import { mapActions } from 'vuex'
 import SharingImage from './SharingImage'
 import SharingPdf from './SharingPdf'
+import SharingFileSpinner from './SharingFileSpinner'
 
 import shareFileUploadMixin from 'mixins/shareFileUpload'
 import fileShareEventQueueMixin from 'mixins/fileShareEventQueue'
 
-import { drawingList, drawingDownload } from 'api/http/drawing'
+import { remoteFileList, remoteFileDownload } from 'api/http/drawing'
 
-import { SIGNAL, DRAWING } from 'configs/remote.config'
+import { SIGNAL, DRAWING, FILE_TYPE } from 'configs/remote.config'
 
 import { isOverflowY } from 'utils/element.js'
 
@@ -53,9 +59,11 @@ export default {
   components: {
     SharingImage,
     SharingPdf,
+    SharingFileSpinner,
   },
   data() {
     return {
+      uploadingFileName: '',
       sharingList: [],
       cbGetFileList: () => {},
     }
@@ -96,7 +104,8 @@ export default {
       this.loadFile(file, () => this.getFileList())
     },
     async getFileList() {
-      const res = await drawingList({
+      const res = await remoteFileList({
+        fileType: FILE_TYPE.SHARE,
         sessionId: this.roomInfo.sessionId,
         workspaceId: this.workspace.uuid,
       })
@@ -124,7 +133,7 @@ export default {
           this.loadPdf(data)
           // this.$eventBus.$emit(`loadPdf_${data.objectName}`, data.index + 1)
         } else {
-          const res = await drawingDownload({
+          const res = await remoteFileDownload({
             sessionId: this.roomInfo.sessionId,
             workspaceId: this.workspace.uuid,
             objectName: data.objectName,

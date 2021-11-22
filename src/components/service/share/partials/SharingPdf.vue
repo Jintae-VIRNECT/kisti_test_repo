@@ -42,7 +42,7 @@
 <script>
 import { mapGetters, mapActions } from 'vuex'
 import { ROLE, DRAWING } from 'configs/remote.config'
-import { drawingRemove, drawingDownload } from 'api/http/drawing'
+import { remoteFileRemove, remoteFileDownload } from 'api/http/drawing'
 import toastMixin from 'mixins/toast'
 import confirmMixin from 'mixins/confirm'
 import PDFJS from 'pdfjs-dist'
@@ -144,7 +144,7 @@ export default {
         })
     },
     async downloadPdfFile() {
-      const res = await drawingDownload({
+      const res = await remoteFileDownload({
         sessionId: this.roomInfo.sessionId,
         workspaceId: this.workspace.uuid,
         objectName: this.fileInfo.objectName,
@@ -230,7 +230,7 @@ export default {
     },
     async remove() {
       try {
-        await drawingRemove({
+        await remoteFileRemove({
           workspaceId: this.workspace.uuid,
           sessionId: this.roomInfo.sessionId,
           leaderUserId: this.account.uuid,
