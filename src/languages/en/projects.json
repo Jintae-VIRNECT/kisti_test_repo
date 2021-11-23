@@ -69,7 +69,8 @@
         "shared": "Shared",
         "selectMember": "Designated Member",
         "searchMember": "Member Search",
-        "edit": "Edit"
+        "edit": "Edit",
+        "configuration": "Configuration"
       },
       "target": {
         "title": "Target",

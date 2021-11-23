@@ -69,7 +69,8 @@
         "shared": "공유",
         "selectMember": "지정 멤버",
         "searchMember": "멤버 검색",
-        "edit": "편집"
+        "edit": "편집",
+        "configuration": "구성"
       },
       "target": {
         "title": "타겟",

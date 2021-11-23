@@ -5,12 +5,14 @@
       <dd class="project-uuid">{{ project.uuid }}</dd>
       <dt>{{ $t('projects.info.project.tracking') }}</dt>
       <dd>{{ project.targetType }}</dd>
-      <dt>{{ $t('projects.info.project.mode') }}</dt>
-      <dd>
-        <ProjectMode :modeList="project.modeList" />
-      </dd>
     </dl>
+    <!-- 임시로 모드영역 숨김처리 -->
+    <dt v-if="false">{{ $t('projects.info.project.mode') }}</dt>
+    <dd v-if="false">
+      <ProjectMode :modeList="project.modeList" />
+    </dd>
     <!-- 프로젝트 씬 정보 -->
+    <dt>{{ $t('projects.info.project.configuration') }}</dt>
     <dl class="gray-row-project">
       <div>
         <dt>{{ $t('projects.info.project.sceneGroup') }}</dt>

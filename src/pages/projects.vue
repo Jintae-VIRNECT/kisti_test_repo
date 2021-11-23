@@ -71,7 +71,9 @@
               sortable="custom"
               :width="120"
             />
+            <!-- 임시로 모드영역 숨김처리 -->
             <el-table-column
+              v-if="false"
               prop="modeList"
               :label="$t('projects.allprojects.column.mode')"
               :width="290"
