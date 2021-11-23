@@ -141,7 +141,7 @@ public class SessionRestController {
         @ApiImplicitParam(name = "paging", value = "검색 결과 페이지네이션 여부", dataType = "boolean", allowEmptyValue = true, defaultValue = "false"),
         @ApiImplicitParam(name = "size", value = "페이징 사이즈", dataType = "number", paramType = "query", defaultValue = "2"),
         @ApiImplicitParam(name = "page", value = "size 대로 나눠진 페이지를 조회할 번호(Index 0 부터 시작)", paramType = "query", defaultValue = "0"),
-        @ApiImplicitParam(name = "sort", value = "정렬 옵션 데이터", paramType = "query", defaultValue = "createdDate,desc"),
+        @ApiImplicitParam(name = "sort", value = "정렬 옵션 데이터", paramType = "query", defaultValue = "createdDate,desc")
     })
     @GetMapping(value = "room")
     public ResponseEntity<ApiResponse<RoomInfoListResponse>> getRoomList(
@@ -174,7 +174,7 @@ public class SessionRestController {
     @ApiImplicitParams({
         @ApiImplicitParam(name = "size", value = "페이징 사이즈", dataType = "number", paramType = "query", defaultValue = "2"),
         @ApiImplicitParam(name = "page", value = "size 대로 나눠진 페이지를 조회할 번호(Index 0 부터 시작)", paramType = "query", defaultValue = "0"),
-        @ApiImplicitParam(name = "sort", value = "정렬 옵션 데이터", paramType = "query", defaultValue = "createdDate,desc"),
+        @ApiImplicitParam(name = "sort", value = "정렬 옵션 데이터", paramType = "query", defaultValue = "createdDate,desc")
     })
     @GetMapping(value = "room/search")
     public ResponseEntity<ApiResponse<RoomInfoListResponse>> getRoomListBySearch(
@@ -326,7 +326,7 @@ public class SessionRestController {
     @ApiOperation(value = "Exit Specific Room", notes = "특정 원격협업 방을 나가는 API 입니다.")
     @ApiImplicitParams({
         @ApiImplicitParam(name = "sessionId", value = "원격협업 방 Session ID", dataType = "string", paramType = "path", required = true),
-        @ApiImplicitParam(name = "userId", value = "사용자 uuid", dataType = "string", paramType = "query", required = true),
+        @ApiImplicitParam(name = "userId", value = "사용자 uuid", dataType = "string", paramType = "query", required = true)
     })
     @DeleteMapping(value = "room/{workspaceId}/{sessionId}/exit")
     public ResponseEntity<ApiResponse<ResultResponse>> exitRoomByWorkspaceIdAndSessionId(

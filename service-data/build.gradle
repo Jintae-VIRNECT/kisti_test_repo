@@ -41,6 +41,12 @@ dependencies {
     // MapStruct
     implementation 'org.mapstruct:mapstruct:1.4.2.Final'
     annotationProcessor 'org.mapstruct:mapstruct-processor:1.4.2.Final'
+
+    // obj to gltf
+    implementation group: 'de.javagl', name: 'obj', version: '0.3.0'
+    implementation group: 'de.javagl', name: 'jgltf-model', version: '2.0.0'
+    implementation group: 'de.javagl', name: 'jgltf-impl-v2', version: '2.0.0'
+    implementation group: 'de.javagl', name: 'jgltf-obj', version: '2.0.0'
 }
 
 //—————————————————————————————————————————————————————————————————————————————————————————————————

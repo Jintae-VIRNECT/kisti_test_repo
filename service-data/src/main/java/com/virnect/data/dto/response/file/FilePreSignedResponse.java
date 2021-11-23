@@ -6,6 +6,9 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
+import com.virnect.data.domain.file.FileConvertStatus;
+import com.virnect.data.domain.file.FileType;
+
 @Getter
 @Setter
 @ApiModel
@@ -25,6 +28,10 @@ public class FilePreSignedResponse {
     private long size;
     @ApiModelProperty(value = "다운로드 URL", notes = "파일 다운로드 URL 입니다.", position = 6, example = "http://url")
     private String url;
-    @ApiModelProperty(value = "다운로드 URL 만료기간", notes = "다운로드 URL 만료기간 입니다.(second)", dataType = "int", position = 7, example = "3600")
+    @ApiModelProperty(value = "파일 타입", notes = "FILE TYPE(FILE, SHARE, OBJECT..)", position = 7)
+    private FileType fileType;
+    @ApiModelProperty(value = "Obj 파일 변환 상태", notes = "3D Object file obj to gltf 변환 상태", position = 8)
+    private FileConvertStatus fileConvertStatus;
+    @ApiModelProperty(value = "다운로드 URL 만료기간", notes = "다운로드 URL 만료기간 입니다.(second)", dataType = "int", position = 9, example = "3600")
     private int expiry;
 }

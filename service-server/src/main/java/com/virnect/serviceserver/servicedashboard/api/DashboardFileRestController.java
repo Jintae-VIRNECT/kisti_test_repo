@@ -189,7 +189,7 @@ public class DashboardFileRestController {
 		@ApiImplicitParam(name = "workspaceId", value = "workspaceId", required = true),
 		@ApiImplicitParam(name = "sessionId", value = "session ID", required = true),
 		@ApiImplicitParam(name = "objectName", value = "object name", paramType = "query", required = true),
-		@ApiImplicitParam(name = "userId", value = "user ID", paramType = "query", required = true),
+		@ApiImplicitParam(name = "userId", value = "user ID", paramType = "query", required = true)
 	})
 	@DeleteMapping(value = "{workspaceId}/{sessionId}")
 	ResponseEntity<ApiResponse<FileDeleteResponse>> deleteAttachedFileRequestHandler(

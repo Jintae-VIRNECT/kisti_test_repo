@@ -6,6 +6,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 import com.virnect.data.domain.file.File;
+import com.virnect.data.domain.file.FileType;
 
 public interface CustomFileRepository {
 
@@ -13,9 +14,10 @@ public interface CustomFileRepository {
 
 	List<File> findByWorkspaceIdAndDeleted(String workspaceId, boolean delete);
 
-	Page<File> findShareFileByWorkspaceAndSessionId(final String workspaceId, final String sessionId, boolean paging, Pageable pageable);
+	Page<File> findShareFileByWorkspaceAndSessionIdAndFileType(final String workspaceId, final String sessionId, boolean paging, Pageable pageable, FileType fileType);
 
 	Page<File> findByWorkspaceIdAndSessionIdAndDeletedAndFileType(final String workspaceId, final String sessionId, boolean deleted, Pageable pageable);
 
+	List<File> findShareFilesAll(final String workspaceId, final String sessionId);
 
 }

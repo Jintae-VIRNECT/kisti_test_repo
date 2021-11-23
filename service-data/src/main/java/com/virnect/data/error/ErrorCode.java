@@ -95,6 +95,7 @@ public enum ErrorCode {
 	ERR_FILE_COVERT_FAILED(7011, "File converting is failed"),
 	ERR_FILE_NOT_FOUND(7013, "This file can not found."),
 	ERR_PROFILE_UPLOAD_FAILED(7015, "Profile upload has failed"),
+	ERR_FILE_EMPTY(7016, "This file is empty"),
 
 	// 스토리지 에러,
 	ERR_STORAGE_NOT_SUPPORTED(7012, "Storage service is not supported. Please check storage server url."),

@@ -10,6 +10,11 @@
       "png",
       "bmp",
       "x-ms-bmp"
+    ],
+    "file_3d": [
+      "obj",
+      "gltf",
+      "glb"
     ]
   }
 }

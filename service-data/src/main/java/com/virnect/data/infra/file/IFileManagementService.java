@@ -1,6 +1,7 @@
 package com.virnect.data.infra.file;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
@@ -35,6 +36,8 @@ public interface IFileManagementService {
      * @throws IOException
      */
     UploadResult upload(MultipartFile file, String dirPath, FileType fileType) throws IOException, NoSuchAlgorithmException, InvalidKeyException;
+
+    UploadResult objectFileUpload(InputStream inputStream, String dirPath, String fileOriginalName, String objectName, String objectPath) throws IOException, NoSuchAlgorithmException, InvalidKeyException;
 
     UploadResult upload(MultipartFile file, String dirPath, FileType fileType, String objectName) throws IOException, NoSuchAlgorithmException, InvalidKeyException;
 

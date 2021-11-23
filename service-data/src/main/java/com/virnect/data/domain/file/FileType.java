@@ -4,5 +4,6 @@ public enum FileType {
     FILE,
     RECORD,
     SHARE,
-    PROFILE
+    PROFILE,
+    OBJECT
 }
