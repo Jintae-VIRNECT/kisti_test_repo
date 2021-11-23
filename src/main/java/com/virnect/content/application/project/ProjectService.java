@@ -715,7 +715,12 @@ public class ProjectService {
 			new ProjectActivityLogEvent(
 				ProjectActivity.UPDATE, null, project, workspaceUserInfo));
 
-		return new ProjectUpdateResponse(true, projectUUID, projectUpdateRequest.getUserUUID(), LocalDateTime.now());
+		boolean uploaderHasSharePermission = isProjectSharePermission(
+			project, projectUpdateRequest.getUserUUID(), workspaceUserInfo.getRole());
+		boolean uploaderHasEditPermission = isProjectEditPermission(
+			project, projectUpdateRequest.getUserUUID(), workspaceUserInfo.getRole());
+		return new ProjectUpdateResponse(
+			true, projectUUID, projectUpdateRequest.getUserUUID(), uploaderHasSharePermission, uploaderHasEditPermission, LocalDateTime.now());
 	}
 
 	private String generateQRString(String targetData) {

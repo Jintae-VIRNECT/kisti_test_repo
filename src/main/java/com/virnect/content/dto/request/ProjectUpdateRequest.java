@@ -42,7 +42,7 @@ public class ProjectUpdateRequest {
 	private List<Mode> modeList;
 	@ApiModelProperty(value = "공유 정보", position = 7)
 	private SharePermissionRequest share;
-	@ApiModelProperty(value = "모드 정보", position = 8)
+	@ApiModelProperty(value = "편집 정보", position = 8)
 	private EditPermissionRequest edit;
 
 	@Override
