@@ -1,8 +1,5 @@
 import http from 'api/gateway'
 import { ROLE } from 'configs/remote.config'
-
-import { memberSort } from 'utils/sort'
-
 /**
  * 멤버 리스트 호출
  * @param {String} filter 사용자 필터(MASTER, MANAGER, MEMBER) default ''
@@ -256,32 +253,5 @@ export const updatePrivateMemberGroup = async ({
     memberList,
   })
 
-  return returnVal
-}
-
-/**
- * 워크스페이스에 있는 하위 멤버 그룹 목록 조회
- *
- * @param {String} workspaceId 워크스페이스 id
- * @param {String} userId 유저 id
- *
- *
- * @returns 워크스페이스 하위 멤버 그룹
- */
-export const getSubGroups = async ({ userId, workspaceId, etcText }) => {
-  const returnVal = await http('SUB_GROUPS', {
-    userId,
-    workspaceId,
-  })
-  returnVal.groupInfoResponseList = returnVal.groupInfoResponseList.map(
-    (subGroup, index) => {
-      subGroup.index = index + 1
-      subGroup.remoteGroupMemberResponses.sort(memberSort)
-      if (subGroup.groupId === 'group_etc') {
-        subGroup.groupName = etcText
-      }
-      return subGroup
-    },
-  )
   return returnVal
 }

@@ -7,8 +7,8 @@
     :emptyImage="emptyImage"
     :emptyTitle="emptyTitle"
     :emptyDescription="emptyDescription"
-    :empty="memberCount === 0"
-    :listCount="memberCount"
+    :empty="list.length === 0"
+    :listCount="list.length"
     :showDeleteButton="false"
     :showRefreshButton="true"
     :showManageGroupButton="true"
@@ -17,31 +17,20 @@
     @search="doSearch"
     @showgroup="toggleMode"
   >
-    <collapsible
-      v-for="subGroup in list"
-      :title="subGroup.groupName"
-      :key="'group_' + subGroup.groupId"
-      :count="subGroup.remoteGroupMemberResponses.length"
-      :preOpen="preOpen"
-    >
-      <div
-        class="grid-container"
-        v-if="subGroup.remoteGroupMemberResponses.length > 0"
+    <div class="grid-container">
+      <member-card
+        v-for="userinfo in list"
+        :key="'user_' + userinfo.uuid"
+        :name="userinfo.nickName"
+        :imageUrl="userinfo.profile"
+        :email="userinfo.email"
+        :role="userinfo.role"
+        :status="accessType(userinfo.accessType)"
+        :showMasterMenu="isMaster && isOnpremise"
+        @forceLogout="forceLogout(userinfo)"
       >
-        <member-card
-          v-for="userinfo in subGroup.remoteGroupMemberResponses"
-          :key="'user_' + userinfo.uuid"
-          :name="userinfo.nickName"
-          :imageUrl="userinfo.profile"
-          :email="userinfo.email"
-          :role="userinfo.role"
-          :status="accessType(userinfo.accessType)"
-          :showMasterMenu="isMaster && isOnpremise"
-          @forceLogout="forceLogout(userinfo)"
-        >
-        </member-card>
-      </div>
-    </collapsible>
+      </member-card>
+    </div>
   </tab-view>
   <tab-view
     v-else
@@ -72,7 +61,7 @@
     <template v-slot:modal>
       <member-group-modal
         :visible.sync="memberGroupModalFlag"
-        :subGroups="subGroups"
+        :users="filteredMemberList"
         :groupMembers="groupMemberList"
         :groupId="selectedGroupId"
         :groupName="selectedGroupName"
@@ -87,15 +76,14 @@
 import MemberGroup from 'MemberGroup'
 import TabView from '../partials/WorkspaceTabView'
 import MemberCard from 'MemberCard'
-import Collapsible from 'Collapsible'
 
 import MemberGroupModal from '../modal/WorkspaceMemberGroup'
 
 import {
+  getMemberList,
   getMemberGroupList,
   getMemberGroupItem,
   deletePrivateMemberGroup,
-  getSubGroups,
 } from 'api/http/member'
 
 import { WORKSPACE_ROLE } from 'configs/status.config'
@@ -103,22 +91,20 @@ import confirmMixin from 'mixins/confirm'
 import toastMixin from 'mixins/toast'
 import { forceLogout } from 'api/http/message'
 import responsiveEmptyImageMixin from 'mixins/responsiveEmptyImage'
+import { ROLE } from 'configs/remote.config'
 
 const defaultEmptyImage = require('assets/image/img_user_empty.svg')
 const mobileEmptyImage = require('assets/image/img_user_empty_new.svg')
 
+import { memberSort } from 'utils/sort'
+
 export default {
   name: 'WorkspaceUser',
   mixins: [confirmMixin, toastMixin, responsiveEmptyImageMixin],
-  components: {
-    TabView,
-    MemberCard,
-    MemberGroup,
-    MemberGroupModal,
-    Collapsible,
-  },
+  components: { TabView, MemberCard, MemberGroup, MemberGroupModal },
   data() {
     return {
+      memberList: [],
       /*{
         deviceType: "UNKNOWN"
         email: "test2@test.com"
@@ -147,8 +133,6 @@ export default {
       groupList: [],
       groupMemberList: [],
 
-      subGroups: [],
-
       isOverflow: false,
     }
   },
@@ -158,42 +142,29 @@ export default {
     },
     list() {
       if (this.searchText.length > 0) {
-        const clonedSubGroups = JSON.parse(JSON.stringify(this.subGroups))
-        return clonedSubGroups.map(subGroup => {
-          subGroup.remoteGroupMemberResponses = subGroup.remoteGroupMemberResponses.filter(
-            this.memberFilter(this.searchText),
-          )
-          return subGroup
-        })
+        return this.searchMemberList
       } else {
-        return this.subGroups
+        return this.memberList
       }
     },
-    memberCount() {
-      return this.list.reduce((acc, subGroup) => {
-        return acc + subGroup.remoteGroupMemberResponses.length
-      }, 0)
-    },
     emptyTitle() {
-      if (this.memberCount === 0) {
+      if (this.memberList.length > 0) {
         return this.$t('workspace.search_empty')
       } else {
         return this.$t('workspace.user_empty')
       }
     },
     emptyDescription() {
-      if (this.subGroups.length > 0) {
+      if (this.memberList.length > 0) {
         return ''
       } else {
         return this.$t('workspace.user_empty_description')
       }
     },
-    preOpen() {
-      if (this.list.length === 1 && this.list[0].groupId === 'group_etc') {
-        return true
-      } else {
-        return false
-      }
+    filteredMemberList() {
+      return this.memberList.filter(member => {
+        return member.role !== ROLE.GUEST
+      })
     },
   },
   watch: {
@@ -202,6 +173,13 @@ export default {
         await this.getList()
         await this.getMemberGroups()
       }
+    },
+    //멤버목록이 갱신되면, 검색 결과 목록도 업데이트 (검색 결과 목록 상태인 경우)
+    memberList: {
+      deep: true,
+      handler() {
+        if (this.searchMemberList.length) this.doSearch(this.searchText)
+      },
     },
 
     async memberGroupModalFlag(flag) {
@@ -223,6 +201,15 @@ export default {
   },
   methods: {
     doSearch(text) {
+      this.searchMemberList = this.memberList.filter(member => {
+        if (member.email.toLowerCase().includes(text.toLowerCase())) {
+          return true
+        }
+        if (member.nickName.toLowerCase().includes(text.toLowerCase())) {
+          return true
+        }
+        return false
+      })
       this.searchText = text
     },
     async getList() {
@@ -234,12 +221,11 @@ export default {
         const params = {
           workspaceId: this.workspace.uuid,
           userId: this.account.uuid,
-          etcText: this.$t('workspace.workspace_member_sub_group_etc'),
         }
 
-        const subGroupData = await getSubGroups(params)
-
-        this.subGroups = subGroupData.groupInfoResponseList
+        const datas = await getMemberList(params)
+        this.memberList = datas.memberList
+        this.memberList.sort(memberSort)
 
         this.loading = false
       } catch (err) {
@@ -263,14 +249,10 @@ export default {
         ? `${targetUserinfo.nickName}\n`
         : `<span style="color:#6bb4f9">${targetUserinfo.nickName}</span> `
 
-      let latestTargetUserInfo = false
-      this.subGroups.forEach(subGroup => {
-        subGroup.remoteGroupMemberResponses.forEach(member => {
-          if (member.uuid === uuid) {
-            latestTargetUserInfo = member
-          }
-        })
-      })
+      //갱신한 목록에서 해당 멤버 검색
+      const latestTargetUserInfo = this.memberList.find(
+        member => member.uuid === uuid,
+      )
 
       //갱신한 목록에서 검색한 해당 멤버의 현재 접속 상태를 확인
       if (latestTargetUserInfo) {
@@ -419,18 +401,6 @@ export default {
         this.isOverflow = true
       else this.isOverflow = false
     },
-
-    memberFilter(text) {
-      return member => {
-        if (member.email.toLowerCase().includes(text.toLowerCase())) {
-          return true
-        }
-        if (member.nickName.toLowerCase().includes(text.toLowerCase())) {
-          return true
-        }
-        return false
-      }
-    },
   },
 
   /* Lifecycles */
@@ -456,7 +426,6 @@ export default {
   grid-template-columns: repeat(auto-fill, minmax(14.286rem, 1fr));
   column-gap: 0.571rem;
   row-gap: 0.571rem;
-  margin-bottom: 2.0714rem;
 }
 
 @include responsive-mobile {
@@ -466,7 +435,6 @@ export default {
     -moz-column-gap: 1rem;
     column-gap: 1rem;
     row-gap: 1rem;
-    margin-bottom: 1.2143rem;
   }
 }
 </style>

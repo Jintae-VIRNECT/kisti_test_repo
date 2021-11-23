@@ -1,4 +1,4 @@
-import { getMemberList, getSubGroups } from 'api/http/member'
+import { getMemberList } from 'api/http/member'
 import { getHistorySingleItem } from 'api/http/history'
 
 import { memberSort } from 'utils/sort'
@@ -47,15 +47,6 @@ export default {
         userId: this.account.uuid,
         includeGuest: false,
       })
-
-      const subGroupsData = await getSubGroups({
-        workspaceId: this.workspace.uuid,
-        userId: this.account.uuid,
-        etcText: this.$t('workspace.workspace_member_sub_group_etc'),
-      })
-
-      this.subGroups = subGroupsData.groupInfoResponseList
-
       this.users = inviteList.memberList
       this.users.sort(memberSort)
       this.selection = this.users.filter(

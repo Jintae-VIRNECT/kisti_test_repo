@@ -32,13 +32,10 @@
 
     <create-room-invite
       :users="users"
-      :subGroups="subGroups"
       :selection="selection"
       @userSelect="selectUser"
       @inviteRefresh="inviteRefresh"
       :loading="loading"
-      :groupList="groupList"
-      :showMemberGroupSelect="showMemberGroupSelect"
     ></create-room-invite>
 
     <button
@@ -92,18 +89,6 @@ export default {
     loading: {
       type: Boolean,
     },
-    groupList: {
-      type: Array,
-      default: () => [],
-    },
-    subGroups: {
-      type: Array,
-      default: () => [],
-    },
-    showMemberGroupSelect: {
-      type: Boolean,
-      default: false,
-    },
   },
   computed: {
     btnDisabled() {
@@ -120,14 +105,6 @@ export default {
       return this.selection.filter(user => user.accessType === 'LOGIN').length
     },
   },
-  watch: {
-    selection(cur, prev) {
-      if (cur.length > 0 && prev.length === 0) {
-        this.selectedListVisible = true
-      }
-    },
-  },
-
   methods: {
     close() {
       this.beforeClose()
