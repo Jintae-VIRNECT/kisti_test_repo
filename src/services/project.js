@@ -1,4 +1,4 @@
-import { api, allSettled } from '@/plugins/axios'
+import { api, allSettled, fileDownloadApi } from '@/plugins/axios'
 import { store } from '@/plugins/context'
 
 // model
@@ -27,6 +27,9 @@ export default {
       params.edit = params.filter.editTypes
       delete params.filter
     }
+
+    params.sort =
+      params.sort && params.sort.replace('targetType', 'target.type')
 
     const userUUID = myProfileGetter().uuid
     const workspaceUUID = activeWorkspaceGetter().uuid
@@ -110,7 +113,6 @@ export default {
    * @param {Object} form
    */
   async searchProjectActivities(projectUUID, form) {
-    console.log('form', form)
     const data = await api('PROJECT_ACTIVITIES', {
       route: { projectUUID },
       params: {
@@ -127,5 +129,20 @@ export default {
       ),
       pageMeta: data.pageMeta,
     }
+  },
+  /**
+   * 프로젝트 다운로드
+   * @param {Array} projectUUIDList
+   * @returns {Object} url 파일 다운로드, fileName 파일명
+   */
+  async downloadProjects(projectUUIDList) {
+    return await fileDownloadApi('PROJECT_DOWNLOAD', {
+      params: {
+        userUUID: myProfileGetter().uuid,
+        workspaceUUID: activeWorkspaceGetter().uuid,
+        projectUUIDList: projectUUIDList.join(','),
+      },
+      responseType: 'blob',
+    })
   },
 }

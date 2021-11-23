@@ -31,9 +31,9 @@
         <el-col class="right">
           <el-button-group>
             <el-button
-              @click="download(content.target.imgPath, content.contentName)"
+              @click="projectsDownload"
               type="text"
-              :disabled="!true"
+              :disabled="!canRemove"
             >
               <img src="~assets/images/icon/ic-file-download.svg" />
             </el-button>
@@ -131,6 +131,7 @@ import { mapGetters } from 'vuex'
 import searchMixin from '@/mixins/search'
 import columnsMixin from '@/mixins/columns'
 import utils from '@/mixins/utils'
+import { Loading } from 'element-ui'
 import { projectFilterList, memberRoleFilter } from '@/models/project/Project'
 
 export default {
@@ -234,6 +235,25 @@ export default {
         })
       }
       this.emitChangedSearchParams()
+    },
+    async projectsDownload() {
+      let loadingInstance = Loading.service({ fullscreen: true })
+      try {
+        const selectedProjects = this.$refs.table.selection.map(
+          project => project.uuid,
+        )
+        const { url, fileName } = await projectService.downloadProjects(
+          selectedProjects,
+        )
+        this.download(url, fileName)
+      } catch (e) {
+        this.$message.error({
+          message: this.$t('common.error'),
+          duration: 4000,
+          showClose: true,
+        })
+      }
+      loadingInstance.close()
     },
     /**
      * @description 데이터 조회 조건 초기화

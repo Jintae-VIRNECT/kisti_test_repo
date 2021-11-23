@@ -20,7 +20,7 @@
           </el-button>
           <el-divider direction="vertical"></el-divider>
           <el-button
-            @click="download(project.targetInfo.path, project.name)"
+            @click="projectsDownload(project.targetInfo.path, project.name)"
             type="text"
           >
             <img src="~assets/images/icon/ic-file-download.svg" />
@@ -90,10 +90,12 @@ import projectService from '@/services/project'
 import workspaceService from '@/services/workspace'
 import { memberRoleFilter } from '@/models/project/Project'
 import filters from '@/mixins/filters'
+import utils from '@/mixins/utils'
+import { Loading } from 'element-ui'
 import { mapGetters } from 'vuex'
 
 export default {
-  mixins: [filters],
+  mixins: [filters, utils],
   async asyncData({ params, store }) {
     // 해당 모달창에서 보여줄 프로젝트 정보를 불러옵니다.
     const project = await projectService.getProjectInfo(
@@ -240,6 +242,22 @@ export default {
           showClose: true,
         })
       }
+    },
+    async projectsDownload() {
+      let loadingInstance = Loading.service({ fullscreen: true })
+      try {
+        const { url, fileName } = await projectService.downloadProjects([
+          this.project.uuid,
+        ])
+        this.download(url, fileName)
+      } catch (e) {
+        this.$message.error({
+          message: this.$t('common.error'),
+          duration: 4000,
+          showClose: true,
+        })
+      }
+      loadingInstance.close()
     },
     // 공유/편집의 드롭메뉴를 지정하고, 지정멤버가 있을 경우에 지정한 멤버들을 드롭메뉴에 추가하니다
     setSelectOptionsAndSelectMembers() {

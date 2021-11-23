@@ -125,7 +125,8 @@ export default {
   PROJECT_DELETE: ['DELETE', '/contents/projects/{projectUUID}'],
   // 프로젝트의 활동 이력 조회요청
   PROJECT_ACTIVITIES: ['GET', '/contents/projects/{projectUUID}/activities'],
-
+  // 프로젝트 다운로드
+  PROJECT_DOWNLOAD: ['GET', '/contents/projects/download'],
   /**
    * onpremise
    */
