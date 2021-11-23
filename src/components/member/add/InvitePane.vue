@@ -16,13 +16,18 @@
         class="virnect-workstation-form"
         :model="form"
         :rules="rules"
+        @submit.native.prevent
       >
         <h6>
           <img src="~assets/images/icon/ic-person.svg" />
           <span>{{ `${$t('members.add.addUser')} ${index + 1}` }}</span>
-          <button @click.prevent="clearMember(index)">
+          <el-button
+            v-if="index"
+            class="invite-pane__close-button"
+            @click.prevent="clearMember(index)"
+          >
             <i class="el-icon-close" />
-          </button>
+          </el-button>
         </h6>
         <el-form-item class="horizon" prop="email" required>
           <template slot="label">
@@ -141,6 +146,7 @@ export default {
       }
     },
     clearMember(index) {
+      if (!index) return false
       this.userInfoList.splice(index, 1)
       this.choosePlan()
     },
@@ -216,12 +222,20 @@ export default {
   section:first-child {
     padding-bottom: 0;
   }
+  &__close-button {
+    width: 20px;
+    height: 20px;
+    background: none;
+    padding: 0;
+    &:hover {
+      background: none;
+    }
+  }
   .el-form {
     margin: 20px 0;
     padding: 20px 20px 4px;
     border: solid 1px #e6e9ee;
     box-shadow: 0 1px 3px 0 rgba(23, 43, 77, 0.1);
-
     .el-icon-close:before {
       font-weight: bold;
     }
