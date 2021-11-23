@@ -30,7 +30,9 @@ export default {
   },
   data() {
     return {
-      roles: role.options.filter(({ value }) => value !== 'MASTER'),
+      roles: role.options.filter(
+        ({ value }) => value !== 'MASTER' && value !== 'GUEST',
+      ),
       val: [this.value],
     }
   },
