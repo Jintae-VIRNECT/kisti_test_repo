@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import com.virnect.workspace.dao.workspace.WorkspaceSettingRepository;
+import com.virnect.workspace.dao.setting.WorkspaceSettingRepository;
 import com.virnect.workspace.domain.workspace.WorkspaceSetting;
 import com.virnect.workspace.infra.file.DefaultImageFile;
 import com.virnect.workspace.infra.file.FileService;

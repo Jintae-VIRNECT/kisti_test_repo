@@ -1,4 +1,4 @@
-package com.virnect.workspace.dao.workspace;
+package com.virnect.workspace.dao.setting;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 

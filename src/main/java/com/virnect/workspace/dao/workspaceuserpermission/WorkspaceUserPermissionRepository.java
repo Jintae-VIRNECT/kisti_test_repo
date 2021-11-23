@@ -1,4 +1,4 @@
-package com.virnect.workspace.dao.workspace;
+package com.virnect.workspace.dao.workspaceuserpermission;
 
 import com.virnect.workspace.domain.workspace.Role;
 import com.virnect.workspace.domain.workspace.Workspace;
