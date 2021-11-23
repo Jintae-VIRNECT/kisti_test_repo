@@ -82,7 +82,7 @@ public class DashboardHistoryRestController {
 		return ResponseEntity.ok(historyService.getRoomHistory(workspaceId, null, option));
 	}
 
-	@ApiOperation(value = "[워크스페이스] 내의 지정 '일' 내에서 발생한 시간별 개인 & 전체 협업 수를 반환하는 API")
+	@ApiOperation(value = "[워크스페이스] 내의 지정 '일' 내에서 발생한 시간별 개인, 전체 협업 수를 반환하는 API")
 	@ApiImplicitParams({
 		@ApiImplicitParam(name = "workspaceId", value = "워크스페이스 ID", defaultValue = "4bfcfbfa4375b2f5a85fbfbb277612ff", required = true),
 		@ApiImplicitParam(name = "userId", value = "유저 uuid", defaultValue = "40467b0c2dd94a83a8c69d70fc54038d", required = true),
@@ -112,7 +112,7 @@ public class DashboardHistoryRestController {
 		);
 	}
 
-	@ApiOperation(value = "[특정 워크스페이스] 내의 지정 '월' 내에서 발생한 시간별 개인 & 전체 협업 수를 반환하는 API")
+	@ApiOperation(value = "[특정 워크스페이스] 내의 지정 '월' 내에서 발생한 시간별 개인, 전체 협업 수를 반환하는 API")
 	@ApiImplicitParams({
 		@ApiImplicitParam(name = "workspaceId", value = "워크스페이스 ID", defaultValue = "4bfcfbfa4375b2f5a85fbfbb277612ff", required = true),
 		@ApiImplicitParam(name = "userId", value = "유저 uuid", defaultValue = "40467b0c2dd94a83a8c69d70fc54038d", required = true),

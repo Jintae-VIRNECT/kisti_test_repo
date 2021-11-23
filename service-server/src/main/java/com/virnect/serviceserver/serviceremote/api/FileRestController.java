@@ -366,7 +366,7 @@ public class FileRestController {
 
     @ApiOperation(value = "Get URL to download guide file", notes = "가이드 파일 다운로드 URL을 받습니다.")
     @ApiImplicitParams({
-        @ApiImplicitParam(name = "objectName", value = "다운로드 파일 고유 이름", dataType = "string", paramType = "query", required = true),
+        @ApiImplicitParam(name = "objectName", value = "다운로드 파일 고유 이름", dataType = "string", paramType = "query", required = true)
     })
     @GetMapping(value = "file/guide")
     public ResponseEntity<ApiResponse<String>> fileDownloadUrlRequestHandler(
