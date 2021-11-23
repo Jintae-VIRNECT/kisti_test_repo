@@ -1,6 +1,7 @@
-package com.virnect.workspace.dao.workspace;
+package com.virnect.workspace.dao.workspaceuserpermission;
 
 import com.virnect.workspace.domain.workspace.Role;
+import com.virnect.workspace.domain.workspace.WorkspaceRole;
 import com.virnect.workspace.domain.workspace.WorkspaceUser;
 import com.virnect.workspace.domain.workspace.WorkspaceUserPermission;
 import org.springframework.data.domain.Page;
@@ -25,7 +26,7 @@ public interface WorkspaceUserPermissionRepositoryCustom {
 
     List<WorkspaceUserPermission> findRecentWorkspaceUserList(int size, String workspaceId);
 
-    Optional<WorkspaceUserPermission> findWorkspaceUser(String workspaceId, String userId);
+    Optional<WorkspaceUserPermission> findWorkspaceUserPermission(String workspaceId, String userId);
 
     List<String> getUserIdsByInUserListAndEqRole(List<String> userIdList, List<Role> roleList, String workspaceId);
 

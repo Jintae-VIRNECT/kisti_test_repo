@@ -1,9 +1,10 @@
 package com.virnect.workspace.dto.rest;
 
-import io.swagger.annotations.ApiModel;
+import org.thymeleaf.util.StringUtils;
+
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
-import lombok.Setter;
+import lombok.RequiredArgsConstructor;
 
 /**
  * Project: PF-Workspace
@@ -13,11 +14,18 @@ import lombok.Setter;
  * DESCRIPTION:
  */
 @Getter
-@Setter
-@ApiModel
+@RequiredArgsConstructor
 public class UserInfoAccessCheckRequest {
 	@ApiModelProperty(value = "계정 이메일 아이디", example = "smic1")
-	private String email;
+	private final String email;
 	@ApiModelProperty(value = "계정 비밀번호", position = 1, example = "smic1234")
-	private String password;
+	private final String password;
+
+	@Override
+	public String toString() {
+		return "UserInfoAccessCheckRequest{" +
+			"email='" + email + '\'' +
+			", password='" + StringUtils.repeat("*", password.length()) + '\'' +
+			'}';
+	}
 }

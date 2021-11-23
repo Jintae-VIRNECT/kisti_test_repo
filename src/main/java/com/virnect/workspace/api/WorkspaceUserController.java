@@ -14,6 +14,8 @@ import io.swagger.annotations.ApiOperation;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+
+import org.slf4j.MDC;
 import org.springframework.context.annotation.Profile;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.StringUtils;
@@ -390,13 +392,13 @@ public class WorkspaceUserController {
         return ResponseEntity.ok(new ApiResponse<>(response));
     }
 
-    @ApiOperation(value = "워크스페이스 전용계정/시트계정 프로필 이미지 변경")
+    @ApiOperation(value = "워크스페이스 전용계정/게스트계정 프로필 이미지 변경")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "workspaceId", value = "워크스페이스 식별자", dataType = "string", defaultValue = "4d6eab0860969a50acbfa4599fbb5ae8", paramType = "path", required = true),
             @ApiImplicitParam(name = "profile", value = "워크스페이스 프로필", dataType = "__file", paramType = "form"),
     })
     @PostMapping("/{workspaceId}/members/profile")
-    public ResponseEntity<ApiResponse<MemberProfileUpdateResponse>> deleteWorkspaceMemberAccount(
+    public ResponseEntity<ApiResponse<MemberProfileUpdateResponse>> updateWorkspaceOnlyUserOrGuestUserProfile(
             @PathVariable("workspaceId") String workspaceId,
             @ModelAttribute @Valid MemberProfileUpdateRequest memberProfileUpdateRequest, BindingResult bindingResult
     ) {
@@ -406,7 +408,7 @@ public class WorkspaceUserController {
                             objectError -> log.error("[UPDATE WORKSPACE USER PROFILE] Error message : [{}]", objectError));
             throw new WorkspaceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
-        MemberProfileUpdateResponse response = workspaceUserService.updateWorkspaceUserProfile(workspaceId, memberProfileUpdateRequest);
+        MemberProfileUpdateResponse response = workspaceUserService.updateWorkspaceOnlyUserOrGuestUserProfile(workspaceId, memberProfileUpdateRequest);
         return ResponseEntity.ok(new ApiResponse<>(response));
     }
 

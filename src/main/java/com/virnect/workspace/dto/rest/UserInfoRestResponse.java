@@ -7,6 +7,8 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
 import lombok.Setter;
 
+import com.virnect.workspace.domain.workspace.UserType;
+
 /**
  * Project: PF-Workspace
  * DATE: 2020-02-19
@@ -42,7 +44,7 @@ public class UserInfoRestResponse {
     @ApiModelProperty(value = "계정 잠금 여부 ( ACTIVE(잠금), INACTIVE(해제) )", position = 11, example = "smic 워크스페이스 유저")
     private String loginLock;
     @ApiModelProperty(value = "사용자 타입 ( USER(일반), MEMBER_USER(멤버유저), VIRNECT_USER(사내 유저) )", position = 12, example = "smic 워크스페이스 유저")
-    private String userType;
+    private UserType userType;
     @ApiModelProperty(value = "마케팅 정보 수신 동의 여부", position = 13, example = "ACCEPT")
     private String marketInfoReceive;
     @ApiModelProperty(value = "비밀번호 찾기 질문", position = 14, example = "집에 가고 싶습니까?")

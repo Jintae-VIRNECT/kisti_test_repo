@@ -1,4 +1,4 @@
-package com.virnect.workspace.dao.workspace;
+package com.virnect.workspace.dao.workspaceuser;
 
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.virnect.workspace.domain.workspace.QWorkspaceUser;

@@ -1,4 +1,4 @@
-package com.virnect.workspace.dao.workspace;
+package com.virnect.workspace.dao.workspacepermission;
 
 import com.virnect.workspace.domain.workspace.WorkspacePermission;
 import org.springframework.data.jpa.repository.JpaRepository;

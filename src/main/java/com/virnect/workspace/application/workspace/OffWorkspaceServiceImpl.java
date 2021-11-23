@@ -18,13 +18,14 @@ import com.virnect.workspace.application.user.UserRestService;
 import com.virnect.workspace.dao.history.HistoryRepository;
 import com.virnect.workspace.dao.setting.SettingRepository;
 import com.virnect.workspace.dao.setting.WorkspaceCustomSettingRepository;
-import com.virnect.workspace.dao.workspace.WorkspacePermissionRepository;
+import com.virnect.workspace.dao.setting.WorkspaceSettingRepository;
 import com.virnect.workspace.dao.workspace.WorkspaceRepository;
-import com.virnect.workspace.dao.workspace.WorkspaceRoleRepository;
-import com.virnect.workspace.dao.workspace.WorkspaceSettingRepository;
-import com.virnect.workspace.dao.workspace.WorkspaceUserPermissionRepository;
-import com.virnect.workspace.dao.workspace.WorkspaceUserRepository;
+import com.virnect.workspace.dao.workspacepermission.WorkspacePermissionRepository;
+import com.virnect.workspace.dao.workspacerole.WorkspaceRoleRepository;
+import com.virnect.workspace.dao.workspaceuser.WorkspaceUserRepository;
+import com.virnect.workspace.dao.workspaceuserpermission.WorkspaceUserPermissionRepository;
 import com.virnect.workspace.domain.workspace.Role;
+import com.virnect.workspace.domain.workspace.UserType;
 import com.virnect.workspace.domain.workspace.Workspace;
 import com.virnect.workspace.domain.workspace.WorkspacePermission;
 import com.virnect.workspace.domain.workspace.WorkspaceRole;
@@ -100,7 +101,7 @@ public class OffWorkspaceServiceImpl extends WorkspaceService {
         //User Service 에서 유저 조회
         UserInfoRestResponse userInfoRestResponse = getUserInfo(workspaceCreateRequest.getUserId());
         //서브유저(유저가 만들어낸 유저)는 워크스페이스를 가질 수 없다.
-        if (userInfoRestResponse == null || userInfoRestResponse.getUserType().equals("SUB_USER")) {
+        if (userInfoRestResponse == null || userInfoRestResponse.getUserType()== UserType.SUB_USER) {
             throw new WorkspaceException(ErrorCode.ERR_UNEXPECTED_SERVER_ERROR);
         }
 

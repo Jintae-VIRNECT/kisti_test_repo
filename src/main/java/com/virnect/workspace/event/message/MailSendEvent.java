@@ -2,9 +2,10 @@ package com.virnect.workspace.event.message;
 
 import com.virnect.workspace.global.constant.Mail;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+
 import org.thymeleaf.context.Context;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
@@ -16,12 +17,26 @@ import java.util.Locale;
  * DESCRIPTION:
  */
 @Getter
-@RequiredArgsConstructor
 public class MailSendEvent {
     private final Context context;
     private final Mail mailType;
     private final Locale locale;
     private final List<String> receiverList;
+
+    public MailSendEvent(Context context, Mail mailType, Locale locale, List<String> receiverList) {
+        this.context = context;
+        this.mailType = mailType;
+        this.locale = locale;
+        this.receiverList = receiverList;
+    }
+    public MailSendEvent(Context context, Mail mailType, Locale locale, String receiver) {
+        this.context = context;
+        this.mailType = mailType;
+        this.locale = locale;
+        List<String> receivers = new ArrayList<>();
+        receivers.add(receiver);
+        this.receiverList = receivers;
+    }
 
     @Override
     public String toString() {

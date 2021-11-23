@@ -6,6 +6,10 @@ import com.virnect.workspace.dao.history.HistoryRepository;
 import com.virnect.workspace.dao.setting.SettingRepository;
 import com.virnect.workspace.dao.setting.WorkspaceCustomSettingRepository;
 import com.virnect.workspace.dao.workspace.*;
+import com.virnect.workspace.dao.workspacepermission.WorkspacePermissionRepository;
+import com.virnect.workspace.dao.workspacerole.WorkspaceRoleRepository;
+import com.virnect.workspace.dao.workspaceuser.WorkspaceUserRepository;
+import com.virnect.workspace.dao.workspaceuserpermission.WorkspaceUserPermissionRepository;
 import com.virnect.workspace.domain.workspace.*;
 import com.virnect.workspace.dto.WorkspaceInfoDTO;
 import com.virnect.workspace.dto.onpremise.*;
@@ -79,7 +83,7 @@ public class OnWorkspaceServiceImpl extends WorkspaceService {
         UserInfoRestResponse userInfoRestResponse = super.getUserInfo(workspaceCreateRequest.getUserId());
 
         //서브유저(유저가 만들어낸 유저)는 워크스페이스를 가질 수 없다.
-        if (userInfoRestResponse == null || userInfoRestResponse.getUserType().equals("SUB_USER")) {
+        if (userInfoRestResponse == null || userInfoRestResponse.getUserType() == UserType.SUB_USER) {
             throw new WorkspaceException(ErrorCode.ERR_UNEXPECTED_SERVER_ERROR);
         }
 

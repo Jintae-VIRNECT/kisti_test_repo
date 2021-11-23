@@ -25,4 +25,9 @@ public class MemberAccountDeleteRequest {
 	@ApiModelProperty(value = "계정 삭제 대상 유저 식별자", required = true, example = "8NZQpwbIoniLQ", position = 2)
 	@NotBlank
 	private String userId;
+
+	@ApiModelProperty(hidden = true)
+	public boolean isUserSelfUpdateRequest() {
+		return requestUserId.equals(userId);
+	}
 }
