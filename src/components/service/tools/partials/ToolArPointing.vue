@@ -14,7 +14,7 @@ import toolMixin from './toolMixin'
 import { ACTION } from 'configs/view.config'
 
 export default {
-  name: 'ToolLineMode',
+  name: 'ToolArPointing',
   mixins: [toolMixin],
   data() {
     return {

@@ -14,6 +14,7 @@
 import shareFileUploadMixin from 'mixins/shareFileUpload'
 import { FILE_TYPE } from 'configs/remote.config'
 export default {
+  name: 'MobileUploadButton',
   mixins: [shareFileUploadMixin],
   props: {
     fileType: {

@@ -166,9 +166,9 @@ export default {
         this.is3dContentsMode &&
         this.ar3dShareStatus === AR_3D_FILE_SHARE_STATUS.COMPLETE &&
         this.share3dContent.objectName
-      )
+      ) {
         return true
-      else return false
+      } else return false
     },
     toolDeactivated() {
       if (

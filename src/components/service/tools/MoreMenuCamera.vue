@@ -30,6 +30,7 @@ import { CONTROL } from 'configs/remote.config'
 import { mapMutations, mapGetters } from 'vuex'
 
 export default {
+  name: 'MoreMenuCamera',
   watch: {
     allowCameraControlFlag(flag) {
       this.SET_ALLOW_CAMERA_CONTROL(flag)

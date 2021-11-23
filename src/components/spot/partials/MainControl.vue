@@ -52,6 +52,7 @@ import { ESTOP_STATE, MOTOR_POWER } from 'configs/spot.config.js'
 import { mapGetters } from 'vuex'
 
 export default {
+  name: 'MainControl',
   components: {
     ControlBtn,
   },

@@ -11,6 +11,7 @@
 
 <script>
 export default {
+  name: 'MobileFileListButton',
   props: {
     disabled: { type: Boolean },
     notice: { type: Boolean },

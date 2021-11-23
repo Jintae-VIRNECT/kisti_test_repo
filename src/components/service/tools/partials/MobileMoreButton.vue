@@ -52,6 +52,7 @@ import { mapGetters } from 'vuex'
 import { ROLE } from 'configs/remote.config'
 
 export default {
+  name: 'MobileMoreButton',
   components: {
     Popover,
     Stream,

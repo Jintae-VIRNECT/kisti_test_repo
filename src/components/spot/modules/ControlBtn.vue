@@ -16,6 +16,7 @@
 
 <script>
 export default {
+  name: 'ControlBtn',
   props: {
     imgSrc: {
       type: String,

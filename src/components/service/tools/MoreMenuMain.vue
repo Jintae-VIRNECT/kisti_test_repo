@@ -39,6 +39,7 @@ const MENU = {
 }
 
 export default {
+  name: 'MoreMenuMain',
   data() {
     return {
       MENU: Object.freeze(MENU),

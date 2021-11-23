@@ -82,6 +82,7 @@ import { VIEW, ACTION } from 'configs/view.config'
 import { SIGNAL, DRAWING, ROLE, FILE_TYPE } from 'configs/remote.config'
 
 export default {
+  name: 'MobileFooter',
   mixins: [tabChangeMixin, fileShareEventQueueMixin],
   components: {
     MobileMoreButton,

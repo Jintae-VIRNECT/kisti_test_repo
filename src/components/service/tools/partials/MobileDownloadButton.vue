@@ -14,6 +14,7 @@ import confirmMixin from 'mixins/confirm'
 import { mapGetters } from 'vuex'
 
 export default {
+  name: 'MobileDownloadButton',
   mixins: [confirmMixin],
   props: {
     disabled: { type: Boolean },

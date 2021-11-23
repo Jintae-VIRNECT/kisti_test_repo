@@ -29,6 +29,7 @@ import Store from 'stores/remote/store'
 import { spotControl } from 'plugins/remote/spot/spotSocket'
 
 export default {
+  name: 'StandSitControl',
   props: {
     sitStandBtn: {
       type: Boolean,

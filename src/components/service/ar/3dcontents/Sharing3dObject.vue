@@ -37,6 +37,7 @@ import { ROLE, AR_3D_FILE_SHARE_STATUS, FILE_TYPE } from 'configs/remote.config'
 import { remoteFileList, remoteFileRemove } from 'api/http/drawing'
 
 export default {
+  name: 'Sharing3dObject',
   mixins: [toastMixin, confirmMixin, touchMixin],
   props: {
     fileInfo: {
@@ -58,22 +59,18 @@ export default {
       return this.account.roleType === ROLE.LEADER
     },
     isSharing() {
-      if (
+      return (
         this.share3dContent.objectName === this.fileInfo.objectName &&
         this.shared &&
         !this.is3dPositionPicking
       )
-        return true
-      else return false
     },
     isRemovable() {
-      if (
+      return (
         this.isLeader &&
         !this.isSharing &&
         this.share3dContent.objectName !== this.fileInfo.objectName
       )
-        return true
-      else return false
     },
   },
   methods: {

@@ -24,6 +24,7 @@ import { SPOT_CONTROL_KEYCODE } from 'configs/spot.config'
 import { spotControl } from 'plugins/remote/spot/spotSocket'
 
 export default {
+  name: 'MoveControl',
   components: {
     ControlBtn,
   },

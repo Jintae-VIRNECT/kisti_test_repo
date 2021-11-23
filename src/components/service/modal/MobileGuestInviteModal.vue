@@ -51,6 +51,7 @@ import FullScreenModal from 'FullScreenModal'
 import LabelInputButton from './partials/LabelInputButton'
 
 export default {
+  name: 'MobileGuestInviteModal',
   components: {
     FullScreenModal,
     LabelInputButton,

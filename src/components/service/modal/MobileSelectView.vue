@@ -36,6 +36,7 @@ const MENU = {
 }
 
 export default {
+  name: 'MobileSelectView',
   mixins: [confirmMixin],
 
   props: {

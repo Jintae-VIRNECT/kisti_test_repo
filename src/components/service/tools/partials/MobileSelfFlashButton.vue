@@ -4,6 +4,7 @@
 
 <script>
 export default {
+  name: 'MobileSelfFlashButton',
   data() {
     return {
       on: false,

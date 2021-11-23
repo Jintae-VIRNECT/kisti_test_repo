@@ -8,6 +8,7 @@
 
 <script>
 export default {
+  name: 'MobileCaptureButton',
   props: {
     disabled: {
       type: Boolean,

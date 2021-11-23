@@ -11,6 +11,7 @@ import { normalizedPosX, normalizedPosY } from 'utils/normalize'
 import { remoteFileDownload } from 'api/http/drawing'
 
 export default {
+  name: 'Ar3d',
   props: {
     videoSize: {
       type: Object,

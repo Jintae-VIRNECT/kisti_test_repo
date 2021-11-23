@@ -57,6 +57,7 @@
 import { mapGetters } from 'vuex'
 import SpotCameraBlock from './SpotCameraBlock.vue'
 export default {
+  name: 'SpotCameraLayer',
   components: { SpotCameraBlock },
   props: {
     cameraBlockList: {

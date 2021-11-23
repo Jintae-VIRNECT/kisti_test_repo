@@ -49,6 +49,7 @@ import { mapGetters, mapMutations } from 'vuex'
 import { remoteFileList } from 'api/http/drawing'
 
 export default {
+  name: 'ShareFileList',
   mixins: [toastMixin, errorMsgMixin, shareFileUploadMixin],
   components: {
     sharing3dObject,
@@ -73,20 +74,26 @@ export default {
     ar3dShareStatus: {
       immediate: true,
       handler(newVal) {
-        if (
+        //3d 파일 공유가 시작된 상태인지 여부(모델의 랜더링 시작, 완료 상태)
+        const is3dShareStarted =
           newVal === AR_3D_FILE_SHARE_STATUS.START ||
           newVal === AR_3D_FILE_SHARE_STATUS.COMPLETE
-        ) {
-          this.isShareStart = true
-        } else if (
+
+        //3d 파일 공유가 랜더링 실패 혹은 취소로 공유상태가 아닌 경우
+        const is3dShareCanceled =
           newVal === AR_3D_FILE_SHARE_STATUS.CANCEL ||
           newVal === AR_3D_FILE_SHARE_STATUS.ERROR
-        ) {
+
+        if (is3dShareStarted) {
+          this.isShareStart = true
+        } else if (is3dShareCanceled) {
           this.isShareStart = false
           this.SHOW_3D_CONTENT({})
           //출력 취소 문구 출력
           this.toastDefault(this.$t('service.ar_3d_load_cancel'))
-        } else if (newVal === '') {
+        }
+        //초기상태
+        else if (newVal === '') {
           this.isShareStart = false
         }
       },

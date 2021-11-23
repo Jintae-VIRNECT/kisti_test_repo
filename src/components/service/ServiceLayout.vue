@@ -8,7 +8,18 @@
 
       <transition name="share">
         <!-- 협업보드 파일/공유 목록 -->
-        <share v-if="!isMobileSize" v-show="currentView === 'drawing'"></share>
+        <share
+          v-if="!isMobileSize"
+          v-show="currentView === VIEW.DRAWING"
+        ></share>
+      </transition>
+
+      <transition name="share">
+        <!-- 3d공유 파일 목록 ui : 리더만 표시-->
+        <share-3d
+          v-if="!isMobileSize && isLeader && currentView === VIEW.AR"
+          v-show="viewAction === ACTION.AR_3D"
+        ></share-3d>
       </transition>
 
       <transition name="share">
@@ -22,21 +33,21 @@
       <main
         class="main-wrapper"
         :class="{
-          shareview: currentView === 'drawing' || isLeaderAr3dContentsMode,
+          shareview: currentView === VIEW.DRAWING || isLeaderAr3dContentsMode,
         }"
       >
         <transition name="main">
           <stream-view
             :class="{
-              hide: currentView !== 'stream' && currentView !== 'screen',
+              hide: currentView !== VIEW.STREAM,
             }"
           ></stream-view>
         </transition>
         <transition name="main">
-          <drawing-view v-show="currentView === 'drawing'"></drawing-view>
+          <drawing-view v-show="currentView === VIEW.DRAWING"></drawing-view>
         </transition>
         <transition name="main">
-          <ar-view v-show="currentView === 'ar'"></ar-view>
+          <ar-view v-show="currentView === VIEW.AR"></ar-view>
         </transition>
         <transition name="popover">
           <capture-modal
@@ -69,6 +80,8 @@
     </div>
     <mobile-footer
       v-if="isMobileSize"
+      :fetchedFileList="fileList"
+      :fetchedAr3dFileList="ar3dFileList"
       @getFileList="onGetFileList"
       @openFileListModal="onOpenFileListModal"
       @get3dFileList="onGet3dFileList"
@@ -169,6 +182,7 @@ export default {
   },
   data() {
     return {
+      VIEW: Object.freeze(VIEW),
       ACTION: Object.freeze(ACTION),
 
       showDenied: false,
@@ -207,28 +221,22 @@ export default {
       return this.account.roleType === ROLE.LEADER
     },
     currentView() {
-      if (this.view === VIEW.STREAM) {
-        return 'stream'
-      } else if (this.view === VIEW.DRAWING) {
-        return 'drawing'
-      } else if (this.view === VIEW.AR) {
-        return 'ar'
-      }
-      return ''
+      if (Object.values(VIEW).includes(this.view)) return this.view
+      else return ''
     },
     userListClass() {
       return {
-        shareview: this.currentView === 'drawing',
+        shareview: this.currentView === VIEW.DRAWING,
         fullscreen:
           this.isVideoLoaded &&
           this.isFullScreen &&
-          (this.currentView === 'stream' || this.currentView === 'screen'),
+          this.currentView === VIEW.STREAM,
       }
     },
     isLeaderAr3dContentsMode() {
       return (
         this.isLeader &&
-        this.currentView === 'ar' &&
+        this.currentView === VIEW.AR &&
         this.viewAction === ACTION.AR_3D
       )
     },

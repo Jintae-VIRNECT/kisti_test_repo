@@ -13,6 +13,7 @@
 
 <script>
 export default {
+  name: 'SharingFileSpinner',
   props: {
     fileName: {
       type: String,

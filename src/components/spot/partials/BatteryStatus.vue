@@ -11,6 +11,7 @@
 
 <script>
 export default {
+  name: 'BatteryStatus',
   props: {
     battery: {
       type: Number,

@@ -34,6 +34,7 @@
 import Modal from 'Modal'
 
 export default {
+  name: 'SpotConnectModal',
   components: {
     Modal,
   },

@@ -37,6 +37,7 @@ import ServiceMobileSetTranslate from './partials/ServiceMobileSetTranslate'
 import { ROLE } from 'configs/remote.config'
 
 export default {
+  name: 'MobileSettingModal',
   components: {
     FullScreenModal,
     ServiceSetPointing,

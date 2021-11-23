@@ -57,6 +57,7 @@ import CreateRoomInvite from 'components/workspace/partials/ModalCreateRoomInvit
 import ProfileList from 'ProfileList'
 
 export default {
+  name: 'MobileInviteModal',
   components: {
     FullScreenModal,
     ProfileList,

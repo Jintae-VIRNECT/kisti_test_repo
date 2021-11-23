@@ -66,6 +66,7 @@ import SharingFileSpinner from '../share/partials/SharingFileSpinner.vue'
 import { remoteFileList } from 'api/http/drawing'
 
 export default {
+  name: 'MobileShareFileListModal',
   mixins: [toastMixin],
   components: {
     FullScreenModal,
@@ -100,32 +101,42 @@ export default {
   watch: {
     fileList: {
       immediate: true,
-      handler(newVal) {
+      handler(newVal, oldVal) {
         //fileList가 조회되고, pdf 목록과 dom이 모두 생성된 후에 부모에 있는 callback을 실행하기 위해 이벤트 전달
         if (newVal.length > 0) {
           this.$nextTick(() => {
             this.$emit('rendered')
           })
         }
+        //file목록의 변화가 생긴 결과가 목록이 빈 경우는 자동으로 파일목록 창을 닫는다.
+        else if (oldVal.length > 0 && newVal.length === 0 && this.modalShow) {
+          this.close()
+        }
       },
     },
     ar3dShareStatus: {
       immediate: true,
       handler(newVal) {
-        if (
+        //3d 파일 공유가 시작된 상태인지 여부(모델의 랜더링 시작, 완료 상태)
+        const is3dShareStarted =
           newVal === AR_3D_FILE_SHARE_STATUS.START ||
           newVal === AR_3D_FILE_SHARE_STATUS.COMPLETE
-        ) {
-          this.isShareStart = true
-        } else if (
+
+        //3d 파일 공유가 랜더링 실패 혹은 취소로 공유상태가 아닌 경우
+        const is3dShareCanceled =
           newVal === AR_3D_FILE_SHARE_STATUS.CANCEL ||
           newVal === AR_3D_FILE_SHARE_STATUS.ERROR
-        ) {
+
+        if (is3dShareStarted) {
+          this.isShareStart = true
+        } else if (is3dShareCanceled) {
           this.isShareStart = false
           this.SHOW_3D_CONTENT({})
           //출력 취소 문구 출력
           this.toastDefault(this.$t('service.ar_3d_load_cancel'))
-        } else if (newVal === '') {
+        }
+        //초기상태
+        else if (newVal === '') {
           this.isShareStart = false
         }
       },
@@ -152,7 +163,6 @@ export default {
     ...mapMutations(['SHOW_3D_CONTENT', 'SET_AR_3D_SHARE_STATUS']),
     close() {
       this.$emit('update:modalShow', false)
-      //this.$emit('update:visible', false)
     },
     shareImage() {
       this.close()

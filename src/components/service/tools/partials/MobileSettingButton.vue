@@ -5,6 +5,7 @@
 <script>
 import { mapActions, mapGetters } from 'vuex'
 export default {
+  name: 'MobileSettingButton',
   computed: {
     ...mapGetters(['modalSetting']),
   },

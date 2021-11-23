@@ -51,6 +51,7 @@ import participantListMixin from 'mixins/participantList'
 // import InviteModal from '../modal/InviteModal'
 
 export default {
+  name: 'MobileParticipantModal',
   components: {
     FullScreenModal,
     ParticipantVideo,

@@ -11,6 +11,7 @@
 import flashMixin from 'mixins/flash'
 
 export default {
+  name: 'MobileFlashButton',
   mixins: [flashMixin],
 }
 </script>

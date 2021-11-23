@@ -73,8 +73,10 @@ export default {
       }
       //ar 3d 컨텐츠 모드 해제 및 공유 중인 데이터/상태 초기화
       else if (beforeVal === ACTION.AR_3D) {
-        if (this.view === VIEW.AR)
+        //AR내에 모드 변경시에만 3d모드 종료 시그널을 보내고, AR기능 자체의 종료인 경우 보내지 않는다.
+        if (this.view === VIEW.AR) {
           this.$call.sendAr3dSharing(AR_3D_CONTENT_SHARE.STOP_SHARE)
+        }
         this.SHOW_3D_CONTENT({})
         this.SET_AR_3D_SHARE_STATUS('')
       }

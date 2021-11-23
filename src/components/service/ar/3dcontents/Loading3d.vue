@@ -15,6 +15,7 @@
 
 <script>
 export default {
+  name: 'Loading3d',
   computed: {
     loadingImg() {
       if (this.isMobileSize)

@@ -57,6 +57,7 @@ import spotMixin from 'mixins/spot'
 import { spotControlRouterGuard } from 'utils/validator'
 
 export default {
+  name: 'SpotLayout',
   components: {
     SpotCameraLayer,
     SpotCameraLayerMobile,

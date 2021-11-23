@@ -31,6 +31,7 @@
 import SpotCameraBlock from './SpotCameraBlock.vue'
 
 export default {
+  name: 'SpotCameraLayerMobile',
   components: { SpotCameraBlock },
   props: {
     cameraBlockList: {

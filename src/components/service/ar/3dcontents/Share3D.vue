@@ -17,6 +17,7 @@
 import FileList from './ShareFileList'
 
 export default {
+  name: 'Share3D',
   components: {
     FileList,
   },

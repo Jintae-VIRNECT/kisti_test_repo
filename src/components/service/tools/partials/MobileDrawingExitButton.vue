@@ -9,6 +9,7 @@ import confirmMixin from 'mixins/confirm'
 import { DRAWING, ROLE } from 'configs/remote.config'
 
 export default {
+  name: 'MobileDrawingExitButton',
   mixins: [confirmMixin],
   computed: {
     ...mapGetters(['view', 'shareFile']),
