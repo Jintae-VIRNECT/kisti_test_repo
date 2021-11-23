@@ -25,8 +25,9 @@
         ></input-row>
 
         <room-invite
-          :subGroups="subGroups"
+          :users="users"
           :selection="selection"
+          :total="users.length"
           :loading="loading"
           @userSelect="selectUser"
           @inviteRefresh="refreshUser"
@@ -44,7 +45,7 @@
       :visible.sync="visibleMobileFlag"
       :beforeClose="beforeClose"
       :value.sync="groupNameInput"
-      :subGroups="subGroups"
+      :users="users"
       :selection="selection"
       :loading="loading"
       :maxSelect="maxSelect"
@@ -99,11 +100,15 @@ export default {
       type: Boolean,
       default: false,
     },
-    groupMembers: {
-      type: Array,
+    users: {
+      tpye: Array,
       default: () => [],
     },
-    subGroups: {
+    total: {
+      type: [Number, Boolean],
+      default: false,
+    },
+    groupMembers: {
       type: Array,
       default: () => [],
     },
@@ -118,6 +123,13 @@ export default {
     }
   },
   computed: {
+    totalNum() {
+      if (this.total === false) {
+        return this.users.length
+      } else {
+        return this.total
+      }
+    },
     groupNameInvalidMessage() {
       const inputLength = this.groupNameInput.length
       if (inputLength === 0) {
@@ -148,6 +160,9 @@ export default {
       if (this.groupNameInput.length < 2 || this.selection.length < 1) {
         this.groupNameInValid = true
       }
+    },
+    users() {
+      this.loading = false
     },
     groupMembers() {
       this.loading = false

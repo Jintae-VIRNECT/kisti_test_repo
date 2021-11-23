@@ -21,8 +21,9 @@
       </p>
 
       <room-invite
-        :subGroups="subGroups"
+        :users="users"
         :selection="selection"
+        :total="users.length"
         :loading="loading"
         @userSelect="selectUser"
         @inviteRefresh="refreshUser"
@@ -67,6 +68,9 @@ export default {
     groupNameInvalidMessage: {
       type: String,
     },
+    users: {
+      type: Array,
+    },
     selection: {
       type: Array,
     },
@@ -83,10 +87,6 @@ export default {
     groupName: {
       type: String,
       default: '',
-    },
-    subGroups: {
-      type: Array,
-      default: () => [],
     },
   },
   data() {
