@@ -233,10 +233,10 @@ export default {
         this.$store.dispatch('project/clearAllProjectData')
         this.$router.replace('/projects')
       } catch (errors) {
-        const e = errors[0]
         this.$message.error({
           message:
-            this.$t('projects.info.message.deleteFail') + `<br>(${e.message})`,
+            this.$tc('projects.info.message.deleteFail', errors.length) +
+            `<br>${this.$t('projects.info.message.deleteFailsPhrase')}`,
           dangerouslyUseHTMLString: true,
           duration: 2000,
           showClose: true,

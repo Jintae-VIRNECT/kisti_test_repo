@@ -221,17 +221,13 @@ export default {
           showClose: true,
         })
       } catch (errors) {
-        errors.forEach((e, index) => {
-          setTimeout(() => {
-            this.$message.error({
-              message:
-                this.$t('projects.info.message.deleteFail') +
-                `<br>(${e.message} / projectUUID: ${e.projectUUID})`,
-              dangerouslyUseHTMLString: true,
-              duration: 4000,
-              showClose: true,
-            })
-          }, index * 100)
+        this.$message.error({
+          message:
+            this.$tc('projects.info.message.deleteFail', errors.length) +
+            `<br>${this.$t('projects.info.message.deleteFailsPhrase')}`,
+          dangerouslyUseHTMLString: true,
+          duration: 4000,
+          showClose: true,
         })
       }
       this.emitChangedSearchParams()
