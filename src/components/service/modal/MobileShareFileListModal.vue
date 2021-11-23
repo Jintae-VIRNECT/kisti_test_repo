@@ -102,6 +102,9 @@ export default {
     fileList: {
       immediate: true,
       handler(newVal, oldVal) {
+        const isFileListEmptyAndModalVisible =
+          oldVal && oldVal.length > 0 && newVal.length === 0 && this.modalShow
+
         //fileList가 조회되고, pdf 목록과 dom이 모두 생성된 후에 부모에 있는 callback을 실행하기 위해 이벤트 전달
         if (newVal.length > 0) {
           this.$nextTick(() => {
@@ -109,7 +112,7 @@ export default {
           })
         }
         //file목록의 변화가 생긴 결과가 목록이 빈 경우는 자동으로 파일목록 창을 닫는다.
-        else if (oldVal.length > 0 && newVal.length === 0 && this.modalShow) {
+        else if (isFileListEmptyAndModalVisible) {
           this.close()
         }
       },
