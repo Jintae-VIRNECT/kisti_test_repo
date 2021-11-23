@@ -2,18 +2,20 @@
   <section class="tab-view">
     <div class="mobile-setting-wrapper">
       <nav class="setting-nav">
-        <ul>
-          <tab-button
-            v-for="(menu, idx) of menus"
-            :key="menu.key"
-            :text="menu.text"
-            :active="tabIdx === idx"
-            @click.native="tabChange(idx)"
-          ></tab-button>
-        </ul>
+        <perfect-scrollbar>
+          <ul>
+            <tab-button
+              v-for="(menu, idx) of menus"
+              :key="menu.key"
+              :text="menu.text"
+              :active="tabIdx === idx"
+              @click.native="tabChange(idx)"
+            ></tab-button>
+          </ul>
+        </perfect-scrollbar>
       </nav>
 
-      <div class="setting-view">
+      <div class="setting-view" :class="menus[tabIdx].key">
         <div class="setting-view__header">{{ menus[tabIdx].mobileText }}</div>
 
         <div class="setting-view__body">
@@ -53,6 +55,7 @@
 </template>
 
 <script>
+import { PerfectScrollbar } from 'vue2-perfect-scrollbar'
 import TabButton from '../../partials/WorkspaceTabButton'
 import SetVideo from './WorkspaceSetVideo'
 import SetAudio from './WorkspaceSetAudio'
@@ -62,6 +65,7 @@ import { mapGetters } from 'vuex'
 
 export default {
   components: {
+    PerfectScrollbar,
     TabButton,
     SetVideo,
     SetAudio,
@@ -98,9 +102,12 @@ export default {
   methods: {
     tabChange(idx) {
       this.$emit('tabChange', idx)
+      this.$nextTick(() => {
+        this.$eventBus.$emit('settingTabChanged')
+      })
     },
   },
 }
 </script>
 
-<style></style>
+<style src="vue2-perfect-scrollbar/dist/vue2-perfect-scrollbar.css" />

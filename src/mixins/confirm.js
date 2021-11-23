@@ -116,7 +116,7 @@ export default {
       cancel = { text: this.$t('button.cancel') },
     ) {
       Alert.fire({
-        title: title,
+        title: this.isMobileSize ? null : title,
         html: text,
         customClass: 'service-confirm',
         showCancelButton: true,

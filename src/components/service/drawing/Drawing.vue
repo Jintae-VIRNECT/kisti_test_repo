@@ -12,7 +12,10 @@
       :file="shareFile"
       @loadingSuccess="loadingFrame = false"
       @loadingStart="loadingFrame = true"
-    ></drawing-canvas>
+      @exitDrawing="exitDrawing"
+      :showExitButton="isDrawingExitVisible"
+    >
+    </drawing-canvas>
     <transition name="loading">
       <div class="drawing-box__empty loading" v-if="loadingFrame">
         <div class="drawing-box__empty-inner">
@@ -28,12 +31,23 @@
     </div>
     <div class="drawing-box__empty" v-show="show === 'default'">
       <div class="drawing-box__empty-inner">
-        <img src="~assets/image/call/img_file.svg" />
-        <p v-html="$t('service.drawing_drag')"></p>
-        <p class="description">
-          {{ $t('service.file_maxsize') }}
-        </p>
-        <button class="btn" @click="addFile">
+        <img :src="emptyDefaultImgPath" />
+        <p
+          v-html="
+            isMobileSize
+              ? $t('service.file_maxsize')
+              : $t('service.drawing_drag')
+          "
+        ></p>
+        <p
+          class="description"
+          v-html="
+            isMobileSize
+              ? $t('service.file_upload_mobile_guide')
+              : $t('service.file_maxsize')
+          "
+        ></p>
+        <button v-if="!isMobileSize" class="btn" @click="addFile">
           {{ $t('service.drawing_import') }}
         </button>
       </div>
@@ -46,11 +60,12 @@ import DrawingCanvas from './DrawingCanvas'
 import { mapGetters, mapActions } from 'vuex'
 import { ROLE, DRAWING } from 'configs/remote.config'
 import { VIEW } from 'configs/view.config'
+import toastMixin from 'mixins/toast'
 import confirmMixin from 'mixins/confirm'
 
 export default {
   name: 'Drawing',
-  mixins: [confirmMixin],
+  mixins: [toastMixin, confirmMixin],
   components: {
     DrawingCanvas,
   },
@@ -71,6 +86,20 @@ export default {
         return 'default'
       }
     },
+    emptyDefaultImgPath() {
+      return this.isMobileSize
+        ? require('assets/image/call/img_file_new.svg')
+        : require('assets/image/call/img_file.svg')
+    },
+    isLeader() {
+      return this.account.roleType === ROLE.LEADER
+    },
+    //협업보드 종료 버튼 표시 여부
+    isDrawingExitVisible() {
+      //리더이고, 협업보드에 공유된 파일이 있을 경우만 표시
+      if (this.isLeader && this.shareFile && this.shareFile.id) return true
+      return false
+    },
   },
   watch: {
     view(val) {
@@ -85,7 +114,7 @@ export default {
     },
   },
   methods: {
-    ...mapActions(['addHistory', 'setView']),
+    ...mapActions(['addHistory', 'setView', 'showImage']),
     participantChange(connectionId) {
       if (this.account.roleType !== ROLE.LEADER) return
       if (this.shareFile && this.shareFile.id) {
@@ -117,19 +146,20 @@ export default {
         target,
       )
     },
-    refreshCanvas() {
-      const imgId = parseInt(
-        Date.now()
-          .toString()
-          .substr(-9),
-      )
-      this.addHistory({
-        id: imgId,
-        fileName: this.shareFile.fileName,
-        oriName: this.shareFile.oriName,
-        img: this.shareFile.img,
-      })
-    },
+    //미사용 함수
+    // refreshCanvas() {
+    //   const imgId = parseInt(
+    //     Date.now()
+    //       .toString()
+    //       .substr(-9),
+    //   )
+    //   this.addHistory({
+    //     id: imgId,
+    //     fileName: this.shareFile.fileName,
+    //     oriName: this.shareFile.oriName,
+    //     img: this.shareFile.img,
+    //   })
+    // },
     addFile() {
       this.$eventBus.$emit('addFile')
     },
@@ -167,6 +197,22 @@ export default {
             : this.fileData.name,
         img: this.imageData,
         // fileData: this.fileData,
+      }
+    },
+    exitDrawing() {
+      if (!this.isLeader) return
+
+      if (this.shareFile && this.shareFile.id) {
+        this.confirmCancel(this.$t('service.toast_exit_drawing'), {
+          text: this.$t('button.exit'),
+          action: () => {
+            this.$call.sendDrawing(DRAWING.END_DRAWING)
+            this.toastDefault(this.$t('service.toast_drawing_end'))
+            this.showImage({}) //공유중 파일 초기화
+            this.setView(VIEW.STREAM) //탭 실시간 공유로 이동
+          },
+        })
+        return
       }
     },
   },

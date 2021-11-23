@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="57px" height="56px" viewBox="0 0 57 56" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>E2FDA4B0-B53A-49BE-B25C-251AD37EE2A2@2x</title>
+    <defs>
+        <path d="M27.0728029,13.1840154 L17.386197,37.1616423 C17.2191933,37.5750332 17.3136163,38.0481235 17.6265185,38.365731 C17.936397,38.6802693 18.4091398,38.7690514 18.8120214,38.588371 L28,34.4678363 L28,34.4678363 L37.1879786,38.588371 C37.5908602,38.7690514 38.063603,38.6802693 38.3734815,38.365731 C38.6863837,38.0481235 38.7808067,37.5750332 38.613803,37.1616423 L28.9271971,13.1840154 C28.7203256,12.6719386 28.1375029,12.4245207 27.6254261,12.6313922 C27.3738829,12.7330119 27.1744227,12.9324721 27.0728029,13.1840154 Z" id="path-1"></path>
+    </defs>
+    <g id="Remote_SPOT_mobile/tablet" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="RSS_0007_Spot-연결_조작키-활성화_tablet" transform="translate(-483.000000, -599.000000)">
+            <g id="icon_point" transform="translate(484.000000, 599.000000)">
+                <rect id="tr" x="0" y="0" width="56" height="56"></rect>
+                <mask id="mask-2" fill="white">
+                    <use xlink:href="#path-1"></use>
+                </mask>
+                <use id="icon/maps/navigation_24px" stroke="#FFFFFF" stroke-width="1.6" fill="#FFD400" fill-rule="nonzero" xlink:href="#path-1"></use>
+            </g>
+        </g>
+    </g>
+</svg>

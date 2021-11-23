@@ -81,21 +81,21 @@ export default {
   SEND_SIGNAL: ['POST', '/remote/room/{workspaceId}/signal'],
 
   /* Service - Drawing */
-  DRAWING_UPLOAD: [
+  REMOTE_FILE_UPLOAD: [
     'POST',
-    '/remote/file/upload/share',
+    '/remote/file/upload/share?fileType={fileType}',
     { type: 'form', timeout: 15000 },
   ],
-  DRAWING_LIST: ['GET', '/remote/file/share'],
-  DRAWING_DOWNLOAD: [
+  REMOTE_FILE_LIST: ['GET', '/remote/file/share?fileType={fileType}'],
+  REMOTE_FILE_DOWNLOAD: [
     'GET',
     '/remote/file/download/url/share/{workspaceId}/{sessionId}',
   ],
-  DRAWING_REMOVE: [
+  REMOTE_FILE_REMOVE: [
     'DELETE',
     '/remote/file/share/{workspaceId}/{sessionId}?leaderUserId={leaderUserId}&objectName={objectName}',
   ],
-  DRAWING_REMOVE_ALL: [
+  REMOTE_FILE_REMOVE_ALL: [
     'DELETE',
     '/remote/files/share/{workspaceId}/{sessionId}?userId={leaderUserId}',
   ],
@@ -149,6 +149,9 @@ export default {
   /* 다운로드 서버 */
   LATEST_APP_INFO: ['GET', '/download/list/{productName}'],
   DOWNLOAD_APP: ['GET', '/download/app/{uuid}'],
+
+  /* WORKSPACE SUB GROUP */
+  SUB_GROUPS: ['GET', '/remote/members/group/{workspaceId}'],
 }
 
 export const wsUri = {

@@ -14,6 +14,10 @@ export default {
       type: Boolean,
       default: false,
     },
+    disableTooltip: {
+      type: Boolean,
+      default: false,
+    },
   },
   data() {
     return {

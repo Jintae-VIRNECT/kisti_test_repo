@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="40px" height="40px" viewBox="0 0 40 40" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>201B4D59-E838-4542-AD7A-5D7F91603FFF@3x</title>
+    <defs>
+        <filter x="-16.2%" y="-16.2%" width="132.5%" height="132.5%" filterUnits="objectBoundingBox" id="filter-1">
+            <feOffset dx="0" dy="0" in="SourceAlpha" result="shadowOffsetOuter1"></feOffset>
+            <feGaussianBlur stdDeviation="1.5" in="shadowOffsetOuter1" result="shadowBlurOuter1"></feGaussianBlur>
+            <feColorMatrix values="0 0 0 0 0   0 0 0 0 0   0 0 0 0 0  0 0 0 0.5 0" type="matrix" in="shadowBlurOuter1" result="shadowMatrixOuter1"></feColorMatrix>
+            <feMerge>
+                <feMergeNode in="shadowMatrixOuter1"></feMergeNode>
+                <feMergeNode in="SourceGraphic"></feMergeNode>
+            </feMerge>
+        </filter>
+        <path d="M23.4545455,11 L13.6363636,11 C12.7363636,11 12,11.7363636 12,12.6363636 L12,24.0909091 L13.6363636,24.0909091 L13.6363636,12.6363636 L23.4545455,12.6363636 L23.4545455,11 Z M25.9381641,14.2727273 L16.9381641,14.2727273 C16.0381641,14.2727273 15.3018005,15.0090909 15.3018005,15.9090909 L15.3018005,27.3636364 C15.3018005,28.2636364 16.0381641,29 16.9381641,29 L25.9381641,29 C26.8381641,29 27.5745277,28.2636364 27.5745277,27.3636364 L27.5745277,15.9090909 C27.5745277,15.0090909 26.8381641,14.2727273 25.9381641,14.2727273 Z M25.9090909,15.9090909 L25.9090909,27.3636364 L16.9090909,27.3636364 L16.9090909,15.9090909 L25.9090909,15.9090909 Z M23.1737898,18.7436541 L21.4381641,20.4792798 L19.7025384,18.7436541 L18.5454545,19.9007379 L20.2810803,21.6363636 L18.5454545,23.3719894 L19.7025384,24.5290732 L21.4381641,22.7934475 L23.1737898,24.5290732 L24.3308737,23.3719894 L22.5952479,21.6363636 L24.3308737,19.9007379 L23.1737898,18.7436541 Z" id="path-2"></path>
+    </defs>
+    <g id="Remote_Main_remote" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="RMS_0220_접속-화면-협업보드(리더)_드로잉" transform="translate(-304.000000, -294.000000)">
+            <g id="expand-button_on" transform="translate(304.000000, 150.000000)">
+                <g id="Group-2" transform="translate(0.000000, 6.000000)">
+                    <g id="wboard_ic_delete" filter="url(#filter-1)" transform="translate(0.000000, 138.000000)">
+                        <polygon opacity="0.186895461" points="0 0 40 0 40 40 0 40"></polygon>
+                        <mask id="mask-3" fill="white">
+                            <use xlink:href="#path-2"></use>
+                        </mask>
+                        <use id="icon/content/copy_24px" fill="#F6F6F6" fill-rule="nonzero" xlink:href="#path-2"></use>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

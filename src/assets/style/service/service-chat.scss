@@ -52,6 +52,10 @@
   text-overflow: ellipsis;
 }
 
+.chat-header__close {
+  display: none;
+}
+
 .chat-header__menu {
   display: flex;
   height: 100%;
@@ -326,6 +330,9 @@
   }
   &.ar::before {
     background-image: url(~assets/image/call/ic_chat_ar.svg);
+  }
+  &.ar-3d::before {
+    background-image: url(~assets/image/call/chat/icon_3D_object.svg);
   }
   &.board::before {
     background-image: url(~assets/image/call/ic_chat_board.svg);
@@ -772,5 +779,371 @@
   transition: background-color 0.2s;
   &:disabled {
     color: rgba($color_text_sub, 0.5);
+  }
+}
+
+@include responsive-mobile {
+  .chat {
+    background-color: $new_color_bg_sub;
+  }
+
+  .chat-header {
+    height: 9.6rem;
+    background-color: $new_color_bg;
+  }
+
+  .chat-header__title {
+    align-items: center;
+    min-height: 5.4rem;
+    color: $new_color_text_main;
+    @include fontLevel(200);
+  }
+
+  .chat-header__menu {
+    border-bottom: 1px solid $new_color_line_border;
+    .chat-header__selector {
+      position: relative;
+      height: 100%;
+      opacity: 1;
+
+      .chat-header__selector--text {
+        color: $new_color_text_sub_description;
+        @include fontLevel(75);
+
+        img {
+          width: 2rem;
+          height: 2rem;
+          margin-right: 0.6rem;
+          background-color: $new_color_text_sub_description;
+        }
+        img.selector-chat {
+          mask-image: url(~assets/image/call/chat_ic_chat_w.svg);
+        }
+        img.selector-file {
+          mask-image: url(~assets/image/call/chat_ic_folder_w.svg);
+        }
+      }
+
+      &.active .chat-header__selector--text {
+        color: $new_color_text_main;
+        img {
+          background-color: $new_color_text_main;
+        }
+      }
+
+      &::after {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 0;
+        height: 3px;
+        background-color: white;
+        transition: width 0.3s;
+        content: "";
+      }
+
+      &.active {
+        background-color: transparent;
+        opacity: 1;
+      }
+
+      &.active::after {
+        width: 100%;
+      }
+    }
+  }
+
+  .chat-header__close {
+    position: absolute;
+    top: 1.5rem;
+    right: 1.6rem;
+    display: block;
+    width: 2.4rem;
+    height: 2.4rem;
+    background: url(~assets/image/ic_close_24.svg) 50% no-repeat;
+  }
+
+  .chat-msglist {
+    padding: 0.9rem 1.4rem 0.9rem 2.4rem;
+  }
+
+  .chat-item {
+    margin: 0.9rem 0;
+
+    .chat-item__body .chat-item__body--time {
+      @include fontLevel(50);
+      margin: 0.4rem 0 0 0;
+      color: $new_color_text_sub_description;
+    }
+
+    .chat-item__body .chat-item__body--text {
+      @include fontLevel(75);
+      em {
+        color: #64a6e5;
+        line-height: 24px;
+      }
+      //icon
+      &::before {
+        width: 1.6rem;
+        height: 1.6rem;
+        background-color: #868c94;
+        background-image: none;
+        //background-size: unset;
+        transform: translate(-5px, 4px);
+        mask-repeat: no-repeat;
+      }
+      &.init::before {
+        mask-image: url(~assets/image/call/ic_chat_remote.svg);
+      }
+      &.alarm::before {
+        mask-image: url(~assets/image/call/ic_chat_alarm.svg);
+      }
+      &.sharing::before {
+        mask-image: url(~assets/image/call/ic_chat_sharing.svg);
+      }
+      &.people::before {
+        mask-image: url(~assets/image/call/ic_chat_ppl.svg);
+      }
+      &.ar::before {
+        mask-image: url(~assets/image/call/ic_chat_ar.svg);
+      }
+      &.board::before {
+        mask-image: url(~assets/image/call/ic_chat_board.svg);
+      }
+      &.cancel::before {
+        mask-image: url(~assets/image/call/ic_chat_filecancel.svg);
+      }
+      &.pointing::before {
+        mask-image: url(~assets/image/call/ic_chat_pointing.svg);
+      }
+      &.record::before {
+        mask-image: url(~assets/image/call/ic_chat_local_record.svg);
+      }
+      &.screen::before {
+        mask-image: url(~assets/image/call/ic_chat_screen.svg);
+      }
+      &.camera::before {
+        mask-image: url(~assets/image/call/ic_chat_camera.svg);
+      }
+    }
+
+    &.system {
+      margin: 0.9rem 0;
+    }
+
+    &.system.create .chat-item__body .chat-item__body--text {
+      @include fontLevel(100);
+    }
+
+    &.opponent {
+      .chat-item__body {
+        margin-left: 4rem;
+        .chat-item__body--name {
+          margin-bottom: 0.6rem;
+          color: #5e666d;
+          @include fontLevel(50);
+        }
+      }
+    }
+
+    &.opponent,
+    &.me {
+      .chat-item__body {
+        .chat-item__body--chatbox {
+          padding: 1.1rem 1.3rem;
+        }
+        .chat-item__body--text {
+          @include fontLevel(150);
+        }
+        .chat-item__body--time {
+          margin-top: 0.6rem;
+        }
+      }
+    }
+
+    &.file-share {
+      .chat-item__body .chat-item__file {
+        .chat-item__file--name {
+          @include fontLevel(150);
+          min-width: 45.8vw;
+          padding-left: 0.8rem;
+        }
+        .chat-item__file--name::before {
+          width: 2.4rem;
+          height: 2.4rem;
+        }
+
+        .chat-item__file--exp {
+          height: 2rem;
+          margin: 0.5rem 0.5rem 0 2.9rem;
+          padding: 0 0.5rem 0 0.7rem;
+          color: $new_color_text_main;
+          @include fontLevel(75);
+        }
+        .chat-item__file--size {
+          margin-top: 0.5rem;
+          @include fontLevel(75);
+          color: $new_color_text_sub_description;
+        }
+      }
+      .chat-item__body {
+        .chat-item__file--button {
+          width: 16.2rem;
+          height: 3.4rem;
+          margin-top: 1.3rem;
+        }
+        .chat-item__file--button .button-text {
+          @include fontLevel(100);
+        }
+      }
+    }
+
+    &.date {
+      margin-bottom: 1.6rem;
+      p {
+        @include fontLevel(50);
+        color: $new_color_text_sub;
+
+        &::after,
+        &::before {
+          width: 28.8vw;
+          margin-right: 1.3rem;
+          margin-left: 1.3rem;
+        }
+      }
+    }
+  }
+
+  .chat-input {
+    background-color: $new_color_bg_item;
+    .chat-input__form {
+      height: 6rem;
+      padding: 1.5rem 1.6rem;
+      .chat-input__form-speech {
+        width: 2.4rem;
+        height: 2.4rem;
+        margin-right: 0.8rem;
+      }
+      .chat-input__form-upload {
+        width: 2.4rem;
+        height: 2.4rem;
+        margin-right: 1.2rem;
+      }
+      .chat-input__form-write {
+        @include fontLevel(100);
+        color: $new_color_text_main;
+        line-height: 2.9rem;
+        &::placeholder {
+          color: $new_color_text_sub_description;
+        }
+      }
+      .chat-input__form-remove {
+        width: 2.8rem;
+        height: 2.8rem;
+        margin-top: 0.1rem;
+        margin-right: 1.1rem;
+        background: url(~assets/image/call/chat/ic_chat_cancel_select_new.svg)
+          center/100% no-repeat;
+      }
+      .chat-input__form-filetext {
+        @include fontLevel(100);
+        color: $new_color_text_main;
+        @include ellipsis;
+      }
+      .chat-input__form-button {
+        width: 6.4rem;
+        height: 3rem;
+        color: $new_color_text_main;
+        background-color: $new_color_bg_button_primary;
+        border-radius: 4px;
+        @include fontLevel(100);
+      }
+    }
+  }
+
+  //파일
+  .chat-file-item {
+    height: 7.8rem;
+    padding: 1.4rem 1rem 1.4rem 2rem;
+    &:hover {
+      background-color: transparent;
+    }
+    &::after {
+      width: 2rem;
+      height: 2rem;
+    }
+    &.active {
+      background-color: $new_color_bg_item;
+    }
+
+    .chat-file-item__wrapper > img {
+      width: 2.4rem;
+      height: 2.4rem;
+    }
+    .chat-file-item__wrapper > .chat-file-item__body {
+      .chat-file-item__name {
+        width: 68.8vw;
+        @include fontLevel(200);
+        height: unset;
+      }
+
+      .chat-file-item__valid {
+        margin-top: 0.6rem;
+        > span {
+          margin-right: 0.8rem;
+          padding: 0 0.6rem;
+          color: $new_color_text_main;
+          line-height: 2rem;
+          background-color: $new_color_bg_button_sub;
+          border: none;
+          @include fontLevel(75);
+        }
+        > em {
+          @include fontLevel(75);
+          margin-left: 0;
+          color: $new_color_text_sub_description;
+        }
+      }
+    }
+  }
+
+  .chat-list__empty-inner {
+    > img {
+      width: 10rem;
+      height: 10rem;
+    }
+    > p {
+      margin-top: 0.5rem;
+      @include fontLevel(150);
+      color: $new_color_text_sub;
+    }
+  }
+
+  .chat-down {
+    background-color: $new_color_bg_item;
+    .chat-down__bar {
+      height: 6rem;
+      padding: 1.5rem 1.6rem;
+      .chat-down__bar--cancel {
+        width: 2.8rem;
+        height: 2.8rem;
+        margin-right: 1.1rem;
+        background: url(~assets/image/call/chat/ic_chat_cancel_select_new.svg)
+          center/100% no-repeat;
+      }
+      .chat-down__bar--count {
+        @include fontLevel(100);
+        color: $new_color_text_main;
+        @include ellipsis;
+      }
+      .chat-down__bar--button {
+        width: 8rem;
+        height: 3rem;
+        color: $new_color_text_main;
+        background-color: $new_color_bg_button_primary;
+        border-radius: 4px;
+        @include fontLevel(100);
+      }
+    }
   }
 }

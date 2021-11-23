@@ -1,5 +1,8 @@
 <template>
   <div class="main-video">
+    <p v-if="viewForce" class="main-video__sharing-user">
+      {{ mainView.nickname }}
+    </p>
     <div
       class="main-video__box"
       @mouseenter="hoverTools = true"
@@ -9,6 +12,16 @@
         hidden: !loaded || emptyStream,
       }"
     >
+      <pinch-zoom-layer
+        v-if="
+          (isLeader || mainView.id === account.uuid) &&
+            isMobileSize &&
+            viewForce &&
+            viewAction !== ACTION.STREAM_POINTING
+        "
+        @zoomLevelChanged="onZoomLevelChanged"
+      ></pinch-zoom-layer>
+
       <!-- 메인 비디오 뷰 -->
       <video
         ref="mainVideo"
@@ -30,7 +43,11 @@
               class="btn small main-video__sharing-button active"
               @click="cancelSharing"
             >
-              {{ $t('button.stream_sharing_cancel') }}
+              {{
+                isMobileSize
+                  ? $t('button.stream_sharing')
+                  : $t('button.stream_sharing_cancel')
+              }}
             </button>
             <button v-else class="btn small main-video__sharing-button">
               {{ $t('button.stream_sharing') }}
@@ -39,8 +56,12 @@
         </transition>
 
         <!-- 녹화 시간 정보 -->
-        <div class="main-video__recording">
-          <div class="main-video__recording--time" v-if="serverTimer">
+        <div
+          v-if="serverTime"
+          class="main-video__recording"
+          :class="{ 'sharing-on': viewForce }"
+        >
+          <div class="main-video__recording--time">
             <p class="server">
               {{ serverTime | timeFilter }}
             </p>
@@ -57,14 +78,23 @@
           class="main-video__pointing"
         ></pointing>
 
+        <!-- zoom 레벨 표시(모바일) -->
+        <div
+          v-if="isMobileSize && showZoomLevel"
+          class="main-video__zoom--level"
+        >
+          <span>{{ zoomLevel }}</span>
+        </div>
+
         <!-- 디바이스 컨트롤 뷰 -->
         <template v-if="allowTools">
           <transition name="opacity">
-            <video-tools v-if="hoverTools"></video-tools>
+            <video-tools v-if="hoverTools && !isMobileSize"></video-tools>
           </transition>
         </template>
         <transition name="opacity">
           <fullscreen
+            v-if="!isMobileSize"
             :hide.sync="hideFullBtn"
             v-show="!hideFullBtn"
           ></fullscreen>
@@ -75,21 +105,22 @@
       <transition name="opacity">
         <!-- 영상이 없을 경우 -->
         <div class="main-video__empty-inner" v-if="resolutions.length === 0">
-          <img src="~assets/image/img_novideo.svg" />
+          <img :src="noVideoSrc" />
           <p>{{ $t('service.stream_no_video') }}</p>
           <p class="inner-discription">
             {{ $t('service.stream_no_worker') }}
           </p>
         </div>
         <div class="main-video__empty-inner" v-else>
-          <img src="~assets/image/call/img_select_video.svg" />
+          <img :src="selectVideoSrc" />
           <p v-html="$t('service.stream_choice')"></p>
         </div>
       </transition>
       <!-- 영상 초기화 로딩 -->
       <transition name="opacity">
         <div class="main-video__empty-inner loading" v-if="initing">
-          <img src="~assets/image/gif_loading.svg" />
+          <img :src="videoLoadingSrc" />
+          <p v-if="isMobileSize" v-html="$t('service.stream_connecting')"></p>
         </div>
       </transition>
     </div>
@@ -98,7 +129,7 @@
         <transition name="opacity">
           <!-- 영상 백그라운드 및 정지 표출 -->
           <div class="main-video__empty-inner" v-if="mainView.me !== true">
-            <img src="~assets/image/img_video_stop.svg" />
+            <img :src="videoStopSrc" />
             <p>{{ $t('service.stream_stop') }}</p>
             <p
               class="inner-discription"
@@ -109,8 +140,9 @@
               {{ $t('service.stream_stoped') }}
             </p>
           </div>
+          <!-- 영상이 없을 경우 -->
           <div class="main-video__empty-inner" v-else>
-            <img src="~assets/image/img_novideo.svg" />
+            <img :src="noVideoSrc" />
             <p>{{ $t('service.stream_off') }}</p>
           </div>
         </transition>
@@ -138,9 +170,11 @@ export default {
     Pointing,
     VideoTools,
     Fullscreen,
+    PinchZoomLayer: () => import('./partials/PinchZoomLayer'),
   },
   data() {
     return {
+      ACTION: Object.freeze(ACTION),
       status: 'good', // good, normal, bad
       hoverTools: false,
       loaded: false,
@@ -158,6 +192,9 @@ export default {
       hideFullBtn: false,
 
       backInterval: null,
+
+      showZoomLevel: false,
+      zoomLevel: 'x1.0',
     }
   },
   computed: {
@@ -172,6 +209,26 @@ export default {
       view: 'view',
       screenSharing: 'screenSharing',
     }),
+    noVideoSrc() {
+      return this.isMobileSize
+        ? require('assets/image/call/img_novideo_new.svg')
+        : require('assets/image/call/img_novideo.svg')
+    },
+    selectVideoSrc() {
+      return this.isMobileSize
+        ? require('assets/image/call/img_select_video_new.svg')
+        : require('assets/image/call/img_select_video.svg')
+    },
+    videoStopSrc() {
+      return this.isMobileSize
+        ? require('assets/image/img_video_stop_new.svg')
+        : require('assets/image/img_video_stop.svg')
+    },
+    videoLoadingSrc() {
+      return this.isMobileSize
+        ? require('assets/image/call/mdpi_image_videolink_new.svg')
+        : require('assets/image/gif_loading.svg')
+    },
     isLeader() {
       return this.account.roleType === ROLE.LEADER
     },
@@ -217,7 +274,7 @@ export default {
       }
       if (
         this.viewForce === true &&
-        this.account.roleType === ROLE.LEADER &&
+        this.isLeader &&
         this.viewAction !== ACTION.STREAM_POINTING
       ) {
         if (
@@ -461,6 +518,16 @@ export default {
       setTimeout(() => {
         this.optimizeVideoSize()
       }, 500)
+    },
+    onZoomLevelChanged(zoomLevel) {
+      clearTimeout(this.timeoutId)
+      this.timeoutId = null
+
+      this.showZoomLevel = true
+      this.zoomLevel = `x${zoomLevel}`
+      this.timeoutId = setTimeout(() => {
+        this.showZoomLevel = false
+      }, 2000)
     },
   },
 

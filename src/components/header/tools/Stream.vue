@@ -1,5 +1,5 @@
 <template>
-  <tooltip :content="`${$t('common.video')} on/off`">
+  <tooltip :active="tooltipActive" :content="`${$t('common.video')} on/off`">
     <toggle-button
       slot="body"
       customClass="toggle-header stream"
@@ -31,6 +31,10 @@ export default {
     size: {
       type: String,
       default: '2.429rem',
+    },
+    tooltipActive: {
+      type: Boolean,
+      default: true,
     },
   },
   data() {

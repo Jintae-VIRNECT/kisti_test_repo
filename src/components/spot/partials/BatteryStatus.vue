@@ -11,6 +11,7 @@
 
 <script>
 export default {
+  name: 'BatteryStatus',
   props: {
     battery: {
       type: Number,
@@ -21,17 +22,17 @@ export default {
 </script>
 
 <style lang="scss">
-@import '~assets/style/vars';
+@import '~assets/style/mixin';
 
 .battery-status {
   position: absolute;
   top: 5.5vh;
   right: 5.5vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 
   height: 3.3vh;
-  display: flex;
-  justify-content: center;
-  align-items: center;
 
   padding: 0 0.714rem;
   background-color: #333333;
@@ -44,9 +45,27 @@ export default {
   }
 
   span {
-    font-family: $font_family2;
     font-weight: 500;
     font-size: 1.481vh;
+    font-family: $font_family2;
+  }
+}
+
+@include responsive-tablet {
+  .battery-status {
+    top: 2.96vh;
+    right: 16.8vw;
+    color: #dadada;
+    @include fontLevel(200);
+  }
+}
+
+@include responsive-mobile {
+  .battery-status {
+    top: 20px;
+    right: 16px;
+    color: #dadada;
+    @include fontLevel(75);
   }
 }
 </style>

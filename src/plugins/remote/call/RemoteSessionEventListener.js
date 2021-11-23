@@ -460,6 +460,11 @@ const signalArDrawing = event => {
   window.vue.$eventBus.$emit(SIGNAL.AR_DRAWING, event)
 }
 
+/** AR 3D 컨텐츠 모드*/
+const signalAr3dContent = event => {
+  window.vue.$eventBus.$emit(SIGNAL.AR_3D, event)
+}
+
 export default {
   streamCreated,
   streamDestroyed,
@@ -480,4 +485,5 @@ export default {
   signalArFeature,
   signalArPointing,
   signalArDrawing,
+  signalAr3dContent,
 }

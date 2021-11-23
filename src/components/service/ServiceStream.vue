@@ -1,7 +1,9 @@
 <template>
   <div class="main-body stream">
-    <stream-tools></stream-tools>
-    <menus></menus>
+    <stream-tools
+      v-if="!isMobileSize || (isMobileSize && viewForce)"
+    ></stream-tools>
+    <menus v-if="!isMobileSize"></menus>
     <main-video></main-video>
   </div>
 </template>
@@ -10,6 +12,7 @@
 import StreamTools from './tools/StreamTools'
 import Menus from './tools/Menus'
 import MainVideo from './stream/MainVideo'
+import { mapGetters } from 'vuex'
 
 export default {
   name: 'ServiceStream',
@@ -17,6 +20,9 @@ export default {
     StreamTools,
     Menus,
     MainVideo,
+  },
+  computed: {
+    ...mapGetters(['viewForce']),
   },
 }
 </script>

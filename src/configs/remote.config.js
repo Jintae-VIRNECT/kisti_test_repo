@@ -27,6 +27,7 @@ export const SIGNAL = {
   LINKFLOW: 'signal:linkflow',
   LOCATION: 'signal:location',
   DRAWING_FROM_VUEX: 'signal:drawingFromVuex',
+  AR_3D: 'signal:3dContentsShare',
 }
 
 /**
@@ -153,6 +154,27 @@ export const AR_DRAWING_ACTION = {
 }
 
 /**
+ * AR 3D 공유 정의
+ */
+export const AR_3D_CONTENT_SHARE = {
+  START_SHARE: 'start3dContentsShare',
+  STOP_SHARE: 'stop3dContentsShare',
+  CONTENT_AUGUMENTED: '3dContentsAugmented',
+  FILE_SHARE: '3dContentsFileShare',
+  CLEAR_CONTENTS: '3dContentsClear',
+
+  // ADDED: 'added', //파일 추가
+  // DELETED: 'deleted', //파일 제거
+}
+
+export const AR_3D_FILE_SHARE_STATUS = {
+  START: 'start',
+  CANCEL: 'cancel',
+  COMPLETE: 'complete',
+  ERROR: 'error',
+}
+
+/**
  * 시그널 - 캡쳐 권한 제어
  */
 export const CAPTURE_PERMISSION = {
@@ -193,4 +215,20 @@ export const LOCATION = {
 
 export const USER_TYPE = {
   GUEST_USER: 'GUEST_USER',
+}
+
+export const FILE_TYPE = {
+  SHARE: 'SHARE',
+  OBJECT: 'OBJECT',
+}
+
+export const ACCEPTABLE_FILE_TYPE = {
+  SHARE: [
+    'image/jpeg',
+    'image/png',
+    'image/bmp',
+    'image/gif',
+    'application/pdf',
+  ],
+  OBJECT: ['obj' /*, 'gltf', 'glb'*/], //gltf 업로드는 추후 지원 여부 결정
 }

@@ -21,6 +21,7 @@ const SYSTEM = {
   AR_START: 'ar-start',
   AR_POINTING: 'ar-pointing',
   AR_AREA: 'ar-area',
+  AR_3D: 'ar-3d',
 
   POINTING_ALLOW: 'pointing-allow',
   POINTING_ALLOW_NOT: 'pointing-not-allow',
@@ -59,6 +60,8 @@ export const systemClass = status => {
     case SYSTEM.AR_POINTING:
     case SYSTEM.AR_AREA:
       return 'ar'
+    case SYSTEM.AR_3D:
+      return 'ar-3d'
     case SYSTEM.POINTING_ALLOW:
     case SYSTEM.POINTING_ALLOW_NOT:
       return 'pointing'
@@ -125,6 +128,8 @@ export const systemText = (type, name) => {
       return vue.$t('service.chat_ar_pointing', { name: name })
     case SYSTEM.AR_AREA:
       return vue.$t('service.chat_ar_area')
+    case SYSTEM.AR_3D:
+      return vue.$t('service.chat_ar_3d_start')
     case SYSTEM.POINTING_ALLOW:
       return vue.$t('service.chat_pointing_allow')
     case SYSTEM.POINTING_ALLOW_NOT:

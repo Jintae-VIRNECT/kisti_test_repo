@@ -5,15 +5,22 @@
     :visible="visible"
     @close="close"
   >
-    <section class="mobile-createroom__selected" v-if="selection.length > 0">
+    <section class="mobile-createroom__selected">
       <div class="selected-header">
         <h1>{{ $t('workspace.create_remote_selected') }}</h1>
         <p class="selected-status">
           {{ `${onlineMemeberOfSelection}/${selection.length}` }}
         </p>
-        <button></button>
+        <button
+          class="user-list-toggle-btn"
+          :class="{
+            off: !selectedListVisible,
+          }"
+          @click="toggleSelectedListVisible"
+        ></button>
       </div>
       <profile-list
+        v-if="selection.length > 0 && selectedListVisible"
         :users="selection"
         :remove="true"
         :showNickname="true"
@@ -25,10 +32,13 @@
 
     <create-room-invite
       :users="users"
+      :subGroups="subGroups"
       :selection="selection"
       @userSelect="selectUser"
       @inviteRefresh="inviteRefresh"
       :loading="loading"
+      :groupList="groupList"
+      :showMemberGroupSelect="showMemberGroupSelect"
     ></create-room-invite>
 
     <button
@@ -55,7 +65,9 @@ export default {
   },
   mixins: [confirmMixin],
   data() {
-    return {}
+    return {
+      selectedListVisible: false,
+    }
   },
   props: {
     visible: {
@@ -80,6 +92,18 @@ export default {
     loading: {
       type: Boolean,
     },
+    groupList: {
+      type: Array,
+      default: () => [],
+    },
+    subGroups: {
+      type: Array,
+      default: () => [],
+    },
+    showMemberGroupSelect: {
+      type: Boolean,
+      default: false,
+    },
   },
   computed: {
     btnDisabled() {
@@ -96,11 +120,20 @@ export default {
       return this.selection.filter(user => user.accessType === 'LOGIN').length
     },
   },
+  watch: {
+    selection(cur, prev) {
+      if (cur.length > 0 && prev.length === 0) {
+        this.selectedListVisible = true
+      }
+    },
+  },
+
   methods: {
     close() {
       this.beforeClose()
     },
     selectUser(user) {
+      if (this.selection.length >= 0) this.selectedListVisible = true
       this.$emit('userSelect', user)
     },
     inviteRefresh() {
@@ -125,6 +158,11 @@ export default {
         imageUrl: '',
         open: false,
       })
+    },
+    toggleSelectedListVisible() {
+      if (!this.selectedListVisible && this.selection.length === 0) return
+      this.selectedListVisible = !this.selectedListVisible
+      this.$eventBus.$emit('scrollHeightReset')
     },
   },
 }

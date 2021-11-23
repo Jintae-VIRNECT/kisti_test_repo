@@ -141,9 +141,20 @@
 
 	"ar_capute": "AR截图",
 	"ar_pointing": "AR指向",
+	"ar_3d": "3D 内容",
 	"ar_area": "设置AR领域",
 	"ar_area_description": "设置AR领域",
 	"ar_pointing_max": "请在希望的位置上点击AR 3D箭头。最多可生成30个箭头。",
+	"chat_ar_3d_start": "启动 3D 内容模式。",
+	"ar_3d_start":"启动 3D 内容模式。 请从文件列表中选择一个文件。",
+	"ar_3d_converting":"正在转换上传的文件。<br/>请稍后再试。",
+	"ar_3d_position_pick":"单击视频可将 3D 内容输出到所需位置。",
+	"ar_3d_loading_toast":"正在输出 3D 内容时无法移动到另一个菜单。",
+	"ar_3d_loading_header_title": "输出 3D 内容…",
+	"ar_3d_loading_title":"正在向共享者的视频<br/>输出 3D 内容。",
+	"ar_3d_load_cancel":"3D 内容输出已取消。",
+	"ar_3d_exist":"有内容输出。请删除并重试。",
+  "ar_3d_converting_fail":"文件转换失败。",
 	"ar_area_setting": "设置AR领域。在设置的领域中执行AR功能。",
 	"ar_area_success": "已经设置AR领域。请开始AR绘画。",
 	"ar_drawing_max": "最多可生成30个个体。",
@@ -182,6 +193,7 @@
 	"file_choice_num": "选择{number}个",
 	"file_remove": "删除文件",
 	"file_upload": "上传文件",
+	"file_upload_mobile_guide": "底部的文件上传按钮<br/>允许您上传要共享的文件。",
 	"file_upload_maxnum": "目前只支持上传1个文件。",
 	"file_upload_maxsize": "已经超出可以附加的容量。",
 	"file_image_notsupport": "不支持该图片。",
@@ -215,6 +227,7 @@
 
 	"record_server_start_message": "开始服务器拍摄。",
 	"record_server_start_failed": "无法开始服务器拍摄。请重试。",
+	"record_server_end": "服务器结束拍摄",
 	"record_server_end_message": "服务器拍摄结束。",
 	"record_server_over_max_count": "已经超出目前可以执行的服务器拍摄个数。\n请稍后再试。",
 	"record_server_no_storage": "服务器中可以保存拍摄文件的空间不足。\n请向管理员咨询。",
@@ -227,6 +240,7 @@
 
 	"camera_control": "控制相机",
 	"camera_control_allow": "允许控制相机",
+	"camera_control_limit": "限制控制相机",
 	"camera_control_every_on": "打开全部相机",
 	"camera_control_every_off": "关闭全部相机",
 
@@ -239,6 +253,7 @@
 	"map_cannot_use_gps": "该设备无法使用位置信息功能。",
 	"map_timeout": "无法确认GPS信息。请向请求的参与者确认是否使用GPS功能。",
 
+	"spot_control": "Spot控制",
 	"spot_networ_error": "因网络/服务器问题而结束连接Spot。\n您要重新连接吗？",
 	"spot_connecting": "正在连接Spot......",
 	"spot_reconnecting": "正在重新连接Spot......",

@@ -1,5 +1,16 @@
 <template>
   <div class="drawing-canvas">
+    <tooltip
+      v-if="showExitButton"
+      :content="`${$t('service.drawing')} ${$t('button.exit')}`"
+      customClass="drawing-box__exit-btn-tooltip"
+    >
+      <button
+        slot="body"
+        class="drawing-box__exit-btn"
+        @click="exitDrawing"
+      ></button>
+    </tooltip>
     <canvas id="drawingCanvas" ref="drawingCanvas"></canvas>
     <canvas id="cursorCanvas"></canvas>
     <div
@@ -26,11 +37,20 @@ import DrawingAction from './DrawingAction'
 
 import MixinToast from 'mixins/toast'
 import { hexToRGBA } from 'utils/color'
+import Tooltip from 'Tooltip'
+
+const MOBILE_FIX_LINE_SIZE = 3
 
 export default {
   name: 'DrawingCanvas',
+  components: {
+    Tooltip,
+  },
   props: {
     file: Object,
+    showExitButton: {
+      type: Boolean,
+    },
   },
   mixins: [
     MixinToast,
@@ -157,7 +177,9 @@ export default {
       if (canvas) {
         //커서를 생성하지만 실제 캔버스 사이즈에 비례한 커서와 브러쉬 사이즈는 캔버스 사이즈가 업데이트 된 후 재 설정된다
         //optimizeCanvasSize함수에서 실제 드로잉 브러쉬와 커서 사이즈가 캔버스 사이즈에 비례하게 계산되어 정해진다.
-        const width = this.tools.lineWidth
+        const width = this.isMobileSize
+          ? MOBILE_FIX_LINE_SIZE
+          : this.tools.lineWidth
 
         // Set custom cursor
         canvas.freeDrawingBrush.width = width
@@ -267,7 +289,9 @@ export default {
       cursor.setHeight(canvas.getHeight())
 
       //드로잉 굵기를 현재 창 크기에서 캔버스 사이즈 기준으로 계산
-      this.updateCanvasBrushWidth(this.tools.lineWidth)
+      this.updateCanvasBrushWidth(
+        this.isMobileSize ? MOBILE_FIX_LINE_SIZE : this.tools.lineWidth,
+      )
 
       canvas.backgroundImage.set({
         scaleX: canvasSize.scale / scale,
@@ -318,6 +342,10 @@ export default {
         cancelAnimationFrame(this.resizeObserveIntervalId)
         this.resizeObserveIntervalId = null
       }
+    },
+
+    exitDrawing() {
+      this.$emit('exitDrawing')
     },
   },
   /* Lifecycles */

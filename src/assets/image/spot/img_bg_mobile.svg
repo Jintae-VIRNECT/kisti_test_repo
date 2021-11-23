@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="360px" height="640px" viewBox="0 0 360 640" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>img_bg</title>
+    <defs>
+        <radialGradient cx="50%" cy="11.0727172%" fx="50%" fy="11.0727172%" r="178.525585%" gradientTransform="translate(0.500000,0.110727),scale(1.000000,0.562500),rotate(90.370945),translate(-0.500000,-0.110727)" id="radialGradient-1">
+            <stop stop-color="#454545" offset="0%"></stop>
+            <stop stop-color="#1F1F21" offset="100%"></stop>
+        </radialGradient>
+        <radialGradient cx="50%" cy="48.8621238%" fx="50%" fy="48.8621238%" r="66.1239751%" gradientTransform="translate(0.500000,0.488621),scale(1.000000,0.562500),rotate(90.000000),translate(-0.500000,-0.488621)" id="radialGradient-2">
+            <stop stop-color="#ADADAD" offset="0%"></stop>
+            <stop stop-color="#1E1E20" offset="100%"></stop>
+        </radialGradient>
+        <radialGradient cx="50%" cy="22.9974365%" fx="50%" fy="22.9974365%" r="172.678212%" gradientTransform="translate(0.500000,0.229974),scale(1.000000,0.562500),rotate(90.000000),translate(-0.500000,-0.229974)" id="radialGradient-3">
+            <stop stop-color="#363434" offset="0%"></stop>
+            <stop stop-color="#000000" offset="100%"></stop>
+        </radialGradient>
+    </defs>
+    <g id="Remote_SPOT_mobile/tablet" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="bg">
+            <rect id="tr" x="0" y="0" width="360" height="640"></rect>
+            <rect fill="url(#radialGradient-1)" x="0" y="0" width="360" height="640"></rect>
+            <rect id="bg-2" fill="url(#radialGradient-2)" opacity="0.5" x="0" y="0" width="360" height="640"></rect>
+            <rect id="bg-2" fill="url(#radialGradient-3)" x="0" y="0" width="360" height="640"></rect>
+        </g>
+    </g>
+</svg>

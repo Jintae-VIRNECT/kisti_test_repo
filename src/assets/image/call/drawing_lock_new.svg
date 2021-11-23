@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="40px" height="40px" viewBox="0 0 40 40" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>C9F8DED9-129B-4A88-BA6E-61AD23B22594@3x</title>
+    <defs>
+        <filter x="-16.2%" y="-16.2%" width="132.5%" height="132.5%" filterUnits="objectBoundingBox" id="filter-1">
+            <feOffset dx="0" dy="0" in="SourceAlpha" result="shadowOffsetOuter1"></feOffset>
+            <feGaussianBlur stdDeviation="1.5" in="shadowOffsetOuter1" result="shadowBlurOuter1"></feGaussianBlur>
+            <feColorMatrix values="0 0 0 0 0   0 0 0 0 0   0 0 0 0 0  0 0 0 0.5 0" type="matrix" in="shadowBlurOuter1" result="shadowMatrixOuter1"></feColorMatrix>
+            <feMerge>
+                <feMergeNode in="shadowMatrixOuter1"></feMergeNode>
+                <feMergeNode in="SourceGraphic"></feMergeNode>
+            </feMerge>
+        </filter>
+        <path d="M20,10 C14.48,10 10,14.48 10,20 C10,25.52 14.48,30 20,30 C25.52,30 30,25.52 30,20 C30,14.48 25.52,10 20,10 Z M12,20 C12,15.58 15.58,12 20,12 C21.85,12 23.55,12.63 24.9,13.69 L13.69,24.9 C12.63,23.55 12,21.85 12,20 Z M20,28 C18.15,28 16.45,27.37 15.1,26.31 L26.31,15.1 C27.37,16.45 28,18.15 28,20 C28,24.42 24.42,28 20,28 Z" id="path-2"></path>
+    </defs>
+    <g id="Remote_Main_remote" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="RMS_0220_접속-화면-협업보드(리더)_드로잉" transform="translate(-304.000000, -393.000000)">
+            <g id="expand-button_on" transform="translate(304.000000, 150.000000)">
+                <g id="Group-2" transform="translate(0.000000, 6.000000)">
+                    <g id="wboard_ic_Stop" filter="url(#filter-1)" transform="translate(0.000000, 237.000000)">
+                        <polygon opacity="0.186895461" points="0 0 40 0 40 40 0 40"></polygon>
+                        <mask id="mask-3" fill="white">
+                            <use xlink:href="#path-2"></use>
+                        </mask>
+                        <use fill="#FFFFFF" fill-rule="nonzero" xlink:href="#path-2"></use>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

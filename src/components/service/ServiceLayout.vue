@@ -7,25 +7,47 @@
       </transition>
 
       <transition name="share">
-        <share v-show="currentView === 'drawing'"></share>
+        <!-- 협업보드 파일/공유 목록 -->
+        <share
+          v-if="!isMobileSize"
+          v-show="currentView === VIEW.DRAWING"
+        ></share>
+      </transition>
+
+      <transition name="share">
+        <!-- 3d공유 파일 목록 ui : 리더만 표시-->
+        <share-3d
+          v-if="!isMobileSize && isLeader && currentView === VIEW.AR"
+          v-show="viewAction === ACTION.AR_3D"
+        ></share-3d>
+      </transition>
+
+      <transition name="share">
+        <!-- 3d공유 파일 목록 ui : 리더만 표시-->
+        <share-3d
+          v-if="!isMobileSize && isLeader && currentView === 'ar'"
+          v-show="viewAction === ACTION.AR_3D"
+        ></share-3d>
       </transition>
 
       <main
         class="main-wrapper"
-        :class="{ shareview: currentView === 'drawing' }"
+        :class="{
+          shareview: currentView === VIEW.DRAWING || isLeaderAr3dContentsMode,
+        }"
       >
         <transition name="main">
           <stream-view
             :class="{
-              hide: currentView !== 'stream' && currentView !== 'screen',
+              hide: currentView !== VIEW.STREAM,
             }"
           ></stream-view>
         </transition>
         <transition name="main">
-          <drawing-view v-show="currentView === 'drawing'"></drawing-view>
+          <drawing-view v-show="currentView === VIEW.DRAWING"></drawing-view>
         </transition>
         <transition name="main">
-          <ar-view v-show="currentView === 'ar'"></ar-view>
+          <ar-view v-show="currentView === VIEW.AR"></ar-view>
         </transition>
         <transition name="popover">
           <capture-modal
@@ -35,7 +57,11 @@
         </transition>
       </main>
 
-      <user-list :class="userListClass"></user-list>
+      <user-list
+        v-if="!isMobileSize"
+        :class="userListClass"
+        @openInviteModal="toggleInviteModal"
+      ></user-list>
       <!-- <div v-else>
         <figure
           v-for="participant of participants"
@@ -52,15 +78,54 @@
       </div> -->
       <!-- <component :is="viewComponent"></component> -->
     </div>
+    <mobile-footer
+      v-if="isMobileSize"
+      :fetchedFileList="fileList"
+      :fetchedAr3dFileList="ar3dFileList"
+      @getFileList="onGetFileList"
+      @openFileListModal="onOpenFileListModal"
+      @get3dFileList="onGet3dFileList"
+      @open3dFileListModal="onOpen3dFileListModal"
+      @participantModalShow="onParticipantModalShow"
+      @addPdfHistory="mobileAddPdfHistory"
+      @uploading="onUploading"
+      @uploaded="onUploaded"
+    ></mobile-footer>
     <reconnect-modal :visible.sync="connectVisible"></reconnect-modal>
     <setting-modal></setting-modal>
     <record-list v-if="useLocalRecording"></record-list>
+
+    <!-- pc에서만 지원 -->
     <map-modal
-      v-if="isOnpremise"
+      v-if="isOnpremise && !isMobileSize"
       :visible.sync="positionMapVisible"
     ></map-modal>
+
+    <!-- PC, 모바일 공통 사용 -->
     <guest-invite-modal :visible.sync="guestInviteModalVisible">
     </guest-invite-modal>
+    <invite-modal :visible.sync="inviteModalVisible"></invite-modal>
+
+    <!-- 모바일에서만 필요 -->
+    <mobile-participant-modal
+      v-if="isMobileSize"
+      :modalShow.sync="isParticipantModalShow"
+    ></mobile-participant-modal>
+    <mobile-share-file-list-modal
+      v-if="isMobileSize"
+      ref="file-list"
+      :modalShow.sync="isFileListModalShow"
+      :fileList="fileList"
+      :uploadingFile="uploadingFile"
+      @rendered="onFileListRendered"
+    ></mobile-share-file-list-modal>
+    <mobile-3d-file-list-modal
+      v-if="isMobileSize"
+      :modalShow.sync="is3dFileListModalShow"
+      :uploadingFile="uploadingFile"
+      :fileList="ar3dFileList"
+      @3dFileListUpdate="on3dFileListUpdate"
+    ></mobile-3d-file-list-modal>
   </section>
 </template>
 
@@ -70,7 +135,7 @@ import SubView from './subview/SubView'
 import UserList from './participants/ParticipantList'
 import { ROLE } from 'configs/remote.config'
 import { CAMERA } from 'configs/device.config'
-import { VIEW } from 'configs/view.config'
+import { VIEW, ACTION } from 'configs/view.config'
 import { URLS } from 'configs/env.config'
 import localRecorderMixin from 'mixins/localRecorder'
 import serverRecordMixin from 'mixins/serverRecorder'
@@ -79,7 +144,7 @@ import confirmMixin from 'mixins/confirm'
 import { checkInput } from 'utils/deviceCheck'
 import ReconnectModal from './modal/ReconnectModal'
 
-import { mapGetters, mapActions } from 'vuex'
+import { mapGetters, mapActions, mapMutations } from 'vuex'
 export default {
   name: 'ServiceLayout',
   beforeRouteEnter(to, from, next) {
@@ -107,10 +172,19 @@ export default {
     RecordList: () => import('LocalRecordList'),
     SettingModal: () => import('./modal/SettingModal'),
     MapModal: () => import('./modal/PositionMapModal'),
+    MobileFooter: () => import('./tools/MobileFooter'),
     GuestInviteModal: () => import('./modal/GuestInviteModal'),
+    InviteModal: () => import('./modal/InviteModal'),
+    MobileParticipantModal: () => import('./modal/MobileParticipantModal'),
+    MobileShareFileListModal: () => import('./modal/MobileShareFileListModal'),
+    Mobile3dFileListModal: () => import('./modal/MobileShareFileListModal'),
+    Share3d: () => import('./ar/3dcontents/Share3D'),
   },
   data() {
     return {
+      VIEW: Object.freeze(VIEW),
+      ACTION: Object.freeze(ACTION),
+
       showDenied: false,
       callTimeout: null,
       isFullScreen: false,
@@ -118,6 +192,17 @@ export default {
       isVideoLoaded: false,
       positionMapVisible: false,
       guestInviteModalVisible: false,
+      inviteModalVisible: false,
+
+      fileList: [],
+      isFileListModalShow: false,
+      isParticipantModalShow: false,
+      fileListCallback: () => {},
+
+      is3dFileListModalShow: false,
+      ar3dFileList: [],
+
+      uploadingFile: '',
     }
   },
   computed: {
@@ -130,32 +215,42 @@ export default {
       'restrictedRoom',
       'useLocalRecording',
       'coworkTimeout',
+      'viewAction',
     ]),
     isLeader() {
       return this.account.roleType === ROLE.LEADER
     },
     currentView() {
-      if (this.view === VIEW.STREAM) {
-        return 'stream'
-      } else if (this.view === VIEW.DRAWING) {
-        return 'drawing'
-      } else if (this.view === VIEW.AR) {
-        return 'ar'
-      }
-      return ''
+      if (Object.values(VIEW).includes(this.view)) return this.view
+      else return ''
     },
     userListClass() {
       return {
-        shareview: this.currentView === 'drawing',
+        shareview: this.currentView === VIEW.DRAWING,
         fullscreen:
           this.isVideoLoaded &&
           this.isFullScreen &&
-          (this.currentView === 'stream' || this.currentView === 'screen'),
+          this.currentView === VIEW.STREAM,
+      }
+    },
+    isLeaderAr3dContentsMode() {
+      return (
+        this.isLeader &&
+        this.currentView === VIEW.AR &&
+        this.viewAction === ACTION.AR_3D
+      )
+    },
+  },
+  watch: {
+    //채팅창이 보이게 되는 경우 chat아이콘의 notice 제거
+    isScreenDesktop(newVal) {
+      if (newVal) {
+        this.SET_CHAT_ACTIVE(false)
       }
     },
   },
-
   methods: {
+    ...mapMutations(['SET_CHAT_ACTIVE']),
     ...mapActions(['useStt', 'setTool']),
     changeOrientation(event) {
       if (!this.myInfo || !this.myInfo.stream) return
@@ -258,6 +353,47 @@ export default {
     toggleGuestInvite(flag) {
       this.guestInviteModalVisible = flag
     },
+    toggleInviteModal(flag) {
+      this.inviteModalVisible = flag
+    },
+    onGetFileList(fileList) {
+      this.fileList = fileList
+    },
+    onOpenFileListModal() {
+      this.isFileListModalShow = true
+    },
+    onGet3dFileList(fileList) {
+      this.ar3dFileList = fileList
+    },
+    onOpen3dFileListModal() {
+      this.is3dFileListModalShow = true
+    },
+    onParticipantModalShow() {
+      this.isParticipantModalShow = true
+    },
+    mobileAddPdfHistory(data) {
+      //mobile-share-file-list-modal 컴포넌트가 생성되기 전에 호출 되므로,
+      //아직 컴포넌트 dom이 추가되지 않았다면 callback으로 등록시켜 논 후 해당 컴포넌트가 랜더링 된 후
+      //이벤트수신 시 콜백을 실행하도록 한다.
+      if (this.$refs['file-list']) this.$refs['file-list'].addPdfHistory(data)
+      else
+        this.fileListCallback = () => {
+          this.fileListCallback = () => {}
+          this.$refs['file-list'].addPdfHistory(data)
+        }
+    },
+    onFileListRendered() {
+      this.fileListCallback()
+    },
+    on3dFileListUpdate(fileList) {
+      this.ar3dFileList = fileList
+    },
+    onUploading(fileName) {
+      this.uploadingFile = fileName
+    },
+    onUploaded() {
+      this.uploadingFile = ''
+    },
   },
 
   /* Lifecycles */
@@ -291,6 +427,7 @@ export default {
     this.$eventBus.$on('video:loaded', this.setVideoLoaded)
     this.$eventBus.$on('map:show', this.togglePositionMap)
     this.$eventBus.$on('guestInvite:show', this.toggleGuestInvite)
+    this.$eventBus.$on('inviteModal:show', this.toggleInviteModal)
   },
   beforeDestroy() {
     if (this.callTimeout) {
@@ -313,6 +450,7 @@ export default {
     this.$eventBus.$off('video:loaded', this.setVideoLoaded)
     this.$eventBus.$off('map:show', this.togglePositionMap)
     this.$eventBus.$off('guestInvite:show', this.toggleGuestInvite)
+    this.$eventBus.$off('inviteModal:show', this.toggleInviteModal)
 
     //협업 종료시 stt 종료
     this.useStt(false)

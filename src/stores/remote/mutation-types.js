@@ -17,6 +17,10 @@ export const CALL_STREAM = 'CALL_STREAM'
 export const CALL_SPEAKER = 'CALL_SPEAKER'
 export const CALL_MIC = 'CALL_MIC'
 export const MUTE_ON_OFF = 'MUTE_ON_OFF'
+export const SET_TAB_MENU_NOTICE = 'SET_TAB_MENU_NOTICE'
+export const SET_ALLOW_CAMERA_CONTROL = 'SET_ALLOW_CAMERA_CONTROL'
+export const SET_IS_3D_POSITION_PICKING = 'SET_IS_3D_POSITION_PICKING'
+export const SET_AR_3D_SHARE_STATUS = 'SET_AR_3D_SHARE_STATUS'
 
 // tools
 export const TOOL_DRAWING_COLOR = 'TOOL_DRAWING_COLOR'
@@ -45,6 +49,7 @@ export const SETTINGS = {
 }
 export const ALLOW_RESET = 'ALLOW_RESET'
 export const TOGGLE_CHAT = 'TOGGLE_CHAT'
+export const SET_CHAT_ACTIVE = 'SET_CHAT_ACTIVE'
 export const SET_DEVICE = 'SET_DEVICE'
 export const SET_IS_MOBILE_SIZE = 'SET_IS_MOBILE_SIZE'
 export const SET_IS_TABLET_SIZE = 'SET_IS_TABLET_SIZE'
@@ -68,6 +73,7 @@ export const REMOVE_FILE = 'REMOVE_FILE'
 export const ADD_PDF_PAGE = 'ADD_PDF_PAGE'
 export const REMOVE_PDF_PAGE = 'REMOVE_PDF_PAGE'
 export const SET_CAPTURE = 'SET_CAPTURE'
+export const SHOW_3D_CONTENT = 'SHOW_3D_CONTENT'
 
 // alarm
 export const ADD_ALARM = 'ADD_ALARM'

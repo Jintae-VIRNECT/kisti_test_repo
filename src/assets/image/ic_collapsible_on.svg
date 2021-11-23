@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="34px" height="35px" viewBox="0 0 34 35" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>icon_dropdown_on@2x</title>
+    <defs>
+        <path d="M23.0668297,13.3588297 C22.8686535,13.1606535 22.5490964,13.1585574 22.3550709,13.3521602 L17.2,18.496 L12.0449291,13.3521602 C11.8500117,13.1576675 11.5358535,13.1561465 11.3331703,13.3588297 L10.3588297,14.3331703 C10.1606535,14.5313465 10.16391,14.85591 10.347271,15.039271 L17.2,21.892 L24.052729,15.039271 C24.2445215,14.8474785 24.2438535,14.5358535 24.0411703,14.3331703 L23.0668297,13.3588297 Z" id="path-1"></path>
+    </defs>
+    <g id="Remote_main" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="RWS_0020-_접속-전-화면_멤버-" transform="translate(-1660.000000, -527.000000)">
+            <g id="list" transform="translate(219.000000, 464.000000)">
+                <g id="Group-6" transform="translate(0.000000, 50.000000)">
+                    <g id="icon_allow_on" transform="translate(1441.000000, 13.000000)">
+                        <rect id="tr" x="1.13686838e-13" y="0" width="34" height="34"></rect>
+                        <mask id="mask-2" fill="white">
+                            <use xlink:href="#path-1"></use>
+                        </mask>
+                        <use id="shape" fill="#FFFFFF" transform="translate(17.200000, 17.446000) rotate(-180.000000) translate(-17.200000, -17.446000) " xlink:href="#path-1"></use>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

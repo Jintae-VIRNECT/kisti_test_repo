@@ -1,9 +1,10 @@
 <template>
   <tool-button
     :text="$t('button.remove_all')"
-    :disabled="!isAvailable"
+    :disabled="disabled"
     :active="status"
-    :src="require('assets/image/ic-tool-delete-all.svg')"
+    :disableTooltip="disableTooltip"
+    :src="iconImage"
     @click.stop="clickHandler"
   ></tool-button>
 </template>
@@ -18,26 +19,18 @@ export default {
   data() {
     return {
       status: false,
-      available: false,
     }
   },
   computed: {
-    isAvailable() {
-      if (this.disabled) {
-        return false
-      } else {
-        return this.available
-      }
-    },
-  },
-  watch: {
-    view() {
-      this.available = false
+    iconImage() {
+      return this.isMobileSize
+        ? require('assets/image/call/ic-tool-delete-all_new.svg')
+        : require('assets/image/ic-tool-delete-all.svg')
     },
   },
   methods: {
     clickHandler() {
-      if (!this.isAvailable) return
+      if (this.disabled) return
       this.status = true
       let listener
       if (this.view === VIEW.DRAWING) {
@@ -50,17 +43,6 @@ export default {
         this.status = false
       }, 100)
     },
-    setAvailable(use) {
-      this.available = use
-    },
-  },
-
-  /* Lifecycling */
-  created() {
-    this.$eventBus.$on(`tool:clearall`, this.setAvailable)
-  },
-  beforeDestroy() {
-    this.$eventBus.$off(`tool:clearall`, this.setAvailable)
   },
 }
 </script>

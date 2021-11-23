@@ -145,9 +145,10 @@ export const addSessionEventListener = session => {
   session.on(SIGNAL.AR_POINTING, eventListener.signalArPointing)
 
   /** AR Drawing */
-  session.on(SIGNAL.AR_DRAWING, event => {
-    window.vue.$eventBus.$emit(SIGNAL.AR_DRAWING, event)
-  })
+  session.on(SIGNAL.AR_DRAWING, eventListener.signalArDrawing)
+
+  /** AR 3D Contents */
+  session.on(SIGNAL.AR_3D, eventListener.signalAr3dContent)
 
   /** 위치 정보*/
   session.on(SIGNAL.LOCATION, event => {

@@ -6,6 +6,7 @@
 
 	"guest_time_expired_description": "限制時間已結束。\n如果您準備連接，請重新請求。",
 	"guest_license_expired": "將要連接的工作區中沒有非會員連接用計畫或全部正在使用。",
-	"guest_install_mobile_app_description": "請安裝VIRNECT Remote App。\n安裝App後，請重新選擇URL。 "
+	"guest_install_mobile_app_description": "請安裝VIRNECT Remote App。\n安裝App後，請重新選擇URL。 ",
+	"guest_install_mobile_app_download_description":"如果未安裝，請下載APK文件。"
   }
 }

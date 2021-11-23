@@ -18,6 +18,7 @@
 
 <script>
 export default {
+  name: 'SpotCameraBlock',
   props: {
     video: {
       type: String,
