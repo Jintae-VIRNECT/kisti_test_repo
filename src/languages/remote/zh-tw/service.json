@@ -193,6 +193,7 @@
 	"file_choice_num": "選擇{number}個",
 	"file_remove": "刪除檔",
 	"file_upload": "上傳檔",
+	"file_upload_mobile_guide": "底部的文件上傳按鈕<br/>允許您上傳要共享的文件。",
 	"file_upload_maxnum": "目前只支持上傳1個檔。",
 	"file_upload_maxsize": "已經超出可以附加的容量。",
 	"file_image_notsupport": "不支持該圖片。",
@@ -226,6 +227,7 @@
 
 	"record_server_start_message": "開始服務器拍攝。",
 	"record_server_start_failed": "無法開始服務器拍攝。請重試。",
+	"record_server_end": "服務器結束拍攝",
 	"record_server_end_message": "服務器拍攝結束。",
 	"record_server_over_max_count": "已經超出目前可以執行的服務器拍攝個數。\n請稍後再試。",
 	"record_server_no_storage": "服務器中可以保存拍攝檔的空間不足。\n請向管理員諮詢。",
@@ -238,6 +240,7 @@
 
 	"camera_control": "控制相機",
 	"camera_control_allow": "允許控制相機",
+	"camera_control_limit": "限制控制相機",
 	"camera_control_every_on": "打開全部相機",
 	"camera_control_every_off": "關閉全部相機",
 
@@ -250,6 +253,7 @@
 	"map_cannot_use_gps": "該設備無法使用位置資訊功能。",
 	"map_timeout": "無法確認GPS資訊。請向請求的參與者確認是否使用GPS功能。",
 
+	"spot_control": "Spot控制",
 	"spot_networ_error": "因網路/伺服器問題而結束連接Spot。\n您要重新連接嗎？",
 	"spot_connecting": "正在連接Spot......",
 	"spot_reconnecting": "正在重新連接Spot......",

@@ -48,7 +48,9 @@
 	"send_email": "Enviar correo electrónico",
 	"join_sec": "Conectar ({time} seg)",
 	"request_again": "Volver a solicitar",
-	"connect_web": "Conectar a la red"
+	"connect_web": "Conectar a la red",
+	"run_app":"Ejecutar la app",
+  "previous": "anterior"
   },
   "date": {
 	"lastday": "[Ayer]A",
