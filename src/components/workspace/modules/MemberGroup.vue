@@ -287,9 +287,7 @@ export default {
     > .popover--body {
       padding: 0px;
     }
-    .group-pop__button {
-      width: 100%;
-    }
+
     @include responsive-popover;
   }
 }

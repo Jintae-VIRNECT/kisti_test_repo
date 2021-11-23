@@ -6,7 +6,7 @@
         <span class="createroom-user__number">{{ totalNum }}</span>
       </p>
       <r-select-check
-        v-if="showMemberGroupSelect && !isMobileSize"
+        v-if="showMemberGroupSelect"
         class="createroom-user--group-selects"
         :options="groupList"
         value="groupId"
@@ -14,50 +14,7 @@
         subText="memberCount"
         :selectedValue.sync="selectedGroupId"
       ></r-select-check>
-
-      <div v-if="isMobileSize" class="header__tools">
-        <popover
-          v-if="isMobileSize"
-          trigger="click"
-          popperClass="member-group-menu"
-          placement="bottom-end"
-          width="auto"
-          scrollHide
-          :useTopMargin="10"
-        >
-          <icon-button
-            slot="reference"
-            v-if="showMemberGroupSelect && isMobileSize"
-            class="favourite"
-            :imgSrc="
-              require('assets/image/workspace/ic_manage_member_group.svg')
-            "
-            :text="$t('button.member_group_bookmark')"
-            @click="() => {}"
-          ></icon-button>
-
-          <ul class="groupcard-popover">
-            <li v-for="group of groupList" :key="group.groupId">
-              <button
-                class="group-pop__button"
-                @click="updateSelectedGroupId(group.groupId)"
-              >
-                {{ group.groupName }}
-              </button>
-            </li>
-          </ul>
-        </popover>
-
-        <icon-button
-          class="refresh"
-          :text="$t('button.refresh')"
-          :imgSrc="require('assets/image/workspace/ic_renew.svg')"
-          animation="rotate360"
-          @click="refresh"
-        ></icon-button>
-      </div>
       <icon-button
-        v-else
         class="refresh"
         :text="$t('button.refresh')"
         :imgSrc="require('assets/image/workspace/ic_renew.svg')"
@@ -66,39 +23,29 @@
       ></icon-button>
     </div>
     <div class="createroom-user__body">
-      <scroller v-if="totalNum > 0">
+      <scroller v-if="users.length > 0">
         <div>
-          <collapsible
-            class="member-collapsible"
-            :decorated="!isMobileSize"
-            v-for="subGroup in filteredSubGroups"
-            :title="subGroup.groupName"
-            :key="'group_' + subGroup.groupId"
-            :count="subGroup.remoteGroupMemberResponses.length"
-            :preOpen="preOpen"
+          <wide-card
+            v-for="(user, idx) of users"
+            :key="idx"
+            :customClass="{
+              choice: true,
+              selected:
+                selection.findIndex(select => select.uuid === user.uuid) > -1,
+            }"
+            :height="height"
+            @click.native="selectUser(user)"
           >
-            <wide-card
-              v-for="(user, idx) of subGroup.remoteGroupMemberResponses"
-              :key="idx"
-              :customClass="{
-                choice: true,
-                selected:
-                  selection.findIndex(select => select.uuid === user.uuid) > -1,
-              }"
-              :height="'100%'"
-              @click.native="selectUser(user)"
-            >
-              <profile
-                class="profile-short"
-                :image="user.profile"
-                :mainText="user.nickname || user.nickName"
-                :subText="user.email"
-                :role="user.role"
-                :thumbStyle="thumbStyle"
-                :status="accessType(user.accessType)"
-              ></profile>
-            </wide-card>
-          </collapsible>
+            <profile
+              class="profile-short"
+              :image="user.profile"
+              :mainText="user.nickname || user.nickName"
+              :subText="user.email"
+              :role="user.role"
+              :thumbStyle="thumbStyle"
+              :status="accessType(user.accessType)"
+            ></profile>
+          </wide-card>
         </div>
       </scroller>
       <div v-else class="createroom-user__empty">
@@ -128,11 +75,8 @@ import Scroller from 'Scroller'
 import Profile from 'Profile'
 import WideCard from 'WideCard'
 import IconButton from 'IconButton'
-import Collapsible from 'Collapsible'
-import Popover from 'Popover'
 import responsiveCardMixin from 'mixins/responsiveCard'
 import RSelectCheck from '../modules/RemoteSelectCheck'
-import { ROLE } from 'configs/remote.config'
 
 export default {
   name: 'ModalCreateRoomInvite',
@@ -140,10 +84,8 @@ export default {
     Scroller,
     Profile,
     WideCard,
-    Collapsible,
     IconButton,
     RSelectCheck,
-    Popover,
   },
   mixins: [responsiveCardMixin],
   data() {
@@ -152,15 +94,21 @@ export default {
     }
   },
   props: {
-    subGroups: {
+    users: {
       type: Array,
-      default: () => [],
+      default: () => {
+        return []
+      },
     },
     selection: {
       type: Array,
       default: () => {
         return []
       },
+    },
+    total: {
+      type: [Number, Boolean],
+      default: false,
     },
     loading: {
       type: Boolean,
@@ -177,32 +125,16 @@ export default {
   },
   computed: {
     totalNum() {
-      return this.filteredSubGroups.reduce((acc, subGroup) => {
-        return acc + subGroup.remoteGroupMemberResponses.length
-      }, 0)
-    },
-    filteredSubGroups() {
-      return this.subGroups.map(subGroup => {
-        subGroup.remoteGroupMemberResponses = subGroup.remoteGroupMemberResponses.filter(
-          member => member.role !== ROLE.GUEST,
-        )
-        return subGroup
-      })
-    },
-    preOpen() {
-      if (
-        this.subGroups.length === 1 &&
-        this.subGroups[0].groupId === 'group_etc'
-      ) {
-        return true
+      if (this.total === false) {
+        return this.users.length
       } else {
-        return false
+        return this.total
       }
     },
   },
   watch: {
     selectedGroupId() {
-      this.$eventBus.$emit('update::selectedgroupid', this.selectedGroupId)
+      this.$emit('selectedgroupid', this.selectedGroupId)
     },
   },
   methods: {
@@ -217,10 +149,6 @@ export default {
       if (accessType) return accessType.toLowerCase()
       return ''
     },
-    updateSelectedGroupId(groupId) {
-      this.$eventBus.$emit('popover:close')
-      this.selectedGroupId = groupId
-    },
   },
 }
 </script>
@@ -233,12 +161,8 @@ export default {
 <style lang="scss">
 @import '~assets/style/mixin';
 @include responsive-mobile {
-  .createroom-user__header .icon-button.refresh > img {
+  .createroom-user__header .icon-button > img {
     content: url(~assets/image/workspace/ic_renew_16.svg);
-  }
-
-  .createroom-user__header .icon-button.favourite > img {
-    content: url(~assets/image/workspace/ic_manage_member_group_16.svg);
   }
 
   .createroom-user__body {
@@ -291,67 +215,6 @@ export default {
     &:focus {
       background-color: #1a1a1b;
     }
-  }
-}
-
-.member-collapsible {
-  &.collapsible.decorated {
-    margin-bottom: 0.5714rem;
-  }
-
-  .widecard {
-    &.choice {
-      border-radius: 4px;
-      padding: 0.8571rem 1.1429rem;
-    }
-
-    &.choice:first-of-type {
-      margin-top: 0.7857rem;
-    }
-
-    &.choice:last-of-type {
-      margin-bottom: 0;
-    }
-  }
-}
-@include responsive-mobile {
-  .member-collapsible {
-    .widecard {
-      &.choice {
-        border-radius: 4px;
-        padding: 0.8571rem 1.1429rem;
-        margin-bottom: 0.7143rem;
-      }
-
-      &.choice:first-of-type {
-        margin-top: 0;
-      }
-
-      &.choice:last-of-type {
-        margin-bottom: 1.0714rem;
-      }
-    }
-  }
-  .header__tools {
-    display: flex;
-  }
-
-  .member-group-menu {
-    z-index: 110;
-    min-width: 16.2857rem;
-    > .popover--body {
-      padding: 0;
-    }
-
-    .groupcard-popover {
-      width: 227.9998px;
-
-      .group-pop__button {
-        width: 100%;
-      }
-    }
-
-    @include responsive-popover;
   }
 }
 </style>
