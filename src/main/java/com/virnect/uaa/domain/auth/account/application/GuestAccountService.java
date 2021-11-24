@@ -1,5 +1,6 @@
 package com.virnect.uaa.domain.auth.account.application;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -16,13 +17,13 @@ import com.virnect.uaa.domain.auth.account.dto.response.GuestAccountInfoResponse
 import com.virnect.uaa.domain.auth.account.dto.response.GuestUserStat;
 import com.virnect.uaa.domain.auth.common.error.AuthenticationErrorCode;
 import com.virnect.uaa.domain.auth.common.exception.UserAuthenticationServiceException;
+import com.virnect.uaa.domain.auth.security.token.JwtProvider;
 import com.virnect.uaa.domain.auth.websocket.ClientSessionInfo;
 import com.virnect.uaa.domain.auth.websocket.session.SessionManager;
 import com.virnect.uaa.domain.user.dao.user.UserRepository;
 import com.virnect.uaa.domain.user.domain.User;
 import com.virnect.uaa.global.common.ApiResponse;
 import com.virnect.uaa.global.common.ClientUserAgentInformationParser;
-import com.virnect.uaa.domain.auth.security.token.JwtProvider;
 import com.virnect.uaa.infra.rest.license.LicenseRestService;
 import com.virnect.uaa.infra.rest.license.dto.UserLicenseInfo;
 import com.virnect.uaa.infra.rest.license.dto.UserLicenseInfoResponse;
@@ -32,6 +33,7 @@ import com.virnect.uaa.infra.rest.license.dto.UserLicenseInfoResponse;
 @Transactional
 @RequiredArgsConstructor
 public class GuestAccountService {
+	private static final int MAX_WORKSPACE_USER_NUMBER = 50;
 	private final UserRepository userRepository;
 	private final LicenseRestService licenseRestService;
 	private final SessionManager<ClientSessionInfo> sessionManager;
@@ -54,7 +56,8 @@ public class GuestAccountService {
 
 		for (User guestUser : licensedSeatUsers) {
 			// 해당 사용자가 웹소켓 세션을 갖고 있는지 확인 -> 있다면 통화 중이거나 사용중
-			String userSessionKey = String.format("%s_%s", accountAllocateRequest.getWorkspaceId(), guestUser.getUuid());
+			String userSessionKey = String.format(
+				"%s_%s", accountAllocateRequest.getWorkspaceId(), guestUser.getUuid());
 			if (sessionManager.hasExistUserSessionId(userSessionKey)) {
 				currentAllocatedGuestUserTotal++;
 				continue;
@@ -120,19 +123,49 @@ public class GuestAccountService {
 	private List<String> findLicenseAllocateUserAndCollectUserId(
 		String workspaceId, String productName, List<String> userIds
 	) {
-		ApiResponse<UserLicenseInfoResponse> remoteRestResponse = licenseRestService.getUserLicenseInfos(
-			workspaceId, userIds, productName);
+		if (userIds.size() > MAX_WORKSPACE_USER_NUMBER) {
+			List<String> licenseAllocatedUserIds = new ArrayList<>();
+			for (int i = 0; i < userIds.size(); i += MAX_WORKSPACE_USER_NUMBER) {
+				List<String> guestUserIds;
+				if (i + MAX_WORKSPACE_USER_NUMBER < userIds.size()) {
+					guestUserIds = userIds.subList(i, i + MAX_WORKSPACE_USER_NUMBER);
 
-		if (remoteRestResponse == null || remoteRestResponse.getData() == null
-			|| remoteRestResponse.getData().getUserLicenseInfos().isEmpty()) {
-			throw new UserAuthenticationServiceException(AuthenticationErrorCode.ERR_GUEST_USER_NOT_FOUND);
+				} else {
+					guestUserIds = userIds.subList(i, userIds.size());
+				}
+				ApiResponse<UserLicenseInfoResponse> remoteRestResponse = licenseRestService.getUserLicenseInfos(
+					workspaceId, guestUserIds, productName);
+
+				if (remoteRestResponse == null || remoteRestResponse.getData() == null
+					|| remoteRestResponse.getData().getUserLicenseInfos().isEmpty()) {
+					throw new UserAuthenticationServiceException(AuthenticationErrorCode.ERR_GUEST_USER_NOT_FOUND);
+				}
+
+				licenseAllocatedUserIds.addAll(
+					remoteRestResponse.getData()
+						.getUserLicenseInfos()
+						.stream()
+						.map(UserLicenseInfo::getUserId)
+						.collect(Collectors.toList())
+				);
+			}
+			return licenseAllocatedUserIds;
+		} else {
+			ApiResponse<UserLicenseInfoResponse> remoteRestResponse = licenseRestService.getUserLicenseInfos(
+				workspaceId, userIds, productName);
+
+			if (remoteRestResponse == null || remoteRestResponse.getData() == null
+				|| remoteRestResponse.getData().getUserLicenseInfos().isEmpty()) {
+				throw new UserAuthenticationServiceException(AuthenticationErrorCode.ERR_GUEST_USER_NOT_FOUND);
+			}
+
+			return remoteRestResponse.getData()
+				.getUserLicenseInfos()
+				.stream()
+				.map(UserLicenseInfo::getUserId)
+				.collect(Collectors.toList());
+
 		}
-
-		return remoteRestResponse.getData()
-			.getUserLicenseInfos()
-			.stream()
-			.map(UserLicenseInfo::getUserId)
-			.collect(Collectors.toList());
 	}
 
 	private String getUUIDString() {
