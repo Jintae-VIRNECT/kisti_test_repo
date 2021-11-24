@@ -19,7 +19,7 @@ export default async function ({ req, res, store, redirect, error, $config }) {
       req.headers['user-agent'].indexOf('Trident/') !== -1
     const isOldEdge = req.headers['user-agent'].indexOf('Edge') !== -1
     if (isIE || isOldEdge) {
-      return error({ message: 'BrowserNotSupport' })
+      return error({ type: 'browser', message: 'BrowserNotSupport' })
     }
 
     // 사용자가 로그인을 하지 않은 경우.
