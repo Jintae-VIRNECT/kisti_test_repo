@@ -23,14 +23,15 @@ app.use(route)
     logger.info(`${key}: ${val}`, 'LISTENING'),
   )
 
-	// if (envSet.SSL_ENV === 'private') {
-	// 	const options = {
-	// 		key: fs.readFileSync(`./cert/${config.sslConfig.name}.key`),
-	// 		cert: fs.readFileSync(`./cert/${config.sslConfig.name}.crt`)
-  //     // passphrase: config.sslConfig.pass
-	// 	}
-	// 	https.createServer(options, app).listen(envSet.SERVER_PORT)
-	// } else {
+	if (envSet.SSL_ENV === 'private') {
+		const options = {
+			key: fs.readFileSync(`./cert/${config.sslConfig.name}.key`),
+			cert: fs.readFileSync(`./cert/${config.sslConfig.name}.crt`)
+      // passphrase: config.sslConfig.pass
+		}
+		https.createServer(options, app).listen(envSet.SERVER_PORT)
+	} else {
 		server.listen(envSet.SERVER_PORT)
-	// }
+	}
 })()
+ 
