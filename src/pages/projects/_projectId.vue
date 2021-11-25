@@ -67,6 +67,7 @@
           :forms="forms"
           :members="members"
           @updated="updated"
+          @closed="closed"
         />
         <!-- 타겟 정보 -->
         <ProjectModalTargetPane

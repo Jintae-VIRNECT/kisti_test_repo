@@ -116,7 +116,9 @@
         "updateNotExist": "워크스페이스에 선택하신 프로젝트가 존재하지 않습니다. 다시 확인해 주세요.",
         "backup": "삭제된 프로젝트를 프로젝트 목록으로 이동했습니다.",
         "emptySelectMember": "지정 멤버를 선택해주세요.",
-        "deleteFailsPhrase": "지정된 프로젝트 파일을 찾을 수 없거나, 편집권한이 없습니다."
+        "deleteFailsPhrase": "지정된 프로젝트 파일을 찾을 수 없거나, 편집권한이 없습니다.",
+        "sharePermissionRelease": "해당 프로젝트의 공유 권한이 해제되었습니다.​",
+        "editPermissionRelease": "해당 프로젝트의 편집 권한이 해제되었습니다.​"
       }
     }
   }

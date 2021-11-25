@@ -76,17 +76,15 @@ export default {
         edit: this.$t('projects.info.message.updateEditFail'),
       }[designationType]
       try {
-        await this.designationMemberTypeUpdate(designationType)
-        this.$message.success({
-          message: succuessMsg,
-          duration: 2000,
-          showClose: true,
-        })
-        this.$emit('updated')
+        const hasPermission = await this.designationMemberTypeUpdate(
+          designationType,
+        )
+        this.isUserHasPermission(hasPermission, succuessMsg, designationType)
       } catch (e) {
         this.$message.error({
-          message: errMsg + `\n(${e})`,
+          message: errMsg + `<br>(${e})`,
           duration: 2000,
+          dangerouslyUseHTMLString: true,
           showClose: true,
         })
       }
@@ -107,22 +105,24 @@ export default {
         edit: this.$t('projects.info.message.updateEditMemberFail'),
       }[designationType]
       try {
-        await this.designationMemberTypeUpdate(designationType)
-        this.$message.success({
-          message: succuessMsg,
-          duration: 2000,
-          showClose: true,
-        })
-        this.$emit('updated')
+        const hasPermission = await this.designationMemberTypeUpdate(
+          designationType,
+        )
+        this.isUserHasPermission(hasPermission, succuessMsg, designationType)
       } catch (e) {
         this.$message.error({
-          message: errMsg + `\n(${e})`,
+          message: errMsg + `<br>(${e})`,
+          dangerouslyUseHTMLString: true,
           duration: 2000,
           showClose: true,
         })
       }
     },
-    // 공유/편집에 관련된 데이터를 서버에 요청하여 수정하는 메소드
+    /**
+     * @description 공유/편집에 관련된 데이터를 서버에 요청하여 수정하는 메소드
+     * @param {String} designationType share or edit
+     * @returns {Boolean} hasSharePermission
+     */
     async designationMemberTypeUpdate(designationType) {
       const formObject = this.forms.find(form => form.key === designationType)
       // 지정멤버 권한 변경시, 선택된 지정멤버 배열이 비었다면 Error를 던집니다.
@@ -139,9 +139,41 @@ export default {
             userList: formObject.selectMembers,
           },
         }
-        await projectService.updateProject(this.project.uuid, form)
+        const { uploaderHasSharePermission } =
+          await projectService.updateProject(this.project.uuid, form)
+        return uploaderHasSharePermission
       } catch (e) {
-        throw new Error(e)
+        throw new Error(e.message, e.code)
+      }
+    },
+    /**
+     * @description 권한 편집을 한 유저가, 현재 프로젝트를 볼 수 있는지 공유 권한체크.
+     * @param {Boolean} hasPermission
+     * @param {String} succuessMsg
+     * @param {String} designationType share or edit
+     */
+    isUserHasPermission(hasPermission, succuessMsg, designationType) {
+      // 공유권한이 없으면, 권한 없다는 알럿과 함께 모달창을 닫는다.
+      if (!hasPermission) {
+        const hasPermissionMsg = {
+          share: this.$t('projects.info.message.sharePermissionRelease'),
+          edit: this.$t('projects.info.message.editPermissionRelease'),
+        }[designationType]
+        this.$message.error({
+          message: hasPermissionMsg,
+          duration: 2000,
+          showClose: true,
+        })
+        this.$emit('updated')
+        this.$emit('closed')
+        // 공유권한이 있으면, 권한 변경이 잘 되었다는 알럿을 보여준다.
+      } else {
+        this.$message.success({
+          message: succuessMsg,
+          duration: 2000,
+          showClose: true,
+        })
+        this.$emit('updated')
       }
     },
   },
