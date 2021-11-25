@@ -7,8 +7,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import com.virnect.data.dto.response.member.*;
-
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
@@ -25,6 +23,9 @@ import com.virnect.data.domain.member.MemberType;
 import com.virnect.data.domain.room.Room;
 import com.virnect.data.dto.PageMetadataResponse;
 import com.virnect.data.dto.constraint.LicenseConstants;
+import com.virnect.data.dto.response.member.MemberInfoListResponse;
+import com.virnect.data.dto.response.member.MemberInfoResponse;
+import com.virnect.data.dto.response.member.MemberSecessionResponse;
 import com.virnect.data.dto.rest.WorkspaceMemberInfoListResponse;
 import com.virnect.data.dto.rest.WorkspaceMemberInfoResponse;
 import com.virnect.data.error.ErrorCode;
@@ -81,7 +82,7 @@ public class MemberService {
 	) {
 
 		WorkspaceMemberInfoListResponse responseData = workspaceRestService.getWorkspaceMembers(
-			workspaceId, filter, search, 0, Integer.MAX_VALUE).getData();
+			workspaceId, filter, search, 0, 50).getData();
 
 		List<WorkspaceMemberInfoResponse> workspaceMemberInfoList = responseData.getMemberInfoList();
 		if (CollectionUtils.isEmpty(workspaceMemberInfoList)) {
@@ -91,13 +92,13 @@ public class MemberService {
 		workspaceMemberInfoList.removeIf(
 			memberInfoResponses ->
 				Arrays.toString(memberInfoResponses.getLicenseProducts()).isEmpty() ||
-				!Arrays.toString(memberInfoResponses.getLicenseProducts())
-					.contains(LicenseConstants.PRODUCT_NAME)
+					!Arrays.toString(memberInfoResponses.getLicenseProducts())
+						.contains(LicenseConstants.PRODUCT_NAME)
 		);
 		workspaceMemberInfoList.removeIf(memberInfoResponses -> memberInfoResponses.getUuid().equals(userId));
 
 		if (accessTypeFilter) {
-			for(Iterator<WorkspaceMemberInfoResponse> memberInfoIterator = workspaceMemberInfoList.iterator(); memberInfoIterator.hasNext();){
+			for (Iterator<WorkspaceMemberInfoResponse> memberInfoIterator = workspaceMemberInfoList.iterator(); memberInfoIterator.hasNext(); ) {
 				AccessStatus targetUser = accessStatusService.getAccessStatus(
 					workspaceId + "_" + memberInfoIterator.next().getUuid());
 				if (ObjectUtils.isEmpty(targetUser) || targetUser.getAccessType() != AccessType.LOGIN) {
@@ -106,7 +107,8 @@ public class MemberService {
 			}
 		}
 
-		CustomPaging customPaging = PagingUtils.customPaging(page, workspaceMemberInfoList.size(), size, workspaceMemberInfoList.isEmpty());
+		CustomPaging customPaging = PagingUtils.customPaging(
+			page, workspaceMemberInfoList.size(), size, workspaceMemberInfoList.isEmpty());
 
 		// 데이터 range
 		workspaceMemberInfoList = IntStream
@@ -127,9 +129,9 @@ public class MemberService {
 			memberInfoResponse.setAccessType(loadAccessType(workspaceId, memberInfoResponse.getUuid()));
 		}
 
-		return new ApiResponse<>(new MemberInfoListResponse(memberInfoList,pageMeta));
+		return new ApiResponse<>(new MemberInfoListResponse(memberInfoList, pageMeta));
 	}
-  
+
 	public MemberInfoListResponse getMembersInvitePossible(
 		String workspaceId,
 		String sessionId,
@@ -163,7 +165,8 @@ public class MemberService {
 			.collect(Collectors.toList());
 
 		for (MemberInfoResponse memberInfoResponse : memberInfoList) {
-			AccessStatus targetUser = accessStatusService.getAccessStatus(workspaceId + "_" + memberInfoResponse.getUuid());
+			AccessStatus targetUser = accessStatusService.getAccessStatus(
+				workspaceId + "_" + memberInfoResponse.getUuid());
 			if (!ObjectUtils.isEmpty(targetUser)) {
 				memberInfoResponse.setAccessType(targetUser.getAccessType());
 			} else {
@@ -171,7 +174,8 @@ public class MemberService {
 			}
 		}
 
-		CustomPaging customPaging = PagingUtils.customPaging(page, workspaceMemberInfoList.size(), size, workspaceMemberInfoList.isEmpty());
+		CustomPaging customPaging = PagingUtils.customPaging(
+			page, workspaceMemberInfoList.size(), size, workspaceMemberInfoList.isEmpty());
 
 		// 데이터 range
 		memberInfoList = IntStream
