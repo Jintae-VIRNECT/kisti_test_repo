@@ -35,7 +35,11 @@ import com.virnect.data.domain.Role;
 import com.virnect.data.domain.member.Member;
 import com.virnect.data.domain.member.MemberStatus;
 import com.virnect.data.dto.PageMetadataResponse;
-import com.virnect.serviceserver.serviceremote.dto.mapper.member.MemberWorkspaceMapper;
+import com.virnect.data.dto.request.session.ForceLogoutRequest;
+import com.virnect.data.dto.response.member.MemberInfoListResponse;
+import com.virnect.data.dto.response.member.MemberInfoResponse;
+import com.virnect.data.dto.response.session.SessionData;
+import com.virnect.data.dto.response.session.SessionTokenData;
 import com.virnect.data.dto.rest.WorkspaceMemberInfoResponse;
 import com.virnect.data.error.ErrorCode;
 import com.virnect.data.global.common.ApiResponse;
@@ -59,12 +63,8 @@ import com.virnect.mediaserver.core.SessionManager;
 import com.virnect.mediaserver.kurento.core.KurentoSession;
 import com.virnect.mediaserver.kurento.core.KurentoSessionListener;
 import com.virnect.mediaserver.kurento.core.KurentoTokenOptions;
-import com.virnect.data.dto.request.session.ForceLogoutRequest;
-import com.virnect.data.dto.response.member.MemberInfoListResponse;
-import com.virnect.data.dto.response.member.MemberInfoResponse;
-import com.virnect.data.dto.response.session.SessionData;
-import com.virnect.data.dto.response.session.SessionTokenData;
 import com.virnect.serviceserver.serviceremote.dao.SessionDataRepository;
+import com.virnect.serviceserver.serviceremote.dto.mapper.member.MemberWorkspaceMapper;
 
 @Slf4j
 @Component
@@ -739,8 +739,10 @@ public class ServiceSessionManager {
 
 		// 로그아웃 및 협업 중인 멤버 필터링
 		List<String> failUserIds = new ArrayList<>();
-		for(Iterator<String> targetUuidList = forceLogoutRequest.getTargetUserIds().iterator(); targetUuidList.hasNext();){
-			AccessStatus targetUser = accessStatusService.getAccessStatus(forceLogoutRequest.getWorkspaceId() + "_" + targetUuidList.next());
+		for (Iterator<String> targetUuidList = forceLogoutRequest.getTargetUserIds()
+			.iterator(); targetUuidList.hasNext(); ) {
+			AccessStatus targetUser = accessStatusService.getAccessStatus(
+				forceLogoutRequest.getWorkspaceId() + "_" + targetUuidList.next());
 			if (!ObjectUtils.isEmpty(targetUser)) {
 				if (targetUser.getAccessType() == AccessType.LOGOUT
 					|| targetUser.getAccessType() == AccessType.JOIN
@@ -754,7 +756,8 @@ public class ServiceSessionManager {
 
 		// 강제 로그 아웃 대상이 없을 경우 (대상 전체가 이미 로그아웃 또는 협업 중인 경우)
 		if (forceLogoutRequest.getTargetUserIds().size() == 0) {
-			return new ApiResponse<>(new MemberInfoListResponse(failMembersResponse, pageMeta), ErrorCode.ERR_MEMBER_LOGOUT_OR_JOIN);
+			return new ApiResponse<>(
+				new MemberInfoListResponse(failMembersResponse, pageMeta), ErrorCode.ERR_MEMBER_LOGOUT_OR_JOIN);
 		}
 
 		// Redis force-logout 채널로 정보 전송
@@ -768,7 +771,8 @@ public class ServiceSessionManager {
 
 		// Logout 상태 확인 (in Redis)
 		for (String targetUserId : forceLogoutRequest.getTargetUserIds()) {
-			AccessStatus checkLogout = accessStatusService.getAccessStatus(forceLogoutRequest.getWorkspaceId() + "_" + targetUserId);
+			AccessStatus checkLogout = accessStatusService.getAccessStatus(
+				forceLogoutRequest.getWorkspaceId() + "_" + targetUserId);
 			if (ObjectUtils.isEmpty(checkLogout) || checkLogout.getAccessType() == AccessType.LOGOUT) {
 				failUserIds.removeIf(targetUserId::equals);
 			}

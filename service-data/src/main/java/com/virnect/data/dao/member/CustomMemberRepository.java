@@ -13,4 +13,6 @@ public interface CustomMemberRepository {
 
 	List<Member> findByWorkspaceIdAndUuid(String workspaceId, String uuid);
 
+	Optional<Member> findGuestMemberByWorkspaceIdAndUuid(String workspaceId, String uuid);
+
 }

@@ -12,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import com.virnect.data.application.account.AccountRestService;
+import com.virnect.data.application.workspace.WorkspaceRestService;
 import com.virnect.data.dao.room.RoomRepository;
 import com.virnect.data.domain.room.Room;
 import com.virnect.data.dto.request.room.JoinRoomRequest;
@@ -35,6 +36,7 @@ public class GuestService {
 	private final RoomService roomService;
 	private final AccountRestService accountRestService;
 	private final RoomRepository roomRepository;
+	private final WorkspaceRestService workspaceRestService;
 
 	private final SessionDataRepository sessionDataRepository;
 	private final ServiceSessionManager serviceSessionManager;
@@ -66,7 +68,7 @@ public class GuestService {
 		);
 		if (guestAccount.getCode() != ErrorCode.ERR_SUCCESS.getCode()) {
 			log.info("ACCOUNT SERVER ERROR : " + guestAccount.getCode() + "(" + guestAccount.getMessage() + ")");
-			if (guestAccount.getCode() == 5000)	{
+			if (guestAccount.getCode() == 5000) {
 				return new ApiResponse<>(ErrorCode.ERR_GUEST_USER_NOT_FOUND);
 			} else if (guestAccount.getCode() == 5001) {
 				return new ApiResponse<>(ErrorCode.ERR_GUEST_USER_NOT_ENOUGH);
@@ -104,6 +106,14 @@ public class GuestService {
 		String sessionId,
 		JoinRoomRequest joinRoomRequest
 	) {
+
+		String guestMemberUuid = workspaceRestService.getWorkspaceMember(workspaceId, joinRoomRequest.getUuid())
+			.getData()
+			.getUuid();
+		if (StringUtils.isBlank(guestMemberUuid)) {
+			return new ApiResponse<>(ErrorCode.ERR_GUEST_USER_NOT_FOUND);
+		}
+
 		ApiResponse<Boolean> dataProcess = this.sessionDataRepository.prepareJoinRoomOnlyGuest(
 			workspaceId,
 			sessionId,
@@ -137,7 +147,6 @@ public class GuestService {
 		return responseData;
 	}
 
-
 	private String extractIpFromRequest(HttpServletRequest request) {
 		String clientIp;
 		String clientXForwardedForIp = request.getHeader("x-forwarded-for");
@@ -149,7 +158,7 @@ public class GuestService {
 		return clientIp;
 	}
 
-	private String parseXForwardedHeader(String header)	{
+	private String parseXForwardedHeader(String header) {
 		return header.split(" *,*")[0];
 	}
 

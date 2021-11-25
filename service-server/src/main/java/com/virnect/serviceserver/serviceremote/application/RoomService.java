@@ -79,6 +79,8 @@ public class RoomService {
 	private static final String TAG = RoomService.class.getSimpleName();
 	private static final String REST_PATH = "/remote/room";
 
+	private static final String GUEST_DELETED_SIGNAL = "signal:deleted-guest";
+
 	private final RemoteServiceConfig config;
 
 	private final RoomRepository roomRepository;
@@ -254,7 +256,7 @@ public class RoomService {
 		// 오픈방이 아닐 경우 정원 인원수 확인
 		if (!(roomRequest.getSessionType() == SessionType.OPEN)) {
 			if (!isValidUserCapacity(roomRequest, licenseItem)) {
-				return new ApiResponse<>(ErrorCode.ERR_ROOM_MEMBER_IS_OVER );
+				return new ApiResponse<>(ErrorCode.ERR_ROOM_MEMBER_IS_OVER);
 			}
 		}
 
@@ -389,7 +391,8 @@ public class RoomService {
 			inviteRoomRequest.getLeaderId(),
 			true,
 			LocalDateTime.now(),
-			new HashMap<>())
+			new HashMap<>()
+		)
 		);
 	}
 
@@ -414,10 +417,12 @@ public class RoomService {
 		if (StringUtils.isBlank(connectionId)) {
 			this.sessionDataRepository.sendEvictMessage(apiResponse.getData());
 			return new ApiResponse<>(
-				new ResultResponse(kickRoomRequest.getLeaderId(),
+				new ResultResponse(
+					kickRoomRequest.getLeaderId(),
 					true,
 					LocalDateTime.now(),
-					new HashMap<>())
+					new HashMap<>()
+				)
 			);
 		}
 		//send rpc message to connection id user of the session id
@@ -435,16 +440,19 @@ public class RoomService {
 			new ApiResponse<>(
 				new ResultResponse(),
 				Integer.parseInt(jsonObject.get("status").getAsString()),
-				jsonObject.get("message").getAsString());
+				jsonObject.get("message").getAsString()
+			);
 		}
 
 		log.info("Evict participant result : {}", serviceSessionManager.evictParticipant(sessionId, connectionId));
 
 		return new ApiResponse<>(
-			new ResultResponse(kickRoomRequest.getLeaderId(),
+			new ResultResponse(
+				kickRoomRequest.getLeaderId(),
 				true,
 				LocalDateTime.now(),
-				new HashMap<>())
+				new HashMap<>()
+			)
 		);
 	}
 
@@ -452,12 +460,30 @@ public class RoomService {
 
 		ApiResponse<ResultResponse> apiResponse = new ApiResponse<>();
 
-		JsonObject jsonObject = serviceSessionManager.generateMessage(
-			sendSignalRequest.getSessionId(),
-			sendSignalRequest.getTo(),
-			sendSignalRequest.getType(),
-			sendSignalRequest.getData()
-		);
+		JsonObject jsonObject;
+		if (sendSignalRequest.getType().equals(GUEST_DELETED_SIGNAL)) {
+			List<String> guestMemberConnectionId = new ArrayList<>();
+			Member guestMember = memberRepository.findGuestMemberByWorkspaceIdAndUuid(
+				workspaceId, sendSignalRequest.getData()).orElse(null);
+			if (ObjectUtils.isEmpty(guestMember)) {
+				return new ApiResponse<>(ErrorCode.ERR_ROOM_MEMBER_NOT_FOUND);
+			}
+			
+			guestMemberConnectionId.add(guestMember.getConnectionId());
+			jsonObject = serviceSessionManager.generateMessage(
+				guestMember.getSessionId(),
+				guestMemberConnectionId,
+				sendSignalRequest.getType(),
+				null
+			);
+		} else {
+			jsonObject = serviceSessionManager.generateMessage(
+				sendSignalRequest.getSessionId(),
+				sendSignalRequest.getTo(),
+				sendSignalRequest.getType(),
+				sendSignalRequest.getData()
+			);
+		}
 		if (jsonObject.has("error")) {
 			log.info("sendSignal :{}", jsonObject.get("error").getAsString());
 			log.info("sendSignal :{}", jsonObject.get("status").getAsString());
@@ -556,8 +582,9 @@ public class RoomService {
 			sessionId
 		);
 
-		Room room = roomRepository.findRoomByWorkspaceIdAndSessionIdNotInEvictedMember(workspaceId, sessionId).orElse(null);
-		if(ObjectUtils.isEmpty(room)) {
+		Room room = roomRepository.findRoomByWorkspaceIdAndSessionIdNotInEvictedMember(workspaceId, sessionId)
+			.orElse(null);
+		if (ObjectUtils.isEmpty(room)) {
 			return new ApiResponse<>(ErrorCode.ERR_ROOM_NOT_FOUND);
 		}
 		if (room.getRoomStatus() != RoomStatus.ACTIVE) {
@@ -633,7 +660,8 @@ public class RoomService {
 			roomPage.getNumberOfElements(),
 			roomPage.getTotalPages(),
 			roomPage.getTotalElements(),
-			roomPage.isLast());
+			roomPage.isLast()
+		);
 
 		return new RoomInfoListResponse(roomInfoResponses, pageMeta);
 	}
@@ -649,10 +677,12 @@ public class RoomService {
 			workspaceId,
 			"remote",
 			search,
-			Integer.MAX_VALUE
+			50
 		).getData().getMemberInfoList();
 
-		Set<String> userIds = workspaceMembers.stream().map(WorkspaceMemberInfoResponse::getUuid).collect(Collectors.toSet());
+		Set<String> userIds = workspaceMembers.stream()
+			.map(WorkspaceMemberInfoResponse::getUuid)
+			.collect(Collectors.toSet());
 
 		//List<String> userIds = new ArrayList<>();
 		/*for (WorkspaceMemberInfoResponse memberInfo : workspaceMembers) {
@@ -683,7 +713,8 @@ public class RoomService {
 			roomPage.getNumberOfElements(),
 			roomPage.getTotalPages(),
 			roomPage.getTotalElements(),
-			roomPage.isLast());
+			roomPage.isLast()
+		);
 
 		return new RoomInfoListResponse(roomInfoResponses, pageMeta);
 	}
@@ -933,7 +964,7 @@ public class RoomService {
 			if (ObjectUtils.isEmpty(accessStatus) || accessStatus.getAccessType() == AccessType.LOGOUT) {
 				result = AccessType.LOGOUT;
 			} else {
-				result =  accessStatus.getAccessType();
+				result = accessStatus.getAccessType();
 			}
 		} catch (Exception e) {
 			log.info("SET MEMBER STATUS EXCEPTION => [{}], [{}]", uuid, e.getMessage());
