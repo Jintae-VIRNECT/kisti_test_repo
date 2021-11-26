@@ -22,14 +22,6 @@
         ></share-3d>
       </transition>
 
-      <transition name="share">
-        <!-- 3d공유 파일 목록 ui : 리더만 표시-->
-        <share-3d
-          v-if="!isMobileSize && isLeader && currentView === 'ar'"
-          v-show="viewAction === ACTION.AR_3D"
-        ></share-3d>
-      </transition>
-
       <main
         class="main-wrapper"
         :class="{
