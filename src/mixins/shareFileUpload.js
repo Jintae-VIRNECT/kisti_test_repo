@@ -21,13 +21,13 @@ export default {
     //협업보드, ar 3d공유 파일 업로드 함수 공통 사용
     async loadFile(file, callback = () => {}, fileType = FILE_TYPE.SHARE) {
       if (file) {
-        this.uploadingFileName = file.name //업로드 스피너 실행
-
         if (file.size > maxFileSize) {
           this.toastError(this.$t('service.file_maxsize'))
           this.clearUploadFile()
           return false
         }
+
+        this.uploadingFileName = file.name //업로드 스피너 실행
 
         const attachedFileType = this.getAttachedFileType(file, fileType) //첨부된 파일 확장자 가져오기
         const isAcceptable = ACCEPTABLE_FILE_TYPE[fileType].includes(
@@ -57,7 +57,7 @@ export default {
               workspaceId: this.workspace.uuid,
             })
 
-            this.uploadingFileName = '' //업로드 스피너 제거
+            this.removeUploadSpinner()
 
             //저장 용량 경고 체크
             if (res.usedStoragePer >= 90) {
@@ -66,6 +66,8 @@ export default {
               this.toastDefault(this.$t('alarm.file_uploaded'))
             }
           } catch (err) {
+            this.removeUploadSpinner()
+
             switch (err.code) {
               case ERROR.FILE_EXTENSION_UNSUPPORT: //미지원 파일 확장자
               case ERROR.FILE_STORAGE_CAPACITY_FULL: //파일 스토리지 용량 초과
@@ -85,11 +87,18 @@ export default {
           this.clearUploadFile()
           callback()
         } else {
+          this.clearUploadFile()
+          this.removeUploadSpinner()
           this.toastError(this.$t('service.file_type'))
           return false
         }
       }
     },
+
+    removeUploadSpinner() {
+      this.uploadingFileName = '' //업로드 스피너 제거
+    },
+
     clearUploadFile() {
       this.$refs['uploadFile'].value = ''
     },
