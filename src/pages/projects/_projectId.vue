@@ -68,6 +68,8 @@
           :members="members"
           @updated="updated"
           @closed="closed"
+          @update:originalPermissionData="setOriginalPermissionData"
+          @undo="undo"
         />
         <!-- 타겟 정보 -->
         <ProjectModalTargetPane
@@ -181,6 +183,10 @@ export default {
       modaltotal: 0,
       // 현재 모달창에서 보고있는 프로젝트 검색옵션.
       modalSearchParams: {},
+      // 돌려놓기시 사용할 원본 share form 데이터
+      originalShareData: {},
+      // 돌려놓기시 사용할 원본 edit form 데이터
+      originalEditData: {},
     }
   },
   watch: {
@@ -279,7 +285,19 @@ export default {
             ? this.project.sharedUserList
             : this.project.editUserList
         }
+        if (isMemberSpecitic) {
+          this.setOriginalPermissionData('share')
+        } else {
+          this.setOriginalPermissionData('edit')
+        }
       })
+    },
+    setOriginalPermissionData(designationType) {
+      if (designationType === 'share') {
+        this.originalShareData = Object.assign({}, this.forms[0])
+      } else {
+        this.originalEditData = Object.assign({}, this.forms[1])
+      }
     },
     // 이전 버튼 클릭 메소드
     async prev() {
@@ -371,6 +389,17 @@ export default {
       })
       this.activityList = []
       this.getActivitiesLogs({ page: 1 })
+    },
+    undo(v) {
+      let num, originalData
+      if (v === 'share') {
+        num = 0
+        originalData = this.originalShareData
+      } else {
+        num = 1
+        originalData = this.originalEditData
+      }
+      this.$set(this.forms, num, Object.assign({}, originalData))
     },
   },
   computed: {

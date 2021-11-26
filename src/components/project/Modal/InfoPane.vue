@@ -49,6 +49,7 @@
       :selectMembers.sync="form.selectMembers"
       @update:updateProjectAuth="updateProjectAuth"
       @update:updateProjectMember="updateProjectMember"
+      @undo="undo"
     ></projectMemberSelect>
   </el-row>
 </template>
@@ -165,6 +166,7 @@ export default {
           showClose: true,
         })
         this.$emit('updated')
+        this.$emit('update:originalPermissionData', designationType)
         this.$emit('closed')
         // 공유권한이 있으면, 권한 변경이 잘 되었다는 알럿을 보여준다.
       } else {
@@ -174,7 +176,11 @@ export default {
           showClose: true,
         })
         this.$emit('updated')
+        this.$emit('update:originalPermissionData', designationType)
       }
+    },
+    undo(v) {
+      this.$emit('undo', v)
     },
   },
 }

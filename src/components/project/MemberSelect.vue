@@ -1,6 +1,11 @@
 <template>
   <div class="project-member-select">
     <el-divider />
+    <el-row>
+      <el-button type="text" class="undo" @click="undo">
+        <img src="~assets/images/icon/ic-undo.svg" />
+      </el-button>
+    </el-row>
     <!-- 프로젝트 공유 / 편집 정보 -->
     <dl class="select" ref="form">
       <dt>{{ $t(selectLabel) }}</dt>
@@ -151,6 +156,9 @@ export default {
         this.labelImg = member ? member.img : this.$defaultUserProfile
       }
     },
+    undo() {
+      this.$emit('undo', this.propsKey)
+    },
   },
   watch: {
     memberPermission(v) {
@@ -183,7 +191,17 @@ export default {
 </script>
 
 <style lang="scss">
-.project-member-select {
+#__nuxt .project-info-modal .el-dialog__body .project-member-select {
+  .el-row {
+    margin: 12px 0;
+    .el-button {
+      height: 24px;
+      width: 24px;
+      padding: 0;
+      position: absolute;
+      right: 0;
+    }
+  }
   .virnect-workstation-form {
     .input-placeholder {
       position: absolute;
