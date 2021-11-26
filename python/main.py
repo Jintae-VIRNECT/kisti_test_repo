@@ -107,7 +107,7 @@ def get_config_file_names(headers, dict_url):
     
     return cf_list
 
-# 파일 목록에서 해당 파일의 컨텐츠를 가지고 옵니다.
+# 파일 목록에서 해당 파일의 콘텐츠를 가지고 옵니다.
 def get_file(headers, raw_url, file_names):
     files = []
     for name in file_names:

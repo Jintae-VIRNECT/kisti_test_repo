@@ -460,7 +460,7 @@ const signalArDrawing = event => {
   window.vue.$eventBus.$emit(SIGNAL.AR_DRAWING, event)
 }
 
-/** AR 3D 컨텐츠 모드*/
+/** AR 3D 콘텐츠 모드*/
 const signalAr3dContent = event => {
   window.vue.$eventBus.$emit(SIGNAL.AR_3D, event)
 }

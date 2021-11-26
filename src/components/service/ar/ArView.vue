@@ -71,7 +71,7 @@ export default {
       if (beforeVal === ACTION.AR_DRAWING) {
         this.$call.sendArDrawing(AR_DRAWING.END_DRAWING)
       }
-      //ar 3d 컨텐츠 모드 해제 및 공유 중인 데이터/상태 초기화
+      //ar 3d 콘텐츠 모드 해제 및 공유 중인 데이터/상태 초기화
       else if (beforeVal === ACTION.AR_3D) {
         //AR내에 모드 변경시에만 3d모드 종료 시그널을 보내고, AR기능 자체의 종료인 경우 보내지 않는다.
         if (this.view === VIEW.AR) {

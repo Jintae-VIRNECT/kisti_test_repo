@@ -175,7 +175,7 @@ export const AR_3D_FILE_SHARE_STATUS = {
 }
 
 /**
- * 시그널 - 캡쳐 권한 제어
+ * 시그널 - 캡처 권한 제어
  */
 export const CAPTURE_PERMISSION = {
   REQUEST: 'request',

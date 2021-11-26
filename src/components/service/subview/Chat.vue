@@ -120,7 +120,7 @@ export default {
             status: 'ar-3d',
             type: 'system',
           })
-          // 3D 컨텐츠 모드를 시작합니다.
+          // 3D 콘텐츠 모드를 시작합니다.
           return
         }
       }
