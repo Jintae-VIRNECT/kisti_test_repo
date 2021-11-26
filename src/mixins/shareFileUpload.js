@@ -72,6 +72,7 @@ export default {
               case ERROR.FILE_EXTENSION_UNSUPPORT: //미지원 파일 확장자
               case ERROR.FILE_STORAGE_CAPACITY_FULL: //파일 스토리지 용량 초과
               case ERROR.FILE_ENCRYPTED: //암호화 파일
+              case ERROR.FILE_EMPTY: //빈파일 업로드
                 this.showErrorToast(err.code)
                 break
               default:
