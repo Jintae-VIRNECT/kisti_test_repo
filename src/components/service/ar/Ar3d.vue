@@ -9,9 +9,11 @@ import { ACTION } from 'configs/view.config'
 import { AR_3D_CONTENT_SHARE, ROLE } from 'configs/remote.config'
 import { normalizedPosX, normalizedPosY } from 'utils/normalize'
 import { remoteFileDownload } from 'api/http/drawing'
+import toastMixin from 'mixins/toast'
 
 export default {
   name: 'Ar3d',
+  mixins: [toastMixin],
   props: {
     videoSize: {
       type: Object,
@@ -33,8 +35,14 @@ export default {
   methods: {
     ...mapMutations(['SET_IS_3D_POSITION_PICKING']),
     async doPointing(event) {
-      if (this.viewAction !== ACTION.AR_3D) return
-      if (!this.isLeader || !this.is3dPositionPicking) return
+      if (this.viewAction !== ACTION.AR_3D) return false //3d 공유 모드가 아닌 경우
+      if (!this.isLeader) return false //리더가 아닌 경우
+      if (!this.share3dContent.objectName) return false //현재 선택한 3d 오브젝트가 없는 경우
+      if (this.share3dContent.objectName && !this.is3dPositionPicking) {
+        //3d 공유가 이미 출력 중인 경우
+        this.toastDefault(this.$t('service.ar_3d_exist'))
+        return false
+      }
 
       let posX = normalizedPosX(event.offsetX, this.videoSize.width)
       let posY = normalizedPosY(event.offsetY, this.videoSize.height)
