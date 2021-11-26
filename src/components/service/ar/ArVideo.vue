@@ -118,8 +118,7 @@ export default {
       return this.resolutions[idx]
     },
     isLeader() {
-      if (this.account.roleType === ROLE.LEADER) return true
-      else return false
+      return this.account.roleType === ROLE.LEADER
     },
   },
   watch: {
@@ -161,7 +160,8 @@ export default {
       } else if (val === 'drawing') {
         this.toastDefault(this.$t('service.ar_area_success'))
       } else if (val === '3d') {
-        this.toastDefault(this.$t('service.ar_3d_start'))
+        if (this.isLeader) this.toastDefault(this.$t('service.ar_3d_start'))
+        else this.toastDefault(this.$t('service.chat_ar_3d_start'))
       }
     },
   },

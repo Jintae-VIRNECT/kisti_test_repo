@@ -31,6 +31,7 @@ import {
 import Loading3d from './3dcontents/Loading3d.vue'
 import ArVideo from './ArVideo'
 import ArCanvas from './ardrawing/DrawingCanvas'
+
 export default {
   name: 'ARView',
   components: {
@@ -55,7 +56,7 @@ export default {
       'ar3dShareStatus',
     ]),
     isDrawing() {
-      if (this.account.roleType !== ROLE.LEADER) {
+      if (!this.isLeader) {
         return false
       }
       if (this.viewAction === ACTION.AR_DRAWING) {
@@ -64,6 +65,9 @@ export default {
         // this.$call.sendArDrawing(AR_DRAWING.END_DRAWING)
         return false
       }
+    },
+    isLeader() {
+      return this.account.roleType === ROLE.LEADER
     },
   },
   watch: {
@@ -89,7 +93,7 @@ export default {
   },
   methods: {
     ...mapMutations(['SHOW_3D_CONTENT', 'SET_AR_3D_SHARE_STATUS']),
-    ...mapActions(['showArImage']),
+    ...mapActions(['showArImage', 'setAction']),
     receiveSignal(receive) {
       const data = JSON.parse(receive.data)
 
@@ -146,12 +150,14 @@ export default {
 
     // 타 참가자 : 3d 모델 공유 모드 시작/종료
     receiveSignal3d(event) {
-      if (this.viewAction !== ACTION.AR_3D) return false
+      const { type } = JSON.parse(event.data)
 
-      if (event.type === AR_3D_CONTENT_SHARE.START_SHARE) {
+      if (!type) return false
+
+      if (type === AR_3D_CONTENT_SHARE.START_SHARE && !this.isLeader) {
         this.setAction(ACTION.AR_3D)
-        this.toastDefault(this.$t('service.chat_ar_3d_start'))
-      } else if (event.type === AR_3D_CONTENT_SHARE.STOP_SHARE) {
+      } else if (type === AR_3D_CONTENT_SHARE.STOP_SHARE) {
+        if (this.viewAction !== ACTION.AR_3D) return false
         this.setAction(ACTION.AR_POINTING) //기본 포인팅 모드로 전환
       } else return false
     },
