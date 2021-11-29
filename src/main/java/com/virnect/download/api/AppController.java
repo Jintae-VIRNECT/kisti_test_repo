@@ -3,6 +3,7 @@ package com.virnect.download.api;
 import javax.validation.Valid;
 
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.MDC;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -20,10 +21,13 @@ import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import com.virnect.download.application.AppService;
+import com.virnect.download.application.download.AppService;
+import com.virnect.download.dto.request.AdminApkAppUploadRequest;
+import com.virnect.download.dto.request.AdminCommonAppUploadRequest;
 import com.virnect.download.dto.request.AppInfoUpdateRequest;
 import com.virnect.download.dto.request.AppSigningKeyRegisterRequest;
 import com.virnect.download.dto.request.AppUploadRequest;
+import com.virnect.download.dto.response.AdminAppUploadResponse;
 import com.virnect.download.dto.response.AppDetailInfoResponse;
 import com.virnect.download.dto.response.AppSigningKetRegisterResponse;
 import com.virnect.download.dto.response.AppUploadResponse;
@@ -106,8 +110,48 @@ public class AppController {
 
 	@ApiOperation(value = "앱 정보 조회")
 	@GetMapping("/list")
-	public ResponseEntity<ApiResponse<AppVersionInfoListResponse>> getAllAppInfoList(){
+	public ResponseEntity<ApiResponse<AppVersionInfoListResponse>> getAllAppInfoList() {
 		ApiResponse<AppVersionInfoListResponse> responseMessage = appService.getAllAppInfo();
 		return ResponseEntity.ok(responseMessage);
+	}
+
+	@ApiOperation(value = "관리자 apk 앱 등록 API", notes = "apk 설치파일을 업로드 합니다.", tags = "onpremise-controller")
+	@ApiImplicitParams({
+		@ApiImplicitParam(name = "uploadAppFile", value = "업로드 앱 파일", paramType = "form", dataType = "__file", required = true),
+		@ApiImplicitParam(name = "Authorization", value = "Authorization Header", required = true, dataType = "string", paramType = "header", defaultValue = "Bearer "),
+	})
+	@PostMapping("/register/apk")
+	public ResponseEntity<ApiResponse<AdminAppUploadResponse>> adminApkAppUploadRequestHandler(
+		@ModelAttribute @Valid AdminApkAppUploadRequest adminApkAppUploadRequest, BindingResult result
+	) {
+		log.info("[UPLOAD APK APP] REQ : {}", adminApkAppUploadRequest.toString());
+		String userUUID = MDC.get("userUUID");
+		if (result.hasErrors() || StringUtils.isEmpty(userUUID)) {
+			result.getAllErrors().forEach(message -> log.error(PARAMETER_LOG_MESSAGE, message));
+			throw new AppServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
+		}
+		AdminAppUploadResponse responseMessage = appService.adminApplicationUploadAndRegister(
+			adminApkAppUploadRequest, userUUID);
+		return ResponseEntity.ok(new ApiResponse<>(responseMessage));
+	}
+
+	@ApiOperation(value = "관리자 일반 앱 등록 API", notes = "exe, appx, appxbundle 설치파일을 업로드 합니다.", tags = "onpremise-controller")
+	@ApiImplicitParams({
+		@ApiImplicitParam(name = "uploadAppFile", value = "업로드 앱 파일", paramType = "form", dataType = "__file", required = true),
+		@ApiImplicitParam(name = "Authorization", value = "Authorization Header", required = true, dataType = "string", paramType = "header", defaultValue = "Bearer "),
+	})
+	@PostMapping("/register/common")
+	public ResponseEntity<ApiResponse<AdminAppUploadResponse>> adminCommonAppUploadRequestHandler(
+		@ModelAttribute @Valid AdminCommonAppUploadRequest commonAppUploadRequest, BindingResult result
+	) {
+		log.info("[UPLOAD COMMON APP] REQ : {}", commonAppUploadRequest.toString());
+		String userUUID = MDC.get("userUUID");
+		if (result.hasErrors() || StringUtils.isEmpty(userUUID)) {
+			result.getAllErrors().forEach(message -> log.error(PARAMETER_LOG_MESSAGE, message));
+			throw new AppServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
+		}
+		AdminAppUploadResponse responseMessage = appService.adminApplicationUploadAndRegister(
+			commonAppUploadRequest, userUUID);
+		return ResponseEntity.ok(new ApiResponse<>(responseMessage));
 	}
 }

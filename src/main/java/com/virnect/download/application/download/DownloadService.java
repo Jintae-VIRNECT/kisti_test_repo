@@ -1,4 +1,4 @@
-package com.virnect.download.application;
+package com.virnect.download.application.download;
 
 import java.util.List;
 import java.util.Locale;
