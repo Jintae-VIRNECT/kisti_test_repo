@@ -5,7 +5,7 @@
     "contents": "Contents",
     "tasks": "Tasks",
     "workspaceSetting": "Workspace Settings",
-    "projects": "Projects",
+    "projects": "Project",
     "collapse": {
       "workspace": {
         "title": "Workspace list",
@@ -18,17 +18,26 @@
         "activity": "Recent Activity"
       },
       "contents": {
-        "list": "All Contents"
+        "list": "All Contents",
+        "title": "Content (ares)"
       },
       "tasks": {
         "list": "All Tasks",
         "results": "Reports",
         "troubles": "Trouble Memo(TM)"
       },
-      "settings":{
+      "settings": {
         "info": "Workspace Infomation",
         "download": "Download management"
+      },
+      "projects": {
+        "list": "Project List",
+        "title": "Project (mars)"
+      },
+      "content": {
+        "list": "Content List"
       }
-    }
+    },
+    "content": "Content"
   }
 }
