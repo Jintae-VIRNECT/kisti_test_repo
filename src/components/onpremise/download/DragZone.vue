@@ -1,83 +1,122 @@
 <template>
-  <div
-    class="drag-zone"
-    :class="{ 'drag-zone--dragged': dragged }"
-    @dragenter="dragenter"
-    @dragover="dragover"
-    @dragleave="dragleave"
-    @drop="drop"
-  >
-    <div class="drag-zone__container" v-show="!fileSelected">
-      <p>+ IPA 파일을 이곳에 드래그해 주세요. 또는</p>
-      <button @click.prevent="$refs[fileType].click()">파일 선택</button>
-    </div>
-    <div class="drag-zone__container" v-show="fileSelected">
-      <p>{{ fileName }}</p>
-      <button @click.prevent="deleteFile(fileType)">
-        <img src="~assets/images/icon/ic-delete.svg" alt="파일삭제" />
-      </button>
-    </div>
+  <ul>
+    <li
+      class="drag-zone"
+      :class="{ 'drag-zone--dragged': fileList[idx].dragged }"
+      @dragenter="e => dragenter(e, idx)"
+      @dragover="e => dragover(e, idx)"
+      @dragleave="e => dragleave(e, idx)"
+      @drop="e => drop(e, idx, file.format)"
+      v-for="(file, idx) of fileList"
+      :key="idx"
+    >
+      <div class="drag-zone__container" v-show="!file.fileSelected">
+        <p class="drag-info">
+          + {{ file.format.toUpperCase() }} 파일을 이곳에 드래그해 주세요.
+        </p>
+        <button @click.prevent="$refs[file.format][0].click()">
+          파일 선택
+        </button>
+        <!-- <button @click.prevent="test($refs[file.fileName])">파일 선택</button> -->
+      </div>
+      <div class="drag-zone__container" v-show="file.fileSelected">
+        <p>{{ file.fileName }}</p>
+        <button @click.prevent="deleteFile(idx)">
+          <img src="~assets/images/icon/ic-delete.svg" alt="파일삭제" />
+        </button>
+      </div>
 
-    <input
-      type="file"
-      name=""
-      :ref="fileType"
-      id=""
-      @change="changedFile"
-      :accept="`.${fileType}`"
-    />
-  </div>
+      <input
+        type="file"
+        @change="e => changedFile(e, idx, file.format)"
+        :name="file.format"
+        :ref="file.format"
+        :accept="`.${file.format}`"
+      />
+    </li>
+  </ul>
 </template>
 
 <script>
 import messageMixin from '@/mixins/message'
+
+const setSplit = str => {
+  if (str.length > 30)
+    return str.slice(0, 30) + '…' + str.slice(str.lastIndexOf('.'))
+  else return str
+}
 export default {
   mixins: [messageMixin],
   data() {
     return {
-      fileSelected: false,
-      fileName: '',
-      dragged: false,
+      fileList: [],
     }
   },
   props: {
-    fileType: {
-      type: String,
+    files: {
+      type: Array,
       required: true,
     },
   },
   methods: {
-    dragenter() {
-      this.dragged = true
+    setList() {
+      const arr = []
+      this.files.map((v, i) => {
+        arr[i] = {
+          fileSelected: false,
+          format: v,
+          fileName: '',
+          file: null,
+          dragged: false,
+        }
+      })
+      this.fileList = arr
     },
-    dragover(event) {
-      event.preventDefault()
-      this.dragged = true
-    },
-    dragleave() {
-      this.dragged = false
-    },
-    drop(event) {
-      event.preventDefault()
-      this.isDragged = false
-      const files = event.dataTransfer.files
+    fileSet(file, idx, format) {
+      const dropFormat = file.name.slice(file.name.lastIndexOf('.') + 1)
+      if (dropFormat !== format) {
+        // 파일 포맷 체크 에러메시지 뭘로 해요?
+        this.errorMessage('Error: 3000')
+        return
+      }
+      this.fileList[idx].fileName = setSplit(file.name)
+      this.fileList[idx].fileSelected = true
+      this.fileList[idx].file = file
 
+      this.$emit('fileData', this.fileList)
+    },
+    drop(event, idx, format) {
+      event.preventDefault()
+      const files = event.dataTransfer.files
       if (files.length !== 1) {
         this.errorMessage('Error: 3000')
-        return false
+        return
       }
 
-      this.fileName = files[0].name
-      this.fileSelected = true
+      this.fileSet(files[0], idx, format)
     },
-    changedFile(event) {
-      this.fileName = event.target.files[0].name
-      this.fileSelected = true
+    changedFile(event, idx, format) {
+      this.fileSet(event.target.files[0], idx, format)
     },
-    deleteFile(fileType) {
-      console.log(fileType)
-      this.fileSelected = false
+    deleteFile(idx) {
+      this.fileList[idx].fileName = ''
+      this.fileList[idx].fileSelected = false
+      this.fileList[idx].file = null
+      this.$emit('fileData', this.fileList)
     },
+    dragenter(event, idx) {
+      this.fileList[idx].dragged = true
+    },
+    dragover(event, idx) {
+      event.preventDefault()
+      this.fileList[idx].dragged = true
+    },
+    dragleave(event, idx) {
+      this.fileList[idx].dragged = false
+    },
+  },
+  mounted() {
+    this.setList()
   },
 }
 </script>
@@ -91,18 +130,15 @@ export default {
   }
 }
 .drag-zone {
-  width: 380px;
-  height: 74px;
   background-color: rgba(244, 246, 250, 0.8);
   border: 1.5px dashed #e0e5ef;
   padding: 27px 24px;
+  margin-bottom: 8px;
   &__container {
     display: flex;
     justify-content: space-between;
   }
-  p {
-    @include fontLevel(100);
-    color: #5e6b81;
+  .drag-info {
     width: 274px;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -119,6 +155,12 @@ export default {
   }
   input[type='file'] {
     display: none;
+  }
+}
+#__nuxt {
+  .el-dialog__body .drag-info {
+    color: #5e6b81;
+    @include fontLevel(75);
   }
 }
 </style>

@@ -65,10 +65,7 @@ module.exports = async () => {
      * alias
      */
     srcDir: resolve(__dirname, 'src'),
-    components: [
-      { path: '~/components' },
-      { prefix: 'virnect', path: '@virnect/components' },
-    ],
+    components: [{ path: '~/components' }],
     alias: {
       '~@virnect': resolve(__dirname, './node_modules/@virnect'),
     },

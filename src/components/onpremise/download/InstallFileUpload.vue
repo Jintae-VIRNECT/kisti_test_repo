@@ -9,35 +9,46 @@
 
     <div>
       <a
-        v-for="item in upload"
+        v-for="(file, idx) of fileList"
+        :key="idx"
         ref="button"
         class="install-file-upload__button"
         :class="{
-          'install-file-upload__button--clicked': item.key === selected,
+          'install-file-upload__button--clicked': idx === selected,
         }"
-        :key="item.key"
-        @click="click(item.key)"
+        @click="click(idx)"
       >
-        <img v-if="item.image" :src="item.image" />
-        <span>{{ item.label }}</span>
+        <img :src="imageSet(idx)" />
+        <span>VIRNECT {{ lowerCase(idx) }}</span>
       </a>
     </div>
   </el-card>
 </template>
 
 <script>
-import { upload } from '@/models/settings/onpremise/upload'
+import upload from '@/models/settings/onpremise/upload'
 export default {
+  props: {
+    fileList: Object,
+    selected: String,
+  },
   data() {
     return {
       upload,
-      selected: 'remote',
     }
   },
   methods: {
     click(key) {
-      this.selected = key
+      this.$emit('isSelected', key)
       this.$emit('selectUploadPart', key)
+    },
+    lowerCase(str) {
+      return str[0].toUpperCase() + str.slice(1)
+    },
+    imageSet(product) {
+      return require(`@virnect/ui-assets/images/products/logo-${this.lowerCase(
+        product,
+      )}.svg`)
     },
   },
 }

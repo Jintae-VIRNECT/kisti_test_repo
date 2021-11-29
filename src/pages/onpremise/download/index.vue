@@ -17,36 +17,51 @@
         <el-col class="container__left">
           <OnpremiseDownloadInstallFileUpload
             @selectUploadPart="selectUploadPart"
+            @isSelected="isSelected"
+            :selected="selected"
+            :fileList="fileList"
           />
         </el-col>
         <!-- 가운데 -->
         <el-col class="container__center">
           <ul>
-            <li>
-              <OnpremiseDownloadFile @fileUploadClick="fileUploadClick" />
+            <li v-for="(file, idx) of fileList[selected]" :key="idx">
+              <el-card class="onpremise-download-file">
+                <OnpremiseDownloadFile
+                  @fileUploadClick="fileUploadClick"
+                  :product="selected"
+                  :files="file"
+                />
+              </el-card>
             </li>
           </ul>
         </el-col>
       </el-row>
     </div>
     <OnpremiseDownloadUploadModal
-      :fileName="installFileName"
+      :file="installFileInfo"
       :visible.sync="showFileUploadModal"
     />
   </div>
 </template>
 
 <script>
+import fileList from '@/models/settings/onpremise/upload'
 export default {
   data() {
     return {
-      installFileName: '',
+      installFileInfo: {},
       showFileUploadModal: false,
+      fileList: fileList,
+      selected: 'remote',
     }
   },
   methods: {
-    fileUploadClick(name) {
-      this.installFileName = name
+    isSelected(key) {
+      this.selected = key
+    },
+    fileUploadClick(name, fileInfo) {
+      this.installFileInfo = fileInfo
       this.showFileUploadModal = true
     },
     selectUploadPart(name) {

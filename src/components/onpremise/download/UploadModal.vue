@@ -3,14 +3,19 @@
     <el-dialog
       class="upload-modal onpremise-setting-modal"
       :visible.sync="showMe"
-      title="iOS 설치 파일 등록"
+      :title="`${file.category} 설치 파일 등록`"
       width="440px"
       top="11vh"
     >
       <div>
         <p class="upload-modal__descriptsion">
-          <span>iOS</span> 설치 파일 등록 시 <span>IPA</span>,
-          <span>PLIST</span> 파일과<br />버전 정보를 등록해주세요
+          <span>{{ file.category }}</span> 설치 파일 등록 시
+          <template v-for="(format, idx) of file.format">
+            <span :key="idx">{{ setFormat(format) }}</span
+            >{{ idx + 1 === file.format.length ? '' : ',  ' }}
+          </template>
+
+          파일과 버전 정보를 등록해주세요
         </p>
         <el-divider></el-divider>
         <el-form ref="form" :model="form" :rules="rules">
@@ -18,7 +23,12 @@
             <template slot="label">
               <span>파일첨부</span>
             </template>
-            <OnpremiseDownloadDragZone fileType="ipa" />
+            <OnpremiseDownloadDragZone
+              v-if="visible"
+              :files="setFormat(file.format)"
+              @fileData="fileData"
+            />
+            <!-- {{ setFormat(file.format) }} -->
           </el-form-item>
           <el-form-item class="horizon" prop="version" required>
             <template slot="label">
@@ -55,8 +65,8 @@ import formRulesMixin from '@/mixins/formRules'
 export default {
   mixins: [modalMixin, formRulesMixin],
   props: {
-    fileName: {
-      type: String,
+    file: {
+      type: Object,
       required: true,
     },
   },
@@ -70,6 +80,28 @@ export default {
     }
   },
   methods: {
+    fileData(files) {
+      files.map(v => {
+        console.log(v.fileName)
+      })
+      // api 기다리는 중
+    },
+    setFormat(str) {
+      let setData = null
+      if (typeof str === 'object') {
+        const arr = []
+        for (let val of str) {
+          arr.push(val.slice(val.indexOf('.') + 1))
+        }
+        // console.log(arr)
+        setData = arr
+      } else {
+        // console.log(str)
+        const format = str.slice(str.indexOf('.') + 1)
+        setData = format.toUpperCase()
+      }
+      return setData
+    },
     cancelFileUpload() {
       this.showProgressModal = false
       this.closed()
@@ -108,6 +140,9 @@ export default {
 <style lang="scss">
 #__nuxt {
   .upload-modal {
+    .upload-modal__descriptsion span {
+      color: var(--color-blue-70);
+    }
     .el-dialog__body {
       height: 507px;
     }

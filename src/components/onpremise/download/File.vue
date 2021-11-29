@@ -1,30 +1,37 @@
 <template>
-  <el-card class="onpremise-download-file">
-    <div>
-      <label>Category</label>
-      <input type="text" value="Android OS" readonly />
+  <article>
+    <div class="file-cell" v-for="(val, idx) of files" :key="`cell-${idx}`">
+      <p class="file-title" v-if="idx !== 'file'">
+        {{ lowerCase(idx) || '-' }}
+      </p>
+      <p class="value" v-if="!/format|file/.test(idx)">{{ val || '-' }}</p>
+      <p class="value" v-else-if="val === null && idx !== 'file'">-</p>
+      <ul v-if="idx === 'format'">
+        <li v-for="names in val" :key="names">
+          {{ names }}
+        </li>
+      </ul>
+      <VirnectButton
+        v-if="idx === 'file'"
+        label="설치 파일 업로드"
+        @onClick="click(files)"
+      />
     </div>
-    <div>
-      <label>File Name</label>
-      <input type="text" value="{file_name}.plist" readonly />
-    </div>
-    <div>
-      <label>Version</label>
-      <input type="text" value="2.5.10" readonly />
-    </div>
-    <div>
-      <label>Released</label>
-      <input type="text" value="21.11.08 05:36" readonly />
-    </div>
-    <VirnectButton label="설치 파일 업로드" @onClick="click" />
-  </el-card>
+  </article>
 </template>
 
 <script>
 export default {
+  props: {
+    product: String,
+    files: Object,
+  },
   methods: {
-    click() {
-      this.$emit('fileUploadClick', 'remote')
+    click(info) {
+      this.$emit('fileUploadClick', this.product, info)
+    },
+    lowerCase(str) {
+      return str[0].toUpperCase() + str.slice(1)
     },
   },
 }
@@ -32,36 +39,19 @@ export default {
 
 <style lang="scss">
 .onpremise-download-file {
-  .el-card__body {
+  article {
     display: flex;
     flex-wrap: wrap;
     flex-direction: row;
     justify-content: space-evenly;
     align-items: center;
-    div {
-      padding: 34px 0;
-    }
-    div:first-child {
-      width: 17.6%;
-    }
-    div:first-child input {
-      @include fontLevel(400);
-    }
-    div:nth-child(2) {
-      width: 31.5%;
-    }
-    div:nth-child(3) {
-      width: 7.4%;
-    }
-    div:nth-child(4) {
-      width: 11.8%;
-    }
-    label {
+    padding: 34px 0;
+    .file-title {
       margin-bottom: 4px;
       color: #5e6b81;
       @include fontLevel(50);
     }
-    input {
+    .value {
       @include fontLevel(150);
       color: #0b1f48;
       width: 100%;
@@ -70,6 +60,24 @@ export default {
       @include fontLevel(100);
       width: 210px;
       color: #0b1f48;
+    }
+  }
+
+  .file-cell {
+    &:first-child {
+      width: 17.6%;
+      .value {
+        @include fontLevel(400);
+      }
+    }
+    &:nth-child(2) {
+      width: 31.5%;
+    }
+    &:nth-child(3) {
+      width: 7.4%;
+    }
+    &:nth-child(4) {
+      width: 11.8%;
     }
   }
 }
