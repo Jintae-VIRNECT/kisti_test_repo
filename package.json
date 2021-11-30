@@ -12,7 +12,8 @@
     "deploy": "cross-env NODE_ENV=$VIRNECT_ENV VIRNECT_ENV=$VIRNECT_ENV CONFIG_SERVER=$CONFIG_SERVER nuxt start --modern=server",
     "e2e": "cypress",
     "i18n": "i18n --sheetId PF-WebWorkstation",
-    "prepare": "husky install"
+    "prepare": "husky install",
+    "test": "jest --coverage"
   },
   "dependencies": {
     "@nuxtjs/axios": "^5.10.3",
@@ -38,12 +39,17 @@
     "@virnect/i18n": "^1.1.1",
     "@virnect/stylelint-config": "^1.0.1",
     "@vue/component-compiler-utils": "^3.1.0",
+    "@vue/test-utils": "^1.3.0",
+    "babel-core": "7.0.0-bridge.0",
+    "babel-jest": "^27.3.1",
     "cypress": "^7.0.0",
     "eslint-plugin-cypress": "^2.11.2",
     "husky": "^6.0.0",
+    "jest": "^27.3.1",
     "sass": "^1.23.7",
     "sass-loader": "^10.1.1",
     "style-loader": "^1.0.2",
+    "vue-jest": "^3.0.7",
     "vue-loader": "^15.8.3",
     "vue-style-loader": "^4.1.2"
   }
