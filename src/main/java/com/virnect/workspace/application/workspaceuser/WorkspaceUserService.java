@@ -29,6 +29,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import com.virnect.workspace.application.license.LicenseRestService;
+import com.virnect.workspace.application.remote.RemoteRestService;
 import com.virnect.workspace.application.user.UserRestService;
 import com.virnect.workspace.dao.workspace.WorkspaceRepository;
 import com.virnect.workspace.dao.workspacepermission.WorkspacePermissionRepository;
@@ -72,6 +73,7 @@ import com.virnect.workspace.dto.rest.MemberUserPasswordChangeResponse;
 import com.virnect.workspace.dto.rest.MyLicenseInfoListResponse;
 import com.virnect.workspace.dto.rest.MyLicenseInfoResponse;
 import com.virnect.workspace.dto.rest.PageMetadataRestResponse;
+import com.virnect.workspace.dto.rest.SendSignalRequest;
 import com.virnect.workspace.dto.rest.UserDeleteRestResponse;
 import com.virnect.workspace.dto.rest.UserInfoAccessCheckRequest;
 import com.virnect.workspace.dto.rest.UserInfoAccessCheckResponse;
@@ -82,7 +84,6 @@ import com.virnect.workspace.dto.rest.UserProfileUpdateResponse;
 import com.virnect.workspace.dto.rest.WorkspaceLicensePlanInfoResponse;
 import com.virnect.workspace.event.cache.UserWorkspacesDeleteEvent;
 import com.virnect.workspace.event.history.HistoryAddEvent;
-import com.virnect.workspace.event.message.GuestUserDeletedEvent;
 import com.virnect.workspace.event.message.MailContextHandler;
 import com.virnect.workspace.event.message.MailSendEvent;
 import com.virnect.workspace.exception.WorkspaceException;
@@ -116,6 +117,7 @@ public abstract class WorkspaceUserService {
 	private final ApplicationEventPublisher applicationEventPublisher;
 	private final MailContextHandler mailContextHandler;
 	private final WorkspacePermissionRepository workspacePermissionRepository;
+	private final RemoteRestService remoteRestService;
 
 	private static final String ANY_LICENSE_PRODUCT = ".*(?i)REMOTE.*|.*(?i)MAKE.*|.*(?i)VIEW.*";
 	private static final int MAX_WORKSPACE_USER_AMOUNT = 50;//워크스페이스 최대 멤버 수(마스터 본인 포함)
@@ -1341,16 +1343,19 @@ public abstract class WorkspaceUserService {
 		workspaceUserPermissionRepository.delete(deleteUserPermission);
 		workspaceUserRepository.delete(workspaceUser);
 
-		//5. remote 협업 종료를 위해 게스트 삭제 푸시 이벤트 발행
+		//5. remote 협업 종료를 위해 게스트 삭제 API 호출
 		List<String> guestUserProducts = myLicenseInfoListResponse.getLicenseInfoList()
 			.stream()
 			.map(MyLicenseInfoResponse::getProductName)
 			.collect(Collectors.toList());
 		if (guestUserProducts.contains("REMOTE")) {
-			applicationEventPublisher.publishEvent(
-				new GuestUserDeletedEvent(workspaceId, memberGuestDeleteRequest.getRequestUserId(),
-					memberGuestDeleteRequest.getUserId(), guestUserProducts
-				));
+			SendSignalRequest sendSignalRequest = new SendSignalRequest(
+				"remote", "signal:deleted-guest", memberGuestDeleteRequest.getUserId());
+			remoteRestService.sendSignal(workspaceId, sendSignalRequest);
+			log.info(
+				"[REST - RM_SERVICE] Send guest user deleted signal. req workspace uuid : {}, req body : {}",
+				workspaceId, sendSignalRequest.toString()
+			);
 		}
 		return new MemberSeatDeleteResponse(true, memberGuestDeleteRequest.getUserId(), LocalDateTime.now());
 	}
