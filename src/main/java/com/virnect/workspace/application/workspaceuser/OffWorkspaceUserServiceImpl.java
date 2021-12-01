@@ -16,6 +16,7 @@ import org.springframework.web.servlet.view.RedirectView;
 import lombok.extern.slf4j.Slf4j;
 
 import com.virnect.workspace.application.license.LicenseRestService;
+import com.virnect.workspace.application.remote.RemoteRestService;
 import com.virnect.workspace.application.user.UserRestService;
 import com.virnect.workspace.dao.workspace.WorkspaceRepository;
 import com.virnect.workspace.dao.workspacepermission.WorkspacePermissionRepository;
@@ -69,12 +70,13 @@ public class OffWorkspaceUserServiceImpl extends WorkspaceUserService {
 		MessageSource messageSource, LicenseRestService licenseRestService, RestMapStruct restMapStruct,
 		ApplicationEventPublisher applicationEventPublisher,
 		MailContextHandler mailContextHandler,
-		WorkspacePermissionRepository workspacePermissionRepository
+		WorkspacePermissionRepository workspacePermissionRepository,
+		RemoteRestService remoteRestService
 	) {
 		super(
 			workspaceRepository, workspaceUserRepository, workspaceRoleRepository, workspaceUserPermissionRepository,
 			userRestService, messageSource, licenseRestService, restMapStruct, applicationEventPublisher,
-			mailContextHandler, workspacePermissionRepository
+			mailContextHandler, workspacePermissionRepository, remoteRestService
 		);
 		this.workspaceRepository = workspaceRepository;
 		this.workspaceUserRepository = workspaceUserRepository;
@@ -105,7 +107,8 @@ public class OffWorkspaceUserServiceImpl extends WorkspaceUserService {
 			.orElseThrow(() -> new WorkspaceException(ErrorCode.ERR_WORKSPACE_USER_NOT_FOUND));
 
 		//1. 사용자 닉네임 변경
-		if (StringUtils.hasText(memberUpdateRequest.getNickname()) && !updateUserInfo.getNickname().equals(memberUpdateRequest.getNickname())) {
+		if (StringUtils.hasText(memberUpdateRequest.getNickname()) && !updateUserInfo.getNickname()
+			.equals(memberUpdateRequest.getNickname())) {
 			log.info("[REVISE MEMBER INFO] User nickname update. nickname : {}", memberUpdateRequest.getNickname());
 			//1-1. 유저 타입 확인
 			if (updateUserInfo.getUserType() == UserType.USER) {
@@ -122,7 +125,10 @@ public class OffWorkspaceUserServiceImpl extends WorkspaceUserService {
 		}
 
 		//2. 사용자 권한 변경
-		if (StringUtils.hasText(memberUpdateRequest.getRole()) && !updateUserPermission.getWorkspaceRole().getRole().name().equals(memberUpdateRequest.getRole())) {
+		if (StringUtils.hasText(memberUpdateRequest.getRole()) && !updateUserPermission.getWorkspaceRole()
+			.getRole()
+			.name()
+			.equals(memberUpdateRequest.getRole())) {
 			log.info(
 				"[REVISE MEMBER INFO] User role update. current role : {}, update role : {} ",
 				updateUserPermission.getWorkspaceRole().getRole(),

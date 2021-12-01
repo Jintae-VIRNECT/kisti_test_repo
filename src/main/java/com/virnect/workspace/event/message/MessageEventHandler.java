@@ -46,24 +46,4 @@ public class MessageEventHandler {
         mailRequest.setSubject(subject);
         messageRestService.sendMail(mailRequest);
     }
-
-    @EventListener(GuestUserDeletedEvent.class)
-    public void inviteSessionDeleteEventListener(GuestUserDeletedEvent guestUserDeletedEvent) {
-        log.info("[GUEST USER DELETED EVENT] - [{}]", guestUserDeletedEvent.toString());
-        Map<Object, Object> pushMessage = new HashMap<>();
-        pushMessage.put("productNames", guestUserDeletedEvent.getGuestUserProductList());
-
-        List<String> targetUserList = new ArrayList<>();
-        targetUserList.add(guestUserDeletedEvent.getReceiveUserId());
-
-        PushSendRequest pushSendRequest = new PushSendRequest();
-        pushSendRequest.setService("remote");
-        pushSendRequest.setEvent("guestUserDeleted");
-        pushSendRequest.setWorkspaceId(guestUserDeletedEvent.getReceiveWorkspaceId());
-        pushSendRequest.setTargetUserIds(targetUserList);
-        pushSendRequest.setUserId(guestUserDeletedEvent.getSendUserId());
-        pushSendRequest.setContents(pushMessage);
-
-        messageRestService.sendPush(pushSendRequest);
-    }
 }

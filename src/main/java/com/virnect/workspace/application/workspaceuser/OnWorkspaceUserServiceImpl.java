@@ -14,7 +14,6 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 import org.springframework.web.servlet.view.RedirectView;
 import org.thymeleaf.context.Context;
@@ -23,6 +22,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import com.virnect.workspace.application.license.LicenseRestService;
 import com.virnect.workspace.application.message.MessageRestService;
+import com.virnect.workspace.application.remote.RemoteRestService;
 import com.virnect.workspace.application.user.UserRestService;
 import com.virnect.workspace.dao.cache.UserInviteRepository;
 import com.virnect.workspace.dao.workspace.WorkspaceRepository;
@@ -97,12 +97,13 @@ public class OnWorkspaceUserServiceImpl extends WorkspaceUserService {
 		MailContextHandler mailContextHandler,
 		WorkspacePermissionRepository workspacePermissionRepository, UserInviteRepository userInviteRepository,
 		RedirectProperty redirectProperty,
-		MessageRestService messageRestService
+		MessageRestService messageRestService,
+		RemoteRestService remoteRestService
 	) {
 		super(
 			workspaceRepository, workspaceUserRepository, workspaceRoleRepository, workspaceUserPermissionRepository,
 			userRestService, messageSource, licenseRestService, restMapStruct, applicationEventPublisher,
-			mailContextHandler, workspacePermissionRepository
+			mailContextHandler, workspacePermissionRepository, remoteRestService
 		);
 		this.workspaceRepository = workspaceRepository;
 		this.workspaceUserRepository = workspaceUserRepository;
