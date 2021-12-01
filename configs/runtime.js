@@ -9,14 +9,14 @@ let envConfig = {}
 let urlConfig = {}
 let sslConfig = {}
 
-const localIp = '192.168.13.72'
+const localIp = 'sss.test.com'
 
 const localUrls = {
   www: `https://${localIp}:9010`,
   console: `https://${localIp}:8883`,
   api: 'https://192.168.6.3:8073',
   accout: 'https://localhost:8822',
-  workstation: 'https://localhost:8878',
+  workstation: `https://${localIp}:8878`,
   download: 'https://localhost:8833',
   remote: 'https://localhost:8886',
   pay: `https://${localIp}:7070`,

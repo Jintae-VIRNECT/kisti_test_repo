@@ -1,4 +1,4 @@
-import Main from 'components/layout/common/Main'
+import Main from 'layouts/Main'
 import LoginCenterRouter from './partials/login'
 import QRRouter from './partials/qr'
 

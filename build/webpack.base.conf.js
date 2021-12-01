@@ -84,6 +84,8 @@ const config = {
       apps: join(__dirname, '../src/apps'),
       assets: join(__dirname, '../src/assets'),
       components: join(__dirname, '../src/components'),
+      pages: join(__dirname, '../src/pages'),
+      layouts: join(__dirname, '../src/layouts'),
       model: join(__dirname, '../src/model'),
       service: join(__dirname, '../src/service'),
       mixins: join(__dirname, '../src/mixins'),

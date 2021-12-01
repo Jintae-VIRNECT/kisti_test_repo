@@ -1,24 +1,22 @@
 <template>
-  <el-row id="footer">
-    <el-col>
-      <h2>footer</h2>
-      <div class="privacy-wrap">
-        <a href="https://virnect.com/terms" target="_blank">{{
-          $t('terms.terms')
-        }}</a>
-        <a href="https://virnect.com/policy" target="_blank">{{
-          $t('terms.privacy')
-        }}</a>
-        <a
-          href="https://virnect.com/location_based"
-          target="_blank"
-          v-if="false"
-          >{{ $t('terms.locationBased') }}</a
-        >
-      </div>
-      <p><strong>©VIRNECT CO., LTD</strong>. All rights reserved.</p>
-    </el-col>
-  </el-row>
+  <section id="footer">
+    <h2>footer</h2>
+    <div class="privacy-wrap">
+      <a href="https://virnect.com/terms" target="_blank">{{
+        $t('terms.terms')
+      }}</a>
+      <a href="https://virnect.com/policy" target="_blank">{{
+        $t('terms.privacy')
+      }}</a>
+      <a
+        href="https://virnect.com/location_based"
+        target="_blank"
+        v-if="false"
+        >{{ $t('terms.locationBased') }}</a
+      >
+    </div>
+    <p><strong>©VIRNECT CO., LTD</strong>. All rights reserved.</p>
+  </section>
 </template>
 
 <script>
@@ -52,7 +50,6 @@ export default {}
     position: relative;
     padding: 0 11px 0 7px;
     color: #81858c;
-    font-weight: normal;
     &:after {
       position: absolute;
       top: 50%;

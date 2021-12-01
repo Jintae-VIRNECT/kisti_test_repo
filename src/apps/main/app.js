@@ -6,6 +6,7 @@ import { sync } from 'vuex-router-sync'
 import store from '@/store'
 import VeeValidate from 'vee-validate'
 import App from '@/App.vue'
+import VueCompositionApi from '@vue/composition-api'
 import messages from 'languages'
 import { version } from 'root/package.json'
 import '@virnect/ui-assets/css/base.old.css'
@@ -55,6 +56,7 @@ const i18n = new VueI18n({
   fallbackLocale: 'en',
   messages: messages,
 })
+Vue.use(VueCompositionApi)
 
 const versionCss = 'font-size: 2rem; color: #297af3;'
 console.log('%cVIRNECT Console %s', versionCss, version)

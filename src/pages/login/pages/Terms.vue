@@ -55,84 +55,18 @@
 </template>
 
 <script>
+import termsSlice from 'service/slice/terms.slice'
 import VueMarkdown from 'vue-markdown'
 
 export default {
   components: {
     VueMarkdown,
   },
-  data() {
+  setup(props, { root }) {
+    const TERMS_SLICE = termsSlice(root)
     return {
-      allTerms: null,
-      serviceAgree: false,
-      privacyAgree: false,
-      marketingAgree: false,
+      ...TERMS_SLICE,
     }
-  },
-  watch: {
-    allTerms() {
-      if (
-        this.allTerms &&
-        !this.serviceAgree &&
-        !this.privacyAgree &&
-        !this.marketingAgree
-      ) {
-        this.serviceAgree = true
-        this.privacyAgree = true
-        this.marketingAgree = true
-      }
-      if (
-        !this.allTerms &&
-        this.serviceAgree &&
-        this.privacyAgree &&
-        this.marketingAgree
-      ) {
-        this.serviceAgree = false
-        this.privacyAgree = false
-        this.marketingAgree = false
-      }
-      if (
-        this.allTerms &&
-        (this.serviceAgree || this.privacyAgree || this.marketingAgree)
-      ) {
-        this.serviceAgree = true
-        this.privacyAgree = true
-        this.marketingAgree = true
-      }
-      if (
-        !this.allTerms ||
-        !this.serviceAgree ||
-        !this.privacyAgree ||
-        !this.marketingAgree
-      ) {
-        this.allTerms = false
-      }
-    },
-    serviceAgree() {
-      if (!this.serviceAgree) return (this.allTerms = false)
-      if (this.serviceAgree && this.privacyAgree && this.marketingAgree) {
-        this.allTerms = true
-      }
-    },
-    privacyAgree() {
-      if (!this.privacyAgree) return (this.allTerms = false)
-      if (this.serviceAgree && this.privacyAgree && this.marketingAgree) {
-        this.allTerms = true
-      }
-    },
-    marketingAgree() {
-      if (!this.marketingAgree) return (this.allTerms = false)
-      if (this.serviceAgree && this.privacyAgree && this.marketingAgree) {
-        this.allTerms = true
-      }
-    },
-  },
-  computed: {
-    checkAll() {
-      if (this.serviceAgree && this.privacyAgree && this.marketingAgree) {
-        return true
-      } else return false
-    },
   },
 }
 </script>

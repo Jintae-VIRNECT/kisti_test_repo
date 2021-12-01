@@ -19,16 +19,17 @@
 </template>
 <script>
 export default {
-  data() {
-    return {}
-  },
-  methods: {
-    goWorkstation() {
-      location.replace(this.$urls['workstation'])
-    },
-    payment() {
-      location.replace(`${this.$urls['pay']}`)
-    },
+  setup(props, { root }) {
+    const goWorkstation = () => {
+      location.replace(root.$urls['workstation'])
+    }
+    const payment = () => {
+      location.replace(root.$urls['pay'])
+    }
+    return {
+      goWorkstation,
+      payment,
+    }
   },
 }
 </script>
