@@ -3,47 +3,45 @@
     <el-dialog
       class="upload-modal onpremise-setting-modal"
       :visible.sync="showMe"
-      :title="`${file.category} 설치 파일 등록`"
+      :title="
+        $tc('workspace.onpremiseSetting.upload.modal.title', file.category)
+      "
       width="440px"
       top="11vh"
     >
       <div>
-        <p class="upload-modal__descriptsion">
-          <span>{{ file.category }}</span> 설치 파일 등록 시
-          <template v-for="(format, idx) of file.format">
-            <span :key="idx">{{ setFormat(format) }}</span
-            >{{ idx + 1 === file.format.length ? '' : ',  ' }}
-          </template>
-
-          파일과 버전 정보를 등록해주세요
-        </p>
+        <p v-html="getDescription()" class="upload-modal__descriptsion"></p>
         <el-divider></el-divider>
         <el-form ref="form" :model="form" :rules="rules">
           <el-form-item class="horizon" prop="file" required>
             <template slot="label">
-              <span>파일첨부</span>
+              <span>{{
+                $t('workspace.onpremiseSetting.upload.modal.attach')
+              }}</span>
             </template>
             <OnpremiseDownloadDragZone
               v-if="visible"
               :files="setFormat(file.format)"
               @fileData="fileData"
             />
-            <!-- {{ setFormat(file.format) }} -->
           </el-form-item>
           <el-form-item class="horizon" prop="version" required>
             <template slot="label">
-              <span>버전정보</span>
+              <span>{{
+                $t('workspace.onpremiseSetting.upload.modal.version')
+              }}</span>
             </template>
             <el-input
               class="full"
               v-model="form.version"
-              placeholder="버전 정보를 입력해 주세요 (e.g. X.X.XX)"
+              :placeholder="
+                $t('workspace.onpremiseSetting.upload.modal.placeholder')
+              "
             />
           </el-form-item>
         </el-form>
         <p>
-          설치 파일 업로드를 완료하면 워크스페이스 멤버들에게 자동 업데이트
-          알림이 전송됩니다.
+          {{ $t('workspace.onpremiseSetting.upload.modal.explanation') }}
         </p>
       </div>
       <div slot="footer">
@@ -67,6 +65,7 @@ export default {
   props: {
     file: {
       type: Object,
+      default: () => ({}),
       required: true,
     },
   },
@@ -86,6 +85,26 @@ export default {
       })
       // api 기다리는 중
     },
+    getDescription() {
+      let result = ''
+
+      if (this.file.format === undefined) return result
+
+      let format = ''
+
+      this.file.format.forEach(item => {
+        format += ` <span>${item
+          .slice(item.indexOf('.') + 1)
+          .toUpperCase()}</span>,`
+      })
+      format = format.slice(0, -1)
+
+      result = this.$t('workspace.onpremiseSetting.upload.modal.description', {
+        category: `<span>${this.file.category}</span>`,
+        format: format,
+      })
+      return result
+    },
     setFormat(str) {
       let setData = null
       if (typeof str === 'object') {
@@ -93,10 +112,8 @@ export default {
         for (let val of str) {
           arr.push(val.slice(val.indexOf('.') + 1))
         }
-        // console.log(arr)
         setData = arr
       } else {
-        // console.log(str)
         const format = str.slice(str.indexOf('.') + 1)
         setData = format.toUpperCase()
       }
@@ -117,6 +134,7 @@ export default {
     async submit() {
       // 유효성 검사
       try {
+        // api 연동 작업 시 진행
         //await this.$refs.form.validate()
       } catch (e) {
         return false

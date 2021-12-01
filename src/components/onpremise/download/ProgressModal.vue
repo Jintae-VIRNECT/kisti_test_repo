@@ -2,18 +2,19 @@
   <el-dialog
     class="progress-modal onpremise-setting-modal"
     :visible.sync="showMe"
-    title="파일 업로드 중"
+    :title="$t('workspace.onpremiseSetting.upload.modal.progressTitle')"
     width="380px"
     top="11vh"
   >
     <div>
-      <p>
-        선택하신 설치 파일을 업로드하는 중입니다. 업로드가 완료될 때까지
-        브라우저를 종료하지 마세요.
-      </p>
+      <p
+        v-html="$t('workspace.onpremiseSetting.upload.modal.progressMessage')"
+      ></p>
     </div>
     <div slot="footer">
-      <el-button type="danger" @click="cancel"> 취소 </el-button>
+      <el-button type="danger" @click="cancel"
+        >$t('workspace.onpremiseSetting.upload.modal.cancel')</el-button
+      >
     </div>
   </el-dialog>
 </template>

@@ -12,12 +12,17 @@
     >
       <div class="drag-zone__container" v-show="!file.fileSelected">
         <p class="drag-info">
-          + {{ file.format.toUpperCase() }} 파일을 이곳에 드래그해 주세요.
+          +
+          {{
+            $tc(
+              'workspace.onpremiseSetting.upload.modal.drag',
+              file.format.toUpperCase(),
+            )
+          }}
         </p>
         <button @click.prevent="$refs[file.format][0].click()">
-          파일 선택
+          {{ $t('workspace.onpremiseSetting.upload.modal.add') }}
         </button>
-        <!-- <button @click.prevent="test($refs[file.fileName])">파일 선택</button> -->
       </div>
       <div class="drag-zone__container" v-show="file.fileSelected">
         <p>{{ file.fileName }}</p>
@@ -76,6 +81,7 @@ export default {
       const dropFormat = file.name.slice(file.name.lastIndexOf('.') + 1)
       if (dropFormat !== format) {
         // 파일 포맷 체크 에러메시지 뭘로 해요?
+        // 서버와 주고 받을 코드에 대해서 논의가 필요합니다.
         this.errorMessage('Error: 3000')
         return
       }

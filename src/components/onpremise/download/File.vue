@@ -13,7 +13,7 @@
       </ul>
       <VirnectButton
         v-if="idx === 'file'"
-        label="설치 파일 업로드"
+        :label="$t('workspace.onpremiseSetting.upload.title')"
         @onClick="click(files)"
       />
     </div>
