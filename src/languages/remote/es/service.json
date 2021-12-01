@@ -160,6 +160,7 @@
 	"ar_drawing_max": "Puede crear hasta 30 objetos.",
 	"ar_exit": "Terminar la creación de tareas en RA.",
 	"ar_exit_description": "Todas las tareas en RA se terminan. <br> ¿Está seguro de que desea terminar?",
+	"ar_requesting_permission":"Solicitando permiso para compartir AR.",
 	
 	"chat": "Chat",
 	"chat_input": "Introduzca su mensaje.",

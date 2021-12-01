@@ -160,6 +160,7 @@
 	"ar_drawing_max": "最多可生成30個個體。",
 	"ar_exit": "AR著作操作結束",
 	"ar_exit_description": "正在著作的AR操作已經全部結束。<br>您依然要結束嗎？",
+	"ar_requesting_permission":"請求對 AR 共享的許可。",
 
 	"chat": "對話",
 	"chat_input": "請輸入資訊。",

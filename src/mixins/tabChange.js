@@ -1,6 +1,6 @@
 import { mapGetters, mapActions, mapMutations } from 'vuex'
 import toastMixin from 'mixins/toast'
-import configmMixin from 'mixins/confirm'
+import confirmMixin from 'mixins/confirm'
 import { VIEW, ACTION } from 'configs/view.config'
 import { DEVICE } from 'configs/device.config'
 import {
@@ -15,7 +15,7 @@ import {
 import { getResolutionScale } from 'utils/settingOptions'
 
 export default {
-  mixins: [toastMixin, configmMixin],
+  mixins: [toastMixin, confirmMixin],
 
   data() {
     return {
@@ -140,7 +140,8 @@ export default {
         if (type === VIEW.AR) {
           if (this.checkArRequestPermission()) {
             this.$call.sendCapturePermission([this.mainView.connectionId])
-            this.toastDefault(this.$t('service.toast_request_permission'))
+            // this.toastDefault(this.$t('service.toast_request_permission'))
+            this.showArPermissionRequest()
           }
         } else {
           this.setView(type)
@@ -194,6 +195,31 @@ export default {
       )
     },
 
+    showArPermissionRequest() {
+      const options = {
+        allowEscapeKey: false,
+        allowOutsideClick: false,
+      }
+
+      this.confirmDefault(
+        this.$t('service.ar_requesting_permission'),
+        {
+          text: this.$t('button.cancel'),
+          action: () => {
+            this.$call.sendArFeatureStop()
+
+            const targetConnectionId = this.mainView.connectionId
+
+            this.updateParticipant({
+              connectionId: targetConnectionId,
+              permission: false,
+            })
+          },
+        },
+        options,
+      )
+    },
+
     /**
      * AR 요청이 가능한지 확인
      */
@@ -238,14 +264,25 @@ export default {
     },
 
     handlePermissionRes(receive) {
+      this.confirmClose()
+
       const data = JSON.parse(receive.data)
 
       if (data.from === this.account.uuid) return
 
-      if (
-        this.account.roleType === ROLE.LEADER &&
-        data.type === CAPTURE_PERMISSION.RESPONSE
-      ) {
+      const isLeader = this.account.roleType === ROLE.LEADER
+      const isPermissionResponse = data.type === CAPTURE_PERMISSION.RESPONSE
+
+      if (isLeader && isPermissionResponse) {
+        const idx = this.participants.findIndex(
+          user => user.connectionId === receive.from.connectionId,
+        )
+
+        if (idx >= 0 && !this.participants[idx].permission) {
+          this.showArRejected()
+          return
+        }
+
         this.updateParticipant({
           connectionId: receive.from.connectionId,
           permission: data.isAllowed,
@@ -257,6 +294,8 @@ export default {
       }
     },
     startAr(sendSignal = false) {
+      this.confirmClose()
+
       this.toastDefault(
         this.$t('service.toast_ar_start', { name: this.mainView.nickname }),
       )

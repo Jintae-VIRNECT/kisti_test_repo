@@ -160,6 +160,7 @@
     "ar_drawing_max": "最大30個のオブジェクトを作成することができます。",
     "ar_exit": "AR制作作業終了",
     "ar_exit_description": "制作中のAR作業がすべて終了されます。<br>終了しますか？",
+    "ar_requesting_permission":"AR共有への許可を要求しています。",
 
     "chat": "チャット",
     "chat_input": "内容を入力してください。",
