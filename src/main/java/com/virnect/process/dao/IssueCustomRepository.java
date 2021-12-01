@@ -38,9 +38,15 @@ public interface IssueCustomRepository {
 
 	Page<Issue> getIssuesInSearchJobTitle(String userUUID, String workspaceUUID, String title, Pageable pageable);
 
-	Page<Issue> getIssuesOut(String myUUID, String search, List<String> workspaceUserList, Pageable pageable);
-
 	long deleteAllIssueByJobList(List<Job> jobList);
 
 	long deleteAllIssueByUserUUID(String userUUID);
+
+	Page<Issue> getNonJobIssuesByUserUUIDListAndWorkspaceUUID(
+		List<String> userUUIDList, String workspaceUUID, Pageable pageable
+	);
+
+	Page<Issue> getNonJobIssuesByUserUUIDAndWorkspaceUUIDAndSearch(
+		String userUUID, String workspaceUUID, String search, Pageable pageable
+	);
 }

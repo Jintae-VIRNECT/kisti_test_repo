@@ -86,8 +86,6 @@ import com.virnect.process.dto.rest.response.user.UserInfoResponse;
 import com.virnect.process.dto.rest.response.workspace.AllMemberInfoResponse;
 import com.virnect.process.dto.rest.response.workspace.MemberInfoDTO;
 import com.virnect.process.dto.rest.response.workspace.MemberListResponse;
-import com.virnect.process.dto.rest.response.workspace.WorkspaceSettingInfoListResponse;
-import com.virnect.process.dto.rest.response.workspace.WorkspaceSettingInfoResponse;
 import com.virnect.process.exception.ProcessServiceException;
 import com.virnect.process.global.common.ApiResponse;
 import com.virnect.process.global.common.PageMetadataResponse;
@@ -954,7 +952,7 @@ public class TaskService {
 		// 2. 동기화 이슈 가져오기
 		if (uploadWorkResult.getIssues() != null && uploadWorkResult.getIssues().size() > 0) {
 			List<WorkResultSyncRequest.IssueResult> issueResultList = uploadWorkResult.getIssues();
-			syncIssue(issueResultList,null);//todo: 워크스페이스 식별자 요청 파라미터 추가 필요
+			syncIssue(issueResultList, null);//todo: 워크스페이스 식별자 요청 파라미터 추가 필요
 		}
 
 		// TODO : 응답을 동기화 결과 반환해야 함..
@@ -1077,6 +1075,7 @@ public class TaskService {
 			Issue issue = Issue.builder()
 				.content(workIssueResult.getCaption())
 				.workerUUID(syncUserUUID)
+				.workspaceUUID(workspaceUUID)
 				.build();
 			if (!StringUtils.isEmpty(workIssueResult.getPhotoFile())) {
 				issue.setPath(getFileUploadUrl(workIssueResult.getPhotoFile(), workspaceUUID));
@@ -1090,9 +1089,10 @@ public class TaskService {
 	private void syncIssue(List<WorkResultSyncRequest.IssueResult> issueResults, String workspaceUUID) {
 		// insert
 		issueResults.forEach(issueResult -> {
-			Issue issue = Issue.globalIssueBuilder()
+			Issue issue = Issue.builder()
 				.content(issueResult.getCaption())
 				.workerUUID(issueResult.getWorkerUUID())
+				.workspaceUUID(workspaceUUID)
 				.build();
 			if (!StringUtils.isEmpty(issueResult.getPhotoFile())) {
 				issue.setPath(getFileUploadUrl(issueResult.getPhotoFile(), workspaceUUID));
@@ -1437,8 +1437,7 @@ public class TaskService {
 			.orElseThrow(() -> new ProcessServiceException(ErrorCode.ERR_NOT_FOUND_PROCESS));
 
 		//권한 체크 - 사용자가 해당 워크스페이스의 매니저 또는 마스터 일때만 작업을 삭제할 수 있음
-		ApiResponse<MemberListResponse> workspaceResponse = this.workspaceRestService.getWorkspaceUserList(
-			process.getWorkspaceUUID(), 50);
+		ApiResponse<MemberListResponse> workspaceResponse = this.workspaceRestService.getWorkspaceUserList(process.getWorkspaceUUID(), false, null);
 
 		MemberListResponse memberListResponse = workspaceResponse.getData();
 

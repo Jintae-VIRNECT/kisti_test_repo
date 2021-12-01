@@ -25,8 +25,8 @@ import com.virnect.process.global.config.FeignConfiguration;
 @FeignClient(name = "account-server", configuration = FeignConfiguration.class)
 public interface UserRestService {
 
-	@GetMapping("/users/{userUUID}")
-	ApiResponse<UserInfoResponse> getUserInfoByUserUUID(@PathVariable("userUUID") String userUUID);
+	@GetMapping("/users/{userId}")
+	ApiResponse<UserInfoResponse> getUserInfoByUserUUID(@PathVariable("userId") String userUUID);
 
 	@GetMapping("/users")
 	ApiResponse<UserInfoListResponse> getUserInfoSearch(
