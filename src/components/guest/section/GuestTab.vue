@@ -6,6 +6,7 @@
     <template>
       <component :is="component"></component>
       <button
+        v-if="isMobileSize"
         class="guest-join btn"
         @click="joinAsGuest"
         v-html="joinText"
