@@ -64,7 +64,11 @@ export default {
       handler() {
         this.$nextTick(() => {
           if (this.show && this.$refs['chatListScrollbar']) {
-            this.$refs['chatListScrollbar'].scrollToY(Number.MAX_SAFE_INTEGER)
+            const closePopover = false
+            this.$refs['chatListScrollbar'].scrollToY(
+              Number.MAX_SAFE_INTEGER,
+              closePopover,
+            )
           }
         })
       },
