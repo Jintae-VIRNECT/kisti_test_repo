@@ -115,6 +115,8 @@ export default {
       maxSelect: maxParticipants - 1,
       groupNameInput: '',
       groupNameInValid: true,
+
+      isSaving: false,
     }
   },
   computed: {
@@ -192,9 +194,14 @@ export default {
       this.$emit('refresh', this.groupId)
     },
     async save() {
+      if (this.isSaving) return
+
+      this.isSaving = true
+
       try {
         const userIds = this.selection.map(member => member.uuid)
         userIds.push(this.account.uuid)
+
         if (this.groupId) {
           await this.updatePrivateMemberGroup(userIds)
         } else {
@@ -213,6 +220,8 @@ export default {
         }
 
         console.error(err)
+      } finally {
+        this.isSaving = false
       }
     },
     async updatePrivateMemberGroup(userIds) {
