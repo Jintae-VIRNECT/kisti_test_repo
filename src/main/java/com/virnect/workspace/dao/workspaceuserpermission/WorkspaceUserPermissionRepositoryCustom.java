@@ -1,14 +1,14 @@
 package com.virnect.workspace.dao.workspaceuserpermission;
 
-import com.virnect.workspace.domain.workspace.Role;
-import com.virnect.workspace.domain.workspace.WorkspaceRole;
-import com.virnect.workspace.domain.workspace.WorkspaceUser;
-import com.virnect.workspace.domain.workspace.WorkspaceUserPermission;
+import java.util.List;
+import java.util.Optional;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
-import java.util.List;
-import java.util.Optional;
+import com.virnect.workspace.domain.workspace.Role;
+import com.virnect.workspace.domain.workspace.WorkspaceUser;
+import com.virnect.workspace.domain.workspace.WorkspaceUserPermission;
 
 /**
  * Project: PF-Workspace
@@ -30,5 +30,7 @@ public interface WorkspaceUserPermissionRepositoryCustom {
 
     List<String> getUserIdsByInUserListAndEqRole(List<String> userIdList, List<Role> roleList, String workspaceId);
 
-    Page<WorkspaceUserPermission> getWorkspaceUserListByInUserList(List<String> userIdList, Pageable newPageable, String workspaceId);
+    Page<WorkspaceUserPermission> getWorkspaceUserPageByInUserList(List<String> userIdList, Pageable newPageable, String workspaceId);
+
+    List<WorkspaceUserPermission> getWorkspaceUserListByInUserList(List<String> userIdList, String workspaceId);
 }

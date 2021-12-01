@@ -1,10 +1,11 @@
 package com.virnect.workspace.dto.response;
 
-import com.virnect.workspace.dto.rest.PageMetadataRestResponse;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-
+import java.util.Collections;
 import java.util.List;
+
+import lombok.Getter;
+
+import com.virnect.workspace.dto.rest.PageMetadataRestResponse;
 
 /**
  * Project: PF-Workspace
@@ -14,8 +15,28 @@ import java.util.List;
  * DESCRIPTION:
  */
 @Getter
-@RequiredArgsConstructor
 public class WorkspaceUserInfoListResponse {
-    private final List<WorkspaceUserInfoResponse> memberInfoList;
-    private final PageMetadataRestResponse pageMeta;
+	private final List<WorkspaceUserInfoResponse> memberInfoList;
+	private final PageMetadataRestResponse pageMeta;
+
+	public WorkspaceUserInfoListResponse(
+		List<WorkspaceUserInfoResponse> memberInfoList,
+		PageMetadataRestResponse pageMeta
+	) {
+		this.memberInfoList = memberInfoList;
+		this.pageMeta = pageMeta;
+	}
+
+	public WorkspaceUserInfoListResponse(
+		List<WorkspaceUserInfoResponse> memberInfoList
+	) {
+		this.memberInfoList = memberInfoList;
+		this.pageMeta = new PageMetadataRestResponse();
+	}
+
+	public WorkspaceUserInfoListResponse() {
+		this.memberInfoList = Collections.emptyList();
+		this.pageMeta = new PageMetadataRestResponse();
+	}
+
 }
