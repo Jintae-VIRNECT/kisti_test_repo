@@ -2,7 +2,7 @@
   <el-row>
     <dl>
       <dt>{{ $t('projects.info.project.name') }}</dt>
-      <dd class="project-uuid">{{ project.uuid }}</dd>
+      <dd>{{ project.uuid }}</dd>
       <dt>{{ $t('projects.info.project.tracking') }}</dt>
       <dd>{{ project.targetType }}</dd>
     </dl>

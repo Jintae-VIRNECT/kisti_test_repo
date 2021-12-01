@@ -131,7 +131,7 @@ export const projectFilterList = [
     label: 'searchbar.filter.target',
     type: targetFilter,
   },
-  { id: 'modeFilter', label: 'searchbar.filter.mode', type: modeFilter },
+  // { id: 'modeFilter', label: 'searchbar.filter.mode', type: modeFilter },
   {
     id: 'sharedTypes',
     label: 'searchbar.filter.share',

@@ -5,7 +5,7 @@
       v-for="(activity, index) in activityList"
       :key="index"
     >
-      <el-col :span="4">
+      <el-col :span="5">
         <VirnectThumbnail :size="36" :image="activity.userProfileImage" />
       </el-col>
       <el-col :span="21">

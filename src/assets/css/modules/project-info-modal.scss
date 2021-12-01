@@ -32,6 +32,7 @@
     height: 40px;
     font-size: 14px;
     line-height: 40px;
+    top: -6px;
   }
 
   .actionbar {
@@ -125,7 +126,7 @@
       margin: 0 0 2px 0;
     }
     dd {
-      margin: 0 0 8px 0;
+      margin: 0 0 6px 0;
       overflow: unset;
       white-space: unset;
     }
@@ -150,7 +151,7 @@
       }
     }
     .el-button {
-      width: 56px;
+      padding: 0 11px;
       height: 36px;
       color: #1e242b;
       background-color: #dee1e6;
@@ -189,9 +190,6 @@
     white-space: nowrap;
     text-overflow: ellipsis;
 
-    &.project-uuid {
-      overflow: visible;
-    }
     & > img {
       float: right;
       margin-left: 12px;

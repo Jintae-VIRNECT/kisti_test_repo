@@ -1,11 +1,13 @@
 <template>
   <el-popover
+    ref="projectPopover"
     popper-class="project-storage-popup"
     placement="bottom-end"
     :title="$t('projects.storage.info.title')"
     trigger="click"
     visible-arrow="false"
     width="312"
+    @show="setZIndex"
   >
     <el-progress
       ref="storagePopup"
@@ -75,6 +77,14 @@ export default {
       this.ProjectUseVolume = this.plansInfo.project.percent
       this.progressInnerAllUse.style.width = `${this.plansInfo.storage.percent}%`
       this.progressInnerAllVolume.style.width = '100%'
+    },
+    setZIndex() {
+      this.$nextTick(() => {
+        const popover = document.querySelector(
+          `#${this.$refs.projectPopover.tooltipId}`,
+        )
+        popover.style.zIndex = 1
+      })
     },
   },
   mounted() {

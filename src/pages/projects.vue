@@ -319,7 +319,7 @@ export default {
       position: absolute;
       right: 0;
       bottom: 0;
-      width: 220px;
+      padding: 0 30px;
       height: 34px;
       margin-bottom: 7px;
     }
@@ -334,7 +334,20 @@ export default {
       margin-right: 20px;
     }
     .filter {
-      width: 25%;
+      width: 22%;
+    }
+    .el-input__inner {
+      width: 120px;
+    }
+    .el-select__tags {
+      flex-wrap: nowrap;
+      max-width: 97px;
+    }
+    .searchbar__filter .selected .el-tag {
+      width: 90px;
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
     }
   }
 }
