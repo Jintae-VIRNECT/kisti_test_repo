@@ -110,7 +110,11 @@ export default {
     goTab(type) {
       if (type === this.view) return //현재 탭과 동일한 경우
 
-      if (this.isAr3dLoading) return //3d 콘텐츠 로딩 중 이동 불가
+      //3d 컨텐츠 로딩 중 이동 불가
+      if (this.isAr3dLoading) {
+        this.toastDefault(this.$t('service.ar_3d_loading_toast'))
+        return
+      }
 
       if (this.checkDisconnected()) {
         return
