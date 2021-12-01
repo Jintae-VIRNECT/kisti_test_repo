@@ -105,7 +105,7 @@ public class WorkspaceUserPermissionRepositoryImpl extends QuerydslRepositorySup
 	}
 
 	@Override
-	public Page<WorkspaceUserPermission> getWorkspaceUserListByInUserList(
+	public Page<WorkspaceUserPermission> getWorkspaceUserPageByInUserList(
 		List<String> userIdList, Pageable pageable, String workspaceId
 	) {
 		QWorkspaceUserPermission qWorkspaceUserPermission = QWorkspaceUserPermission.workspaceUserPermission;
@@ -116,5 +116,16 @@ public class WorkspaceUserPermissionRepositoryImpl extends QuerydslRepositorySup
 		List<WorkspaceUserPermission> workspaceUserPermissionList = getQuerydsl().applyPagination(pageable, query)
 			.fetch();
 		return new PageImpl<>(workspaceUserPermissionList, pageable, query.fetchCount());
+	}
+
+	@Override
+	public List<WorkspaceUserPermission> getWorkspaceUserListByInUserList(
+		List<String> userIdList, String workspaceId
+	) {
+		QWorkspaceUserPermission qWorkspaceUserPermission = QWorkspaceUserPermission.workspaceUserPermission;
+		return from(qWorkspaceUserPermission)
+			.select(qWorkspaceUserPermission)
+			.where(qWorkspaceUserPermission.workspaceUser.workspace.uuid.eq(workspaceId), inUserIdList(userIdList))
+			.fetch();
 	}
 }

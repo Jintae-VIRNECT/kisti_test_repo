@@ -57,6 +57,7 @@ public class WorkspaceUserController {
             @ApiImplicitParam(name = "page", value = "size 대로 나눠진 페이지를 조회할 번호", paramType = "query", defaultValue = "0"),
             @ApiImplicitParam(name = "size", value = "페이징 사이즈", dataType = "number", paramType = "query", defaultValue = "20"),
             @ApiImplicitParam(name = "sort", value = "정렬 옵션 데이터(role, joinDate, email, nickname)", paramType = "query", defaultValue = "role,desc"),
+            @ApiImplicitParam(name = "paging", value = "정렬 여부", paramType = "query", defaultValue = "true"),
     })
     @GetMapping("/{workspaceId}/members")
     public ResponseEntity<ApiResponse<WorkspaceUserInfoListResponse>> getMembers(
@@ -66,12 +67,13 @@ public class WorkspaceUserController {
             @RequestParam(value = "role", required = false) List<Role> role,
             @RequestParam(value = "userType", required = false) String userType,
             @RequestParam(value = "plan", required = false) String plan,
+            @RequestParam(value = "paging", required = false, defaultValue = "true") boolean paging,
             @ApiIgnore PageRequest pageable
     ) {
         if (!StringUtils.hasText(workspaceId)) {
             throw new WorkspaceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
-        WorkspaceUserInfoListResponse responseMessage = workspaceUserService.getMembers(workspaceId, search, filter, role, userType, plan, pageable);
+        WorkspaceUserInfoListResponse responseMessage = workspaceUserService.getMembers(workspaceId, search, filter, role, userType, plan, pageable, paging);
         return ResponseEntity.ok(new ApiResponse<>(responseMessage));
     }
 
