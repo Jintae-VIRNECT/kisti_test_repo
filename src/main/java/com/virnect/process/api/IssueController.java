@@ -4,8 +4,8 @@ import java.util.Objects;
 
 import javax.validation.Valid;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.ResponseEntity;
-import org.springframework.util.StringUtils;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -144,7 +144,7 @@ public class IssueController {
 	 */
 	@ApiOperation(value = "트러블 메모 목록 조회", notes = "searchType을 최우선 확인함. searchType이 NONE인 경우 검색어는 무시됨.\n정렬 컬럼명은 updatedDate.\n 특정 작업 등에 얽매이지 않는다. 현재는 JOB_ID가 null인 것을 리턴.")
 	@ApiImplicitParams({
-		@ApiImplicitParam(name = "workspaceUUID", value = "워크스페이스 식별자", dataType = "string", paramType = "query"),
+		@ApiImplicitParam(name = "workspaceUUID", value = "워크스페이스 식별자", dataType = "string", paramType = "query", required = true),
 		@ApiImplicitParam(name = "search", value = "검색어 - searchType이 NONE인 경우 검색어는 무시됨.", dataType = "string", paramType = "query", defaultValue = ""),
 		@ApiImplicitParam(name = "myUUID", value = "사용자 식별자", dataType = "string", paramType = "query"),
 		@ApiImplicitParam(name = "page", value = "조회할 페이지 번호(1부터)", dataType = "number", paramType = "query", defaultValue = "1"),
@@ -153,15 +153,15 @@ public class IssueController {
 	})
 	@GetMapping("/troubleMemos")
 	public ResponseEntity<ApiResponse<IssuesResponse>> getTroubleMemo(
-		@RequestParam(value = "workspaceUUID", required = true, defaultValue = "4d6eab0860969a50acbfa4599fbb5ae8") String workspaceUUID
+		@RequestParam(value = "workspaceUUID") String workspaceUUID
 		, @RequestParam(value = "search", required = false) String search
 		, @RequestParam(value = "myUUID", required = false) String myUUID
 		, @ApiIgnore PageRequest pageable
 	) {
-		if (!StringUtils.hasText(workspaceUUID)) {
+		if (StringUtils.isEmpty(workspaceUUID)) {
 			throw new ProcessServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
 		}
-		ApiResponse<IssuesResponse> issuesResponseApiResponse = this.issueService.getIssuesOut(
+		ApiResponse<IssuesResponse> issuesResponseApiResponse = this.issueService.getTroubleMemos(
 			myUUID, workspaceUUID, search, pageable.of());
 
 		return ResponseEntity.ok(issuesResponseApiResponse);
