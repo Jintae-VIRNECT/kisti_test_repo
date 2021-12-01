@@ -56,12 +56,12 @@
         </transition>
 
         <!-- 녹화 시간 정보 -->
-        <div
-          v-if="serverTime"
-          class="main-video__recording"
-          :class="{ 'sharing-on': viewForce }"
-        >
-          <div class="main-video__recording--time">
+        <div class="main-video__recording">
+          <div
+            class="main-video__recording--time"
+            v-if="serverTimer"
+            :class="{ 'sharing-on': viewForce }"
+          >
             <p class="server">
               {{ serverTime | timeFilter }}
             </p>
