@@ -31,7 +31,7 @@ export default {
     async toggleShare() {
       try {
         if (this.isScreenSharing) {
-          this.stopScreenSharing()
+          await this.stopScreenSharing()
         } else {
           await this.startScreenShare()
         }
@@ -64,8 +64,8 @@ export default {
         }
 
         this.$call.sendScreenSharing(true)
-        this.isScreenSharing = true
         this.setScreenSharing(true)
+        this.isScreenSharing = true
       }
     },
 
@@ -90,6 +90,8 @@ export default {
       }
     },
     async stopScreenSharing() {
+      this.isScreenSharing = false
+
       if (this.myTempStream) {
         await this.$call.replaceTrack(this.myTempStream.getVideoTracks()[0])
         this.myTempStream.getVideoTracks().forEach(track => {
@@ -108,7 +110,6 @@ export default {
 
       this.$call.sendScreenSharing(false)
       this.setScreenSharing(false)
-      this.isScreenSharing = false
     },
   },
 }
