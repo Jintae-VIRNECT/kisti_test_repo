@@ -1,11 +1,11 @@
-import Center from 'components/layout/login/LoginCenter'
-import Login from 'components/layout/login/pages/Login'
-import Terms from 'components/layout/login/pages/Terms'
-import Signup from 'components/layout/login/pages/Signup'
-import User from 'components/layout/login/pages/User'
-import Find from 'components/layout/login/pages/Find'
-import ResetPass from 'components/layout/login/pages/onpremise/ResetPassword'
-import Complete from 'components/layout/login/pages/Complete'
+import Center from 'pages/login/LoginCenter'
+import Login from 'pages/login/pages/Login'
+import Terms from 'pages/login/pages/Terms'
+import Signup from 'pages/login/pages/Signup'
+import User from 'pages/login/pages/User'
+import Find from 'pages/login/pages/Find'
+import ResetPass from 'pages/login/pages/onpremise/ResetPassword'
+import Complete from 'pages/login/pages/Complete'
 
 export default {
   path: '',

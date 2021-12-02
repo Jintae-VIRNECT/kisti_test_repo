@@ -12,9 +12,4 @@ export default {
       state.isMobile = value
     },
   },
-  actions: {
-    async IS_MOBILE({ commit }, isMobile) {
-      commit('IS_MOBILE', isMobile)
-    },
-  },
 }

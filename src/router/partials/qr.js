@@ -1,6 +1,6 @@
-import QR from 'components/layout/qr/QR.vue'
-import QRLogin from 'components/layout/qr/pages/QRLogin'
-import QRLoginCenter from 'components/layout/qr/pages/QRLoginCenter'
+import QR from 'pages/qr/QR.vue'
+import QRLogin from 'pages/qr/pages/QRLogin'
+import QRLoginCenter from 'pages/qr/pages/QRLoginCenter'
 
 export default {
   path: '',

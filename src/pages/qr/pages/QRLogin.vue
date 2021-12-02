@@ -36,6 +36,7 @@
 </template>
 
 <script>
+import { ref } from '@vue/composition-api'
 import { QrcodeStream } from 'vue-qrcode-reader'
 
 export default {
@@ -48,42 +49,46 @@ export default {
   components: {
     QrcodeStream,
   },
-  data() {
-    return {
-      result: '',
-      error: '',
-    }
-  },
-  methods: {
-    nameSet(txt) {
-      if (this.env !== 'onpremise' || !/VIRNECT/.test(txt)) return txt
+  setup(props, { root }) {
+    const result = ref('')
+    const error = ref('')
+
+    const nameSet = txt => {
+      if (root.$env !== 'onpremise' || !/VIRNECT/.test(txt)) return txt
       else {
-        let val = txt.replace(/VIRNECT/, this.customInfo.title)
+        let val = txt.replace(/VIRNECT/, props.customInfo.title)
         return val
       }
-    },
-    onDecode(result) {
-      this.result = result
-    },
-    async onInit(promise) {
+    }
+    const onDecode = val => {
+      result.value = val
+    }
+    const onInit = async promise => {
       try {
         await promise
       } catch (error) {
         if (error.name === 'NotAllowedError') {
-          this.error = 'ERROR: you need to grant camera access permisson'
+          error.value = 'ERROR: you need to grant camera access permisson'
         } else if (error.name === 'NotFoundError') {
-          this.error = 'ERROR: no camera on this device'
+          error.value = 'ERROR: no camera on this device'
         } else if (error.name === 'NotSupportedError') {
-          this.error = 'ERROR: secure context required (HTTPS, localhost)'
+          error.value = 'ERROR: secure context required (HTTPS, localhost)'
         } else if (error.name === 'NotReadableError') {
-          this.error = 'ERROR: is the camera already in use?'
+          error.value = 'ERROR: is the camera already in use?'
         } else if (error.name === 'OverconstrainedError') {
-          this.error = 'ERROR: installed cameras are not suitable'
+          error.value = 'ERROR: installed cameras are not suitable'
         } else if (error.name === 'StreamApiNotSupportedError') {
-          this.error = 'ERROR: Stream API is not supported in this browser'
+          error.value = 'ERROR: Stream API is not supported in this browser'
         }
       }
-    },
+    }
+    return {
+      result,
+      error,
+      nameSet,
+      onDecode,
+      onInit,
+    }
   },
 }
 </script>
