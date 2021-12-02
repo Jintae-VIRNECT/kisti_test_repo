@@ -1,5 +1,5 @@
 # Build Stage
-FROM node:12-alpine AS builder
+FROM node:14-alpine AS builder
 
 COPY . .
 
@@ -13,7 +13,7 @@ RUN yarn build \
 RUN rm -f .npmrc
 
 # Runtime Stage
-FROM node:12-alpine
+FROM node:14-alpine
 
 ENV APP_HOME=/usr/app
 WORKDIR $APP_HOME

@@ -61,7 +61,7 @@
           {{ $t('signup.authentication.reSubmit') }}
         </button>
 
-        <PassConfirm
+        <PassWordConfirm
           :pass="signup"
           :setString="setString"
           @watchInput="watchInput"
@@ -195,7 +195,7 @@
 import { ref } from '@vue/composition-api'
 import Signup from 'model/signup'
 import sighupSlice from 'service/slice/signup.slice'
-import PassConfirm from 'components/PassWordConfirm.vue'
+import PassWordConfirm from 'components/PassWordConfirm'
 export default {
   name: 'signup',
   props: {
@@ -203,7 +203,7 @@ export default {
     policyAgree: Boolean,
   },
   emits: ['watchInput'],
-  components: { PassConfirm },
+  components: { PassWordConfirm },
   setup(props, { root }) {
     const signup = ref(new Signup())
     const pickerOptions = ref({
