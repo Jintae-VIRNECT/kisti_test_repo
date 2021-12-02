@@ -1,29 +1,8 @@
 import { ref, computed, onMounted, onBeforeMount } from '@vue/composition-api'
 import Cookies from 'js-cookie'
 import AuthService from 'service/auth-service'
-import { domainRegex } from 'mixins/validate'
+import { cookieOption } from 'mixins/cookie'
 import { alertMessage } from 'mixins/alert'
-
-const cookieOption = (urls, expire) => {
-  const isDomain = urls.domain
-    ? urls.domain
-    : location.hostname.replace(/.*?\./, '')
-
-  const URL = domainRegex.test(location.hostname) ? isDomain : location.hostname
-  if (expire)
-    return {
-      secure: true,
-      sameSite: 'None',
-      expires: expire / 3600000,
-      domain: URL,
-    }
-  else
-    return {
-      secure: true,
-      sameSite: 'None',
-      domain: URL,
-    }
-}
 
 export default function login(props, root) {
   const login = ref({

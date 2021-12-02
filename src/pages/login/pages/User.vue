@@ -7,7 +7,7 @@
 
         <p class="input-title">{{ $t('user.profileImage.title') }}</p>
         <article class="profile-image">
-          <div class="image-holder" @click="profilePopup = true">
+          <div class="image-holder" @click="isProfilePopup = true">
             <div
               class="image"
               v-if="thumbnail"
@@ -22,8 +22,8 @@
             <p>{{ $t('user.profileImage.contents') }}</p>
           </div>
         </article>
-        <ThumbnailUpload
-          :profilePopup="profilePopup"
+        <ProfileUpload
+          :isProfilePopup="isProfilePopup"
           :inputImg="inputImg"
           :thumbnailImageBtnDisabled="thumbnailImageBtnDisabled"
           ref="imgUpload"
@@ -112,7 +112,7 @@
 import userSlice from 'service/slice/user.slice'
 import mixin from 'mixins/mixin'
 import { ValidationProvider } from 'vee-validate'
-import ThumbnailUpload from 'components/popup/ThumbnailUpload'
+import ProfileUpload from 'components/popup/ProfileUpload'
 
 export default {
   name: 'user',
@@ -129,7 +129,7 @@ export default {
   ],
   components: {
     ValidationProvider,
-    ThumbnailUpload,
+    ProfileUpload,
   },
   setup(props, { root }) {
     const USER_SLICE = userSlice(props, root)

@@ -21,8 +21,8 @@ module.exports = {
     '^.+\\.svg$': 'jest-svg-transformer',
   },
   // collectCoverage: true,
-  collectCoverageFrom: ['**/*.{js,vue}'],
-  // coverageReporters: ['text', 'cobertura'],
+  // collectCoverageFrom: ['**/*.{js,vue}'],
+  coverageReporters: ['text', 'cobertura'],
   transform: {
     '^.+\\.js$': 'babel-jest',
     '^.+\\.vue$': 'vue-jest',

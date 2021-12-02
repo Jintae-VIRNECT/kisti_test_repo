@@ -166,11 +166,6 @@ export default {
     .info-text {
       color: #103573;
     }
-    i {
-      position: absolute;
-      left: 28px;
-      color: #8b96ac;
-    }
     .user-email-holder span {
       display: block;
       padding-left: 100px;

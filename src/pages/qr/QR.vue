@@ -43,6 +43,7 @@ export default {
     const ESSENTIAL = essential(root)
     const qrImg = ref(null)
     const userInfo = ref(null)
+    const statusSet = ref(props.showStatus)
 
     const logout = async () => {
       try {
@@ -53,19 +54,15 @@ export default {
       }
     }
 
-    const statusSet = ref(props.showStatus)
-
     const redirection = async () => {
       try {
         if (props.auth.isLogin) {
-          console.log(props.showStatus)
           userInfo.value = props.auth.myInfo
           statusSet.value.login = !props.auth.isLogin
           statusSet.value.profile = true
           statusSet.value.language = false
         } else throw 'error'
       } catch (e) {
-        // props.showStatus.profile = false
         location.replace(`${root.$urls['console']}/?continue=${location.href}`)
       }
     }

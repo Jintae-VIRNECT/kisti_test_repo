@@ -14,7 +14,8 @@
           clearable
           v-model="fullName.lastName"
           :class="{
-            'input-danger': errors.has('tab-category-1-lastname'),
+            'input-danger':
+              /\w/g.test(fullName.lastName) && fullName.lastName !== '',
           }"
         ></el-input>
         <el-input
@@ -23,7 +24,8 @@
           clearable
           v-model="fullName.firstName"
           :class="{
-            'input-danger': errors.has('tab-category-1-firstname'),
+            'input-danger':
+              /\w/g.test(fullName.firstName) && fullName.firstName !== '',
           }"
         ></el-input>
         <p class="input-title">{{ $t('find.mobile.title') }}</p>
@@ -47,7 +49,9 @@
           clearable
           name="phoneNumber"
           v-model="findEmail.phoneNumber"
-          :class="{ 'input-danger': errors.has('phoneNumber') }"
+          :class="{
+            'input-danger': !phoneNumberValid && findEmail.phoneNumber !== '',
+          }"
         ></el-input>
       </div>
 
@@ -143,13 +147,21 @@ export default {
     const isFindEmail = ref(null)
     const countryCodeLists = countryCode
 
+    const phoneNumberValid = computed(() => {
+      return mobileNumberValidate(findEmail.value.phoneNumber)
+    })
+    const emailValid = computed(() => {
+      return emailValidate(findEmail.value.recoveryEmail)
+    })
+
     const emailFindActive = computed(() => {
+      if (fullName.value.firstName === '') return false
+      if (fullName.value.lastName === '') return false
       if (tabCategory.value === 1) {
-        if (fullName.value.firstName === '') return false
-        if (fullName.value.lastName === '') return false
-        if (findEmail.value.phoneNumber === '') return false
-        return true
+        if (phoneNumberValid.value) return true
+        return false
       } else {
+        if (emailValid.value) return true
         return false
       }
     })
@@ -172,9 +184,6 @@ export default {
     })
 
     const findUserData = ref([])
-    const emailValid = computed(() => {
-      return emailValidate(findEmail.value.recoveryEmail)
-    })
 
     const mailAccountFind = async () => {
       try {
@@ -222,6 +231,7 @@ export default {
       findEmail,
       fullName,
       countryCodeLists,
+      phoneNumberValid,
       emailFindActive,
       mailFindText,
       isFindEmail,

@@ -2,35 +2,14 @@ import { ref, computed, onMounted } from '@vue/composition-api'
 import { countryCode } from 'model/countryCode'
 import {
   nickNameValidate,
-  domainRegex,
   emailValidate,
   mobileNumberValidate,
 } from 'mixins/validate'
+import { cookieOption } from 'mixins/cookie'
 import { alertMessage } from 'mixins/alert'
 import Cookies from 'js-cookie'
 import AuthService from 'service/auth-service'
 import imageUpload from 'service/slice/imageUpload.slice'
-
-const cookieOption = (urls, expire) => {
-  const isDomain = urls.domain
-    ? urls.domain
-    : location.hostname.replace(/.*?\./, '')
-
-  const URL = domainRegex.test(location.hostname) ? isDomain : location.hostname
-  if (expire)
-    return {
-      secure: true,
-      sameSite: 'None',
-      expires: expire / 3600000,
-      domain: URL,
-    }
-  else
-    return {
-      secure: true,
-      sameSite: 'None',
-      domain: URL,
-    }
-}
 
 const formDataSet = props => {
   const data = new FormData()
@@ -68,15 +47,15 @@ const signUps = async (root, formData) => {
   } catch (e) {
     alertMessage(
       root,
-      root.$t('user.error.etc.title'), // 기타 오류
-      root.$t('user.error.etc.message'), // 회원가입 진행에 실패하였습니다. 잠시 후 다시 이용해 주세요.
+      root.$t('user.error.etc.title'),
+      root.$t('user.error.etc.message'),
       'error',
     )
   }
 }
 
 export default function user(props, root) {
-  const profilePopup = ref(false)
+  const isProfilePopup = ref(false)
   const user = ref({
     profile: '',
     nickname: '',
@@ -84,7 +63,7 @@ export default function user(props, root) {
     recoveryEmail: '',
   })
   const userCountryCode = ref('+82')
-  const countryCodeLists = ref(countryCode)
+  const countryCodeLists = countryCode
   const formData = ref(new FormData())
   const thumbnail = ref(null)
   const nicknameCheck = ref(true)
@@ -92,7 +71,7 @@ export default function user(props, root) {
     root,
     thumbnail,
     formData,
-    profilePopup,
+    isProfilePopup,
     user,
   )
 
@@ -158,8 +137,8 @@ export default function user(props, root) {
     } catch (e) {
       alertMessage(
         root,
-        root.$t('user.error.nickName.title'), // 닉네임 설정 오류
-        root.$t('user.error.nickName.message'), // 닉네임은 국문, 영문, 특수문자, 띄어쓰기 포함 20자 이하로 입력해 주세요.
+        root.$t('user.error.nickName.title'),
+        root.$t('user.error.nickName.message'),
         'error',
       )
     }
@@ -178,7 +157,7 @@ export default function user(props, root) {
   })
 
   return {
-    profilePopup,
+    isProfilePopup,
     user,
     userCountryCode,
     countryCodeLists,

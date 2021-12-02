@@ -55,6 +55,7 @@
 </template>
 
 <script>
+import { computed, ref, watch } from '@vue/composition-api'
 import AuthService from 'service/auth-service'
 import dayjs from 'dayjs'
 import utc from 'dayjs/plugin/utc'
@@ -66,19 +67,16 @@ export default {
     env: String,
     subTitle: String,
   },
-  data() {
-    return {
-      runnerID: null,
-      deadline: dayjs().add(3, 'minute').unix(),
-      remainTime: 0,
-      qrImage: null,
-      isExpire: false,
-    }
-  },
-  computed: {
-    showTime() {
-      let minute = parseInt(this.remainTime / 60)
-      let second = parseInt(this.remainTime % 60)
+  setup(props, { root }) {
+    const runnerID = ref(null)
+    const deadline = ref(dayjs().add(3, 'minute').unix())
+    const remainTime = ref(0)
+    const qrImage = ref(null)
+    const isExpire = ref(false)
+
+    const showTime = computed(() => {
+      let minute = parseInt(remainTime.value / 60)
+      let second = parseInt(remainTime.value % 60)
       if (minute < 10) {
         minute = '0' + minute
       }
@@ -86,54 +84,68 @@ export default {
         second = '0' + second
       }
       return `${minute}:${second}`
-    },
-  },
-  watch: {
-    userInfo() {
-      this.reset()
-    },
-  },
-  methods: {
-    nameSet(txt) {
-      if (this.env !== 'onpremise' || !/VIRNECT/.test(txt)) return txt
+    })
+
+    const nameSet = txt => {
+      if (root.$env !== 'onpremise' || !/VIRNECT/.test(txt)) return txt
       else {
-        let val = txt.replace(/VIRNECT/, this.customInfo.title)
+        let val = txt.replace(/VIRNECT/, props.customInfo.title)
         return val
       }
-    },
-    async reset() {
+    }
+
+    const timeRunner = () => {
+      clearInterval(runnerID.value)
+      dayjs.extend(duration)
+      dayjs.extend(utc)
+      isExpire.value = false
+      runnerID.value = setInterval(() => {
+        const diff = deadline.value - dayjs().unix()
+        remainTime.value = parseInt(dayjs.duration({ second: diff }).$ms / 1000)
+        if (remainTime.value < 1) {
+          isExpire.value = true
+          clearInterval(runnerID.value)
+        }
+      }, 1000)
+    }
+
+    const reset = async () => {
       const params = {
-        email: this.userInfo.email,
-        userId: this.userInfo.uuid,
+        email: props.userInfo.email,
+        userId: props.userInfo.uuid,
       }
       try {
         let otp = await AuthService.qrOtp({ params: params })
         if (otp.code == 200) {
-          this.timeRunner()
-          this.deadline = dayjs().add(3, 'minute').unix()
-          this.remainTime = parseInt(this.deadline - dayjs().unix())
-          this.qrImage = `data:image/png;base64,${otp.data.qrCode}`
+          timeRunner()
+          deadline.value = dayjs().add(3, 'minute').unix()
+          remainTime.value = parseInt(deadline.value - dayjs().unix())
+          qrImage.value = `data:image/png;base64,${otp.data.qrCode}`
         } else {
           throw otp.data
         }
       } catch (e) {
         location.replace(`${window.urls['console']}/?continue=${location.href}`)
       }
-    },
-    timeRunner() {
-      clearInterval(this.runnerID)
-      dayjs.extend(duration)
-      dayjs.extend(utc)
-      this.isExpire = false
-      this.runnerID = setInterval(() => {
-        const diff = this.deadline - dayjs().unix()
-        this.remainTime = parseInt(dayjs.duration({ second: diff }).$ms / 1000)
-        if (this.remainTime < 1) {
-          this.isExpire = true
-          clearInterval(this.runnerID)
-        }
-      }, 1000)
-    },
+    }
+
+    watch(
+      () => props.userInfo,
+      () => {
+        reset()
+      },
+    )
+
+    return {
+      runnerID,
+      deadline,
+      remainTime,
+      qrImage,
+      isExpire,
+      showTime,
+      nameSet,
+      reset,
+    }
   },
 }
 </script>

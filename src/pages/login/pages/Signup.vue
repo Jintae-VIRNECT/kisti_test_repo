@@ -10,16 +10,18 @@
           :placeholder="$t('signup.mailPlaceholder')"
           v-model="signup.email"
           type="email"
+          name="email"
           clearable
           :disabled="authLoading"
-          name="email"
-          v-validate="'required|email|max:50'"
+          :class="{
+            'input-danger': !emailValid && signup.email !== '',
+          }"
         >
         </el-input>
         <el-button
           class="block-btn verification-btn"
           type="info"
-          :disabled="errors.has('email') || signup.email == ''"
+          :disabled="!emailValid"
           v-if="!authLoading"
           @click="sendEmail()"
         >
@@ -35,7 +37,9 @@
           name="verificationCode"
           clearable
           maxlength="6"
-          v-validate="'required|max:6'"
+          :class="{
+            'input-danger': verificationCode.length < 6,
+          }"
         >
         </el-input>
         <el-button
@@ -56,37 +60,12 @@
         >
           {{ $t('signup.authentication.reSubmit') }}
         </button>
-        <p class="input-title must-check">
-          {{ $t('signup.password.pass') }}
-        </p>
-        <el-input
-          class="password-input"
-          :placeholder="$t('signup.password.comfirm')"
-          v-model="signup.password"
-          type="password"
-          clearable
-          name="password"
-          v-validate="'required|password'"
-          :class="{ 'input-danger': errors.has('password') }"
-        >
-        </el-input>
-        <el-input
-          class="passwordconfirm-input"
-          :placeholder="$t('signup.password.reComfirm')"
-          v-model="passwordConfirm"
-          type="password"
-          clearable
-          name="passwordConfirm"
-          v-validate="'required|password'"
-          :class="{
-            'input-danger':
-              signup.password !== passwordConfirm || errors.has('password'),
-          }"
-        >
-        </el-input>
-        <p class="restriction-text">
-          {{ $t('signup.password.notice') }}
-        </p>
+
+        <PassWordConfirm
+          :pass="signup"
+          :setString="setString"
+          @watchInput="watchInput"
+        />
 
         <p class="input-title must-check">{{ $t('signup.name.name') }}</p>
         <el-input
@@ -110,7 +89,6 @@
 
         <p class="input-title must-check">{{ $t('signup.birth.birth') }}</p>
         <el-date-picker
-          v-if="!isMobile"
           class="birth-input year-input"
           popper-class="year"
           v-model="birth.year"
@@ -124,7 +102,6 @@
         ></el-date-picker>
 
         <el-date-picker
-          v-if="!isMobile"
           class="birth-input month-input"
           popper-class="month"
           v-model="birth.month"
@@ -139,7 +116,6 @@
         ></el-date-picker>
 
         <el-date-picker
-          v-if="!isMobile"
           class="birth-input date-input"
           popper-class="day"
           v-model="birth.date"
@@ -148,21 +124,9 @@
           format="dd"
           maxlength="2"
           :data-placeholder="$t('signup.birth.date')"
-          v-validate="'required'"
           :clearable="false"
           :picker-options="pickerOptions"
         ></el-date-picker>
-
-        <!-- mobile datepicker -->
-        <div class="el-input">
-          <input
-            v-if="isMobile"
-            type="date"
-            class="el-input__inner"
-            v-model="birth.mobile"
-            :placeholder="$t('signup.birth.date')"
-          />
-        </div>
 
         <p class="input-title must-check">{{ $t('signup.route.title') }}</p>
         <el-select
@@ -229,23 +193,33 @@
 
 <script>
 import { ref } from '@vue/composition-api'
+import Signup from 'model/signup'
 import sighupSlice from 'service/slice/signup.slice'
+import PassWordConfirm from 'components/PassWordConfirm'
 export default {
   name: 'signup',
   props: {
     marketInfoReceive: Boolean,
     policyAgree: Boolean,
   },
+  emits: ['watchInput'],
+  components: { PassWordConfirm },
   setup(props, { root }) {
+    const signup = ref(new Signup())
     const pickerOptions = ref({
       disabledDate(time) {
         return time.getTime() > Date.now()
       },
     })
-    const SIGHUP_SLICE = sighupSlice(props, root)
+    const setString = {
+      password: root.$t('signup.password.comfirm'),
+      passWordConfirm: root.$t('signup.password.reComfirm'),
+    }
+    const SIGHUP_SLICE = sighupSlice(props, root, signup)
     return {
       ...SIGHUP_SLICE,
       pickerOptions,
+      setString,
     }
   },
 }

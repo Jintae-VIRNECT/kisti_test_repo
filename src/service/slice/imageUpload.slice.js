@@ -6,7 +6,7 @@ export default function imageUpload(
   root,
   thumbnail,
   formData,
-  profilePopup,
+  isProfilePopup,
   user,
 ) {
   const imgUpload = ref()
@@ -25,7 +25,7 @@ export default function imageUpload(
       file.value = null
     }
     // close()
-    profilePopup.value = false
+    isProfilePopup.value = false
   }
   const uploadImage = async event => {
     const files = event.target.files
@@ -45,7 +45,7 @@ export default function imageUpload(
     imgUpload.value.$refs.imgUpload.value = ''
   }
   const thumbnailImageRegistBtn = () => {
-    profilePopup.value = false
+    isProfilePopup.value = false
     user.value.profile = file.value
     thumbnail.value = inputImg.value
   }

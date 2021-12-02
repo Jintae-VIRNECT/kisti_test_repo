@@ -89,11 +89,9 @@
 
 <script>
 import loginSlice from 'service/slice/login.slice'
-import mixin from 'mixins/mixin'
 import footerSection from 'layouts/Footer'
 export default {
   name: 'login',
-  mixins: [mixin],
   components: {
     footerSection,
   },

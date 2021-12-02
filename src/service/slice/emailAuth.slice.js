@@ -102,6 +102,11 @@ export default function emailAuth(root, signup, check) {
       errorMessage(e, root)
     }
   }
+
+  const resendEmail = () => {
+    if (setCount.value) sendEmail()
+  }
+
   return {
     isVerification,
     authLoading,
@@ -110,6 +115,7 @@ export default function emailAuth(root, signup, check) {
     verificationCode,
     verificationText,
     sendEmail,
+    resendEmail,
     checkVerificationCode,
   }
 }

@@ -6,9 +6,8 @@ import {
   onUnmounted,
 } from '@vue/composition-api'
 import dayjs from 'dayjs'
-import Signup from 'model/signup'
 import { alertMessage } from 'mixins/alert'
-import { passValidate, userBirth, validBirth } from 'mixins/validate'
+import { emailValidate, userBirth, validBirth } from 'mixins/validate'
 import emailAuth from 'service/slice/emailAuth.slice'
 
 const createI18nArray = (root, i18nArrayKey) => {
@@ -22,19 +21,17 @@ const createI18nArray = (root, i18nArrayKey) => {
   return arr
 }
 
-const unLoadEvent = e => {
+const eventPrevent = e => {
   e.preventDefault()
   e.returnValue = ''
 }
 
-export default function terms(props, root) {
-  const signup = ref(new Signup())
+export default function terms(props, root, signup) {
   const passwordConfirm = ref('')
   const birth = ref({
     year: '',
     month: '',
     date: '',
-    mobile: '',
   })
   const timeSet = ref(dayjs(new Date()))
   const joinInfo = ref('')
@@ -42,11 +39,12 @@ export default function terms(props, root) {
   const check = ref(false)
   const subscriptionPath = createI18nArray(root, 'signup.subscriptionPathLists')
   const serviceInfoLists = createI18nArray(root, 'signup.serviceInfoLists')
-  const isMobile = computed(() => {
-    return root.$store.getters['isMobile']
-  })
 
   const EMAIL_AUTH_SLICE = emailAuth(root, signup, check)
+
+  const watchInput = (val, key) => {
+    signup.value[key] = val
+  }
 
   const checkSignup = () => {
     // 폼내용전송
@@ -111,6 +109,9 @@ export default function terms(props, root) {
       signup.value.inviteSession = inviteSession
     }
   }
+  const emailValid = computed(() => {
+    return emailValidate(signup.value.email)
+  })
 
   const nextBtn = computed(() => {
     if (!check.value) return false
@@ -143,7 +144,6 @@ export default function terms(props, root) {
   watch(
     () => root.$i18n.locale,
     () => {
-      // 언어 변경에 따라 값을 변경해야 한다.
       const info = subscriptionPath[joinInfo.value]
       signup.value.joinInfo =
         joinInfo.value === subscriptionPath.length - 1
@@ -154,14 +154,6 @@ export default function terms(props, root) {
         serviceInfo.value === serviceInfoLists.length - 1
           ? ''
           : root.$t(service.label)
-    },
-  )
-  watch(
-    () => birth.value.mobile,
-    newTime => {
-      birth.value.year = newTime
-      birth.value.month = newTime
-      birth.value.date = newTime
     },
   )
   watch(
@@ -201,20 +193,15 @@ export default function terms(props, root) {
       root.$router.push('/')
     }
     notVirnectEmailCheck()
-    root.$validator.extend('password', {
-      getMessage: () => root.$t('signup.password.notice'),
-      validate: value => passValidate(value),
-    })
 
-    window.addEventListener('beforeunload', unLoadEvent)
-
+    window.addEventListener('beforeunload', eventPrevent)
     if (props.marketInfoReceive.value)
       return (signup.value.marketInfoReceive = 'ACCEPT')
     else return (signup.value.marketInfoReceive = 'REJECT')
   })
 
   onUnmounted(() => {
-    window.removeEventListener('beforeunload', unLoadEvent)
+    window.removeEventListener('beforeunload', eventPrevent)
   })
 
   return {
@@ -227,8 +214,9 @@ export default function terms(props, root) {
     check,
     joinInfo,
     serviceInfo,
+    emailValid,
     nextBtn,
-    isMobile,
+    watchInput,
     ...EMAIL_AUTH_SLICE,
     validBirth,
     checkAge,
