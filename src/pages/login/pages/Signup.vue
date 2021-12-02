@@ -195,7 +195,7 @@
 import { ref } from '@vue/composition-api'
 import Signup from 'model/signup'
 import sighupSlice from 'service/slice/signup.slice'
-import PassWordConfirm from 'components/PassWordConfirm'
+import PassWordConfirm from '@/components/PassWordConfirm'
 export default {
   name: 'signup',
   props: {
