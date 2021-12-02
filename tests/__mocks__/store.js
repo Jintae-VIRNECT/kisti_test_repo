@@ -1,22 +1,14 @@
 import Vuex from 'vuex'
-
+import auth from 'auth'
+import plan from 'plan'
 //unit-test에 사용될 mock store를 정의
 
-let state
-let getters
-let actions
-let mutations
 let store
-
-state = {}
-getters = {}
-actions = {}
-mutations = {}
 store = new Vuex.Store({
-  state,
-  getters,
-  actions,
-  mutations,
+  modules: {
+    auth,
+    plan,
+  },
 })
 
 export default store

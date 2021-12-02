@@ -2,6 +2,7 @@ import { createLocalVue } from '@vue/test-utils'
 
 import Vue from 'vue'
 import Vuex from 'vuex'
+import ElementUI from 'element-ui'
 
 const localVue = createLocalVue()
 
@@ -15,5 +16,6 @@ const GlobalPlugins = {
 localVue.prototype.$eventBus = createLocalVue()
 localVue.use(GlobalPlugins)
 localVue.use(Vuex)
+localVue.use(ElementUI)
 
 export default localVue
