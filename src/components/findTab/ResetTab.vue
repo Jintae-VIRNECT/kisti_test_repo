@@ -41,7 +41,7 @@
         v-if="isCodeAuth === false"
       ></el-input>
 
-      <PassWordConfirm
+      <PassConfirm
         v-if="isCodeAuth"
         :pass="resetPass"
         :setString="setString"
@@ -73,10 +73,10 @@ import { ref, computed } from '@vue/composition-api'
 import UserService from 'service/user-service'
 import { alertMessage, confirmWindow } from 'mixins/alert'
 import { passValidate, emailValidate } from 'mixins/validate'
-import PassWordConfirm from '@/components/PassWordConfirm'
+import PassConfirm from 'components/PassWordConfirm'
 
 export default {
-  components: { PassWordConfirm },
+  components: { PassConfirm },
   setup(props, { root }) {
     const isCodeAuth = ref(null)
     const resetPass = ref({
