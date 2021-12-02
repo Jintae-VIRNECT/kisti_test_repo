@@ -14,6 +14,9 @@ import {
 } from 'configs/remote.config'
 import { getResolutionScale } from 'utils/settingOptions'
 
+const PERMISSION_DEFAULT = 'default'
+const PERMISSION_CANCELED = 'canceled'
+
 export default {
   mixins: [toastMixin, confirmMixin],
 
@@ -206,6 +209,13 @@ export default {
           text: this.$t('button.cancel'),
           action: () => {
             this.$call.sendArFeatureStop()
+
+            if (this.mainView.permission === PERMISSION_DEFAULT) {
+              this.updateParticipant({
+                connectionId: this.mainView.connectionId,
+                permission: PERMISSION_CANCELED,
+              })
+            }
           },
         },
         options,
@@ -265,11 +275,23 @@ export default {
       const isLeader = this.account.roleType === ROLE.LEADER
       const isPermissionResponse = data.type === CAPTURE_PERMISSION.RESPONSE
 
+      const idx = this.participants.findIndex(
+        user => user.connectionId === receive.from.connectionId,
+      )
+
+      const isCanceled =
+        idx >= 0
+          ? this.participants[idx].permission === PERMISSION_CANCELED
+          : false
+
       if (isLeader && isPermissionResponse) {
         this.updateParticipant({
           connectionId: receive.from.connectionId,
           permission: data.isAllowed,
         })
+
+        if (isCanceled) return
+
         if (this.view !== VIEW.AR) {
           const sendSignal = true
           data.isAllowed ? this.startAr(sendSignal) : this.showArRejected()
