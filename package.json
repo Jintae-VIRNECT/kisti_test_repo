@@ -20,6 +20,7 @@
   },
   "dependencies": {
     "@virnect/logger": "^1.0.2",
+    "@vue/composition-api": "^1.4.0",
     "axios": "^0.18.0",
     "express": "^4.16.3"
   },
