@@ -140,7 +140,6 @@ export default {
         if (type === VIEW.AR) {
           if (this.checkArRequestPermission()) {
             this.$call.sendCapturePermission([this.mainView.connectionId])
-            // this.toastDefault(this.$t('service.toast_request_permission'))
             this.showArPermissionRequest()
           }
         } else {
@@ -207,13 +206,6 @@ export default {
           text: this.$t('button.cancel'),
           action: () => {
             this.$call.sendArFeatureStop()
-
-            const targetConnectionId = this.mainView.connectionId
-
-            this.updateParticipant({
-              connectionId: targetConnectionId,
-              permission: false,
-            })
           },
         },
         options,
@@ -274,15 +266,6 @@ export default {
       const isPermissionResponse = data.type === CAPTURE_PERMISSION.RESPONSE
 
       if (isLeader && isPermissionResponse) {
-        const idx = this.participants.findIndex(
-          user => user.connectionId === receive.from.connectionId,
-        )
-
-        if (idx >= 0 && !this.participants[idx].permission) {
-          this.showArRejected()
-          return
-        }
-
         this.updateParticipant({
           connectionId: receive.from.connectionId,
           permission: data.isAllowed,
