@@ -7,8 +7,8 @@ ARG NODE_ENV=production
 ARG NPM_TOKEN
 COPY .npmrc .npmrc
 
-RUN yarn install --production=false
-RUN yarn build \
+RUN npm install --production=false
+RUN npm run build \
 && rm -rf node_modules
 RUN rm -f .npmrc
 
@@ -27,7 +27,7 @@ COPY --from=builder package.json .
 COPY --from=builder dist dist
 COPY .npmrc .npmrc
 
-RUN yarn install --production=true
+RUN npm install --production=true
 
 EXPOSE 8883
-CMD ["yarn", "start"]
+CMD ["npm", "start"]
