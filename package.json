@@ -29,7 +29,7 @@
     "@virnect/components": "1.9.8",
     "@virnect/eslint-config": "^0.0.0",
     "@virnect/i18n": "^1.1.1",
-    "@virnect/platform-auth": "^1.0.5",
+    "@virnect/platform-auth": "^1.0.6",
     "@virnect/stylelint-config": "^1.0.5",
     "@vue/test-utils": "^1.2.2",
     "autoprefixer": "^7.1.2",

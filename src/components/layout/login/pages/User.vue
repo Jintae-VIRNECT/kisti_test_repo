@@ -151,6 +151,28 @@ import CountryCode from 'model/countryCode'
 import AuthService from 'service/auth-service'
 import mixin from 'mixins/mixin'
 import { ValidationProvider, Validator } from 'vee-validate'
+const domainRegex =
+  /^(((http(s?)):\/\/)?)([0-9a-zA-Z-]+\.)+[a-zA-Z]{2,6}(:[0-9]+)?(\/\S*)?/
+const cookieOption = (urls, expire) => {
+  const isDomain = urls.domain
+    ? urls.domain
+    : location.hostname.replace(/.*?\./, '')
+
+  const URL = domainRegex.test(location.hostname) ? isDomain : location.hostname
+  if (expire)
+    return {
+      secure: true,
+      sameSite: 'None',
+      expires: expire / 3600000,
+      domain: URL,
+    }
+  else
+    return {
+      secure: true,
+      sameSite: 'None',
+      domain: URL,
+    }
+}
 
 export default {
   name: 'user',
@@ -310,17 +332,16 @@ export default {
           this.$router.push({
             name: 'complete',
           })
-          const cookieOption = {
-            secure: true,
-            sameSite: 'None',
-            expires: res.data.expireIn / 3600000,
-            domain:
-              location.hostname.split('.').length === 3
-                ? location.hostname.replace(/.*?\./, '')
-                : location.hostname,
-          }
-          Cookies.set('accessToken', res.data.accessToken, cookieOption)
-          Cookies.set('refreshToken', res.data.refreshToken, cookieOption)
+          Cookies.set(
+            'accessToken',
+            res.data.accessToken,
+            cookieOption(this.$urls, res.data.expireIn),
+          )
+          Cookies.set(
+            'refreshToken',
+            res.data.refreshToken,
+            cookieOption(this.$urls, res.data.expireIn),
+          )
         } else throw res
       } catch (e) {
         this.alertMessage(
