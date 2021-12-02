@@ -93,12 +93,29 @@ import AuthService from 'service/auth-service'
 import mixin from 'mixins/mixin'
 
 import footerSection from '../../common/Footer'
-const cookieOption = {
-  domain:
-    location.hostname.split('.').length === 3
-      ? location.hostname.replace(/.*?\./, '')
-      : location.hostname,
+const domainRegex =
+  /^(((http(s?)):\/\/)?)([0-9a-zA-Z-]+\.)+[a-zA-Z]{2,6}(:[0-9]+)?(\/\S*)?/
+const cookieOption = (urls, expire) => {
+  const isDomain = urls.domain
+    ? urls.domain
+    : location.hostname.replace(/.*?\./, '')
+
+  const URL = domainRegex.test(location.hostname) ? isDomain : location.hostname
+  if (expire)
+    return {
+      secure: true,
+      sameSite: 'None',
+      expires: expire / 3600000,
+      domain: URL,
+    }
+  else
+    return {
+      secure: true,
+      sameSite: 'None',
+      domain: URL,
+    }
 }
+
 export default {
   name: 'login',
   mixins: [mixin],
@@ -176,9 +193,9 @@ export default {
     emailRemember(email, check) {
       if (check == true) {
         this.rememberEmail = true
-        Cookies.set('email', email, cookieOption)
+        Cookies.set('email', email, cookieOption(this.$urls))
       } else {
-        Cookies.remove('email', cookieOption)
+        Cookies.remove('email', cookieOption(this.$urls))
       }
     },
     autoLogin(check) {
@@ -202,17 +219,16 @@ export default {
       try {
         let res = await AuthService.login({ params: this.login })
         if (res.code === 200) {
-          const cookieOption = {
-            secure: true,
-            sameSite: 'None',
-            expires: res.data.expireIn / 3600000,
-            domain:
-              location.hostname.split('.').length === 3
-                ? location.hostname.replace(/.*?\./, '')
-                : location.hostname,
-          }
-          Cookies.set('accessToken', res.data.accessToken, cookieOption)
-          Cookies.set('refreshToken', res.data.refreshToken, cookieOption)
+          Cookies.set(
+            'accessToken',
+            res.data.accessToken,
+            cookieOption(this.$urls, res.data.expireIn),
+          )
+          Cookies.set(
+            'refreshToken',
+            res.data.refreshToken,
+            cookieOption(this.$urls, res.data.expireIn),
+          )
 
           this.redirection(res.data)
         } else throw res
