@@ -94,7 +94,9 @@ export default {
       this.searchTroubles()
     },
     async searchTroubles() {
-      const { list, total } = await resultService.searchTroubles()
+      const { list, total } = await resultService.searchTroubles(
+        this.searchParams,
+      )
       this.troublesList = list
       this.troublesTotal = total
     },
