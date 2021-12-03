@@ -135,6 +135,25 @@ public class AppRepositoryImpl implements AppRepositoryCustom {
 	}
 
 	@Override
+	public App getActiveAppByDeviceLatestVersionCode(
+		DeviceLatestVersionCodeDto deviceLatestVersionCodeDto
+	) {
+		return query
+			.select(app)
+			.from(app)
+			.innerJoin(app.os, oS).fetchJoin()
+			.innerJoin(app.device, device).fetchJoin()
+			.where(
+				app.appStatus.eq(ACTIVE),
+				app.device.id.eq(deviceLatestVersionCodeDto.getDeviceId()),
+				app.versionCode.eq(deviceLatestVersionCodeDto.getVersionCode())
+			)
+			.orderBy(app.id.asc())
+			.fetchFirst();
+	}
+
+
+	@Override
 	public long registerSigningKeyByPackageName(String packageName, String signingKey) {
 		return query
 			.update(app)

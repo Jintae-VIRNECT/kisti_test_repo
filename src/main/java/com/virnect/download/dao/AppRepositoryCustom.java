@@ -34,4 +34,6 @@ public interface AppRepositoryCustom {
 	boolean existAppVersionCode(Device device, OS os, Long versionCode);
 
 	boolean isLowerThanPreviousAppVersionCode(Device device, OS os, Long versionCode);
+
+	App getActiveAppByDeviceLatestVersionCode(DeviceLatestVersionCodeDto deviceLatestVersionCodeDto);
 }

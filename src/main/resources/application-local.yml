@@ -2,9 +2,9 @@ spring:
   application:
     name: download-server
   datasource:
-    url: jdbc:mysql://localhost:3306/downloads?characterEncoding=UTF-8&serverTimezone=UTC
-    username: root
-    password: root
+    url: jdbc:mysql://192.168.6.3:4336/op_downloads?characterEncoding=UTF-8&serverTimezone=UTC
+    username: virnect-downloads
+    password: virnect1234
   jpa:
     hibernate:
       ddl-auto: validate
