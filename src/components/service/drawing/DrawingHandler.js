@@ -233,27 +233,31 @@ export default {
         )
         opt.e.preventDefault()
         opt.e.stopPropagation()
+
         const vpt = canvas.viewportTransform
         const cursorVpt = this.cursor.canvas.viewportTransform
-        if (this.origin.scale === 1 && zoom < 400 / 1000) {
-          vpt[4] = 200 - (1000 * zoom) / 2
-          vpt[5] = 200 - (1000 * zoom) / 2
-          cursorVpt[4] = 200 - (1000 * zoom) / 2
-          cursorVpt[5] = 200 - (1000 * zoom) / 2
+
+        //zoom시 panning boundary를 제한하는 부분
+        const CANVAS_ZOOM_BOUND = 1500
+        if (this.origin.scale === 1 && zoom < 400 / CANVAS_ZOOM_BOUND) {
+          vpt[4] = 200 - (CANVAS_ZOOM_BOUND * zoom) / 2
+          vpt[5] = 200 - (CANVAS_ZOOM_BOUND * zoom) / 2
+          cursorVpt[4] = 200 - (CANVAS_ZOOM_BOUND * zoom) / 2
+          cursorVpt[5] = 200 - (CANVAS_ZOOM_BOUND * zoom) / 2
         } else {
           if (vpt[4] >= 0) {
             vpt[4] = 0
             cursorVpt[4] = 0
-          } else if (vpt[4] < canvas.getWidth() - 1000 * zoom) {
-            vpt[4] = canvas.getWidth() - 1000 * zoom
-            cursorVpt[4] = canvas.getWidth() - 1000 * zoom
+          } else if (vpt[4] < canvas.getWidth() - CANVAS_ZOOM_BOUND * zoom) {
+            vpt[4] = canvas.getWidth() - CANVAS_ZOOM_BOUND * zoom
+            cursorVpt[4] = canvas.getWidth() - CANVAS_ZOOM_BOUND * zoom
           }
           if (vpt[5] >= 0) {
             vpt[5] = 0
             cursorVpt[5] = 0
-          } else if (vpt[5] < canvas.getHeight() - 1000 * zoom) {
-            vpt[5] = canvas.getHeight() - 1000 * zoom
-            cursorVpt[5] = canvas.getHeight() - 1000 * zoom
+          } else if (vpt[5] < canvas.getHeight() - CANVAS_ZOOM_BOUND * zoom) {
+            vpt[5] = canvas.getHeight() - CANVAS_ZOOM_BOUND * zoom
+            cursorVpt[5] = canvas.getHeight() - CANVAS_ZOOM_BOUND * zoom
           }
         }
         this.keepPositionInBounds(canvas)
