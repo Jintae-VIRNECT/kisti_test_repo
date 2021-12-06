@@ -3,7 +3,7 @@ package com.virnect.workspace.global.common.mapper.rest;
 import com.virnect.workspace.dto.response.WorkspaceNewMemberInfoResponse;
 import com.virnect.workspace.dto.response.WorkspaceUserInfoResponse;
 import com.virnect.workspace.dto.response.WorkspaceUserLicenseInfoResponse;
-import com.virnect.workspace.dto.rest.UserInfoRestResponse;
+import com.virnect.workspace.application.user.dto.response.UserInfoRestResponse;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 

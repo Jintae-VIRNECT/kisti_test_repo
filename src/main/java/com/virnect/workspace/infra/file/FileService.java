@@ -12,7 +12,7 @@ import org.springframework.web.multipart.MultipartFile;
  * DESCRIPTION: File Upload Interface for LocalFileUpload and AWS FileUpload
  */
 public interface FileService {
-    String upload(MultipartFile file, String workspaceUUID) throws IOException;
+    String upload(MultipartFile file, String workspaceUUID);
 
     void delete(final String url);
 

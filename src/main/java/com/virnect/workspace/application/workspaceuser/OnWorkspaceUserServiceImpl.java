@@ -21,9 +21,8 @@ import org.thymeleaf.context.Context;
 import lombok.extern.slf4j.Slf4j;
 
 import com.virnect.workspace.application.license.LicenseRestService;
-import com.virnect.workspace.application.message.MessageRestService;
 import com.virnect.workspace.application.remote.RemoteRestService;
-import com.virnect.workspace.application.user.UserRestService;
+import com.virnect.workspace.application.user.UserRestServiceHandler;
 import com.virnect.workspace.dao.cache.UserInviteRepository;
 import com.virnect.workspace.dao.workspace.WorkspaceRepository;
 import com.virnect.workspace.dao.workspacepermission.WorkspacePermissionRepository;
@@ -40,13 +39,13 @@ import com.virnect.workspace.domain.workspace.WorkspaceUser;
 import com.virnect.workspace.domain.workspace.WorkspaceUserPermission;
 import com.virnect.workspace.dto.request.MemberUpdateRequest;
 import com.virnect.workspace.dto.request.WorkspaceInviteRequest;
-import com.virnect.workspace.dto.rest.InviteUserDetailInfoResponse;
-import com.virnect.workspace.dto.rest.InviteUserInfoResponse;
-import com.virnect.workspace.dto.rest.MyLicenseInfoListResponse;
-import com.virnect.workspace.dto.rest.MyLicenseInfoResponse;
-import com.virnect.workspace.dto.rest.UserInfoModifyRequest;
-import com.virnect.workspace.dto.rest.UserInfoRestResponse;
-import com.virnect.workspace.dto.rest.WorkspaceLicensePlanInfoResponse;
+import com.virnect.workspace.application.user.dto.response.InviteUserDetailInfoResponse;
+import com.virnect.workspace.application.user.dto.response.InviteUserInfoResponse;
+import com.virnect.workspace.application.license.dto.MyLicenseInfoListResponse;
+import com.virnect.workspace.application.license.dto.MyLicenseInfoResponse;
+import com.virnect.workspace.application.user.dto.request.UserInfoModifyRequest;
+import com.virnect.workspace.application.user.dto.response.UserInfoRestResponse;
+import com.virnect.workspace.application.license.dto.WorkspaceLicensePlanInfoResponse;
 import com.virnect.workspace.event.history.HistoryAddEvent;
 import com.virnect.workspace.event.invite.InviteSessionDeleteEvent;
 import com.virnect.workspace.event.message.MailContextHandler;
@@ -78,46 +77,41 @@ public class OnWorkspaceUserServiceImpl extends WorkspaceUserService {
 	private final WorkspaceRoleRepository workspaceRoleRepository;
 	private final WorkspacePermissionRepository workspacePermissionRepository;
 	private final WorkspaceUserPermissionRepository workspaceUserPermissionRepository;
-	private final UserRestService userRestService;
 	private final UserInviteRepository userInviteRepository;
 	private final MessageSource messageSource;
-	private final LicenseRestService licenseRestService;
 	private final RedirectProperty redirectProperty;
 	private final ApplicationEventPublisher applicationEventPublisher;
 	private final MailContextHandler mailContextHandler;
-	private final RestMapStruct restMapStruct;
+	private final UserRestServiceHandler userRestServiceHandler;
 	private static final int MAX_JOIN_WORKSPACE_AMOUNT = 49;//최대 참여 가능한 워크스페이스 수
 
 	public OnWorkspaceUserServiceImpl(
 		WorkspaceRepository workspaceRepository, WorkspaceUserRepository workspaceUserRepository,
 		WorkspaceRoleRepository workspaceRoleRepository,
-		WorkspaceUserPermissionRepository workspaceUserPermissionRepository, UserRestService userRestService,
+		WorkspaceUserPermissionRepository workspaceUserPermissionRepository,
 		MessageSource messageSource, LicenseRestService licenseRestService, RestMapStruct restMapStruct,
 		ApplicationEventPublisher applicationEventPublisher,
 		MailContextHandler mailContextHandler,
 		WorkspacePermissionRepository workspacePermissionRepository, UserInviteRepository userInviteRepository,
 		RedirectProperty redirectProperty,
-		MessageRestService messageRestService,
-		RemoteRestService remoteRestService
+		RemoteRestService remoteRestService, UserRestServiceHandler userRestServiceHandler
 	) {
 		super(
 			workspaceRepository, workspaceUserRepository, workspaceRoleRepository, workspaceUserPermissionRepository,
-			userRestService, messageSource, licenseRestService, restMapStruct, applicationEventPublisher,
-			mailContextHandler, workspacePermissionRepository, remoteRestService
+			messageSource, licenseRestService, restMapStruct, applicationEventPublisher,
+			mailContextHandler, workspacePermissionRepository, remoteRestService, userRestServiceHandler
 		);
 		this.workspaceRepository = workspaceRepository;
 		this.workspaceUserRepository = workspaceUserRepository;
 		this.workspaceRoleRepository = workspaceRoleRepository;
 		this.workspacePermissionRepository = workspacePermissionRepository;
 		this.workspaceUserPermissionRepository = workspaceUserPermissionRepository;
-		this.userRestService = userRestService;
 		this.userInviteRepository = userInviteRepository;
 		this.messageSource = messageSource;
-		this.licenseRestService = licenseRestService;
 		this.redirectProperty = redirectProperty;
 		this.applicationEventPublisher = applicationEventPublisher;
 		this.mailContextHandler = mailContextHandler;
-		this.restMapStruct = restMapStruct;
+		this.userRestServiceHandler = userRestServiceHandler;
 	}
 
 	@Override
@@ -128,7 +122,11 @@ public class OnWorkspaceUserServiceImpl extends WorkspaceUserService {
 		if (StringUtils.hasText(memberUpdateRequest.getNickname())) {
 			log.info("[REVISE MEMBER INFO] User nickname update. nickname : {}", memberUpdateRequest.getNickname());
 			//1-1. 유저 타입 확인
-			UserInfoRestResponse updateUserInfo = getUserInfoRequest(memberUpdateRequest.getUserId());
+			UserInfoRestResponse updateUserInfo = userRestServiceHandler.getUserRequest(
+				memberUpdateRequest.getUserId());
+			if (updateUserInfo.isEmtpy()) {
+				throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_USER_NOT_FOUND);
+			}
 			if (updateUserInfo.getUserType() == UserType.USER) {
 				throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_USER_INFO_UPDATE_USER_TYPE);
 			}
@@ -140,8 +138,11 @@ public class OnWorkspaceUserServiceImpl extends WorkspaceUserService {
 				throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_INVALID_PERMISSION);
 			}
 			//1-3. 변경 요청
-			modifyUserInfoByUserId(
+			UserInfoRestResponse userInfoRestResponse = userRestServiceHandler.modifyUserRequest(
 				memberUpdateRequest.getUserId(), new UserInfoModifyRequest(memberUpdateRequest.getNickname()));
+			if (userInfoRestResponse.isEmtpy()) {
+				throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_USER_INFO_UPDATE);
+			}
 		}
 		//2. 사용자 권한 변경
 		if (StringUtils.hasText(memberUpdateRequest.getRole())) {
@@ -154,7 +155,11 @@ public class OnWorkspaceUserServiceImpl extends WorkspaceUserService {
 				memberUpdateRequest.getRole()
 			);
 			//2-1. 유저 타입 확인
-			UserInfoRestResponse updateUserInfo = getUserInfoRequest(memberUpdateRequest.getUserId());
+			UserInfoRestResponse updateUserInfo = userRestServiceHandler.getUserRequest(
+				memberUpdateRequest.getUserId());
+			if (updateUserInfo.isEmtpy()) {
+				throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_USER_NOT_FOUND);
+			}
 			if (updateUserInfo.getUserType() == UserType.GUEST_USER) {
 				throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_USER_INFO_UPDATE_USER_TYPE);
 			}
@@ -174,8 +179,11 @@ public class OnWorkspaceUserServiceImpl extends WorkspaceUserService {
 			workspaceUserPermissionRepository.save(updateUserPermission);
 
 			//2-4. 메일 발송
-			UserInfoRestResponse masterUserInfo = getUserInfoRequest(
+			UserInfoRestResponse masterUserInfo = userRestServiceHandler.getUserRequest(
 				updateUserPermission.getWorkspaceUser().getWorkspace().getUserId());
+			if (masterUserInfo.isEmtpy()) {
+				throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_USER_NOT_FOUND);
+			}
 			Context context = mailContextHandler.getWorkspaceUserPermissionUpdateContext(
 				updateUserPermission.getWorkspaceUser().getWorkspace().getName(), masterUserInfo, updateUserInfo,
 				updateWorkspaceRole.getRole().toString()
@@ -204,7 +212,11 @@ public class OnWorkspaceUserServiceImpl extends WorkspaceUserService {
 				org.apache.commons.lang.StringUtils.join(currentProductList, ",")
 			);
 			//3-1. 유저 타입 확인
-			UserInfoRestResponse updateUserInfo = getUserInfoRequest(memberUpdateRequest.getUserId());
+			UserInfoRestResponse updateUserInfo = userRestServiceHandler.getUserRequest(
+				memberUpdateRequest.getUserId());
+			if (updateUserInfo.isEmtpy()) {
+				throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_USER_NOT_FOUND);
+			}
 			if (updateUserInfo.getUserType() == UserType.GUEST_USER) {
 				throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_USER_INFO_UPDATE_USER_TYPE);
 			}
@@ -263,7 +275,11 @@ public class OnWorkspaceUserServiceImpl extends WorkspaceUserService {
 			}
 
 			//3-4. 라이선스 변경 히스토리 저장
-			UserInfoRestResponse requestUserInfo = getUserInfoRequest(memberUpdateRequest.getRequestUserId());
+			UserInfoRestResponse requestUserInfo = userRestServiceHandler.getUserRequest(
+				memberUpdateRequest.getRequestUserId());
+			if (requestUserInfo.isEmtpy()) {
+				throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_USER_NOT_FOUND);
+			}
 			Workspace workspace = workspaceRepository.findByUuid(workspaceId)
 				.orElseThrow(() -> new WorkspaceException(ErrorCode.ERR_WORKSPACE_NOT_FOUND));
 			saveUserLicenseUpdateHistory(
@@ -276,7 +292,10 @@ public class OnWorkspaceUserServiceImpl extends WorkspaceUserService {
 			);
 
 			//3-5. 라이선스 변경 성공 메일 전송
-			UserInfoRestResponse masterUserInfo = getUserInfoRequest(workspace.getUserId());
+			UserInfoRestResponse masterUserInfo = userRestServiceHandler.getUserRequest(workspace.getUserId());
+			if (masterUserInfo.isEmtpy()) {
+				throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_USER_NOT_FOUND);
+			}
 			Context context = mailContextHandler.getWorkspaceUserPlanUpdateContext(
 				workspace.getName(), masterUserInfo, updateUserInfo, currentProductList);
 			applicationEventPublisher.publishEvent(
@@ -325,7 +344,10 @@ public class OnWorkspaceUserServiceImpl extends WorkspaceUserService {
 		// 마스터 유저 정보
 		Workspace workspace = workspaceRepository.findByUuid(workspaceId)
 			.orElseThrow(() -> new WorkspaceException(ErrorCode.ERR_WORKSPACE_NOT_FOUND));
-		UserInfoRestResponse materUser = getUserInfoRequest(workspace.getUserId());
+		UserInfoRestResponse masterUser = userRestServiceHandler.getUserRequest(workspace.getUserId());
+		if (masterUser.isEmtpy()) {
+			throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_USER_NOT_FOUND);
+		}
 
 		//2. 초대 정보 저장
 		workspaceInviteRequest.getUserInfoList().forEach(userInfo -> {
@@ -373,13 +395,13 @@ public class OnWorkspaceUserServiceImpl extends WorkspaceUserService {
 				Context context = mailContextHandler.getWorkspaceInviteContext(
 					sessionCode, locale, workspace.getName(), userInfo,
 					inviteUserResponse.getInviteUserDetailInfo(),
-					materUser
+					masterUser
 				);
 				applicationEventPublisher.publishEvent(
 					new MailSendEvent(context, Mail.WORKSPACE_INVITE, locale, emailReceiverList));
 			} else {
 				Context context = mailContextHandler.getWorkspaceInviteNonUserContext(
-					sessionCode, locale, workspace.getName(), userInfo, materUser);
+					sessionCode, locale, workspace.getName(), userInfo, masterUser);
 				applicationEventPublisher.publishEvent(
 					new MailSendEvent(context, Mail.WORKSPACE_INVITE_NON_USER, locale, emailReceiverList));
 			}
@@ -451,8 +473,7 @@ public class OnWorkspaceUserServiceImpl extends WorkspaceUserService {
 		inviteUserInfoResponseMap.values().forEach(inviteUserInfoResponse -> {
 			long userIncludedWorkspaceAmount = workspaceUserRepository.countByUserId(
 				inviteUserInfoResponse.getInviteUserDetailInfo().getUserUUID());
-			if (inviteUserInfoResponse.isMemberUser()
-				&& userIncludedWorkspaceAmount + 1 > MAX_JOIN_WORKSPACE_AMOUNT) {
+			if (inviteUserInfoResponse.isMemberUser() && userIncludedWorkspaceAmount + 1 > MAX_JOIN_WORKSPACE_AMOUNT) {
 				log.error(
 					"[WORKSPACE INVITE USER] maximum join workspace amount : [{}], current user join workspace amount(include request) : [{}]",
 					MAX_JOIN_WORKSPACE_AMOUNT, userIncludedWorkspaceAmount + 1
@@ -496,7 +517,7 @@ public class OnWorkspaceUserServiceImpl extends WorkspaceUserService {
 	(List<String> invitedUserEmailList) {
 		Map<String, InviteUserInfoResponse> inviteUserInfoResponseMap = new HashMap<>();
 		invitedUserEmailList.forEach(invitedUserEmail -> {
-			ApiResponse<InviteUserInfoResponse> inviteUserInfoResponseApiResponse = getInviteUserInfoByEmail(
+			ApiResponse<InviteUserInfoResponse> inviteUserInfoResponseApiResponse = userRestServiceHandler.getInviteUserRequest(
 				invitedUserEmail);
 			if (inviteUserInfoResponseApiResponse.getCode() != 200) {
 				log.error("[WORKSPACE INVITE USER] Invalid Invited User Info.");
@@ -539,18 +560,6 @@ public class OnWorkspaceUserServiceImpl extends WorkspaceUserService {
 		}
 	}
 
-	private ApiResponse<InviteUserInfoResponse> getInviteUserInfoByEmail(String email) {
-		ApiResponse<InviteUserInfoResponse> inviteUserInfoResponseApiResponse = userRestService.getInviteUserInfoByEmail(
-			email);
-		if (inviteUserInfoResponseApiResponse.getCode() != 200) {
-			log.error(
-				"[GET INVITE USER INFO BY EMAIL] response code : {}, response message : {}",
-				inviteUserInfoResponseApiResponse.getCode(), inviteUserInfoResponseApiResponse.getMessage()
-			);
-		}
-		return inviteUserInfoResponseApiResponse;
-	}
-
 	/**
 	 * 워크스페이스 초대 수락
 	 *
@@ -577,7 +586,7 @@ public class OnWorkspaceUserServiceImpl extends WorkspaceUserService {
 		log.info("[WORKSPACE INVITE ACCEPT] Workspace invite session Info >> [{}]", userInvite.toString());
 
 		//1-2. 초대받은 유저가 유효한지 체크
-		ApiResponse<InviteUserInfoResponse> inviteUserInfoResponseApiResponse = getInviteUserInfoByEmail(
+		ApiResponse<InviteUserInfoResponse> inviteUserInfoResponseApiResponse = userRestServiceHandler.getInviteUserRequest(
 			userInvite.getInvitedUserEmail());
 		if (inviteUserInfoResponseApiResponse.getCode() != 200) {
 			log.error("[WORKSPACE INVITE ACCEPT] Invalid Invited User Info.");
@@ -605,7 +614,10 @@ public class OnWorkspaceUserServiceImpl extends WorkspaceUserService {
 
 		Workspace workspace = workspaceRepository.findByUuid(userInvite.getWorkspaceId())
 			.orElseThrow(() -> new WorkspaceException(ErrorCode.ERR_WORKSPACE_NOT_FOUND));
-		UserInfoRestResponse masterUserInfo = getUserInfoRequest(workspace.getUserId());
+		UserInfoRestResponse masterUserInfo = userRestServiceHandler.getUserRequest(workspace.getUserId());
+		if (masterUserInfo.isEmtpy()) {
+			throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_USER_NOT_FOUND);
+		}
 
 		//1-5. 유저가 최대 참여 가능한 워크스페이스 수 체크
 		long maxJoinWorkspaceAmount = workspaceUserRepository.countByWorkspace_Uuid(workspace.getUuid());
@@ -693,7 +705,7 @@ public class OnWorkspaceUserServiceImpl extends WorkspaceUserService {
 		//워크스페이스 권한 부여하기 (workspace_user_permission)
 		WorkspaceRole workspaceRole = workspaceRoleRepository.findByRole(Role.valueOf(userInvite.getRole()))
 			.orElseThrow(() -> new WorkspaceException(ErrorCode.ERR_UNEXPECTED_SERVER_ERROR));
-		WorkspacePermission workspacePermission = workspacePermissionRepository.findById(Permission.ALL.getValue())
+		WorkspacePermission workspacePermission = workspacePermissionRepository.findByPermission(Permission.ALL)
 			.orElseThrow(() -> new WorkspaceException(ErrorCode.ERR_UNEXPECTED_SERVER_ERROR));
 		WorkspaceUserPermission newWorkspaceUserPermission = WorkspaceUserPermission.builder()
 			.workspaceUser(workspaceUser)
@@ -775,8 +787,11 @@ public class OnWorkspaceUserServiceImpl extends WorkspaceUserService {
 			workspace, Role.MANAGER);
 		if (managerUserPermissionList != null && !managerUserPermissionList.isEmpty()) {
 			managerUserPermissionList.forEach(workspaceUserPermission -> {
-				UserInfoRestResponse managerUserInfo = getUserInfoRequest(
+				UserInfoRestResponse managerUserInfo = userRestServiceHandler.getUserRequest(
 					workspaceUserPermission.getWorkspaceUser().getUserId());
+				if (managerUserInfo.isEmtpy()) {
+					throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_USER_NOT_FOUND);
+				}
 				emailReceiverList.add(managerUserInfo.getEmail());
 			});
 		}
@@ -802,7 +817,7 @@ public class OnWorkspaceUserServiceImpl extends WorkspaceUserService {
 		log.info("[WORKSPACE INVITE REJECT] Workspace Invite Session Info >> [{}] ", userInvite);
 
 		//비회원 거절은 메일 전송 안함.
-		ApiResponse<InviteUserInfoResponse> inviteUserInfoResponseApiResponse = getInviteUserInfoByEmail(
+		ApiResponse<InviteUserInfoResponse> inviteUserInfoResponseApiResponse = userRestServiceHandler.getInviteUserRequest(
 			userInvite.getInvitedUserEmail());
 		if (inviteUserInfoResponseApiResponse.getCode() != 200) {
 			log.error("[WORKSPACE INVITE REJECT] Invalid Invited User Info.");
@@ -829,7 +844,10 @@ public class OnWorkspaceUserServiceImpl extends WorkspaceUserService {
 		//MAIL 발송
 		Workspace workspace = workspaceRepository.findByUuid(userInvite.getWorkspaceId())
 			.orElseThrow(() -> new WorkspaceException(ErrorCode.ERR_WORKSPACE_NOT_FOUND));
-		UserInfoRestResponse masterUserInfo = getUserInfoRequest(workspace.getUserId());
+		UserInfoRestResponse masterUserInfo = userRestServiceHandler.getUserRequest(workspace.getUserId());
+		if (masterUserInfo.isEmtpy()) {
+			throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_USER_NOT_FOUND);
+		}
 
 		List<String> emailReceiverList = getMasterAndManagerEmail(workspace, masterUserInfo);
 

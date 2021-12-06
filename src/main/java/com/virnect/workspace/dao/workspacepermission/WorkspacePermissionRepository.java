@@ -1,6 +1,10 @@
 package com.virnect.workspace.dao.workspacepermission;
 
+import java.util.Optional;
+
 import com.virnect.workspace.domain.workspace.WorkspacePermission;
+import com.virnect.workspace.global.constant.Permission;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 
 /**
@@ -11,5 +15,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
  * DESCRIPTION:
  */
 public interface WorkspacePermissionRepository extends JpaRepository<WorkspacePermission, Long> {
-    WorkspacePermission findByPermission(String permission);
+    Optional<WorkspacePermission> findByPermission(Permission permission);
 }

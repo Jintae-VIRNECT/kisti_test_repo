@@ -53,28 +53,29 @@ public class MinioFileService implements FileService {
 	private String allowExtension;
 
 	@Override
-	public String upload(MultipartFile file, String workspaceUUID) throws IOException {
+	public String upload(MultipartFile file, String workspaceUUID){
 		String extension = FilenameUtils.getExtension(file.getOriginalFilename());
 		String uniqueFileName = UUID.randomUUID().toString().replace("-", "") + "." + extension;
 		String objectName = String.format("workspace/%s/profile/%s", workspaceUUID, uniqueFileName);
 
-		PutObjectArgs putObjectArgs = PutObjectArgs.builder()
-			.bucket(bucket)
-			.object(objectName)
-			.contentType(file.getContentType())
-			.stream(file.getInputStream(), file.getSize(), -1)
-			.build();
-		log.info("[FILE UPLOAD] Upload File Info >> bucket : {}, object : {}, fileSize(byte) : {}",
-			bucket, objectName,
-			file.getSize()
-		);
+
 		try {
+			PutObjectArgs putObjectArgs = PutObjectArgs.builder()
+				.bucket(bucket)
+				.object(objectName)
+				.contentType(file.getContentType())
+				.stream(file.getInputStream(), file.getSize(), -1)
+				.build();
+			log.info("[FILE UPLOAD] Upload File Info >> bucket : {}, object : {}, fileSize(byte) : {}",
+				bucket, objectName,
+				file.getSize()
+			);
+
 			ObjectWriteResponse response = minioClient.putObject(putObjectArgs);
 			String uploadPath = minioClient.getObjectUrl(bucket, objectName);
 			log.info("[FILE UPLOAD] Upload Result path : [{}],", uploadPath);
 			return uploadPath;
-		} catch (ErrorResponseException | InsufficientDataException | InternalException | InvalidBucketNameException | InvalidKeyException | InvalidResponseException | NoSuchAlgorithmException |
-			ServerException | XmlParserException exception) {
+		} catch (ErrorResponseException | InsufficientDataException | InternalException | InvalidBucketNameException | InvalidKeyException | InvalidResponseException | NoSuchAlgorithmException | ServerException | XmlParserException | IOException exception) {
 			log.error(exception.getClass().toString());
 			log.error(exception.getMessage());
 			throw new WorkspaceException(ErrorCode.ERR_UNEXPECTED_SERVER_ERROR);

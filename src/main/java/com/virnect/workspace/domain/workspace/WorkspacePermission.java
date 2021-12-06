@@ -1,6 +1,8 @@
 package com.virnect.workspace.domain.workspace;
 
 import com.virnect.workspace.domain.TimeEntity;
+import com.virnect.workspace.global.constant.Permission;
+
 import lombok.*;
 import org.hibernate.envers.Audited;
 
@@ -25,8 +27,9 @@ public class WorkspacePermission extends TimeEntity {
     @Column(name = "workspace_permission_id")
     private Long id;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "permission", nullable = false)
-    private String permission;
+    private Permission permission;
 
     @Lob
     @Column(name = "description")

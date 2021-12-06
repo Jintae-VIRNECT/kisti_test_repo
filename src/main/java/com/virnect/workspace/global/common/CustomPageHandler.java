@@ -1,6 +1,6 @@
 package com.virnect.workspace.global.common;
 
-import com.virnect.workspace.dto.rest.PageMetadataRestResponse;
+import com.virnect.workspace.dto.response.PageMetadataRestResponse;
 
 import java.util.ArrayList;
 import java.util.List;

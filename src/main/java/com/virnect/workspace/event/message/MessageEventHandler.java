@@ -1,13 +1,7 @@
 package com.virnect.workspace.event.message;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import com.virnect.workspace.application.message.MessageRestService;
-import com.virnect.workspace.dto.rest.MailRequest;
-import com.virnect.workspace.dto.rest.PushSendRequest;
+import com.virnect.workspace.application.message.dto.MailRequest;
 import com.virnect.workspace.global.constant.MailSender;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

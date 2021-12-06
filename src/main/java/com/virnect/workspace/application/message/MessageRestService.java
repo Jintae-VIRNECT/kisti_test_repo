@@ -1,8 +1,8 @@
 package com.virnect.workspace.application.message;
 
-import com.virnect.workspace.dto.rest.MailRequest;
-import com.virnect.workspace.dto.rest.PushResponse;
-import com.virnect.workspace.dto.rest.PushSendRequest;
+import com.virnect.workspace.application.message.dto.MailRequest;
+import com.virnect.workspace.application.message.dto.PushResponse;
+import com.virnect.workspace.application.message.dto.PushSendRequest;
 import com.virnect.workspace.global.common.ApiResponse;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.PostMapping;

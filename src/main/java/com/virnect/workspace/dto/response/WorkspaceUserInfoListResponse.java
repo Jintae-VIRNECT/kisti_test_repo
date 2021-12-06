@@ -5,8 +5,6 @@ import java.util.List;
 
 import lombok.Getter;
 
-import com.virnect.workspace.dto.rest.PageMetadataRestResponse;
-
 /**
  * Project: PF-Workspace
  * DATE: 2020-02-19

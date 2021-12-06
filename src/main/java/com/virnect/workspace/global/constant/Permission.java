@@ -10,16 +10,9 @@ import lombok.Getter;
  * DESCRIPTION:
  */
 public enum Permission {
-    ALL(1L),
-    MEMBER_MANAGEMENT(2L),
-    GROUP_MANAGEMENT(3L),
-    CONTENTS_MANAGEMENT(4L),
-    PROCESS_MANAGEMENT(5L);
-
-    @Getter
-    private long value;
-
-    Permission(long value) {
-        this.value = value;
-    }
+    ALL,
+    MEMBER_MANAGEMENT,
+    GROUP_MANAGEMENT,
+    CONTENTS_MANAGEMENT,
+    PROCESS_MANAGEMENT;
 }

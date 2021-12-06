@@ -2,11 +2,13 @@ package com.virnect.workspace.api;
 
 import com.virnect.workspace.application.workspace.WorkspaceService;
 import com.virnect.workspace.domain.setting.Product;
-import com.virnect.workspace.dto.WorkspaceInfoDTO;
-import com.virnect.workspace.dto.onpremise.*;
+import com.virnect.workspace.dto.response.WorkspaceInfoDTO;
 import com.virnect.workspace.dto.request.SettingUpdateRequest;
 import com.virnect.workspace.dto.request.WorkspaceCreateRequest;
+import com.virnect.workspace.dto.request.WorkspaceFaviconUpdateRequest;
+import com.virnect.workspace.dto.request.WorkspaceLogoUpdateRequest;
 import com.virnect.workspace.dto.request.WorkspaceSettingUpdateRequest;
+import com.virnect.workspace.dto.request.WorkspaceTitleUpdateRequest;
 import com.virnect.workspace.dto.request.WorkspaceUpdateRequest;
 import com.virnect.workspace.dto.response.*;
 import com.virnect.workspace.exception.WorkspaceException;

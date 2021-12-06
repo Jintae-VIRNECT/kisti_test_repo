@@ -1,8 +1,8 @@
 package com.virnect.workspace.event.message;
 
 import com.virnect.workspace.dto.request.WorkspaceInviteRequest;
-import com.virnect.workspace.dto.rest.InviteUserDetailInfoResponse;
-import com.virnect.workspace.dto.rest.UserInfoRestResponse;
+import com.virnect.workspace.application.user.dto.response.InviteUserDetailInfoResponse;
+import com.virnect.workspace.application.user.dto.response.UserInfoRestResponse;
 import com.virnect.workspace.global.common.RedirectProperty;
 import com.virnect.workspace.global.constant.LicenseProduct;
 import lombok.RequiredArgsConstructor;

@@ -1,5 +1,6 @@
 package com.virnect.workspace.infra.file;
 
+import java.io.IOException;
 import java.util.UUID;
 
 import org.apache.commons.io.FilenameUtils;
@@ -73,7 +74,7 @@ public class S3FileService implements FileService {
 			log.info("[FILE UPLOAD] Upload Result path : [{}],", uploadPath);
 			return uploadPath;
 
-		} catch (Exception e) {
+		} catch (IOException e) {
 			log.error(e.getMessage());
 			throw new WorkspaceException(ErrorCode.ERR_UNEXPECTED_SERVER_ERROR);
 		}
