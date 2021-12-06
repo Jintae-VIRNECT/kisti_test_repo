@@ -124,6 +124,15 @@ export default {
   .member-add-modal__content {
     display: flex;
   }
+  .close-button {
+    width: 20px;
+    height: 20px;
+    background: none;
+    padding: 0;
+    &:hover {
+      background: none;
+    }
+  }
   .member-add-modal__tab-button {
     width: 160px;
     min-height: 38px;

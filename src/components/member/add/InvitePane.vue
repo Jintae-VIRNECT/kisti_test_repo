@@ -23,7 +23,7 @@
           <span>{{ `${$t('members.add.addUser')} ${index + 1}` }}</span>
           <el-button
             v-if="index"
-            class="invite-pane__close-button"
+            class="close-button"
             @click.prevent="clearMember(index)"
           >
             <i class="el-icon-close" />
@@ -221,15 +221,6 @@ export default {
   }
   section:first-child {
     padding-bottom: 0;
-  }
-  &__close-button {
-    width: 20px;
-    height: 20px;
-    background: none;
-    padding: 0;
-    &:hover {
-      background: none;
-    }
   }
   .el-form {
     margin: 20px 0;

@@ -18,13 +18,19 @@
         class="virnect-workstation-form"
         :model="form"
         :rules="rules"
+        @submit.native.prevent
       >
         <h6>
           <img src="~assets/images/icon/ic-person.svg" />
           <span>{{ `${$t('members.create.createMember')} ${index + 1}` }}</span>
-          <button @click.prevent="clearMember(index)">
+          <el-button
+            v-if="index"
+            class="close-button"
+            @submit.native.prevent
+            @click.prevent="clearMember(index)"
+          >
             <i class="el-icon-close" />
-          </button>
+          </el-button>
         </h6>
         <el-form-item class="horizon" prop="id" required>
           <template slot="label">
@@ -37,6 +43,7 @@
               maxlength="20"
               :disabled="form.duplicateCheck"
               :placeholder="$t('members.create.idPlaceholder')"
+              @keyup.enter.native="idEnterEvent(form, index, valid)"
             />
             <el-button
               type="primary"
@@ -49,7 +56,7 @@
               type="primary"
               v-show="!form.duplicateCheck"
               @click="checkMembersId(form)"
-              :disabled="form.id.length === 0 || !valid"
+              :disabled="!form.id.length || !valid"
               :class="cssVars"
               >{{ $t('members.create.idCheck') }}</el-button
             >
@@ -209,6 +216,7 @@ export default {
       }
     },
     clearMember(index) {
+      if (!index) return false
       this.userInfoList.splice(index, 1)
       this.choosePlan()
     },
@@ -266,6 +274,13 @@ export default {
         else {
           this.errorMessage(e)
         }
+      }
+    },
+    idEnterEvent(form, index, valid) {
+      if (valid) {
+        this.checkMembersId(form)
+      } else {
+        this.userInfoList[index].duplicateCheck = false
       }
     },
   },

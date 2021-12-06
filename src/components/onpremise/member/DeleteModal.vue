@@ -19,6 +19,7 @@
         class="virnect-workstation-form"
         :model="form"
         :show-message="false"
+        @submit.native.prevent
       >
         <el-form-item
           class="horizon"
