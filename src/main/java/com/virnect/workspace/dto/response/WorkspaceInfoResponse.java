@@ -1,6 +1,5 @@
 package com.virnect.workspace.dto.response;
 
-import com.virnect.workspace.dto.WorkspaceInfoDTO;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 

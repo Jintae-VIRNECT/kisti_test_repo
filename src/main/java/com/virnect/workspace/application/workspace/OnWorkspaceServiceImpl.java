@@ -11,11 +11,16 @@ import com.virnect.workspace.dao.workspacerole.WorkspaceRoleRepository;
 import com.virnect.workspace.dao.workspaceuser.WorkspaceUserRepository;
 import com.virnect.workspace.dao.workspaceuserpermission.WorkspaceUserPermissionRepository;
 import com.virnect.workspace.domain.workspace.*;
-import com.virnect.workspace.dto.WorkspaceInfoDTO;
-import com.virnect.workspace.dto.onpremise.*;
+import com.virnect.workspace.dto.response.WorkspaceInfoDTO;
 import com.virnect.workspace.dto.request.WorkspaceCreateRequest;
-import com.virnect.workspace.dto.rest.UserInfoRestResponse;
-import com.virnect.workspace.event.cache.UserWorkspacesDeleteEvent;
+import com.virnect.workspace.application.user.dto.response.UserInfoRestResponse;
+import com.virnect.workspace.dto.request.WorkspaceFaviconUpdateRequest;
+import com.virnect.workspace.dto.request.WorkspaceLogoUpdateRequest;
+import com.virnect.workspace.dto.request.WorkspaceTitleUpdateRequest;
+import com.virnect.workspace.dto.response.WorkspaceCustomSettingResponse;
+import com.virnect.workspace.dto.response.WorkspaceFaviconUpdateResponse;
+import com.virnect.workspace.dto.response.WorkspaceLogoUpdateResponse;
+import com.virnect.workspace.dto.response.WorkspaceTitleUpdateResponse;
 import com.virnect.workspace.event.message.MailContextHandler;
 import com.virnect.workspace.exception.WorkspaceException;
 import com.virnect.workspace.global.common.mapper.rest.RestMapStruct;
@@ -31,9 +36,6 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.StringUtils;
-
-import java.io.IOException;
 
 @Slf4j
 @Service
@@ -69,79 +71,60 @@ public class OnWorkspaceServiceImpl extends WorkspaceService {
      * @param workspaceCreateRequest - 생성 할 워크스페이스 정보
      * @return - 생성 된 워크스페이스 정보
      */
-    //@CacheEvict(value = "userWorkspaces", key = "#workspaceCreateRequest.userId")
     @Transactional
     @Override
     public WorkspaceInfoDTO createWorkspace(WorkspaceCreateRequest workspaceCreateRequest) {
-        //필수 값 체크
-        if (!StringUtils.hasText(workspaceCreateRequest.getUserId()) || !StringUtils.hasText(
-                workspaceCreateRequest.getName()) || !StringUtils.hasText(workspaceCreateRequest.getDescription())) {
-            throw new WorkspaceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
-        }
-
-        //User Service 에서 유저 조회
+        //1. 서브유저(유저가 만들어낸 유저)는 워크스페이스를 가질 수 없다.
         UserInfoRestResponse userInfoRestResponse = super.getUserInfo(workspaceCreateRequest.getUserId());
-
-        //서브유저(유저가 만들어낸 유저)는 워크스페이스를 가질 수 없다.
-        if (userInfoRestResponse == null || userInfoRestResponse.getUserType() == UserType.SUB_USER) {
+        if (userInfoRestResponse.isSubUser()) {
             throw new WorkspaceException(ErrorCode.ERR_UNEXPECTED_SERVER_ERROR);
         }
 
-        //사용자가 최대로 생성 가능한 워크스페이스 수를 넘겼는지 체크
+        //2. 사용자가 생성 가능한 워크스페이스 수를 넘겼는지 체크
         long userHasWorkspaceAmount = workspaceRepository.countByUserId(workspaceCreateRequest.getUserId());
         if (userHasWorkspaceAmount + 1 > MAX_HAVE_WORKSPACE_AMOUNT) {
             log.error("[WORKSPACE CREATE] creatable maximum Workspace amount : [{}], current amount of workspace that user has : [{}].", MAX_HAVE_WORKSPACE_AMOUNT, userHasWorkspaceAmount);
             throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_CREATE_MAX_CREATE);
         }
 
-        //워크스페이스 생성
         String workspaceId = RandomStringTokenUtil.generate(UUIDType.WORKSPACE_UUID, 0);
-        String pinNumber = RandomStringTokenUtil.generate(UUIDType.PIN_NUMBER, 0);
 
-        String profile;
-        if (workspaceCreateRequest.getProfile() != null) {
-            try {
-                profile = fileUploadService.upload(workspaceCreateRequest.getProfile(), workspaceId);
-            } catch (IOException e) {
-                throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_CREATE_INVALID_PROFILE);
-            }
-        } else {
+        String profile = null;
+        if (workspaceCreateRequest.getProfile() == null) {
             profile = fileUploadService.getDefaultFileUrl(DefaultImageFile.WORKSPACE_PROFILE_IMG);
+        } else {
+            profile = fileUploadService.upload(workspaceCreateRequest.getProfile(), workspaceId);
         }
 
-        Workspace newWorkspace = Workspace.builder()
+        // 워크스페이스 생성
+        Workspace workspace = Workspace.builder()
                 .uuid(workspaceId)
                 .userId(workspaceCreateRequest.getUserId())
                 .name(workspaceCreateRequest.getName())
                 .description(workspaceCreateRequest.getDescription())
                 .profile(profile)
-                .pinNumber(pinNumber)
+                .pinNumber(RandomStringTokenUtil.generate(UUIDType.PIN_NUMBER, 0))
                 .build();
-
-        workspaceRepository.save(newWorkspace);
+        workspaceRepository.save(workspace);
 
         // 워크스페이스 소속 할당
         WorkspaceUser newWorkspaceUser = WorkspaceUser.builder()
                 .userId(workspaceCreateRequest.getUserId())
-                .workspace(newWorkspace)
+                .workspace(workspace)
                 .build();
         workspaceUserRepository.save(newWorkspaceUser);
 
         // 워크스페이스 권한 할당
         WorkspaceRole workspaceRole = workspaceRoleRepository.findByRole(Role.MASTER).orElseThrow(() -> new WorkspaceException(ErrorCode.ERR_WORKSPACE_ROLE_NOT_FOUND));
-        WorkspacePermission workspacePermission = workspacePermissionRepository.findById(Permission.ALL.getValue()).orElseThrow(() -> new WorkspaceException(ErrorCode.ERR_WORKSPACE_PERMISSION_NOT_FOUND));
-        WorkspaceUserPermission newWorkspaceUserPermission = WorkspaceUserPermission.builder()
+        WorkspacePermission workspacePermission = workspacePermissionRepository.findByPermission(Permission.ALL).orElseThrow(() -> new WorkspaceException(ErrorCode.ERR_WORKSPACE_PERMISSION_NOT_FOUND));
+        WorkspaceUserPermission workspaceUserPermission = WorkspaceUserPermission.builder()
                 .workspaceRole(workspaceRole)
                 .workspacePermission(workspacePermission)
                 .workspaceUser(newWorkspaceUser)
                 .build();
-        workspaceUserPermissionRepository.save(newWorkspaceUserPermission);
+        workspaceUserPermissionRepository.save(workspaceUserPermission);
 
-        WorkspaceInfoDTO workspaceInfoDTO = workspaceMapStruct.workspaceToWorkspaceInfoDTO(newWorkspace);
-        workspaceInfoDTO.setMasterUserId(newWorkspace.getUserId());
-
-        applicationEventPublisher.publishEvent(new UserWorkspacesDeleteEvent(workspaceCreateRequest.getUserId()));// 캐싱 삭제
-        return workspaceInfoDTO;
+        return workspaceMapStruct.workspaceToWorkspaceInfoDTO(workspace);
     }
 
     @Override

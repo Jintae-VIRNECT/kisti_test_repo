@@ -1,7 +1,7 @@
 package com.virnect.workspace.dto.response;
 
 import com.virnect.workspace.domain.workspace.Role;
-import com.virnect.workspace.dto.rest.PageMetadataRestResponse;
+
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

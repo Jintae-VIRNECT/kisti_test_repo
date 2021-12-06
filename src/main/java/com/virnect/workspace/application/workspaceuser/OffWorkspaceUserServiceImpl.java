@@ -17,7 +17,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import com.virnect.workspace.application.license.LicenseRestService;
 import com.virnect.workspace.application.remote.RemoteRestService;
-import com.virnect.workspace.application.user.UserRestService;
+import com.virnect.workspace.application.user.UserRestServiceHandler;
 import com.virnect.workspace.dao.workspace.WorkspaceRepository;
 import com.virnect.workspace.dao.workspacepermission.WorkspacePermissionRepository;
 import com.virnect.workspace.dao.workspacerole.WorkspaceRoleRepository;
@@ -30,10 +30,10 @@ import com.virnect.workspace.domain.workspace.WorkspaceRole;
 import com.virnect.workspace.domain.workspace.WorkspaceUserPermission;
 import com.virnect.workspace.dto.request.MemberUpdateRequest;
 import com.virnect.workspace.dto.request.WorkspaceInviteRequest;
-import com.virnect.workspace.dto.rest.MyLicenseInfoListResponse;
-import com.virnect.workspace.dto.rest.MyLicenseInfoResponse;
-import com.virnect.workspace.dto.rest.UserInfoModifyRequest;
-import com.virnect.workspace.dto.rest.UserInfoRestResponse;
+import com.virnect.workspace.application.license.dto.MyLicenseInfoListResponse;
+import com.virnect.workspace.application.license.dto.MyLicenseInfoResponse;
+import com.virnect.workspace.application.user.dto.request.UserInfoModifyRequest;
+import com.virnect.workspace.application.user.dto.response.UserInfoRestResponse;
 import com.virnect.workspace.event.message.MailContextHandler;
 import com.virnect.workspace.exception.WorkspaceException;
 import com.virnect.workspace.global.common.ApiResponse;
@@ -51,43 +51,33 @@ import com.virnect.workspace.global.error.ErrorCode;
 @Service
 @Profile("onpremise")
 public class OffWorkspaceUserServiceImpl extends WorkspaceUserService {
-	private static final String serviceID = "workspace-server";
 	private final WorkspaceRepository workspaceRepository;
-	private final WorkspaceUserRepository workspaceUserRepository;
 	private final WorkspaceRoleRepository workspaceRoleRepository;
-	private final WorkspacePermissionRepository workspacePermissionRepository;
 	private final WorkspaceUserPermissionRepository workspaceUserPermissionRepository;
-	private final UserRestService userRestService;
-	private final LicenseRestService licenseRestService;
-	private final RestMapStruct restMapStruct;
-	private final MessageSource messageSource;
-	private final ApplicationEventPublisher applicationEventPublisher;
+	private final UserRestServiceHandler userRestServiceHandler;
 
 	public OffWorkspaceUserServiceImpl(
-		WorkspaceRepository workspaceRepository, WorkspaceUserRepository workspaceUserRepository,
+		WorkspaceRepository workspaceRepository,
+		WorkspaceUserRepository workspaceUserRepository,
 		WorkspaceRoleRepository workspaceRoleRepository,
-		WorkspaceUserPermissionRepository workspaceUserPermissionRepository, UserRestService userRestService,
-		MessageSource messageSource, LicenseRestService licenseRestService, RestMapStruct restMapStruct,
+		WorkspaceUserPermissionRepository workspaceUserPermissionRepository,
+		MessageSource messageSource,
+		LicenseRestService licenseRestService,
+		RestMapStruct restMapStruct,
 		ApplicationEventPublisher applicationEventPublisher,
 		MailContextHandler mailContextHandler,
 		WorkspacePermissionRepository workspacePermissionRepository,
-		RemoteRestService remoteRestService
+		RemoteRestService remoteRestService,
+		UserRestServiceHandler userRestServiceHandler
 	) {
-		super(
-			workspaceRepository, workspaceUserRepository, workspaceRoleRepository, workspaceUserPermissionRepository,
-			userRestService, messageSource, licenseRestService, restMapStruct, applicationEventPublisher,
-			mailContextHandler, workspacePermissionRepository, remoteRestService
+		super(workspaceRepository, workspaceUserRepository, workspaceRoleRepository, workspaceUserPermissionRepository,
+			messageSource, licenseRestService, restMapStruct, applicationEventPublisher, mailContextHandler,
+			workspacePermissionRepository, remoteRestService, userRestServiceHandler
 		);
 		this.workspaceRepository = workspaceRepository;
-		this.workspaceUserRepository = workspaceUserRepository;
 		this.workspaceRoleRepository = workspaceRoleRepository;
-		this.workspacePermissionRepository = workspacePermissionRepository;
 		this.workspaceUserPermissionRepository = workspaceUserPermissionRepository;
-		this.userRestService = userRestService;
-		this.licenseRestService = licenseRestService;
-		this.restMapStruct = restMapStruct;
-		this.messageSource = messageSource;
-		this.applicationEventPublisher = applicationEventPublisher;
+		this.userRestServiceHandler = userRestServiceHandler;
 	}
 
 	@Override
@@ -95,7 +85,10 @@ public class OffWorkspaceUserServiceImpl extends WorkspaceUserService {
 		String workspaceId, MemberUpdateRequest memberUpdateRequest, Locale locale
 	) {
 		// 변경 대상 유저 정보 조회
-		UserInfoRestResponse updateUserInfo = getUserInfoRequest(memberUpdateRequest.getUserId());
+		UserInfoRestResponse updateUserInfo = userRestServiceHandler.getUserRequest(memberUpdateRequest.getUserId());
+		if (updateUserInfo.isEmtpy()) {
+			throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_USER_NOT_FOUND);
+		}
 
 		// 변경 요청 유저 permission 조회
 		WorkspaceUserPermission requestUserPermission = workspaceUserPermissionRepository.findWorkspaceUserPermission(
@@ -120,8 +113,11 @@ public class OffWorkspaceUserServiceImpl extends WorkspaceUserService {
 				throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_INVALID_PERMISSION);
 			}
 			//1-3. 변경 요청
-			modifyUserInfoByUserId(
+			UserInfoRestResponse userInfoRestResponse = userRestServiceHandler.modifyUserRequest(
 				memberUpdateRequest.getUserId(), new UserInfoModifyRequest(memberUpdateRequest.getNickname()));
+			if (userInfoRestResponse.isEmtpy()) {
+				throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_USER_INFO_UPDATE);
+			}
 		}
 
 		//2. 사용자 권한 변경
@@ -151,8 +147,11 @@ public class OffWorkspaceUserServiceImpl extends WorkspaceUserService {
 			workspaceUserPermissionRepository.save(updateUserPermission);
 
 			//2-4. 메일 발송
-			UserInfoRestResponse masterUserInfo = getUserInfoRequest(
+			UserInfoRestResponse masterUserInfo = userRestServiceHandler.getUserRequest(
 				updateUserPermission.getWorkspaceUser().getWorkspace().getUserId());
+			if (masterUserInfo.isEmtpy()) {
+				throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_USER_NOT_FOUND);
+			}
 
 			//2-5. 히스토리 저장
 			Workspace workspace = workspaceRepository.findByUuid(workspaceId)
@@ -228,7 +227,11 @@ public class OffWorkspaceUserServiceImpl extends WorkspaceUserService {
 			}
 
 			//3-4. 라이선스 변경 히스토리 저장
-			UserInfoRestResponse requestUserInfo = getUserInfoRequest(memberUpdateRequest.getRequestUserId());
+			UserInfoRestResponse requestUserInfo = userRestServiceHandler.getUserRequest(
+				memberUpdateRequest.getRequestUserId());
+			if (requestUserInfo.isEmtpy()) {
+				throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_USER_NOT_FOUND);
+			}
 			Workspace workspace = workspaceRepository.findByUuid(workspaceId)
 				.orElseThrow(() -> new WorkspaceException(ErrorCode.ERR_WORKSPACE_NOT_FOUND));
 			saveUserLicenseUpdateHistory(
@@ -262,23 +265,4 @@ public class OffWorkspaceUserServiceImpl extends WorkspaceUserService {
 		return null;
 	}
 
-	private void checkFileSize(long requestSize) {
-		if (requestSize < 0 || requestSize > (long)3145728) {
-			log.error(
-				"[UPLOAD FILE SIZE CHECK] Acceptable File size : [{}], Present File size : [{}] ",
-				3145728, requestSize
-			);
-			throw new WorkspaceException(ErrorCode.ERR_NOT_ALLOW_FILE_SIZE);
-		}
-	}
-
-	private void checkFileExtension(String requestExtension, String allowExtension) {
-		if (!StringUtils.hasText(requestExtension) || !allowExtension.contains(requestExtension.toLowerCase())) {
-			log.error(
-				"[UPLOAD FILE EXTENSION CHECK] Acceptable File extension : [{}], Present File extension : [{}] ",
-				allowExtension, requestExtension
-			);
-			throw new WorkspaceException(ErrorCode.ERR_NOT_ALLOW_FILE_EXTENSION);
-		}
-	}
 }

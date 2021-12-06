@@ -1,9 +1,9 @@
 package com.virnect.workspace.application.license;
 
-import com.virnect.workspace.dto.rest.LicenseRevokeResponse;
-import com.virnect.workspace.dto.rest.MyLicenseInfoListResponse;
-import com.virnect.workspace.dto.rest.MyLicenseInfoResponse;
-import com.virnect.workspace.dto.rest.WorkspaceLicensePlanInfoResponse;
+import com.virnect.workspace.application.license.dto.LicenseRevokeResponse;
+import com.virnect.workspace.application.license.dto.MyLicenseInfoListResponse;
+import com.virnect.workspace.application.license.dto.MyLicenseInfoResponse;
+import com.virnect.workspace.application.license.dto.WorkspaceLicensePlanInfoResponse;
 import com.virnect.workspace.global.common.ApiResponse;
 import feign.hystrix.FallbackFactory;
 import lombok.extern.slf4j.Slf4j;

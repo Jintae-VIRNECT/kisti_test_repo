@@ -3,7 +3,7 @@ package com.virnect.workspace.application.history;
 import com.virnect.workspace.dao.history.HistoryRepository;
 import com.virnect.workspace.domain.histroy.History;
 import com.virnect.workspace.dto.response.WorkspaceHistoryListResponse;
-import com.virnect.workspace.dto.rest.PageMetadataRestResponse;
+import com.virnect.workspace.dto.response.PageMetadataRestResponse;
 import com.virnect.workspace.global.common.mapper.history.HistoryMapStruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

@@ -1,28 +1,70 @@
 package com.virnect.workspace.application.workspace;
 
+import java.text.DecimalFormat;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Locale;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
+import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.context.annotation.Profile;
+import org.springframework.data.domain.Page;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
+import org.thymeleaf.context.Context;
+
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+
 import com.virnect.workspace.application.license.LicenseRestService;
 import com.virnect.workspace.application.user.UserRestService;
 import com.virnect.workspace.dao.history.HistoryRepository;
 import com.virnect.workspace.dao.setting.SettingRepository;
 import com.virnect.workspace.dao.setting.WorkspaceCustomSettingRepository;
 import com.virnect.workspace.dao.workspace.WorkspaceRepository;
-import com.virnect.workspace.dao.workspaceuserpermission.WorkspaceUserPermissionRepository;
 import com.virnect.workspace.dao.workspaceuser.WorkspaceUserRepository;
-import com.virnect.workspace.domain.setting.*;
+import com.virnect.workspace.dao.workspaceuserpermission.WorkspaceUserPermissionRepository;
+import com.virnect.workspace.domain.setting.PaymentType;
+import com.virnect.workspace.domain.setting.Product;
+import com.virnect.workspace.domain.setting.Setting;
+import com.virnect.workspace.domain.setting.SettingName;
+import com.virnect.workspace.domain.setting.SettingValue;
+import com.virnect.workspace.domain.setting.Status;
+import com.virnect.workspace.domain.setting.WorkspaceCustomSetting;
 import com.virnect.workspace.domain.workspace.Role;
 import com.virnect.workspace.domain.workspace.Workspace;
 import com.virnect.workspace.domain.workspace.WorkspaceUser;
 import com.virnect.workspace.domain.workspace.WorkspaceUserPermission;
-import com.virnect.workspace.dto.WorkspaceInfoDTO;
-import com.virnect.workspace.dto.onpremise.*;
+import com.virnect.workspace.dto.response.WorkspaceInfoDTO;
+import com.virnect.workspace.dto.response.WorkspaceCustomSettingResponse;
+import com.virnect.workspace.dto.request.WorkspaceFaviconUpdateRequest;
+import com.virnect.workspace.dto.response.WorkspaceFaviconUpdateResponse;
+import com.virnect.workspace.dto.request.WorkspaceLogoUpdateRequest;
+import com.virnect.workspace.dto.response.WorkspaceLogoUpdateResponse;
+import com.virnect.workspace.dto.request.WorkspaceTitleUpdateRequest;
+import com.virnect.workspace.dto.response.WorkspaceTitleUpdateResponse;
 import com.virnect.workspace.dto.request.SettingUpdateRequest;
 import com.virnect.workspace.dto.request.WorkspaceCreateRequest;
 import com.virnect.workspace.dto.request.WorkspaceSettingUpdateRequest;
 import com.virnect.workspace.dto.request.WorkspaceUpdateRequest;
-import com.virnect.workspace.dto.response.*;
-import com.virnect.workspace.dto.rest.PageMetadataRestResponse;
-import com.virnect.workspace.dto.rest.UserInfoRestResponse;
-import com.virnect.workspace.dto.rest.WorkspaceLicensePlanInfoResponse;
+import com.virnect.workspace.dto.response.SettingInfoListResponse;
+import com.virnect.workspace.dto.response.SettingInfoResponse;
+import com.virnect.workspace.dto.response.SettingUpdateResponse;
+import com.virnect.workspace.dto.response.WorkspaceInfoListResponse;
+import com.virnect.workspace.dto.response.WorkspaceInfoResponse;
+import com.virnect.workspace.dto.response.WorkspaceLicenseInfoResponse;
+import com.virnect.workspace.dto.response.WorkspaceSecessionResponse;
+import com.virnect.workspace.dto.response.WorkspaceSettingInfoListResponse;
+import com.virnect.workspace.dto.response.WorkspaceSettingInfoResponse;
+import com.virnect.workspace.dto.response.WorkspaceSettingUpdateResponse;
+import com.virnect.workspace.dto.response.WorkspaceUserInfoResponse;
+import com.virnect.workspace.dto.response.PageMetadataRestResponse;
+import com.virnect.workspace.application.user.dto.response.UserInfoRestResponse;
+import com.virnect.workspace.application.license.dto.WorkspaceLicensePlanInfoResponse;
 import com.virnect.workspace.event.message.MailContextHandler;
 import com.virnect.workspace.event.message.MailSendEvent;
 import com.virnect.workspace.exception.WorkspaceException;
@@ -33,20 +75,6 @@ import com.virnect.workspace.global.constant.LicenseProduct;
 import com.virnect.workspace.global.constant.Mail;
 import com.virnect.workspace.global.error.ErrorCode;
 import com.virnect.workspace.infra.file.FileService;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.context.annotation.Profile;
-import org.springframework.data.domain.Page;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.StringUtils;
-import org.thymeleaf.context.Context;
-
-import java.text.DecimalFormat;
-import java.time.LocalDateTime;
-import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  * Project: PF-Workspace
@@ -79,7 +107,6 @@ public abstract class WorkspaceService {
      * @param workspaceCreateRequest - 생성 할 워크스페이스 정보
      * @return - 생성 된 워크스페이스 정보
      */
-    //@CacheEvict(value = "userWorkspaces", key = "#workspaceCreateRequest.userId")
     @Transactional
     public abstract WorkspaceInfoDTO createWorkspace(WorkspaceCreateRequest workspaceCreateRequest);
 
@@ -89,10 +116,6 @@ public abstract class WorkspaceService {
      * @param userId - 사용자 uuid
      * @return - 소속된 워크스페이스 정보
      */
-    /*@Cacheable(value = "userWorkspaces", key = "{#userId" +
-            ".concat(',pageSize=').concat(#pageRequest.of().pageSize)" +
-            ".concat(',pageNumber=').concat(#pageRequest.of().pageNumber)" +
-            ".concat(',pageSort=').concat(#pageRequest.of().sort.toString()).replace(':',',')}", unless = "#result.workspaceList.size()==0")*/
     public WorkspaceInfoListResponse getUserWorkspaces(
             String userId, com.virnect.workspace.global.common.PageRequest pageRequest
     ) {
