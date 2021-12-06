@@ -718,6 +718,21 @@ public class ServiceSessionManager {
 		}
 	}
 
+	public boolean evictParticipant(String sessionId, String connectionId, EndReason reason) {
+		Session session = this.sessionManager.getSessionWithNotActive(sessionId);
+		if (ObjectUtils.isEmpty(session)) {
+			return false;
+		}
+		//evictedParticipant
+		Participant participant = session.getParticipantByPublicId(connectionId);
+		if (!ObjectUtils.isEmpty(participant)) {
+			this.sessionManager.evictParticipant(participant, null, null, reason);
+			return true;
+		} else {
+			return false;
+		}
+	}
+
 	public ApiResponse<MemberInfoListResponse> forceLogout(ForceLogoutRequest forceLogoutRequest) {
 
 		List<WorkspaceMemberInfoResponse> failMembers = new ArrayList<>();

@@ -7,6 +7,7 @@ import org.apache.logging.log4j.util.Strings;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -18,7 +19,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import com.virnect.data.domain.member.MemberType;
+import com.virnect.data.dto.request.guest.GuestEventRequest;
 import com.virnect.data.dto.request.room.JoinRoomRequest;
+import com.virnect.data.dto.response.ResultResponse;
 import com.virnect.data.dto.response.guest.GuestInfoResponse;
 import com.virnect.data.dto.response.room.RoomInfoResponse;
 import com.virnect.data.dto.response.room.RoomResponse;
@@ -99,6 +102,26 @@ public class GuestRestController {
 			sessionId,
 			joinRoomRequest
 		);
+		return ResponseEntity.ok(responseData);
+	}
+
+	@ApiOperation(value = "Guest member event", notes = "게스트 멤버 이벤트")
+	@PostMapping(value = "guest/event")
+	public ResponseEntity<ApiResponse<ResultResponse>> guestMemberEvent(
+		@ModelAttribute @Valid GuestEventRequest guestEvent,
+		BindingResult result
+	) {
+		LogMessage.formedInfo(
+			TAG,
+			"REST API: POST "
+				+ REST_PATH + "/"
+				+ "guestEvent:" + guestEvent.toString(),
+			"guestMemberEvent"
+		);
+		if (result.hasErrors()) {
+			throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
+		}
+		ApiResponse<ResultResponse> responseData = guestService.guestEvent(guestEvent);
 		return ResponseEntity.ok(responseData);
 	}
 

@@ -54,6 +54,8 @@ public class GroupService {
 	private final String ETC_GROUP_NAME = "기타";
 	private final int GROUP_COUNT_LIMIT = 10;
 	private final int GROUP_MEMBER_COUNT_LIMIT = 6;
+	private final String GROUP = "group_";
+	private final String RemoteLicense = "REMOTE";
 
 	private final WorkspaceRestService workspaceRestService;
 
@@ -79,15 +81,9 @@ public class GroupService {
 			return new ApiResponse<>(ErrorCode.ERR_MEMBER_INVALID);
 		}
 
-		long groupCount = groupRepository.findByWorkspaceIdGroupCount(workspaceId);
-		if (groupCount >= GROUP_COUNT_LIMIT) {
-			return new ApiResponse<>(ErrorCode.ERR_GROUP_COUNT_OVER);
-		}
-		if (groupRequest.getMemberList().size() > GROUP_MEMBER_COUNT_LIMIT) {
-			return new ApiResponse<>(ErrorCode.ERR_GROUP_MEMBER_COUNT_OVER);
-		}
 		// 이미 그룹 멤버에 속해있는지 확인
-		List<RemoteGroup> joinedMember = groupRepository.findByWorkspaceIdAndUserIdArray(workspaceId, groupRequest.getMemberList());
+		List<RemoteGroup> joinedMember = groupRepository.findByWorkspaceIdAndUserIdArray(
+			workspaceId, groupRequest.getMemberList());
 		if (!CollectionUtils.isEmpty(joinedMember)) {
 			return new ApiResponse<>(ErrorCode.ERR_GROUP_MEMBER_ALREADY_JOINED);
 		}
@@ -110,7 +106,8 @@ public class GroupService {
 		}
 
 		List<WorkspaceMemberInfoResponse> workspaceMembers = getWorkspaceMembers(workspaceId, userIds);
-		List<RemoteGroupMemberResponse> remoteGroupMemberResponses = mapperWorkspaceToRemoteGroupMember(createdGroup.getGroupMembers(), workspaceMembers);
+		List<RemoteGroupMemberResponse> remoteGroupMemberResponses = mapperWorkspaceToRemoteGroupMember(
+			createdGroup.getGroupMembers(), workspaceMembers);
 		return new ApiResponse<>(buildRemoteGroupResponse(createdGroup, remoteGroupMemberResponses));
 	}
 
@@ -120,7 +117,8 @@ public class GroupService {
 		boolean includeOneself
 	) {
 		// Remote group 정보
-		List<RemoteGroup> remoteGroups = groupRepository.findByWorkspaceIdAndUserIdAndIncludeOneself(workspaceId, userId, includeOneself);
+		List<RemoteGroup> remoteGroups = groupRepository.findByWorkspaceIdAndUserIdAndIncludeOneself(
+			workspaceId, userId, includeOneself);
 
 		// Workspace 전체 멤버 가져오기
 		List<WorkspaceMemberInfoResponse> workspaceMembers = getWorkspaceMembers(workspaceId);
@@ -132,7 +130,8 @@ public class GroupService {
 		// Result Response
 		List<RemoteGroupResponse> groupsResponse = new ArrayList<>();
 		for (RemoteGroup remoteGroup : remoteGroups) {
-			List<RemoteGroupMemberResponse> remoteGroupMembers = mapperWorkspaceToRemoteGroupMember(remoteGroup.getGroupMembers(), workspaceMembers);
+			List<RemoteGroupMemberResponse> remoteGroupMembers = mapperWorkspaceToRemoteGroupMember(
+				remoteGroup.getGroupMembers(), workspaceMembers);
 			groupsResponse.add(buildRemoteGroupResponse(remoteGroup, remoteGroupMembers));
 		}
 		groupsResponse.add(makeEtcGroup(workspaceId, remoteGroups, workspaceMembers));
@@ -150,23 +149,26 @@ public class GroupService {
 		boolean accessTypeFilter
 	) {
 		if (groupId.equals(ETC_GROUP_ID)) {
-			List<RemoteGroup> remoteGroups = groupRepository.findByWorkspaceIdAndUserIdAndIncludeOneself(workspaceId, userId, includeOneself);
+			List<RemoteGroup> remoteGroups = groupRepository.findByWorkspaceIdAndUserIdAndIncludeOneself(
+				workspaceId, userId, includeOneself);
 			List<WorkspaceMemberInfoResponse> workspaceMembers = getWorkspaceMembers(workspaceId);
 			workspaceMembers = includeOneselfFilter(userId, includeOneself, workspaceMembers);
 			return new ApiResponse<>(makeEtcGroup(workspaceId, remoteGroups, workspaceMembers));
 		}
 
-		RemoteGroup remoteGroup = groupRepository.findByWorkspaceIdAndGroupIdAndUserIdAndIncludeOneself(workspaceId, groupId, userId, includeOneself).orElse(null);
+		RemoteGroup remoteGroup = groupRepository.findByWorkspaceIdAndGroupIdAndUserIdAndIncludeOneself(
+			workspaceId, groupId, userId, includeOneself).orElse(null);
 		if (ObjectUtils.isEmpty(remoteGroup)) {
 			return new ApiResponse<>(ErrorCode.ERR_GROUP_NOT_FOUND);
 		}
 
 		List<WorkspaceMemberInfoResponse> workspaceMembers = workspaceRestService.getWorkspaceMembers(
-			workspaceId, filter, search,50).getData().getMemberInfoList();
+			workspaceId, filter, search, 50).getData().getMemberInfoList();
 
-		List<RemoteGroupMemberResponse> remoteGroupMembers = mapperWorkspaceToRemoteGroupMember(remoteGroup.getGroupMembers(), workspaceMembers);
+		List<RemoteGroupMemberResponse> remoteGroupMembers = mapperWorkspaceToRemoteGroupMember(
+			remoteGroup.getGroupMembers(), workspaceMembers);
 		if (accessTypeFilter) {
-			for(Iterator<RemoteGroupMemberResponse> groupMemberIterator = remoteGroupMembers.iterator(); groupMemberIterator.hasNext();){
+			for (Iterator<RemoteGroupMemberResponse> groupMemberIterator = remoteGroupMembers.iterator(); groupMemberIterator.hasNext(); ) {
 				AccessStatus targetUser = accessStatusService.getAccessStatus(
 					workspaceId + "_" + groupMemberIterator.next().getUuid());
 				if (ObjectUtils.isEmpty(targetUser) || targetUser.getAccessType() != AccessType.LOGIN) {
@@ -208,7 +210,8 @@ public class GroupService {
 		}
 
 		List<WorkspaceMemberInfoResponse> workspaceMembers = getWorkspaceMembers(workspaceId);
-		List<RemoteGroupMemberResponse> remoteGroupMembers = mapperWorkspaceToRemoteGroupMember(updatedGroup.getGroupMembers(), workspaceMembers);
+		List<RemoteGroupMemberResponse> remoteGroupMembers = mapperWorkspaceToRemoteGroupMember(
+			updatedGroup.getGroupMembers(), workspaceMembers);
 
 		return new ApiResponse<>(buildRemoteGroupResponse(updatedGroup, remoteGroupMembers));
 	}
@@ -270,7 +273,8 @@ public class GroupService {
 		}
 
 		List<WorkspaceMemberInfoResponse> workspaceMembers = getWorkspaceMembers(workspaceId, userIds);
-		List<FavoriteGroupMemberResponse> favoriteGroupMembers = mapperWorkspaceToFavoriteMember(favoriteGroup.getFavoriteGroupMembers(), workspaceMembers);
+		List<FavoriteGroupMemberResponse> favoriteGroupMembers = mapperWorkspaceToFavoriteMember(
+			favoriteGroup.getFavoriteGroupMembers(), workspaceMembers);
 
 		return new ApiResponse<>(buildFavoriteGroupResponse(createdFavoriteGroup, favoriteGroupMembers));
 	}
@@ -280,7 +284,8 @@ public class GroupService {
 		String userId,
 		boolean includeOneself
 	) {
-		List<FavoriteGroup> favoriteGroups = favoriteGroupRepository.findByWorkspaceIdAndUserIdAndIncludeOneself(workspaceId, userId, includeOneself);
+		List<FavoriteGroup> favoriteGroups = favoriteGroupRepository.findByWorkspaceIdAndUserIdAndIncludeOneself(
+			workspaceId, userId, includeOneself);
 		if (CollectionUtils.isEmpty(favoriteGroups)) {
 			return new ApiResponse<>(
 				FavoriteGroupListResponse.builder().favoriteGroupResponses(Collections.emptyList()).build()
@@ -302,10 +307,12 @@ public class GroupService {
 		List<WorkspaceMemberInfoResponse> workspaceMembers = getWorkspaceMembers(workspaceId, removedDistinctUserIds);
 		List<FavoriteGroupResponse> groupInfoResponseList = new ArrayList<>();
 		for (FavoriteGroup favoriteGroup : favoriteGroups) {
-			List<FavoriteGroupMemberResponse> favoriteGroupMembers = mapperWorkspaceToFavoriteMember(favoriteGroup.getFavoriteGroupMembers(), workspaceMembers);
+			List<FavoriteGroupMemberResponse> favoriteGroupMembers = mapperWorkspaceToFavoriteMember(
+				favoriteGroup.getFavoriteGroupMembers(), workspaceMembers);
 			groupInfoResponseList.add(buildFavoriteGroupResponse(favoriteGroup, favoriteGroupMembers));
 		}
-		return new ApiResponse<>(FavoriteGroupListResponse.builder().favoriteGroupResponses(groupInfoResponseList).build());
+		return new ApiResponse<>(
+			FavoriteGroupListResponse.builder().favoriteGroupResponses(groupInfoResponseList).build());
 	}
 
 	public ApiResponse<FavoriteGroupResponse> getFavoriteGroupDetail(
@@ -317,7 +324,8 @@ public class GroupService {
 		boolean includeOneself,
 		boolean accessTypeFilter
 	) {
-		FavoriteGroup favoriteGroup = favoriteGroupRepository.findByWorkspaceIdAndUserIdAndGroupIdAndIncludeOneself(workspaceId, groupId, userId, includeOneself).orElse(null);
+		FavoriteGroup favoriteGroup = favoriteGroupRepository.findByWorkspaceIdAndUserIdAndGroupIdAndIncludeOneself(
+			workspaceId, groupId, userId, includeOneself).orElse(null);
 		if (ObjectUtils.isEmpty(favoriteGroup)) {
 			return new ApiResponse<>(ErrorCode.ERR_GROUP_NOT_FOUND);
 		}
@@ -332,8 +340,9 @@ public class GroupService {
 		);
 
 		if (accessTypeFilter) {
-			for(Iterator<FavoriteGroupMemberResponse> groupMemberIterator = favoriteGroupMembers.iterator(); groupMemberIterator.hasNext();){
-				AccessStatus targetUser = accessStatusService.getAccessStatus(workspaceId + "_" + groupMemberIterator.next().getUuid());
+			for (Iterator<FavoriteGroupMemberResponse> groupMemberIterator = favoriteGroupMembers.iterator(); groupMemberIterator.hasNext(); ) {
+				AccessStatus targetUser = accessStatusService.getAccessStatus(
+					workspaceId + "_" + groupMemberIterator.next().getUuid());
 				if (ObjectUtils.isEmpty(targetUser) || targetUser.getAccessType() != AccessType.LOGIN) {
 					groupMemberIterator.remove();
 				}
@@ -356,7 +365,8 @@ public class GroupService {
 			return new ApiResponse<>(ErrorCode.ERR_GROUP_MEMBER_COUNT_OVER);
 		}
 
-		FavoriteGroup targetGroup = favoriteGroupRepository.findByWorkspaceIdAndUserIdAndGroupId(workspaceId, userId, groupId).orElse(null);
+		FavoriteGroup targetGroup = favoriteGroupRepository.findByWorkspaceIdAndUserIdAndGroupId(
+			workspaceId, userId, groupId).orElse(null);
 		if (ObjectUtils.isEmpty(targetGroup)) {
 			return new ApiResponse<>(ErrorCode.ERR_GROUP_NOT_FOUND);
 		}
@@ -382,7 +392,8 @@ public class GroupService {
 		}
 
 		List<WorkspaceMemberInfoResponse> workspaceMembers = getWorkspaceMembers(workspaceId, userIds);
-		List<FavoriteGroupMemberResponse> favoriteGroupMembers = mapperWorkspaceToFavoriteMember(updatedFavoriteGroup.getFavoriteGroupMembers(), workspaceMembers);
+		List<FavoriteGroupMemberResponse> favoriteGroupMembers = mapperWorkspaceToFavoriteMember(
+			updatedFavoriteGroup.getFavoriteGroupMembers(), workspaceMembers);
 		return new ApiResponse<>(buildFavoriteGroupResponse(updatedFavoriteGroup, favoriteGroupMembers));
 	}
 
@@ -391,7 +402,8 @@ public class GroupService {
 		String userId,
 		String groupId
 	) {
-		FavoriteGroup targetGroup = favoriteGroupRepository.findByWorkspaceIdAndUserIdAndGroupId(workspaceId, userId, groupId).orElse(null);
+		FavoriteGroup targetGroup = favoriteGroupRepository.findByWorkspaceIdAndUserIdAndGroupId(
+			workspaceId, userId, groupId).orElse(null);
 		if (ObjectUtils.isEmpty(targetGroup)) {
 			return new ApiResponse<>(ErrorCode.ERR_GROUP_NOT_FOUND);
 		}
@@ -404,7 +416,8 @@ public class GroupService {
 	}
 
 	private boolean isMasterOfWorkspace(String workspaceId, String userId) {
-		WorkspaceMemberInfoResponse masterUserInfo = workspaceRestService.getWorkspaceMember(workspaceId, userId).getData();
+		WorkspaceMemberInfoResponse masterUserInfo = workspaceRestService.getWorkspaceMember(workspaceId, userId)
+			.getData();
 		return Role.MASTER == masterUserInfo.getRole();
 	}
 
@@ -436,7 +449,8 @@ public class GroupService {
 		// Make uuid set
 		Set<String> userIds = new HashSet<>();
 		for (RemoteGroup remoteGroup : remoteGroups) {
-			userIds.addAll(remoteGroup.getGroupMembers().stream().map(RemoteGroupMember::getUuid).collect(Collectors.toSet()));
+			userIds.addAll(
+				remoteGroup.getGroupMembers().stream().map(RemoteGroupMember::getUuid).collect(Collectors.toSet()));
 		}
 
 		// Make Etc group
@@ -465,7 +479,7 @@ public class GroupService {
 		for (FavoriteGroupMember favoriteGroupMember : favoriteGroupMembers) {
 			for (WorkspaceMemberInfoResponse workspaceMemberInfoResponse : workspaceMembers) {
 				if (favoriteGroupMember.getUuid().equals(workspaceMemberInfoResponse.getUuid())) {
-					if (Arrays.asList(workspaceMemberInfoResponse.getLicenseProducts()).contains("REMOTE")) {
+					if (Arrays.asList(workspaceMemberInfoResponse.getLicenseProducts()).contains(RemoteLicense)) {
 						FavoriteGroupMemberResponse favoriteGroupMemberResponse = workspaceToFavoriteGroupMemberMapper.toDto(
 							workspaceMemberInfoResponse);
 						favoriteGroupMemberResponse.setAccessType(
@@ -478,7 +492,8 @@ public class GroupService {
 					} else {
 						FavoriteGroupMember target = favoriteGroupMemberRepository.findByFavoriteGroupIdAndUuid(
 							favoriteGroupMember.getFavoriteGroup().getId(),
-							favoriteGroupMember.getUuid()).orElse(null);
+							favoriteGroupMember.getUuid()
+						).orElse(null);
 						if (!ObjectUtils.isEmpty(target)) {
 							target.setDeleted(true);
 							favoriteGroupMemberRepository.save(target);
@@ -499,16 +514,22 @@ public class GroupService {
 		for (RemoteGroupMember remoteGroupMember : remoteGroupMembers) {
 			for (WorkspaceMemberInfoResponse workspaceMemberInfoResponse : workspaceMembers) {
 				if (remoteGroupMember.getUuid().equals(workspaceMemberInfoResponse.getUuid())) {
-					if (Arrays.asList(workspaceMemberInfoResponse.getLicenseProducts()).contains("REMOTE")) {
-						RemoteGroupMemberResponse remoteGroupMemberResponse = workspaceToRemoteGroupMemberMapper.toDto(workspaceMemberInfoResponse);
+					if (Arrays.asList(workspaceMemberInfoResponse.getLicenseProducts()).contains(RemoteLicense)) {
+						RemoteGroupMemberResponse remoteGroupMemberResponse = workspaceToRemoteGroupMemberMapper.toDto(
+							workspaceMemberInfoResponse);
 						remoteGroupMemberResponse.setAccessType(
-							loadAccessType(remoteGroupMember.getRemoteGroup().getWorkspaceId(), remoteGroupMemberResponse.getUuid())
+							loadAccessType(
+								remoteGroupMember.getRemoteGroup().getWorkspaceId(),
+								remoteGroupMemberResponse.getUuid()
+							)
 						);
-						remoteGroupMemberResponses.add(workspaceToRemoteGroupMemberMapper.toDto(workspaceMemberInfoResponse));
+						remoteGroupMemberResponses.add(
+							workspaceToRemoteGroupMemberMapper.toDto(workspaceMemberInfoResponse));
 					} else {
 						RemoteGroupMember target = remoteGroupMemberRepository.findByRemoteGroupIdAndUuid(
 							remoteGroupMember.getRemoteGroup().getId(),
-							remoteGroupMember.getUuid()).orElse(null);
+							remoteGroupMember.getUuid()
+						).orElse(null);
 						if (!ObjectUtils.isEmpty(target)) {
 							target.setDeleted(true);
 							remoteGroupMemberRepository.save(target);
@@ -536,7 +557,7 @@ public class GroupService {
 	private RemoteGroup buildRemoteGroup(String workspaceId, String groupName) {
 		return RemoteGroup.builder()
 			.workspaceId(workspaceId)
-			.groupId("group_" + RandomStringUtils.randomAlphabetic(1).toUpperCase() + RandomStringUtils.randomAlphanumeric(9))
+			.groupId(makeGroupName())
 			.groupName(groupName)
 			.build();
 	}
@@ -549,7 +570,7 @@ public class GroupService {
 	}
 
 	private RemoteGroupResponse buildRemoteGroupResponse(
-		RemoteGroup	remoteGroup,
+		RemoteGroup remoteGroup,
 		List<RemoteGroupMemberResponse> remoteGroupMemberResponses
 	) {
 		return RemoteGroupResponse.builder()
@@ -595,7 +616,7 @@ public class GroupService {
 
 	private FavoriteGroup buildFavoriteGroup(String workspaceId, String groupName, String uuid) {
 		return FavoriteGroup.builder().workspaceId(workspaceId)
-			.groupId("group_" + RandomStringUtils.randomAlphabetic(1).toUpperCase() + RandomStringUtils.randomAlphanumeric(9))
+			.groupId(makeGroupName())
 			.groupName(groupName)
 			.uuid(uuid)
 			.build();
@@ -628,13 +649,18 @@ public class GroupService {
 	}
 
 	private List<WorkspaceMemberInfoResponse> getWorkspaceMembers(String workspaceId) {
-		return workspaceRestService.getWorkspaceMembers(workspaceId,"remote", 50).getData().getMemberInfoList();
+		return workspaceRestService.getWorkspaceMembers(workspaceId, "remote", 50).getData().getMemberInfoList();
 	}
 
 	private List<WorkspaceMemberInfoResponse> getWorkspaceMembers(String workspaceId, List<String> userIds) {
 		return workspaceRestService.getWorkspaceMembersExcludeUserIds(
 			workspaceId,
-			userIds.toArray(new String[0])).getData().getMemberInfoList();
+			userIds.toArray(new String[0])
+		).getData().getMemberInfoList();
+	}
+
+	private String makeGroupName() {
+		return GROUP + RandomStringUtils.randomAlphabetic(1).toUpperCase() + RandomStringUtils.randomAlphanumeric(9);
 	}
 
 }

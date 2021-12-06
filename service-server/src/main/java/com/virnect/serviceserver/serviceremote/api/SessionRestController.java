@@ -464,4 +464,5 @@ public class SessionRestController {
 		ApiResponse<MemberInfoListResponse> responseData = serviceSessionManager.forceLogout(forceLogoutRequest);
 		return ResponseEntity.ok(responseData);
 	}
+
 }
