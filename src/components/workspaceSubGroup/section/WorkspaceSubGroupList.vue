@@ -121,7 +121,7 @@ export default {
       //선택가능한 유저
       users: [],
 
-      currentPage: 1,
+      currentPage: 0,
     }
   },
   computed: {
@@ -246,8 +246,8 @@ export default {
       let to = null
 
       if (this.currentPage > 0) {
-        from = (this.currentPage - 1) * GROUP_COUNT_PER_PAGE
-        to = this.currentPage * GROUP_COUNT_PER_PAGE
+        from = this.currentPage * GROUP_COUNT_PER_PAGE
+        to = (this.currentPage + 1) * GROUP_COUNT_PER_PAGE
       } else {
         from = 0
         to = GROUP_COUNT_PER_PAGE
@@ -256,7 +256,7 @@ export default {
       this.subGroupsWithoutEtc = this.subGroupsWithoutEtc.slice(from, to)
     },
     updateCurrentPage(page) {
-      this.currentPage = page
+      this.currentPage = page - 1
     },
     async getSubGroupItem(groupId) {
       const group = await getSubGroupItem({
