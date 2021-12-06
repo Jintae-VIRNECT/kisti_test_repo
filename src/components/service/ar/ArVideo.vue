@@ -18,7 +18,7 @@
         <button
           class="ar-video__select"
           @click="setArArea"
-          v-if="currentAction === 'area'"
+          v-if="currentAction === 'area' && arArea"
         >
           <div class="ar-video__select-back"></div>
           <div class="ar-video__select-inner">
@@ -69,6 +69,11 @@ export default {
   },
   props: {
     canPointing: {
+      type: Boolean,
+      default: true,
+    },
+    //ar 영역 캡쳐 ui 활성화 여부
+    arArea: {
       type: Boolean,
       default: true,
     },

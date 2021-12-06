@@ -118,10 +118,7 @@
       </transition>
       <!-- 영상 초기화 로딩 -->
       <transition name="opacity">
-        <div class="main-video__empty-inner loading" v-if="initing">
-          <img :src="videoLoadingSrc" />
-          <p v-if="isMobileSize" v-html="$t('service.stream_connecting')"></p>
-        </div>
+        <video-loading v-if="initing"></video-loading>
       </transition>
     </div>
     <transition name="opacity">
@@ -160,6 +157,7 @@ import { CAMERA, FLASH } from 'configs/device.config'
 import Pointing from './StreamPointing'
 import VideoTools from './MainVideoTools'
 import Fullscreen from './tools/Fullscreen'
+import VideoLoading from './partials/VideoLoading'
 import shutterMixin from 'mixins/shutter'
 import toastMixin from 'mixins/toast'
 
@@ -170,6 +168,7 @@ export default {
     Pointing,
     VideoTools,
     Fullscreen,
+    VideoLoading,
     PinchZoomLayer: () => import('./partials/PinchZoomLayer'),
   },
   data() {
@@ -223,11 +222,6 @@ export default {
       return this.isMobileSize
         ? require('assets/image/img_video_stop_new.svg')
         : require('assets/image/img_video_stop.svg')
-    },
-    videoLoadingSrc() {
-      return this.isMobileSize
-        ? require('assets/image/call/mdpi_image_videolink_new.svg')
-        : require('assets/image/gif_loading.svg')
     },
     isLeader() {
       return this.account.roleType === ROLE.LEADER

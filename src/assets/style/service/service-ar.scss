@@ -121,21 +121,6 @@
   height: 100%;
 }
 
-.ar-video__loading {
-  position: absolute;
-  top: -0.143rem;
-  left: -0.143rem;
-  display: flex;
-  width: calc(100% + 0.286rem);
-  height: calc(100% + 0.286rem);
-  background-color: #1e1e20;
-}
-.ar-video__loading-inner {
-  margin: auto;
-  text-align: center;
-  user-select: none;
-}
-
 .ar-3d-content__loading{
   position: absolute;
   top: -0.343rem;

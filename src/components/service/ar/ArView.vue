@@ -1,6 +1,6 @@
 <template>
   <div class="ar-view">
-    <ar-video :canPointing="!leaderDrawing">
+    <ar-video :canPointing="!leaderDrawing" :ar-area="!loadingFrame">
       <!-- 모델 증강 중에 표시되는 로딩 화면 -->
       <loading-3d v-if="loading3d"></loading-3d>
     </ar-video>
@@ -9,11 +9,10 @@
       :file="shareArImage"
       @loading="loadingFrame = false"
     ></ar-canvas>
-    <div class="ar-video__loading" v-if="loadingFrame">
-      <div class="ar-video__loading-inner">
-        <img src="~assets/image/gif_loading.svg" />
-      </div>
-    </div>
+    <transition name="opacity">
+      <!-- 3d 공유 -> ar 영역캡쳐(드로잉) 모드 전환시, ar영역 캡쳐 후 드로잉 화면 전환시 사용하는 로딩화면 -->
+      <video-loading v-if="loadingFrame"></video-loading>
+    </transition>
   </div>
 </template>
 
@@ -29,8 +28,11 @@ import {
 } from 'configs/remote.config'
 
 import Loading3d from './3dcontents/Loading3d.vue'
+import VideoLoading from '../stream/partials/VideoLoading.vue'
 import ArVideo from './ArVideo'
 import ArCanvas from './ardrawing/DrawingCanvas'
+
+const MODE_CHANGE_DELAY = 3000
 
 export default {
   name: 'ARView',
@@ -38,6 +40,7 @@ export default {
     Loading3d,
     ArVideo,
     ArCanvas,
+    VideoLoading,
   },
   data() {
     return {
@@ -96,6 +99,13 @@ export default {
         this.$call.sendAr3dSharing(AR_3D_CONTENT_SHARE.START_SHARE, {
           targetUserId,
         })
+      }
+      //3d 공유 -> ar 드로잉으로 모드 전환 시
+      else if (beforeVal === ACTION.AR_3D && newVal === ACTION.AR_AREA) {
+        this.loadingFrame = true
+        setTimeout(() => {
+          this.loadingFrame = false
+        }, MODE_CHANGE_DELAY)
       }
     },
     //로딩화면 표출 여부 결정
