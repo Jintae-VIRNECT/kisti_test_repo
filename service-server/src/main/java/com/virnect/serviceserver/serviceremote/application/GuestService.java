@@ -13,9 +13,13 @@ import lombok.extern.slf4j.Slf4j;
 
 import com.virnect.data.application.account.AccountRestService;
 import com.virnect.data.application.workspace.WorkspaceRestService;
+import com.virnect.data.dao.member.MemberRepository;
 import com.virnect.data.dao.room.RoomRepository;
+import com.virnect.data.domain.member.Member;
 import com.virnect.data.domain.room.Room;
+import com.virnect.data.dto.request.guest.GuestEventRequest;
 import com.virnect.data.dto.request.room.JoinRoomRequest;
+import com.virnect.data.dto.response.ResultResponse;
 import com.virnect.data.dto.response.guest.GuestInfoResponse;
 import com.virnect.data.dto.response.room.RoomInfoResponse;
 import com.virnect.data.dto.response.room.RoomResponse;
@@ -23,6 +27,7 @@ import com.virnect.data.dto.rest.GuestAccountInfoResponse;
 import com.virnect.data.error.ErrorCode;
 import com.virnect.data.global.common.ApiResponse;
 import com.virnect.data.infra.utils.LogMessage;
+import com.virnect.mediaserver.core.EndReason;
 import com.virnect.serviceserver.serviceremote.dao.SessionDataRepository;
 
 @Slf4j
@@ -38,6 +43,7 @@ public class GuestService {
 	private final RoomRepository roomRepository;
 	private final WorkspaceRestService workspaceRestService;
 
+	private final MemberRepository memberRepository;
 	private final SessionDataRepository sessionDataRepository;
 	private final ServiceSessionManager serviceSessionManager;
 
@@ -111,7 +117,7 @@ public class GuestService {
 			.getData()
 			.getUuid();
 		if (StringUtils.isBlank(guestMemberUuid)) {
-			return new ApiResponse<>(ErrorCode.ERR_GUEST_USER_NOT_FOUND);
+			return new ApiResponse<>(ErrorCode.ERR_MEMBER_INVALID);
 		}
 
 		ApiResponse<Boolean> dataProcess = this.sessionDataRepository.prepareJoinRoomOnlyGuest(
@@ -162,4 +168,25 @@ public class GuestService {
 		return header.split(" *,*")[0];
 	}
 
+	public ApiResponse<ResultResponse> guestEvent(GuestEventRequest guestEvent) {
+		ResultResponse resultResponse = new ResultResponse();
+		switch (guestEvent.getEvent()) {
+			case DELETED_ACCOUNT:
+				Member guestMember = memberRepository.findGuestMemberByWorkspaceIdAndUuid(
+					guestEvent.getWorkspaceId(),
+					guestEvent.getUserId()
+				).orElse(null);
+				if (ObjectUtils.isEmpty(guestMember)) {
+					return new ApiResponse<>(ErrorCode.ERR_ROOM_MEMBER_NOT_FOUND);
+				}
+				if (serviceSessionManager.evictParticipant(
+					guestMember.getSessionId(), guestMember.getConnectionId(), EndReason.deletedAccount)
+				) {
+					resultResponse.setResult(true);
+					resultResponse.setUserId(guestEvent.getUserId());
+				}
+				break;
+		}
+		return new ApiResponse<>(resultResponse);
+	}
 }

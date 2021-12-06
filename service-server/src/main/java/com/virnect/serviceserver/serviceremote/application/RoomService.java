@@ -79,8 +79,6 @@ public class RoomService {
 	private static final String TAG = RoomService.class.getSimpleName();
 	private static final String REST_PATH = "/remote/room";
 
-	private static final String GUEST_DELETED_SIGNAL = "signal:deleted-guest";
-
 	private final RemoteServiceConfig config;
 
 	private final RoomRepository roomRepository;
@@ -457,33 +455,13 @@ public class RoomService {
 	}
 
 	public ApiResponse<ResultResponse> sendSignal(String workspaceId, SendSignalRequest sendSignalRequest) {
-
 		ApiResponse<ResultResponse> apiResponse = new ApiResponse<>();
-
-		JsonObject jsonObject;
-		if (sendSignalRequest.getType().equals(GUEST_DELETED_SIGNAL)) {
-			List<String> guestMemberConnectionId = new ArrayList<>();
-			Member guestMember = memberRepository.findGuestMemberByWorkspaceIdAndUuid(
-				workspaceId, sendSignalRequest.getData()).orElse(null);
-			if (ObjectUtils.isEmpty(guestMember)) {
-				return new ApiResponse<>(ErrorCode.ERR_ROOM_MEMBER_NOT_FOUND);
-			}
-			
-			guestMemberConnectionId.add(guestMember.getConnectionId());
-			jsonObject = serviceSessionManager.generateMessage(
-				guestMember.getSessionId(),
-				guestMemberConnectionId,
-				sendSignalRequest.getType(),
-				null
-			);
-		} else {
-			jsonObject = serviceSessionManager.generateMessage(
-				sendSignalRequest.getSessionId(),
-				sendSignalRequest.getTo(),
-				sendSignalRequest.getType(),
-				sendSignalRequest.getData()
-			);
-		}
+		JsonObject jsonObject = serviceSessionManager.generateMessage(
+			sendSignalRequest.getSessionId(),
+			sendSignalRequest.getTo(),
+			sendSignalRequest.getType(),
+			sendSignalRequest.getData()
+		);
 		if (jsonObject.has("error")) {
 			log.info("sendSignal :{}", jsonObject.get("error").getAsString());
 			log.info("sendSignal :{}", jsonObject.get("status").getAsString());
