@@ -71,11 +71,13 @@ export default {
     },
   },
   watch: {
-    viewAction(val, beforeVal) {
+    viewAction(newVal, beforeVal) {
+      //종료 시그널 전송 부분
+      //ar 드로잉 모드 종료
       if (beforeVal === ACTION.AR_DRAWING) {
         this.$call.sendArDrawing(AR_DRAWING.END_DRAWING)
       }
-      //ar 3d 콘텐츠 모드 해제 및 공유 중인 데이터/상태 초기화
+      //3d 공유 모드 종료 : ar 3d 컨텐츠 모드 해제 및 공유 중인 데이터/상태 초기화
       else if (beforeVal === ACTION.AR_3D) {
         //AR내에 모드 변경시에만 3d모드 종료 시그널을 보내고, AR기능 자체의 종료인 경우 보내지 않는다.
         if (this.view === VIEW.AR) {
@@ -83,6 +85,17 @@ export default {
         }
         this.SHOW_3D_CONTENT({})
         this.SET_AR_3D_SHARE_STATUS('')
+      }
+
+      //시작 시그널 전송 부분
+      //3d 공유 기능 시작
+      if (newVal === ACTION.AR_3D) {
+        const targetUserId = this.mainView.id
+
+        //시그널 전송 : start 3D contents share
+        this.$call.sendAr3dSharing(AR_3D_CONTENT_SHARE.START_SHARE, {
+          targetUserId,
+        })
       }
     },
     //로딩화면 표출 여부 결정

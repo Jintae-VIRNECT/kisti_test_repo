@@ -13,7 +13,6 @@
 <script>
 import toolMixin from './toolMixin'
 import { VIEW, ACTION } from 'configs/view.config'
-import { AR_3D_CONTENT_SHARE } from 'configs/remote.config'
 import { mapGetters } from 'vuex'
 
 export default {
@@ -35,13 +34,7 @@ export default {
     },
     activate3dShareMode() {
       this.setAction(ACTION.AR_3D)
-
-      const targetUserId = this.mainView.id
-
-      //시그널 전송 : start 3D contents share
-      this.$call.sendAr3dSharing(AR_3D_CONTENT_SHARE.START_SHARE, {
-        targetUserId,
-      })
+      //3d 공유 기능 시작 시그널 전송은 ArView에서 실행
     },
   },
 }
