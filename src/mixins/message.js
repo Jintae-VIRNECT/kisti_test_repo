@@ -9,7 +9,7 @@ export default {
         900: this.$t('members.add.message.memberOverflow'),
         1000: this.$t('common.error'),
         1002: this.$t('members.add.message.memberAlready'),
-        1003: this.$t('members.delete.message.wrongPassword'),
+        1016: this.$t('members.delete.message.wrongPassword'),
         1007: this.$t('members.add.message.notHaveAnyPlan'),
         1008: this.$t('members.add.message.memberOverflow'),
         1011: this.$t('members.create.message.idDuplicated'),
