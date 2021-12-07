@@ -5,8 +5,6 @@ import org.springframework.stereotype.Component;
 import feign.hystrix.FallbackFactory;
 import lombok.extern.slf4j.Slf4j;
 
-import com.virnect.workspace.application.remote.dto.SendSignalRequest;
-
 /**
  * Project: PF-Workspace
  * DATE: 2021-12-01
@@ -21,12 +19,11 @@ public class RemoteRestFallbackFactory implements FallbackFactory<RemoteRestServ
 	public RemoteRestService create(Throwable cause) {
 		return new RemoteRestService() {
 			@Override
-			public void sendSignal(
-				String workspaceId, SendSignalRequest sendSignalRequest
-			) {
+			public void sendGuestUserDeletedEvent(String event, String userId, String workspaceId) {
 				log.error(
-					"[REST - RM_SERVICE][FALLBACK] Send signal fail. req workspace uuid : {}, req body : {}, failure cause : {}",
-					workspaceId, sendSignalRequest.toString(), cause.getMessage());
+					"[REST - RM_SERVICE][FALLBACK] Send event fail. event : {}, userId : {}, workspaceId : {} failure cause : {}",
+					event, userId, workspaceId, cause.getMessage()
+				);
 			}
 		};
 	}
