@@ -1,16 +1,37 @@
 package com.virnect.workspace.application.workspaceuser;
 
-import java.io.IOException;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Locale;
-import java.util.Optional;
-import java.util.function.Function;
-import java.util.stream.Collectors;
-
+import com.virnect.workspace.application.license.LicenseRestService;
+import com.virnect.workspace.application.license.dto.LicenseRevokeResponse;
+import com.virnect.workspace.application.license.dto.MyLicenseInfoListResponse;
+import com.virnect.workspace.application.license.dto.MyLicenseInfoResponse;
+import com.virnect.workspace.application.license.dto.WorkspaceLicensePlanInfoResponse;
+import com.virnect.workspace.application.remote.RemoteRestService;
+import com.virnect.workspace.application.user.UserRestServiceHandler;
+import com.virnect.workspace.application.user.dto.request.*;
+import com.virnect.workspace.application.user.dto.response.*;
+import com.virnect.workspace.dao.workspace.WorkspaceRepository;
+import com.virnect.workspace.dao.workspacepermission.WorkspacePermissionRepository;
+import com.virnect.workspace.dao.workspacerole.WorkspaceRoleRepository;
+import com.virnect.workspace.dao.workspaceuser.WorkspaceUserRepository;
+import com.virnect.workspace.dao.workspaceuserpermission.WorkspaceUserPermissionRepository;
+import com.virnect.workspace.domain.rest.LicenseStatus;
+import com.virnect.workspace.domain.workspace.*;
+import com.virnect.workspace.dto.request.*;
+import com.virnect.workspace.dto.response.*;
+import com.virnect.workspace.event.cache.UserWorkspacesDeleteEvent;
+import com.virnect.workspace.event.history.HistoryAddEvent;
+import com.virnect.workspace.event.message.MailContextHandler;
+import com.virnect.workspace.event.message.MailSendEvent;
+import com.virnect.workspace.exception.WorkspaceException;
+import com.virnect.workspace.global.common.ApiResponse;
+import com.virnect.workspace.global.common.CustomPageHandler;
+import com.virnect.workspace.global.common.CustomPageResponse;
+import com.virnect.workspace.global.common.mapper.rest.RestMapStruct;
+import com.virnect.workspace.global.constant.Mail;
+import com.virnect.workspace.global.constant.Permission;
+import com.virnect.workspace.global.error.ErrorCode;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Profile;
@@ -24,74 +45,11 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.servlet.view.RedirectView;
 import org.thymeleaf.context.Context;
 
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-
-import com.virnect.workspace.application.license.LicenseRestService;
-import com.virnect.workspace.application.remote.RemoteRestService;
-import com.virnect.workspace.application.user.UserRestServiceHandler;
-import com.virnect.workspace.dao.workspace.WorkspaceRepository;
-import com.virnect.workspace.dao.workspacepermission.WorkspacePermissionRepository;
-import com.virnect.workspace.dao.workspacerole.WorkspaceRoleRepository;
-import com.virnect.workspace.dao.workspaceuser.WorkspaceUserRepository;
-import com.virnect.workspace.dao.workspaceuserpermission.WorkspaceUserPermissionRepository;
-import com.virnect.workspace.domain.rest.LicenseStatus;
-import com.virnect.workspace.domain.workspace.Role;
-import com.virnect.workspace.domain.workspace.UserType;
-import com.virnect.workspace.domain.workspace.Workspace;
-import com.virnect.workspace.domain.workspace.WorkspacePermission;
-import com.virnect.workspace.domain.workspace.WorkspaceRole;
-import com.virnect.workspace.domain.workspace.WorkspaceUser;
-import com.virnect.workspace.domain.workspace.WorkspaceUserPermission;
-import com.virnect.workspace.dto.request.MemberAccountCreateInfo;
-import com.virnect.workspace.dto.request.MemberAccountCreateRequest;
-import com.virnect.workspace.dto.request.MemberAccountDeleteRequest;
-import com.virnect.workspace.dto.request.MemberGuestCreateRequest;
-import com.virnect.workspace.dto.request.MemberGuestDeleteRequest;
-import com.virnect.workspace.dto.request.MemberKickOutRequest;
-import com.virnect.workspace.dto.request.MemberProfileUpdateRequest;
-import com.virnect.workspace.dto.request.MemberUpdateRequest;
-import com.virnect.workspace.dto.request.WorkspaceInviteRequest;
-import com.virnect.workspace.dto.request.WorkspaceMemberPasswordChangeRequest;
-import com.virnect.workspace.dto.response.MemberProfileUpdateResponse;
-import com.virnect.workspace.dto.response.MemberSeatDeleteResponse;
-import com.virnect.workspace.dto.response.WorkspaceMemberInfoListResponse;
-import com.virnect.workspace.dto.response.WorkspaceMemberPasswordChangeResponse;
-import com.virnect.workspace.dto.response.WorkspaceNewMemberInfoResponse;
-import com.virnect.workspace.dto.response.WorkspaceUserInfoListResponse;
-import com.virnect.workspace.dto.response.WorkspaceUserInfoResponse;
-import com.virnect.workspace.dto.response.WorkspaceUserLicenseInfoResponse;
-import com.virnect.workspace.dto.response.WorkspaceUserLicenseListResponse;
-import com.virnect.workspace.application.user.dto.request.GuestMemberDeleteRequest;
-import com.virnect.workspace.application.user.dto.request.GuestMemberRegistrationRequest;
-import com.virnect.workspace.application.license.dto.LicenseRevokeResponse;
-import com.virnect.workspace.application.user.dto.request.MemberDeleteRequest;
-import com.virnect.workspace.application.user.dto.request.MemberRegistrationRequest;
-import com.virnect.workspace.application.user.dto.request.MemberUserPasswordChangeRequest;
-import com.virnect.workspace.application.user.dto.response.MemberUserPasswordChangeResponse;
-import com.virnect.workspace.application.license.dto.MyLicenseInfoListResponse;
-import com.virnect.workspace.application.license.dto.MyLicenseInfoResponse;
-import com.virnect.workspace.dto.response.PageMetadataRestResponse;
-import com.virnect.workspace.application.remote.dto.SendSignalRequest;
-import com.virnect.workspace.application.user.dto.response.UserDeleteRestResponse;
-import com.virnect.workspace.application.user.dto.request.UserInfoAccessCheckRequest;
-import com.virnect.workspace.application.user.dto.response.UserInfoAccessCheckResponse;
-import com.virnect.workspace.application.user.dto.response.UserInfoListRestResponse;
-import com.virnect.workspace.application.user.dto.response.UserInfoRestResponse;
-import com.virnect.workspace.application.user.dto.response.UserProfileUpdateResponse;
-import com.virnect.workspace.application.license.dto.WorkspaceLicensePlanInfoResponse;
-import com.virnect.workspace.event.cache.UserWorkspacesDeleteEvent;
-import com.virnect.workspace.event.history.HistoryAddEvent;
-import com.virnect.workspace.event.message.MailContextHandler;
-import com.virnect.workspace.event.message.MailSendEvent;
-import com.virnect.workspace.exception.WorkspaceException;
-import com.virnect.workspace.global.common.ApiResponse;
-import com.virnect.workspace.global.common.CustomPageHandler;
-import com.virnect.workspace.global.common.CustomPageResponse;
-import com.virnect.workspace.global.common.mapper.rest.RestMapStruct;
-import com.virnect.workspace.global.constant.Mail;
-import com.virnect.workspace.global.constant.Permission;
-import com.virnect.workspace.global.error.ErrorCode;
+import java.io.IOException;
+import java.time.LocalDateTime;
+import java.util.*;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 /**
  * Project: PF-Workspace
@@ -1286,17 +1244,24 @@ public abstract class WorkspaceUserService {
 			throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_GUEST_USER_DELETE);
 		}
 
-		//2. 라이선스 해제 요청
-		MyLicenseInfoListResponse myLicenseInfoListResponse = getMyLicenseInfoRequestHandler(
-			workspaceId, memberGuestDeleteRequest.getUserId());
-		if (!myLicenseInfoListResponse.getLicenseInfoList().isEmpty()) {
+        //2. remote 협업 종료를 위해 게스트 삭제 API 호출
+        MyLicenseInfoListResponse myLicenseInfoListResponse = getMyLicenseInfoRequestHandler(
+                workspaceId, memberGuestDeleteRequest.getUserId());
+        if (myLicenseInfoListResponse.isHaveRemoteLicense()) {
+            remoteRestService.sendGuestUserDeletedEvent("DELETED_ACCOUNT", memberGuestDeleteRequest.getUserId(), workspaceId);
+            log.info("[REST - RM_SERVICE] Send guest user deleted event. deleted userId : {}, workspaceId : {}", memberGuestDeleteRequest.getUserId(), workspaceId);
+        }
+
+
+		//3. 라이선스 해제 요청
+		if (!myLicenseInfoListResponse.isEmpty()) {
 			myLicenseInfoListResponse.getLicenseInfoList()
 				.forEach(myLicenseInfoResponse -> revokeWorkspaceLicenseToUser(workspaceId,
 					memberGuestDeleteRequest.getUserId(), myLicenseInfoResponse.getProductName()
 				));
 		}
 
-		//3. 게스트 유저 삭제 요청
+		//4. 게스트 유저 삭제 요청
 		GuestMemberDeleteRequest guestMemberDeleteRequest = new GuestMemberDeleteRequest();
 		guestMemberDeleteRequest.setMasterUUID(workspace.getUserId());
 		guestMemberDeleteRequest.setGuestUserUUID(deleteUserPermission.getWorkspaceUser().getUserId());
@@ -1306,25 +1271,11 @@ public abstract class WorkspaceUserService {
 			throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_GUEST_USER_DELETE);
 		}
 
-		//4. 웤스 서버에서 삭제
+		//5. 웤스 서버에서 삭제
 		WorkspaceUser workspaceUser = deleteUserPermission.getWorkspaceUser();
 		workspaceUserPermissionRepository.delete(deleteUserPermission);
 		workspaceUserRepository.delete(workspaceUser);
 
-		//5. remote 협업 종료를 위해 게스트 삭제 API 호출
-		List<String> guestUserProducts = myLicenseInfoListResponse.getLicenseInfoList()
-			.stream()
-			.map(MyLicenseInfoResponse::getProductName)
-			.collect(Collectors.toList());
-		if (guestUserProducts.contains("REMOTE")) {
-			SendSignalRequest sendSignalRequest = new SendSignalRequest(
-				"remote", "signal:deleted-guest", memberGuestDeleteRequest.getUserId());
-			remoteRestService.sendSignal(workspaceId, sendSignalRequest);
-			log.info(
-				"[REST - RM_SERVICE] Send guest user deleted signal. req workspace uuid : {}, req body : {}",
-				workspaceId, sendSignalRequest.toString()
-			);
-		}
 		return new MemberSeatDeleteResponse(true, memberGuestDeleteRequest.getUserId(), LocalDateTime.now());
 	}
 

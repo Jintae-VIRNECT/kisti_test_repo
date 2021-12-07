@@ -4,6 +4,7 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.util.CollectionUtils;
 
 import java.util.List;
 
@@ -20,4 +21,14 @@ import java.util.List;
 public class MyLicenseInfoListResponse {
     @ApiModelProperty(value = "내 라이선스 정보 목록")
     private List<MyLicenseInfoResponse> licenseInfoList;
+
+    public boolean isEmpty() {
+        return CollectionUtils.isEmpty(licenseInfoList);
+    }
+
+    public boolean isHaveRemoteLicense() {
+        return !CollectionUtils.isEmpty(licenseInfoList) &&
+                licenseInfoList.stream().anyMatch(myLicenseInfoResponse -> myLicenseInfoResponse.getProductName().equals("REMOTE"));
+
+    }
 }
