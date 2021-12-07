@@ -44,7 +44,6 @@ module.exports = async () => {
       '@nuxtjs/axios',
     ],
     plugins: [
-      '@/plugins/element-ui',
       '@/plugins/axios',
       '@/plugins/context',
       '@/plugins/virnectComponents',
@@ -68,10 +67,7 @@ module.exports = async () => {
      * dir
      */
     srcDir: resolve(__dirname, 'src'),
-    components: [
-      { path: '~/components' },
-      // { prefix: 'virnect', path: '@virnect/components' },
-    ],
+    components: [{ path: '~/components' }],
     alias: {
       '~@virnect': resolve(__dirname, './node_modules/@virnect'),
     },

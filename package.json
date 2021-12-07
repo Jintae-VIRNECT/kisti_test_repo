@@ -19,9 +19,9 @@
   "dependencies": {
     "@nuxtjs/axios": "^5.10.3",
     "@nuxtjs/style-resources": "^1.0.0",
-    "@virnect/components": "1.9.7",
+    "@virnect/components": "1.9.8",
     "@virnect/logger": "^1.0.2",
-    "@virnect/platform-auth": "^1.0.5",
+    "@virnect/platform-auth": "^1.0.6",
     "axios": "^0.19.2",
     "cross-env": "^7.0.2",
     "dayjs": "^1.8.28",

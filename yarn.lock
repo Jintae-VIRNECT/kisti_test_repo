@@ -1557,12 +1557,12 @@
   dependencies:
     "@types/node" "*"
 
-"@virnect/components@1.9.7":
-  version "1.9.7"
-  resolved "http://192.168.6.3:4873/@virnect%2fcomponents/-/components-1.9.7.tgz#10a1e10564bfce93ef7318bdafdcce9b99f9b427"
-  integrity sha512-3h8Q6m1tBLBdZYlKs/gZm/rW0Rcc8aLlubcOBLgrJYXM50/DxBiAc233zy2OOoWg3ObWlPryfzmdLm0toj7Mcg==
+"@virnect/components@1.9.8":
+  version "1.9.8"
+  resolved "http://192.168.6.3:4873/@virnect%2fcomponents/-/components-1.9.8.tgz#f2d059db7ac556c48a33ef90cad736dbf5b0a7bf"
+  integrity sha512-ZGTsWDVWb1+m7eqFPteQp6KsvKNFOikHyDKax3gFV94VrrlhNo6VvdgQcisQz75B5VvjLYfKTNVTpmWY06kpOw==
   dependencies:
-    "@virnect/ui-assets" "^1.9.7"
+    "@virnect/ui-assets" "^1.9.8"
     v-tooltip "^2.1.3"
 
 "@virnect/eslint-config@^1.0.3":
@@ -1595,10 +1595,10 @@
     dotenv "^8.1.0"
     log4js "^6.1.0"
 
-"@virnect/platform-auth@^1.0.5":
-  version "1.0.5"
-  resolved "http://192.168.6.3:4873/@virnect%2fplatform-auth/-/platform-auth-1.0.5.tgz#077b50fa0e81b35d7179150547a9f0a69a5254af"
-  integrity sha512-QqM3eMcBgcScvHN6zf5KwPiuy+kskvaFlbE51V+WFJzwQ7imecnlV8i1qYVWrSpUoqKcDSy4Y65bxuQ9agDPEg==
+"@virnect/platform-auth@^1.0.6":
+  version "1.0.6"
+  resolved "http://192.168.6.3:4873/@virnect%2fplatform-auth/-/platform-auth-1.0.6.tgz#a2305ddbd001520bb9e6ea12d699a6aa8590a48e"
+  integrity sha512-6wDfyHxHXSDi10AwFikWnNZ+EDE4BwEJ5bMawoXndR7uHPd//SVfZrpY85szTePjxAPSqriXJTRCCK03demSjQ==
   dependencies:
     axios "^0.19.2"
     js-cookie "^2.2.1"
@@ -1618,10 +1618,10 @@
     stylelint-prettier "^1.1.2"
     stylelint-scss "^3.18.0"
 
-"@virnect/ui-assets@^1.9.7":
-  version "1.9.7"
-  resolved "http://192.168.6.3:4873/@virnect%2fui-assets/-/ui-assets-1.9.7.tgz#d71d1727f07d36f659cd32f6778487993e4df40c"
-  integrity sha512-IiRaSdq0q3147DTyMIMueU8er9SON0TV+ppwz8KirK2is59hE/SmQPnDY3sahxa1bXnNsw7IdqDzsu0YdEJkJw==
+"@virnect/ui-assets@^1.9.8":
+  version "1.9.8"
+  resolved "http://192.168.6.3:4873/@virnect%2fui-assets/-/ui-assets-1.9.8.tgz#868f8d8e82604490e3b9797714f556e4a74b6ddf"
+  integrity sha512-GMfJ63CEo5+Fc5Ly6R4ORkqu4P31ta9zCdb2YX80w+HbJdQeJ20AVh2+y8dsmn2hkaPjbFUbvTxsLVKAkAGwUA==
 
 "@vue/babel-helper-vue-jsx-merge-props@^1.2.1":
   version "1.2.1"
