@@ -28,3 +28,9 @@ main {
 #__nuxt figure.virnect-thumbnail {
   background: rgb(220 222 228);
 }
+
+button,
+input,
+input[type="submit"] {
+  border: 0;
+}
