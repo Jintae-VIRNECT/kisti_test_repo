@@ -8,6 +8,7 @@
 import { mapGetters } from 'vuex'
 import PinchZoom from 'pinch-zoom-js'
 import { CAMERA } from 'configs/device.config'
+import { CAMERA_STATE } from 'configs/status.config'
 import toastMixin from 'mixins/toast'
 
 //Zoom.vue와 중복되는 로직들이 있지만, 디벨롭 브랜치와 컨플릭트 최소화 하기 위해 별도 믹스인으로 공통분류 하지 않았음.
@@ -40,7 +41,7 @@ export default {
       if (this.mainView && this.mainView.id) {
         return this.mainView.camera
       }
-      return -1
+      return CAMERA_STATE.UNAVAILABLE
     },
   },
   watch: {
@@ -88,7 +89,7 @@ export default {
     },
 
     changeZoomLevel(level) {
-      if (this.cameraStatus === -1) {
+      if (this.cameraStatus === CAMERA_STATE.UNAVAILABLE) {
         this.toastDefault(this.$t('service.camera_permission'))
         return
       }

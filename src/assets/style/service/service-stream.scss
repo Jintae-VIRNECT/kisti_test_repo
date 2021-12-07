@@ -160,7 +160,8 @@
     width: 8.571rem;
     height: 8.571rem;
   }
-  &.loading {
+  &.loading, 
+  &.stopped {
     position: absolute;
     top: 0;
     left: 0;

@@ -119,6 +119,7 @@ import { mapGetters, mapActions } from 'vuex'
 import { ROLE } from 'configs/remote.config'
 import { VIEW } from 'configs/view.config'
 import { CAMERA } from 'configs/device.config'
+import { CAMERA_STATE } from 'configs/status.config'
 import { proxyUrl } from 'utils/file'
 import toastMixin from 'mixins/toast'
 import confirmMixin from 'mixins/confirm'
@@ -226,13 +227,13 @@ export default {
     cameraStatus() {
       if (this.participant.hasVideo) {
         if (this.participant.cameraStatus === CAMERA.CAMERA_OFF) {
-          return 'off'
+          return CAMERA_STATE.OFF
         } else if (this.participant.cameraStatus === CAMERA.APP_IS_BACKGROUND) {
-          return 'background'
+          return CAMERA_STATE.BACKGROUND
         }
-        return 'on'
+        return CAMERA_STATE.ON
       } else {
-        return -1
+        return CAMERA_STATE.UNAVAILABLE
       }
     },
     isMuted() {
@@ -246,22 +247,26 @@ export default {
     'participant.nickname': 'participantInited',
     participant() {},
     cameraStatus(status, oldStatus) {
-      if (status === -1 || oldStatus === -1) return
+      if (
+        status === CAMERA_STATE.UNAVAILABLE ||
+        oldStatus === CAMERA_STATE.UNAVAILABLE
+      )
+        return
       if (status === oldStatus) return
-      if (status === 'off') {
-        if (oldStatus === 'background') return
+      if (status === CAMERA_STATE.OFF) {
+        if (oldStatus === CAMERA_STATE.BACKGROUND) return
         this.addChat({
           name: this.participant.nickname,
           status: 'stream-stop',
           type: 'system',
         })
-      } else if (status === 'background') {
+      } else if (status === CAMERA_STATE.BACKGROUND) {
         this.addChat({
           name: this.participant.nickname,
           status: 'stream-background',
           type: 'system',
         })
-      } else if (status === 'on') {
+      } else if (status === CAMERA_STATE.ON) {
         this.addChat({
           name: this.participant.nickname,
           status: 'stream-start',

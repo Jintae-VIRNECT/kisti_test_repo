@@ -26,11 +26,6 @@
   max-width: 100%;
   height: 100%;
   max-height: 100%;
-
-  //3d 모델 위치 선택하는 단계 일 경우
-  &.active{
-    border: 4px solid $color_primary;
-  }
 }
 
 .ar-video__select {
@@ -121,6 +116,16 @@
   height: 100%;
 }
 
+.ar-3d-pointing.active::after{
+  position: absolute;
+  top: 0;
+  left: -2px;
+  width: calc(100% - 4px);
+  height: calc(100% - 8px);
+  border: 4px solid $color_primary;
+  content:"";
+}
+
 .ar-3d-content__loading{
   position: absolute;
   top: -0.343rem;
@@ -198,8 +203,8 @@
     }
   }
 
-  .ar-video__stream.active {
-    border: none;
+  .ar-3d-pointing.active::after{
+    display: none;
   }
 
   .ar-3d-content__loading{

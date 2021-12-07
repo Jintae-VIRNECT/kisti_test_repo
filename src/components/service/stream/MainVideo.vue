@@ -125,18 +125,10 @@
       <div class="main-video__empty" v-if="emptyStream">
         <transition name="opacity">
           <!-- 영상 백그라운드 및 정지 표출 -->
-          <div class="main-video__empty-inner" v-if="mainView.me !== true">
-            <img :src="videoStopSrc" />
-            <p>{{ $t('service.stream_stop') }}</p>
-            <p
-              class="inner-discription"
-              v-if="cameraStatus !== -1 && cameraStatus.state === 'background'"
-              v-html="$t('service.stream_background')"
-            ></p>
-            <p class="inner-discription" v-else>
-              {{ $t('service.stream_stoped') }}
-            </p>
-          </div>
+          <video-stopped
+            v-if="mainView.me !== true"
+            :cameraStatus="cameraStatus"
+          ></video-stopped>
           <!-- 영상이 없을 경우 -->
           <div class="main-video__empty-inner" v-else>
             <img :src="noVideoSrc" />
@@ -153,11 +145,13 @@ import { mapActions, mapGetters } from 'vuex'
 import { ROLE } from 'configs/remote.config'
 import { ACTION } from 'configs/view.config'
 import { CAMERA, FLASH } from 'configs/device.config'
+import { CAMERA_STATE } from 'configs/status.config'
 
 import Pointing from './StreamPointing'
 import VideoTools from './MainVideoTools'
 import Fullscreen from './tools/Fullscreen'
 import VideoLoading from './partials/VideoLoading'
+import VideoStopped from './partials/VideoStopped'
 import shutterMixin from 'mixins/shutter'
 import toastMixin from 'mixins/toast'
 
@@ -169,6 +163,7 @@ export default {
     VideoTools,
     Fullscreen,
     VideoLoading,
+    VideoStopped,
     PinchZoomLayer: () => import('./partials/PinchZoomLayer'),
   },
   data() {
@@ -218,11 +213,6 @@ export default {
         ? require('assets/image/call/img_select_video_new.svg')
         : require('assets/image/call/img_select_video.svg')
     },
-    videoStopSrc() {
-      return this.isMobileSize
-        ? require('assets/image/img_video_stop_new.svg')
-        : require('assets/image/img_video_stop.svg')
-    },
     isLeader() {
       return this.account.roleType === ROLE.LEADER
     },
@@ -242,24 +232,28 @@ export default {
       return this.resolutions[idx]
     },
     cameraStatus() {
-      if (this.mainView && this.mainView.id) {
-        if (this.mainView.cameraStatus === CAMERA.CAMERA_OFF) {
-          return {
-            state: 'off',
-            id: this.mainView.id,
-          }
-        } else if (this.mainView.cameraStatus === CAMERA.APP_IS_BACKGROUND) {
-          return {
-            state: 'background',
-            id: this.mainView.id,
-          }
+      const hasMainView = this.mainView && this.mainView.id
+
+      if (hasMainView) {
+        const id = this.mainView.id
+        let state = CAMERA_STATE.ON
+
+        const isCameraOff = this.mainView.cameraStatus === CAMERA.CAMERA_OFF
+        const isAppBackground =
+          this.mainView.cameraStatus === CAMERA.APP_IS_BACKGROUND
+
+        if (isCameraOff) {
+          state = CAMERA_STATE.OFF
+        } else if (isAppBackground) {
+          state = CAMERA_STATE.BACKGROUND
         }
+
         return {
-          state: 'on',
-          id: this.mainView.id,
+          state,
+          id,
         }
       } else {
-        return -1
+        return CAMERA_STATE.UNAVAILABLE
       }
     },
     allowTools() {
@@ -284,9 +278,10 @@ export default {
       }
     },
     emptyStream() {
-      const validCameraStatus = this.cameraStatus !== -1
-      const cameraOff = this.cameraStatus.state === 'off'
-      const cameraBackground = this.cameraStatus.state === 'background'
+      const validCameraStatus = this.cameraStatus !== CAMERA_STATE.UNAVAILABLE
+      const cameraOff = this.cameraStatus.state === CAMERA_STATE.OFF
+      const cameraBackground =
+        this.cameraStatus.state === CAMERA_STATE.BACKGROUND
       const screenSharing = this.mainView.screenShare
 
       return (
@@ -352,12 +347,12 @@ export default {
     cameraStatus: {
       deep: true,
       handler(status) {
-        if (status === -1) {
+        if (status === CAMERA_STATE.UNAVAILABLE) {
           this.$eventBus.$emit('video:loaded', false)
           return
         }
 
-        this.$eventBus.$emit('video:loaded', status.state === 'on')
+        this.$eventBus.$emit('video:loaded', status.state === CAMERA_STATE.ON)
       },
     },
     localRecordStatus(status) {

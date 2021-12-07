@@ -3,9 +3,6 @@
     <div class="ar-video__box">
       <video
         class="ar-video__stream"
-        :class="{
-          active: is3dPositionPicking,
-        }"
         ref="arVideo"
         :srcObject.prop="mainView.stream"
         @play="mediaPlay"
@@ -44,6 +41,9 @@
       ></ar-pointing>
       <ar-3d
         class="ar-3d-pointing"
+        :class="{
+          active: is3dPositionPicking,
+        }"
         :videoSize="videoSize"
         v-if="currentAction === '3d' && isLeader"
       ></ar-3d>

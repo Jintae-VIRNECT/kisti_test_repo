@@ -1,6 +1,9 @@
 <template>
   <div class="ar-view">
-    <ar-video :canPointing="!leaderDrawing" :ar-area="!loadingFrame">
+    <ar-video
+      :canPointing="!leaderDrawing"
+      :ar-area="!loadingFrame && !isArDeviceBackground"
+    >
       <!-- 모델 증강 중에 표시되는 로딩 화면 -->
       <loading-3d v-if="loading3d"></loading-3d>
     </ar-video>
@@ -12,6 +15,13 @@
     <transition name="opacity">
       <!-- 3d 공유 -> ar 영역캡쳐(드로잉) 모드 전환시, ar영역 캡쳐 후 드로잉 화면 전환시 사용하는 로딩화면 -->
       <video-loading v-if="loadingFrame"></video-loading>
+    </transition>
+    <!-- ar 기기 백그라운드 전환 시 화면 -->
+    <transition name="opacity">
+      <video-stopped
+        v-if="isArDeviceBackground"
+        :cameraStatus="cameraStatus"
+      ></video-stopped>
     </transition>
   </div>
 </template>
@@ -26,11 +36,14 @@ import {
   AR_3D_CONTENT_SHARE,
   AR_3D_FILE_SHARE_STATUS,
 } from 'configs/remote.config'
+import { CAMERA } from 'configs/device.config'
+import { CAMERA_STATE } from 'configs/status.config'
 
-import Loading3d from './3dcontents/Loading3d.vue'
-import VideoLoading from '../stream/partials/VideoLoading.vue'
+import Loading3d from './3dcontents/Loading3d'
 import ArVideo from './ArVideo'
 import ArCanvas from './ardrawing/DrawingCanvas'
+import VideoLoading from '../stream/partials/VideoLoading'
+import VideoStopped from '../stream/partials/VideoStopped'
 
 const MODE_CHANGE_DELAY = 3000
 
@@ -41,6 +54,7 @@ export default {
     ArVideo,
     ArCanvas,
     VideoLoading,
+    VideoStopped,
   },
   data() {
     return {
@@ -71,6 +85,37 @@ export default {
     },
     isLeader() {
       return this.account.roleType === ROLE.LEADER
+    },
+    isArDeviceBackground() {
+      return (
+        this.mainView.cameraStatus === CAMERA.APP_IS_BACKGROUND &&
+        this.mainView.me !== true
+      )
+    },
+    cameraStatus() {
+      const hasMainView = this.mainView && this.mainView.id
+
+      if (hasMainView) {
+        const id = this.mainView.id
+        let state = CAMERA_STATE.ON
+
+        const isCameraOff = this.mainView.cameraStatus === CAMERA.CAMERA_OFF
+        const isAppBackground =
+          this.mainView.cameraStatus === CAMERA.APP_IS_BACKGROUND
+
+        if (isCameraOff) {
+          state = CAMERA_STATE.OFF
+        } else if (isAppBackground) {
+          state = CAMERA_STATE.BACKGROUND
+        }
+
+        return {
+          state,
+          id,
+        }
+      } else {
+        return CAMERA_STATE.UNAVAILABLE
+      }
     },
   },
   watch: {
