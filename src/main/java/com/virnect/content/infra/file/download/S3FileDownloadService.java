@@ -49,11 +49,9 @@ public class S3FileDownloadService implements FileDownloadService {
 	@Value("${cloud.aws.s3.bucket.name}")
 	private String bucketName;
 
-	@Value("${file.prefix}")
-	private String prefix;
-
 	@Override
 	public ResponseEntity<byte[]> fileDownload(String fileUrl, String range) {
+		String prefix = "https://" + bucketName + ".s3." + amazonS3Client.getRegionName() + ".amazonaws.com/";
 		log.info("PARSER - URL: [{}]", fileUrl);
 		String[] fileSplit = fileUrl.split(prefix);
 		String objectName = fileSplit[fileSplit.length - 1];
@@ -104,6 +102,7 @@ public class S3FileDownloadService implements FileDownloadService {
 
 	@Override
 	public long getFileSize(String fileUrl) {
+		String prefix = "https://" + bucketName + ".s3." + amazonS3Client.getRegionName() + ".amazonaws.com/";
 		log.info("[AWS S3 GET FILE SIZE] GET SIZE BEGIN. URL : {}", fileUrl);
 		String[] fileSplit = fileUrl.split(prefix);
 		String objectName = fileSplit[fileSplit.length - 1];
@@ -134,6 +133,7 @@ public class S3FileDownloadService implements FileDownloadService {
 
 	@Override
 	public byte[] getFileStreamBytes(String fileUrl) {
+		String prefix = "https://" + bucketName + ".s3." + amazonS3Client.getRegionName() + ".amazonaws.com/";
 		log.info("[AWS S3 FILE DOWNLOAD] URL : {}", fileUrl);
 		String[] fileSplit = fileUrl.split(prefix);
 		String objectName = fileSplit[fileSplit.length - 1];

@@ -1,5 +1,7 @@
 package com.virnect.content.event;
 
+import java.util.Arrays;
+
 import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Propagation;
@@ -24,7 +26,8 @@ public class ProjectActivityLogEventHandler {
 	@Transactional(propagation = Propagation.REQUIRES_NEW)
 	public void publishprojectActivityLog(ProjectActivityLogEvent projectActivityLogEvent) {
 		ProjectActivityLog projectActivityLog = ProjectActivityLog.projectActivityLogBuilder()
-			.message(messageSource.getMessage(projectActivityLogEvent.getMessage().name(), projectActivityLogEvent.getMessageArgs(), projectActivityLogEvent.getLocale()))
+			.activity(projectActivityLogEvent.getActivity())
+			.activityProperty(projectActivityLogEvent.getActivityProperty())
 			.project(projectActivityLogEvent.getProject())
 			.workspaceUserInfo(projectActivityLogEvent.getWorkspaceUserInfo())
 			.build();

@@ -8,8 +8,8 @@ import java.security.NoSuchAlgorithmException;
 import java.util.Base64;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.CompletableFuture;
 
-import org.apache.commons.io.FilenameUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
 import org.springframework.http.MediaType;
@@ -60,14 +60,12 @@ public class MinioUploadService implements FileUploadService {
 	@Value("${minio.server}")
 	private String minioServer;
 
-	@Value("${file.prefix}")
-	private String prefix;
-
 	@Value("#{'${file.allowed-extension}'.split(',')}")
 	private List<String> allowedExtension;
 
 	@Override
 	public void deleteByFileUrl(String fileUrl) {
+		String prefix = minioServer + "/" + bucketName + "/";
 		log.info("[MINIO FILE DELETE] DELETE BEGIN. URL : {}", fileUrl);
 		if (!StringUtils.hasText(fileUrl)) {
 			return;
@@ -75,7 +73,7 @@ public class MinioUploadService implements FileUploadService {
 		String[] fileSplit = fileUrl.split(prefix);
 		String objectName = fileSplit[fileSplit.length - 1];
 
-		if(fileUrl.contains(V_TARGET_DEFAULT_NAME)){
+		if (fileUrl.contains(V_TARGET_DEFAULT_NAME)) {
 			log.info("[MINIO FILE DELETE] DEFAULT FILE SKIP. KEY : {}", objectName);
 			return;
 		}
@@ -85,14 +83,15 @@ public class MinioUploadService implements FileUploadService {
 			.object(objectName)
 			.build();
 		log.info("[MINIO FILE DELETE] DELETE REQUEST. BUCKET : {}, KEY : {}", bucketName, objectName);
-		try {
-			minioClient.removeObject(removeObjectArgs);
-			log.info("[MINIO FILE DELETE] DELETE SUCCESS.");
-		} catch (ErrorResponseException | InsufficientDataException | InternalException | InvalidKeyException | InvalidResponseException | IOException |
-			NoSuchAlgorithmException | ServerException | XmlParserException e) {
-			log.info("[MINIO FILE DELETE] DELETE FAIL. ERROR MESSAGE : {}", e.getMessage());
-			//throw new ContentServiceException(ErrorCode.ERR_DELETE_CONTENT);
-		}
+		CompletableFuture.runAsync(() -> {
+			try {
+				minioClient.removeObject(removeObjectArgs);
+				log.info("[MINIO FILE DELETE] DELETE SUCCESS.");
+			} catch (ErrorResponseException | InsufficientDataException | InternalException | InvalidKeyException | InvalidResponseException | IOException |
+				NoSuchAlgorithmException | ServerException | XmlParserException e) {
+				log.error("[MINIO FILE DELETE] DELETE FAIL. ERROR MESSAGE : {}", e.getMessage());
+			}
+		});
 
 	}
 
@@ -185,6 +184,7 @@ public class MinioUploadService implements FileUploadService {
 		String sourceFileUrl, String destinationFileDir,
 		String destinationWorkspaceUUID, String destinationFileNameWithoutExtension
 	) {
+		String prefix = minioServer + "/" + bucketName + "/";
 		log.info(
 			"[MINIO FILE COPY] COPY BEGIN. URL : {}, DESTINATION DIR : {}, DESTINATION NAME : {}", sourceFileUrl,
 			destinationFileDir, destinationFileNameWithoutExtension
@@ -192,7 +192,10 @@ public class MinioUploadService implements FileUploadService {
 		String[] fileSplit = sourceFileUrl.split(prefix);
 		String sourceObjectName = fileSplit[fileSplit.length - 1];
 		String sourceFileExtension = sourceFileUrl.substring(sourceFileUrl.lastIndexOf(".") + 1); //Ares
-		String destinationObjectName = String.format("workspace/%s/%s/%s.%s", destinationWorkspaceUUID, destinationFileDir, destinationFileNameWithoutExtension, sourceFileExtension);
+		String destinationObjectName = String.format(
+			"workspace/%s/%s/%s.%s", destinationWorkspaceUUID, destinationFileDir, destinationFileNameWithoutExtension,
+			sourceFileExtension
+		);
 
 		CopySource copySource = CopySource.builder()
 			.bucket(bucketName)

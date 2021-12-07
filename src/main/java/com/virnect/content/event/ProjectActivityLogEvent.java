@@ -10,42 +10,28 @@ import com.virnect.content.dto.rest.WorkspaceUserResponse;
 
 @Getter
 public class ProjectActivityLogEvent {
-	private final ProjectActivity message;
-	private final Object[] messageArgs;
+	private final ProjectActivity activity;
+	private final String activityProperty;
 	private final Project project;
 	private final WorkspaceUserResponse workspaceUserInfo;
-	private final Locale locale;
 
 	public ProjectActivityLogEvent(
-		ProjectActivity message, Object[] messageArgs, Project project,
+		ProjectActivity message, String activityProperty, Project project,
 		WorkspaceUserResponse workspaceUserInfo
 	) {
-		this.message = message;
-		this.messageArgs = messageArgs;
+		this.activity = message;
+		this.activityProperty = activityProperty;
 		this.project = project;
 		this.workspaceUserInfo = workspaceUserInfo;
-		this.locale = Locale.KOREA;
-	}
-
-	public ProjectActivityLogEvent(
-		ProjectActivity message, Object[] messageArgs, Project project,
-		WorkspaceUserResponse workspaceUserInfo,
-		Locale locale
-	) {
-		this.message = message;
-		this.messageArgs = messageArgs;
-		this.project = project;
-		this.workspaceUserInfo = workspaceUserInfo;
-		this.locale = locale;
 	}
 
 	@Override
 	public String toString() {
 		return "ProjectActivityLogEvent{" +
-			"message=" + message +
+			"activity=" + activity +
+			", activityProperty='" + activityProperty + '\'' +
 			", project=" + project +
 			", workspaceUserInfo=" + workspaceUserInfo +
-			", locale=" + locale.toString() +
 			'}';
 	}
 }

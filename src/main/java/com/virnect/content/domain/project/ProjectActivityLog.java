@@ -2,6 +2,8 @@ package com.virnect.content.domain.project;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -37,8 +39,12 @@ public class ProjectActivityLog extends BaseTimeEntity {
 	@Column(name = "id")
 	private Long id;
 
-	@Column(name = "message", nullable = false)
-	private String message;
+	@Column(name = "activity", nullable = false)
+	@Enumerated(EnumType.STRING)
+	private ProjectActivity activity;
+
+	@Column(name = "activity_property")
+	private String activityProperty;
 
 	@Column(name = "user_id", nullable = false)
 	private Long userId;
@@ -61,11 +67,13 @@ public class ProjectActivityLog extends BaseTimeEntity {
 
 	@Builder(builderMethodName = "projectActivityLogBuilder")
 	public ProjectActivityLog(
-		String message,
+		ProjectActivity activity,
+		String activityProperty,
 		Project project,
 		WorkspaceUserResponse workspaceUserInfo
 	) {
-		this.message = message;
+		this.activity = activity;
+		this.activityProperty = activityProperty;
 		this.userId = workspaceUserInfo.getId();
 		this.userUUID = workspaceUserInfo.getUuid();
 		this.userName = workspaceUserInfo.getName();

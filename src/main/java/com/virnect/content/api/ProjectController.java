@@ -1,6 +1,7 @@
 package com.virnect.content.api;
 
 import java.util.List;
+import java.util.Locale;
 
 import javax.validation.Valid;
 
@@ -189,15 +190,15 @@ public class ProjectController {
 	})
 	@GetMapping("/{projectUUID}/activities")
 	public ResponseEntity<ApiResponse<ProjectActivityLogListResponse>> getProjectActivityLogs(
-		@PathVariable("projectUUID") String projectUUID, @ApiIgnore PageRequest pageRequest
+		@PathVariable("projectUUID") String projectUUID, @ApiIgnore PageRequest pageRequest, @ApiIgnore Locale locale
 	) {
 		String userUUID = MDC.get("userUUID");
-		log.info("[GET PROJECT ACTIVITY LOG] REQ projectUUID : {}, userUUID : {}", projectUUID, userUUID);
+		log.info("[GET PROJECT ACTIVITY LOG] REQ projectUUID : {}, userUUID : {}, locale : {}", projectUUID, userUUID, locale.toString());
 		if (!StringUtils.hasText(projectUUID) || !StringUtils.hasText(userUUID)) {
 			throw new ContentServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
 		}
 		ProjectActivityLogListResponse responseMessage = projectService.getProjectActivityLogs(projectUUID, userUUID,
-			pageRequest.of()
+			pageRequest.of(), locale
 		);
 		return ResponseEntity.ok(new ApiResponse<>(responseMessage));
 	}

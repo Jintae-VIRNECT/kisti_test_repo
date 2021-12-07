@@ -54,14 +54,12 @@ public class S3UploadService implements FileUploadService {
 	@Value("${cloud.aws.s3.bucket.name}")
 	private String bucketName;
 
-	@Value("${file.prefix}")
-	private String prefix;
-
 	@Value("#{'${file.allowed-extension}'.split(',')}")
 	private List<String> allowedExtension;
 
 	@Override
 	public void deleteByFileUrl(String fileUrl) {
+		String prefix = "https://" + bucketName + ".s3." + amazonS3Client.getRegionName() + ".amazonaws.com/";
 		if (!StringUtils.hasText(fileUrl)) {
 			return;
 		}
@@ -79,8 +77,7 @@ public class S3UploadService implements FileUploadService {
 			amazonS3Client.deleteObject(deleteObjectRequest);
 			log.info("[AWS S3 FILE DELETE] DELETE SUCCESS.");
 		} catch (SdkClientException e) {
-			log.info("[AWS S3 FILE DELETE] DELETE FAIL. ERROR MESSAGE : {}", e.getMessage());
-			//throw new ContentServiceException(ErrorCode.ERR_DELETE_CONTENT);
+			log.error("[AWS S3 FILE DELETE] DELETE FAIL. ERROR MESSAGE : {}", e.getMessage());
 		}
 	}
 
@@ -222,6 +219,7 @@ public class S3UploadService implements FileUploadService {
 		String sourceFileUrl, String destinationFileDir,
 		String destinationWorkspaceUUID, String destinationFileNameWithoutExtension
 	) {
+		String prefix = "https://" + bucketName + ".s3." + amazonS3Client.getRegionName() + ".amazonaws.com/";
 		log.info(
 			"[MINIO FILE COPY] COPY BEGIN. URL : {}, DESTINATION DIR : {}, DESTINATION NAME : {}", sourceFileUrl,
 			destinationFileDir, destinationFileNameWithoutExtension

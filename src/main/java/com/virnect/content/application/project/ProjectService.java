@@ -7,6 +7,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
+import java.util.Locale;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -14,6 +15,7 @@ import javax.imageio.ImageIO;
 
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.context.MessageSource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
@@ -104,6 +106,7 @@ public class ProjectService {
 	private final UserRestService userRestService;
 	private final ApplicationEventPublisher applicationEventPublisher;
 	private final ProjectActivityLogRepository projectActivityLogRepository;
+	private final MessageSource messageSource;
 
 	private static final String PROJECT_DIRECTORY = "project";
 	private static final String REPORT_DIRECTORY = "report";
@@ -139,7 +142,7 @@ public class ProjectService {
 			projectUploadRequest.getWorkspaceUUID(),
 			projectUUID
 		);
-		//fileUploadService.deleteByFileUrl(projectUploadRequest.getProject());//원본파일 삭제
+		fileUploadService.deleteByFileUrl(projectUploadRequest.getProject());//원본파일 삭제
 
 		String properties = "";
 		ObjectMapper objectMapper = new ObjectMapper();
@@ -445,6 +448,7 @@ public class ProjectService {
 		//업로더 네임, 프로필 정보
 		UserInfoResponse userInfoResponse = getUserInfoResponse(project.getUserUUID());
 		projectInfoResponse.setUploaderName(userInfoResponse.getName());
+		projectInfoResponse.setUploaderNickname(userInfoResponse.getNickname());
 		projectInfoResponse.setUploaderProfile(userInfoResponse.getProfile());
 		return projectInfoResponse;
 	}
@@ -635,9 +639,8 @@ public class ProjectService {
 			}
 			applicationEventPublisher.publishEvent(
 				new ProjectActivityLogEvent(
-					ProjectActivity.UPDATE_SHARE_PERMISSION,
-					new String[] {projectUpdateRequest.getShare().getPermission().name()}, project,
-					workspaceUserInfo
+					ProjectActivity.UPDATE_SHARE_PERMISSION, projectUpdateRequest.getShare().getPermission().name(),
+					project, workspaceUserInfo
 				));
 
 		}
@@ -655,8 +658,8 @@ public class ProjectService {
 			}
 			applicationEventPublisher.publishEvent(
 				new ProjectActivityLogEvent(
-					ProjectActivity.UPDATE_EDIT_PERMISSION,
-					new String[] {projectUpdateRequest.getEdit().getPermission().name()}, project,
+					ProjectActivity.UPDATE_EDIT_PERMISSION, projectUpdateRequest.getEdit().getPermission().name(),
+					project,
 					workspaceUserInfo
 				));
 		}
@@ -720,7 +723,9 @@ public class ProjectService {
 		boolean uploaderHasEditPermission = isProjectEditPermission(
 			project, projectUpdateRequest.getUserUUID(), workspaceUserInfo.getRole());
 		return new ProjectUpdateResponse(
-			true, projectUUID, projectUpdateRequest.getUserUUID(), uploaderHasSharePermission, uploaderHasEditPermission, LocalDateTime.now());
+			true, projectUUID, projectUpdateRequest.getUserUUID(), uploaderHasSharePermission,
+			uploaderHasEditPermission, LocalDateTime.now()
+		);
 	}
 
 	private String generateQRString(String targetData) {
@@ -857,7 +862,7 @@ public class ProjectService {
 
 	@Transactional
 	public ProjectActivityLogListResponse getProjectActivityLogs(
-		String projectUUID, String userUUID, Pageable pageable
+		String projectUUID, String userUUID, Pageable pageable, Locale locale
 	) {
 		//1. 프로젝트 조회
 		Project project = projectRepository.findByUuid(projectUUID)
@@ -874,9 +879,17 @@ public class ProjectService {
 
 		//2. 활동이력 조회
 		Page<ProjectActivityLog> projectActivityLogPage = projectActivityLogRepository.findByProject(project, pageable);
-		List<ProjectActivityLogResponse> projectActivityLogResponseList = projectActivityLogPage.stream()
-			.map(projectResponseMapper::projectActivityLogToResponse)
-			.collect(Collectors.toList());
+		List<ProjectActivityLogResponse> projectActivityLogResponseList = new ArrayList<>();
+		for (ProjectActivityLog projectActivityLog : projectActivityLogPage) {
+			ProjectActivityLogResponse projectActivityLogResponse = projectResponseMapper.projectActivityLogToResponse(
+				projectActivityLog);
+			String message = messageSource.getMessage(
+				projectActivityLog.getActivity().name(), new String[] {projectActivityLog.getActivityProperty()},
+				locale
+			);
+			projectActivityLogResponse.setMessage(message);
+			projectActivityLogResponseList.add(projectActivityLogResponse);
+		}
 		PageMetadataResponse pageMetadataResponse = PageMetadataResponse.builder()
 			.currentPage(pageable.getPageNumber())
 			.currentSize(pageable.getPageSize())

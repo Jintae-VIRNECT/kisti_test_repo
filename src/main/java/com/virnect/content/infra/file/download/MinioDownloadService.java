@@ -59,11 +59,9 @@ public class MinioDownloadService implements FileDownloadService {
 	@Value("${minio.server}")
 	private String minioServer;
 
-	@Value("${file.prefix}")
-	private String prefix;
-
 	@Override
 	public ResponseEntity<byte[]> fileDownload(String fileUrl, String range) {
+		String prefix = minioServer + "/" + bucketName + "/";
 		try {
 			log.info("PARSER - URL: [{}]", fileUrl);
 			String[] fileSplit = fileUrl.split(prefix);
@@ -128,6 +126,7 @@ public class MinioDownloadService implements FileDownloadService {
 
 	@Override
 	public long getFileSize(String fileUrl) {
+		String prefix = minioServer + "/" + bucketName + "/";
 		log.info("[MINIO GET FILE SIZE] GET SIZE BEGIN. URL : {}", fileUrl);
 		String[] fileSplit = fileUrl.split(prefix);
 		String objectName = fileSplit[fileSplit.length - 1];
@@ -163,6 +162,7 @@ public class MinioDownloadService implements FileDownloadService {
 
 	@Override
 	public byte[] getFileStreamBytes(String fileUrl) {
+		String prefix = minioServer + "/" + bucketName + "/";
 		log.info("[MINIO FILE DOWNLOAD] URL : {}", fileUrl);
 		String[] fileSplit = fileUrl.split(prefix);
 		String objectName = fileSplit[fileSplit.length - 1];
