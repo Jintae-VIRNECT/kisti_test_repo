@@ -187,6 +187,7 @@ export default {
       originalShareData: {},
       // 돌려놓기시 사용할 원본 edit form 데이터
       originalEditData: {},
+      downloadFileMaxSize: 250,
     }
   },
   watch: {
@@ -250,7 +251,25 @@ export default {
         })
       }
     },
+    // 해당 프로젝트 파일 용량이 Max용량을 초과하는지 유무를 반환한다.
+    checkProjectFileSize() {
+      const isFileSizeOverThenMaxSize =
+        this.project.size / 1024 / 1024 > this.downloadFileMaxSize
+      if (isFileSizeOverThenMaxSize) {
+        this.$message.error({
+          message: this.$t('projects.info.message.downloadFailMaxSize', {
+            0: this.downloadFileMaxSize,
+          }),
+          duration: 4000,
+          showClose: true,
+        })
+        return false
+      }
+      return true
+    },
     async projectsDownload() {
+      if (!this.checkProjectFileSize()) return
+
       let loadingInstance = Loading.service({ fullscreen: true })
       try {
         const { url, fileName } = await projectService.downloadProjects([

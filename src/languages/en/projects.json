@@ -118,7 +118,8 @@
         "emptySelectMember": "Please select a designation member.",
         "deleteFailsPhrase": "The specified project file cannot be found or you do not have editing rights.",
         "sharePermissionRelease": "The sharing permission for that project has been lifted.​",
-        "editPermissionRelease": "Editing rights for that project have been revoked.​"
+        "editPermissionRelease": "Editing rights for that project have been revoked.​",
+        "downloadFailMaxSize": "The file cannot be downloaded because the file size exceeds {0}MB."
       }
     }
   }

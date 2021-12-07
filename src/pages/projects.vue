@@ -30,13 +30,6 @@
         </el-col>
         <el-col class="right">
           <el-button-group>
-            <el-button
-              @click="projectsDownload"
-              type="text"
-              :disabled="!canRemove"
-            >
-              <img src="~assets/images/icon/ic-file-download.svg" />
-            </el-button>
             <el-button @click="remove" type="text" :disabled="!canRemove">
               <img src="~assets/images/icon/ic-delete.svg" />
             </el-button>
@@ -233,25 +226,6 @@ export default {
         })
       }
       this.emitChangedSearchParams()
-    },
-    async projectsDownload() {
-      let loadingInstance = Loading.service({ fullscreen: true })
-      try {
-        const selectedProjects = this.$refs.table.selection.map(
-          project => project.uuid,
-        )
-        const { url, fileName } = await projectService.downloadProjects(
-          selectedProjects,
-        )
-        this.download(url, fileName)
-      } catch (e) {
-        this.$message.error({
-          message: this.$t('common.error'),
-          duration: 4000,
-          showClose: true,
-        })
-      }
-      loadingInstance.close()
     },
     /**
      * @description 데이터 조회 조건 초기화
