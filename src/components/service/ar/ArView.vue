@@ -133,6 +133,7 @@ export default {
         }
         this.SHOW_3D_CONTENT({})
         this.SET_AR_3D_SHARE_STATUS('')
+        this.SET_IS_3D_POSITION_PICKING(false)
       }
 
       //시작 시그널 전송 부분
@@ -160,7 +161,11 @@ export default {
     },
   },
   methods: {
-    ...mapMutations(['SHOW_3D_CONTENT', 'SET_AR_3D_SHARE_STATUS']),
+    ...mapMutations([
+      'SHOW_3D_CONTENT',
+      'SET_AR_3D_SHARE_STATUS',
+      'SET_IS_3D_POSITION_PICKING',
+    ]),
     ...mapActions(['showArImage', 'setAction']),
     receiveSignal(receive) {
       const data = JSON.parse(receive.data)
