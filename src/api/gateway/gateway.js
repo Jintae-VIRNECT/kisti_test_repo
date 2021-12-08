@@ -11,7 +11,7 @@ import { logger, debug } from 'utils/logger'
 import axios from '../axios'
 import errorList from './gateway.error.json'
 import networkError from './network.error.json'
-import { cookieClear } from 'utils/auth'
+import { clearCookie } from 'utils/auth'
 import qs from 'qs'
 import { TIMEOUT } from 'configs/env.config'
 
@@ -195,7 +195,7 @@ const errorHandler = function(err) {
       // case 8003:
       case 8005:
         // console.error(error.message)
-        cookieClear()
+        clearCookie()
         window.location.reload()
         break
       // case 'Network Error':
