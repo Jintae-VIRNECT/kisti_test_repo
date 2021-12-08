@@ -49,8 +49,8 @@ export let urlsFromConfigServer = {}
 /**
  * 메소드
  */
-export function setTokensToCookies(urls, response) {
-  const cookieOption = getCookieOption(urls, response.expireIn)
+export function setTokensToCookies(response) {
+  const cookieOption = getCookieOption(urlsFromConfigServer, response.expireIn)
   Cookies.set('accessToken', response.accessToken, cookieOption)
   Cookies.set('refreshToken', response.refreshToken, cookieOption)
   debug('TOKEN::', axios.defaults.headers)
