@@ -22,8 +22,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import com.virnect.download.application.download.AppService;
-import com.virnect.download.dto.request.AdminApkAppUploadRequest;
-import com.virnect.download.dto.request.AdminCommonAppUploadRequest;
+import com.virnect.download.dto.request.AdminAppUploadRequest;
 import com.virnect.download.dto.request.AppInfoUpdateRequest;
 import com.virnect.download.dto.request.AppSigningKeyRegisterRequest;
 import com.virnect.download.dto.request.AppUploadRequest;
@@ -115,43 +114,23 @@ public class AppController {
 		return ResponseEntity.ok(responseMessage);
 	}
 
-	@ApiOperation(value = "관리자 apk 앱 등록 API", notes = "apk 설치파일을 업로드 합니다.", tags = "onpremise-controller")
+	@ApiOperation(value = "관리자 앱 등록 API", notes = "설치파일을 업로드 합니다.", tags = "onpremise-controller")
 	@ApiImplicitParams({
 		@ApiImplicitParam(name = "uploadAppFile", value = "업로드 앱 파일", paramType = "form", dataType = "__file", required = true),
 		@ApiImplicitParam(name = "Authorization", value = "Authorization Header", required = true, dataType = "string", paramType = "header", defaultValue = "Bearer "),
 	})
-	@PostMapping("/register/apk")
+	@PostMapping("/register/admin")
 	public ResponseEntity<ApiResponse<AdminAppUploadResponse>> adminApkAppUploadRequestHandler(
-		@ModelAttribute @Valid AdminApkAppUploadRequest adminApkAppUploadRequest, BindingResult result
+		@ModelAttribute @Valid AdminAppUploadRequest adminAppUploadRequest, BindingResult result
 	) {
-		log.info("[UPLOAD APK APP] REQ : {}", adminApkAppUploadRequest.toString());
+		log.info("[UPLOAD APP] REQ : {}", adminAppUploadRequest.toString());
 		String userUUID = MDC.get("userUUID");
 		if (result.hasErrors() || StringUtils.isEmpty(userUUID)) {
 			result.getAllErrors().forEach(message -> log.error(PARAMETER_LOG_MESSAGE, message));
 			throw new AppServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
 		}
 		AdminAppUploadResponse responseMessage = appService.adminApplicationUploadAndRegister(
-			adminApkAppUploadRequest, userUUID);
-		return ResponseEntity.ok(new ApiResponse<>(responseMessage));
-	}
-
-	@ApiOperation(value = "관리자 일반 앱 등록 API", notes = "exe, appx, appxbundle 설치파일을 업로드 합니다.", tags = "onpremise-controller")
-	@ApiImplicitParams({
-		@ApiImplicitParam(name = "uploadAppFile", value = "업로드 앱 파일", paramType = "form", dataType = "__file", required = true),
-		@ApiImplicitParam(name = "Authorization", value = "Authorization Header", required = true, dataType = "string", paramType = "header", defaultValue = "Bearer "),
-	})
-	@PostMapping("/register/common")
-	public ResponseEntity<ApiResponse<AdminAppUploadResponse>> adminCommonAppUploadRequestHandler(
-		@ModelAttribute @Valid AdminCommonAppUploadRequest commonAppUploadRequest, BindingResult result
-	) {
-		log.info("[UPLOAD COMMON APP] REQ : {}", commonAppUploadRequest.toString());
-		String userUUID = MDC.get("userUUID");
-		if (result.hasErrors() || StringUtils.isEmpty(userUUID)) {
-			result.getAllErrors().forEach(message -> log.error(PARAMETER_LOG_MESSAGE, message));
-			throw new AppServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
-		}
-		AdminAppUploadResponse responseMessage = appService.adminApplicationUploadAndRegister(
-			commonAppUploadRequest, userUUID);
+			adminAppUploadRequest, userUUID);
 		return ResponseEntity.ok(new ApiResponse<>(responseMessage));
 	}
 }

@@ -34,8 +34,7 @@ import com.virnect.download.domain.AppUpdateStatus;
 import com.virnect.download.domain.Device;
 import com.virnect.download.domain.OS;
 import com.virnect.download.domain.Product;
-import com.virnect.download.dto.request.AdminApkAppUploadRequest;
-import com.virnect.download.dto.request.AdminCommonAppUploadRequest;
+import com.virnect.download.dto.request.AdminAppUploadRequest;
 import com.virnect.download.dto.request.AppInfoUpdateRequest;
 import com.virnect.download.dto.request.AppSigningKeyRegisterRequest;
 import com.virnect.download.dto.request.AppUploadRequest;
@@ -314,33 +313,49 @@ public class AppService {
 
 	@Transactional
 	public AdminAppUploadResponse adminApplicationUploadAndRegister(
-		AdminApkAppUploadRequest adminApkAppUploadRequest, String userUUID
+		AdminAppUploadRequest adminAppUploadRequest, String userUUID
 	) {
-		//1-1. 마스터 유저인지 체크
+		//1-1. 마스터 유저인지 검증
 		masterUserValidation(userUUID);
 
 		//1-2. product, os, device 검증
-		Product product = getProduct(adminApkAppUploadRequest.getProductName());
-		OS os = getOS(adminApkAppUploadRequest.getOperationSystem());
+		Product product = getProduct(adminAppUploadRequest.getProductName());
+		OS os = getOS(adminAppUploadRequest.getOperationSystem());
 		Device device = getDevice(
-			adminApkAppUploadRequest.getDeviceType(), adminApkAppUploadRequest.getDeviceModel(),
-			adminApkAppUploadRequest.getProductName()
+			adminAppUploadRequest.getDeviceType(), adminAppUploadRequest.getDeviceModel(),
+			adminAppUploadRequest.getProductName()
 		);
 
-		//1-3. Apk metadata 파싱
-		ApkMeta apkMeta = parsingAppInfo(adminApkAppUploadRequest.getUploadAppFile());
+		String applicationSignature = adminAppUploadRequest.getSigningKey();
+		ApkMeta apkMeta = null;
 
-		//1-4. 버전 유효성 검증
-		Optional<App> latestActiveApp = appRepository.getLatestVersionActiveAppInfoByPackageName(apkMeta.getPackageName());
-		latestActiveApp.ifPresent(app -> {
-			newAppVersionCodeValidation(apkMeta.getPackageName(), apkMeta.getVersionCode());
-			//구 버전은 inactive 처리
-			app.setAppStatus(AppStatus.INACTIVE);
-			appRepository.save(app);
-		});
+		//1-3. apk 파일 버전 유효성 검증
+		if (adminAppUploadRequest.isAndroidOS()) {
+			apkMeta = parsingAppInfo(adminAppUploadRequest.getUploadAppFile());
+			Optional<App> latestActiveApp = appRepository.getLatestVersionActiveAppInfoByPackageName(
+				apkMeta.getPackageName());
+			if (latestActiveApp.isPresent()) {
+				//version check
+				newAppVersionCodeValidation(apkMeta.getPackageName(), apkMeta.getVersionCode());
+				//signature
+				applicationSignature = latestActiveApp.get().getSignature();
+			}
+		}
+
+		//1-4. apk 제외한 파일 버전 유효성 검증
+		if (!adminAppUploadRequest.isAndroidOS()) {
+			Optional<App> latestActiveApp = appRepository.getLatestVersionActiveAppInfoByDeviceAndOs(device, os);
+			latestActiveApp.ifPresent(app -> {
+				if (StringUtils.isEmpty(adminAppUploadRequest.getVersionName())) {
+					throw new AppServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
+				}
+				//version check
+				newAppVersionCodeValidation(device, os, adminAppUploadRequest.getVersionCode());
+			});
+		}
 
 		//2-1. 파일 업로드
-		String appUploadUrl = fileUploadService.upload(adminApkAppUploadRequest.getUploadAppFile());
+		String appUploadUrl = fileUploadService.upload(adminAppUploadRequest.getUploadAppFile());
 
 		//2-2. 앱 정보 저장
 		App app = App.builder()
@@ -348,14 +363,14 @@ public class AppService {
 			.device(device)
 			.product(product)
 			.os(os)
-			.packageName(apkMeta.getPackageName())
-			.versionName(apkMeta.getVersionName())
-			.versionCode(apkMeta.getVersionCode())
+			.packageName(apkMeta == null ? null : apkMeta.getPackageName())
+			.versionName(apkMeta == null ? adminAppUploadRequest.getVersionName() : apkMeta.getVersionName())
+			.versionCode(apkMeta == null ? adminAppUploadRequest.getVersionCode() : apkMeta.getVersionCode())
 			.appUrl(appUploadUrl)
 			.imageUrl("")
-			.signature(adminApkAppUploadRequest.getSigningKey())
+			.signature(applicationSignature)
 			.appStatus(AppStatus.ACTIVE)
-			.appUpdateStatus(adminApkAppUploadRequest.getAppUpdateStatus())
+			.appUpdateStatus(AppUpdateStatus.REQUIRED)
 			.build();
 		appRepository.save(app);
 
@@ -363,12 +378,21 @@ public class AppService {
 		return responseMapper.appToAdminAppUploadResponse(app);
 	}
 
+	@Transactional
+	public void inactivePreviousApp(App app) {
+		app.setAppStatus(AppStatus.INACTIVE);
+		appRepository.save(app);
+	}
+
 	private void masterUserValidation(String userUUID) {
 		log.info("[REST - WORKSPACE SERVER][GET MY WORKSPACE LIST] request user uuid : {}", userUUID);
 		ApiResponse<WorkspaceInfoListResponse> apiResponse = workspaceRestService.getMyWorkspaceInfoList(
 			userUUID);
 		if (apiResponse.getCode() != 200 || CollectionUtils.isEmpty(apiResponse.getData().getWorkspaceList())) {
-			log.error("[REST - WORKSPACE SERVER][GET MY WORKSPACE LIST] response code : {}, response message : {}", apiResponse.getCode(), apiResponse.getMessage());
+			log.error(
+				"[REST - WORKSPACE SERVER][GET MY WORKSPACE LIST] response code : {}, response message : {}",
+				apiResponse.getCode(), apiResponse.getMessage()
+			);
 			throw new AppServiceException(ErrorCode.ERR_APP_UPLOAD_FAIL_WORKSPACE_INVALID_PERMISSION);
 		}
 		List<WorkspaceInfoResponse> workspaceList = apiResponse.getData().getWorkspaceList();
@@ -390,59 +414,13 @@ public class AppService {
 			.orElseThrow(() -> new AppServiceException(ErrorCode.ERR_APP_UPLOAD_FAIL_DEVICE_INFO_NOT_FOUND));
 	}
 
-	@Transactional
-	public AdminAppUploadResponse adminApplicationUploadAndRegister(
-		AdminCommonAppUploadRequest appUploadRequest, String userUUID
-	) {
-		//1-1. 마스터 유저인지 체크
-		masterUserValidation(userUUID);
-
-		//1-2. product, os, device 검증
-		Product product = getProduct(appUploadRequest.getProductName());
-		OS os = getOS(appUploadRequest.getOperationSystem());
-		Device device = getDevice(
-			appUploadRequest.getDeviceType(), appUploadRequest.getDeviceModel(), appUploadRequest.getProductName());
-
-		//1-3. 버전 유효성 검증
-		Optional<App> latestActiveApp = appRepository.getLatestVersionActiveAppInfoByDeviceAndOs(device, os);
-		latestActiveApp.ifPresent(app -> {
-			newAppVersionCodeValidation(device, os, appUploadRequest.getVersionCode());
-			//구 버전은 inactive 처리
-			app.setAppStatus(AppStatus.INACTIVE);
-			appRepository.save(app);
-		});
-
-		//2-1. 파일 업로드
-		String appUploadUrl = fileUploadService.upload(appUploadRequest.getUploadAppFile());
-
-		//2-2. 앱 정보 저장
-		App app = App.builder()
-			.uuid(generateAppUUID())
-			.device(device)
-			.product(product)
-			.os(os)
-			.packageName(null)
-			.versionName(appUploadRequest.getVersionName())
-			.versionCode(appUploadRequest.getVersionCode())
-			.appUrl(appUploadUrl)
-			.imageUrl("")
-			.signature(null)
-			.appStatus(AppStatus.ACTIVE)
-			.appUpdateStatus(AppUpdateStatus.OPTIONAL)
-			.build();
-		appRepository.save(app);
-
-		//2-3. 응답
-		return responseMapper.appToAdminAppUploadResponse(app);
-	}
-
 	private void newAppVersionCodeValidation(Device device, OS os, long versionCode) {
 		// 버전 코드 중복 체크 및 중복 시 예외 발생
-		if(appRepository.existAppVersionCode(device, os, versionCode)) {
+		if (appRepository.existAppVersionCode(device, os, versionCode)) {
 			throw new AppServiceException(ErrorCode.ERR_APP_UPLOAD_FAIL_DUPLICATE_VERSION);
 		}
 		// 현재 앱 버전 코드가 기존 최신 버전 보다 낮은 버전 코드의 경우 예외 발생
-		if(appRepository.isLowerThanPreviousAppVersionCode(device, os, versionCode)) {
+		if (appRepository.isLowerThanPreviousAppVersionCode(device, os, versionCode)) {
 			throw new AppServiceException(ErrorCode.ERR_APP_UPLOAD_FAIL_VERSION_IS_LOWER);
 		}
 	}
