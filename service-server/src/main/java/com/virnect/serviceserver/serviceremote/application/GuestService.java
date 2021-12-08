@@ -3,6 +3,7 @@ package com.virnect.serviceserver.serviceremote.application;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang.StringUtils;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
 
@@ -19,7 +20,6 @@ import com.virnect.data.domain.member.Member;
 import com.virnect.data.domain.room.Room;
 import com.virnect.data.dto.request.guest.GuestEventRequest;
 import com.virnect.data.dto.request.room.JoinRoomRequest;
-import com.virnect.data.dto.response.ResultResponse;
 import com.virnect.data.dto.response.guest.GuestInfoResponse;
 import com.virnect.data.dto.response.room.RoomInfoResponse;
 import com.virnect.data.dto.response.room.RoomResponse;
@@ -27,8 +27,10 @@ import com.virnect.data.dto.rest.GuestAccountInfoResponse;
 import com.virnect.data.error.ErrorCode;
 import com.virnect.data.global.common.ApiResponse;
 import com.virnect.data.infra.utils.LogMessage;
-import com.virnect.mediaserver.core.EndReason;
 import com.virnect.serviceserver.serviceremote.dao.SessionDataRepository;
+import com.virnect.serviceserver.serviceremote.dto.constraint.PushConstants;
+import com.virnect.serviceserver.serviceremote.event.MessageEvent;
+import com.virnect.serviceserver.serviceremote.event.MessageRequest;
 
 @Slf4j
 @Service
@@ -46,6 +48,8 @@ public class GuestService {
 	private final MemberRepository memberRepository;
 	private final SessionDataRepository sessionDataRepository;
 	private final ServiceSessionManager serviceSessionManager;
+
+	private final ApplicationEventPublisher eventPublisher;
 
 	/*public ApiResponse<GuestInviteUrlResponse> createGuestInviteUrl(String workspaceId, String sessionId) {
 
@@ -168,25 +172,39 @@ public class GuestService {
 		return header.split(" *,*")[0];
 	}
 
-	public ApiResponse<ResultResponse> guestEvent(GuestEventRequest guestEvent) {
-		ResultResponse resultResponse = new ResultResponse();
+	public void guestEvent(GuestEventRequest guestEvent) {
 		switch (guestEvent.getEvent()) {
 			case DELETED_ACCOUNT:
 				Member guestMember = memberRepository.findGuestMemberByWorkspaceIdAndUuid(
 					guestEvent.getWorkspaceId(),
 					guestEvent.getUserId()
 				).orElse(null);
-				if (ObjectUtils.isEmpty(guestMember)) {
-					return new ApiResponse<>(ErrorCode.ERR_ROOM_MEMBER_NOT_FOUND);
-				}
-				if (serviceSessionManager.evictParticipant(
-					guestMember.getSessionId(), guestMember.getConnectionId(), EndReason.deletedAccount)
-				) {
-					resultResponse.setResult(true);
-					resultResponse.setUserId(guestEvent.getUserId());
+				if (!ObjectUtils.isEmpty(guestMember)) {
+					eventPublisher.publishEvent(
+						new MessageEvent(
+							this,
+							buildMessageRequest(
+								guestMember.getSessionId(),
+								guestMember.getConnectionId(),
+								PushConstants.PUSH_SIGNAL_SYSTEM,
+								guestEvent.getEvent().toString()
+							)
+						)
+					);
 				}
 				break;
 		}
-		return new ApiResponse<>(resultResponse);
 	}
+
+	private MessageRequest buildMessageRequest(
+		String sessionId, String connectionId, String signalType, String message
+	) {
+		return MessageRequest.builder()
+			.sessionId(sessionId)
+			.connectionId(connectionId)
+			.signalType(signalType)
+			.message(message)
+			.build();
+	}
+
 }
