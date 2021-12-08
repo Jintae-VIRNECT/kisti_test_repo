@@ -29,20 +29,23 @@ const intervalTime = 5 * 60 * 1000 // 5 minutes
 const renewvalTime = 10 * 60 // 5 minutes
 let interval
 
+const domainRegex =
+  /^(((http(s?)):\/\/)?)([0-9a-zA-Z-]+\.)+[a-zA-Z]{2,6}(:[0-9]+)?(\/\S*)?/
+
 /**
  * 메소드
  */
-function setTokensToCookies(response) {
-  const cookieOption = {
-    expires: response.expireIn / 3600000,
-    domain:
-      location.hostname.split('.').length === 3
-        ? location.hostname.replace(/.*?\./, '')
-        : location.hostname,
-  }
-  Cookies.set('accessToken', response.accessToken, cookieOption)
-  Cookies.set('refreshToken', response.refreshToken, cookieOption)
-  debug('TOKEN::', axios.defaults.headers)
+function setTokensToCookies(urls, response) {
+  Cookies.set(
+    'accessToken',
+    response.accessToken,
+    getCookieOption(urls, response.expireIn),
+  )
+  Cookies.set(
+    'refreshToken',
+    response.refreshToken,
+    getCookieOption(urls, response.expireIn),
+  )
 }
 
 const tokenInterval = async () => {
@@ -61,7 +64,7 @@ const tokenInterval = async () => {
     let response = await tokenRequest(params)
 
     if (response.refreshed === true) {
-      setTokensToCookies(response)
+      setTokensToCookies(window.urls, response)
     }
   }
 }
@@ -141,13 +144,29 @@ const getWsSettings = async () => {
 }
 
 export const cookieClear = () => {
-  if (/\.?virnect\.com/.test(location.href)) {
-    Cookies.remove('accessToken', { domain: '.virnect.com' })
-    Cookies.remove('refreshToken', { domain: '.virnect.com' })
-  } else {
-    Cookies.remove('accessToken')
-    Cookies.remove('refreshToken')
-  }
+  Cookies.remove('accessToken', getCookieOption(window.urls))
+  Cookies.remove('refreshToken', getCookieOption(window.urls))
+}
+
+const getCookieOption = (urls, expire) => {
+  const domain = urls.domain
+    ? urls.domain
+    : location.hostname.replace(/.*?\./, '')
+
+  const url = domainRegex.test(location.hostname) ? domain : location.hostname
+  if (expire)
+    return {
+      secure: true,
+      sameSite: 'None',
+      expires: expire / 3600000,
+      domain: url,
+    }
+  else
+    return {
+      secure: true,
+      sameSite: 'None',
+      domain: url,
+    }
 }
 
 /**
