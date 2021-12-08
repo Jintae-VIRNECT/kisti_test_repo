@@ -85,6 +85,8 @@ const sender = async function(constant, params, headers = {}, custom) {
         parameter.append(param, params[param])
       }
       debug(option)
+    } else if (custom && custom.authorization === false) {
+      delete axios.defaults.headers.common['Authorization']
     } else {
       option.headers['Content-Type'] = 'application/json'
     }

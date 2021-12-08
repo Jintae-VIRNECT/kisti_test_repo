@@ -147,7 +147,13 @@ export default {
   SEND_MAIL: ['POST', '/messages/mail'],
 
   /* 다운로드 서버 */
-  LATEST_APP_INFO: ['GET', '/download/list/{productName}'],
+  LATEST_APP_INFO: [
+    'GET',
+    '/download/list/{productName}',
+    {
+      authorization: false,
+    },
+  ],
   DOWNLOAD_APP: ['GET', '/download/app/{uuid}'],
 
   /* WORKSPACE SUB GROUP */
