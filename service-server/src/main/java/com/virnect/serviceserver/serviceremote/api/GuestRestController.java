@@ -21,7 +21,6 @@ import lombok.extern.slf4j.Slf4j;
 import com.virnect.data.domain.member.MemberType;
 import com.virnect.data.dto.request.guest.GuestEventRequest;
 import com.virnect.data.dto.request.room.JoinRoomRequest;
-import com.virnect.data.dto.response.ResultResponse;
 import com.virnect.data.dto.response.guest.GuestInfoResponse;
 import com.virnect.data.dto.response.room.RoomInfoResponse;
 import com.virnect.data.dto.response.room.RoomResponse;
@@ -107,7 +106,7 @@ public class GuestRestController {
 
 	@ApiOperation(value = "Guest member event", notes = "게스트 멤버 이벤트")
 	@PostMapping(value = "guest/event")
-	public ResponseEntity<ApiResponse<ResultResponse>> guestMemberEvent(
+	public void guestMemberEvent(
 		@ModelAttribute @Valid GuestEventRequest guestEvent,
 		BindingResult result
 	) {
@@ -121,8 +120,7 @@ public class GuestRestController {
 		if (result.hasErrors()) {
 			throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
 		}
-		ApiResponse<ResultResponse> responseData = guestService.guestEvent(guestEvent);
-		return ResponseEntity.ok(responseData);
+		guestService.guestEvent(guestEvent);
 	}
 
 }
