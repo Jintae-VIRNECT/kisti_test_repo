@@ -826,89 +826,10 @@ public abstract class WorkspaceUserService {
 	}
 
 	@Transactional
-	public boolean deleteWorkspaceMemberAccount(
+	public abstract boolean deleteWorkspaceMemberAccount(
 		String workspaceId, MemberAccountDeleteRequest
 		memberAccountDeleteRequest
-	) {
-		//1-1. 삭제하려는 유저가 전용 계정인지 체크
-		UserInfoRestResponse deleteUserInfo = userRestServiceHandler.getUserRequest(
-			memberAccountDeleteRequest.getUserId());
-		if (deleteUserInfo.isEmtpy()) {
-			throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_USER_NOT_FOUND);
-		}
-		if (deleteUserInfo.getUserType() != UserType.WORKSPACE_ONLY_USER) {
-			throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_USER_ACCOUNT_DELETE_FAIL);
-		}
-		//1-2. 마스터 비밀번호를 올바르게 입력했는지 체크
-		Workspace workspace = workspaceRepository.findByUuid(workspaceId)
-			.orElseThrow(() -> new WorkspaceException(ErrorCode.ERR_WORKSPACE_NOT_FOUND));
-		UserInfoRestResponse masterUserInfo = userRestServiceHandler.getUserRequest(workspace.getUserId());
-		if (masterUserInfo.isEmtpy()) {
-			throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_USER_NOT_FOUND);
-		}
-		UserInfoAccessCheckRequest userInfoAccessCheckRequest = new UserInfoAccessCheckRequest(
-			masterUserInfo.getEmail(), memberAccountDeleteRequest.getRequestUserPassword());
-		ApiResponse<UserInfoAccessCheckResponse> apiResponse = userRestServiceHandler.accessCheckUserRequest(
-			masterUserInfo.getUuid(), userInfoAccessCheckRequest);
-		if (apiResponse.getCode() == 4001) {
-			throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_USER_ACCOUNT_DELETE_ACCESS);
-		}
-		if (apiResponse.getCode() != 200) {
-			throw new WorkspaceException(ErrorCode.ERR_UNEXPECTED_SERVER_ERROR);
-		}
-
-		//1-3. 요청한 사람의 권한 체크
-		WorkspaceUserPermission requestUserPermission = workspaceUserPermissionRepository.findWorkspaceUserPermission(
-			workspaceId, memberAccountDeleteRequest.getRequestUserId())
-			.orElseThrow(() -> new WorkspaceException(ErrorCode.ERR_WORKSPACE_NOT_FOUND));
-		WorkspaceUserPermission deleteUserPermission = workspaceUserPermissionRepository.findWorkspaceUserPermission(
-			workspaceId, memberAccountDeleteRequest.getUserId())
-			.orElseThrow(() -> new WorkspaceException(ErrorCode.ERR_WORKSPACE_NOT_FOUND));
-
-		// 본인은 삭제할 수 없다.
-		if (memberAccountDeleteRequest.isUserSelfUpdateRequest()) {
-			throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_INVALID_PERMISSION);
-		}
-
-		// 요청한 사람이 마스터 또는 매니저여야 한다.
-		if (!isMasterOrManagerRole(requestUserPermission.getWorkspaceRole())) {
-			throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_INVALID_PERMISSION);
-		}
-		// 매니저 유저는 매니저 유저를 삭제할 수 없다.
-		if (isBothManagerRole(requestUserPermission.getWorkspaceRole(), deleteUserPermission.getWorkspaceRole())) {
-			throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_INVALID_PERMISSION);
-		}
-
-		//2. license-sever revoke api 요청
-		MyLicenseInfoListResponse myLicenseInfoListResponse = getMyLicenseInfoRequestHandler(
-			workspaceId, memberAccountDeleteRequest.getUserId());
-		if (!myLicenseInfoListResponse.getLicenseInfoList().isEmpty()) {
-			for (MyLicenseInfoResponse myLicenseInfoResponse : myLicenseInfoListResponse.getLicenseInfoList()) {
-				revokeWorkspaceLicenseToUser(
-					workspaceId, memberAccountDeleteRequest.getUserId(), myLicenseInfoResponse.getProductName());
-			}
-		}
-
-		//3. user-server에 멤버 삭제 api 요청
-		MemberDeleteRequest memberDeleteRequest = new MemberDeleteRequest();
-		memberDeleteRequest.setMemberUserUUID(memberAccountDeleteRequest.getUserId());
-		memberDeleteRequest.setMasterUUID(workspace.getUserId());
-		UserDeleteRestResponse userDeleteRestResponse = userRestServiceHandler.deleteWorkspaceOnlyUserRequest(
-			memberDeleteRequest);
-		if (userDeleteRestResponse.isEmpty()) {
-			throw new WorkspaceException(ErrorCode.ERR_UNEXPECTED_SERVER_ERROR);
-		}
-
-		//4. workspace-sever 권한 및 소속 해제
-		workspaceUserPermissionRepository.deleteAllByWorkspaceUser(deleteUserPermission.getWorkspaceUser());
-		workspaceUserRepository.deleteById(deleteUserPermission.getWorkspaceUser().getId());
-
-		log.info(
-			"[DELETE WORKSPACE MEMBER ACCOUNT] Workspace delete user success. Request User UUID : [{}], Delete User UUID : [{}], DeleteDate : [{}]",
-			memberAccountDeleteRequest.getRequestUserId(), memberAccountDeleteRequest.getUserId(), LocalDateTime.now()
-		);
-		return true;
-	}
+	);
 
 	@Transactional
 	public WorkspaceMemberPasswordChangeResponse memberPasswordChange(
@@ -1148,7 +1069,7 @@ public abstract class WorkspaceUserService {
 	 * @param workspace     - 검증 대상 워크스페이스 정보
 	 * @param requestUserId - 계정 생성 요청 유저 식별자
 	 */
-	private void checkGuestMemberManagementPermission(Workspace workspace, String requestUserId) {
+	public void checkGuestMemberManagementPermission(Workspace workspace, String requestUserId) {
 		WorkspaceUserPermission requestUserPermission = workspaceUserPermissionRepository.findByWorkspaceUser_WorkspaceAndWorkspaceUser_UserId(
 			workspace, requestUserId).orElseThrow(() -> new WorkspaceException(ErrorCode.ERR_WORKSPACE_USER_NOT_FOUND));
 		Role requestUserRole = requestUserPermission.getWorkspaceRole().getRole();
@@ -1219,65 +1140,10 @@ public abstract class WorkspaceUserService {
 	 * @param memberGuestDeleteRequest - 삭제 대상 유저 및 삭제 요청 유저 정보
 	 * @return - 삭제 결과
 	 */
-	public MemberSeatDeleteResponse deleteWorkspaceMemberSeat(
+	public abstract MemberSeatDeleteResponse deleteWorkspaceMemberSeat(
 		String workspaceId, MemberGuestDeleteRequest
 		memberGuestDeleteRequest
-	) {
-		//1-1. 요청한 사람의 권한 체크
-		Workspace workspace = workspaceRepository.findByUuid(workspaceId)
-			.orElseThrow(() -> new WorkspaceException(ErrorCode.ERR_WORKSPACE_NOT_FOUND));
-		checkGuestMemberManagementPermission(workspace, memberGuestDeleteRequest.getRequestUserId());
-
-		//1-2. 요청받은 유저가 게스트 유저인지 체크
-		WorkspaceUserPermission deleteUserPermission = workspaceUserPermissionRepository.findByWorkspaceUser_WorkspaceAndWorkspaceUser_UserId(
-			workspace, memberGuestDeleteRequest.getUserId())
-			.orElseThrow(() -> new WorkspaceException(ErrorCode.ERR_WORKSPACE_USER_NOT_FOUND));
-		if (deleteUserPermission.getWorkspaceRole().getRole() != Role.GUEST) {
-			throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_GUEST_USER_DELETE);
-		}
-		UserInfoRestResponse userInfoRestResponse = userRestServiceHandler.getUserRequest(
-			memberGuestDeleteRequest.getUserId());
-		if (userInfoRestResponse.isEmtpy()) {
-			throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_USER_NOT_FOUND);
-		}
-		if (userInfoRestResponse.getUserType() != UserType.GUEST_USER) {
-			throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_GUEST_USER_DELETE);
-		}
-
-        //2. remote 협업 종료를 위해 게스트 삭제 API 호출
-        MyLicenseInfoListResponse myLicenseInfoListResponse = getMyLicenseInfoRequestHandler(
-                workspaceId, memberGuestDeleteRequest.getUserId());
-        if (myLicenseInfoListResponse.isHaveRemoteLicense()) {
-            remoteRestService.sendGuestUserDeletedEvent("DELETED_ACCOUNT", memberGuestDeleteRequest.getUserId(), workspaceId);
-            log.info("[REST - RM_SERVICE] Send guest user deleted event. deleted userId : {}, workspaceId : {}", memberGuestDeleteRequest.getUserId(), workspaceId);
-        }
-
-
-		//3. 라이선스 해제 요청
-		if (!myLicenseInfoListResponse.isEmpty()) {
-			myLicenseInfoListResponse.getLicenseInfoList()
-				.forEach(myLicenseInfoResponse -> revokeWorkspaceLicenseToUser(workspaceId,
-					memberGuestDeleteRequest.getUserId(), myLicenseInfoResponse.getProductName()
-				));
-		}
-
-		//4. 게스트 유저 삭제 요청
-		GuestMemberDeleteRequest guestMemberDeleteRequest = new GuestMemberDeleteRequest();
-		guestMemberDeleteRequest.setMasterUUID(workspace.getUserId());
-		guestMemberDeleteRequest.setGuestUserUUID(deleteUserPermission.getWorkspaceUser().getUserId());
-		UserDeleteRestResponse userDeleteRestResponse = userRestServiceHandler.deleteGuestUserRequest(
-			guestMemberDeleteRequest);
-		if (userDeleteRestResponse.isEmpty()) {
-			throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_GUEST_USER_DELETE);
-		}
-
-		//5. 웤스 서버에서 삭제
-		WorkspaceUser workspaceUser = deleteUserPermission.getWorkspaceUser();
-		workspaceUserPermissionRepository.delete(deleteUserPermission);
-		workspaceUserRepository.delete(workspaceUser);
-
-		return new MemberSeatDeleteResponse(true, memberGuestDeleteRequest.getUserId(), LocalDateTime.now());
-	}
+	);
 
 	/**
 	 * 전용계정, 게스트 계정 프로필 이미지 수정
