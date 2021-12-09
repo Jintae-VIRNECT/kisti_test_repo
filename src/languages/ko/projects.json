@@ -120,6 +120,10 @@
         "sharePermissionRelease": "해당 프로젝트의 공유 권한이 해제되었습니다.​",
         "editPermissionRelease": "해당 프로젝트의 편집 권한이 해제되었습니다.​",
         "downloadFailMaxSize": "파일용량이 {0}MB 초과되어 파일을 다운로드할  수 없습니다."
+      },
+      "download": {
+        "title": "파일 다운로드 중",
+        "desc": "선택하신 파일을 다운로드 하는 중입니다.<br>완료될 때까지 브라우저를 종료하지 마세요."
       }
     }
   }

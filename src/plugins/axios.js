@@ -5,6 +5,7 @@ import { context } from '@/plugins/context'
 
 let axios = null
 let fileAxios = null
+let originalAxiosTimeout
 /**
  * Api gateway
  * @param {String} name
@@ -15,7 +16,7 @@ export async function api(name, option = {}) {
     throw new Error(`API not found '${name}'`)
   }
   let [method, uri] = URI[name]
-  let { route, params, headers } = option
+  let { route, params, headers, timeout = originalAxiosTimeout } = option
 
   // replace route
   method = method.toLowerCase()
@@ -43,6 +44,9 @@ export async function api(name, option = {}) {
       Authorization: `Bearer ${accessToken}`,
     }
   }
+
+  axios.defaults.timeout =
+    timeout === originalAxiosTimeout ? originalAxiosTimeout : timeout
 
   try {
     const response = await axios[method](uri, params, { headers })
@@ -89,7 +93,11 @@ export async function fileDownloadApi(name, option = {}) {
     headers,
     responseType = undefined,
     contentType = fileAxios.defaults.headers['Content-Type'],
+    onDownloadProgress = undefined,
+    cancelEvent = undefined,
   } = option
+  // axios cancel
+  const CancelToken = fileAxios.CancelToken
 
   // replace route
   method = method.toLowerCase()
@@ -117,8 +125,16 @@ export async function fileDownloadApi(name, option = {}) {
       Authorization: `Bearer ${accessToken}`,
     }
   }
+
+  // file options
   if (responseType) {
     fileAxios.defaults.responseType = responseType
+  }
+  if (onDownloadProgress) {
+    fileAxios.defaults.onDownloadProgress = onDownloadProgress
+  }
+  if (cancelEvent) {
+    fileAxios.defaults.cancelToken = new CancelToken(cancelEvent)
   }
   fileAxios.defaults.headers['Content-Type'] = contentType
 
@@ -153,6 +169,11 @@ export async function fileDownloadApi(name, option = {}) {
       throw error
     }
   } catch (e) {
+    // cancel
+    if (fileAxios.isCancel(e)) {
+      e.code = 'cancel'
+      throw e
+    }
     if (context.$config.DEBUG) console.error(`URL: ${uri}`)
     // timeout
     if (e.code === 'ECONNABORTED') {
@@ -189,13 +210,14 @@ export default function ({ $config, $axios }, inject) {
   })
   fileAxios = $axios.create({
     baseURL: $config.API_GATEWAY_URL,
-    timeout: 600000,
+    timeout: 300000,
     headers: { 'Content-Type': 'application/octet-stream' },
     httpsAgent: new https.Agent({
       rejectUnauthorized: false,
     }),
     withCredentials: /(staging|production)/.test($config.VIRNECT_ENV),
   })
+  originalAxiosTimeout = $config.API_TIMEOUT
 
   /**
    * Api gateway

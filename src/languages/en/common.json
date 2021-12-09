@@ -17,7 +17,12 @@
     "plan": "Plan",
     "message": {
       "notAllowFileExtension": "Unsupported file type.",
-      "notAllowFileSize": "Unsupported file size."
+      "notAllowFileSize": "Unsupported file size.",
+      "fileRequestCancelDesc": "Are you sure you want to cancel the file request?",
+      "fileRequestCanceTitle": "Cancel file request",
+      "fileDownloadCancelTitle": "Cancel file download",
+      "fileUploadCancelTitle": "Cancel file upload",
+      "fileRequestCancel": "The file request was canceled."
     },
     "apply": "Apply",
     "error": "Request failed. please try again later.",

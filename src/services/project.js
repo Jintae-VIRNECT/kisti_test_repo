@@ -133,9 +133,10 @@ export default {
   /**
    * 프로젝트 다운로드
    * @param {Array} projectUUIDList
+   * @param {requestCallback} onDownloadProgress - 다운로드 퍼센테이지
    * @returns {Object} url 파일 다운로드, fileName 파일명
    */
-  async downloadProjects(projectUUIDList) {
+  async downloadProjects(projectUUIDList, onDownloadProgress, cancelEvent) {
     return await fileDownloadApi('PROJECT_DOWNLOAD', {
       params: {
         userUUID: myProfileGetter().uuid,
@@ -143,6 +144,8 @@ export default {
         projectUUIDList: projectUUIDList.join(','),
       },
       responseType: 'blob',
+      onDownloadProgress,
+      cancelEvent,
     })
   },
 }

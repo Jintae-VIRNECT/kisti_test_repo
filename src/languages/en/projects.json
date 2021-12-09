@@ -120,6 +120,10 @@
         "sharePermissionRelease": "The sharing permission for that project has been lifted.​",
         "editPermissionRelease": "Editing rights for that project have been revoked.​",
         "downloadFailMaxSize": "The file cannot be downloaded because the file size exceeds {0}MB."
+      },
+      "download": {
+        "title": "Downloading file",
+        "desc": "The selected file is being downloaded.<br>Do not close your browser until finished."
       }
     }
   }

@@ -85,6 +85,14 @@
       </el-col>
       <!-- 오른쪽 Tabs 끝 -->
     </el-row>
+    <FileProgressModal
+      :visible.sync="showProgressModal"
+      :progress="progress"
+      :title="$t('projects.info.download.title')"
+      :desc="$t('projects.info.download.desc')"
+      cancelTitle="common.message.fileDownloadCancelTitle"
+      @cancel="cancelFileUpload"
+    />
   </el-dialog>
 </template>
 
@@ -94,7 +102,6 @@ import workspaceService from '@/services/workspace'
 import { memberRoleFilter } from '@/models/project/Project'
 import filters from '@/mixins/filters'
 import utils from '@/mixins/utils'
-import { Loading } from 'element-ui'
 import { mapGetters } from 'vuex'
 
 export default {
@@ -188,6 +195,11 @@ export default {
       // 돌려놓기시 사용할 원본 edit form 데이터
       originalEditData: {},
       downloadFileMaxSize: 250,
+      // 프로그래스바 모달창에 사용될 데이터.
+      progress: 0,
+      showProgressModal: false,
+      // axios 취소 인스턴스
+      cancel: () => {},
     }
   },
   watch: {
@@ -267,23 +279,47 @@ export default {
       }
       return true
     },
+    // 프로그래스바 상태 init 메서드
+    initProgressStatus(isStart) {
+      this.loading = isStart
+      this.showProgressModal = isStart
+      this.progress = 0
+    },
+    // mars 파일 다운로드 메서드
     async projectsDownload() {
+      // 최대 용량 초과시, return
       if (!this.checkProjectFileSize()) return
 
-      let loadingInstance = Loading.service({ fullscreen: true })
+      this.initProgressStatus(true)
       try {
-        const { url, fileName } = await projectService.downloadProjects([
-          this.project.uuid,
-        ])
-        this.download(url, fileName)
+        const onDownloadProgress = event => {
+          this.progress = Math.round((100 * event.loaded) / event.total)
+        }
+        const cancelEvent = c => {
+          this.cancel = c
+        }
+        const { url, fileName } = await projectService.downloadProjects(
+          [this.project.uuid],
+          onDownloadProgress,
+          cancelEvent,
+        )
+        setTimeout(() => this.download(url, fileName), 500)
       } catch (e) {
+        const message =
+          e.code === 'cancel'
+            ? this.$t('common.message.fileRequestCancel')
+            : this.$t('common.error')
         this.$message.error({
-          message: this.$t('common.error'),
+          message,
           duration: 4000,
           showClose: true,
         })
       }
-      loadingInstance.close()
+      this.initProgressStatus(false)
+    },
+    // 다운로드 취소 버튼 클릭시, 실행시킬 메서드
+    async cancelFileUpload() {
+      this.cancel()
     },
     // 공유/편집의 드롭메뉴를 지정하고, 지정멤버가 있을 경우에 지정한 멤버들을 드롭메뉴에 추가하니다
     setSelectOptionsAndSelectMembers() {
