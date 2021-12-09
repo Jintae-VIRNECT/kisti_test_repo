@@ -6,6 +6,8 @@ import lombok.Setter;
 
 import javax.validation.constraints.NotBlank;
 
+import org.apache.commons.lang.StringUtils;
+
 /**
  * Project: PF-Workspace
  * DATE: 2020-10-13
@@ -21,7 +23,7 @@ public class MemberAccountDeleteRequest {
 	private String requestUserId;
 	@ApiModelProperty(value = "요청 유저 패스워드", required = true, example = "test1234", position = 1)
 	//@NotBlank
-	private String requestUserPassword; //3Q 전용계정 타입 추가되면서 기획 상 사라짐.
+	private String requestUserPassword; //3Q 전용계정 타입 추가되면서 기획 상 사라짐. 다시 생김..
 	@ApiModelProperty(value = "계정 삭제 대상 유저 식별자", required = true, example = "8NZQpwbIoniLQ", position = 2)
 	@NotBlank
 	private String userId;
@@ -29,5 +31,14 @@ public class MemberAccountDeleteRequest {
 	@ApiModelProperty(hidden = true)
 	public boolean isUserSelfUpdateRequest() {
 		return requestUserId.equals(userId);
+	}
+
+	@Override
+	public String toString() {
+		return "MemberAccountDeleteRequest{" +
+			"requestUserId='" + requestUserId + '\'' +
+			", requestUserPassword='" + StringUtils.repeat("*",requestUserPassword.length()) + '\'' +
+			", userId='" + userId + '\'' +
+			'}';
 	}
 }

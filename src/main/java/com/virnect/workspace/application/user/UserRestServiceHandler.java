@@ -178,7 +178,7 @@ public class UserRestServiceHandler {
 			);
 			return UserDeleteRestResponse.EMPTY;
 		}
-		log.error(
+		log.info(
 			"[{}][DELETE WORKSPACE_ONLY_USER] request : {}, response code : {}, response data : {}",
 			PREFIX_USER_REST_SERVICE,
 			memberDeleteRequest.toString(), apiResponse.getCode(), apiResponse.getData()
