@@ -187,7 +187,7 @@ export const CAPTURE_PERMISSION = {
  */
 export const SYSTEM = {
   EVICT: 'evict',
-  DELETED_ACCOUNT: 'DELETED_ACCOUNT',
+  DELETED_ACCOUNT: 'deletedAccount',
 }
 
 /**
