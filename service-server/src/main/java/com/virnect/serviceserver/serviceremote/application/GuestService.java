@@ -16,9 +16,8 @@ import com.virnect.data.application.account.AccountRestService;
 import com.virnect.data.application.workspace.WorkspaceRestService;
 import com.virnect.data.dao.member.MemberRepository;
 import com.virnect.data.dao.room.RoomRepository;
-import com.virnect.data.domain.member.Member;
 import com.virnect.data.domain.room.Room;
-import com.virnect.data.dto.request.guest.GuestEventRequest;
+import com.virnect.data.dto.request.guest.EventRequest;
 import com.virnect.data.dto.request.room.JoinRoomRequest;
 import com.virnect.data.dto.response.guest.GuestInfoResponse;
 import com.virnect.data.dto.response.room.RoomInfoResponse;
@@ -30,7 +29,6 @@ import com.virnect.data.infra.utils.LogMessage;
 import com.virnect.serviceserver.serviceremote.dao.SessionDataRepository;
 import com.virnect.serviceserver.serviceremote.dto.constraint.PushConstants;
 import com.virnect.serviceserver.serviceremote.event.MessageEvent;
-import com.virnect.serviceserver.serviceremote.event.MessageRequest;
 
 @Slf4j
 @Service
@@ -172,39 +170,14 @@ public class GuestService {
 		return header.split(" *,*")[0];
 	}
 
-	public void guestEvent(GuestEventRequest guestEvent) {
-		switch (guestEvent.getEvent()) {
-			case DELETED_ACCOUNT:
-				Member guestMember = memberRepository.findGuestMemberByWorkspaceIdAndUuid(
-					guestEvent.getWorkspaceId(),
-					guestEvent.getUserId()
-				).orElse(null);
-				if (!ObjectUtils.isEmpty(guestMember)) {
-					eventPublisher.publishEvent(
-						new MessageEvent(
-							this,
-							buildMessageRequest(
-								guestMember.getSessionId(),
-								guestMember.getConnectionId(),
-								PushConstants.PUSH_SIGNAL_SYSTEM,
-								guestEvent.getEvent().toString()
-							)
-						)
-					);
-				}
-				break;
-		}
-	}
-
-	private MessageRequest buildMessageRequest(
-		String sessionId, String connectionId, String signalType, String message
-	) {
-		return MessageRequest.builder()
-			.sessionId(sessionId)
-			.connectionId(connectionId)
-			.signalType(signalType)
-			.message(message)
-			.build();
+	public void guestEvent(EventRequest eventRequest) {
+		eventPublisher.publishEvent(
+			new MessageEvent(
+				this,
+				PushConstants.PUSH_SIGNAL_SYSTEM,
+				eventRequest
+			)
+		);
 	}
 
 }

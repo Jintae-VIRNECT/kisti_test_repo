@@ -10,7 +10,7 @@ import com.virnect.data.global.validation.CustomEnumValid;
 
 @Getter
 @Setter
-public class GuestEventRequest {
+public class EventRequest {
 
 	@CustomEnumValid(enumClass = EventType.class)
 	private EventType event;
