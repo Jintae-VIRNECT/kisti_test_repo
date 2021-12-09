@@ -4,10 +4,13 @@ import org.springframework.context.ApplicationEvent;
 
 import lombok.Getter;
 
+import com.virnect.data.dto.request.guest.EventRequest;
+
 @Getter
 public class MessageEvent extends ApplicationEvent {
 
-	private MessageRequest messageRequest;
+	private String signalType;
+	private EventRequest eventRequest;
 
 	/**
 	 * Create a new {@code ApplicationEvent}.
@@ -16,9 +19,11 @@ public class MessageEvent extends ApplicationEvent {
 	 */
 	public MessageEvent(
 		Object source,
-		MessageRequest messageRequest
+		String signalType,
+		EventRequest eventRequest
 	) {
 		super(source);
-		this.messageRequest = messageRequest;
+		this.signalType = signalType;
+		this.eventRequest = eventRequest;
 	}
 }
