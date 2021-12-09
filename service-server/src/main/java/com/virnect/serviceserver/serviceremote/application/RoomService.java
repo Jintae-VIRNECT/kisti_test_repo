@@ -817,6 +817,12 @@ public class RoomService {
 			//sessionService.setMemberHistory(memberHistory);
 			roomHistory.getMemberHistories().add(memberHistory);
 
+			accessStatusService.saveAccessStatus(
+				roomMember.getWorkspaceId() + "_" + roomMember.getUuid(),
+				AccessType.LOGIN,
+				roomMember.getUuid()
+			);
+
 			//delete member
 			memberRepository.delete(roomMember);
 		}
@@ -861,6 +867,7 @@ public class RoomService {
 			);
 			fileService.removeFiles(workspaceId, sessionId);
 		}
+
 		return new ApiResponse<>(new RoomDeleteResponse(sessionId, true, LocalDateTime.now()));
 	}
 
