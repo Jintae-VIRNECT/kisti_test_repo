@@ -11,22 +11,19 @@ import com.virnect.data.dto.PageMetadataResponse;
 
 @Getter
 @Setter
-@Builder
 @NoArgsConstructor
 public class RoomHistoryInfoListResponse {
 
-	private PageMetadataResponse pageMeta;
 	private List<RoomHistoryInfoResponse> roomHistoryInfoList;
+	private PageMetadataResponse pageMeta;
 
+	@Builder
 	public RoomHistoryInfoListResponse(
-		PageMetadataResponse pageMeta,
-		List<RoomHistoryInfoResponse> roomHistoryInfoList
+		List<RoomHistoryInfoResponse> roomHistoryInfoList,
+		PageMetadataResponse pageMeta
 	) {
 		this.pageMeta = pageMeta;
 		this.roomHistoryInfoList = roomHistoryInfoList;
 	}
 
-	public RoomHistoryInfoListResponse(List<RoomHistoryInfoResponse> roomHistoryInfoList) {
-		this.roomHistoryInfoList = roomHistoryInfoList;
-	}
 }

@@ -21,10 +21,6 @@ import com.virnect.data.domain.member.MemberHistory;
 import com.virnect.data.domain.member.MemberType;
 import com.virnect.data.domain.roomhistory.RoomHistory;
 import com.virnect.data.dto.PageMetadataResponse;
-import com.virnect.data.global.util.paging.PagingUtils;
-import com.virnect.serviceserver.serviceremote.dto.mapper.member.MemberHistoryMapper;
-import com.virnect.serviceserver.serviceremote.dto.mapper.roomhistory.RoomHistoryDetailInfoMapper;
-import com.virnect.serviceserver.serviceremote.dto.mapper.roomhistory.RoomHistoryInfoMapper;
 import com.virnect.data.dto.request.room.RoomHistoryDeleteRequest;
 import com.virnect.data.dto.response.ResultResponse;
 import com.virnect.data.dto.response.member.MemberInfoResponse;
@@ -34,8 +30,13 @@ import com.virnect.data.dto.response.room.RoomHistoryInfoResponse;
 import com.virnect.data.dto.rest.WorkspaceMemberInfoListResponse;
 import com.virnect.data.dto.rest.WorkspaceMemberInfoResponse;
 import com.virnect.data.error.ErrorCode;
+import com.virnect.data.error.exception.RemoteServiceException;
 import com.virnect.data.global.common.ApiResponse;
+import com.virnect.data.global.util.paging.PagingUtils;
 import com.virnect.data.infra.utils.LogMessage;
+import com.virnect.serviceserver.serviceremote.dto.mapper.member.MemberHistoryMapper;
+import com.virnect.serviceserver.serviceremote.dto.mapper.roomhistory.RoomHistoryDetailInfoMapper;
+import com.virnect.serviceserver.serviceremote.dto.mapper.roomhistory.RoomHistoryInfoMapper;
 
 @Slf4j
 @Service
@@ -66,9 +67,11 @@ public class HistoryService {
 		Pageable pageable
 	) {
 
-		Page<RoomHistory> roomHistoryPage = roomHistoryRepository.findMyRoomHistorySpecificUserId(workspaceId, userId, paging, pageable);
+		Page<RoomHistory> roomHistoryPage = roomHistoryRepository.findMyRoomHistorySpecificUserId(
+			workspaceId, userId, paging, pageable);
 
-		List<RoomHistoryInfoResponse> roomHistoryInfoResponses = makeRoomHistoryInfoResponses(workspaceId, roomHistoryPage);
+		List<RoomHistoryInfoResponse> roomHistoryInfoResponses = makeRoomHistoryInfoResponses(
+			workspaceId, roomHistoryPage);
 		PageMetadataResponse pageMeta = PagingUtils.pagingBuilder(
 			paging,
 			pageable,
@@ -97,14 +100,16 @@ public class HistoryService {
 
 		List<String> userIds = new ArrayList<>();
 		for (WorkspaceMemberInfoResponse memberInfo : members) {
-			if (!StringUtils.isBlank(memberInfo.getUuid())){
+			if (!StringUtils.isBlank(memberInfo.getUuid())) {
 				userIds.add(memberInfo.getUuid());
 			}
 		}
 
-		Page<RoomHistory> roomHistoryPage = roomHistoryRepository.findMyRoomHistorySpecificUserIdBySearch(workspaceId, userId, userIds, search, pageable);
+		Page<RoomHistory> roomHistoryPage = roomHistoryRepository.findMyRoomHistorySpecificUserIdBySearch(
+			workspaceId, userId, userIds, search, pageable);
 
-		List<RoomHistoryInfoResponse> roomHistoryInfoResponses = makeRoomHistoryInfoResponses(workspaceId, roomHistoryPage);
+		List<RoomHistoryInfoResponse> roomHistoryInfoResponses = makeRoomHistoryInfoResponses(
+			workspaceId, roomHistoryPage);
 		PageMetadataResponse pageMeta = PagingUtils.pagingBuilder(
 			true,
 			pageable,
@@ -117,7 +122,7 @@ public class HistoryService {
 		return new RoomHistoryInfoListResponse(roomHistoryInfoResponses, pageMeta);
 	}
 
-	public ApiResponse<RoomHistoryDetailInfoResponse> getHistoryBySessionId(
+	public RoomHistoryDetailInfoResponse getHistoryBySessionId(
 		String workspaceId,
 		String sessionId
 	) {
@@ -129,10 +134,8 @@ public class HistoryService {
 			sessionId
 		);
 
-		RoomHistory roomHistory = roomHistoryRepository.findRoomHistoryByWorkspaceIdAndSessionId(workspaceId, sessionId).orElse(null);
-		if (ObjectUtils.isEmpty(roomHistory)) {
-			return new ApiResponse<>(ErrorCode.ERR_ROOM_NOT_FOUND);
-		}
+		RoomHistory roomHistory = roomHistoryRepository.findRoomHistoryByWorkspaceIdAndSessionId(workspaceId, sessionId)
+			.orElseThrow(() -> new RemoteServiceException(ErrorCode.ERR_ROOM_NOT_FOUND));
 
 		// Make uuid array
 		List<String> userList = new ArrayList<>();
@@ -160,10 +163,10 @@ public class HistoryService {
 		RoomService.mapperWorkspaceMemberToMember(memberInfo, memberInfoList);
 		resultResponse.setMemberList(setLeader(memberInfoList));
 
-		return new ApiResponse<>(resultResponse);
+		return resultResponse;
 	}
 
-	public ApiResponse<ResultResponse> deleteHistory(
+	public ResultResponse deleteHistory(
 		String workspaceId,
 		String userId
 	) {
@@ -183,14 +186,13 @@ public class HistoryService {
 			}
 		});
 
-		ResultResponse resultResponse = new ResultResponse();
-		resultResponse.userId = userId;
-		resultResponse.setResult(true);
-
-		return new ApiResponse<>(resultResponse);
+		return ResultResponse.builder()
+			.userId(userId)
+			.result(true)
+			.build();
 	}
 
-	public ApiResponse<ResultResponse> deleteHistoryById(
+	public ResultResponse deleteHistoryById(
 		String workspaceId,
 		RoomHistoryDeleteRequest roomHistoryDeleteRequest
 	) {
@@ -224,11 +226,10 @@ public class HistoryService {
 			}
 		}
 
-		ResultResponse resultResponse = new ResultResponse();
-		resultResponse.userId = roomHistoryDeleteRequest.getUuid();
-		resultResponse.setResult(true);
-
-		return new ApiResponse<>(resultResponse);
+		return ResultResponse.builder()
+			.userId(roomHistoryDeleteRequest.getUuid())
+			.result(true)
+			.build();
 	}
 
 	public RoomHistory getRoomHistory(String workspaceId, String sessionId) {
@@ -236,8 +237,8 @@ public class HistoryService {
 	}
 
 	private List<RoomHistoryInfoResponse> makeRoomHistoryInfoResponses(
-			String workspaceId,
-			Page<RoomHistory> roomHistoryPage
+		String workspaceId,
+		Page<RoomHistory> roomHistoryPage
 	) {
 		List<RoomHistoryInfoResponse> roomHistoryInfoResponses = new ArrayList<>();
 		// Make uuid array

@@ -17,7 +17,7 @@ import lombok.extern.slf4j.Slf4j;
 import springfox.documentation.annotations.ApiIgnore;
 
 import com.virnect.data.error.ErrorCode;
-import com.virnect.data.error.exception.RestServiceException;
+import com.virnect.data.error.exception.RemoteServiceException;
 import com.virnect.data.global.common.ApiResponse;
 import com.virnect.data.infra.utils.LogMessage;
 import com.virnect.serviceserver.servicedashboard.application.DashboardHistoryService;
@@ -47,11 +47,11 @@ public class DashboardHistoryRestController {
 		@ApiImplicitParam(name = "status", value = "협업 진행 유무(전체(ALL)/진행중(ONGOING)/종료됨(END))", paramType = "query", defaultValue = "ALL"),
 		@ApiImplicitParam(name = "searchWord", value = "검색어", paramType = "query"),
 		@ApiImplicitParam(name = "sortProperties",
-				value = "정렬(NO, TITLE, LEADER_NICK_NAME, ACTIVE_DATE, STATUS, SERVER_RECORD_FILE_COUNT, LOCAL_RECORD_FILE_COUNT, ATTACHED_FILE_COUNT)",
-				paramType = "query", defaultValue = "ACTIVE_DATE"),
+			value = "정렬(NO, TITLE, LEADER_NICK_NAME, ACTIVE_DATE, STATUS, SERVER_RECORD_FILE_COUNT, LOCAL_RECORD_FILE_COUNT, ATTACHED_FILE_COUNT)",
+			paramType = "query", defaultValue = "ACTIVE_DATE"),
 		@ApiImplicitParam(name = "sortOrder",
-				value = "ASC or DESC",
-				paramType = "query", defaultValue = "ASC")
+			value = "ASC or DESC",
+			paramType = "query", defaultValue = "ASC")
 	})
 	@GetMapping(value = "history/{workspaceId}")
 	ResponseEntity<ApiResponse<RoomHistoryInfoListResponse>> getRoomHistoryRequestHandler(
@@ -77,9 +77,9 @@ public class DashboardHistoryRestController {
 					message.toString()
 				)
 			);
-			throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
+			throw new RemoteServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
 		}
-		return ResponseEntity.ok(historyService.getRoomHistory(workspaceId, null, option));
+		return ResponseEntity.ok(new ApiResponse<>(historyService.getRoomHistory(workspaceId, null, option)));
 	}
 
 	@ApiOperation(value = "[워크스페이스] 내의 지정 '일' 내에서 발생한 시간별 개인, 전체 협업 수를 반환하는 API")
@@ -105,10 +105,11 @@ public class DashboardHistoryRestController {
 			"getRoomHistoryWithInDateRequestHandler"
 		);
 		if (StringUtils.isBlank(workspaceId) || StringUtils.isBlank(userId) || StringUtils.isBlank(selectedDate)) {
-			throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
+			throw new RemoteServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
 		}
 		return ResponseEntity.ok(
-			new ApiResponse<>(historyService.getRoomHistoryStatsInDate(workspaceId, userId, selectedDate, timeDifference))
+			new ApiResponse<>(
+				historyService.getRoomHistoryStatsInDate(workspaceId, userId, selectedDate, timeDifference))
 		);
 	}
 
@@ -136,10 +137,11 @@ public class DashboardHistoryRestController {
 		);
 
 		if (StringUtils.isBlank(workspaceId) || StringUtils.isBlank(userId) || StringUtils.isBlank(selectedMonth)) {
-			throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
+			throw new RemoteServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
 		}
 		return ResponseEntity.ok(
-			new ApiResponse<>(historyService.getRoomHistoryStatsOnMonth(workspaceId, userId, selectedMonth, timeDifference))
+			new ApiResponse<>(
+				historyService.getRoomHistoryStatsOnMonth(workspaceId, userId, selectedMonth, timeDifference))
 		);
 	}
 
@@ -154,11 +156,11 @@ public class DashboardHistoryRestController {
 		@ApiImplicitParam(name = "status", value = "협업 진행 유무(전체(ALL)/진행중(ONGOING)/종료됨(END))", paramType = "query", defaultValue = "ALL"),
 		@ApiImplicitParam(name = "searchWord", value = "검색어", paramType = "query"),
 		@ApiImplicitParam(name = "sortProperties",
-				value = "정렬(NO, TITLE, LEADER_NICK_NAME, ACTIVE_DATE, STATUS, SERVER_RECORD_FILE_COUNT, LOCAL_RECORD_FILE_COUNT, ATTACHED_FILE_COUNT)",
-				paramType = "query", defaultValue = "ACTIVE_DATE"),
+			value = "정렬(NO, TITLE, LEADER_NICK_NAME, ACTIVE_DATE, STATUS, SERVER_RECORD_FILE_COUNT, LOCAL_RECORD_FILE_COUNT, ATTACHED_FILE_COUNT)",
+			paramType = "query", defaultValue = "ACTIVE_DATE"),
 		@ApiImplicitParam(name = "sortOrder",
-				value = "ASC or DESC",
-				paramType = "query", defaultValue = "ASC")
+			value = "ASC or DESC",
+			paramType = "query", defaultValue = "ASC")
 	})
 	@GetMapping(value = "my-history/{workspaceId}/{userId}")
 	ResponseEntity<ApiResponse<RoomHistoryInfoListResponse>> getRoomHistoryMineRequestHandler(
@@ -175,9 +177,10 @@ public class DashboardHistoryRestController {
 			"getRoomHistoryMineRequestHandler"
 		);
 		if (StringUtils.isBlank(workspaceId) || StringUtils.isBlank(userId)) {
-			throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
+			throw new RemoteServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
 		}
-		return ResponseEntity.ok(historyService.getRoomHistory(workspaceId, userId, option));
+		return ResponseEntity.ok(new ApiResponse<>(historyService.getRoomHistory(workspaceId, userId, option)));
+
 	}
 
 	@ApiOperation(value = "특정 원격협업 방 최근 기록 상세 정보를 조회하는 API 입니다.")
@@ -195,7 +198,7 @@ public class DashboardHistoryRestController {
 			"getRoomHistoryDetailRequestHandler"
 		);
 		if (StringUtils.isBlank(workspaceId) || StringUtils.isBlank(sessionId)) {
-			throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
+			throw new RemoteServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
 		}
 		return ResponseEntity.ok(
 			new ApiResponse<>(historyService.getEndRoomDetail(workspaceId, sessionId))

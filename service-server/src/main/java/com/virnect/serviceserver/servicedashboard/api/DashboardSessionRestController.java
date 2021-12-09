@@ -11,12 +11,12 @@ import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import com.virnect.data.error.ErrorCode;
+import com.virnect.data.error.exception.RemoteServiceException;
+import com.virnect.data.global.common.ApiResponse;
 import com.virnect.data.infra.utils.LogMessage;
 import com.virnect.serviceserver.servicedashboard.application.DashboardHistoryService;
 import com.virnect.serviceserver.servicedashboard.dto.response.RoomDetailInfoResponse;
-import com.virnect.data.error.ErrorCode;
-import com.virnect.data.error.exception.RestServiceException;
-import com.virnect.data.global.common.ApiResponse;
 
 @Slf4j
 @RestController
@@ -44,7 +44,7 @@ public class DashboardSessionRestController {
 			"getRoomDetailInfoRequestHandler"
 		);
 		if (StringUtils.isBlank(workspaceId) || StringUtils.isBlank(sessionId)) {
-			throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
+			throw new RemoteServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
 		}
 		return ResponseEntity.ok(
 			new ApiResponse<>(historyService.getOngoingRoomDetail(workspaceId, sessionId))

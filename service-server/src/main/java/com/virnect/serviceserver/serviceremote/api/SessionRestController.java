@@ -4,6 +4,7 @@ import javax.validation.Valid;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.logging.log4j.util.Strings;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -40,12 +41,13 @@ import com.virnect.data.dto.response.room.RoomInfoListResponse;
 import com.virnect.data.dto.response.room.RoomResponse;
 import com.virnect.data.dto.rest.PushResponse;
 import com.virnect.data.error.ErrorCode;
-import com.virnect.data.error.exception.RestServiceException;
+import com.virnect.data.error.exception.RemoteServiceException;
 import com.virnect.data.global.common.ApiResponse;
 import com.virnect.data.infra.utils.LogMessage;
 import com.virnect.serviceserver.serviceremote.application.PushMessageClient;
 import com.virnect.serviceserver.serviceremote.application.RoomService;
 import com.virnect.serviceserver.serviceremote.application.ServiceSessionManager;
+import com.virnect.serviceserver.serviceremote.event.SendSignalEvent;
 
 @Slf4j
 @RestController
@@ -59,6 +61,8 @@ public class SessionRestController {
 	private final ServiceSessionManager serviceSessionManager;
 	private final PushMessageClient pushMessageClient;
 	private final RoomService roomService;
+
+	private final ApplicationEventPublisher eventPublisher;
 
 	@ApiOperation(value = "Service Push Message ", notes = "푸시 메시지를 발행 하는 API 입니다.")
 	@PostMapping(value = "message/push")
@@ -74,10 +78,11 @@ public class SessionRestController {
 			"sendPushMessageHandler"
 		);
 		if (result.hasErrors()) {
-			throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
+			throw new RemoteServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
 		}
-		ApiResponse<PushResponse> response = this.pushMessageClient.sendPush(pushSendRequest);
-		return ResponseEntity.ok(response);
+
+		PushResponse response = this.pushMessageClient.sendPush(pushSendRequest);
+		return ResponseEntity.ok(new ApiResponse<>(response));
 	}
 
 	@ApiOperation(value = "Initialize a Remote Room with Company Code", notes = "Generate Remote Session")
@@ -100,15 +105,15 @@ public class SessionRestController {
 			"createRoomRequestHandlerByUserId"
 		);
 		if (result.hasErrors()) {
-			throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
+			throw new RemoteServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
 		}
-		ApiResponse<RoomResponse> responseData = roomService.initRoomByClient(
+		RoomResponse responseData = roomService.initRoomByClient(
 			client,
 			userId,
 			roomRequest,
 			companyCode
 		);
-		return ResponseEntity.ok(responseData);
+		return ResponseEntity.ok(new ApiResponse<>(responseData));
 	}
 
 	@ApiOperation(value = "Initialize a Remote Room with Company Code", notes = "This api will be deprecated")
@@ -127,13 +132,13 @@ public class SessionRestController {
 			"createRoomRequestHandler"
 		);
 		if (result.hasErrors()) {
-			throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
+			throw new RemoteServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
 		}
-		ApiResponse<RoomResponse> responseData = roomService.initRoom(
+		RoomResponse responseData = roomService.initRoom(
 			roomRequest,
 			companyCode
 		);
-		return ResponseEntity.ok(responseData);
+		return ResponseEntity.ok(new ApiResponse<>(responseData));
 	}
 
 	@ApiOperation(value = "Load Room Information List", notes = "원격협헙 방 리스트 조회하는 API 입니다.")
@@ -159,7 +164,7 @@ public class SessionRestController {
 			"getRoomList"
 		);
 		if (Strings.isBlank(workspaceId) || Strings.isBlank(userId)) {
-			throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
+			throw new RemoteServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
 		}
 		RoomInfoListResponse responseData = roomService.getRoomList(
 			workspaceId,
@@ -193,7 +198,7 @@ public class SessionRestController {
 			"getRoomListBySearch"
 		);
 		if (Strings.isBlank(workspaceId) || Strings.isBlank(userId)) {
-			throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
+			throw new RemoteServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
 		}
 
 		RoomInfoListResponse responseData;
@@ -231,13 +236,13 @@ public class SessionRestController {
 			"getRoomByWorkspaceIdAndSessionId"
 		);
 		if (StringUtils.isBlank(workspaceId) || StringUtils.isBlank(sessionId)) {
-			throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
+			throw new RemoteServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
 		}
-		ApiResponse<RoomDetailInfoResponse> responseData = roomService.getRoomDetailBySessionId(
+		RoomDetailInfoResponse responseData = roomService.getRoomDetailBySessionId(
 			workspaceId,
 			sessionId
 		);
-		return ResponseEntity.ok(responseData);
+		return ResponseEntity.ok(new ApiResponse<>(responseData));
 	}
 
 	@ApiOperation(value = "Delete Specific Room", notes = "특정 원격협업 방을 삭제하는 API 입니다.")
@@ -257,14 +262,14 @@ public class SessionRestController {
 			"deleteRoomByWorkspaceIdAndSessionIdAndUserId"
 		);
 		if (StringUtils.isBlank(workspaceId) || StringUtils.isBlank(sessionId) || StringUtils.isBlank(userId)) {
-			throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
+			throw new RemoteServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
 		}
-		ApiResponse<RoomDeleteResponse> responseData = roomService.deleteRoomById(
+		RoomDeleteResponse responseData = roomService.deleteRoomById(
 			workspaceId,
 			sessionId,
 			userId
 		);
-		return ResponseEntity.ok(responseData);
+		return ResponseEntity.ok(new ApiResponse<>(responseData));
 	}
 
 	@ApiOperation(value = "Update Room Information", notes = "특정 원격협업 방 상세 정보를 수정하는 API 입니다.")
@@ -285,14 +290,14 @@ public class SessionRestController {
 			"updateRoomByWorkspaceIdAndSessionId"
 		);
 		if (result.hasErrors() || Strings.isBlank(workspaceId) || Strings.isBlank(sessionId)) {
-			throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
+			throw new RemoteServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
 		}
-		ApiResponse<RoomDetailInfoResponse> responseData = roomService.updateRoom(
+		RoomDetailInfoResponse responseData = roomService.updateRoom(
 			workspaceId,
 			sessionId,
 			modifyRoomInfoRequest
 		);
-		return ResponseEntity.ok(responseData);
+		return ResponseEntity.ok(new ApiResponse<>(responseData));
 	}
 
 	@ApiOperation(value = "Join a Specific Room", notes = "특정 원격협업 방에 접속하는 API 입니다.")
@@ -313,14 +318,14 @@ public class SessionRestController {
 			"joinRoomByWorkspaceIdAndSessionId"
 		);
 		if (result.hasErrors() || Strings.isBlank(workspaceId) || Strings.isBlank(sessionId)) {
-			throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
+			throw new RemoteServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
 		}
-		ApiResponse<RoomResponse> responseData = roomService.joinRoomById(
+		RoomResponse responseData = roomService.joinRoomById(
 			workspaceId,
 			sessionId,
 			joinRoomRequest
 		);
-		return ResponseEntity.ok(responseData);
+		return ResponseEntity.ok(new ApiResponse<>(responseData));
 	}
 
 	@ApiOperation(value = "Exit Specific Room", notes = "특정 원격협업 방을 나가는 API 입니다.")
@@ -344,14 +349,14 @@ public class SessionRestController {
 			"exitRoomByWorkspaceIdAndSessionId"
 		);
 		if (StringUtils.isBlank(workspaceId) || StringUtils.isBlank(sessionId) || StringUtils.isBlank(userId)) {
-			throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
+			throw new RemoteServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
 		}
-		ApiResponse<ResultResponse> responseData = roomService.exitRoomBySessionIdAndUserId(
+		ResultResponse responseData = roomService.exitRoomBySessionIdAndUserId(
 			workspaceId,
 			sessionId,
 			userId
 		);
-		return ResponseEntity.ok(responseData);
+		return ResponseEntity.ok(new ApiResponse<>(responseData));
 	}
 
 	@ApiOperation(value = "Invite a Member to Specific Room", notes = "특정 멤버를 원격협업 방에 초대하는 API 입니다.")
@@ -372,14 +377,14 @@ public class SessionRestController {
 			"inviteMember"
 		);
 		if (result.hasErrors() || StringUtils.isBlank(workspaceId) || StringUtils.isBlank(sessionId)) {
-			throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
+			throw new RemoteServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
 		}
-		ApiResponse<ResultResponse> responseData = roomService.inviteMember(
+		ResultResponse responseData = roomService.inviteMember(
 			workspaceId,
 			sessionId,
 			inviteRoomRequest
 		);
-		return ResponseEntity.ok(responseData);
+		return ResponseEntity.ok(new ApiResponse<>(responseData));
 	}
 
 	@ApiOperation(value = "Kick out a specific member from a specific room", notes = "특정 멤버를 원격협업 방에서 내보내는 API 입니다.")
@@ -400,14 +405,14 @@ public class SessionRestController {
 			"kickOutMember"
 		);
 		if (result.hasErrors() || StringUtils.isBlank(workspaceId) || StringUtils.isBlank(sessionId)) {
-			throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
+			throw new RemoteServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
 		}
-		ApiResponse<ResultResponse> responseData = roomService.kickOutMember(
+		ResultResponse responseData = roomService.kickOutMember(
 			workspaceId,
 			sessionId,
 			kickRoomRequest
 		);
-		return ResponseEntity.ok(responseData);
+		return ResponseEntity.ok(new ApiResponse<>(responseData));
 	}
 
 	@ApiOperation(value = "send signal to the specific room session", notes = "특정 원격협업 방에 신호를 보내는 API 입니다.")
@@ -426,13 +431,18 @@ public class SessionRestController {
 			"sendSignal"
 		);
 		if (result.hasErrors() || StringUtils.isBlank(workspaceId)) {
-			throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
+			throw new RemoteServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
 		}
-		ApiResponse<ResultResponse> responseData = roomService.sendSignal(
-			workspaceId,
-			sendSignalRequest
+
+		eventPublisher.publishEvent(
+			new SendSignalEvent(this, sendSignalRequest)
 		);
-		return ResponseEntity.ok(responseData);
+
+		return ResponseEntity.ok(
+			new ApiResponse<>(ResultResponse.builder()
+				.result(true)
+				.build())
+		);
 	}
 
 	@ApiOperation(value = "Forced Logout", notes = "강제 로그아웃 API 입니다")
@@ -459,7 +469,7 @@ public class SessionRestController {
 					message.toString()
 				)
 			);
-			throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
+			throw new RemoteServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
 		}
 		ApiResponse<MemberInfoListResponse> responseData = serviceSessionManager.forceLogout(forceLogoutRequest);
 		return ResponseEntity.ok(responseData);

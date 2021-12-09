@@ -29,8 +29,7 @@ import com.virnect.data.dto.response.member.MemberSecessionResponse;
 import com.virnect.data.dto.rest.WorkspaceMemberInfoListResponse;
 import com.virnect.data.dto.rest.WorkspaceMemberInfoResponse;
 import com.virnect.data.error.ErrorCode;
-import com.virnect.data.error.exception.RestServiceException;
-import com.virnect.data.global.common.ApiResponse;
+import com.virnect.data.error.exception.RemoteServiceException;
 import com.virnect.data.global.util.paging.CustomPaging;
 import com.virnect.data.global.util.paging.PagingUtils;
 import com.virnect.data.redis.application.AccessStatusService;
@@ -71,7 +70,7 @@ public class MemberService {
 		return responseData;
 	}
 
-	public ApiResponse<MemberInfoListResponse> getMembersExceptForMe(
+	public MemberInfoListResponse getMembersExceptForMe(
 		String workspaceId,
 		String userId,
 		String filter,
@@ -86,7 +85,7 @@ public class MemberService {
 
 		List<WorkspaceMemberInfoResponse> workspaceMemberInfoList = responseData.getMemberInfoList();
 		if (CollectionUtils.isEmpty(workspaceMemberInfoList)) {
-			return new ApiResponse<>(ErrorCode.ERR_ROOM_MEMBER_INFO_EMPTY);
+			throw new RemoteServiceException(ErrorCode.ERR_ROOM_MEMBER_INFO_EMPTY);
 		}
 
 		workspaceMemberInfoList.removeIf(
@@ -100,7 +99,7 @@ public class MemberService {
 		if (accessTypeFilter) {
 			for (Iterator<WorkspaceMemberInfoResponse> memberInfoIterator = workspaceMemberInfoList.iterator(); memberInfoIterator.hasNext(); ) {
 				AccessStatus targetUser = accessStatusService.getAccessStatus(
-					workspaceId + "_" + memberInfoIterator.next().getUuid());
+					workspaceId, memberInfoIterator.next().getUuid());
 				if (ObjectUtils.isEmpty(targetUser) || targetUser.getAccessType() != AccessType.LOGIN) {
 					memberInfoIterator.remove();
 				}
@@ -129,7 +128,7 @@ public class MemberService {
 			memberInfoResponse.setAccessType(loadAccessType(workspaceId, memberInfoResponse.getUuid()));
 		}
 
-		return new ApiResponse<>(new MemberInfoListResponse(memberInfoList, pageMeta));
+		return new MemberInfoListResponse(memberInfoList, pageMeta);
 	}
 
 	public MemberInfoListResponse getMembersInvitePossible(
@@ -143,7 +142,7 @@ public class MemberService {
 	) {
 
 		Room room = roomRepository.findRoomByWorkspaceIdAndSessionIdForWrite(workspaceId, sessionId)
-			.orElseThrow(() -> new RestServiceException(ErrorCode.ERR_ROOM_NOT_FOUND));
+			.orElseThrow(() -> new RemoteServiceException(ErrorCode.ERR_ROOM_NOT_FOUND));
 
 		WorkspaceMemberInfoListResponse responseData = workspaceRestService.getWorkspaceMembers(workspaceId).getData();
 		List<WorkspaceMemberInfoResponse> workspaceMemberInfoList = responseData.getMemberInfoList();
@@ -165,8 +164,7 @@ public class MemberService {
 			.collect(Collectors.toList());
 
 		for (MemberInfoResponse memberInfoResponse : memberInfoList) {
-			AccessStatus targetUser = accessStatusService.getAccessStatus(
-				workspaceId + "_" + memberInfoResponse.getUuid());
+			AccessStatus targetUser = accessStatusService.getAccessStatus(workspaceId, memberInfoResponse.getUuid());
 			if (!ObjectUtils.isEmpty(targetUser)) {
 				memberInfoResponse.setAccessType(targetUser.getAccessType());
 			} else {
@@ -201,7 +199,7 @@ public class MemberService {
 	private AccessType loadAccessType(String workspaceId, String uuid) {
 		AccessType result;
 		try {
-			AccessStatus accessStatus = accessStatusService.getAccessStatus(workspaceId + "_" + uuid);
+			AccessStatus accessStatus = accessStatusService.getAccessStatus(workspaceId, uuid);
 			if (ObjectUtils.isEmpty(accessStatus) || accessStatus.getAccessType() == AccessType.LOGOUT) {
 				result = AccessType.LOGOUT;
 			} else {

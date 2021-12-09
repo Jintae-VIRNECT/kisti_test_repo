@@ -1,7 +1,5 @@
 package com.virnect.data.redis;
 
-import java.nio.charset.StandardCharsets;
-
 import org.springframework.data.redis.connection.Message;
 import org.springframework.data.redis.connection.MessageListener;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -30,30 +28,27 @@ public class MessageDelegator implements MessageListener {
 
 	@Override
 	public void onMessage(Message message, byte[] pattern) {
-		System.out.println(new String(message.getBody(), StandardCharsets.UTF_8));
 		try {
-			String body = (String) redisTemplate.getStringSerializer().deserialize(message.getBody());
+			String body = (String)redisTemplate.getStringSerializer().deserialize(message.getBody());
 			StatusMessage statusMessage = objectMapper.readValue(body, StatusMessage.class);
 			switch (statusMessage.getStatus()) {
-				case LOGIN_STATUS :
-					log.info("[REDIS:POST] login uuid : " + statusMessage.getUserId());
+				case LOGIN_STATUS:
 					accessStatusService.saveAccessStatus(
-						statusMessage.getWorkspaceId() + "_" + statusMessage.getUserId(),
-						AccessType.LOGIN,
-						statusMessage.getUserId()
+						statusMessage.getWorkspaceId(),
+						statusMessage.getUserId(),
+						AccessType.LOGIN
 					);
 					break;
-				case LOGOUT_STATUS :
-					log.info("[REDIS:POST] logout uuid : " + statusMessage.getUserId());
+				case LOGOUT_STATUS:
 					accessStatusService.saveAccessStatus(
-						statusMessage.getWorkspaceId() + "_" + statusMessage.getUserId(),
-						AccessType.LOGOUT,
-						statusMessage.getUserId()
+						statusMessage.getWorkspaceId(),
+						statusMessage.getUserId(),
+						AccessType.LOGOUT
 					);
 					break;
 			}
 		} catch (Exception e) {
-			log.info("[ERROR]" + e.getMessage());
+			log.info("[onMessage ERROR]" + e.getMessage());
 		}
 	}
 }

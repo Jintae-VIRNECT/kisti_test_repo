@@ -28,7 +28,6 @@ import com.google.gson.JsonParser;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import com.virnect.client.RemoteServiceException;
 import com.virnect.data.application.workspace.WorkspaceRestService;
 import com.virnect.data.dao.member.MemberRepository;
 import com.virnect.data.domain.Role;
@@ -42,6 +41,7 @@ import com.virnect.data.dto.response.session.SessionData;
 import com.virnect.data.dto.response.session.SessionTokenData;
 import com.virnect.data.dto.rest.WorkspaceMemberInfoResponse;
 import com.virnect.data.error.ErrorCode;
+import com.virnect.data.error.exception.RemoteServiceException;
 import com.virnect.data.global.common.ApiResponse;
 import com.virnect.data.infra.utils.LogMessage;
 import com.virnect.data.redis.RedisPublisher;
@@ -152,11 +152,6 @@ public class ServiceSessionManager {
 							"return false"
 						);
 						return false;
-
-						//do not force disconnect by server
-                        /*Session session = sessionManager.getSessionWithNotActive(sessionId);
-                        Participant evict = session.getParticipantByPublicId(participant.getParticipantPublicId());
-                        sessionManager.evictParticipant(evict, null, null, EndReason.forceDisconnectByServer);*/
 					} else {
 						sessionDataRepository.setAccessStatus(participant, sessionId, AccessType.JOIN);
 						//todo: after log here
@@ -211,13 +206,6 @@ public class ServiceSessionManager {
 			}
 		};
 	}
-
-
-
-    /*public ServiceSessionManager(@Lazy SessionManager sessionManager, DataRepository dataRepository) {
-        this.sessionManager = sessionManager;
-        this.dataRepository = dataRepository;
-    }*/
 
 	private JsonObject generateErrorMessage(String errorMessage, String path, HttpStatus status) {
 		JsonObject responseJson = new JsonObject();
@@ -320,7 +308,6 @@ public class ServiceSessionManager {
 	public JsonObject generateSession(String customSessionId) {
 		SessionData sessionData = new SessionData();
 		SessionProperties.Builder builder = new SessionProperties.Builder();
-		//String customSessionId = sessionData.getCustomSessionId();
 		try {
 			// Safe parameter retrieval. Default values if not defined
 			if (sessionData.getRecordingMode() != null) {
@@ -375,26 +362,6 @@ public class ServiceSessionManager {
 		}
 
 		SessionProperties sessionProperties = builder.build();
-        /*String sessionId;
-        if (customSessionId != null && !customSessionId.isEmpty()) {
-            if (sessionManager.getSessionWithNotActive(customSessionId) != null) {
-                return generateErrorMessage(
-                        "customSessionId" + customSessionId + " | "
-                                +"RecordingMode " + sessionData.getRecordingMode() + " | "
-                                + "Default OutputMode " + sessionData.getDefaultOutputMode() + " | "
-                                + "Default RecordingLayout " + sessionData.getDefaultRecordingLayout() + " | "
-                                + "MediaMode " + sessionData.getMediaMode()
-                                + ". Custom session is already defined",
-                        SESSION_METHOD,
-                        HttpStatus.CONFLICT
-                );
-            }
-            sessionId = customSessionId;
-        } else {
-            sessionId = IdentifierPrefixes.SESSION_ID + RandomStringUtils.randomAlphabetic(1).toUpperCase()
-                    + RandomStringUtils.randomAlphanumeric(9);
-        }*/
-
 		Session sessionNotActive = sessionManager.storeSessionNotActive(customSessionId, sessionProperties);
 		log.info(
 			"New session {} initialized with custom id: {}", customSessionId,
@@ -408,10 +375,7 @@ public class ServiceSessionManager {
 		return sessionJson;
 	}
 
-	//public JsonObject generateSessionToken(SessionTokenData tokenData) {
 	public JsonObject generateSessionToken(JsonObject sessionJson) {
-		//Assert.assertTrue(jsonObject.get("name").getAsString().equals("Baeldung"));
-		//Assert.assertTrue(jsonObject.get("java").getAsBoolean() == true);
 		//Auto generate Token
 		SessionTokenData tokenData = new SessionTokenData();
 		tokenData.setSession(sessionJson.get("id").getAsString());
@@ -602,7 +566,6 @@ public class ServiceSessionManager {
 							true
 						);
 						return true;
-						//return ResponseEntity.status(HttpStatus.NO_CONTENT).body(apiResponse);
 					} finally {
 						sessionNotActive.closingLock.writeLock().unlock();
 					}
@@ -611,25 +574,19 @@ public class ServiceSessionManager {
 						+ " closing lock to be available for closing from DELETE /api/sessions";
 					log.error(errorMsg);
 					return false;
-					//apiResponse.setMessage(generateErrorMessage(errorMsg, "/api/sessions", HttpStatus.BAD_REQUEST).toString());
-					//return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(apiResponse);
 				}
 			} catch (InterruptedException e) {
 				String errorMsg = "InterruptedException while waiting for Session " + sessionId
 					+ " closing lock to be available for closing from DELETE /api/sessions";
 				log.error(errorMsg);
 				return false;
-                /*apiResponse.setData(false);
-                apiResponse.setMessage(generateErrorMessage(errorMsg, "/api/sessions", HttpStatus.BAD_REQUEST).toString());
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(apiResponse);*/
 			}
 		} else {
-			//return ResponseEntity.status(HttpStatus.NOT_FOUND).body(apiResponse);
 			return false;
 		}
 	}
 
-	public JsonObject generateMessage(
+	public void generateMessage(
 		String sessionId,
 		List<String> to,
 		String type,
@@ -640,23 +597,13 @@ public class ServiceSessionManager {
 		JsonObject completeMessage = new JsonObject();
 
 		Session session = sessionManager.getSession(sessionId);
-		String SESSION_MESSAGE_METHOD = "generateMessage";
 		if (ObjectUtils.isEmpty(session)) {
 			session = sessionManager.getSessionNotActive(sessionId);
 			if (!ObjectUtils.isEmpty(session)) {
 				// Session is not active (no connected participants)
-				return generateErrorMessage(
-					"Session is not active (no connected participants)",
-					SESSION_MESSAGE_METHOD,
-					HttpStatus.NOT_ACCEPTABLE
-				);
+				throw new com.virnect.data.error.exception.RemoteServiceException(ErrorCode.NOT_ACCEPTABLE);
 			}
-			// Session does not exist
-			return generateErrorMessage(
-				"Session does not exist",
-				SESSION_MESSAGE_METHOD,
-				HttpStatus.NOT_FOUND
-			);
+			throw new RemoteServiceException(ErrorCode.NOT_FOUND);
 		}
 
 		if (!StringUtils.isBlank(type)) {
@@ -679,25 +626,15 @@ public class ServiceSessionManager {
 				JsonArray toArray = gson.toJsonTree(to).getAsJsonArray();
 				completeMessage.add("to", toArray);
 			} catch (IllegalStateException exception) {
-				return generateErrorMessage(
-					"\"to\" parameter is not a valid JSON array",
-					SESSION_MESSAGE_METHOD,
-					HttpStatus.BAD_REQUEST
-				);
+				throw new RemoteServiceException(ErrorCode.BAD_REQUEST);
 			}
 		}
 
 		try {
 			sessionManager.sendMessage(completeMessage.toString(), sessionId);
-		} catch (RemoteServiceException e) {
-			return this.generateErrorMessage(
-				"\"to\" array has no valid connection identifiers",
-				SESSION_MESSAGE_METHOD,
-				HttpStatus.NOT_ACCEPTABLE
-			);
+		} catch (Exception e) {
+			throw new RemoteServiceException(ErrorCode.NOT_ACCEPTABLE);
 		}
-		return completeMessage;
-		//return new ResponseEntity<>(HttpStatus.OK);
 	}
 
 	public boolean evictParticipant(String sessionId, String connectionId) {
@@ -710,23 +647,6 @@ public class ServiceSessionManager {
 		Participant participant = session.getParticipantByPublicId(connectionId);
 		if (!ObjectUtils.isEmpty(participant)) {
 			this.sessionManager.evictParticipant(participant, null, null, EndReason.forceDisconnectByUser);
-			return true;
-			//return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-		} else {
-			return false;
-			//return ResponseEntity.status(HttpStatus.NOT_FOUND).body(apiResponse);
-		}
-	}
-
-	public boolean evictParticipant(String sessionId, String connectionId, EndReason reason) {
-		Session session = this.sessionManager.getSessionWithNotActive(sessionId);
-		if (ObjectUtils.isEmpty(session)) {
-			return false;
-		}
-		//evictedParticipant
-		Participant participant = session.getParticipantByPublicId(connectionId);
-		if (!ObjectUtils.isEmpty(participant)) {
-			this.sessionManager.evictParticipant(participant, null, null, reason);
 			return true;
 		} else {
 			return false;
@@ -742,14 +662,9 @@ public class ServiceSessionManager {
 		// Master uuid 및 권한 체크
 		WorkspaceMemberInfoResponse masterUserInfo = workspaceRestService.getWorkspaceMember(
 			forceLogoutRequest.getWorkspaceId(), forceLogoutRequest.getUserId()).getData();
-		if (StringUtils.isBlank(masterUserInfo.getUuid())) {
+		if (StringUtils.isBlank(masterUserInfo.getUuid()) || masterUserInfo.getRole() != Role.MASTER) {
 			log.info("Master uuid is null");
-			return new ApiResponse<>(ErrorCode.ERR_ACCESS_AUTHORITY);
-		}
-
-		if (masterUserInfo.getRole() != Role.MASTER) {
-			log.info("This user is not Master");
-			return new ApiResponse<>(ErrorCode.ERR_ACCESS_AUTHORITY);
+			throw new com.virnect.data.error.exception.RemoteServiceException(ErrorCode.ERR_ACCESS_AUTHORITY);
 		}
 
 		// 로그아웃 및 협업 중인 멤버 필터링
@@ -757,7 +672,7 @@ public class ServiceSessionManager {
 		for (Iterator<String> targetUuidList = forceLogoutRequest.getTargetUserIds()
 			.iterator(); targetUuidList.hasNext(); ) {
 			AccessStatus targetUser = accessStatusService.getAccessStatus(
-				forceLogoutRequest.getWorkspaceId() + "_" + targetUuidList.next());
+				forceLogoutRequest.getWorkspaceId(), targetUuidList.next());
 			if (!ObjectUtils.isEmpty(targetUser)) {
 				if (targetUser.getAccessType() == AccessType.LOGOUT
 					|| targetUser.getAccessType() == AccessType.JOIN
@@ -772,7 +687,9 @@ public class ServiceSessionManager {
 		// 강제 로그 아웃 대상이 없을 경우 (대상 전체가 이미 로그아웃 또는 협업 중인 경우)
 		if (forceLogoutRequest.getTargetUserIds().size() == 0) {
 			return new ApiResponse<>(
-				new MemberInfoListResponse(failMembersResponse, pageMeta), ErrorCode.ERR_MEMBER_LOGOUT_OR_JOIN);
+				new MemberInfoListResponse(failMembersResponse, pageMeta),
+				ErrorCode.ERR_MEMBER_LOGOUT_OR_JOIN
+			);
 		}
 
 		// Redis force-logout 채널로 정보 전송
@@ -787,7 +704,7 @@ public class ServiceSessionManager {
 		// Logout 상태 확인 (in Redis)
 		for (String targetUserId : forceLogoutRequest.getTargetUserIds()) {
 			AccessStatus checkLogout = accessStatusService.getAccessStatus(
-				forceLogoutRequest.getWorkspaceId() + "_" + targetUserId);
+				forceLogoutRequest.getWorkspaceId(), targetUserId);
 			if (ObjectUtils.isEmpty(checkLogout) || checkLogout.getAccessType() == AccessType.LOGOUT) {
 				failUserIds.removeIf(targetUserId::equals);
 			}
@@ -795,12 +712,9 @@ public class ServiceSessionManager {
 
 		// 강제 로그아웃 대상에서 제외된 유저들 정보
 		for (String failMemberUuid : failUserIds) {
-			ApiResponse<WorkspaceMemberInfoResponse> workspaceMemberInfo = workspaceRestService.getWorkspaceMember(
-				forceLogoutRequest.getWorkspaceId(), failMemberUuid);
-			if (workspaceMemberInfo.getCode() != ErrorCode.ERR_SUCCESS.getCode()) {
-				return new ApiResponse<>(ErrorCode.ERR_UNEXPECTED_SERVER_ERROR);
-			}
-			failMembers.add(workspaceMemberInfo.getData());
+			failMembers.add(
+				workspaceRestService.getWorkspaceMember(forceLogoutRequest.getWorkspaceId(), failMemberUuid).getData()
+			);
 		}
 
 		if (failMembers.size() > 0) {
@@ -817,7 +731,6 @@ public class ServiceSessionManager {
 				.numberOfElements(failMembersResponse.size())
 				.build();
 		}
-
 		return new ApiResponse<>(new MemberInfoListResponse(failMembersResponse, pageMeta));
 	}
 

@@ -1,6 +1,5 @@
 package com.virnect.data.dto.push;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.validation.constraints.NotBlank;
@@ -19,14 +18,14 @@ public class SendSignalRequest {
 	private String sessionId;
 
 	@ApiModelProperty(position = 1)
-	private List<String> to = new ArrayList<>();
+	private List<String> to;
 
 	@ApiModelProperty(position = 2)
 	private String type;
 
 	@ApiModelProperty(position = 3)
 	private String data;
-
+	
 	@Override
 	public String toString() {
 		return "SendSignalRequest{" +

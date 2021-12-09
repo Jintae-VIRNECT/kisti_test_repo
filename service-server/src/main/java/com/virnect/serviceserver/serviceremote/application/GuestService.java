@@ -1,11 +1,12 @@
 package com.virnect.serviceserver.serviceremote.application;
 
+import java.util.Optional;
+
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang.StringUtils;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
-import org.springframework.util.ObjectUtils;
 
 import com.google.gson.JsonObject;
 
@@ -14,7 +15,6 @@ import lombok.extern.slf4j.Slf4j;
 
 import com.virnect.data.application.account.AccountRestService;
 import com.virnect.data.application.workspace.WorkspaceRestService;
-import com.virnect.data.dao.member.MemberRepository;
 import com.virnect.data.dao.room.RoomRepository;
 import com.virnect.data.domain.room.Room;
 import com.virnect.data.dto.request.guest.EventRequest;
@@ -24,8 +24,8 @@ import com.virnect.data.dto.response.room.RoomInfoResponse;
 import com.virnect.data.dto.response.room.RoomResponse;
 import com.virnect.data.dto.rest.GuestAccountInfoResponse;
 import com.virnect.data.error.ErrorCode;
+import com.virnect.data.error.exception.RemoteServiceException;
 import com.virnect.data.global.common.ApiResponse;
-import com.virnect.data.infra.utils.LogMessage;
 import com.virnect.serviceserver.serviceremote.dao.SessionDataRepository;
 import com.virnect.serviceserver.serviceremote.dto.constraint.PushConstants;
 import com.virnect.serviceserver.serviceremote.event.MessageEvent;
@@ -43,27 +43,12 @@ public class GuestService {
 	private final RoomRepository roomRepository;
 	private final WorkspaceRestService workspaceRestService;
 
-	private final MemberRepository memberRepository;
 	private final SessionDataRepository sessionDataRepository;
 	private final ServiceSessionManager serviceSessionManager;
 
 	private final ApplicationEventPublisher eventPublisher;
 
-	/*public ApiResponse<GuestInviteUrlResponse> createGuestInviteUrl(String workspaceId, String sessionId) {
-
-		Room room = roomRepository.findRoomByGuest(workspaceId, sessionId).orElse(null);
-		if (ObjectUtils.isEmpty(room)) {
-			return new ApiResponse<>(ErrorCode.ERR_ROOM_NOT_FOUND);
-		}
-
-		return new ApiResponse<>(GuestInviteUrlResponse.builder()
-			.workspaceId(workspaceId)
-			.sessionId(sessionId)
-			.url(config.remoteServiceProperties.getRemoteServicePublicUrl() + "/remote/invitation/guest/" + workspaceId + "/" + sessionId)
-			.build());
-	}*/
-
-	public ApiResponse<GuestInfoResponse> getGuestInfo(
+	public GuestInfoResponse getGuestInfo(
 		String workspaceId,
 		HttpServletRequest request
 	) {
@@ -77,14 +62,14 @@ public class GuestService {
 		if (guestAccount.getCode() != ErrorCode.ERR_SUCCESS.getCode()) {
 			log.info("ACCOUNT SERVER ERROR : " + guestAccount.getCode() + "(" + guestAccount.getMessage() + ")");
 			if (guestAccount.getCode() == 5000) {
-				return new ApiResponse<>(ErrorCode.ERR_GUEST_USER_NOT_FOUND);
+				throw new RemoteServiceException(ErrorCode.ERR_GUEST_USER_NOT_FOUND);
 			} else if (guestAccount.getCode() == 5001) {
-				return new ApiResponse<>(ErrorCode.ERR_GUEST_USER_NOT_ENOUGH);
+				throw new RemoteServiceException(ErrorCode.ERR_GUEST_USER_NOT_ENOUGH);
 			}
 		}
 		log.info("guest account toString : " + guestAccount.getData().toString());
 
-		GuestInfoResponse guestInfoResponse = GuestInfoResponse.builder()
+		return GuestInfoResponse.builder()
 			.workspaceId(workspaceId)
 			.uuid(guestAccount.getData().getUuid())
 			.name(guestAccount.getData().getName())
@@ -93,51 +78,30 @@ public class GuestService {
 			.refreshToken(guestAccount.getData().getRefreshToken())
 			.expireIn(guestAccount.getData().getExpireIn())
 			.build();
-
-		return new ApiResponse<>(guestInfoResponse);
 	}
 
-	public ApiResponse<RoomInfoResponse> getOpenRoomInfo(
+	public RoomInfoResponse getOpenRoomInfo(
 		String workspaceId,
 		String sessionId
 	) {
-		Room openRoom = roomRepository.findOpenRoomByGuest(workspaceId, sessionId).orElse(null);
-		if (ObjectUtils.isEmpty(openRoom)) {
-			return new ApiResponse<>(ErrorCode.ERR_ROOM_NOT_FOUND);
-		}
+		Room openRoom = roomRepository.findOpenRoomByGuest(workspaceId, sessionId)
+			.orElseThrow(() -> new RemoteServiceException(ErrorCode.ERR_ROOM_NOT_FOUND));
 		RoomInfoResponse roomInfoResponse = roomService.makeRoomInfo(workspaceId, openRoom);
-		return new ApiResponse<>(roomInfoResponse);
+		return roomInfoResponse;
 	}
 
-	public ApiResponse<RoomResponse> joinRoomOnlyGuest(
+	public RoomResponse joinRoomOnlyGuest(
 		String workspaceId,
 		String sessionId,
 		JoinRoomRequest joinRoomRequest
 	) {
+		Optional.ofNullable(
+			workspaceRestService.getWorkspaceMember(workspaceId, joinRoomRequest.getUuid())
+				.getData()
+				.getUuid()
+		).orElseThrow(() -> new RemoteServiceException(ErrorCode.ERR_MEMBER_INVALID));
 
-		String guestMemberUuid = workspaceRestService.getWorkspaceMember(workspaceId, joinRoomRequest.getUuid())
-			.getData()
-			.getUuid();
-		if (StringUtils.isBlank(guestMemberUuid)) {
-			return new ApiResponse<>(new RoomResponse(), ErrorCode.ERR_MEMBER_INVALID);
-		}
-
-		ApiResponse<Boolean> dataProcess = this.sessionDataRepository.prepareJoinRoomOnlyGuest(
-			workspaceId,
-			sessionId,
-			joinRoomRequest.getUuid()
-		);
-
-		if (!dataProcess.getData()) {
-			LogMessage.formedInfo(
-				TAG,
-				"REST API: POST " + REST_PATH + "/",
-				"joinRoomOnlyGuest",
-				"process data get false",
-				dataProcess.getMessage()
-			);
-			return new ApiResponse<>(dataProcess.getCode(), dataProcess.getMessage());
-		}
+		this.sessionDataRepository.prepareJoinRoomOnlyGuest(workspaceId, sessionId, joinRoomRequest.getUuid());
 
 		// 세션 및 토큰 생성
 		JsonObject sessionJson = serviceSessionManager.generateSession(sessionId);
@@ -152,7 +116,7 @@ public class GuestService {
 		);
 		//responseData.getData().getCoturn().add(setCoturnResponse(responseData.getData().getSessionType()));
 		responseData.getData().setCoturn(roomService.setCoturnListResponse(responseData.getData().getSessionType()));
-		return responseData;
+		return responseData.getData();
 	}
 
 	private String extractIpFromRequest(HttpServletRequest request) {
