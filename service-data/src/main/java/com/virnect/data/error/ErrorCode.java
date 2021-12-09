@@ -66,7 +66,7 @@ public enum ErrorCode {
 	// Guest 관련 에러
 	ERR_GUEST_USER_NOT_ENOUGH(4028, "Not enough unassigned guest users"),
 	ERR_GUEST_USER_NOT_FOUND(4029, " Guest user not found"),
-	
+
 	// error code for service validation
 	ERR_LICENSE_NOT_VALIDITY(5001, "License has no validity"),
 	ERR_LICENSE_TYPE_VALIDITY(5002, "License is not the license type"),
@@ -101,7 +101,7 @@ public enum ErrorCode {
 	ERR_STORAGE_NOT_SUPPORTED(7012, "Storage service is not supported. Please check storage server url."),
 	ERR_STORAGE_LIMIT_REACHED(7016, "The storage limit is about to be reached"),
 	ERR_STORAGE_CAPACITY_FULL(7017, "The storage capacity is full"),
-	
+
 	ERR_PDF_PASSWORD(7018, "The pdf file is locked"),
 	ERR_MAKE_THUMBNAIL(7019, "Failed to convert the thumbnail file"),
 
@@ -116,7 +116,11 @@ public enum ErrorCode {
 	ERR_SESSION_CLIENT_METADATA_NULL(8010, "Client metadata error"),
 	ERR_SESSION_CLIENT_METADATA_EXCEPTION(8009, "Client metadata error"),
 	ERR_DATA_SAVE_EXCEPTION(8010, "Data save error"),
-	ERR_UNEXPECTED_SERVER_ERROR(9999, "Unexpected Server Error, Please contact Administrator");
+	ERR_UNEXPECTED_SERVER_ERROR(9999, "Unexpected Server Error, Please contact Administrator"),
+
+	NOT_ACCEPTABLE(406, "Not Acceptable"),
+	NOT_FOUND(404, "Not Found"),
+	BAD_REQUEST(400, "Bad Request");
 
 	@ApiModelProperty(value = "에러 코드")
 	private int code;

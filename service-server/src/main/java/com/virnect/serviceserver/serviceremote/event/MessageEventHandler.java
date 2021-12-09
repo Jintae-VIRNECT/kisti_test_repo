@@ -6,8 +6,6 @@ import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 import org.springframework.util.ObjectUtils;
 
-import com.google.gson.JsonObject;
-
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -32,24 +30,31 @@ public class MessageEventHandler {
 					messageEvent.getEventRequest().getUserId()
 				).orElse(null);
 				if (!ObjectUtils.isEmpty(guestMember)) {
-					JsonObject jsonObject = serviceSessionManager.generateMessage(
+					serviceSessionManager.generateMessage(
 						guestMember.getSessionId(),
 						Collections.singletonList(guestMember.getConnectionId()),
 						messageEvent.getSignalType(),
 						messageEvent.getEventRequest().getEvent().getMessage()
 					);
-					if (jsonObject.has("error")) {
-						log.info("[Send signal result] : error({})", jsonObject.get("error").getAsString());
-					} else {
-						log.info(
-							"[Evict participant result] : {}",
-							serviceSessionManager.evictParticipant(
-								guestMember.getSessionId(),
-								guestMember.getConnectionId()
-							)
-						);
-					}
+
+					log.info(
+						"[Evict participant result] : {}",
+						serviceSessionManager.evictParticipant(
+							guestMember.getSessionId(),
+							guestMember.getConnectionId()
+						)
+					);
 				}
 		}
+	}
+
+	@EventListener
+	public void sendMessage(SendSignalEvent sendSignalEvent) {
+		serviceSessionManager.generateMessage(
+			sendSignalEvent.getSendSignalRequest().getSessionId(),
+			sendSignalEvent.getSendSignalRequest().getTo(),
+			sendSignalEvent.getSendSignalRequest().getType(),
+			sendSignalEvent.getSendSignalRequest().getData()
+		);
 	}
 }

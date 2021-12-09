@@ -17,7 +17,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import com.virnect.data.dto.rest.ListRecordingFilesResponse;
 import com.virnect.data.error.ErrorCode;
-import com.virnect.data.error.exception.RestServiceException;
+import com.virnect.data.error.exception.RemoteServiceException;
 import com.virnect.data.global.common.ApiResponse;
 import com.virnect.data.infra.utils.LogMessage;
 import com.virnect.serviceserver.servicedashboard.application.DashboardFileService;
@@ -60,7 +60,7 @@ public class DashboardFileRestController {
 			"getAttachedFileListRequestHandler"
 		);
 		if (StringUtils.isBlank(workspaceId) || StringUtils.isBlank(sessionId) || StringUtils.isBlank(userId)) {
-			throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
+			throw new RemoteServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
 		}
 		return ResponseEntity.ok(
 			new ApiResponse<>(fileService.getAttachedFileList(workspaceId, sessionId, deleted))
@@ -90,7 +90,7 @@ public class DashboardFileRestController {
 			"getLocalRecordFileListRequestHandler"
 		);
 		if (StringUtils.isBlank(workspaceId) || StringUtils.isBlank(sessionId) || StringUtils.isBlank(userId)) {
-			throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
+			throw new RemoteServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
 		}
 		return ResponseEntity.ok(
 			new ApiResponse<>(fileService.getLocalRecordFileList(workspaceId, sessionId, deleted))
@@ -120,7 +120,7 @@ public class DashboardFileRestController {
 			"getServerRecordFileListRequestHandler"
 		);
 		if (StringUtils.isBlank(workspaceId) || StringUtils.isBlank(sessionId) || StringUtils.isBlank(userId)) {
-			throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
+			throw new RemoteServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
 		}
 		return ResponseEntity.ok(
 			new ApiResponse<>(fileService.getServerRecordFileList(workspaceId, sessionId, userId, order))
@@ -147,7 +147,7 @@ public class DashboardFileRestController {
 			"deleteServerRecordFileRequestHandler"
 		);
 		if (StringUtils.isBlank(workspaceId) || StringUtils.isBlank(userId)) {
-			throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
+			throw new RemoteServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
 		}
 		return ResponseEntity.ok(
 			new ApiResponse<>(fileService.deleteServerRecordFileUrl(workspaceId, userId, id))
@@ -176,8 +176,9 @@ public class DashboardFileRestController {
 				+ sessionId,
 			"deleteLocalRecordFileRequestHandler"
 		);
-		if (StringUtils.isBlank(workspaceId) || StringUtils.isBlank(sessionId) || StringUtils.isBlank(userId) || StringUtils.isBlank(objectName)) {
-			throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
+		if (StringUtils.isBlank(workspaceId) || StringUtils.isBlank(sessionId) || StringUtils.isBlank(userId)
+			|| StringUtils.isBlank(objectName)) {
+			throw new RemoteServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
 		}
 		return ResponseEntity.ok(
 			new ApiResponse<>(fileService.deleteLocalRecordFileUrl(workspaceId, sessionId, objectName))
@@ -206,8 +207,9 @@ public class DashboardFileRestController {
 				+ sessionId,
 			"deleteAttachedFileRequestHandler"
 		);
-		if (StringUtils.isBlank(workspaceId) || StringUtils.isBlank(sessionId) || StringUtils.isBlank(userId) || StringUtils.isBlank(objectName)) {
-			throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
+		if (StringUtils.isBlank(workspaceId) || StringUtils.isBlank(sessionId) || StringUtils.isBlank(userId)
+			|| StringUtils.isBlank(objectName)) {
+			throw new RemoteServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
 		}
 		return ResponseEntity.ok(
 			new ApiResponse<>(fileService.deleteAttachedFile(workspaceId, sessionId, objectName))
@@ -236,8 +238,9 @@ public class DashboardFileRestController {
 				+ sessionId,
 			"getFileDownloadUrlRequestHandler"
 		);
-		if (StringUtils.isBlank(workspaceId) || StringUtils.isBlank(sessionId) || StringUtils.isBlank(userId) || StringUtils.isBlank(objectName)) {
-			throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
+		if (StringUtils.isBlank(workspaceId) || StringUtils.isBlank(sessionId) || StringUtils.isBlank(userId)
+			|| StringUtils.isBlank(objectName)) {
+			throw new RemoteServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
 		}
 		return ResponseEntity.ok(
 			new ApiResponse<>(fileService.getAttachedFileUrl(workspaceId, sessionId, objectName))
@@ -266,7 +269,7 @@ public class DashboardFileRestController {
 			"getServerRecordFileDownloadUrlRequestHandler"
 		);
 		if (StringUtils.isBlank(workspaceId) || StringUtils.isBlank(userId)) {
-			throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
+			throw new RemoteServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
 		}
 		return ResponseEntity.ok(
 			new ApiResponse<>(fileService.getServerRecordFileUrl(workspaceId, userId, id))
@@ -295,8 +298,9 @@ public class DashboardFileRestController {
 				+ sessionId,
 			"getLocalRecordFileDownloadUrlRequestHandler"
 		);
-		if (StringUtils.isBlank(workspaceId) || StringUtils.isBlank(sessionId) || StringUtils.isBlank(userId) || StringUtils.isBlank(objectName)) {
-			throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
+		if (StringUtils.isBlank(workspaceId) || StringUtils.isBlank(sessionId) || StringUtils.isBlank(userId)
+			|| StringUtils.isBlank(objectName)) {
+			throw new RemoteServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
 		}
 		return ResponseEntity.ok(
 			new ApiResponse<>(fileService.getLocalRecordFileUrl(workspaceId, sessionId, objectName))
