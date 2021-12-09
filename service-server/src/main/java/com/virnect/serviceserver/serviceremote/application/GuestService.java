@@ -119,7 +119,7 @@ public class GuestService {
 			.getData()
 			.getUuid();
 		if (StringUtils.isBlank(guestMemberUuid)) {
-			return new ApiResponse<>(ErrorCode.ERR_MEMBER_INVALID);
+			return new ApiResponse<>(new RoomResponse(), ErrorCode.ERR_MEMBER_INVALID);
 		}
 
 		ApiResponse<Boolean> dataProcess = this.sessionDataRepository.prepareJoinRoomOnlyGuest(
