@@ -35,7 +35,7 @@ export default {
     ...mapActions(['roomClear', 'setRoomInfo']),
     async join(room, showRestrictAgreeModal = true) {
       this.logger('>>> JOIN ROOM')
-      console.log('debug room :', room)
+
       try {
         //멤버 상태 등록 안된 경우 협업방 입장 불가
         //그러나 guest 멤버는 체크하지 않음.
@@ -132,6 +132,17 @@ export default {
             }
 
             return false
+          } else if (err.code === ERROR.MEMBER_UUID_IS_INVALID) {
+            this.confirmDefault(
+              this.$t('guest.guest_account_deleted_and_request_account_again'),
+              {
+                action: async () => {
+                  const reason = 'deleted'
+                  this.$eventBus.$emit('initTimerAndGuestMember', reason)
+                },
+                text: this.$t('button.request_again'),
+              },
+            )
           }
         }
         this.toastError(this.$t('workspace.remote_invite_impossible'))

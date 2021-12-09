@@ -84,38 +84,50 @@ export default {
   methods: {
     ...mapActions(['setCompanyInfo', 'updateAccount', 'changeWorkspace']),
 
-    async initGuestMember() {
-      await auth.logout(false)
+    async initGuestMember(omitLogout = false) {
+      try {
+        if (!omitLogout) {
+          const redirect = false
+          await auth.logout(redirect)
+        }
 
-      const guestInfo = await getGuestInfo({ workspaceId: this.workspaceId })
+        const guestInfo = await getGuestInfo({ workspaceId: this.workspaceId })
 
-      if (guestInfo.uuid === null) {
-        throw { code: ERROR.GUEST_USER_NOT_FOUND }
+        if (guestInfo.uuid === null) {
+          this.showGuestExpiredAlarm()
+          return
+        }
+
+        this.updateAccount({
+          ...guestInfo,
+          roleType: ROLE.GUEST,
+        })
+
+        setTokensToCookies(guestInfo)
+
+        const wsInfo = await getWorkspaceInfo({ workspaceId: this.workspaceId })
+
+        this.changeWorkspace(wsInfo)
+
+        this.checkCompany(guestInfo.uuid, this.workspaceId)
+
+        await auth.init()
+
+        auth.initAuthConnection(
+          this.workspaceId,
+          this.onDuplicatedRegistration,
+          this.onRemoteExitReceived,
+          this.onForceLogoutReceived,
+          this.onWorkspaceDuplicated,
+          this.onRegistrationFail,
+        )
+      } catch (err) {
+        if (err.code === ERROR.GUEST_USER_NOT_FOUND) {
+          this.showGuestExpiredAlarm()
+        } else {
+          console.error(err)
+        }
       }
-
-      this.updateAccount({
-        ...guestInfo,
-        roleType: ROLE.GUEST,
-      })
-
-      setTokensToCookies(guestInfo)
-
-      const wsInfo = await getWorkspaceInfo({ workspaceId: this.workspaceId })
-
-      this.changeWorkspace(wsInfo)
-
-      this.checkCompany(guestInfo.uuid, this.workspaceId)
-
-      await auth.init()
-
-      auth.initAuthConnection(
-        this.workspaceId,
-        this.onDuplicatedRegistration,
-        this.onRemoteExitReceived,
-        this.onForceLogoutReceived,
-        this.onWorkspaceDuplicated,
-        this.onRegistrationFail,
-      )
     },
     async checkCompany(uuid, workspaceId) {
       const res = await getCompanyInfo({

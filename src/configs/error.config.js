@@ -41,4 +41,6 @@ export const ERROR = {
 
   //즐겨찾기 그룹 갯수를 초과한 경우
   WORKSPACE_MEMBER_GROUP_MAX_OVER: 4027,
+
+  MEMBER_UUID_IS_INVALID: 4031,
 }

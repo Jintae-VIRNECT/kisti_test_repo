@@ -14,6 +14,7 @@ import {
   VIDEO,
   FILE,
   DRAWING,
+  SYSTEM,
 } from 'configs/remote.config'
 import { CAMERA as CAMERA_STATUS } from 'configs/device.config'
 
@@ -465,6 +466,14 @@ const signalAr3dContent = event => {
   window.vue.$eventBus.$emit(SIGNAL.AR_3D, event)
 }
 
+/** 계정 삭제로 인해 서비스 서버에서 강퇴 처리*/
+const signalEvictedBySystem = event => {
+  const data = JSON.parse(event.data)
+  if (data.type === SYSTEM.DELETED_ACCOUNT) {
+    window.vue.$eventBus.$emit(SYSTEM.DELETED_ACCOUNT, event)
+  }
+}
+
 export default {
   streamCreated,
   streamDestroyed,
@@ -486,4 +495,5 @@ export default {
   signalArPointing,
   signalArDrawing,
   signalAr3dContent,
+  signalEvictedBySystem,
 }

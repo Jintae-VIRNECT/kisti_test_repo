@@ -183,10 +183,11 @@ export const CAPTURE_PERMISSION = {
 }
 
 /**
- * 시그널 - ??
+ * 시그널 - 서비스 서버 메시지
  */
 export const SYSTEM = {
   EVICT: 'evict',
+  DELETED_ACCOUNT: 'DELETED_ACCOUNT',
 }
 
 /**
