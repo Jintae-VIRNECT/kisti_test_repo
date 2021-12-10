@@ -1,19 +1,24 @@
-import com.github.jk1.license.filter.ExcludeTransitiveDependenciesFilter
-import com.github.jk1.license.filter.LicenseBundleNormalizer
-import com.github.jk1.license.render.InventoryMarkdownReportRenderer
-
 plugins {
     id 'org.springframework.boot' version '2.3.8.RELEASE'
     id 'io.spring.dependency-management' version '1.0.10.RELEASE'
     id "com.ewerk.gradle.plugins.querydsl" version "1.0.10"
     id "io.franzbecker.gradle-lombok" version "3.3.0"
-    id "com.github.jk1.dependency-license-report" version "1.13"
     id 'java'
+    id 'jacoco'
 }
 
 ext {
     springCloudVersion = 'Hoxton.SR10'
     mapstructVersion = '1.4.2.Final'
+    jacocoExcludes = [
+            "com/virnect/uaa/UserAccountAndAuthenticationServer.java",
+            "com/virnect/uaa/global/config/**",
+            "com/virnect/uaa/domain/**/dto/**",
+            "com/virnect/uaa/global/domain/**",
+            "src/main/resources/**",
+            "**/*Config.*",
+            "**/*Configuration.*"
+    ]
 }
 
 
@@ -140,12 +145,12 @@ dependencies {
 test {
     useJUnitPlatform()
     systemProperty("spring.active.profiles", "test")
-    systemProperty("VIRNECT_ENV","test")
+    systemProperty("VIRNECT_ENV", "test")
 }
 
 
 // querydsl 적용
-def querydslDir= "$buildDir/generated/querydsl"
+def querydslDir = "$buildDir/generated/querydsl"
 
 querydsl {
     library = "com.querydsl:querydsl-apt"
@@ -165,14 +170,39 @@ configurations {
     querydsl.extendsFrom compileClasspath
 }
 
-
-
-//License Reporting Configuration
-licenseReport {
-    renderers = [new InventoryMarkdownReportRenderer()]
-    filters = [new LicenseBundleNormalizer(), new ExcludeTransitiveDependenciesFilter()]
-}
-
 bootJar {
     layered()
+}
+
+/**
+ * Jacoco Configuration
+ */
+
+jacoco {
+    toolVersion = "0.8.7"
+}
+
+jacocoTestReport {
+    dependsOn test
+
+    reports {
+        csv.enabled true
+        xml.enabled true
+    }
+
+    afterEvaluate {
+        classDirectories.setFrom(files(classDirectories.files.collect {
+            fileTree(dir: it, exclude: jacocoExcludes)
+        }))
+    }
+
+    finalizedBy jacocoTestCoverageVerification
+}
+
+jacocoTestCoverageVerification {
+    afterEvaluate {
+        classDirectories.setFrom(files(classDirectories.files.collect {
+            fileTree(dir: it, exclude: jacocoExcludes)
+        }))
+    }
 }
