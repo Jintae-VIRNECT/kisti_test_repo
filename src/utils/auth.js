@@ -43,6 +43,7 @@ let savedWorkspaceId //기존 workspaceId, workspaceId 변경 확인 하기 위�
 let changingWorkspaceId //변경 요청 중인 workspaceId 변경 완료 응답 받은 후 savedWorksapceId에 저장
 
 const domainRegex = /^(((http(s?)):\/\/)?)([0-9a-zA-Z-]+\.)+[a-zA-Z]{2,6}(:[0-9]+)?(\/\S*)?/
+export const COOKIE_EXPIRE_UNIT = 60 * 60 * 24 //쿠키 expires 값은 24시간이 1 기준으로 들어가고, api응답값의 expireIn은 초단위로 오기 때문에 계산하기 위한 값
 
 export let urlsFromConfigServer = {}
 
@@ -471,7 +472,7 @@ const getCookieOption = (urls, expire) => {
     return {
       secure: true,
       sameSite: 'None',
-      expires: expire / 3600000,
+      expires: expire / COOKIE_EXPIRE_UNIT, //* expire는 초단위, expires 값 세팅 단위는 1이 24시간 단위이므로 맞게 계산해줘야 한다.
       domain: url,
     }
   else
