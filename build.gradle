@@ -9,11 +9,15 @@ plugins {
     id "io.franzbecker.gradle-lombok" version "3.3.0"
     id "com.github.jk1.dependency-license-report" version "1.13"
     id 'java'
+    id 'jacocos'
 }
 
 ext {
     springCloudVersion = 'Hoxton.SR10'
     mapstructVersion = '1.4.2.Final'
+    jacocoExcludes = [
+				//'src/main/java/com/virnect/user/UserApplication.java'
+    ]
 }
 
 
@@ -175,4 +179,37 @@ licenseReport {
 
 bootJar {
     layered()
+}
+
+/**
+ * Jacoco Configuration
+ */
+
+jacoco {
+    toolVersion = "0.8.7"
+}
+
+jacocoTestReport {
+    dependsOn test
+
+    reports {
+        csv.enabled true
+        xml.enabled true
+    }
+
+    afterEvaluate {
+        classDirectories.setFrom(files(classDirectories.files.collect {
+            fileTree(dir: it, exclude: jacocoExcludes)
+        }))
+    }
+
+    finalizedBy jacocoTestCoverageVerification
+}
+
+jacocoTestCoverageVerification {
+    afterEvaluate {
+        classDirectories.setFrom(files(classDirectories.files.collect {
+            fileTree(dir: it, exclude: jacocoExcludes)
+        }))
+    }
 }
