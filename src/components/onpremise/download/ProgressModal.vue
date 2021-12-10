@@ -12,9 +12,9 @@
       ></p>
     </div>
     <div slot="footer">
-      <el-button type="danger" @click="cancel"
-        >$t('workspace.onpremiseSetting.upload.modal.cancel')</el-button
-      >
+      <el-button type="danger" @click="cancel">{{
+        $t('workspace.onpremiseSetting.upload.modal.cancel')
+      }}</el-button>
     </div>
   </el-dialog>
 </template>

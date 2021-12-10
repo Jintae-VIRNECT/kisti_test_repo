@@ -122,15 +122,21 @@
         "modal": {
           "title": "Registering {n} installation file",
           "description": "Please register the {format} file and version information when registering {category} installation file.",
-          "attach": "Attach file", 
+          "attach": "Attach file",
           "version": "Version infomation",
-          "placeholder": "Please enter version information. (e.g. X.X.XX)",
+          "placeholder": "Please enter version information. (e.g. X.X.X.X)",
           "explanation": "An automatic update notification is sent to Workspace members when the installation file upload is complete.",
           "drag": "Drag the {n} File or",
           "add": "Add File",
           "progressTitle": "Uploading installation file.",
           "progressMessage": "The selected installation file is being uploaded.<br>Don't close your browser until done.",
-          "cancel": "Cancel"
+          "cancel": "Cancel",
+          "versionWarning": "Please enter version information.",
+          "submit": "Register"
+        },
+        "success": "The installation file has been uploaded.",
+        "error": {
+          "wrongExtension": "Please register the {n} file."
         }
       }
     }

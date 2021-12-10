@@ -1,37 +1,52 @@
 <template>
   <article>
-    <div class="file-cell" v-for="(val, idx) of files" :key="`cell-${idx}`">
-      <p class="file-title" v-if="idx !== 'file'">
-        {{ lowerCase(idx) || '-' }}
+    <div class="file-cell">
+      <p class="file-title">Category</p>
+      <p class="value">
+        {{ file.category || '-' }}
       </p>
-      <p class="value" v-if="!/format|file/.test(idx)">{{ val || '-' }}</p>
-      <p class="value" v-else-if="val === null && idx !== 'file'">-</p>
-      <ul v-if="idx === 'format'">
-        <li v-for="names in val" :key="names">
-          {{ names }}
+    </div>
+    <div class="file-cell">
+      <p class="file-title">Format</p>
+      <ul v-if="typeof file.format === 'string'">
+        <li>
+          {{ file.format }}
         </li>
       </ul>
+      <ul v-else>
+        <li v-for="(value, index) in file.format" :key="index">{{ value }}</li>
+      </ul>
+    </div>
+    <div class="file-cell">
+      <p class="file-title">Version</p>
+      <p class="value">{{ file.version }}</p>
+    </div>
+    <div class="file-cell">
+      <p class="file-title">Released</p>
+      <p class="value">{{ released(file.released) }}</p>
+    </div>
+    <div class="file-cell">
       <VirnectButton
-        v-if="idx === 'file'"
         :label="$t('workspace.onpremiseSetting.upload.title')"
-        @onClick="click(files)"
+        @onClick="click(file)"
       />
     </div>
   </article>
 </template>
 
 <script>
+import dayjs from '@/plugins/dayjs'
 export default {
   props: {
-    product: String,
-    files: Object,
+    file: Object,
   },
   methods: {
     click(info) {
-      this.$emit('fileUploadClick', this.product, info)
+      this.$emit('fileUploadClick', info)
     },
-    lowerCase(str) {
-      return str[0].toUpperCase() + str.slice(1)
+    released(reletedTime) {
+      const format = dayjs(this.file.released).format('YY.MM.DD hh:mm')
+      return format === 'Invalid Date' ? reletedTime : format
     },
   },
 }

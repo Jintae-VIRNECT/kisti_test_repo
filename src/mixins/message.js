@@ -16,6 +16,7 @@ export default {
         1018: this.$t('members.add.message.memberWithdrawal'),
         1021: this.$t('members.setting.message.notChangeMasterPlan'),
         2201: this.$t('members.create.message.idDuplicated'),
+        6007: this.$t('workspace.onpremiseSetting.upload.modal.versionWarning'),
       },
     }
   },

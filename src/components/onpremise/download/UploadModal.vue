@@ -3,6 +3,7 @@
     <el-dialog
       class="upload-modal onpremise-setting-modal"
       :visible.sync="showMe"
+      :close-on-click-modal="false"
       :title="
         $tc('workspace.onpremiseSetting.upload.modal.title', file.category)
       "
@@ -13,7 +14,7 @@
         <p v-html="getDescription()" class="upload-modal__descriptsion"></p>
         <el-divider></el-divider>
         <el-form ref="form" :model="form" :rules="rules">
-          <el-form-item class="horizon" prop="file" required>
+          <el-form-item class="horizon" ref="files">
             <template slot="label">
               <span>{{
                 $t('workspace.onpremiseSetting.upload.modal.attach')
@@ -21,11 +22,12 @@
             </template>
             <OnpremiseDownloadDragZone
               v-if="visible"
-              :files="setFormat(file.format)"
+              :formatList="getFormatList(file.format)"
+              @fileTypeError="fileError"
               @fileData="fileData"
             />
           </el-form-item>
-          <el-form-item class="horizon" prop="version" required>
+          <el-form-item class="horizon" prop="version">
             <template slot="label">
               <span>{{
                 $t('workspace.onpremiseSetting.upload.modal.version')
@@ -46,7 +48,7 @@
       </div>
       <div slot="footer">
         <el-button type="primary" @click="submit">
-          {{ $t('workspace.onpremiseSetting.logo.submit') }}
+          {{ $t('workspace.onpremiseSetting.upload.modal.submit') }}
         </el-button>
       </div>
     </el-dialog>
@@ -60,8 +62,11 @@
 <script>
 import modalMixin from '@/mixins/modal'
 import formRulesMixin from '@/mixins/formRules'
+import messgeMixin from '@/mixins/message'
+import workspaceService from '@/services/workspace'
+
 export default {
-  mixins: [modalMixin, formRulesMixin],
+  mixins: [modalMixin, formRulesMixin, messgeMixin],
   props: {
     file: {
       type: Object,
@@ -79,25 +84,29 @@ export default {
     }
   },
   methods: {
+    fileError() {
+      this.$refs['files'].$el.classList.add('is-error')
+    },
     fileData(files) {
-      files.map(v => {
-        console.log(v.fileName)
-      })
-      // api 기다리는 중
+      this.$refs['files'].$el.classList.remove('is-error')
+      this.form.files = files
+    },
+    getType(target) {
+      return Object.prototype.toString.call(target).slice(8, -1)
     },
     getDescription() {
       let result = ''
-
-      if (this.file.format === undefined) return result
+      if (this.getType(this.file.format) === 'Undefined') return result
 
       let format = ''
-
-      this.file.format.forEach(item => {
-        format += ` <span>${item
-          .slice(item.indexOf('.') + 1)
-          .toUpperCase()}</span>,`
-      })
-      format = format.slice(0, -1)
+      if (this.getType(this.file.format) === 'Array') {
+        this.file.format.forEach(item => {
+          format += ` <span>${this.getFileExtension(item)}</span>,`
+        })
+        format = format.slice(0, -1)
+      } else if (this.getType(this.file.format) === 'String') {
+        format += `<span>${this.getFileExtension(this.file.format)}</span>`
+      }
 
       result = this.$t('workspace.onpremiseSetting.upload.modal.description', {
         category: `<span>${this.file.category}</span>`,
@@ -105,17 +114,16 @@ export default {
       })
       return result
     },
-    setFormat(str) {
+    getFileExtension(str) {
+      const array = str.split('.')
+      return array[array.length - 1].toUpperCase()
+    },
+    getFormatList(value) {
       let setData = null
-      if (typeof str === 'object') {
-        const arr = []
-        for (let val of str) {
-          arr.push(val.slice(val.indexOf('.') + 1))
-        }
-        setData = arr
+      if (this.getType(value) === 'Array') {
+        setData = value.map(val => val.slice(val.indexOf('.') + 1))
       } else {
-        const format = str.slice(str.indexOf('.') + 1)
-        setData = format.toUpperCase()
+        setData = [this.getFileExtension(value)]
       }
       return setData
     },
@@ -128,21 +136,34 @@ export default {
       this.whiteLogoFile = this.whiteLogo
     },
     closed() {
+      this.$refs.form.resetFields()
       this.$refs.form.clearValidate()
       this.showMe = false
     },
     async submit() {
-      // 유효성 검사
       try {
-        // api 연동 작업 시 진행
-        //await this.$refs.form.validate()
+        await this.$refs.form.validate()
+
+        if (!this.form.files.length) return this.fileError()
       } catch (e) {
+        this.errorMessage(e)
         return false
       }
 
       try {
         this.showProgressModal = true
+        await workspaceService.setWorkspaceDownloadFile({
+          ...this.file,
+          ...this.form,
+        })
+        this.showProgressModal = false
+        this.closed()
+        this.$emit('refresh')
+        this.successMessage(
+          this.$t('workspace.onpremiseSetting.upload.success'),
+        )
       } catch (e) {
+        this.me
         console.log(e)
       }
     },

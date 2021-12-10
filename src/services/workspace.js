@@ -7,7 +7,9 @@ import Member from '@/models/workspace/Member'
 import MemberActivity from '@/models/workspace/MemberActivity'
 import PlansInfo from '@/models/workspace/PlansInfo'
 import OnPremiseSetting from '@/models/workspace/OnPremiseSetting'
-
+import Application, {
+  productList,
+} from '@/models/settings/onpremise/application'
 function activeWorkspaceGetter() {
   return store.getters['auth/activeWorkspace']
 }
@@ -405,6 +407,60 @@ export default {
       route: { workspaceId: activeWorkspaceGetter().uuid },
       params: formData,
     })
+    return data
+  },
+  /**
+   * 다운로드 파일 리스트 조회 (onpremise)
+   */
+  async getDownloadFiles(productName) {
+    const { appInfoList } = await api('WORKSPACE_GET_DOWNLOAD_FILES', {
+      route: {
+        productName,
+      },
+    })
+    const appList = appInfoList.map(app => new Application(app))
+
+    const productAppList = productList[productName].map(file => {
+      const app = appList.find(app => app.category === file.category)
+      if (app) {
+        file.format = app.format
+        file.version = app.version
+        file.released = app.released
+        return file
+      } else return file
+    })
+
+    return productAppList
+  },
+  /**
+   * 워크스페이스 파일 업로드 (onpremise)
+   */
+  async setWorkspaceDownloadFile(form) {
+    if (!form.files.length) return false
+
+    const formData = new FormData()
+    formData.append('deviceModel  ', form.deviceModel)
+    formData.append('deviceType  ', form.category.toUpperCase())
+    formData.append('operationSystem  ', form.operationSystem)
+    formData.append('productName ', form.productName)
+    formData.append('uploadAppFile ', form.files[0].file)
+
+    if (form.signingKey) {
+      formData.append('signingKey ', form.signingKey)
+    }
+
+    if (form.version) {
+      formData.append('versionName   ', form.version)
+    }
+
+    const data = await api('WORKSPACE_SET_DOWNLOAD_FILE', {
+      params: formData,
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+      timeout: 100000,
+    })
+
     return data
   },
 }

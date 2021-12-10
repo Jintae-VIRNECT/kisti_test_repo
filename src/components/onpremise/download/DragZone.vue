@@ -58,32 +58,37 @@ export default {
     }
   },
   props: {
-    files: {
+    formatList: {
       type: Array,
       required: true,
     },
   },
   methods: {
     setList() {
-      const arr = []
-      this.files.map((v, i) => {
-        arr[i] = {
+      this.fileList = this.formatList.map(format => {
+        return {
           fileSelected: false,
-          format: v,
+          format,
           fileName: '',
           file: null,
           dragged: false,
         }
       })
-      this.fileList = arr
     },
     fileSet(file, idx, format) {
       const dropFormat = file.name.slice(file.name.lastIndexOf('.') + 1)
-      if (dropFormat !== format) {
-        // 파일 포맷 체크 에러메시지 뭘로 해요?
-        // 서버와 주고 받을 코드에 대해서 논의가 필요합니다.
-        this.errorMessage('Error: 3000')
-        return
+
+      if (dropFormat.toLowerCase() !== format.toLowerCase()) {
+        this.$message.error({
+          message: this.$tc(
+            'workspace.onpremiseSetting.upload.error.wrongExtension',
+            format,
+          ),
+          duration: 2000,
+          showClose: true,
+        })
+        this.$emit('fileTypeError')
+        return false
       }
       this.fileList[idx].fileName = setSplit(file.name)
       this.fileList[idx].fileSelected = true

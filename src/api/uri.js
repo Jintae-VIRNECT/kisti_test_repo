@@ -147,4 +147,8 @@ export default {
   WORKSPACE_SET_LOGO: ['POST', '/workspaces/{workspaceId}/logo'],
   // 워크스페이스 파비콘 변경
   WORKSPACE_SET_FAVICON: ['POST', '/workspaces/{workspaceId}/favicon'],
+  // 워크스페이스 다운로드 파일 리스트 조회
+  WORKSPACE_GET_DOWNLOAD_FILES: ['GET', '/download/list/{productName}'],
+  // 워크스페이스 다운로드 파일 업로드
+  WORKSPACE_SET_DOWNLOAD_FILE: ['POST', '/download/app/register/admin'],
 }

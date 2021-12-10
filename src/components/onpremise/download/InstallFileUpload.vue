@@ -9,32 +9,30 @@
 
     <div>
       <a
-        v-for="(file, idx) of fileList"
+        v-for="(product, idx) of productList"
         :key="idx"
         ref="button"
         class="install-file-upload__button"
         :class="{
-          'install-file-upload__button--clicked': idx === selected,
+          'install-file-upload__button--clicked': product === selected,
         }"
-        @click="click(idx)"
+        @click="click(product)"
       >
-        <img :src="imageSet(idx)" />
-        <span>VIRNECT {{ lowerCase(idx) }}</span>
+        <img :src="imageSet(product)" />
+        <span>VIRNECT {{ lowerCase(product) }}</span>
       </a>
     </div>
   </el-card>
 </template>
 
 <script>
-import upload from '@/models/settings/onpremise/upload'
 export default {
   props: {
-    fileList: Object,
     selected: String,
   },
   data() {
     return {
-      upload,
+      productList: ['remote', 'make', 'view'],
     }
   },
   methods: {

@@ -6,6 +6,7 @@
       :userInfo="auth.myInfo"
       :urls="$url"
       :logo="{ default: logo }"
+      :regex="/remote|workstation|login|download/"
       @logout="$store.commit('auth/LOGOUT')"
     >
       <template slot="subTitle">

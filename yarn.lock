@@ -2072,7 +2072,7 @@
   dependencies:
     "@types/node" "*"
 
-"@virnect/components@^1.9.7":
+"@virnect/components@^1.9.8":
   version "1.9.8"
   resolved "http://192.168.6.3:4873/@virnect%2fcomponents/-/components-1.9.8.tgz#f2d059db7ac556c48a33ef90cad736dbf5b0a7bf"
   integrity sha512-ZGTsWDVWb1+m7eqFPteQp6KsvKNFOikHyDKax3gFV94VrrlhNo6VvdgQcisQz75B5VvjLYfKTNVTpmWY06kpOw==

@@ -19,18 +19,16 @@
             @selectUploadPart="selectUploadPart"
             @isSelected="isSelected"
             :selected="selected"
-            :fileList="fileList"
           />
         </el-col>
         <!-- 가운데 -->
         <el-col class="container__center">
           <ul>
-            <li v-for="(file, idx) of fileList[selected]" :key="idx">
+            <li v-for="(file, idx) of fileList" :key="idx">
               <el-card class="onpremise-download-file">
                 <OnpremiseDownloadFile
                   @fileUploadClick="fileUploadClick"
-                  :product="selected"
-                  :files="file"
+                  :file="file"
                 />
               </el-card>
             </li>
@@ -41,18 +39,28 @@
     <OnpremiseDownloadUploadModal
       :file="installFileInfo"
       :visible.sync="showFileUploadModal"
+      @refresh="selectUploadPart(selected)"
     />
   </div>
 </template>
 
 <script>
-import fileList from '@/models/settings/onpremise/upload'
+import workspaceService from '@/services/workspace'
 export default {
+  async asyncData({ error }) {
+    try {
+      const downloadFiles = await workspaceService.getDownloadFiles('remote')
+      return {
+        fileList: downloadFiles,
+      }
+    } catch (e) {
+      error({ message: e.message })
+    }
+  },
   data() {
     return {
       installFileInfo: {},
       showFileUploadModal: false,
-      fileList: fileList,
       selected: 'remote',
     }
   },
@@ -60,13 +68,16 @@ export default {
     isSelected(key) {
       this.selected = key
     },
-    fileUploadClick(name, fileInfo) {
+    fileUploadClick(fileInfo) {
       this.installFileInfo = fileInfo
       this.showFileUploadModal = true
     },
-    selectUploadPart(name) {
-      // 넘어오는 name으로 출력될 리스트 처리
-      console.log(name)
+    async selectUploadPart(name) {
+      try {
+        this.fileList = await workspaceService.getDownloadFiles(name)
+      } catch (e) {
+        throw new Error(e.message, e.code)
+      }
     },
   },
 }

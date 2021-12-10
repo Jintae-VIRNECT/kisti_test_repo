@@ -61,18 +61,19 @@ export default {
             message: this.$t('invalid.format', [this.$t('members.add.email')]),
           },
         ],
-        file: [
-          {
-            required: true,
-            message: ' ',
-            trigger: 'blur',
-          },
-        ],
         version: [
           {
-            required: true,
             message: ' ',
-            trigger: 'blur',
+          },
+          {
+            validator: (rule, value, callback) => {
+              if (!value.trim().length) callback()
+
+              if (!/^([1-9]{1})(\.(([1-9]{1})|0)){0,3}$/g.test(value)) {
+                callback(new Error(' '))
+              }
+              callback()
+            },
           },
         ],
       },
