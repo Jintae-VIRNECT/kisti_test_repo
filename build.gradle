@@ -17,8 +17,7 @@ ext {
             "com/virnect/uaa/global/domain/**",
             "src/main/resources/**",
             "**/*Config.*",
-            "**/*Configuration.*",
-            'com/virnect/user/adapter/inbound/dto/**'
+            "**/*Configuration.*"
     ]
 }
 
