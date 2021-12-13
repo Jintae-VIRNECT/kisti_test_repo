@@ -58,14 +58,14 @@ export default {
     }
   },
   props: {
-    formatList: {
+    extensionList: {
       type: Array,
       required: true,
     },
   },
   methods: {
     setList() {
-      this.fileList = this.formatList.map(format => {
+      this.fileList = this.extensionList.map(format => {
         return {
           fileSelected: false,
           format,

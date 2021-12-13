@@ -87,8 +87,6 @@
         "upload": "Uploaded a project.",
         "edit": "Changed the permission to edit information to {member}.",
         "shared": "Changed the sharing status to {member}.",
-        "moveTrash": "Moved the project to the Trash.",
-        "backup": "Moved the deleted project to the project list.",
         "download": "Downloaded the project.",
         "empty": "No activity history",
         "delete": "Deleted the project.",

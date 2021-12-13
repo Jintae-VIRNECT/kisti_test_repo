@@ -22,12 +22,16 @@
             </template>
             <OnpremiseDownloadDragZone
               v-if="visible"
-              :formatList="getFormatList(file.format)"
+              :extensionList="getExtensionList(file.name)"
               @fileTypeError="fileError"
               @fileData="fileData"
             />
           </el-form-item>
-          <el-form-item class="horizon" prop="version">
+          <el-form-item
+            v-if="extension !== 'APK'"
+            class="horizon"
+            prop="version"
+          >
             <template slot="label">
               <span>{{
                 $t('workspace.onpremiseSetting.upload.modal.version')
@@ -80,6 +84,7 @@ export default {
         files: [],
         version: '',
       },
+      extension: '',
       showProgressModal: false,
     }
   },
@@ -96,36 +101,39 @@ export default {
     },
     getDescription() {
       let result = ''
-      if (this.getType(this.file.format) === 'Undefined') return result
+      if (this.getType(this.file.name) === 'Undefined') return result
 
-      let format = ''
-      if (this.getType(this.file.format) === 'Array') {
-        this.file.format.forEach(item => {
-          format += ` <span>${this.getFileExtension(item)}</span>,`
+      let spanTagString = ''
+      if (this.getType(this.file.name) === 'Array') {
+        this.file.name.forEach(item => {
+          spanTagString += ` <span>${this.getFileExtension(item)}</span>,`
         })
-        format = format.slice(0, -1)
-      } else if (this.getType(this.file.format) === 'String') {
-        format += `<span>${this.getFileExtension(this.file.format)}</span>`
+        // 마지막 항목의 쉼표 제거
+        spanTagString = spanTagString.slice(0, -1)
+      } else if (this.getType(this.file.name) === 'String') {
+        spanTagString += `<span>${this.getFileExtension(this.file.name)}</span>`
       }
 
       result = this.$t('workspace.onpremiseSetting.upload.modal.description', {
         category: `<span>${this.file.category}</span>`,
-        format: format,
+        extension: spanTagString,
       })
       return result
     },
     getFileExtension(str) {
+      if (this.getType(str) !== 'String') return false
+
       const array = str.split('.')
       return array[array.length - 1].toUpperCase()
     },
-    getFormatList(value) {
-      let setData = null
+    getExtensionList(value) {
+      let result = null
       if (this.getType(value) === 'Array') {
-        setData = value.map(val => val.slice(val.indexOf('.') + 1))
+        result = value.map(val => val.slice(val.indexOf('.') + 1))
       } else {
-        setData = [this.getFileExtension(value)]
+        result = [this.getFileExtension(value)]
       }
-      return setData
+      return result
     },
     cancelFileUpload() {
       this.showProgressModal = false
@@ -134,6 +142,7 @@ export default {
     opened() {
       this.logoFile = this.logo
       this.whiteLogoFile = this.whiteLogo
+      this.extension = this.getFileExtension(this.file.name)
     },
     closed() {
       this.$refs.form.resetFields()
@@ -163,7 +172,7 @@ export default {
           this.$t('workspace.onpremiseSetting.upload.success'),
         )
       } catch (e) {
-        this.me
+        this.errorMessage(e)
         console.log(e)
       }
     },

@@ -423,7 +423,7 @@ export default {
     const productAppList = productList[productName].map(file => {
       const app = appList.find(app => app.category === file.category)
       if (app) {
-        file.format = app.format
+        file.name = app.name
         file.version = app.version
         file.released = app.released
         return file
@@ -439,18 +439,18 @@ export default {
     if (!form.files.length) return false
 
     const formData = new FormData()
-    formData.append('deviceModel  ', form.deviceModel)
-    formData.append('deviceType  ', form.category.toUpperCase())
-    formData.append('operationSystem  ', form.operationSystem)
-    formData.append('productName ', form.productName)
-    formData.append('uploadAppFile ', form.files[0].file)
+    formData.append('deviceModel', form.deviceModel)
+    formData.append('deviceType', form.category.toUpperCase())
+    formData.append('operationSystem', form.operationSystem)
+    formData.append('productName', form.productName)
+    formData.append('uploadAppFile', form.files[0].file)
 
     if (form.signingKey) {
-      formData.append('signingKey ', form.signingKey)
+      formData.append('signingKey', form.signingKey)
     }
 
     if (form.version) {
-      formData.append('versionName   ', form.version)
+      formData.append('versionName', form.version)
     }
 
     const data = await api('WORKSPACE_SET_DOWNLOAD_FILE', {

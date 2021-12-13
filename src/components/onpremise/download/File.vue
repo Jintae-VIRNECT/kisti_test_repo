@@ -7,14 +7,16 @@
       </p>
     </div>
     <div class="file-cell">
-      <p class="file-title">Format</p>
-      <ul v-if="typeof file.format === 'string'">
+      <p class="file-title">File Name</p>
+      <ul v-if="typeof file.name === 'string'">
         <li>
-          {{ file.format }}
+          {{ file.name }}
         </li>
       </ul>
       <ul v-else>
-        <li v-for="(value, index) in file.format" :key="index">{{ value }}</li>
+        <li v-for="(value, index) in file.name" :key="index">
+          {{ value }}
+        </li>
       </ul>
     </div>
     <div class="file-cell">

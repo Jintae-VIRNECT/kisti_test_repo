@@ -121,7 +121,7 @@
         "title": "설치파일 업로드",
         "modal": {
           "title": "{n} 설치파일 등록",
-          "description": "{category} 설치파일 등록 시 {format} 파일과 버전정보를 등록해주세요.",
+          "description": "{category} 설치파일 등록 시 {extension} 파일과 버전정보를 등록해주세요.",
           "attach": "파일 첨부",
           "version": "버전 정보",
           "placeholder": "버전정보를 입력해주세요. (e.g. X.X.X.X)",
