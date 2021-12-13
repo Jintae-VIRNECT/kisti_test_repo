@@ -134,10 +134,10 @@ export const resetOrientation = async file => {
  * 0.05MB 이하는 모두 0.1MB로 표기
  *
  * @param {Number} size 파일 사이즈(byte)
- * @returns MB 표기로 변환된 파일 사이즈
+ * @returns {String} MB 표기로 변환된 파일 사이즈
  */
 export const fileSizeFilter = size => {
-  const fiftyKB = 5120 //50KB
+  const fiftyKB = 51200 //50KB
   const dividedByMB = size / 1024 / 1024
 
   if (size <= fiftyKB) {
