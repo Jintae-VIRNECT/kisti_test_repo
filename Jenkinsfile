@@ -73,7 +73,7 @@ pipeline {
 
             steps {
                 script {
-                    APP = docker.build("""${REPO_NAME}:${BRANCH_NAME}.${BUILD_NUMBER}""" -f ./docker/Dockerfile .""")
+                    APP = docker.build("""${REPO_NAME}:${BRANCH_NAME}.${BUILD_NUMBER}""", """ -f ./docker/Dockerfile .""")
                 }
             }
             post {
