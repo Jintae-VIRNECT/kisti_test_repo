@@ -352,8 +352,8 @@ export default {
       }
     }
     .el-button {
-      font-size: 13px;
       margin: 0;
+      font-size: 13px;
       &.en {
         width: 133px;
       }
@@ -363,24 +363,24 @@ export default {
   .create-pane__title {
     h6 {
       @include fontLevel(100);
-      color: #0b1f48;
       margin-bottom: 8px;
+      color: #0b1f48;
     }
     p {
       @include fontLevel(75);
-      color: #445168;
       margin-bottom: 16px;
+      color: #445168;
     }
   }
   .create-pane__content {
-    overflow-y: scroll;
+    width: 610px;
     max-height: 498px;
     padding: 0 5px 0 24px;
-    width: 610px;
+    overflow-y: scroll;
     .el-tabs .el-tabs__item {
       height: 40px;
-      line-height: 40px;
       padding: 0 14px;
+      line-height: 40px;
     }
   }
   .create-pane__sub-title {
@@ -389,8 +389,8 @@ export default {
     border-bottom: 1px solid #eaedf3;
     p {
       @include fontLevel(75);
-      color: #0b1f48;
       margin-bottom: 8px;
+      color: #0b1f48;
     }
     .el-divider--horizontal {
       margin: 8px 0 16px 0;
@@ -406,8 +406,8 @@ export default {
   }
   .create-pane__footer {
     display: flex;
-    padding: 24px;
     justify-content: space-between;
+    padding: 24px;
     border-top: 1px solid #edf0f7;
   }
 }

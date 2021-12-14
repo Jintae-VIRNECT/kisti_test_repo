@@ -195,18 +195,18 @@ export default {
   .el-row {
     margin: 12px 0;
     .el-button {
-      height: 24px;
-      width: 24px;
-      padding: 0;
       position: absolute;
       right: 0;
+      width: 24px;
+      height: 24px;
+      padding: 0;
     }
   }
   .virnect-workstation-form {
     .input-placeholder {
       position: absolute;
-      margin: 8px 0 8px 12px;
       z-index: 1;
+      margin: 8px 0 8px 12px;
       cursor: var(--cursor);
       pointer-events: var(--pointer);
 
@@ -214,9 +214,9 @@ export default {
         background-color: #e6e9ee;
       }
       > span {
+        color: #5e6b81;
         font-size: 13px;
         vertical-align: top;
-        color: #5e6b81;
       }
     }
   }
@@ -224,11 +224,11 @@ export default {
   .label-user {
     & div:nth-child(1) {
       display: inline-block;
-      border-radius: 12px;
       width: 100px;
       height: 24px;
       margin-top: 8px;
       background-color: #f5f7fa;
+      border-radius: 12px;
       &:hover {
         background-color: #e3eeff;
       }
@@ -245,22 +245,22 @@ export default {
         cursor: pointer;
       }
       span {
-        margin-left: 4px;
-        font-size: 12px;
-        font-weight: 500;
-        vertical-align: middle;
         display: inline-block;
         width: 46px;
+        margin-left: 4px;
         overflow-x: hidden;
-        text-overflow: ellipsis;
+        font-weight: 500;
+        font-size: 12px;
         white-space: nowrap;
+        text-overflow: ellipsis;
+        vertical-align: middle;
       }
     }
     div:nth-child(2) {
       display: inline-block;
       margin-left: 4px;
-      font-size: 12px;
       font-weight: 500;
+      font-size: 12px;
     }
   }
 }
@@ -269,8 +269,8 @@ export default {
     color: black;
     .virnect-thumbnail {
       display: inline-block;
-      vertical-align: middle;
       margin: 0 12px 0 4px;
+      vertical-align: middle;
     }
   }
 }

@@ -119,8 +119,8 @@ export default {
 <style lang="scss">
 #__nuxt .member-setting-modal {
   .el-dialog__body {
-    overflow-y: scroll;
     padding: 0;
+    overflow-y: scroll;
     .el-row--flex {
       min-height: 487px;
     }
@@ -143,12 +143,12 @@ export default {
 
   h6 {
     @include fontLevel(100);
-    color: #0b1f48;
     margin-bottom: 16px;
+    color: #0b1f48;
   }
   &--left {
-    border-right: 1px solid #eaeef2;
     padding: 12px;
+    border-right: 1px solid #eaeef2;
     button:first-child {
       margin-top: 0;
     }
@@ -161,8 +161,8 @@ export default {
     height: 38px;
     margin: 2px 0;
     padding: 9px 12px;
-    border-radius: 3px;
     text-align: left;
+    border-radius: 3px;
     &:hover {
       background-color: #eff2f7;
     }

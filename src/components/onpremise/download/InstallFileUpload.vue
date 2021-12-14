@@ -62,8 +62,8 @@ export default {
     align-items: center;
     height: 44px;
     padding: 0 24px;
-    transition: background-color 0.25s ease;
     cursor: pointer;
+    transition: background-color 0.25s ease;
     &:hover {
       background-color: #f5f7fa;
     }

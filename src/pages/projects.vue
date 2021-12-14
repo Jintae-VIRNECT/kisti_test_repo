@@ -293,9 +293,9 @@ export default {
       position: absolute;
       right: 0;
       bottom: 0;
-      padding: 0 30px;
       height: 34px;
       margin-bottom: 7px;
+      padding: 0 30px;
     }
   }
   .searchbar {

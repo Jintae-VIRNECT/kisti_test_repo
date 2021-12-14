@@ -315,19 +315,19 @@ export default {
   }
   &__submit-button {
     @include fontLevel(100);
-    line-height: 14px;
     width: 66px;
     height: 38px;
+    line-height: 14px;
     border-radius: 3px;
   }
   &__image-change-button {
     @include fontLevel(75);
-    line-height: 13px;
     width: 134px;
     height: 36px;
-    padding: 8px 16px;
-    border-radius: 3px;
     margin-left: 24px;
+    padding: 8px 16px;
+    line-height: 13px;
+    border-radius: 3px;
   }
 }
 </style>

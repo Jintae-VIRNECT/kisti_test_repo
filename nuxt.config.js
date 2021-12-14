@@ -75,6 +75,7 @@ module.exports = async () => {
         '@virnect/components',
         'vee-validate/dist/rules',
       ],
+      postcss: null,
     },
     /**
      * env

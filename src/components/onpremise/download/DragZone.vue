@@ -135,16 +135,16 @@ export default {
 <style lang="scss">
 .is-error {
   .drag-zone {
-    border-radius: 3px;
-    border: solid 2px #f64f4e;
     padding: 23px 20px;
+    border: solid 2px #f64f4e;
+    border-radius: 3px;
   }
 }
 .drag-zone {
+  margin-bottom: 8px;
+  padding: 27px 24px;
   background-color: rgba(244, 246, 250, 0.8);
   border: 1.5px dashed #e0e5ef;
-  padding: 27px 24px;
-  margin-bottom: 8px;
   &__container {
     display: flex;
     justify-content: space-between;
@@ -152,12 +152,12 @@ export default {
   .drag-info {
     width: 274px;
     overflow: hidden;
-    text-overflow: ellipsis;
     white-space: nowrap;
+    text-overflow: ellipsis;
   }
   &--dragged {
-    border: 3px dashed #e0e5ef;
     padding: 24px 21px;
+    border: 3px dashed #e0e5ef;
   }
   button {
     @include fontLevel(100);

@@ -211,13 +211,13 @@ export default {
       margin-bottom: 16px;
     }
     .el-form-item__label {
-      line-height: 20px;
       margin-bottom: 8px;
+      line-height: 20px;
     }
     .is-error .el-input__inner {
-      border-radius: 3px;
-      border: solid 2px #f64f4e;
       padding: 23px 20px;
+      border: solid 2px #f64f4e;
+      border-radius: 3px;
     }
   }
 }

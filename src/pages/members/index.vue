@@ -164,9 +164,9 @@ export default {
     margin-bottom: 20px;
   }
   .members-list {
-    margin-right: -28px;
     display: inline-flex;
     flex-wrap: wrap;
+    margin-right: -28px;
   }
   .el-col.el-col-24.profile {
     width: 320px;

@@ -107,13 +107,13 @@ export default {
 <style lang="scss">
 #__nuxt .member-add-modal {
   .el-dialog__body {
-    padding: 0;
     max-height: none;
+    padding: 0;
   }
   &--left {
-    border-right: 1px solid #eaeef2;
-    padding: 12px;
     width: 184px;
+    padding: 12px;
+    border-right: 1px solid #eaeef2;
     button:first-child {
       margin-top: 0;
     }
@@ -127,20 +127,20 @@ export default {
   .close-button {
     width: 20px;
     height: 20px;
-    background: none;
     padding: 0;
+    background: none;
     &:hover {
       background: none;
     }
   }
   .member-add-modal__tab-button {
+    display: flex;
     width: 160px;
     min-height: 38px;
     margin: 2px 0;
     padding: 9px 12px;
-    border-radius: 3px;
     text-align: left;
-    display: flex;
+    border-radius: 3px;
     &:hover {
       background-color: #eff2f7;
     }

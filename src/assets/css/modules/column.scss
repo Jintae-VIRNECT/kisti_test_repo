@@ -214,18 +214,18 @@
 
   @mixin border($color) {
     & {
-      border: solid 1.2px $color;
-      color: $color;
       display: inline-block;
-      text-align: center;
       width: 68px;
       height: 28px;
       margin-right: 8px;
       padding: 3px 12px 5px;
-      border-radius: 3px;
+      color: $color;
       font-size: 13px;
       line-height: 20px;
+      text-align: center;
       background-color: rgba(32, 102, 243, 0.02);
+      border: solid 1.2px $color;
+      border-radius: 3px;
     }
   }
 

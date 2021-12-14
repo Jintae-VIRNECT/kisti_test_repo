@@ -114,9 +114,9 @@ export default {
 
     @for $i from 1 through 3 {
       &-bar__inner:nth-child(#{$i}) {
+        z-index: nth($zIndexs, $i);
         width: nth($widths, $i);
         background: nth($colors, $i);
-        z-index: nth($zIndexs, $i);
       }
     }
   }

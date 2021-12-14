@@ -58,10 +58,10 @@ export default {
 .onpremise-download-file {
   article {
     display: flex;
-    flex-wrap: wrap;
     flex-direction: row;
-    justify-content: space-evenly;
+    flex-wrap: wrap;
     align-items: center;
+    justify-content: space-evenly;
     padding: 34px 0;
     .file-title {
       margin-bottom: 4px;
@@ -70,8 +70,8 @@ export default {
     }
     .value {
       @include fontLevel(150);
-      color: #0b1f48;
       width: 100%;
+      color: #0b1f48;
     }
     .el-button {
       @include fontLevel(100);
