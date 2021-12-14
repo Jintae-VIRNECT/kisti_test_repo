@@ -159,7 +159,9 @@ export default {
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 7rem;
+    min-width: 7rem;
+    white-space: inherit;
+
     height: 100%;
     padding: 0;
     color: #ffffff;
@@ -168,6 +170,7 @@ export default {
     border-radius: 2px;
 
     &.not-primary {
+      text-align: center;
       padding: 0;
       background: $new_color_bg_button_sub;
       border-radius: 2px;
