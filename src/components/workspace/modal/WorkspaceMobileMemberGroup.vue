@@ -12,7 +12,6 @@
         type="text"
         :count="20"
         showCount
-        :validate="validate"
         :valid.sync="groupNameInValid"
         required
       ></input-row>
@@ -27,15 +26,7 @@
         @userSelect="selectUser"
         @inviteRefresh="refreshUser"
       ></room-invite>
-      <button
-        class="btn save-group"
-        :disabled="
-          selection.length === 0 ||
-            groupNameInput.length === 0 ||
-            groupNameInValid
-        "
-        @click="save"
-      >
+      <button class="btn save-group" :disabled="!canSave" @click="save">
         {{ $t('button.confirm') }} {{ selection.length }}/{{ this.maxSelect }}
       </button>
     </div>
@@ -47,7 +38,11 @@ import FullScreenModal from 'FullScreenModal'
 import RoomInvite from 'components/workspace/partials/ModalCreateRoomInvite'
 import InputRow from 'InputRow'
 
+import memberGroupMixin from 'mixins/memberGroup'
+
 export default {
+  name: 'WorkspaceMobileMemberGroup',
+  mixins: [memberGroupMixin],
   components: { FullScreenModal, RoomInvite, InputRow },
   props: {
     visible: {
@@ -60,21 +55,11 @@ export default {
     value: {
       type: String,
     },
-    validate: {
-      type: String,
-      default: null,
-    },
-    groupNameInvalidMessage: {
-      type: String,
-    },
     selection: {
       type: Array,
     },
     loading: {
       type: Boolean,
-    },
-    maxSelect: {
-      type: Number,
     },
     groupId: {
       type: String,
@@ -107,6 +92,9 @@ export default {
     },
     groupNameInput(newVal) {
       this.$emit('update:value', newVal)
+    },
+    subGroups() {
+      this.loading = false
     },
   },
   methods: {

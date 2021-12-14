@@ -15,7 +15,6 @@
           :placeholder="$t('workspace.workspace_member_group_name')"
           :value.sync="groupNameInput"
           :valid.sync="groupNameInValid"
-          validate="validName"
           :validMessage="groupNameInvalidMessage"
           type="text"
           :count="20"
@@ -31,11 +30,7 @@
           @userSelect="selectUser"
           @inviteRefresh="refreshUser"
         ></room-invite>
-        <button
-          class="btn save-group"
-          :disabled="selection.length === 0 || groupNameInValid"
-          @click="save"
-        >
+        <button class="btn save-group" :disabled="!canSave" @click="save">
           {{ $t('button.confirm') }} {{ selection.length }}/{{ this.maxSelect }}
         </button>
       </div>
@@ -47,11 +42,8 @@
       :subGroups="subGroups"
       :selection="selection"
       :loading="loading"
-      :maxSelect="maxSelect"
       :groupId="groupId"
       :groupName="groupName"
-      :groupNameInvalidMessage="groupNameInvalidMessage"
-      validate="validName"
       @userSelect="selectUser"
       @inviteRefresh="refreshUser"
       @save="save"
@@ -72,14 +64,18 @@ import {
 import toastMixin from 'mixins/toast'
 import responsiveModalVisibleMixin from 'mixins/responsiveModalVisible'
 import errorMsgMixin from 'mixins/errorMsg'
-
-import { maxParticipants } from 'utils/callOptions'
+import memberGroupMixin from 'mixins/memberGroup'
 
 import { ERROR } from 'configs/error.config'
 
 export default {
   name: 'WorkspaceMemberGroup',
-  mixins: [toastMixin, responsiveModalVisibleMixin, errorMsgMixin],
+  mixins: [
+    toastMixin,
+    responsiveModalVisibleMixin,
+    errorMsgMixin,
+    memberGroupMixin,
+  ],
   components: {
     Modal,
     RoomInvite,
@@ -112,26 +108,11 @@ export default {
     return {
       loading: false,
       selection: [],
-      maxSelect: maxParticipants - 1,
       groupNameInput: '',
       groupNameInValid: true,
 
       isSaving: false,
     }
-  },
-  computed: {
-    groupNameInvalidMessage() {
-      const inputLength = this.groupNameInput.length
-      if (inputLength === 0) {
-        return this.$t('workspace.workspace_member_group_name_valid1')
-      } else if (inputLength < 2 && inputLength > 0) {
-        return this.$t('workspace.workspace_member_group_name_valid2')
-      } else if (this.selection.length < 1) {
-        return this.$t('workspace.workspace_member_group_count_valid')
-      } else {
-        return this.$t('workspace.remote_name_valid2')
-      }
-    },
   },
   watch: {
     visible(flag) {
@@ -146,30 +127,17 @@ export default {
       }
       this.setVisiblePcOrMobileFlag(flag)
     },
-    groupNameInput() {
-      if (this.groupNameInput.length < 2 || this.selection.length < 1) {
-        this.groupNameInValid = true
-      }
+    subGroups() {
+      this.loading = false
     },
     groupMembers() {
       this.loading = false
-    },
-    selection() {
-      if (this.selection.length < 1) {
-        this.groupNameInValid = true
-      } else {
-        this.groupNameInValid = false
-      }
     },
   },
 
   methods: {
     beforeClose() {
       this.$emit('update:visible', false)
-    },
-    accessType(accessType) {
-      if (accessType) return accessType.toLowerCase()
-      return ''
     },
     selectUser(user) {
       const idx = this.selection.findIndex(select => user.uuid === select.uuid)
