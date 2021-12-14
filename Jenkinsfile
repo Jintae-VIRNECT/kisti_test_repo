@@ -73,7 +73,7 @@ pipeline {
 
             steps {
                 script {
-                    APP = docker.build("""${REPO_NAME}:${BRANCH_NAME}.${BUILD_NUMBER}""", """--build-arg NODE_ENV=${ENV_NAME} -f ./docker/Dockerfile .""")
+                    APP = docker.build("""${REPO_NAME}:${BRANCH_NAME}.${BUILD_NUMBER}""", """--build-arg NPM_TOKEN=sfKAhE8K0ypM8ePwY2mUiR7k2jcOs/vXGFwD+eHwMZE= -f ./docker/Dockerfile .""")
                 }
             }
             post {
