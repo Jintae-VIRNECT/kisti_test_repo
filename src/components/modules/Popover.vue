@@ -319,7 +319,7 @@ export default {
   position: absolute;
   top: 0;
   left: 0;
-  z-index: 100;
+  z-index: 101;
   min-width: 17.143em;
   overflow: hidden;
   // background-color: #fff;
