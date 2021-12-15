@@ -1,6 +1,11 @@
 package com.virnect.download.application.download;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.file.FileSystems;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -9,14 +14,17 @@ import java.util.stream.Collectors;
 
 import javax.persistence.EntityManager;
 
+import org.apache.commons.io.IOUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
-import net.dongliu.apk.parser.ByteArrayApkFile;
+import net.dongliu.apk.parser.ApkFile;
 import net.dongliu.apk.parser.bean.ApkMeta;
+
+import com.github.katjahahn.parser.sections.rsrc.version.VersionInfo;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -176,10 +184,12 @@ public class AppService {
 			throw new AppServiceException(ErrorCode.ERR_APP_UPLOAD_FAIL);
 		}
 		try {
-			ByteArrayApkFile apkFile = new ByteArrayApkFile(app.getBytes());
+			File file = convertToFile(app);
+			ApkFile apkFile = new ApkFile(file);
 			ApkMeta apkMeta = apkFile.getApkMeta();
 			log.info(apkMeta.toString());
 			apkFile.close();
+			deleteFile(file);
 			return apkMeta;
 		} catch (IOException e) {
 			log.error("APK Parsing Error", e);
@@ -327,31 +337,46 @@ public class AppService {
 		);
 
 		String applicationSignature = adminAppUploadRequest.getSigningKey();
-		ApkMeta apkMeta = null;
+		String packageName = null;
+		String versionName = null;
+		Long versionCode = null;
 
 		//1-3. apk 파일 버전 유효성 검증
-		if (adminAppUploadRequest.isAndroidOS()) {
-			apkMeta = parsingAppInfo(adminAppUploadRequest.getUploadAppFile());
-			Optional<App> latestActiveApp = appRepository.getLatestVersionActiveAppInfoByPackageName(
-				apkMeta.getPackageName());
+		if (adminAppUploadRequest.isApkApp()) {
+			ApkMeta apkMeta = parsingAppInfo(adminAppUploadRequest.getUploadAppFile());
+			packageName = apkMeta.getPackageName();
+			versionName = apkMeta.getVersionName();
+			versionCode = apkMeta.getVersionCode();
+
+			Optional<App> latestActiveApp = appRepository.getLatestVersionActiveAppInfoByPackageName(packageName);
 			if (latestActiveApp.isPresent()) {
-				//version check
-				newAppVersionCodeValidation(apkMeta.getPackageName(), apkMeta.getVersionCode());
-				//signature
+				newAppVersionCodeValidation(packageName, versionCode);
 				applicationSignature = latestActiveApp.get().getSignature();
 			}
 		}
 
-		//1-4. apk 제외한 파일 버전 유효성 검증
-		if (!adminAppUploadRequest.isAndroidOS()) {
+		//1-4. exe 파일 버전 유효성 검증
+		if (adminAppUploadRequest.isExeApp()) {
+			versionName = parsingExeAppInfo(adminAppUploadRequest.getUploadAppFile());
+			versionCode = Long.parseLong(StringUtils.deleteAny(versionName, "."));
+
 			Optional<App> latestActiveApp = appRepository.getLatestVersionActiveAppInfoByDeviceAndOs(device, os);
-			latestActiveApp.ifPresent(app -> {
-				if (StringUtils.isEmpty(adminAppUploadRequest.getVersionName())) {
-					throw new AppServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
-				}
-				//version check
-				newAppVersionCodeValidation(device, os, adminAppUploadRequest.getVersionCode());
-			});
+			if (latestActiveApp.isPresent()) {
+				newAppVersionCodeValidation(device, os, versionCode);
+			}
+		}
+
+		//1-5. apk, exe 제외한 파일 버전 유효성 검증
+		if (!adminAppUploadRequest.isApkApp() && !adminAppUploadRequest.isExeApp()) {
+			versionName = adminAppUploadRequest.getVersionName();
+			versionCode = adminAppUploadRequest.getVersionCode();
+			if (StringUtils.isEmpty(versionName) || StringUtils.isEmpty(versionCode)) {
+				throw new AppServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
+			}
+			Optional<App> latestActiveApp = appRepository.getLatestVersionActiveAppInfoByDeviceAndOs(device, os);
+			if (latestActiveApp.isPresent()) {
+				newAppVersionCodeValidation(device, os, versionCode);
+			}
 		}
 
 		//2-1. 파일 업로드
@@ -363,9 +388,9 @@ public class AppService {
 			.device(device)
 			.product(product)
 			.os(os)
-			.packageName(apkMeta == null ? null : apkMeta.getPackageName())
-			.versionName(apkMeta == null ? adminAppUploadRequest.getVersionName() : apkMeta.getVersionName())
-			.versionCode(apkMeta == null ? adminAppUploadRequest.getVersionCode() : apkMeta.getVersionCode())
+			.packageName(packageName)
+			.versionName(versionName)
+			.versionCode(versionCode)
 			.appUrl(appUploadUrl)
 			.imageUrl("")
 			.signature(applicationSignature)
@@ -378,10 +403,47 @@ public class AppService {
 		return responseMapper.appToAdminAppUploadResponse(app);
 	}
 
-	@Transactional
-	public void inactivePreviousApp(App app) {
-		app.setAppStatus(AppStatus.INACTIVE);
-		appRepository.save(app);
+	private String parsingExeAppInfo(MultipartFile app) {
+		if (app == null || app.isEmpty()) {
+			log.error("Upload Application file is empty or set as null");
+			throw new AppServiceException(ErrorCode.ERR_APP_UPLOAD_FAIL);
+		}
+
+		File file = convertToFile(app);
+		List<VersionInfo> versionInfos = VersionInfo.parseFromResources(file);
+		deleteFile(file);
+		return versionInfos.stream().findFirst()
+			.map(versionInfo -> {
+				log.info(versionInfo.getStringFileInfo().toString());
+				return versionInfo.getVersionStrings().get("ProductVersion");
+			})
+			.map(version -> version.replaceAll("[\\s|\u0000]+", ""))
+			.orElseThrow(() -> new AppServiceException(ErrorCode.ERR_APP_UPLOAD_FAIL));
+	}
+
+	private void deleteFile(File file) {
+		if (file.exists()) {
+			try {
+				Path path = FileSystems.getDefault().getPath("./tmp/", file.getName());
+				Files.delete(path);
+				log.info("Temp File Delete Success. File path : {}", path);
+			} catch (IOException e) {
+				log.error("Temp File Delete Error", e);
+			}
+		}
+	}
+
+	private File convertToFile(MultipartFile app) {
+		String path = "./tmp/" + app.getOriginalFilename();
+		File file = new File(path);
+		try (FileOutputStream fileOutputStream = new FileOutputStream(file)) {
+			IOUtils.copy(app.getInputStream(), fileOutputStream);
+			log.info("Temp File Created. File path : {}", path);
+			return file;
+		} catch (IOException e) {
+			log.error("Convert File Error", e);
+			throw new AppServiceException(ErrorCode.ERR_APP_UPLOAD_FAIL);
+		}
 	}
 
 	private void masterUserValidation(String userUUID) {

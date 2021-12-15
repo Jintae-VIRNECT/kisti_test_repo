@@ -54,9 +54,9 @@ pipeline {
           steps {
             sh 'wget http://localhost:8086/v2/api-docs -O /var/lib/jenkins/Swagger-Diff/Diff/${SERVICE_NAME}_old.json'
             sh 'count=`docker ps | grep pf-download | wc -l`; if [ ${count} -gt 0 ]; then echo "Running STOP&DELETE"; docker stop pf-download && docker rm pf-download; else echo "Not Running STOP&DELETE"; fi;'
-            sh 'docker run -p 8086:8086 -e "CONFIG_SERVER=http://192.168.6.3:6383" -e "VIRNECT_ENV=develop" -d --restart=always --name=pf-download pf-download'
+            sh 'docker run -p 8086:8086 -e "CONFIG_SERVER=http://192.168.6.3:6383" -e "VIRNECT_ENV=develop" -v /tmp:/usr/app/tmp -d --restart=always --name=pf-download pf-download'
             sh 'count=`docker ps -a | grep pf-download-onpremise | wc -l`; if [ ${count} -gt 0 ]; then echo "Running STOP&DELETE"; docker stop pf-download-onpremise && docker rm pf-download-onpremise; else echo "Not Running STOP&DELETE"; fi;'
-            sh 'docker run -p 18086:8086 --restart=always  -e "CONFIG_SERVER=http://192.168.6.3:6383" -e "VIRNECT_ENV=onpremise" -d --name=pf-download-onpremise pf-download'
+            sh 'docker run -p 18086:8086 --restart=always  -e "CONFIG_SERVER=http://192.168.6.3:6383" -e "VIRNECT_ENV=onpremise" -v /tmp:/usr/app/tmp -d --name=pf-download-onpremise pf-download'
             sh 'wget http://localhost:8086/v2/api-docs -O /var/lib/jenkins/Swagger-Diff/Diff/${SERVICE_NAME}_new.json'
             sh "if [ `diff  /var/lib/jenkins/Swagger-Diff/Diff/${SERVICE_NAME}_old.json   /var/lib/jenkins/Swagger-Diff/Diff/${SERVICE_NAME}_new.json | wc -l` -gt 0 ];\
                         then \
@@ -102,7 +102,7 @@ pipeline {
                         execCommand: 'count=`docker ps | grep pf-download | wc -l`; if [ ${count} -gt 0 ]; then echo "Running STOP&DELETE"; docker stop pf-download && docker rm pf-download; else echo "Not Running STOP&DELETE"; fi;'
                       ),
                       sshTransfer(
-                        execCommand: "docker run -p 8086:8086 --restart=always -e 'CONFIG_SERVER=https://stgconfig.virnect.com' -e 'VIRNECT_ENV=staging' -e eureka.instance.ip-address=`hostname -I | awk  \'{print \$1}\'` -d --name=pf-download $aws_ecr_address/pf-download:\\${GIT_TAG}"
+                        execCommand: "docker run -p 8086:8086 --restart=always -e 'CONFIG_SERVER=https://stgconfig.virnect.com' -e 'VIRNECT_ENV=staging' -e eureka.instance.ip-address=`hostname -I | awk  \'{print \$1}\'` -v /tmp:/usr/app/tmp -d --name=pf-download $aws_ecr_address/pf-download:\\${GIT_TAG}"
                       ),
                       sshTransfer(
                         execCommand: "if [ `docker images | grep pf-download | grep -v server | wc -l` -ne 1 ]; then docker rmi  -f \$(docker images | grep \"pf-download\" | grep -v \\${GIT_TAG} | awk \'{print \$3}\'); else echo \"Just One Images...\"; fi;"
@@ -144,7 +144,7 @@ pipeline {
                 def GIT_TAG_CONTENT = sh(returnStdout: true, script: 'git for-each-ref refs/tags/$GIT_TAG --format=\'%(contents)\' | sed -z \'s/\\\n/\\\\n/g\'')
                 def payload = """
                 {"tag_name": "$GIT_TAG", "name": "$GIT_TAG", "body": "$GIT_TAG_CONTENT", "target_commitish": "master", "draft": false, "prerelease": true}
-                """                             
+                """
 
                 sh "curl -d '$payload' -X POST 'https://api.github.com/repos/$REPO_NAME/releases?access_token=$securitykey'"
                 def GIT_TAG_RELEASE = sh(returnStdout: true, script: 'git for-each-ref refs/tags/$GIT_TAG --format=\'%(contents)\' | sed -z \'s/\\\n/\\\n\\\n/g\'')
@@ -180,7 +180,7 @@ pipeline {
                         execCommand: 'count=`docker ps | grep pf-download | wc -l`; if [ ${count} -gt 0 ]; then echo "Running STOP&DELETE"; docker stop pf-download && docker rm pf-download; else echo "Not Running STOP&DELETE"; fi;'
                       ),
                       sshTransfer(
-                        execCommand: "docker run -p 8086:8086 --restart=always -e 'CONFIG_SERVER=https://config.virnect.com' -e 'VIRNECT_ENV=production' -e eureka.instance.ip-address=`hostname -I | awk  \'{print \$1}\'` -d --name=pf-download $aws_ecr_address/pf-download:\\${GIT_TAG}"
+                        execCommand: "docker run -p 8086:8086 --restart=always -e 'CONFIG_SERVER=https://config.virnect.com' -e 'VIRNECT_ENV=production' -e eureka.instance.ip-address=`hostname -I | awk  \'{print \$1}\'` -v /tmp:/usr/app/tmp -d --name=pf-download $aws_ecr_address/pf-download:\\${GIT_TAG}"
                       ),
                       sshTransfer(
                         execCommand: "if [ `docker images | grep pf-download | grep -v server | wc -l` -ne 1 ]; then docker rmi  -f \$(docker images | grep \"pf-download\" | grep -v \\${GIT_TAG} | awk \'{print \$3}\'); else echo \"Just One Images...\"; fi;"

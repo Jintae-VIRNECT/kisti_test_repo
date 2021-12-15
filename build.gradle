@@ -90,6 +90,9 @@ dependencies {
 
     // Open Feign
     implementation 'org.springframework.cloud:spring-cloud-starter-openfeign'
+
+    //
+    implementation 'com.github.katjahahn:portex_2.12:3.0.2'
 }
 
 test {

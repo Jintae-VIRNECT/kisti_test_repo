@@ -1,11 +1,15 @@
 package com.virnect.download.dto.request;
 
+import java.util.Objects;
+
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
+
+import com.google.common.io.Files;
 
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
@@ -56,11 +60,16 @@ public class AdminAppUploadRequest {
 
 	@ApiModelProperty(hidden = true)
 	public Long getVersionCode() {
-		return Long.parseLong(StringUtils.deleteAny(versionName, "."));
+		return StringUtils.isEmpty(versionName) ? null : Long.parseLong(StringUtils.deleteAny(versionName, "."));:
 	}
 
 	@ApiModelProperty(hidden = true)
-	public boolean isAndroidOS() {
-		return operationSystem.equalsIgnoreCase("ANDROID");
+	public boolean isApkApp() {
+		return Files.getFileExtension(Objects.requireNonNull(uploadAppFile.getOriginalFilename())).equals("apk");
+	}
+
+	@ApiModelProperty(hidden = true)
+	public boolean isExeApp() {
+		return Files.getFileExtension(Objects.requireNonNull(uploadAppFile.getOriginalFilename())).equals("exe");
 	}
 }
