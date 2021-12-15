@@ -11,8 +11,7 @@ import VDatepicker from 'plugins/remote/vdatepicker'
 import i18n from 'plugins/remote/i18n'
 import globalMixin from 'mixins/global'
 
-// import { version } from '@/package.json'
-import { version } from '../../../package.json'
+import packageInfo from '../../../package.json'
 import { logger, debug } from 'utils/logger'
 
 import Store from 'stores/remote/store'
@@ -29,7 +28,7 @@ Vue.config.productionTip = false
 
 const EventBus = new Vue()
 Vue.prototype.$eventBus = EventBus
-Vue.prototype.$version = version.replace(/-\w/, '')
+Vue.prototype.$version = packageInfo.version.replace(/-\w/, '')
 Vue.prototype.logger = logger
 Vue.prototype.debug = debug
 
@@ -45,7 +44,7 @@ window.vue = app
 setTimeout(
   console.log.bind(
     console,
-    `%cVIRNECT Remote DashBoard v${version.replace(/-/, '.')}`,
+    `%cVIRNECT Remote DashBoard v${packageInfo.version.replace(/-/, '.')}`,
     'font-size:25px;color:#0f75f5;font-weight:700;font-family:roboto',
   ),
 )

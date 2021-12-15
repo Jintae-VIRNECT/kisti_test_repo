@@ -766,7 +766,7 @@ export default {
 }
 </script>
 
-<style lang="postcss">
+<style lang="scss">
 .vc-pane-container {
   position: relative;
   width: 100%;
