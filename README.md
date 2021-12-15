@@ -21,21 +21,20 @@ NODE_ENV: local, develop, production / SSL_ENV: private, public
 ## Environment
 
 ```
-npm -> ^5.6.0
-node -> v12.15.1
+yarn -> 1.22.4
+node -> 14.17.0
 ```
 
 ## Build
 
 ```
-$ npm install
-$ npm run build
+package.json 참조
 ```
 
 ## Running the application
 
 ```shell script
-npm run start
+package.json 참조
 ```
 
 ## Running the application with Docker
@@ -49,7 +48,5 @@ docker build -t rm-web ./docker/Dockerfile .
 ```shell script
 Needed SSL_ENV, NODE_ENV as Environment variables
 
-docker run -d --name 'rm-web' -p 8886:8886 -e SSL_ENV=public NODE_ENV=production rm-web
-
-
+docker run -d --name 'rm-web' -p 8886:8886 -e NODE_ENV=production rm-web
 ```
