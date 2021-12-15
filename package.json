@@ -5,7 +5,7 @@
   "description": "rm-dashboard",
   "author": "ykmo@virnect.com",
   "scripts": {
-    "serve": "npm run lint && vue-cli-service serve",
+    "serve": "yarn run lint && vue-cli-service serve",
     "build": "vue-cli-service lint && vue-cli-service build",
     "test:unit": "vue-cli-service test:unit",
     "lint": "vue-cli-service lint",
