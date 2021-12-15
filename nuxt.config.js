@@ -36,6 +36,7 @@ module.exports = async () => {
     /**
      * Plugins
      */
+    buildModules: ['@nuxt/postcss8'],
     modules: [
       'nuxt-helmet',
       ['nuxt-i18n', lang],
@@ -75,7 +76,17 @@ module.exports = async () => {
         '@virnect/components',
         'vee-validate/dist/rules',
       ],
-      postcss: null,
+      postcss: {
+        plugins: {
+          'postcss-import': {},
+          'postcss-url': {},
+        },
+        preset: {
+          autoprefixer: {
+            grid: true,
+          },
+        },
+      },
     },
     /**
      * env
