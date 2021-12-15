@@ -136,7 +136,13 @@
         },
         "success": "The installation file has been uploaded.",
         "error": {
-          "wrongExtension": "Please register the {n} file."
+          "fail": "Failed to register installation file. Please try again after a while.",
+          "size": "The file is not correct. Please check again.", 
+          "notExtension": "Installation file extension not supported.",
+          "duplicateVersion": "Installation file version is duplicated.",
+          "lowVersion": "Installation file version is lower then latest version duplicated.",
+          "wrongExtension": "Please register the {n} file.",
+          "oneFile": "Please only register one file."
         }
       }
     }

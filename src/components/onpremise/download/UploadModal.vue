@@ -172,8 +172,10 @@ export default {
           this.$t('workspace.onpremiseSetting.upload.success'),
         )
       } catch (e) {
+        this.showProgressModal = false
+        this.closed()
+        this.$emit('refresh')
         this.errorMessage(e)
-        console.log(e)
       }
     },
   },

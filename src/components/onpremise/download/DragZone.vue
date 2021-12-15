@@ -90,6 +90,17 @@ export default {
         this.$emit('fileTypeError')
         return false
       }
+
+      if (file.size === 0) {
+        this.$message.error({
+          message: this.$t('workspace.onpremiseSetting.upload.error.size'),
+          duration: 2000,
+          showClose: true,
+        })
+        this.$emit('fileTypeError')
+        return false
+      }
+
       this.fileList[idx].fileName = setSplit(file.name)
       this.fileList[idx].fileSelected = true
       this.fileList[idx].file = file
@@ -100,8 +111,12 @@ export default {
       event.preventDefault()
       const files = event.dataTransfer.files
       if (files.length !== 1) {
-        this.errorMessage('Error: 3000')
-        return
+        this.$message.error({
+          message: this.$t('workspace.onpremiseSetting.upload.error.oneFile'),
+          duration: 2000,
+          showClose: true,
+        })
+        return false
       }
 
       this.fileSet(files[0], idx, format)
