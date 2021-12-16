@@ -44,13 +44,11 @@ public class S3UploadService implements FileUploadService {
 	@Value("#{'${file.allowed-extension}'.split(',')}")
 	private List<String> allowedExtension;
 
-	@Value("${file.prefix}")
-	private String prefix;
-
 	private final AmazonS3 amazonS3Client;
 
 	@Override
 	public void delete(String url) {
+		String prefix = "https://" + bucketName + ".s3." + amazonS3Client.getRegionName() + ".amazonaws.com/";
 		if (!StringUtils.hasText(url) || url.contains("virnect_target.png")) {
 			log.info("[S3 DELETE] DEFAULT FILE SKIP. URL : {}", url);
 		}

@@ -56,11 +56,12 @@ public class MinioUploadService implements FileUploadService {
 	@Value("#{'${file.allowed-extension}'.split(',')}")
 	private List<String> allowedExtension;
 
-	@Value("${file.prefix}")
-	private String prefix;
+	@Value("${minio.server}")
+	private String minioServer;
 
 	@Override
 	public void delete(String url) {
+		String prefix = minioServer + "/" + bucketName + "/";
 		if (!StringUtils.hasText(url) || url.contains("virnect_target.png")) {
 			log.info("[MINIO FILE DELETE] DEFAULT FILE SKIP. URL : {}", url);
 		}
