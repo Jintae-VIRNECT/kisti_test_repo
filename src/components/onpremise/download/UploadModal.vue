@@ -27,11 +27,8 @@
               @fileData="fileData"
             />
           </el-form-item>
-          <el-form-item
-            v-if="extension !== 'APK'"
-            class="horizon"
-            prop="version"
-          >
+          <!-- APK, EXE 파일이 아니면 버전 입력 항목을 출력합니다. -->
+          <el-form-item v-if="showVersion" class="horizon" prop="version">
             <template slot="label">
               <span>{{
                 $t('workspace.onpremiseSetting.upload.modal.version')
@@ -84,7 +81,6 @@ export default {
         files: [],
         version: '',
       },
-      extension: '',
       showProgressModal: false,
     }
   },
@@ -142,7 +138,6 @@ export default {
     opened() {
       this.logoFile = this.logo
       this.whiteLogoFile = this.whiteLogo
-      this.extension = this.getFileExtension(this.file.name)
     },
     closed() {
       this.$refs.form.resetFields()
@@ -182,6 +177,12 @@ export default {
   watch: {
     showProgressModal(v) {
       if (v === false) this.showMe = false
+    },
+  },
+  computed: {
+    showVersion() {
+      let extension = this.getFileExtension(this.file.name)
+      return extension !== 'APK' && extension !== 'EXE'
     },
   },
 }

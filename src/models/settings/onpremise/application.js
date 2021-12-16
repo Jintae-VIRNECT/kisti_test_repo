@@ -60,7 +60,7 @@ export const productList = {
       name: ['{file_name}.apk'],
       version: '2.5.10',
       released: 'YY.MM.DD HH:DD',
-      deviceModel: 'SMARTPHONE_TABLET',
+      deviceModel: 'HMT_SERIES',
       operationSystem: 'ANDROID',
       productName: 'REMOTE',
     }),
