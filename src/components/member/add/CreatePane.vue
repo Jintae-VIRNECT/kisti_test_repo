@@ -209,7 +209,7 @@ export default {
       })
     },
     addMember() {
-      if (this.availableMember >= this.maximum) {
+      if (this.isMaxUserAmount) {
         this.errorMessage('Error: 900')
       } else {
         this.userInfoList.push(new CreateMember())
@@ -232,6 +232,10 @@ export default {
       this.initAvailablePlans()
     },
     async submit() {
+      if (this.isMaxUserAmount) {
+        this.errorMessage('Error: 900')
+        return
+      }
       // 유효성 검사
       try {
         await Promise.all(this.$refs.form.map(form => form.validate()))
@@ -301,6 +305,9 @@ export default {
     },
     cssVars() {
       return this.$i18n.locale
+    },
+    isMaxUserAmount() {
+      return this.availableMember >= this.maximum
     },
   },
 }

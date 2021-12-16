@@ -47,19 +47,19 @@
         <MemberAddInvitePane
           v-show="tabName === 'invite'"
           :membersTotal.sync="membersTotal"
-          :maximum.sync="maximum"
+          :maximum.sync="plansInfo.maxUserAmount"
           @updated="updated"
         />
         <MemberAddCreatePane
           v-show="tabName === 'create'"
           :membersTotal.sync="membersTotal"
-          :maximum.sync="maximum"
+          :maximum.sync="plansInfo.maxUserAmount"
           @updated="updated"
         />
         <MemberAddGuestPane
           v-show="tabName === 'guest'"
           :membersTotal.sync="membersTotal"
-          :maximum.sync="maximum"
+          :maximum.sync="plansInfo.maxUserAmount"
           @updated="updated"
         />
       </div>
@@ -69,6 +69,7 @@
 
 <script>
 import modalMixin from '@/mixins/modal'
+import { mapGetters } from 'vuex'
 
 export default {
   mixins: [modalMixin],
@@ -79,7 +80,6 @@ export default {
     return {
       showMe: true,
       tabName: this.$isOnpremise ? 'create' : 'invite',
-      maximum: 49,
     }
   },
   methods: {
@@ -97,6 +97,9 @@ export default {
     },
   },
   computed: {
+    ...mapGetters({
+      plansInfo: 'plan/plansInfo',
+    }),
     cssVars() {
       return this.$isOnpremise ? '4vh' : '11vh'
     },
