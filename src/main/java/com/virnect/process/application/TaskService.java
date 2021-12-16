@@ -194,14 +194,15 @@ public class TaskService {
 			.state(INIT_STATE)
 			.subProcessList(new ArrayList<>())
 			.workspaceUUID(registerNewProcess.getWorkspaceUUID())
+			.workerUUID(registerNewProcess.getWorkerUUID())
 			.contentUUID(contentApiResponse.getData().getContents().getUuid())
-			.contentManagerUUID(contentApiResponse.getData().getContents().getManagerUUID())
+			.contentManagerUUID(contentApiResponse.getData().getContents().getManagerUUID())//ownerUUID와 같음.
 			.build();
 
 		// 3. 복제 / 전환 분기
 		// 3-1. 복제 - 메뉴얼(컨텐츠)도 보고 작업(보고)도 필요한 경우 = 복제
 		if ("duplicate".equals(registerNewProcess.getTargetSetting())) {
-			// 3-1-1. 컨텐츠 파일 복제 요청
+			// 3-1-1. 컨텐츠 파일 복제 요청 (컨텐츠의 소유자(= 컨텐츠의 업로더) 로 userUUID를 담아야 복제할 수 있다.)
 			ApiResponse<ContentUploadResponse> contentDuplicate = this.contentRestService.contentDuplicate(
 				registerNewProcess.getContentUUID()
 				, registerNewProcess.getWorkspaceUUID()
@@ -646,6 +647,7 @@ public class TaskService {
 			.state(INIT_STATE)
 			.subProcessList(new ArrayList<>())
 			.workspaceUUID(duplicateRequest.getWorkspaceUUID())
+			.workerUUID(duplicateRequest.getWorkerUUID())
 			.contentUUID(contentApiResponse.getData().getContents().getUuid())
 			.contentManagerUUID(contentApiResponse.getData().getContents().getManagerUUID())
 			.build();
@@ -1395,6 +1397,9 @@ public class TaskService {
 			if (updateSourceProcess.getState() == State.CLOSED || updateSourceProcess.getState() == State.DELETED) {
 				throw new ProcessServiceException(ErrorCode.ERR_PROCESS_UPDATED);
 			}
+
+			// 공정 담당자 편집
+			updateSourceProcess.setWorkerUUID(editProcessRequest.getWorkerUUID());
 
 			// 2. 공정 상세정보 편집
 			updateSourceProcess.setStartDate(Optional.of(editProcessRequest)
