@@ -55,7 +55,7 @@
     </div>
     <MemberAddModal
       v-if="showAddModal"
-      :membersTotal="membersTotal"
+      :membersTotal="memberAmount"
       @refresh="searchMembers()"
       @close="closeMemberAddModal"
     />
@@ -92,6 +92,7 @@ export default {
       memberSort,
       memberSearch: '',
       loading: false,
+      memberAmount: 0,
     }
   },
   methods: {
@@ -104,8 +105,8 @@ export default {
     changedSearchParams() {
       // 워크스테이션 정보 갱신
       this.getWorkspacePlansInfo()
-
       this.searchMembers()
+      this.getWorkspaceInfo()
     },
     async searchMembers() {
       this.loading = true
@@ -121,6 +122,16 @@ export default {
      */
     async getWorkspacePlansInfo() {
       await this.$store.dispatch('plan/getPlansInfo')
+    },
+    /**
+     * 워크스페이스 정보 가져오기
+     */
+    async getWorkspaceInfo() {
+      const { memberAmount } = await workspaceService.getWorkspaceInfo(
+        this.activeWorkspace.uuid,
+      )
+      // 현재 워크스페이스의 등록된 유저 수
+      this.memberAmount = memberAmount
     },
     addMember() {
       this.showAddModal = true
