@@ -51,7 +51,7 @@
         </p>
       </div>
       <div slot="footer">
-        <el-button type="primary" @click="submit">
+        <el-button type="primary" @click="submit" :disabled="submitDisabled">
           {{ $t('workspace.onpremiseSetting.upload.modal.submit') }}
         </el-button>
       </div>
@@ -76,6 +76,22 @@ export default {
       type: Object,
       default: () => ({}),
       required: true,
+    },
+  },
+  computed: {
+    submitDisabled() {
+      if (this.extension === 'APK') {
+        if (this.form.files.length === 0) {
+          return true
+        } else return false
+      } else {
+        if (
+          this.form.files.length === 0 ||
+          !/^([1-9]{1})(\.(([1-9]{1})|0)){0,3}$/g.test(this.form.version)
+        ) {
+          return true
+        } else return false
+      }
     },
   },
   data() {
@@ -165,18 +181,15 @@ export default {
           ...this.file,
           ...this.form,
         })
-        this.showProgressModal = false
-        this.closed()
         this.$emit('refresh')
         this.successMessage(
           this.$t('workspace.onpremiseSetting.upload.success'),
         )
       } catch (e) {
-        this.showProgressModal = false
-        this.closed()
-        this.$emit('refresh')
         this.errorMessage(e)
       }
+      this.showProgressModal = false
+      this.closed()
     },
   },
   watch: {
