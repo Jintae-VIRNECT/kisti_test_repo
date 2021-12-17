@@ -26,7 +26,7 @@
       </div>
       <div class="drag-zone__container" v-show="file.fileSelected">
         <p>{{ file.fileName }}</p>
-        <button @click.prevent="deleteFile(idx)">
+        <button @click.prevent="deleteFile(idx, $refs[file.format][0])">
           <img src="~assets/images/icon/ic-delete.svg" alt="파일삭제" />
         </button>
       </div>
@@ -124,10 +124,11 @@ export default {
     changedFile(event, idx, format) {
       this.fileSet(event.target.files[0], idx, format)
     },
-    deleteFile(idx) {
+    deleteFile(idx, refs) {
       this.fileList[idx].fileName = ''
       this.fileList[idx].fileSelected = false
       this.fileList[idx].file = null
+      refs.value = null
       this.$emit('fileData', this.fileList)
     },
     dragenter(event, idx) {

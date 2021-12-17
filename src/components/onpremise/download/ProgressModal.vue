@@ -40,6 +40,24 @@ export default {
     .el-dialog__footer {
       border-top: none;
     }
+    .el-dialog__title {
+      &:after {
+        position: absolute;
+        content: '...';
+        width: 6px;
+        overflow: hidden;
+        white-space: nowrap;
+        animation: loadingDot 1.6s linear infinite;
+      }
+    }
+  }
+}
+@keyframes loadingDot {
+  0% {
+    width: 0;
+  }
+  100% {
+    width: 16px;
   }
 }
 </style>

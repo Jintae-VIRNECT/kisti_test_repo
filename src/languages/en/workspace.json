@@ -126,7 +126,7 @@
           "version": "Version infomation",
           "placeholder": "Please enter version information. (e.g. X.X.X.X)",
           "explanation": "When the installation file upload is completed, an update notification window is created when the app is re-run.",
-          "drag": "Drag the {n} File or",
+          "drag": "Drag the {n} File",
           "add": "Add File",
           "progressTitle": "Uploading installation file.",
           "progressMessage": "The selected installation file is being uploaded.<br>Don't close your browser until done.",
@@ -137,7 +137,7 @@
         "success": "The installation file has been uploaded.",
         "error": {
           "fail": "Failed to register installation file. Please try again after a while.",
-          "size": "The file is not correct. Please check again.", 
+          "size": "The file is not correct. Please check again.",
           "notExtension": "Installation file extension not supported.",
           "duplicateVersion": "Installation file version is duplicated.",
           "lowVersion": "Installation file version is lower then latest version duplicated.",
