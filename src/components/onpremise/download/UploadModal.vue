@@ -28,7 +28,7 @@
             />
           </el-form-item>
           <el-form-item
-            v-if="extension !== 'APK'"
+            v-if="!/APK|EXE/.test(extension)"
             class="horizon"
             prop="version"
           >
@@ -80,17 +80,16 @@ export default {
   },
   computed: {
     submitDisabled() {
-      if (this.extension === 'APK') {
-        if (this.form.files.length === 0) {
-          return true
-        } else return false
+      if (/APK|EXE/.test(this.extension)) {
+        if (this.form.files.length === 0) return true
+        else return false
       } else {
         if (
           this.form.files.length === 0 ||
           !/^([1-9]{1})(\.(([1-9]{1})|0)){0,3}$/g.test(this.form.version)
-        ) {
+        )
           return true
-        } else return false
+        else return false
       }
     },
   },
