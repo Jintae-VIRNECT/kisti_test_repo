@@ -47,6 +47,19 @@
 <script>
 import workspaceService from '@/services/workspace'
 export default {
+  middleware({ store, redirect, $config }) {
+    if (process.server) {
+      //구축형 환경이 아니면 루트로 돌려보냄
+      if ($config.VIRNECT_ENT !== 'onpremise') {
+        redirect('/')
+      }
+
+      // 마스터가 아니라면 루트로 돌려보냄
+      if (store.getters['auth/activeWorkspace'].role !== 'MASTER') {
+        redirect('/')
+      }
+    }
+  },
   async asyncData({ error }) {
     try {
       const downloadFiles = await workspaceService.getDownloadFiles('remote')
