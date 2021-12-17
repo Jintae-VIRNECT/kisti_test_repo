@@ -60,7 +60,7 @@ public class AdminAppUploadRequest {
 
 	@ApiModelProperty(hidden = true)
 	public Long getVersionCode() {
-		return StringUtils.isEmpty(versionName) ? null : Long.parseLong(StringUtils.deleteAny(versionName, "."));:
+		return StringUtils.isEmpty(versionName) ? null : Long.parseLong(StringUtils.deleteAny(versionName, "."));
 	}
 
 	@ApiModelProperty(hidden = true)
