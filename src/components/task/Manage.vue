@@ -290,7 +290,7 @@ export default {
             dayjs.utc(taskInfo.startDate).local().toDate(),
             dayjs.utc(taskInfo.endDate).local().toDate(),
           ],
-          worker: '',
+          worker: taskInfo.workerUUID ?? '',
           position: taskInfo.position,
         }
         this.subForm = subTasks.list.map(subTask => ({
@@ -352,6 +352,9 @@ export default {
         task: this.mainForm,
         subTasks: this.subForm,
       })
+
+      if (this.subForm.length === 0) form.workerUUID = this.mainForm.worker
+
       this.$emit('next', form)
     },
     // 추가 생성
@@ -364,6 +367,9 @@ export default {
         task: this.mainForm,
         subTasks: this.subForm,
       })
+
+      if (this.subForm.length === 0) form.workerUUID = this.mainForm.worker
+
       this.$emit('next', form)
     },
     async update() {
@@ -373,6 +379,9 @@ export default {
         task: { id: this.taskId, ...this.mainForm },
         subTasks: this.subForm,
       })
+
+      if (this.subForm.length === 0) form.workerUUID = this.mainForm.worker
+
       try {
         await taskService.updateTask(this.taskId, form)
         this.$message.success({
