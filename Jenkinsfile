@@ -177,7 +177,7 @@ pipeline {
                   echo "Starting a new container..."
                   docker run --restart=on-failure:10 \
                     -d \
-                    -e VIRNECT_ENV=develop \
+                    -e VIRNECT_ENV=onpremise \
                     -e CONFIG_SERVER=http://192.168.6.3:6383 \
                     -e eureka.instance.ip-address=`hostname -I | awk \'{print $1}\'` \
                     -p 1${PORT}:${PORT} \
