@@ -132,7 +132,7 @@ pipeline {
                 docker login ${NEXUS_REGISTRY}
                 docker pull ${NEXUS_REGISTRY}/${REPO_NAME}:${BRANCH_NAME}.${BUILD_NUMBER}
                 
-                count=`docker ps -a | grep ${REPO_NAME} | wc -l`
+                count=`docker ps -a | grep ${REPO_NAME} | grep -v onpremise | wc -l`
 
                 if [ $count -eq 0 ]
                 then 
