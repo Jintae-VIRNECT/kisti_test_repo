@@ -172,7 +172,7 @@ pipeline {
                     --name=${REPO_NAME}-onpremise ${NEXUS_REGISTRY}/${REPO_NAME}:${BRANCH_NAME}.${BUILD_NUMBER}
                 else
                   echo "Found a running container. stop the running container..."
-                  docker stop ${REPO_NAME} && docker rm ${REPO_NAME}
+                  docker stop ${REPO_NAME}-onpremise && docker rm ${REPO_NAME}-onpremise
 
                   echo "Starting a new container..."
                   docker run --restart=on-failure:10 \
