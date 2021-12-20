@@ -141,7 +141,7 @@ pipeline {
                     -d \
                     -e VIRNECT_ENV=develop \
                     -e CONFIG_SERVER=http://192.168.6.3:6383 \
-                    -e WRITE_YOUR=ENVIRONMENT_VARIABLE_HERE \
+                    -e eureka.instance.ip-address=`hostname -I | awk \'{print $1}\'` \
                     -p ${PORT}:${PORT} \
                     --name=${REPO_NAME} ${NEXUS_REGISTRY}/${REPO_NAME}:${BRANCH_NAME}.${BUILD_NUMBER}
                 else
@@ -153,7 +153,7 @@ pipeline {
                     -d \
                     -e VIRNECT_ENV=develop \
                     -e CONFIG_SERVER=http://192.168.6.3:6383 \
-                    -e WRITE_YOUR=ENVIRONMENT_VARIABLE_HERE \
+                    -e eureka.instance.ip-address=`hostname -I | awk \'{print $1}\'` \
                     -p ${PORT}:${PORT} \
                     --name=${REPO_NAME} ${NEXUS_REGISTRY}/${REPO_NAME}:${BRANCH_NAME}.${BUILD_NUMBER}
                 fi
@@ -167,7 +167,7 @@ pipeline {
                     -d \
                     -e VIRNECT_ENV=develop \
                     -e CONFIG_SERVER=http://192.168.6.3:6383 \
-                    -e WRITE_YOUR=ENVIRONMENT_VARIABLE_HERE \
+                    -e eureka.instance.ip-address=`hostname -I | awk \'{print $1}\'` \
                     -p 1${PORT}:${PORT} \
                     --name=${REPO_NAME}-onpremise ${NEXUS_REGISTRY}/${REPO_NAME}:${BRANCH_NAME}.${BUILD_NUMBER}
                 else
@@ -179,7 +179,7 @@ pipeline {
                     -d \
                     -e VIRNECT_ENV=develop \
                     -e CONFIG_SERVER=http://192.168.6.3:6383 \
-                    -e WRITE_YOUR=ENVIRONMENT_VARIABLE_HERE \
+                    -e eureka.instance.ip-address=`hostname -I | awk \'{print $1}\'` \
                     -p 1${PORT}:${PORT} \
                     --name=${REPO_NAME}-onpremise ${NEXUS_REGISTRY}/${REPO_NAME}:${BRANCH_NAME}.${BUILD_NUMBER}
                 fi
