@@ -27,7 +27,7 @@
               @fileData="fileData"
             />
           </el-form-item>
-          <!-- APK, EXE 파일이 아니면 버전 입력 항목을 출력합니다. -->
+          <!-- APK 파일이 아니면 버전 입력 항목을 출력합니다. -->
           <el-form-item v-if="showVersion" class="horizon" prop="version">
             <template slot="label">
               <span>{{
@@ -78,10 +78,10 @@ export default {
   computed: {
     showVersion() {
       const extension = this.getFileExtension(this.file.name)
-      return !/APK|EXE/.test(extension)
+      return !/APK/.test(extension)
     },
     submitDisabled() {
-      if (/APK|EXE/.test(this.extension)) {
+      if (/APK/.test(this.extension)) {
         if (this.form.files.length === 0) return true
         else return false
       } else {
@@ -193,12 +193,6 @@ export default {
   watch: {
     showProgressModal(v) {
       if (v === false) this.showMe = false
-    },
-  },
-  computed: {
-    showVersion() {
-      let extension = this.getFileExtension(this.file.name)
-      return extension !== 'APK' && extension !== 'EXE'
     },
   },
 }
