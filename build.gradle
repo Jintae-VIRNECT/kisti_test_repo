@@ -146,6 +146,7 @@ test {
     useJUnitPlatform()
     systemProperty("spring.active.profiles", "test")
     systemProperty("VIRNECT_ENV", "test")
+    finalizedBy jacocoTestReport
 }
 
 
