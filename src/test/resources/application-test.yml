@@ -114,3 +114,10 @@ cookie:
     domain: 192.168.6.3
     name: DrememberMe
     remember-me-parameter: rememberMe
+
+
+
+payletter:
+  api: "http://localhost:8883"
+  coupon: 44
+  enabled: true
