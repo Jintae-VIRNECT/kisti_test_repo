@@ -31,7 +31,7 @@ public class OnPayService implements PayService {
 	private int couponId;
 	@Value("${payletter.api:none}")
 	private String billingApiEndpoint;
-	@Value("${payletter.api.enabled:false}")
+	@Value("${payletter.enabled:false}")
 	private boolean payletterApiEnabled;
 
 	@PostConstruct
