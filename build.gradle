@@ -13,8 +13,8 @@ ext {
     jacocoExcludes = [
             "com/virnect/uaa/UserAccountAndAuthenticationServer.java",
             "com/virnect/uaa/global/config/**",
-            "com/virnect/uaa/domain/**/dto/**",
-            "com/virnect/uaa/global/domain/**",
+            "**/dto/**",
+            "**/domain/**",
             "src/main/resources/**",
             "**/*Config.*",
             "**/*Configuration.*"
