@@ -5,7 +5,6 @@ import java.util.Collections;
 import javax.annotation.PostConstruct;
 
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Profile;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -23,7 +22,6 @@ import com.virnect.uaa.infra.rest.billing.dto.BillingRestResponse;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-@Profile(value = {"staging", "production"})
 public class OnPayService implements PayService {
 	private static final String COUPON_REGISTER_API_URL = "/billing/coupon/registerbyid";
 	private final RestTemplate restTemplate;
@@ -33,16 +31,16 @@ public class OnPayService implements PayService {
 	private int couponId;
 	@Value("${payletter.api:none}")
 	private String billingApiEndpoint;
-	@Value("${spring.profiles.active:develop}")
-	private String serverMode;
+	@Value("${payletter.api.enabled:false}")
+	private boolean payletterApiEnabled;
 
 	@PostConstruct
 	public void payServiceInit() {
 		log.info("============================================================================");
-		log.info("--> PAY_LETTER_REST_SERVICE_ENABLE..");
+		log.info("--> PAY_LETTER_REST_SERVICE");
 		log.info("--> COUPON_ID: {}", couponId);
 		log.info("--> BILLING_API: {}", billingApiEndpoint);
-		log.info("--> SERVICE_MODE: {}", serverMode);
+		log.info("--> ENABLED_MODE: {}", payletterApiEnabled);
 		log.info("============================================================================");
 	}
 
@@ -53,6 +51,10 @@ public class OnPayService implements PayService {
 	 * @param userId - 사용자 식별 번호
 	 */
 	public void eventCouponRegisterToNewUser(final String email, final String name, final long userId) {
+		if (!payletterApiEnabled) {
+			return;
+		}
+
 		BillingCouponRegisterRequest billingCouponRegisterRequest = new BillingCouponRegisterRequest();
 		billingCouponRegisterRequest.setSiteCode(1);
 		billingCouponRegisterRequest.setCouponId(couponId);
