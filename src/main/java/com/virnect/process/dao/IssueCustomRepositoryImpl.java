@@ -11,6 +11,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.support.QuerydslRepositorySupport;
 import org.thymeleaf.util.StringUtils;
 
+import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.JPQLQuery;
 
 import com.virnect.process.domain.Issue;
@@ -169,28 +170,6 @@ public class IssueCustomRepositoryImpl extends QuerydslRepositorySupport impleme
 		return new PageImpl<>(issueList, pageable, query.fetchCount());
 	}
 
-	@Override
-	public Page<Issue> getIssuesOut(String myUUID, String search, List<String> workspaceUserList, Pageable pageable) {
-		QIssue qIssue = QIssue.issue;
-
-		JPQLQuery<Issue> query = from(qIssue);
-
-		query.where(qIssue.job.isNull());
-		query.where(qIssue.workerUUID.in(workspaceUserList));
-
-		if (Objects.nonNull(search)) {
-			query.where(qIssue.content.contains(search));
-		}
-
-		if (Objects.nonNull(myUUID)) {
-			query.where(qIssue.workerUUID.eq(myUUID));
-		}
-
-		List<Issue> issueList = getQuerydsl().applyPagination(pageable, query).fetch();
-
-		return new PageImpl<>(issueList, pageable, query.fetchCount());
-	}
-
 	public JPQLQuery<Issue> defaultQuery(String userUUID, String workspaceUUID) {
 		QIssue qIssue = QIssue.issue;
 		QJob qJob = QJob.job;
@@ -224,5 +203,45 @@ public class IssueCustomRepositoryImpl extends QuerydslRepositorySupport impleme
 	public long deleteAllIssueByUserUUID(String userUUID) {
 		QIssue qIssue = QIssue.issue;
 		return delete(qIssue).where(qIssue.workerUUID.eq(userUUID)).execute();
+	}
+
+	@Override
+	public Page<Issue> getNonJobIssuesByUserUUIDListAndWorkspaceUUID(
+		List<String> userUUIDList, String workspaceUUID, Pageable pageable
+	) {
+		QIssue qIssue = QIssue.issue;
+
+		JPQLQuery<Issue> query = from(qIssue).where(qIssue.workspaceUUID.eq(workspaceUUID).or(qIssue.workspaceUUID.isNull()),qIssue.workerUUID.in(userUUIDList), qIssue.job.isNull());
+
+		List<Issue> issueList = getQuerydsl().applyPagination(pageable, query).fetch();
+
+		return new PageImpl<>(issueList, pageable, query.fetchCount());
+	}
+
+	@Override
+	public Page<Issue> getNonJobIssuesByUserUUIDAndWorkspaceUUIDAndSearch(
+		String userUUID, String workspaceUUID, String search, Pageable pageable
+	) {
+		QIssue qIssue = QIssue.issue;
+
+		JPQLQuery<Issue> query = from(qIssue).where(qIssue.workspaceUUID.eq(workspaceUUID).or(qIssue.workspaceUUID.isNull()), eqWorkerUUID(userUUID), containsSearch(search), qIssue.job.isNull());
+
+		List<Issue> issueList = getQuerydsl().applyPagination(pageable, query).fetch();
+
+		return new PageImpl<>(issueList, pageable, query.fetchCount());
+	}
+
+	private BooleanExpression containsSearch(String search) {
+		if(!StringUtils.isEmpty(search)){
+			return QIssue.issue.content.contains(search);
+		}
+		return null;
+	}
+
+	private BooleanExpression eqWorkerUUID(String userUUID) {
+		if(!StringUtils.isEmpty(userUUID)){
+			return QIssue.issue.workerUUID.eq(userUUID);
+		}
+		return null;
 	}
 }

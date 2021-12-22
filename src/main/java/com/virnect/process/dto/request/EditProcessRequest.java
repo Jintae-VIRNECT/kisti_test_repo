@@ -4,6 +4,7 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
 import lombok.Setter;
 
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -16,7 +17,7 @@ public class EditProcessRequest {
     private Long taskId;
 
 
-    @ApiModelProperty(value = "작업 수정 사용자 식별자", notes = "작업 담당 사용자 식별자, 설정시 모든 세부 작업 담당자가 해당 사용자로 동기화 됨", required = true, position = 1, example = "4ea61b4ad1dab12fb2ce8a14b02b7460")
+    @ApiModelProperty(value = "컨텐츠 업로드 유저 식별자", notes = "컨텐츠 업로드 유저 식별자", required = true, position = 1, example = "4ea61b4ad1dab12fb2ce8a14b02b7460")
     private String actorUUID = "";
 
     @NotNull
@@ -33,4 +34,20 @@ public class EditProcessRequest {
     @NotNull
     @ApiModelProperty(value = "세부 작업 정보 배열", notes = "해당 작업에서의 세부 작업 정보들이 담긴 배열", required = true, position = 5)
     private List<EditSubProcessRequest> subTaskList;
+
+    @ApiModelProperty(value = "작업 담당 사용자 식별자", notes = "작업 담당 사용자의 식별자. 하위작업이 없는 경우에만 입력받습니다.", required = false, position = 6, example = "498b1839dc29ed7bb2ee90ad6985c608")
+    private String workerUUID;
+
+    @Override
+    public String toString() {
+        return "EditProcessRequest{" +
+            "taskId=" + taskId +
+            ", actorUUID='" + actorUUID + '\'' +
+            ", startDate=" + startDate +
+            ", endDate=" + endDate +
+            ", position='" + position + '\'' +
+            ", subTaskList=" + subTaskList +
+            ", workerUUID='" + workerUUID + '\'' +
+            '}';
+    }
 }

@@ -27,7 +27,7 @@ public interface WorkspaceRestService {
 
 	@GetMapping("/workspaces/{workspaceId}/members")
 	ApiResponse<MemberListResponse> getWorkspaceUserList(
-		@PathVariable("workspaceId") String workspaceId, @RequestParam("size") int size
+		@PathVariable("workspaceId") String workspaceId, @RequestParam("paging") boolean paging, @RequestParam("search") String search
 	);
 
 	/*@GetMapping("/workspaces/{workspaceId}/settings")

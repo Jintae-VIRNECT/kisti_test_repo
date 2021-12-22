@@ -90,38 +90,25 @@ public class IssueService {
 	 * @param pageable
 	 * @return
 	 */
-	public ApiResponse<IssuesResponse> getIssuesOut(
+	public ApiResponse<IssuesResponse> getTroubleMemos(
 		String myUUID, String workspaceUUID, String search, Pageable pageable
 	) {
-
-		ApiResponse<MemberListResponse> memberListResponseApiResponse = workspaceRestService.getSimpleWorkspaceUserList(
-			workspaceUUID);
-		List<String> userUUIDList = memberListResponseApiResponse.getData()
-			.getMemberInfoList()
-			.stream()
-			.map(MemberInfoDTO::getUuid)
-			.collect(
-				Collectors.toList());
-
+		//1. search에 해당 유저 이메일, 닉네임 검색
 		if (StringUtils.hasText(search)) {
-			// 검색어로 워크스페이스 내 사용자의 이메일, 닉네임 검색
-			ApiResponse<UserInfoListResponse> userInfoListResult = this.userRestService.getUserInfoSearchNickName(
-				search, userUUIDList);
-
-			if (!userInfoListResult.getData().getUserInfoList().isEmpty()) {
-				userUUIDList = userInfoListResult.getData()
-					.getUserInfoList()
-					.stream()
-					.map(UserInfoResponse::getUuid)
-					.collect(
-						Collectors.toList());
-				search = null;//사용자의 이메일, 닉네임으로 검색되었을 때는 트러블 메모 내용명으로 검색하지 않는다.
+			MemberListResponse memberListResponse = workspaceRestService.getWorkspaceUserList(workspaceUUID, false, search).getData();
+			List<String> userUUIDList = memberListResponse.getMemberInfoList()
+				.stream()
+				.map(MemberInfoDTO::getUuid)
+				.collect(Collectors.toList());
+			if (!userUUIDList.isEmpty()) {
+				Page<Issue> issuePage = issueRepository.getNonJobIssuesByUserUUIDListAndWorkspaceUUID(
+					userUUIDList, workspaceUUID, pageable);
+				return getIssuesResponseApiResponse(pageable, issuePage);
 			}
 		}
-		log.debug("{}", userUUIDList);
-
-		Page<Issue> issuePage = this.issueRepository.getIssuesOut(myUUID, search, userUUIDList, pageable);
-
+		//2. 유저 이메일, 닉네임 검색된 결과가 없는 경우 search로 issue의 content를 검색
+		Page<Issue> issuePage = issueRepository.getNonJobIssuesByUserUUIDAndWorkspaceUUIDAndSearch(
+			myUUID, workspaceUUID, search, pageable);
 		return getIssuesResponseApiResponse(pageable, issuePage);
 	}
 
@@ -152,6 +139,7 @@ public class IssueService {
 				.workerName(userInfoResponse.getData().getNickname())
 				.workerProfile(userInfoResponse.getData().getProfile())
 				.caption(Optional.of(issue).map(Issue::getContent).orElseGet(() -> ""))
+				.workspaceUUID(issue.getWorkspaceUUID())
 				.build();
 		} else {
 			// job issue
@@ -178,6 +166,7 @@ public class IssueService {
 				.workerProfile(userInfoResponse.getData().getProfile())
 				.photoFilePath(issue.getPath())
 				.caption(issue.getContent())
+				.workspaceUUID(issue.getWorkspaceUUID())
 				.build();
 		}
 		return new ApiResponse<>(issueInfoResponse);
@@ -193,11 +182,12 @@ public class IssueService {
 		Issue issue = Issue.builder()
 			.content(request.getCaption())
 			.workerUUID(request.getWorkerUUID())
+			.workspaceUUID(request.getWorkspaceUUID())
 			.build();
 
 		// Base64로 받은 이미지 처리
 		if (!StringUtils.isEmpty(request.getPhotoFile())) {
-			issue.setPath(getFileUploadUrl(request.getPhotoFile(), null));//todo : 워크스페이스 식별자 요청 파라미터 추가 필요
+			issue.setPath(getFileUploadUrl(request.getPhotoFile(), request.getWorkspaceUUID()));
 		}
 
 		this.issueRepository.save(issue);
@@ -239,6 +229,7 @@ public class IssueService {
 				.workerUUID(userInfo.getUuid())
 				.workerName(userInfo.getNickname())
 				.workerProfile(userInfo.getProfile())
+				.workspaceUUID(issue.getWorkspaceUUID())
 				.build();
 		}).collect(Collectors.toList());
 

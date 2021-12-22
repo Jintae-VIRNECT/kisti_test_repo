@@ -24,7 +24,7 @@ public class ProcessRegisterRequest {
 	@ApiModelProperty(value = "작업 이름", notes = "작업 이름(컨텐츠 명)", required = true, position = 1, example = "전기 오토바이 제조")
 	private String name;
 
-	@ApiModelProperty(value = "작업 담당 사용자 식별자", notes = "작업 담당 사용자 식별자, 설정시 모든 세부 작업 담당자가 해당 사용자로 동기화 됨", required = true, position = 2, example = "498b1839dc29ed7bb2ee90ad6985c608")
+	@ApiModelProperty(value = "컨텐츠 업로드 유저 식별자", notes = "컨텐츠 업로드 유저 식별자", required = true, position = 2, example = "498b1839dc29ed7bb2ee90ad6985c608")
 	private String ownerUUID = "";
 
 	@NotNull
@@ -59,6 +59,9 @@ public class ProcessRegisterRequest {
 	@ApiModelProperty(value = "세부 작업 정보 배열", notes = "해당 작업에서의 세부 작업 정보들이 담긴 배열", required = true, position = 10)
 	private List<NewSubProcessRequest> subTaskList;
 
+	@ApiModelProperty(value = "작업자 유저 식별자", notes = "작업자 유저 식별자. 하위작업이 없는 경우에만 입력받습니다.", required = false, position = 11)
+	private String workerUUID;
+
 	@Override
 	public String toString() {
 		return "ProcessRegisterRequest{" +
@@ -72,7 +75,8 @@ public class ProcessRegisterRequest {
 			", targetSize=" + targetSize +
 			", workspaceUUID='" + workspaceUUID + '\'' +
 			", targetSetting='" + targetSetting + '\'' +
-			", subTaskList=" + subTaskList +
+			", subTaskList=" + subTaskList +'\'' +
+			", workerUUID=" + workerUUID +
 			'}';
 	}
 }
