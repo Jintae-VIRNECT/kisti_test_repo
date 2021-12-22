@@ -135,7 +135,7 @@ pipeline {
                             -p ${PORT}:${PORT} \
                             --name=${REPO_NAME} ${NEXUS_REGISTRY}/${REPO_NAME}:${BRANCH_NAME}.${BUILD_NUMBER}
 
-                        sleep 1
+                        sleep 3
 
                         echo "Downloading new swagger api docs..."
                         wget http://localhost:${PORT}/v2/api-docs -O /var/lib/jenkins/Swagger-Diff/Diff/${REPO_NAME}_new.json
