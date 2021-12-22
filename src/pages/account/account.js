@@ -4,6 +4,7 @@ import Vue from 'vue'
 import Router from 'routers/account'
 import Store from 'stores/remote/store'
 
+import packageInfo from '../../../package.json'
 import App from './App.vue'
 // import globalMixin from 'mixins/global'
 
@@ -13,7 +14,7 @@ import App from './App.vue'
 
 const EventBus = new Vue()
 Vue.prototype.$eventBus = EventBus
-Vue.prototype.version = '2.0.0'
+Vue.prototype.$version = packageInfo.version.replace(/-\w/, '')
 
 export default new Vue({
   el: '#container',
@@ -26,7 +27,7 @@ export default new Vue({
 setTimeout(
   console.log.bind(
     console,
-    `%c VIRNECT Remote Service `,
-    'padding:4px 18px;background:linear-gradient(to right, #0064ff, #6700ff);font-size:32px;color:#fff;border-radius:15px',
+    `%cVIRNECT Remote DashBoard v${packageInfo.version.replace(/-/, '.')}`,
+    'font-size:25px;color:#0f75f5;font-weight:700;font-family:roboto',
   ),
 )

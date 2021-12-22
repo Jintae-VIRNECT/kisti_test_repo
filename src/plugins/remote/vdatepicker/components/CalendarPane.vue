@@ -172,7 +172,7 @@ export default {
 }
 </script>
 
-<style lang="postcss" scoped>
+<style lang="scss" scoped>
 .vc-pane {
   display: flex;
   flex-direction: column;

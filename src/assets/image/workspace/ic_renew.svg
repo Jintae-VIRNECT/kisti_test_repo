@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="24px" height="24px" viewBox="0 0 24 24" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>ECF09D7F-24C3-49D2-9270-0C138342263E@1x</title>
+    <defs>
+        <rect id="path-1" x="0" y="0" width="1280" height="78" rx="4"></rect>
+        <filter x="-1.7%" y="-19.9%" width="103.4%" height="155.1%" filterUnits="objectBoundingBox" id="filter-2">
+            <feMorphology radius="0.5" operator="dilate" in="SourceAlpha" result="shadowSpreadOuter1"></feMorphology>
+            <feOffset dx="0" dy="6" in="shadowSpreadOuter1" result="shadowOffsetOuter1"></feOffset>
+            <feGaussianBlur stdDeviation="6" in="shadowOffsetOuter1" result="shadowBlurOuter1"></feGaussianBlur>
+            <feComposite in="shadowBlurOuter1" in2="SourceAlpha" operator="out" result="shadowBlurOuter1"></feComposite>
+            <feColorMatrix values="0 0 0 0 0   0 0 0 0 0   0 0 0 0 0  0 0 0 0.05 0" type="matrix" in="shadowBlurOuter1"></feColorMatrix>
+        </filter>
+        <path d="M6,0 L706,0 C709.313708,-6.08718376e-16 712,2.6862915 712,6 L712,848 C712,851.313708 709.313708,854 706,854 L6,854 C2.6862915,854 4.05812251e-16,851.313708 0,848 L0,6 C-4.05812251e-16,2.6862915 2.6862915,6.08718376e-16 6,0 Z" id="path-3"></path>
+        <filter x="-3.4%" y="-2.6%" width="106.7%" height="106.8%" filterUnits="objectBoundingBox" id="filter-4">
+            <feOffset dx="0" dy="12" in="SourceAlpha" result="shadowOffsetOuter1"></feOffset>
+            <feGaussianBlur stdDeviation="6" in="shadowOffsetOuter1" result="shadowBlurOuter1"></feGaussianBlur>
+            <feColorMatrix values="0 0 0 0 0   0 0 0 0 0   0 0 0 0 0  0 0 0 0.3 0" type="matrix" in="shadowBlurOuter1" result="shadowMatrixOuter1"></feColorMatrix>
+            <feOffset dx="0" dy="0" in="SourceAlpha" result="shadowOffsetOuter2"></feOffset>
+            <feGaussianBlur stdDeviation="5" in="shadowOffsetOuter2" result="shadowBlurOuter2"></feGaussianBlur>
+            <feColorMatrix values="0 0 0 0 0   0 0 0 0 0   0 0 0 0 0  0 0 0 0.0720061189 0" type="matrix" in="shadowBlurOuter2" result="shadowMatrixOuter2"></feColorMatrix>
+            <feMerge>
+                <feMergeNode in="shadowMatrixOuter1"></feMergeNode>
+                <feMergeNode in="shadowMatrixOuter2"></feMergeNode>
+            </feMerge>
+        </filter>
+        <path d="M18.3636364,8.75 L14.7272727,12.5 L17.4545455,12.5 C17.4545455,15.603125 15.0090909,18.125 12,18.125 C11.0818182,18.125 10.2090909,17.890625 9.45454545,17.46875 L8.12727273,18.8375 C9.24545455,19.56875 10.5727273,20 12,20 C16.0181818,20 19.2727273,16.64375 19.2727273,12.5 L22,12.5 L18.3636364,8.75 Z M6.54545455,12.5 C6.54545455,9.396875 8.99090909,6.875 12,6.875 C12.9181818,6.875 13.7909091,7.109375 14.5454545,7.53125 L15.8727273,6.1625 C14.7545455,5.43125 13.4272727,5 12,5 C7.98181818,5 4.72727273,8.35625 4.72727273,12.5 L2,12.5 L5.63636364,16.25 L9.27272727,12.5 L6.54545455,12.5 Z" id="path-5"></path>
+    </defs>
+    <g id="Design_v-2.2" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="WSG_0010-_그룹-설정-_팝업_2" transform="translate(-776.000000, -317.000000)">
+            <rect fill="#FFFFFF" x="0" y="0" width="1920" height="1080"></rect>
+            <g id="Work_list">
+                <rect id="bg" fill="#F8F8FA" x="0" y="0" width="1920" height="1080"></rect>
+                <g id="list" transform="translate(320.000000, 183.000000)">
+                    <g id="Group-4" transform="translate(0.000000, 62.000000)">
+                        <g id="rbox" transform="translate(0.000000, 36.000000)">
+                            <use fill="black" fill-opacity="1" filter="url(#filter-2)" xlink:href="#path-1"></use>
+                            <use stroke="#F0F0F0" stroke-width="1" fill="#FFFFFF" fill-rule="evenodd" xlink:href="#path-1"></use>
+                        </g>
+                    </g>
+                </g>
+            </g>
+            <rect id="dim" fill="#000000" opacity="0.86" x="-1" y="0" width="1920" height="1080"></rect>
+            <g id="makegroup" transform="translate(197.000000, 113.000000)">
+                <g id="popup_bg">
+                    <use fill="black" fill-opacity="1" filter="url(#filter-4)" xlink:href="#path-3"></use>
+                    <use fill="#F8F8FA" fill-rule="evenodd" xlink:href="#path-3"></use>
+                </g>
+                <g id="btn_Refresh" transform="translate(568.000000, 195.000000)">
+                    <path d="M104,0.5 C104.966498,0.5 105.841498,0.891750844 106.474874,1.52512627 C107.108249,2.15850169 107.5,3.03350169 107.5,4 L107.5,4 L107.5,38 C107.5,38.9664983 107.108249,39.8414983 106.474874,40.4748737 C105.841498,41.1082492 104.966498,41.5 104,41.5 L104,41.5 L4,41.5 C3.03350169,41.5 2.15850169,41.1082492 1.52512627,40.4748737 C0.891750844,39.8414983 0.5,38.9664983 0.5,38 L0.5,38 L0.5,4 C0.5,3.03350169 0.891750844,2.15850169 1.52512627,1.52512627 C2.15850169,0.891750844 3.03350169,0.5 4,0.5 L4,0.5 Z" id="Refresh_bg" stroke="#E3E3E3" fill="#FFFFFF"></path>
+                    <g id="icon_Refresh" transform="translate(11.000000, 9.000000)">
+                        <rect id="tr" x="0" y="0" width="24" height="24"></rect>
+                        <mask id="mask-6" fill="white">
+                            <use xlink:href="#path-5"></use>
+                        </mask>
+                        <use id="icon/action/cached_24px" fill="#757F91" fill-rule="nonzero" xlink:href="#path-5"></use>
+                    </g>
+                </g>
+                <g id="List" transform="translate(36.000000, 207.000000)"></g>
+            </g>
+        </g>
+    </g>
+</svg>
