@@ -24,4 +24,4 @@ COPY --from=builder ${buildDir}/lib BOOT-INF/lib
 COPY --from=builder ${buildDir}/app .
 
 EXPOSE 8078
-CMD ["java", "-Xms700M", "-Xmx700M", "org.springframework.boot.loader.JarLauncher"]
+CMD ["java", "-Xms700M", "-Xmx1200M", "org.springframework.boot.loader.JarLauncher"]

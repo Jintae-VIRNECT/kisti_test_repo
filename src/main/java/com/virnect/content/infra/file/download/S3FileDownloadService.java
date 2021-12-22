@@ -1,7 +1,11 @@
 package com.virnect.content.infra.file.download;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.util.List;
 import java.util.Map;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
@@ -45,11 +49,9 @@ public class S3FileDownloadService implements FileDownloadService {
 	@Value("${cloud.aws.s3.bucket.name}")
 	private String bucketName;
 
-	@Value("${file.prefix}")
-	private String prefix;
-
 	@Override
 	public ResponseEntity<byte[]> fileDownload(String fileUrl, String range) {
+		String prefix = "https://" + bucketName + ".s3." + amazonS3Client.getRegionName() + ".amazonaws.com/";
 		log.info("PARSER - URL: [{}]", fileUrl);
 		String[] fileSplit = fileUrl.split(prefix);
 		String objectName = fileSplit[fileSplit.length - 1];
@@ -100,6 +102,7 @@ public class S3FileDownloadService implements FileDownloadService {
 
 	@Override
 	public long getFileSize(String fileUrl) {
+		String prefix = "https://" + bucketName + ".s3." + amazonS3Client.getRegionName() + ".amazonaws.com/";
 		log.info("[AWS S3 GET FILE SIZE] GET SIZE BEGIN. URL : {}", fileUrl);
 		String[] fileSplit = fileUrl.split(prefix);
 		String objectName = fileSplit[fileSplit.length - 1];
@@ -130,6 +133,8 @@ public class S3FileDownloadService implements FileDownloadService {
 
 	@Override
 	public byte[] getFileStreamBytes(String fileUrl) {
+		String prefix = "https://" + bucketName + ".s3." + amazonS3Client.getRegionName() + ".amazonaws.com/";
+		log.info("[AWS S3 FILE DOWNLOAD] URL : {}", fileUrl);
 		String[] fileSplit = fileUrl.split(prefix);
 		String objectName = fileSplit[fileSplit.length - 1];
 		GetObjectRequest getObjectRequest = new GetObjectRequest(bucketName, objectName);
@@ -138,6 +143,27 @@ public class S3FileDownloadService implements FileDownloadService {
 			return IOUtils.toByteArray(objectInputStream);
 		} catch (AmazonS3Exception | IOException e) {
 			log.error("Error Message:     {}", e.getMessage());
+			throw new ContentServiceException(ErrorCode.ERR_CONTENT_DOWNLOAD);
+		}
+	}
+
+	@Override
+	public byte[] multipleFileDownload(List<String> fileUrlList) {
+		try (ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+			 ZipOutputStream zipOutputStream = new ZipOutputStream(byteArrayOutputStream)) {
+			for (String fileUrl : fileUrlList) {
+				log.info("[AWS S3 FILE DOWNLOAD] URL : {}", fileUrl);
+				String[] fileSplit = fileUrl.split("/");
+				String fileName = fileSplit[fileSplit.length - 1];
+				byte[] fileStream = getFileStreamBytes(fileUrl);
+				zipOutputStream.putNextEntry(new ZipEntry(fileName));
+				zipOutputStream.write(fileStream);
+				zipOutputStream.closeEntry();
+			}
+			zipOutputStream.finish();
+			return byteArrayOutputStream.toByteArray();
+		} catch (IOException e) {
+			log.error(e.getMessage());
 			throw new ContentServiceException(ErrorCode.ERR_CONTENT_DOWNLOAD);
 		}
 	}

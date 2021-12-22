@@ -51,22 +51,24 @@ public enum ErrorCode {
 	ERR_PROJECT_UPLOAD_INVALID_LICENSE(5012, "Project upload fail. Because user have no uploadable product license."),
 
 	//프로젝트 조회
-	ERR_PROJECT_ACCESS_INVALID_SHARE_PERMISSION(
-		5020, "Project access fail. Because user have invalid project share permission."),
+	ERR_PROJECT_ACCESS_INVALID_PERMISSION(
+		5020, "Project access fail. Because user have invalid project permission."),
 
 	//프로젝트 수정
 	ERR_PROJECT_UPDATE(5030, "Project update fail."),
-	ERR_PROJECT_UPDATE_INVALID_SHARE_PERMISSION(
-		5031, "Project update fail. Because user have invalid project share permission."),
-	ERR_PROJECT_UPDATE_INVALID_EDIT_PERMISSION(
-		5032, "Project update fail. Because user have invalid project edit permission."),
-	ERR_PROJECT_UPDATE_MAX_STORAGE(5033, "Project update fail. Because maximum uploadable storage is exceeded."),
-	ERR_PROJECT_UPDATE_INVALID_LICENSE(5034, "Project update fail. Because user have no uploadable product license."),
+	ERR_PROJECT_UPDATE_INVALID_PERMISSION(
+		5031, "Project update fail. Because user have invalid project edit permission."),
+	ERR_PROJECT_UPDATE_MAX_STORAGE(5032, "Project update fail. Because maximum uploadable storage is exceeded."),
+	ERR_PROJECT_UPDATE_INVALID_LICENSE(5033, "Project update fail. Because user have no uploadable product license."),
 
 	//프로젝트 다운로드
 	ERR_PROJECT_DOWNLOAD(5040, "Project download fail."),
-	ERR_PROJECT_DOWNLOAD_INVALID_SHARE_PERMISSION(
-		5041, "Project download fail. Because user have invalid project share permission."),
+	ERR_PROJECT_DOWNLOAD_INVALID_PERMISSION(
+		5041, "Project download fail. Because user have invalid project permission."),
+
+	//프로젝트 삭제
+	ERR_PROJECT_DELETE(5050, "Project delete fail."),
+	ERR_PROJECT_DELETE_INVALID_PERMISSION(5051, "Project delete fail. Because user have invalid project edit permission."),
 
 	// 공통 에러
 	ERR_INVALID_REQUEST_PARAMETER(8001, "Invalid request parameter cause api errors"),

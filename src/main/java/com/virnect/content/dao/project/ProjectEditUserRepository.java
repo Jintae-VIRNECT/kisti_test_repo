@@ -13,5 +13,6 @@ import com.virnect.content.domain.project.ProjectEditUser;
  * DESCRIPTION:
  */
 @Repository
-public interface ProjectEditUserRepository extends JpaRepository<ProjectEditUser, Long> {
+public interface ProjectEditUserRepository
+	extends JpaRepository<ProjectEditUser, Long>, ProjectEditUserCustomRepository {
 }

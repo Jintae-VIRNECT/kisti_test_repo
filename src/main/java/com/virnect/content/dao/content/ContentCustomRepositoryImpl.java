@@ -120,17 +120,6 @@ public class ContentCustomRepositoryImpl extends QuerydslRepositorySupport imple
                 .fetchOne();
     }
 
-    @Override
-    public Long getWorkspaceDownload(String workspaceUUID) {
-        QContent qContent = QContent.content;
-
-        Long sumDownload = from(qContent)
-                .select(qContent.downloadHits.sum())
-                .where(qContent.workspaceUUID.eq(workspaceUUID))
-                .fetchOne();
-
-        return sumDownload;
-    }
 
     @Override
     public List<Tuple> countByUsers(String workspaceUUID, List<String> userUUIDList) {
@@ -167,5 +156,13 @@ public class ContentCustomRepositoryImpl extends QuerydslRepositorySupport imple
     public long deleteAllContentByWorkspaceUUID(String workspaceUUID) {
         QContent qContent = QContent.content;
         return delete(qContent).where(qContent.workspaceUUID.eq(workspaceUUID)).execute();
+    }
+
+    @Override
+    public List<Content> findContentAndTargetListByWorkspaceUUID(String workspaceUUID) {
+        QContent qContent = QContent.content;
+        QTarget qTarget = QTarget.target;
+        return from(qContent).select(qContent).where(qContent.workspaceUUID.eq(workspaceUUID))
+            .join(qContent.targetList,qTarget).fetchJoin().fetch();
     }
 }
