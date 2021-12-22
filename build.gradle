@@ -14,6 +14,7 @@ ext {
             "com/virnect/uaa/UserAccountAndAuthenticationServer.java",
             "com/virnect/uaa/global/config/**",
             "**/dto/**",
+            "**/infra/rest/**",
             "**/domain/**",
             "src/main/resources/**",
             "**/*Config.*",
