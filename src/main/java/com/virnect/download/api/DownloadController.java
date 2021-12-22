@@ -18,7 +18,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import springfox.documentation.annotations.ApiIgnore;
 
-import com.virnect.download.application.DownloadService;
+import com.virnect.download.application.download.DownloadService;
 import com.virnect.download.dto.response.AppInfoListResponse;
 import com.virnect.download.exception.DownloadException;
 import com.virnect.download.global.common.ApiResponse;

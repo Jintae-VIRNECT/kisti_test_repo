@@ -2,7 +2,7 @@ spring:
   application:
     name: download-server
   datasource:
-    url: jdbc:mysql://192.168.6.3:4336/downloads?characterEncoding=UTF-8&serverTimezone=UTC
+    url: jdbc:mysql://192.168.6.3:4336/op_downloads?characterEncoding=UTF-8&serverTimezone=UTC
     username: virnect-downloads
     password: virnect1234
   jpa:
@@ -12,7 +12,7 @@ spring:
     database-platform: org.hibernate.dialect.MySQL5InnoDBDialect
     properties:
       hibernate:
-        format_sql: true
+        format_sql: false
   servlet:
     multipart:
       max-file-size: 500MB
@@ -20,10 +20,13 @@ spring:
   zipkin:
     base-url: http://192.168.6.3:9411
     discovery-client-enabled: false
+  cloud:
+    loadbalancer:
+      ribbon:
+        enabled: true
 logging:
   level:
     com.virnect.download.application.*: DEBUG
-    org.hibernate.type.descriptor.sql: trace
 
 ## Server Configuration
 server:
@@ -35,7 +38,7 @@ server:
 file:
   upload-path: "app/"
   url: "http://192.168.6.3:${server.port}/download/"
-  allowed-extension: "apk"
+  allowed-extension: "apk,exe,appx,appxbundle"
 
 ## Eureka Server Configuration
 eureka:
@@ -75,7 +78,11 @@ minio:
   bucket: "virnect-download"
   bucket-resource: "app"
 
-app-store:
-  view-mobile: "https://play.google.com/store/apps/details?id=com.VIRNECT.VIRNECTView"
-  remote-mobile: "https://play.google.com/store/apps/details?id=com.virnect.remote.mobile2"
-  remote-linkflow: "https://play.google.com/store/apps/details?id=com.virnect.remote.linkflow"
+workspace-server:
+  ribbon:
+    listOfServers: http://192.168.6.3:8082
+feign:
+  client:
+    config:
+      default:
+        loggerLevel: FULL

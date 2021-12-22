@@ -15,6 +15,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import com.virnect.download.domain.App;
+import com.virnect.download.domain.Device;
+import com.virnect.download.domain.OS;
 import com.virnect.download.dto.domain.DeviceLatestVersionCodeDto;
 import com.virnect.download.dto.domain.QDeviceLatestVersionCodeDto;
 
@@ -55,7 +57,7 @@ public class AppRepositoryImpl implements AppRepositoryCustom {
 	}
 
 	@Override
-	public Optional<App> getLatestVersionAppInfoByPackageName(String packageName) {
+	public Optional<App> getLatestVersionActiveAppInfoByPackageName(String packageName) {
 		return Optional.ofNullable(
 			query
 				.selectFrom(app)
@@ -70,7 +72,7 @@ public class AppRepositoryImpl implements AppRepositoryCustom {
 	}
 
 	@Override
-	public List<App> findByPackageNameAndSignature(String packageName, String signature) {
+	public List<App> getAppByPackageNameAndSignature(String packageName, String signature) {
 
 		return query
 			.selectFrom(app)
@@ -96,6 +98,60 @@ public class AppRepositoryImpl implements AppRepositoryCustom {
 			.groupBy(app.device.id)
 			.fetch();
 	}
+
+	@Override
+	public Optional<App> getLatestVersionActiveAppInfoByDeviceAndOs(
+		Device device, OS os
+	) {
+		return Optional.ofNullable(
+			query
+				.selectFrom(app)
+				.where(app.device.eq(device))
+				.where(app.os.eq(os))
+				.where(app.appStatus.eq(ACTIVE))
+				.orderBy(app.versionCode.desc())
+				.fetchFirst());
+	}
+
+	@Override
+	public boolean existAppVersionCode(Device device, OS os, Long versionCode) {
+		return (query.selectFrom(app)
+			.where(
+				app.device.eq(device), app.os.eq(os),
+				app.versionCode.eq(versionCode)
+			)
+			.fetchFirst()) != null;
+	}
+
+	@Override
+	public boolean isLowerThanPreviousAppVersionCode(Device device, OS os, Long versionCode) {
+		return (query.select(app.versionCode)
+			.from(app)
+			.where(
+				app.device.eq(device), app.os.eq(os)
+			)
+			.orderBy(app.versionCode.desc())
+			.fetchFirst()) > versionCode;
+	}
+
+	@Override
+	public App getActiveAppByDeviceLatestVersionCode(
+		DeviceLatestVersionCodeDto deviceLatestVersionCodeDto
+	) {
+		return query
+			.select(app)
+			.from(app)
+			.innerJoin(app.os, oS).fetchJoin()
+			.innerJoin(app.device, device).fetchJoin()
+			.where(
+				app.appStatus.eq(ACTIVE),
+				app.device.id.eq(deviceLatestVersionCodeDto.getDeviceId()),
+				app.versionCode.eq(deviceLatestVersionCodeDto.getVersionCode())
+			)
+			.orderBy(app.id.asc())
+			.fetchFirst();
+	}
+
 
 	@Override
 	public long registerSigningKeyByPackageName(String packageName, String signingKey) {

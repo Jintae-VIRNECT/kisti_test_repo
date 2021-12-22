@@ -39,7 +39,7 @@ public class MinioFileUploadService implements FileUploadService {
 	private List<String> allowedExtension;
 
 	@Override
-	public String upload(MultipartFile file) throws IOException {
+	public String upload(MultipartFile file) {
 		log.info("[MINIO UPLOADER] - UPLOAD BEGIN");
 		if (file.getSize() <= 0) {
 			throw new AppServiceException(ErrorCode.ERR_APP_UPLOAD_EMPTY_APPLICATION_FILE);
@@ -54,30 +54,30 @@ public class MinioFileUploadService implements FileUploadService {
 
 		log.info("UPLOAD SERVICE: ==> originName: [{}] , size: {}", file.getOriginalFilename(), file.getSize());
 
-		String fileName = String.format(
-			"%s/%s", resourceDir, file.getOriginalFilename());
+		String fileName = resourceDir + "/" + file.getOriginalFilename();
 
 		log.info("[MINIO_UPLOAD_BEGIN]");
 		log.info("BUCKET: [{}], FILENAME: [{}]", bucket, fileName);
 
 		Map<String, String> contentMetadata = new HashMap<>();
-		contentMetadata.put("Content-Disposition",String.format("attachment; filename=\"%s\"", file.getOriginalFilename()));
-		contentMetadata.put("filename",file.getOriginalFilename());
+		contentMetadata.put("Content-Disposition", "attachment; filename=\"" + file.getOriginalFilename() + "\"");
+		contentMetadata.put("filename", file.getOriginalFilename());
 
-		PutObjectArgs putObjectArgs = PutObjectArgs.builder()
-			.contentType(file.getContentType())
-			.bucket(bucket)
-			.object(fileName)
-			.stream(file.getInputStream(), file.getInputStream().available(), -1)
-			.headers(contentMetadata)
-			.build();
 		try {
+			PutObjectArgs putObjectArgs = PutObjectArgs.builder()
+				.contentType(file.getContentType())
+				.bucket(bucket)
+				.object(fileName)
+				.stream(file.getInputStream(), file.getInputStream().available(), -1)
+				.headers(contentMetadata)
+				.build();
+
 			minioClient.putObject(putObjectArgs);
 			String url = minioClient.getObjectUrl(bucket, fileName);
 			log.info("[MINIO_UPLOAD_URL] - [{}]", url);
 			log.info("[MINIO_UPLOAD_END]");
 			return url;
-		} catch (MinioException | InvalidKeyException | NoSuchAlgorithmException e) {
+		} catch (MinioException | InvalidKeyException | NoSuchAlgorithmException | IOException e) {
 			log.error("[MINIO_FILE_UPLOAD_ERROR] - {}", e.getMessage(), e);
 			throw new AppServiceException(ErrorCode.ERR_APP_UPLOAD_FAIL);
 		}

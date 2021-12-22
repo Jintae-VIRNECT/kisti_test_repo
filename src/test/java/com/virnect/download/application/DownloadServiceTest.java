@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.util.StringUtils;
 
 /**
  * Project: PF-Download
@@ -14,10 +15,7 @@ import org.springframework.test.context.ActiveProfiles;
  * EMAIL: ljk@virnect.com
  * DESCRIPTION:
  */
-@SpringBootTest
-@ActiveProfiles("local")
-@AutoConfigureMockMvc
-public class DownloadServiceTest {
+ class DownloadServiceTest {
 	@Test
 	void createAppUUID() {
 		String[] tokens = UUID.randomUUID().toString().split("-");
@@ -28,7 +26,11 @@ public class DownloadServiceTest {
 
 		String[] tokens3 = UUID.randomUUID().toString().split("-");
 		System.out.println(tokens3[1] + "-" + tokens3[4]);
-
+	}
+	@Test
+	void test(){
+		String s = StringUtils.deleteAny(".2.3.1", ".");
+		System.out.println(s);
 	}
 
 }

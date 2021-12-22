@@ -39,6 +39,7 @@ public enum ErrorCode {
 		6012,
 		"Application information update fail."
 	),
+	ERR_APP_UPLOAD_FAIL_WORKSPACE_INVALID_PERMISSION(6013,"Application file upload fail. User is haven't valid workspace permission"),
 
 	// 공통 에러
 	ERR_API_AUTHENTICATION(8003, "Authentication Error"),
