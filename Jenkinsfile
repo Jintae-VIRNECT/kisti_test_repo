@@ -12,26 +12,70 @@ pipeline {
         PORT = sh(returnStdout: true, script: 'cat docker/Dockerfile | egrep EXPOSE | awk \'{print $2}\'').trim()
         BRANCH_NAME = "${BRANCH_NAME.toLowerCase().trim()}"
         APP = ' '
-        PREVIOUS_VERSION = sh(returnStdout: true, script: 'git semver get || git semver minor').trim()
-        NEXT_VERSION = getNextSemanticVersion(majorPattern: '.*[Bb]REAKING CHANGE[;:].*', minorPattern: '.*[Ff]eat[;:].*', patchPattern: '.*[Ff]ix[;:].*').toString()
+        PREVIOUS_VERSION = sh(returnStdout: true, script: 'git fetch --tags origin master && git semver get || git semver minor').trim()
+        PREVIOUS_VERSION_PARENT_COMMIT = sh(returnStdout: true, script: "git log --pretty=%P -n 1 ${PREVIOUS_VERSION}").trim()
+        NEXT_VERSION = getNextSemanticVersion(from: [type: 'COMMIT', value: "${PREVIOUS_VERSION_PARENT_COMMIT}"], to: [type: 'COMMIT', value: 'HEAD']).toString()
     }
 
     stages {
-        stage ('checkout') {
+        stage('version update and compatibility check') {
+            when { anyOf { branch 'master'; branch 'staging'; branch 'develop'} }
+            environment {
+                APP_VERSION = sh(returnStdout: true, script: 'cat package.json | grep \"version\" | awk -F ":" \'{print \$2}\' | sed "s/[\\",\\,]//g"').trim()
+                IS_UPDATE_COMMIT = sh(script: "git log -1 | grep 'chore: SOFTWARE VERSION UPDATED'", returnStatus: true)
+            }
             steps {
-                checkout scm
-
                 script {
-                    result = sh(script: "git log -1 | grep 'chore: SOFTWARE VERSION UPDATED'", returnStatus: true)
-                    if (result != 0) {
-                        echo "performing build..."
-                    } else {
-                        echo "not running..."
-                        echo 'clean up current directory'
+                    if (env.IS_UPDATE_COMMIT == '0') {
+                        echo "version update commit, not running..."
+                        echo "clean up current directory"
                         deleteDir()
                         currentBuild.getRawBuild().getExecutor().interrupt(Result.SUCCESS)
                         sleep(1)
-                    }                
+                    } else if ((env.APP_VERSION != env.PREVIOUS_VERSION)) {
+                        echo "Version compatibility with master branch is not correct. Pull and merge from the master branch. not running..."
+                        echo 'clean up current directory'
+                        deleteDir()
+                        currentBuild.getRawBuild().getExecutor().interrupt(Result.ABORTED)
+                        sleep(1)
+                    }
+
+                    echo "PREVIOUS TAG VERSION: ${PREVIOUS_VERSION}"
+                    echo "NEXT TAG VERSION: ${NEXT_VERSION}"
+                    echo "APP VERSION: ${APP_VERSION}"
+                }
+            }
+        }
+
+        stage ('sonarqube code analysis') {
+            when {
+                branch 'develop'
+            }
+            environment {
+                scannerHome = tool 'sonarqube-scanner'
+            }
+            steps {
+                withSonarQubeEnv('sonarqube') {
+                    sh "${scannerHome}/bin/sonar-scanner"
+                }                
+                timeout(time: 5, unit: 'MINUTES') {
+                    waitForQualityGate abortPipeline: true
+                }
+            }
+        }
+
+        stage ('edit package version') {
+            steps {
+                script {
+                    if ("${BRANCH_NAME}" == 'master') {
+                      sh '''
+                        sed -i "/\\"version\\":/ c\\  \\"version\\": \\"${NEXT_VERSION}\\"," package.json
+                      '''
+                    } else {
+                      sh '''
+                        sed -i "/\\"version\\":/ c\\  \\"version\\": \\"${NEXT_VERSION}-${BRANCH_NAME}-${BUILD_NUMBER}\\"," package.json
+                      '''
+                    }
                 }
             }
         }
@@ -115,8 +159,11 @@ pipeline {
         }
 
         stage ('image scanning') {
+            when {
+                branch 'develop'
+            }
             steps {
-                writeFile file: 'anchore_images', text: "${NEXUS_REGISTRY}/${REPO_NAME}:${BRANCH_NAME}.${BUILD_NUMBER}"
+                writeFile file: 'anchore_images', text: "${NEXUS_REGISTRY}/${REPO_NAME}:${NEXT_VERSION}-${BRANCH_NAME}-${BUILD_NUMBER}"
                 anchore name: 'anchore_images'
             }
         }
@@ -130,7 +177,7 @@ pipeline {
             steps {
               sh '''
                 docker login ${NEXUS_REGISTRY}
-                docker pull ${NEXUS_REGISTRY}/${REPO_NAME}:${BRANCH_NAME}.${BUILD_NUMBER}
+                docker pull ${NEXUS_REGISTRY}/${REPO_NAME}:${NEXT_VERSION}-${BRANCH_NAME}-${BUILD_NUMBER}
                 
                 count=`docker ps -a | grep ${REPO_NAME} | grep -v onpremise | wc -l`
 
@@ -143,7 +190,7 @@ pipeline {
                     -e CONFIG_SERVER=http://192.168.6.3:6383 \
                     -e WRITE_YOUR=ENVIRONMENT_VARIABLE_HERE \
                     -p ${PORT}:${PORT} \
-                    --name=${REPO_NAME} ${NEXUS_REGISTRY}/${REPO_NAME}:${BRANCH_NAME}.${BUILD_NUMBER}
+                    --name=${REPO_NAME} ${NEXUS_REGISTRY}/${REPO_NAME}:${NEXT_VERSION}-${BRANCH_NAME}-${BUILD_NUMBER}
                 else
                   echo "Found a running container. stop the running container..."
                   docker stop ${REPO_NAME} && docker rm ${REPO_NAME}
@@ -155,7 +202,7 @@ pipeline {
                     -e CONFIG_SERVER=http://192.168.6.3:6383 \
                     -e WRITE_YOUR=ENVIRONMENT_VARIABLE_HERE \
                     -p ${PORT}:${PORT} \
-                    --name=${REPO_NAME} ${NEXUS_REGISTRY}/${REPO_NAME}:${BRANCH_NAME}.${BUILD_NUMBER}
+                    --name=${REPO_NAME} ${NEXUS_REGISTRY}/${REPO_NAME}:${NEXT_VERSION}-${BRANCH_NAME}-${BUILD_NUMBER}
                 fi
 
                 count=`docker ps -a | grep ${REPO_NAME}-onpremise | wc -l`
@@ -168,7 +215,7 @@ pipeline {
                     -e CONFIG_SERVER=http://192.168.6.3:6383 \
                     -e WRITE_YOUR=ENVIRONMENT_VARIABLE_HERE \
                     -p 1${PORT}:${PORT} \
-                    --name=${REPO_NAME}-onpremise ${NEXUS_REGISTRY}/${REPO_NAME}:${BRANCH_NAME}.${BUILD_NUMBER}
+                    --name=${REPO_NAME}-onpremise ${NEXUS_REGISTRY}/${REPO_NAME}:${NEXT_VERSION}-${BRANCH_NAME}-${BUILD_NUMBER}
                 else
                   echo "Found a running container. stop the running container..."
                   docker stop ${REPO_NAME}-onpremise && docker rm ${REPO_NAME}-onpremise
@@ -179,7 +226,7 @@ pipeline {
                     -e CONFIG_SERVER=http://192.168.6.3:6383 \
                     -e WRITE_YOUR=ENVIRONMENT_VARIABLE_HERE \
                     -p 1${PORT}:${PORT} \
-                    --name=${REPO_NAME}-onpremise ${NEXUS_REGISTRY}/${REPO_NAME}:${BRANCH_NAME}.${BUILD_NUMBER}
+                    --name=${REPO_NAME}-onpremise ${NEXUS_REGISTRY}/${REPO_NAME}:${NEXT_VERSION}-${BRANCH_NAME}-${BUILD_NUMBER}
                 fi
               '''
             }
@@ -211,7 +258,7 @@ pipeline {
                                         execCommand: 'aws ecr get-login --region ap-northeast-2 --no-include-email | bash'
                                     ),
                                     sshTransfer(
-                                        execCommand: "docker pull ${aws_ecr_address}/${REPO_NAME}:${BRANCH_NAME}.${BUILD_NUMBER}"
+                                        execCommand: "docker pull ${aws_ecr_address}/${REPO_NAME}:${NEXT_VERSION}-${BRANCH_NAME}-${BUILD_NUMBER}"
                                     ),
                                     sshTransfer(
                                         execCommand: """
@@ -225,7 +272,7 @@ pipeline {
                                                     -e CONFIG_SERVER=https://stgconfig.virnect.com \
                                                     -e WRITE_YOUR=ENVIRONMENT_VARIABLE_HERE \
                                                     -p ${PORT}:${PORT} \
-                                                    --name=${REPO_NAME} ${aws_ecr_address}/${REPO_NAME}:${BRANCH_NAME}.${BUILD_NUMBER}
+                                                    --name=${REPO_NAME} ${aws_ecr_address}/${REPO_NAME}:${NEXT_VERSION}-${BRANCH_NAME}-${BUILD_NUMBER}
                                         """
                                     )
                                 ]
@@ -245,7 +292,7 @@ pipeline {
                                         execCommand: 'aws ecr get-login --region ap-northeast-2 --no-include-email | bash'
                                     ),
                                     sshTransfer(
-                                        execCommand: "docker pull ${aws_ecr_address}/${REPO_NAME}:${BRANCH_NAME}.${BUILD_NUMBER}"
+                                        execCommand: "docker pull ${aws_ecr_address}/${REPO_NAME}:${NEXT_VERSION}-${BRANCH_NAME}-${BUILD_NUMBER}"
                                     ),
                                     sshTransfer(
                                         execCommand: """
@@ -259,7 +306,7 @@ pipeline {
                                                     -e CONFIG_SERVER=http://3.35.50.181:6383 \
                                                     -e WRITE_YOUR=ENVIRONMENT_VARIABLE_HERE \
                                                     -p ${PORT}:${PORT} \
-                                                    --name=${REPO_NAME} ${aws_ecr_address}/${REPO_NAME}:${BRANCH_NAME}.${BUILD_NUMBER}
+                                                    --name=${REPO_NAME} ${aws_ecr_address}/${REPO_NAME}:${NEXT_VERSION}-${BRANCH_NAME}-${BUILD_NUMBER}
                                         """
                                     )
                                 ]
