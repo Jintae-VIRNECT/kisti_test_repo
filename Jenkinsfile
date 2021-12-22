@@ -376,10 +376,5 @@ pipeline {
         }
     }
 
-    post {
-        cleanup {
-            echo 'clean up current directory'
-            deleteDir()
-        }
-    }
+
 }
