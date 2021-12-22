@@ -1,0 +1,86 @@
+export default {
+  getters: {
+    plansInfo: () => {
+      return {
+        storage: {
+          current: 0,
+          default: 0,
+          add: 0,
+          max: 0,
+          remain: 0,
+          percent: 0,
+        },
+        project: { current: 0, percent: 0 },
+        viewCount: {
+          current: 0,
+          default: 0,
+          add: 0,
+          max: 0,
+          remain: 0,
+          percent: 0,
+        },
+        callTime: {
+          current: 0,
+          default: 0,
+          add: 0,
+          max: 0,
+          remain: 0,
+          percent: 0,
+        },
+        endDate: '2021-12-01T23:36:02.16',
+        planStatus: 'INACTIVE',
+        products: [
+          {
+            value: 'remote',
+            label: 'Remote',
+            logo: 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIzMiIgaGVpZ2h0PSIzMiIgdmlld0JveD0iMCAwIDMyIDMyIj4NCiAgICA8ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPg0KICAgICAgICA8cGF0aCBmaWxsPSIjMjA3RkY0IiBkPSJNNi41MzQgMThMMTQuOTQgMTMuMTM5IDE0Ljk0IDEwLjI2NCA2LjUzMyAxNS4xNDcgNi41MzMgMTUuMTUgMy4wNTkgMTMuMTQzIDMuMDU5IDkuMTM2IDguOTk3IDUuNzA4IDYuNTMgNC4yNzkgMC41ODkgNy43MDkgMC41ODggNy43MDggMC41ODggNy43MDkgMC41ODggMTQuNTY5IDYuNTMzIDE4eiIgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoNyA3KSIvPg0KICAgICAgICA8cGF0aCBmaWxsPSIjN0RCM0Y2IiBkPSJNMTcuNDEyIDcuNzEyTDguOTk5IDIuODUyIDYuNTMgNC4yNzggMTIuNDcgNy43MTYgMTIuNDc0IDcuNzE0IDE0Ljk0IDkuMTM4IDE0Ljk0IDEzLjEzNyAxNC45MzcgMTMuMTM5IDExLjQ2OCAxNS4xNDMgNS41MjggMTEuNjk1IDMuMDU4IDEzLjE0MiAxMS40NjYgMTcuOTk2IDE3LjQwOCAxNC41NjZ6IiB0cmFuc2Zvcm09InRyYW5zbGF0ZSg3IDcpIi8+DQogICAgICAgIDxwYXRoIGZpbGw9IiNDMEQ4RkYiIGQ9Ik04Ljk5OSAwTDMuMDU4IDMuNDMgMy4wNTkgMy40MzEgMy4wNTggMy40MyAzLjA1OCAxMy4xNDIgNS41MjggMTQuNTY5IDUuNTI4IDQuODU3IDUuNTI4IDQuODU2IDUuNTI4IDQuODU3IDguOTk5IDIuODUzIDEyLjQ3IDQuODU3IDEyLjQ3IDExLjY5OSAxNC45NCAxMC4yNjQgMTQuOTQgMy40M3oiIHRyYW5zZm9ybT0idHJhbnNsYXRlKDcgNykiLz4NCiAgICAgICAgPHBhdGggZmlsbD0iIzIwN0ZGNCIgZD0iTTMuMDYgOS4xMzZMMy4wNiA5LjEzNiA4Ljk5NyA1LjcwOCA2LjUzMSA0LjI3OSAwLjU4OSA3LjcwOSAwLjU4OCA3LjcwOSAwLjU4OCA3LjcwOXoiIHRyYW5zZm9ybT0idHJhbnNsYXRlKDcgNykiLz4NCiAgICA8L2c+DQo8L3N2Zz4NCg==',
+            licenseType: 'PUBLIC',
+            amount: 0,
+            usedAmount: 0,
+          },
+          {
+            value: 'make',
+            label: 'Make',
+            logo: 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIzMiIgaGVpZ2h0PSIzMiIgdmlld0JveD0iMCAwIDMyIDMyIj4NCiAgICA8ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPg0KICAgICAgICA8cGF0aCBmaWxsPSIjNkZCNkZCIiBkPSJNMS4zMDQgOS43ODlMMCAxMC41NDEuMDEgMTMuODQ2IDggOS4yMzcgNS4xMyA3LjU3OXpNOCA5LjIzN0wxNiAxMy44NTUgMTUuOTk5IDEwLjU0MSAxNC42OTUgOS43ODkgMTAuODcgNy41OHoiIHRyYW5zZm9ybT0idHJhbnNsYXRlKDggNykiLz4NCiAgICAgICAgPHBhdGggZmlsbD0iI0JGRENGRiIgZD0iTTkuMzA1IDE0LjQwN0w4IDE1LjE2IDggMTguNDc0IDE2IDEzLjg1NiAxNiAxMC41NDF6IiB0cmFuc2Zvcm09InRyYW5zbGF0ZSg4IDcpIi8+DQogICAgICAgIDxwYXRoIGZpbGw9IiMwMDdDRjciIGQ9Ik0wLjAwMSAxMy44NTZMOCAxOC40NzQgOCAxNS4xNiA2LjY5NiAxNC40MDcgMC4wMDEgMTAuNTQxeiIgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoOCA3KSIvPg0KICAgICAgICA8cGF0aCBmaWxsPSIjNkZCNkZCIiBkPSJNNy45OTkgMEwxLjMwNCAzLjg2NiAwIDQuNjE4IDAuMDEgNy45MjMgOC4wMDMgMy4zMSAxNiA3LjkzMiAxNS45OTkgNC42MTggMTQuNjk1IDMuODY2eiIgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoOCA3KSIvPg0KICAgICAgICA8cGF0aCBmaWxsPSIjQkZEQ0ZGIiBkPSJNOS4zMDUgOC40ODRMOCA5LjIzNyA4IDEyLjU1MSAxNiA3LjkzMiAxNiA0LjYxOXoiIHRyYW5zZm9ybT0idHJhbnNsYXRlKDggNykiLz4NCiAgICAgICAgPHBhdGggZmlsbD0iIzAwN0NGNyIgZD0iTTAuMDAxIDcuOTMyTDggMTIuNTUxIDggOS4yMzcgNi42OTYgOC40ODQgMC4wMDEgNC42MTh6IiB0cmFuc2Zvcm09InRyYW5zbGF0ZSg4IDcpIi8+DQogICAgPC9nPg0KPC9zdmc+DQo=',
+            licenseType: 'PUBLIC',
+            amount: 0,
+            usedAmount: 0,
+          },
+          {
+            value: 'view',
+            label: 'View',
+            logo: '/_nuxt/img/logo-View.4ad2e8f.svg',
+            licenseType: 'PUBLIC',
+            amount: 0,
+            usedAmount: 0,
+          },
+        ],
+        remote: {
+          value: 'remote',
+          label: 'Remote',
+          logo: 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIzMiIgaGVpZ2h0PSIzMiIgdmlld0JveD0iMCAwIDMyIDMyIj4NCiAgICA8ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPg0KICAgICAgICA8cGF0aCBmaWxsPSIjMjA3RkY0IiBkPSJNNi41MzQgMThMMTQuOTQgMTMuMTM5IDE0Ljk0IDEwLjI2NCA2LjUzMyAxNS4xNDcgNi41MzMgMTUuMTUgMy4wNTkgMTMuMTQzIDMuMDU5IDkuMTM2IDguOTk3IDUuNzA4IDYuNTMgNC4yNzkgMC41ODkgNy43MDkgMC41ODggNy43MDggMC41ODggNy43MDkgMC41ODggMTQuNTY5IDYuNTMzIDE4eiIgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoNyA3KSIvPg0KICAgICAgICA8cGF0aCBmaWxsPSIjN0RCM0Y2IiBkPSJNMTcuNDEyIDcuNzEyTDguOTk5IDIuODUyIDYuNTMgNC4yNzggMTIuNDcgNy43MTYgMTIuNDc0IDcuNzE0IDE0Ljk0IDkuMTM4IDE0Ljk0IDEzLjEzNyAxNC45MzcgMTMuMTM5IDExLjQ2OCAxNS4xNDMgNS41MjggMTEuNjk1IDMuMDU4IDEzLjE0MiAxMS40NjYgMTcuOTk2IDE3LjQwOCAxNC41NjZ6IiB0cmFuc2Zvcm09InRyYW5zbGF0ZSg3IDcpIi8+DQogICAgICAgIDxwYXRoIGZpbGw9IiNDMEQ4RkYiIGQ9Ik04Ljk5OSAwTDMuMDU4IDMuNDMgMy4wNTkgMy40MzEgMy4wNTggMy40MyAzLjA1OCAxMy4xNDIgNS41MjggMTQuNTY5IDUuNTI4IDQuODU3IDUuNTI4IDQuODU2IDUuNTI4IDQuODU3IDguOTk5IDIuODUzIDEyLjQ3IDQuODU3IDEyLjQ3IDExLjY5OSAxNC45NCAxMC4yNjQgMTQuOTQgMy40M3oiIHRyYW5zZm9ybT0idHJhbnNsYXRlKDcgNykiLz4NCiAgICAgICAgPHBhdGggZmlsbD0iIzIwN0ZGNCIgZD0iTTMuMDYgOS4xMzZMMy4wNiA5LjEzNiA4Ljk5NyA1LjcwOCA2LjUzMSA0LjI3OSAwLjU4OSA3LjcwOSAwLjU4OCA3LjcwOSAwLjU4OCA3LjcwOXoiIHRyYW5zZm9ybT0idHJhbnNsYXRlKDcgNykiLz4NCiAgICA8L2c+DQo8L3N2Zz4NCg==',
+          licenseType: 'PUBLIC',
+          amount: 0,
+          usedAmount: 0,
+        },
+        make: {
+          value: 'make',
+          label: 'Make',
+          logo: 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIzMiIgaGVpZ2h0PSIzMiIgdmlld0JveD0iMCAwIDMyIDMyIj4NCiAgICA8ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPg0KICAgICAgICA8cGF0aCBmaWxsPSIjNkZCNkZCIiBkPSJNMS4zMDQgOS43ODlMMCAxMC41NDEuMDEgMTMuODQ2IDggOS4yMzcgNS4xMyA3LjU3OXpNOCA5LjIzN0wxNiAxMy44NTUgMTUuOTk5IDEwLjU0MSAxNC42OTUgOS43ODkgMTAuODcgNy41OHoiIHRyYW5zZm9ybT0idHJhbnNsYXRlKDggNykiLz4NCiAgICAgICAgPHBhdGggZmlsbD0iI0JGRENGRiIgZD0iTTkuMzA1IDE0LjQwN0w4IDE1LjE2IDggMTguNDc0IDE2IDEzLjg1NiAxNiAxMC41NDF6IiB0cmFuc2Zvcm09InRyYW5zbGF0ZSg4IDcpIi8+DQogICAgICAgIDxwYXRoIGZpbGw9IiMwMDdDRjciIGQ9Ik0wLjAwMSAxMy44NTZMOCAxOC40NzQgOCAxNS4xNiA2LjY5NiAxNC40MDcgMC4wMDEgMTAuNTQxeiIgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoOCA3KSIvPg0KICAgICAgICA8cGF0aCBmaWxsPSIjNkZCNkZCIiBkPSJNNy45OTkgMEwxLjMwNCAzLjg2NiAwIDQuNjE4IDAuMDEgNy45MjMgOC4wMDMgMy4zMSAxNiA3LjkzMiAxNS45OTkgNC42MTggMTQuNjk1IDMuODY2eiIgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoOCA3KSIvPg0KICAgICAgICA8cGF0aCBmaWxsPSIjQkZEQ0ZGIiBkPSJNOS4zMDUgOC40ODRMOCA5LjIzNyA4IDEyLjU1MSAxNiA3LjkzMiAxNiA0LjYxOXoiIHRyYW5zZm9ybT0idHJhbnNsYXRlKDggNykiLz4NCiAgICAgICAgPHBhdGggZmlsbD0iIzAwN0NGNyIgZD0iTTAuMDAxIDcuOTMyTDggMTIuNTUxIDggOS4yMzcgNi42OTYgOC40ODQgMC4wMDEgNC42MTh6IiB0cmFuc2Zvcm09InRyYW5zbGF0ZSg4IDcpIi8+DQogICAgPC9nPg0KPC9zdmc+DQo=',
+          licenseType: 'PUBLIC',
+          amount: 0,
+          usedAmount: 0,
+        },
+        view: {
+          value: 'view',
+          label: 'View',
+          logo: '/_nuxt/img/logo-View.4ad2e8f.svg',
+          licenseType: 'PUBLIC',
+          amount: 0,
+          usedAmount: 0,
+        },
+      }
+    },
+  },
+  namespaced: true,
+}

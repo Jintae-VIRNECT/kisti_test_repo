@@ -37,9 +37,9 @@ export default {
     width: 12px;
     height: 12px;
     margin-right: 8px;
-    border-radius: 2px;
     vertical-align: middle;
     background: var(--color);
+    border-radius: 2px;
     content: '';
   }
   .used {

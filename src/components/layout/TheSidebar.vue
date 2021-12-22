@@ -40,6 +40,9 @@
 import collapseTask from '@/components/layout/collapses/TheSidebarCollapseTask'
 import collapseMember from '@/components/layout/collapses/TheSidebarCollapseMember'
 import collapseContents from '@/components/layout/collapses/TheSidebarCollapseContents'
+import collapseProjects from '@/components/layout/collapses/TheSidebarCollapseProjects'
+import collapseSettings from '@/components/layout/collapses/TheSidebarCollapseSettings'
+
 import { mapGetters } from 'vuex'
 import filterMixin from '@/mixins/filters'
 
@@ -49,6 +52,8 @@ export default {
     collapseTask,
     collapseMember,
     collapseContents,
+    collapseProjects,
+    collapseSettings,
   },
   props: {
     menus: Array,

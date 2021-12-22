@@ -30,7 +30,9 @@ export default {
   },
   data() {
     return {
-      roles: role.options.filter(({ value }) => value !== 'MASTER'),
+      roles: role.options.filter(
+        ({ value }) => value !== 'MASTER' && value !== 'GUEST',
+      ),
       val: [this.value],
     }
   },
@@ -75,6 +77,9 @@ export default {
   }
   &.MEMBER .el-tag {
     background: #7ac1fc;
+  }
+  &.GUEST .el-tag {
+    background: #9fd4ff;
   }
 }
 body .el-popper.el-select-dropdown.is-multiple.member-role-select__dropdown {

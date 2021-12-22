@@ -15,6 +15,7 @@ export default class WorkspaceInfo extends Model {
       master: members.find(member => member.role === 'MASTER'),
       managers: members.filter(member => member.role === 'MANAGER'),
       members: members.filter(member => member.role === 'MEMBER'),
+      memberAmount: members.length,
       plansCount: {
         remote: json.remotePlanCount,
         make: json.makePlanCount,

@@ -1,6 +1,11 @@
 <template>
   <div class="project-member-select">
     <el-divider />
+    <el-row>
+      <el-button type="text" class="undo" @click="undo">
+        <img src="~assets/images/icon/ic-undo.svg" />
+      </el-button>
+    </el-row>
     <!-- 프로젝트 공유 / 편집 정보 -->
     <dl class="select" ref="form">
       <dt>{{ $t(selectLabel) }}</dt>
@@ -123,9 +128,10 @@ export default {
       return this.memberPermissions !== 'SPECIFIC_MEMBER'
     },
     getLabelName() {
-      return this.members.find(
+      const member = this.members.find(
         member => member.value === this.selectMemberArray[0],
-      ).label
+      )
+      return member ? member.label : this.$t('members.deletedUser')
     },
   },
   methods: {
@@ -136,7 +142,7 @@ export default {
     // 선택한 지정 멤버 리스트에서, 첫 번째 인덱스 멤버를 삭제한다. 라벨의 X 버튼 클릭시 실행.
     deleteFirstUser() {
       if (this.selectMemberArray.length) {
-        this.selectMemberArray.shift()
+        this.selectMemberArray = this.selectMemberArray.slice(1)
         this.setLabelImage()
       }
     },
@@ -144,13 +150,20 @@ export default {
       // 선택한 유저 수가 0명 이상일 때,
       if (this.selectMemberArray.length) {
         // 선택된 유저 리스트에서 첫 유저의 프로필 사진을 대표 라벨 이미지로 보여주기
-        this.labelImg = this.members.find(
+        const member = this.members.find(
           member => member.value === this.selectMemberArray[0],
-        ).img
+        )
+        this.labelImg = member ? member.img : this.$defaultUserProfile
       }
+    },
+    undo() {
+      this.$emit('undo', this.propsKey)
     },
   },
   watch: {
+    memberPermission(v) {
+      this.memberPermissions = v
+    },
     memberPermissions(v) {
       this.$emit('update:memberPermission', v)
 
@@ -161,6 +174,10 @@ export default {
         // 지정 멤버를 제외한 메뉴 선택시, 지정 멤버 리스트를 비웁니다.
         this.selectMemberArray = []
       }
+    },
+    selectMembers(v) {
+      this.selectMemberArray = v
+      this.selectChange()
     },
     selectMemberArray(v) {
       this.$emit('update:selectMembers', v)
@@ -174,12 +191,22 @@ export default {
 </script>
 
 <style lang="scss">
-.project-member-select {
+#__nuxt .project-info-modal .el-dialog__body .project-member-select {
+  .el-row {
+    margin: 12px 0;
+    .el-button {
+      position: absolute;
+      right: 0;
+      width: 24px;
+      height: 24px;
+      padding: 0;
+    }
+  }
   .virnect-workstation-form {
     .input-placeholder {
       position: absolute;
-      margin: 8px 0 8px 12px;
       z-index: 1;
+      margin: 8px 0 8px 12px;
       cursor: var(--cursor);
       pointer-events: var(--pointer);
 
@@ -187,9 +214,9 @@ export default {
         background-color: #e6e9ee;
       }
       > span {
+        color: #5e6b81;
         font-size: 13px;
         vertical-align: top;
-        color: #5e6b81;
       }
     }
   }
@@ -197,11 +224,11 @@ export default {
   .label-user {
     & div:nth-child(1) {
       display: inline-block;
-      border-radius: 12px;
       width: 100px;
       height: 24px;
       margin-top: 8px;
       background-color: #f5f7fa;
+      border-radius: 12px;
       &:hover {
         background-color: #e3eeff;
       }
@@ -218,22 +245,22 @@ export default {
         cursor: pointer;
       }
       span {
-        margin-left: 4px;
-        font-size: 12px;
-        font-weight: 500;
-        vertical-align: middle;
         display: inline-block;
         width: 46px;
+        margin-left: 4px;
         overflow-x: hidden;
-        text-overflow: ellipsis;
+        font-weight: 500;
+        font-size: 12px;
         white-space: nowrap;
+        text-overflow: ellipsis;
+        vertical-align: middle;
       }
     }
     div:nth-child(2) {
       display: inline-block;
       margin-left: 4px;
-      font-size: 12px;
       font-weight: 500;
+      font-size: 12px;
     }
   }
 }
@@ -242,8 +269,8 @@ export default {
     color: black;
     .virnect-thumbnail {
       display: inline-block;
-      vertical-align: middle;
       margin: 0 12px 0 4px;
+      vertical-align: middle;
     }
   }
 }

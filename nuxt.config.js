@@ -36,6 +36,7 @@ module.exports = async () => {
     /**
      * Plugins
      */
+    buildModules: ['@nuxt/postcss8'],
     modules: [
       'nuxt-helmet',
       ['nuxt-i18n', lang],
@@ -46,7 +47,9 @@ module.exports = async () => {
       '@/plugins/element-ui',
       '@/plugins/axios',
       '@/plugins/context',
-      '@plugins/vee-validate',
+      '@/plugins/vee-validate',
+      '@/plugins/virnectComponents',
+      '@/plugins/vue-infinite-loading',
     ],
     /*
      ** Customize style
@@ -63,15 +66,27 @@ module.exports = async () => {
      * alias
      */
     srcDir: resolve(__dirname, 'src'),
-    components: [
-      { path: '~/components' },
-      { prefix: 'virnect', path: '@virnect/components' },
-    ],
+    components: [{ path: '~/components' }],
     alias: {
       '~@virnect': resolve(__dirname, './node_modules/@virnect'),
     },
     build: {
-      transpile: ['@virnect/platform-auth', 'vee-validate/dist/rules'],
+      transpile: [
+        '@virnect/platform-auth',
+        '@virnect/components',
+        'vee-validate/dist/rules',
+      ],
+      postcss: {
+        plugins: {
+          'postcss-import': {},
+          'postcss-url': {},
+        },
+        preset: {
+          autoprefixer: {
+            grid: true,
+          },
+        },
+      },
     },
     /**
      * env

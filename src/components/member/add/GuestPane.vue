@@ -224,27 +224,27 @@ export default {
   .guest-pane__title {
     h6 {
       @include fontLevel(100);
-      color: #0b1f48;
       margin-bottom: 8px;
+      color: #0b1f48;
     }
     p {
       @include fontLevel(75);
-      color: #445168;
       margin-bottom: 16px;
+      color: #445168;
     }
     ul {
       display: flex;
-      width: 568px;
       justify-content: space-between;
+      width: 568px;
       margin-bottom: 25px;
     }
     dl {
       width: 280px;
       height: 122px;
       padding: 14px 16px 16px 16px;
-      border-radius: 3px;
-      border: solid 1px #e0e5ef;
       background-color: rgba(244, 246, 250, 0.8);
+      border: solid 1px #e0e5ef;
+      border-radius: 3px;
     }
     dt {
       @include fontLevel(200);
@@ -258,14 +258,14 @@ export default {
     }
   }
   .guest-pane__content {
-    overflow-y: scroll;
+    width: 610px;
     max-height: 455px;
     padding: 0 5px 0 24px;
-    width: 610px;
+    overflow-y: scroll;
     .el-tabs .el-tabs__item {
       height: 40px;
-      line-height: 40px;
       padding: 0 14px;
+      line-height: 40px;
     }
   }
   .guest-pane__sub-title {
@@ -274,8 +274,8 @@ export default {
     border-bottom: 0;
     p {
       @include fontLevel(75);
-      color: #0b1f48;
       margin-bottom: 8px;
+      color: #0b1f48;
     }
     .el-divider--horizontal {
       margin: 8px 0 16px 0;
@@ -283,8 +283,8 @@ export default {
   }
   .guest-pane__footer {
     display: flex;
-    padding: 24px;
     justify-content: flex-end;
+    padding: 24px;
     border-top: 1px solid #edf0f7;
   }
 }

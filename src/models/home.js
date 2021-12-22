@@ -2,16 +2,16 @@ export const install = [
   {
     label: 'home.install.remote',
     path: '/remote',
-    image: require('assets/images/logo/logo-remote.svg'),
+    image: require('@virnect/ui-assets/images/products/logo-Remote.svg'),
   },
   {
     label: 'home.install.make',
     path: '/make',
-    image: require('assets/images/logo/logo-make.svg'),
+    image: require('@virnect/ui-assets/images/products/logo-Make.svg'),
   },
   {
     label: 'home.install.view',
     path: '/view',
-    image: require('assets/images/logo/logo-view.svg'),
+    image: require('@virnect/ui-assets/images/products/logo-View.svg'),
   },
 ]

@@ -16,13 +16,18 @@
         class="virnect-workstation-form"
         :model="form"
         :rules="rules"
+        @submit.native.prevent
       >
         <h6>
           <img src="~assets/images/icon/ic-person.svg" />
           <span>{{ `${$t('members.add.addUser')} ${index + 1}` }}</span>
-          <button @click.prevent="clearMember(index)">
+          <el-button
+            v-if="index"
+            class="close-button"
+            @click.prevent="clearMember(index)"
+          >
             <i class="el-icon-close" />
-          </button>
+          </el-button>
         </h6>
         <el-form-item class="horizon" prop="email" required>
           <template slot="label">
@@ -134,13 +139,14 @@ export default {
       })
     },
     addMember() {
-      if (this.availableMember >= this.maximum) {
+      if (this.isMaxUserAmount) {
         this.errorMessage('Error: 900')
       } else {
         this.userInfoList.push(new InviteMember())
       }
     },
     clearMember(index) {
+      if (!index) return false
       this.userInfoList.splice(index, 1)
       this.choosePlan()
     },
@@ -156,6 +162,10 @@ export default {
       this.initAvailablePlans()
     },
     async submit() {
+      if (this.isMaxUserAmount) {
+        this.errorMessage('Error: 900')
+        return
+      }
       // 유효성 검사
       try {
         await Promise.all(this.$refs.form.map(form => form.validate()))
@@ -204,6 +214,9 @@ export default {
     availableMember() {
       return this.membersTotal + this.userInfoList.length
     },
+    isMaxUserAmount() {
+      return this.availableMember >= this.maximum
+    },
   },
 }
 </script>
@@ -221,7 +234,6 @@ export default {
     padding: 20px 20px 4px;
     border: solid 1px #e6e9ee;
     box-shadow: 0 1px 3px 0 rgba(23, 43, 77, 0.1);
-
     .el-icon-close:before {
       font-weight: bold;
     }
@@ -253,24 +265,24 @@ export default {
   .invite-pane__title {
     h6 {
       @include fontLevel(100);
-      color: #0b1f48;
       margin-bottom: 8px;
+      color: #0b1f48;
     }
     p {
       @include fontLevel(75);
-      color: #445168;
       margin-bottom: 16px;
+      color: #445168;
     }
   }
   .invite-pane__content {
-    overflow-y: scroll;
+    width: 610px;
     max-height: 455px;
     padding: 0 5px 0 24px;
-    width: 610px;
+    overflow-y: scroll;
     .el-tabs .el-tabs__item {
       height: 40px;
-      line-height: 40px;
       padding: 0 14px;
+      line-height: 40px;
     }
   }
   .invite-pane__sub-title {
@@ -279,8 +291,8 @@ export default {
     border-bottom: 1px solid #eaedf3;
     p {
       @include fontLevel(75);
-      color: #0b1f48;
       margin-bottom: 8px;
+      color: #0b1f48;
     }
     .el-divider--horizontal {
       margin: 8px 0 16px 0;
@@ -291,8 +303,8 @@ export default {
   }
   .invite-pane__footer {
     display: flex;
-    padding: 24px;
     justify-content: space-between;
+    padding: 24px;
     border-top: 1px solid #edf0f7;
   }
 }

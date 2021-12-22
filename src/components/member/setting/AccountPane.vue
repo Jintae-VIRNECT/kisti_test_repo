@@ -136,15 +136,20 @@ export default {
   },
   computed: {
     editEnabled() {
+      // 일반 계정이 일때 수정 불가
+      if (this.isUserTypeUser(this.member.userType)) return false
       // 본인 정보이면 수정 가능
       if (this.mine(this.member.userId)) return true
       // 수정 권한이 있으면 수정 가능
-      if (this.canEdit(this.member.userType, this.member.role)) return true
+      if (this.canManage(this.member.role)) return true
+
       return false
     },
     deleteEnabled() {
+      // 일반 계정이 일때 수정 불가
+      if (this.isUserTypeUser(this.member.userType)) return false
       // 수정 권한이 있으면 삭제 가능
-      if (this.canEdit(this.member.userType, this.member.role)) return true
+      if (this.canManage(this.member.role)) return true
       return false
     },
     deleteTitle() {
@@ -249,14 +254,6 @@ export default {
         }
       }
     },
-    canEdit(type, role) {
-      if (this.canManage(role)) {
-        // 일반 계정 일 때 수정 불가
-        if (this.isUserTypeUser(type)) return false
-        else return true
-      }
-      return false
-    },
     async updateNickname() {
       const form = {
         userId: this.member.userId,
@@ -318,19 +315,19 @@ export default {
   }
   &__submit-button {
     @include fontLevel(100);
-    line-height: 14px;
     width: 66px;
     height: 38px;
+    line-height: 14px;
     border-radius: 3px;
   }
   &__image-change-button {
     @include fontLevel(75);
-    line-height: 13px;
     width: 134px;
     height: 36px;
-    padding: 8px 16px;
-    border-radius: 3px;
     margin-left: 24px;
+    padding: 8px 16px;
+    line-height: 13px;
+    border-radius: 3px;
   }
 }
 </style>

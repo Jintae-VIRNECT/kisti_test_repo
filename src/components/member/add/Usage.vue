@@ -23,12 +23,12 @@ export default {
 <style lang="scss" scoped>
 #__nuxt .usage {
   display: flex;
-  margin-bottom: 8px;
   align-items: center;
+  margin-bottom: 8px;
   img:first-child {
-    opacity: 0.6;
     width: 20px;
     height: 20px;
+    opacity: 0.6;
   }
   &__counter {
     span {

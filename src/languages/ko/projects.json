@@ -69,7 +69,8 @@
         "shared": "공유",
         "selectMember": "지정 멤버",
         "searchMember": "멤버 검색",
-        "edit": "편집"
+        "edit": "편집",
+        "configuration": "구성"
       },
       "target": {
         "title": "타겟",
@@ -85,12 +86,11 @@
         "update": "프로젝트를 업데이트했습니다.",
         "upload": "프로젝트를 업로드했습니다.",
         "edit": "정보 편집 권한을 {member}로 변경했습니다.",
-        "shared": "공유 상태를 {member}로 변경했습니다.",
-        "moveTrash": "프로젝트를 휴지통으로 이동했습니다.",
-        "backup": "삭제된 프로젝트를 프로젝트 목록으로 이동했습니다.",
+        "shared": "정보 공유 권한을 {member}로 변경했습니다.",
         "download": "프로젝트를 다운로드했습니다.",
         "empty": "활동내역이 없습니다",
-        "delete": "프로젝트를 삭제했습니다."
+        "delete": "프로젝트를 삭제했습니다.",
+        "overwrite": "프로젝트를 덮어쓰기했습니다."
       },
       "message": {
         "moveTrash": "휴지통으로 이동",
@@ -99,7 +99,7 @@
         "delete": "선택 프로젝트 삭제",
         "deleteSure": "선택하신 프로젝트를 삭제 하시겠습니까? <br>삭제된 프로젝트는 복원되지 않습니다.",
         "deleteSuccess": "프로젝트가 삭제되었습니다.",
-        "deleteFail": "프로젝트 삭제에 실패했습니다. 잠시 후 다시 이용해 주세요.",
+        "deleteFail": "{n}건의 프로젝트 삭제에 실패했습니다.",
         "deleteNotExist": "워크스페이스에 선택하신 프로젝트가 존재하지 않습니다. 다시 확인해 주세요.",
         "updateShareSuccess": "프로젝트 공유 상태가 변경되었습니다",
         "updateShareFail": "프로젝트 공유 상태 변경에 실패했습니다.",
@@ -113,7 +113,15 @@
         "updateEditMemberNotExist": "워크스페이스 멤버만 편집 지정 멤버로 설정할 수 있습니다.",
         "updateNotExist": "워크스페이스에 선택하신 프로젝트가 존재하지 않습니다. 다시 확인해 주세요.",
         "backup": "삭제된 프로젝트를 프로젝트 목록으로 이동했습니다.",
-        "emptySelectMember": "지정 멤버를 선택해주세요."
+        "emptySelectMember": "지정 멤버를 선택해주세요.",
+        "deleteFailsPhrase": "지정된 프로젝트 파일을 찾을 수 없거나, 편집권한이 없습니다.",
+        "sharePermissionRelease": "해당 프로젝트의 공유 권한이 해제되었습니다.​",
+        "editPermissionRelease": "해당 프로젝트의 편집 권한이 해제되었습니다.​",
+        "downloadFailMaxSize": "파일용량이 {0}MB 초과되어 파일을 다운로드할  수 없습니다."
+      },
+      "download": {
+        "title": "파일 다운로드 중",
+        "desc": "선택하신 파일을 다운로드 하는 중입니다.<br>완료될 때까지 브라우저를 종료하지 마세요."
       }
     }
   }

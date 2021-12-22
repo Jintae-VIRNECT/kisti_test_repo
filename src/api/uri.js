@@ -121,7 +121,12 @@ export default {
   PROJECT_INFO: ['GET', '/contents/projects/{projectUUID}'],
   // 프로젝트 상태 수정
   PROJECT_UPDATE: ['PUT', '/contents/projects/{projectUUID}'],
-
+  // 프로젝트 삭제 요청
+  PROJECT_DELETE: ['DELETE', '/contents/projects/{projectUUID}'],
+  // 프로젝트의 활동 이력 조회요청
+  PROJECT_ACTIVITIES: ['GET', '/contents/projects/{projectUUID}/activities'],
+  // 프로젝트 다운로드
+  PROJECT_DOWNLOAD: ['GET', '/contents/projects/download'],
   /**
    * onpremise
    */
@@ -142,4 +147,8 @@ export default {
   WORKSPACE_SET_LOGO: ['POST', '/workspaces/{workspaceId}/logo'],
   // 워크스페이스 파비콘 변경
   WORKSPACE_SET_FAVICON: ['POST', '/workspaces/{workspaceId}/favicon'],
+  // 워크스페이스 다운로드 파일 리스트 조회
+  WORKSPACE_GET_DOWNLOAD_FILES: ['GET', '/download/list/{productName}'],
+  // 워크스페이스 다운로드 파일 업로드
+  WORKSPACE_SET_DOWNLOAD_FILE: ['POST', '/download/app/register/admin'],
 }
