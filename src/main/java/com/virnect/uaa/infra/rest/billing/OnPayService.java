@@ -5,9 +5,12 @@ import java.util.Collections;
 import javax.annotation.PostConstruct;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -16,8 +19,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import com.virnect.uaa.infra.rest.billing.dto.BillingCouponRegisterRequest;
-import com.virnect.uaa.infra.rest.billing.dto.BillingRestResponse;
+import com.virnect.uaa.infra.rest.billing.dto.CouponRegisterRequest;
+import com.virnect.uaa.infra.rest.billing.dto.CouponRegisterResponse;
+import com.virnect.uaa.infra.rest.billing.dto.PayletterApiResponse;
 
 @Slf4j
 @Service
@@ -45,44 +49,44 @@ public class OnPayService implements PayService {
 	}
 
 	/**
-	 *
-	 * @param email - 사용자 이메일
+	 *  @param email - 사용자 이메일
 	 * @param name - 사용자 이름
 	 * @param userId - 사용자 식별 번호
+	 * @return
 	 */
-	public void eventCouponRegisterToNewUser(final String email, final String name, final long userId) {
+	public ResponseEntity<PayletterApiResponse<CouponRegisterResponse>> welcomeEventCouponRegister(
+		final String email, final String name, final long userId
+	) {
 		if (!payletterApiEnabled) {
-			return;
+			return null;
 		}
 
-		BillingCouponRegisterRequest billingCouponRegisterRequest = new BillingCouponRegisterRequest();
-		billingCouponRegisterRequest.setSiteCode(1);
-		billingCouponRegisterRequest.setCouponId(couponId);
-		billingCouponRegisterRequest.setUserEmail(email);
-		billingCouponRegisterRequest.setUserName(name);
-		billingCouponRegisterRequest.setUserNumber(userId);
+		CouponRegisterRequest welcomeCouponRegisterRequest = CouponRegisterRequest.builder()
+			.siteCode(1)
+			.couponId(couponId)
+			.userEmail(email)
+			.userName(name)
+			.userNumber(userId)
+			.build();
 
 		try {
 			HttpHeaders headers = new HttpHeaders();
 			headers.setContentType(MediaType.APPLICATION_JSON);
 			headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
 
-			String couponRegisterJsonReqBody = objectMapper.writeValueAsString(billingCouponRegisterRequest);
-			HttpEntity<String> couponRegisterReqHttpEntity = new HttpEntity<>(couponRegisterJsonReqBody, headers);
+			String couponRegisterJsonRequest = objectMapper.writeValueAsString(welcomeCouponRegisterRequest);
+			HttpEntity<String> couponRegisterReqHttpEntity = new HttpEntity<>(couponRegisterJsonRequest, headers);
 
 			log.info("[USER_EVENT_COUPON_REGISTER_REQUEST] - [{}]", couponRegisterReqHttpEntity);
 
-			BillingRestResponse<?> couponRegisterResponse = restTemplate.postForObject(
-				billingApiEndpoint + COUPON_REGISTER_API_URL, couponRegisterReqHttpEntity, BillingRestResponse.class
+			return restTemplate.exchange(
+				billingApiEndpoint + COUPON_REGISTER_API_URL, HttpMethod.POST, couponRegisterReqHttpEntity,
+				new ParameterizedTypeReference<PayletterApiResponse<CouponRegisterResponse>>() {
+				}
 			);
-
-			if (couponRegisterResponse == null || couponRegisterResponse.getResult().getCode() != 0) {
-				log.error("[USER_EVENT_COUPON_REGISTER_ERROR] - [{}]", couponRegisterResponse);
-			} else {
-				log.info("[USER_EVENT_COUPON_REGISTER_SUCCESS] - [{}]", couponRegisterResponse);
-			}
 		} catch (Exception e) {
 			log.error("[USER_EVENT_COUPON_REGISTER_ERROR]", e);
+			return null;
 		}
 	}
 }

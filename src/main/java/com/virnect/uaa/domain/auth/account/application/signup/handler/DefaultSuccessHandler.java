@@ -7,6 +7,7 @@ import java.util.Locale;
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.context.annotation.Profile;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.thymeleaf.context.Context;
 
@@ -17,6 +18,8 @@ import com.virnect.uaa.domain.user.domain.User;
 import com.virnect.uaa.infra.email.EmailService;
 import com.virnect.uaa.infra.email.context.MailMessageContext;
 import com.virnect.uaa.infra.rest.billing.PayService;
+import com.virnect.uaa.infra.rest.billing.dto.CouponRegisterResponse;
+import com.virnect.uaa.infra.rest.billing.dto.PayletterApiResponse;
 
 @Slf4j
 @Profile(value = {"!onpremise"})
@@ -31,9 +34,20 @@ public class DefaultSuccessHandler implements SignUpSuccessHandler {
 		User user, HttpServletRequest request, Locale locale
 	) {
 		log.info("SignUpSuccess - Sign UP Welcome Coupon");
-		payService.eventCouponRegisterToNewUser(user.getEmail(), user.getName(), user.getId());
+		assignWelcomeCoupon(user);
 		log.info("SignUpSuccess - Sign UP Welcome Email");
 		sendSignUpWelcomeEmail(user, locale);
+	}
+
+	private void assignWelcomeCoupon(User user) {
+		ResponseEntity<PayletterApiResponse<CouponRegisterResponse>> couponAssignResponseEntity = payService.welcomeEventCouponRegister(
+			user.getEmail(), user.getName(), user.getId());
+
+		if (couponAssignResponseEntity == null) {
+			return;
+		}
+
+		log.info("[USER_EVENT_COUPON_REGISTER_RESPONSE] - [{}]", couponAssignResponseEntity);
 	}
 
 	public void sendSignUpWelcomeEmail(User user, Locale locale) {
@@ -58,23 +72,5 @@ public class DefaultSuccessHandler implements SignUpSuccessHandler {
 			.build();
 
 		emailService.send(mailMessageContext);
-		//
-		// String mailTitle = messageSource.getMessage("MAIL_TITLE_OF_REGISTER_SUCCESS", null, locale);
-		// String mailTemplatePath = String.format("%s/register/welcome", locale.getLanguage());
-		// log.info("mailTemplatePath: {}", mailTemplatePath);
-		// String message = templateEngine.process(mailTemplatePath, context);
-
-		// EmailMessage registrationSuccessMail = new EmailMessage();
-		// registrationSuccessMail.setSubject(mailTitle);
-		// registrationSuccessMail.setTo(user.getEmail());
-		// registrationSuccessMail.setMessage(message);
-		//
-		// log.info(
-		// 	"[SEND_REGISTRATION_SUCCESS_MAIL] - title: {} , to: {}",
-		// 	registrationSuccessMail.getSubject(),
-		// 	registrationSuccessMail.getTo()
-		// );
-		//
-		// emailService.send(registrationSuccessMail);
 	}
 }

@@ -1,14 +1,14 @@
 package com.virnect.uaa.infra.rest.billing;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.BDDMockito.*;
+import static org.assertj.core.api.Assertions.*;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
@@ -16,31 +16,21 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @ExtendWith(SpringExtension.class)
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.MOCK)
-@AutoConfigureMockMvc
+@SpringBootTest
 @ActiveProfiles("test")
 class PayServiceTest {
-	@MockBean
+	@Autowired
 	PayService payService;
 
 	@Test
-	@DisplayName("PayService Parameter Mocking Test")
-	void eventCouponRegisterToNewUser() {
+	@DisplayName("PayApiService - CouponRegister 200_OK")
+	void couponRegisterWith_200_OK() {
 		String testEmail = "sky456139@virnect.com";
 		String testName = "장정현";
 		int testUserId = 11;
 
-		doAnswer(invocation -> {
-			String email = invocation.getArgument(0);
-			String name = invocation.getArgument(1);
-			int userId = invocation.getArgument(2);
+		ResponseEntity<?> responseEntity = payService.welcomeEventCouponRegister(testEmail, testName, testUserId);
 
-			assertEquals(email, testEmail);
-			assertEquals(name, testName);
-			assertEquals(userId, testUserId);
-			return null;
-		}).when(payService).eventCouponRegisterToNewUser(anyString(), anyString(), anyInt());
-
-		payService.eventCouponRegisterToNewUser(testEmail, testName, testUserId);
+		assertThat(responseEntity.getStatusCode()).isSameAs(HttpStatus.OK);
 	}
 }
