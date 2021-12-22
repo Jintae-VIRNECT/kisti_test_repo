@@ -80,36 +80,6 @@ pipeline {
             }
         }
 
-        stage ('sonarqube code analysis') {
-            environment {
-                scannerHome = tool 'sonarqube-scanner'
-            }
-            steps {
-                withSonarQubeEnv('sonarqube') {
-                    sh "${scannerHome}/bin/sonar-scanner"
-                }                
-                timeout(time: 5, unit: 'MINUTES') {
-                    waitForQualityGate abortPipeline: true
-                }
-            }
-        }
-
-        stage ('edit package version') {
-            steps {
-                script {
-                    if ("${BRANCH_NAME}" == 'master') {
-                      sh '''
-                        sed -i "/\\"version\\":/ c\\  \\"version\\": \\"${NEXT_VERSION}\\"," package.json
-                      '''
-                    } else {
-                      sh '''
-                        sed -i "/\\"version\\":/ c\\  \\"version\\": \\"${BRANCH_NAME}.${BUILD_NUMBER}\\"," package.json
-                      '''
-                    }
-                }
-            }
-        }
-
         stage ('build docker image') {
             environment {
               ENV_NAME = "${env.BRANCH_NAME == "develop" ? "develop" : "production"}"
