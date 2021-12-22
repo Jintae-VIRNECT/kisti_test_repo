@@ -3,7 +3,7 @@ import Router from 'vue-router'
 
 Vue.use(Router)
 
-import App from '@/App'
+import App from '~/App'
 import MainRouter from './main'
 // import PageNotFound from 'WC-Modules/vue/components/errors/CommonError'
 // import NetworkError from 'WC-Modules/vue/components/errors/NetworkError'

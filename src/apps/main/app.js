@@ -6,6 +6,7 @@ import { sync } from 'vuex-router-sync'
 import store from '@/store'
 import VeeValidate from 'vee-validate'
 import App from '@/App.vue'
+import VueCompositionApi from '@vue/composition-api'
 import messages from 'languages'
 import { version } from 'root/package.json'
 import '@virnect/ui-assets/css/base.old.css'
@@ -31,6 +32,13 @@ import 'element/message-box.css'
 import 'element/dialog.css'
 
 import 'assets/css/common.scss'
+
+import * as Virnect from '@virnect/components'
+import 'assets/css/_components.scss'
+Object.entries(Virnect).map(([componentName, component]) => {
+  Vue.component(`Virnect${componentName}`, component)
+})
+
 import 'assets/css/_override.scss'
 
 sync(store, router)
@@ -45,9 +53,10 @@ Vue.use(VueQrcodeReader)
 Vue.use(VueI18n)
 const i18n = new VueI18n({
   locale: 'ko',
-  fallbackLocale: process.env.VIRNECT_ENV === 'production' ? 'ko' : null,
+  fallbackLocale: 'en',
   messages: messages,
 })
+Vue.use(VueCompositionApi)
 
 const versionCss = 'font-size: 2rem; color: #297af3;'
 console.log('%cVIRNECT Console %s', versionCss, version)
