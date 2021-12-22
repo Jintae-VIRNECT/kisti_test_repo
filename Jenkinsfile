@@ -87,7 +87,7 @@ pipeline {
 
             steps {
                 script {
-                    APP = docker.build("""${REPO_NAME}:${BRANCH_NAME}.${BUILD_NUMBER}""", """--build-arg NODE_ENV=${ENV_NAME} --build-arg NPM_TOKEN=sfKAhE8K0ypM8ePwY2mUiR7k2jcOs/vXGFwD+eHwMZE= -f ./docker/Dockerfile .""")
+                    APP = docker.build("""${REPO_NAME}:${NEXT_VERSION}-${BRANCH_NAME}-${BUILD_NUMBER}""", """--build-arg NODE_ENV=${ENV_NAME} --build-arg NPM_TOKEN=sfKAhE8K0ypM8ePwY2mUiR7k2jcOs/vXGFwD+eHwMZE= -f ./docker/Dockerfile .""")
                 }
             }
             post {
@@ -101,7 +101,7 @@ pipeline {
             steps {
                 script {
                     docker.withRegistry("""https://${NEXUS_REGISTRY}""", "jenkins_to_nexus") {
-                        APP.push("${BRANCH_NAME}.${BUILD_NUMBER}")
+                        APP.push("${NEXT_VERSION}-${BRANCH_NAME}-${BUILD_NUMBER}")
 
                         if ("${BRANCH_NAME}" == 'master') {
                             APP.push("${NEXT_VERSION}")
@@ -117,7 +117,7 @@ pipeline {
             steps {
                 script {
                     docker.withRegistry("https://$aws_ecr_address", 'ecr:ap-northeast-2:aws-ecr-credentials') {
-                        APP.push("${BRANCH_NAME}.${BUILD_NUMBER}")
+                        APP.push("${NEXT_VERSION}-${BRANCH_NAME}-${BUILD_NUMBER}")
 
                         if ("${BRANCH_NAME}" == 'master') {
                             APP.push("${NEXT_VERSION}")
