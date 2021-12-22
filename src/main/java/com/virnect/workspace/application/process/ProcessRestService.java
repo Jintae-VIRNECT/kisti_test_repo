@@ -1,6 +1,6 @@
 package com.virnect.workspace.application.process;
 
-import com.virnect.workspace.dto.rest.SubProcessCountResponse;
+import com.virnect.workspace.application.process.dto.SubProcessCountResponse;
 import com.virnect.workspace.global.common.ApiResponse;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;

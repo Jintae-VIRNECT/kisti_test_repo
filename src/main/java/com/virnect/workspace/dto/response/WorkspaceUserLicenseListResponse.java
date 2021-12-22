@@ -1,6 +1,5 @@
 package com.virnect.workspace.dto.response;
 
-import com.virnect.workspace.dto.rest.PageMetadataRestResponse;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;

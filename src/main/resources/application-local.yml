@@ -123,7 +123,9 @@ license-server:
 message-server:
   ribbon:
     listOfServers: http://192.168.6.3:8084
-
+remote-service-server:
+  ribbon:
+    listOfServers: http://192.168.6.3:8000
 
 ## AWS Storage
 cloud:

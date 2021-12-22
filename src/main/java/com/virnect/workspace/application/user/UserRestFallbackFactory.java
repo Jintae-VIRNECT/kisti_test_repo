@@ -1,10 +1,23 @@
 package com.virnect.workspace.application.user;
 
-import com.virnect.workspace.dto.rest.*;
+import com.virnect.workspace.application.user.dto.request.GuestMemberDeleteRequest;
+import com.virnect.workspace.application.user.dto.request.GuestMemberRegistrationRequest;
+import com.virnect.workspace.application.user.dto.response.InviteUserInfoResponse;
+import com.virnect.workspace.application.user.dto.request.MemberDeleteRequest;
+import com.virnect.workspace.application.user.dto.request.MemberRegistrationRequest;
+import com.virnect.workspace.application.user.dto.request.MemberUserPasswordChangeRequest;
+import com.virnect.workspace.application.user.dto.response.MemberUserPasswordChangeResponse;
+import com.virnect.workspace.application.user.dto.response.UserDeleteRestResponse;
+import com.virnect.workspace.application.user.dto.request.UserInfoAccessCheckRequest;
+import com.virnect.workspace.application.user.dto.response.UserInfoAccessCheckResponse;
+import com.virnect.workspace.application.user.dto.response.UserInfoListRestResponse;
+import com.virnect.workspace.application.user.dto.request.UserInfoModifyRequest;
+import com.virnect.workspace.application.user.dto.response.UserInfoRestResponse;
+import com.virnect.workspace.application.user.dto.response.UserProfileUpdateResponse;
 import com.virnect.workspace.global.common.ApiResponse;
 import feign.hystrix.FallbackFactory;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Pageable;
+
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -32,22 +45,13 @@ public class UserRestFallbackFactory implements FallbackFactory<UserRestService>
             }
 
             @Override
-            public ApiResponse<UserInfoListRestResponse> getUserInfoListUserIdAndSearchKeyword(
-                    String userId, String search, boolean paging, Pageable pageable
-            ) {
-                return new ApiResponse<>(new UserInfoListRestResponse());
-            }
-
-            @Override
             public ApiResponse<InviteUserInfoResponse> getInviteUserInfoByEmail(String email) {
                 return new ApiResponse<>(null);
             }
 
             @Override
             public ApiResponse<UserInfoListRestResponse> getUserInfoList(String search, List<String> workspaceUserIdList) {
-                UserInfoListRestResponse userInfoListRestResponse = new UserInfoListRestResponse();
-                userInfoListRestResponse.setUserInfoList(UserInfoListRestResponse.EMPTY);
-                userInfoListRestResponse.setPageMeta(null);
+                UserInfoListRestResponse userInfoListRestResponse = UserInfoListRestResponse.EMPTY;
                 return new ApiResponse<>(userInfoListRestResponse);
             }
 
@@ -90,12 +94,14 @@ public class UserRestFallbackFactory implements FallbackFactory<UserRestService>
             }
 
             @Override
-            public ApiResponse<UserInfoRestResponse> guestMemberRegistrationRequest(GuestMemberRegistrationRequest guestMemberRegistrationRequest, String serviceID) {
+            public ApiResponse<UserInfoRestResponse> guestMemberRegistrationRequest(
+                GuestMemberRegistrationRequest guestMemberRegistrationRequest, String serviceID) {
                 return null;
             }
 
             @Override
-            public ApiResponse<UserDeleteRestResponse> guestMemberDeleteRequest(GuestMemberDeleteRequest guestMemberDeleteRequest, String serviceID) {
+            public ApiResponse<UserDeleteRestResponse> guestMemberDeleteRequest(
+                GuestMemberDeleteRequest guestMemberDeleteRequest, String serviceID) {
                 return null;
             }
         };

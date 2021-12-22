@@ -25,12 +25,12 @@ public class MemberAccountCreateRequest {
     @Valid
     private List<MemberAccountCreateInfo> memberAccountCreateRequest;
 
-    //시트 권한으로 전용 계정을 생성 할 수 없음
-    public boolean existSeatRoleUser() {
+    //게스트 권한이 부여된 전용 계정을 생성 할 수 없음
+    public boolean existGuestRoleUser() {
         return memberAccountCreateRequest.stream().anyMatch(memberAccountCreateInfo -> memberAccountCreateInfo.getRole().equals(Role.GUEST.name()));
     }
 
-    //마스터 권한으로 전용 계정을 생성할 수 없음.
+    //마스터 권한이 부여된 전용 계정을 생성할 수 없음.
     public boolean existMasterRoleUser() {
         return memberAccountCreateRequest.stream().anyMatch(memberAccountCreateInfo -> memberAccountCreateInfo.getRole().equals(Role.MASTER.name()));
     }

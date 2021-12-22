@@ -3,7 +3,7 @@ package com.virnect.workspace.global.common.mapper.workspace;
 import com.virnect.workspace.domain.setting.Setting;
 import com.virnect.workspace.domain.setting.WorkspaceCustomSetting;
 import com.virnect.workspace.domain.workspace.Workspace;
-import com.virnect.workspace.dto.WorkspaceInfoDTO;
+import com.virnect.workspace.dto.response.WorkspaceInfoDTO;
 import com.virnect.workspace.dto.response.SettingInfoResponse;
 import com.virnect.workspace.dto.response.WorkspaceInfoListResponse;
 import com.virnect.workspace.dto.response.WorkspaceSettingInfoResponse;

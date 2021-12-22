@@ -1,10 +1,22 @@
 package com.virnect.workspace.application.user;
 
-import com.virnect.workspace.dto.rest.*;
+import com.virnect.workspace.application.user.dto.request.GuestMemberDeleteRequest;
+import com.virnect.workspace.application.user.dto.request.GuestMemberRegistrationRequest;
+import com.virnect.workspace.application.user.dto.response.InviteUserInfoResponse;
+import com.virnect.workspace.application.user.dto.request.MemberDeleteRequest;
+import com.virnect.workspace.application.user.dto.request.MemberRegistrationRequest;
+import com.virnect.workspace.application.user.dto.request.MemberUserPasswordChangeRequest;
+import com.virnect.workspace.application.user.dto.response.MemberUserPasswordChangeResponse;
+import com.virnect.workspace.application.user.dto.response.UserDeleteRestResponse;
+import com.virnect.workspace.application.user.dto.request.UserInfoAccessCheckRequest;
+import com.virnect.workspace.application.user.dto.response.UserInfoAccessCheckResponse;
+import com.virnect.workspace.application.user.dto.response.UserInfoListRestResponse;
+import com.virnect.workspace.application.user.dto.request.UserInfoModifyRequest;
+import com.virnect.workspace.application.user.dto.response.UserInfoRestResponse;
+import com.virnect.workspace.application.user.dto.response.UserProfileUpdateResponse;
 import com.virnect.workspace.global.common.ApiResponse;
 import com.virnect.workspace.global.config.FeignConfiguration;
 import org.springframework.cloud.openfeign.FeignClient;
-import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -22,13 +34,6 @@ public interface UserRestService {
     //유저 정보 조회
     @GetMapping("/users/{userId}")
     ApiResponse<UserInfoRestResponse> getUserInfoByUserId(@PathVariable("userId") String userId);
-
-    //유저 정보 리스트 검색
-    @GetMapping("/users")
-    ApiResponse<UserInfoListRestResponse> getUserInfoListUserIdAndSearchKeyword(
-            @RequestParam("uuid") String userId, @RequestParam("search") String search,
-            @RequestParam("paging") boolean paging, Pageable pageable
-    );
 
     //유저 중복 여부 조회
     @GetMapping("/users/invite")
@@ -72,11 +77,11 @@ public interface UserRestService {
     @RequestMapping(method = RequestMethod.POST, value = "/users/{userId}/profile", consumes = "multipart/form-data")
     ApiResponse<UserProfileUpdateResponse> modifyUserProfileRequest(@PathVariable("userId") String userId, @RequestPart("profile") MultipartFile profile, @RequestParam("updateAsDefaultImage") Boolean updateAsDefaultImage);
 
-    //워크스페이스 시트 계정 등록
+    //워크스페이스 게스트 계정 등록
     @PostMapping("/users/members/guest")
     ApiResponse<UserInfoRestResponse> guestMemberRegistrationRequest(@RequestBody GuestMemberRegistrationRequest guestMemberRegistrationRequest, @RequestHeader("serviceID") String serviceID);
 
-    //워크스페이스 시트 계정 삭제
+    //워크스페이스 게스트 계정 삭제
     @DeleteMapping("/users/members/guest")
     ApiResponse<UserDeleteRestResponse> guestMemberDeleteRequest(@RequestBody GuestMemberDeleteRequest guestMemberDeleteRequest, @RequestHeader("serviceID") String serviceID);
 }
