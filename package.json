@@ -10,15 +10,16 @@
     "build:production": "cross-env NODE_ENV=production VIRNECT_ENV=local nuxt build --modern=server",
     "deploy": "cross-env NODE_ENV=$VIRNECT_ENV VIRNECT_ENV=$VIRNECT_ENV CONFIG_SERVER=$CONFIG_SERVER nuxt start --modern=server",
     "generate": "nuxt generate",
-    "i18n": "i18n --sheetId PF-WebAccount"
+    "i18n": "i18n --sheetId PF-WebAccount",
+    "test": "jest",
+    "test:coverage": "jest --coverage"
   },
   "dependencies": {
     "@nuxtjs/axios": "^5.11.0",
     "@nuxtjs/style-resources": "^1.0.0",
-    "@virnect/components": "^1.8.3",
+    "@virnect/components": "^1.9.7",
     "@virnect/logger": "^1.0.2",
-    "@virnect/platform-auth": "^1.0.2",
-    "@virnect/ui-assets": "^1.8.0",
+    "@virnect/platform-auth": "^1.0.7",
     "axios": "^0.19.2",
     "cross-env": "^7.0.2",
     "dayjs": "^1.8.23",
@@ -38,14 +39,20 @@
     "@virnect/stylelint-config": "^1.0.1",
     "@vue/component-compiler-utils": "^3.1.0",
     "@vue/eslint-config-airbnb": "^4.0.0",
-    "babel-core": "^6.26.3",
+    "@vue/test-utils": "^1.3.0",
+    "babel-core": "^7.0.0-bridge.0",
+    "babel-jest": "^27.4.2",
     "babel-loader": "^8.0.6",
     "babel-preset-env": "^1.7.0",
+    "glob": "^7.2.0",
+    "jest": "^27.4.2",
+    "jest-transform-stub": "^2.0.0",
     "sass": "^1.23.7",
-    "sass-loader": "^8.0.0",
+    "sass-loader": "^10.1.1",
     "style-loader": "^1.0.2",
+    "vee-validate": "2.2.15",
+    "vue-jest": "^3.0.7",
     "vue-loader": "^15.8.3",
-    "vue-style-loader": "^4.1.2",
-    "vee-validate": "2.2.15"
+    "vue-style-loader": "^4.1.2"
   }
 }
