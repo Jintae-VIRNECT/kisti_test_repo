@@ -70,13 +70,13 @@
 
 <script>
 import Profile from 'Profile'
-import FileSaver from 'file-saver'
+
 import linkifyHtml from 'linkifyjs/html'
 import { systemClass, systemText } from './chatUtils'
 import { downloadFile } from 'api/http/file'
 import { mapGetters, mapActions } from 'vuex'
 import { translate as doTranslate } from 'plugins/remote/translate'
-import { downloadByURL } from 'utils/file'
+import { downloadByURL, fileSizeFilter } from 'utils/file'
 import { checkFileType } from 'utils/fileTypes'
 import toastMixin from 'mixins/toast'
 import confirmMixin from 'mixins/confirm'
@@ -230,16 +230,7 @@ export default {
       return chatText ? chatText.replace(/\n/gi, '<br>') : ''
     },
     fileSize() {
-      let size = this.chat.file.size
-      const mb = 1048576
-
-      if (size >= mb) {
-        size = size / 1024 / 1024
-        return `${size.toFixed(1)}MB`
-      } else {
-        size = size / 1024
-        return `${size.toFixed(1)}KB`
-      }
+      return fileSizeFilter(this.chat.file.size)
     },
   },
   methods: {

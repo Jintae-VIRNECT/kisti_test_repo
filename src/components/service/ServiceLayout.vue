@@ -22,14 +22,6 @@
         ></share-3d>
       </transition>
 
-      <transition name="share">
-        <!-- 3d공유 파일 목록 ui : 리더만 표시-->
-        <share-3d
-          v-if="!isMobileSize && isLeader && currentView === 'ar'"
-          v-show="viewAction === ACTION.AR_3D"
-        ></share-3d>
-      </transition>
-
       <main
         class="main-wrapper"
         :class="{
@@ -133,14 +125,17 @@
 import HeaderSection from 'components/header/Header'
 import SubView from './subview/SubView'
 import UserList from './participants/ParticipantList'
-import { ROLE } from 'configs/remote.config'
+
+import { ROLE, SYSTEM } from 'configs/remote.config'
 import { CAMERA } from 'configs/device.config'
 import { VIEW, ACTION } from 'configs/view.config'
 import { URLS } from 'configs/env.config'
+
 import localRecorderMixin from 'mixins/localRecorder'
 import serverRecordMixin from 'mixins/serverRecorder'
-import Store from 'stores/remote/store'
 import confirmMixin from 'mixins/confirm'
+
+import Store from 'stores/remote/store'
 import { checkInput } from 'utils/deviceCheck'
 import ReconnectModal from './modal/ReconnectModal'
 
@@ -394,6 +389,15 @@ export default {
     onUploaded() {
       this.uploadingFile = ''
     },
+    showAccountDeleted() {
+      this.confirmDefault(this.$t('guest.guest_account_deleted_and_logout'), {
+        action: () => {
+          this.$call.leave()
+          this.$router.push({ name: 'workspace' })
+        },
+        text: this.$t('button.logout'),
+      })
+    },
   },
 
   /* Lifecycles */
@@ -428,6 +432,7 @@ export default {
     this.$eventBus.$on('map:show', this.togglePositionMap)
     this.$eventBus.$on('guestInvite:show', this.toggleGuestInvite)
     this.$eventBus.$on('inviteModal:show', this.toggleInviteModal)
+    this.$eventBus.$on(SYSTEM.DELETED_ACCOUNT, this.showAccountDeleted)
   },
   beforeDestroy() {
     if (this.callTimeout) {
@@ -451,6 +456,7 @@ export default {
     this.$eventBus.$off('map:show', this.togglePositionMap)
     this.$eventBus.$off('guestInvite:show', this.toggleGuestInvite)
     this.$eventBus.$off('inviteModal:show', this.toggleInviteModal)
+    this.$eventBus.$off(SYSTEM.DELETED_ACCOUNT, this.showAccountDeleted)
 
     //협업 종료시 stt 종료
     this.useStt(false)

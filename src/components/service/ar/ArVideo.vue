@@ -3,9 +3,6 @@
     <div class="ar-video__box">
       <video
         class="ar-video__stream"
-        :class="{
-          active: is3dPositionPicking,
-        }"
         ref="arVideo"
         :srcObject.prop="mainView.stream"
         @play="mediaPlay"
@@ -18,7 +15,7 @@
         <button
           class="ar-video__select"
           @click="setArArea"
-          v-if="currentAction === 'area'"
+          v-if="currentAction === 'area' && arArea"
         >
           <div class="ar-video__select-back"></div>
           <div class="ar-video__select-inner">
@@ -44,6 +41,9 @@
       ></ar-pointing>
       <ar-3d
         class="ar-3d-pointing"
+        :class="{
+          active: is3dPositionPicking,
+        }"
         :videoSize="videoSize"
         v-if="currentAction === '3d' && isLeader"
       ></ar-3d>
@@ -69,6 +69,11 @@ export default {
   },
   props: {
     canPointing: {
+      type: Boolean,
+      default: true,
+    },
+    //ar 영역 캡쳐 ui 활성화 여부
+    arArea: {
       type: Boolean,
       default: true,
     },
@@ -118,8 +123,7 @@ export default {
       return this.resolutions[idx]
     },
     isLeader() {
-      if (this.account.roleType === ROLE.LEADER) return true
-      else return false
+      return this.account.roleType === ROLE.LEADER
     },
   },
   watch: {
@@ -161,7 +165,8 @@ export default {
       } else if (val === 'drawing') {
         this.toastDefault(this.$t('service.ar_area_success'))
       } else if (val === '3d') {
-        this.toastDefault(this.$t('service.ar_3d_start'))
+        if (this.isLeader) this.toastDefault(this.$t('service.ar_3d_start'))
+        else this.toastDefault(this.$t('service.chat_ar_3d_start'))
       }
     },
   },

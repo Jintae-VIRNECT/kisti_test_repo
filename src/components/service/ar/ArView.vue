@@ -1,6 +1,9 @@
 <template>
   <div class="ar-view">
-    <ar-video :canPointing="!leaderDrawing">
+    <ar-video
+      :canPointing="!leaderDrawing"
+      :ar-area="!loadingFrame && !isArDeviceBackground"
+    >
       <!-- 모델 증강 중에 표시되는 로딩 화면 -->
       <loading-3d v-if="loading3d"></loading-3d>
     </ar-video>
@@ -9,11 +12,17 @@
       :file="shareArImage"
       @loading="loadingFrame = false"
     ></ar-canvas>
-    <div class="ar-video__loading" v-if="loadingFrame">
-      <div class="ar-video__loading-inner">
-        <img src="~assets/image/gif_loading.svg" />
-      </div>
-    </div>
+    <transition name="opacity">
+      <!-- 3d 공유 -> ar 영역캡쳐(드로잉) 모드 전환시, ar영역 캡쳐 후 드로잉 화면 전환시 사용하는 로딩화면 -->
+      <video-loading v-if="loadingFrame"></video-loading>
+    </transition>
+    <!-- ar 기기 백그라운드 전환 시 화면 -->
+    <transition name="opacity">
+      <video-stopped
+        v-if="isArDeviceBackground"
+        :cameraStatus="cameraStatus"
+      ></video-stopped>
+    </transition>
   </div>
 </template>
 
@@ -27,16 +36,25 @@ import {
   AR_3D_CONTENT_SHARE,
   AR_3D_FILE_SHARE_STATUS,
 } from 'configs/remote.config'
+import { CAMERA } from 'configs/device.config'
+import { CAMERA_STATE } from 'configs/status.config'
 
-import Loading3d from './3dcontents/Loading3d.vue'
+import Loading3d from './3dcontents/Loading3d'
 import ArVideo from './ArVideo'
 import ArCanvas from './ardrawing/DrawingCanvas'
+import VideoLoading from '../stream/partials/VideoLoading'
+import VideoStopped from '../stream/partials/VideoStopped'
+
+const MODE_CHANGE_DELAY = 3000
+
 export default {
   name: 'ARView',
   components: {
     Loading3d,
     ArVideo,
     ArCanvas,
+    VideoLoading,
+    VideoStopped,
   },
   data() {
     return {
@@ -55,7 +73,7 @@ export default {
       'ar3dShareStatus',
     ]),
     isDrawing() {
-      if (this.account.roleType !== ROLE.LEADER) {
+      if (!this.isLeader) {
         return false
       }
       if (this.viewAction === ACTION.AR_DRAWING) {
@@ -65,13 +83,49 @@ export default {
         return false
       }
     },
+    isLeader() {
+      return this.account.roleType === ROLE.LEADER
+    },
+    isArDeviceBackground() {
+      return (
+        this.mainView.cameraStatus === CAMERA.APP_IS_BACKGROUND &&
+        this.mainView.me !== true
+      )
+    },
+    cameraStatus() {
+      const hasMainView = this.mainView && this.mainView.id
+
+      if (hasMainView) {
+        const id = this.mainView.id
+        let state = CAMERA_STATE.ON
+
+        const isCameraOff = this.mainView.cameraStatus === CAMERA.CAMERA_OFF
+        const isAppBackground =
+          this.mainView.cameraStatus === CAMERA.APP_IS_BACKGROUND
+
+        if (isCameraOff) {
+          state = CAMERA_STATE.OFF
+        } else if (isAppBackground) {
+          state = CAMERA_STATE.BACKGROUND
+        }
+
+        return {
+          state,
+          id,
+        }
+      } else {
+        return CAMERA_STATE.UNAVAILABLE
+      }
+    },
   },
   watch: {
-    viewAction(val, beforeVal) {
+    viewAction(newVal, beforeVal) {
+      //종료 시그널 전송 부분
+      //ar 드로잉 모드 종료
       if (beforeVal === ACTION.AR_DRAWING) {
         this.$call.sendArDrawing(AR_DRAWING.END_DRAWING)
       }
-      //ar 3d 컨텐츠 모드 해제 및 공유 중인 데이터/상태 초기화
+      //3d 공유 모드 종료 : ar 3d 컨텐츠 모드 해제 및 공유 중인 데이터/상태 초기화
       else if (beforeVal === ACTION.AR_3D) {
         //AR내에 모드 변경시에만 3d모드 종료 시그널을 보내고, AR기능 자체의 종료인 경우 보내지 않는다.
         if (this.view === VIEW.AR) {
@@ -79,6 +133,25 @@ export default {
         }
         this.SHOW_3D_CONTENT({})
         this.SET_AR_3D_SHARE_STATUS('')
+        this.SET_IS_3D_POSITION_PICKING(false)
+      }
+
+      //시작 시그널 전송 부분
+      //3d 공유 기능 시작
+      if (newVal === ACTION.AR_3D) {
+        const targetUserId = this.mainView.id
+
+        //시그널 전송 : start 3D contents share
+        this.$call.sendAr3dSharing(AR_3D_CONTENT_SHARE.START_SHARE, {
+          targetUserId,
+        })
+      }
+      //3d 공유 -> ar 드로잉으로 모드 전환 시
+      else if (beforeVal === ACTION.AR_3D && newVal === ACTION.AR_AREA) {
+        this.loadingFrame = true
+        setTimeout(() => {
+          this.loadingFrame = false
+        }, MODE_CHANGE_DELAY)
       }
     },
     //로딩화면 표출 여부 결정
@@ -88,8 +161,12 @@ export default {
     },
   },
   methods: {
-    ...mapMutations(['SHOW_3D_CONTENT', 'SET_AR_3D_SHARE_STATUS']),
-    ...mapActions(['showArImage']),
+    ...mapMutations([
+      'SHOW_3D_CONTENT',
+      'SET_AR_3D_SHARE_STATUS',
+      'SET_IS_3D_POSITION_PICKING',
+    ]),
+    ...mapActions(['showArImage', 'setAction']),
     receiveSignal(receive) {
       const data = JSON.parse(receive.data)
 
@@ -146,12 +223,14 @@ export default {
 
     // 타 참가자 : 3d 모델 공유 모드 시작/종료
     receiveSignal3d(event) {
-      if (this.viewAction !== ACTION.AR_3D) return false
+      const { type } = JSON.parse(event.data)
 
-      if (event.type === AR_3D_CONTENT_SHARE.START_SHARE) {
+      if (!type) return false
+
+      if (type === AR_3D_CONTENT_SHARE.START_SHARE && !this.isLeader) {
         this.setAction(ACTION.AR_3D)
-        this.toastDefault(this.$t('service.chat_ar_3d_start'))
-      } else if (event.type === AR_3D_CONTENT_SHARE.STOP_SHARE) {
+      } else if (type === AR_3D_CONTENT_SHARE.STOP_SHARE) {
+        if (this.viewAction !== ACTION.AR_3D) return false
         this.setAction(ACTION.AR_POINTING) //기본 포인팅 모드로 전환
       } else return false
     },

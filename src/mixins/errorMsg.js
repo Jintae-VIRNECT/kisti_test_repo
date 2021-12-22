@@ -23,6 +23,7 @@ export default {
         case ERROR.NO_LICENSE:
           this.toastError(this.$t('workspace.no_license'))
           break
+        case ERROR.FILE_EMPTY:
         case ERROR.FILE_DUMMY_ASSUMED:
           this.toastError(this.$t('service.file_dummy_assumed'))
           break

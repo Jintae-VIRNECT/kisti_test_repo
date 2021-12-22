@@ -162,6 +162,7 @@ export default {
     tabChange(idx) {
       this.$eventBus.$emit('popover:close')
       this.$eventBus.$emit('scroll:reset:workspace')
+      this.$eventBus.$emit('search:clear')
       this.$nextTick(() => {
         this.tabIdx = idx
       })
@@ -204,6 +205,8 @@ export default {
 
   /* Lifecycles */
   async created() {
+    this.$eventBus.$emit('search:clear')
+
     navigator.mediaDevices.ondevicechange = this.onDeviceChange
     const permission = await getPermission({
       video: true,

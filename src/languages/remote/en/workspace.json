@@ -203,6 +203,7 @@
     "workspace_member_group_member":"Favorite member",
     "workspace_member_group_member_no_selection" :"Do not select​",
     "workspace_member_group_count_valid":"Please select at least 1 member.",
+    "workspace_member_sub_group_etc":"etc group",
 
     "workspace_select":"Select Workspace"
   }

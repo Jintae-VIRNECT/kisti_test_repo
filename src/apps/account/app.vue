@@ -35,6 +35,7 @@
 <script>
 import { login } from 'api/http/account'
 import Cookies from 'js-cookie'
+import { COOKIE_EXPIRE_UNIT } from 'utils/auth'
 
 export default {
   name: 'container',
@@ -50,16 +51,18 @@ export default {
     }
   },
   methods: {
-    setTokensFromCookies(access, refresh) {
+    setTokensFromCookies(response) {
+      const { accessToken, refreshToken, expireIn } = response
+      console.error(expireIn, expireIn / COOKIE_EXPIRE_UNIT)
       const cookieOption = {
-        expires: 1,
+        expires: expireIn / COOKIE_EXPIRE_UNIT,
         domain:
           location.hostname.split('.').length === 3
             ? location.hostname.replace(/.*?\./, '')
             : location.hostname,
       }
-      Cookies.set('accessToken', access, cookieOption)
-      Cookies.set('refreshToken', refresh, cookieOption)
+      Cookies.set('accessToken', accessToken, cookieOption)
+      Cookies.set('refreshToken', refreshToken, cookieOption)
       location.href = '/home'
     },
     async doLogin() {
@@ -69,10 +72,10 @@ export default {
           password: this.form.userPw,
           rememberMe: false,
         }
-        const rtn = await login(params)
-        this.setTokensFromCookies(rtn.accessToken, rtn.refreshToken)
+        const response = await login(params)
+        this.setTokensFromCookies(response)
       } catch (err) {
-        console.log(err)
+        alert(JSON.stringify(err))
       }
     },
   },

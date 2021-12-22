@@ -26,6 +26,8 @@
 
 <script>
 import { checkFileType } from 'utils/fileTypes'
+import { fileSizeFilter } from 'utils/file'
+
 export default {
   name: 'ChatFileItem',
   props: {
@@ -42,10 +44,7 @@ export default {
   },
   computed: {
     fileSize() {
-      if (this.file.size > 1024 * 1024) {
-        return parseFloat(this.file.size / 1024 / 1024).toFixed(1) + 'MB'
-      }
-      return parseFloat(this.file.size / 1024).toFixed(1) + 'KB'
+      return fileSizeFilter(this.file.size)
     },
     isInvalid() {
       return this.file.expired
@@ -58,23 +57,20 @@ export default {
         name: this.file.name,
         type: this.file.contentType,
       })
-      switch (extension) {
-        case 'threed':
-          return require('assets/image/call/chat/ic_3d_w.svg')
-        case 'zip':
-          return require('assets/image/call/chat/ic_zip_w.svg')
-        case 'pdf':
-          return require('assets/image/call/chat/ic_pdf_w.svg')
-        case 'audio':
-          return require('assets/image/call/chat/ic_audio_w.svg')
-        case 'video':
-          return require('assets/image/call/chat/ic_video_w.svg')
-        case 'image':
-          return require('assets/image/call/chat/ic_image_w.svg')
-        case 'doc':
-          return require('assets/image/call/chat/ic_ms_w.svg')
-        default:
-          return require('assets/image/call/chat/ic_file_w.svg')
+      const extensionMap = {
+        threed: require('assets/image/call/chat/ic_3d_w.svg'),
+        zip: require('assets/image/call/chat/ic_zip_w.svg'),
+        pdf: require('assets/image/call/chat/ic_pdf_w.svg'),
+        audio: require('assets/image/call/chat/ic_audio_w.svg'),
+        video: require('assets/image/call/chat/ic_video_w.svg'),
+        image: require('assets/image/call/chat/ic_image_w.svg'),
+        doc: require('assets/image/call/chat/ic_ms_w.svg'),
+      }
+
+      if (Object.keys(extensionMap).includes(extension)) {
+        return extensionMap[extension]
+      } else {
+        return require('assets/image/call/chat/ic_file_w.svg')
       }
     },
     fileInfo() {

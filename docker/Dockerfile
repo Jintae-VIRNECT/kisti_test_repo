@@ -1,16 +1,16 @@
 # Build Stage
-FROM node:12-alpine AS builder
+FROM node:14-alpine AS builder
 
 COPY . .
 
 ARG NODE_ENV=production
 
-RUN npm --production=false install
-RUN npm run build \
+RUN yarn install --production=false
+RUN yarn run build \
 && rm -rf node_modules
 
 # Runtime Stage
-FROM node:12-alpine
+FROM node:14-alpine
 
 ENV APP_HOME=/usr/app
 WORKDIR $APP_HOME
@@ -22,12 +22,12 @@ COPY --from=builder static static
 COPY --from=builder route.js .
 COPY --from=builder server.js .
 COPY --from=builder package.json .
-COPY --from=builder package-lock.json .
+COPY --from=builder yarn.lock .
 COPY --from=builder .npmrc .
 COPY --from=builder dist dist
 COPY --from=builder translate translate
 
-RUN npm install --production
+RUN yarn install --production=true
 
 EXPOSE 8886
-CMD ["npm", "run", "start"]
+CMD ["yarn", "run", "start"]

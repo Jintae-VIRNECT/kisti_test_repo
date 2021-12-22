@@ -1,5 +1,5 @@
 <template>
-  <div class="ar-tools tools">
+  <div v-if="toolVisible" class="ar-tools tools">
     <!-- mobile -->
     <template v-if="isMobileSize">
       <div
@@ -116,6 +116,7 @@ export default {
   mixins: [toolStatusMixin],
   data() {
     return {
+      toolVisible: false,
       toolbarActive: false,
       active: 'pointing',
       isRecording: false,
@@ -190,6 +191,11 @@ export default {
         this.setUndoAvailable(false)
         this.setRedoAvailable(false)
         this.setClearAvailable(false)
+      }
+      if (val === ACTION.AR_3D && !this.isLeader) {
+        this.toolVisible = false
+      } else {
+        this.toolVisible = true
       }
     },
   },

@@ -159,7 +159,9 @@ export default {
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 7rem;
+    min-width: 7rem;
+    white-space: inherit;
+
     height: 100%;
     padding: 0;
     color: #ffffff;
@@ -168,6 +170,7 @@ export default {
     border-radius: 2px;
 
     &.not-primary {
+      text-align: center;
       padding: 0;
       background: $new_color_bg_button_sub;
       border-radius: 2px;
@@ -180,6 +183,20 @@ export default {
         background-color: $color_darkgray_400;
       }
     }
+  }
+
+  input:-webkit-autofill,
+  input:-webkit-autofill:hover,
+  input:-webkit-autofill:focus,
+  textarea:-webkit-autofill,
+  textarea:-webkit-autofill:hover,
+  textarea:-webkit-autofill:focus,
+  select:-webkit-autofill,
+  select:-webkit-autofill:hover,
+  select:-webkit-autofill:focus {
+    -webkit-text-fill-color: #fff;
+    -webkit-box-shadow: 0 0 0px 1000px transparent inset;
+    transition: background-color 5000s ease-in-out 0s;
   }
 }
 

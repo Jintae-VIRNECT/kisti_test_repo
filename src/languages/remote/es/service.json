@@ -112,7 +112,7 @@
 	"setting_record_target": "Objetivo de grabación",
 	"setting_record_max_time": "Tiempo máximo de grabación",
 	"setting_record_interval": "Intervalo máximo de grabación",
-	"setting_record_time_tooltip": "Crear archivos de grabación local prolongadamente puede causar sobrecarga en su PC por lo cual recomendamos fijar intervalos de tiempo para crear archivos de grabación.",
+	"setting_record_time_tooltip": "Crear archivos de grabación <br /> local prolongadamente puede causar <br /> sobrecarga en su PC por lo cual recomendamos <br /> fijar intervalos de tiempo para crear archivos de grabación.",
 	"setting_record_resolution": "Resolución de grabación",
 	"setting_record_resolution_tooltip": "En caso de la resolución es de 720p (HD) o superior, el servicio puede interrumpirse, dependiendo del rendimiento de su PC. ",
 	"setting_server_record": "Configurar el servidor de grabación",
@@ -160,6 +160,7 @@
 	"ar_drawing_max": "Puede crear hasta 30 objetos.",
 	"ar_exit": "Terminar la creación de tareas en RA.",
 	"ar_exit_description": "Todas las tareas en RA se terminan. <br> ¿Está seguro de que desea terminar?",
+	"ar_requesting_permission":"Solicitando permiso para compartir AR.",
 	
 	"chat": "Chat",
 	"chat_input": "Introduzca su mensaje.",

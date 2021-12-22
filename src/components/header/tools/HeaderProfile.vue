@@ -64,7 +64,7 @@
 import { mapGetters } from 'vuex'
 import Popover from 'Popover'
 import Profile from 'Profile'
-import auth from 'utils/auth'
+import auth, { urlsFromConfigServer } from 'utils/auth'
 import { URLS } from 'configs/env.config'
 import Stream from '../tools/Stream'
 import Mic from '../tools/Mic'
@@ -155,7 +155,9 @@ export default {
       if (!this.isOnpremise) {
         window.open('https://file.virnect.com/Guide/remote_web_user_guide.pdf')
       } else {
-        window.open(`${window.urls.minio}/guide/remote_web_user_guide.pdf`)
+        window.open(
+          `${urlsFromConfigServer.minio}/guide/remote_web_user_guide.pdf`,
+        )
       }
     },
     setVisible(visible) {

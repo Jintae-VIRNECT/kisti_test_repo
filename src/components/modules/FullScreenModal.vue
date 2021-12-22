@@ -55,6 +55,7 @@ export default {
   display: flex;
   flex-direction: column;
   background-color: $new_color_bg_sub;
+  cursor: auto;
 }
 
 .fullscreen-modal__header {

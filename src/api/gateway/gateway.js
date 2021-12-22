@@ -11,7 +11,7 @@ import { logger, debug } from 'utils/logger'
 import axios from '../axios'
 import errorList from './gateway.error.json'
 import networkError from './network.error.json'
-import { cookieClear } from 'utils/auth'
+import { clearCookie } from 'utils/auth'
 import qs from 'qs'
 import { TIMEOUT } from 'configs/env.config'
 
@@ -85,6 +85,8 @@ const sender = async function(constant, params, headers = {}, custom) {
         parameter.append(param, params[param])
       }
       debug(option)
+    } else if (custom && custom.authorization === false) {
+      delete axios.defaults.headers.common['Authorization']
     } else {
       option.headers['Content-Type'] = 'application/json'
     }
@@ -195,7 +197,7 @@ const errorHandler = function(err) {
       // case 8003:
       case 8005:
         // console.error(error.message)
-        cookieClear()
+        clearCookie()
         window.location.reload()
         break
       // case 'Network Error':

@@ -38,8 +38,8 @@
             :filelink="alarm.filelink"
             :image="alarm.image"
             :accept="alarm.accept"
-            @accept="acceptInvite(alarm.sessionId, alarm.userId)"
-            @refuse="inviteDenied(alarm.sessionId, alarm.userId)"
+            @accept="acceptInvite(alarm.sessionId, alarm.userId, alarm.id)"
+            @refuse="inviteDenied(alarm.sessionId, alarm.userId, alarm.id)"
             @remove="remove(alarm)"
           ></notice-item>
           <!-- <notice-item
@@ -117,6 +117,7 @@ import { ROLE } from 'configs/remote.config'
 import { ERROR } from 'configs/error.config'
 import { sendPush } from 'api/http/message'
 import { getRoomInfo } from 'api/http/room'
+import { v4 as uuidv4 } from 'uuid'
 
 import Switcher from 'Switcher'
 import Popover from 'Popover'
@@ -133,7 +134,7 @@ import { isRegisted } from 'utils/auth'
 
 const defaultPopoverWidth = '29.571rem'
 const mobilePopoverWidth = '26.5rem'
-const deafultPlacement = 'bottom-end'
+const defaultPlacement = 'bottom-end'
 const mobilePlacement = 'bottom-start'
 const defaultNoticeIconSize = '2.429rem'
 const mobileNoticeIconSize = '4rem'
@@ -152,23 +153,7 @@ export default {
     Scroller,
     NoticeItem,
   },
-  props: {
-    //TEMP : 서비스 반응형 반영 후 제거 필요
-    //워크스페이스 선반영되어 서비스 화면에 영향을 주게되어 고정 사이즈와 src를 부여하기 위해 추가한 속성
-    //서비스 반응형 완료 후에는 제거해도됨
-    // fixSize: {
-    //   type: String,
-    //   default: null,
-    // },
-    // fixSrc: {
-    //   type: Boolean,
-    //   default: false,
-    // },
-    // tempClass: {
-    //   type: Boolean,
-    //   default: false,
-    // },
-  },
+  props: {},
   data() {
     return {
       onPush: true,
@@ -176,16 +161,12 @@ export default {
       active: false,
       visible: false,
       muted: true,
-      // alarmList: [],
+
       activeSrc: defaultActiveSrc,
       inactiveSrc: defaultInactiveSrc,
       size: defaultNoticeIconSize,
-      placement: deafultPlacement,
+      placement: defaultPlacement,
       width: defaultPopoverWidth,
-
-      //TEMP : 서비스 반응형 반영 후 제거 필요
-      // defaultActiveSrc: Object.freeze(defaultActiveSrc),
-      // defaultInactiveSrc: Object.freeze(defaultInactiveSrc),
     }
   },
   computed: {
@@ -213,13 +194,7 @@ export default {
     },
   },
   methods: {
-    ...mapActions([
-      'addAlarm',
-      'removeAlarm',
-      'updateAlarm',
-      'inviteResponseAlarm',
-      'clearWorkspace',
-    ]),
+    ...mapActions(['addAlarm', 'removeAlarm', 'updateAlarm', 'clearWorkspace']),
     loadeddata() {
       this.$refs['noticeAudio'].onloadeddata = () => {}
       if (this.isSafari) {
@@ -253,103 +228,126 @@ export default {
 
       this.logger('received message::', body)
 
-      switch (body.event) {
-        case EVENT.INVITE:
-          if (!this.onPush) return
-          this.addAlarm({
-            type: 'invite',
-            info: this.$t('alarm.member_name_from', {
-              name: body.contents.nickName,
-            }),
-            image: body.contents.profile,
-            description: this.$t('alarm.invite_request'),
-            sessionId: body.contents.sessionId,
-            userId: body.userId,
-            accept: 'none',
-            date: new Date(),
-          })
-          // if (!this.onPush) return
-          this.playSound()
-          this.alarmInvite(
-            body.contents,
-            () => this.acceptInvite(body.contents.sessionId, body.userId),
-            () => this.inviteDenied(body.contents.sessionId, body.userId),
-          )
-          break
-        case EVENT.INVITE_ACCEPTED:
-          if (!this.onPush) return
-
-          this.addAlarm({
-            type: 'info_user',
-            info: this.$t('alarm.member_name_from', {
-              name: body.contents.nickName,
-            }),
-            title: '',
-            description: this.$t('alarm.invite_accept'),
-            date: new Date(),
-          })
-          // if (!this.onPush) return
-          this.alarmInviteAccepted(body.contents.nickName)
-          break
-        case EVENT.INVITE_DENIED:
-          if (!this.onPush) return
-          this.addAlarm({
-            type: 'info_user',
-            info: this.$t('alarm.member_name_from', {
-              name: body.contents.nickName,
-            }),
-            title: '',
-            description: this.$t('alarm.invite_refuse'),
-            date: new Date(),
-          })
-          // if (!this.onPush) return
-          this.alarmInviteDenied(body.contents.nickName)
-          break
-        //제거예정
-        case EVENT.LICENSE_EXPIRATION:
-          this.alarmLicenseExpiration(body.contents.leftLicenseTime)
-          break
-        //제거예정
-        case EVENT.LICENSE_EXPIRED:
-          if (this.$route.name === 'workspace') {
-            this.clearWorkspace(this.workspace.uuid)
-            this.alarmLicenseHome()
-          } else {
-            this.alarmLicense()
-            setTimeout(() => {
-              this.clearWorkspace(this.workspace.uuid)
-              if (!this.$route.name !== 'workspace') {
-                this.$call.leave()
-                this.$router.push({ name: 'workspace' })
-              }
-            }, 60000)
-          }
-          break
-        default:
-          return
+      const alarmListeners = {
+        [EVENT.INVITE]: this.handleEventInvite,
+        [EVENT.INVITE_ACCEPTED]: this.handleEventInviteAccepted,
+        [EVENT.INVITE_DENIED]: this.handleEventInviteDenied,
+        [EVENT.LICENSE_EXPIRATION]: this.handleEventLicenseExpiration,
+        [EVENT.LICENSE_EXPIRED]: this.handleEventLicenseExpired,
       }
+
+      const alarmListenerCb = alarmListeners[body.event]
+      if (alarmListenerCb) {
+        alarmListenerCb(body)
+      } else {
+        console.error('alarmListenerCb is not defined')
+      }
+
       this.active = true
     },
+    handleEventInvite(body) {
+      if (!this.onPush) return
+
+      const id = uuidv4()
+      this.addAlarm({
+        id: id,
+        type: 'invite',
+        info: this.$t('alarm.member_name_from', {
+          name: body.contents.nickName,
+        }),
+        image: body.contents.profile,
+        description: this.$t('alarm.invite_request'),
+        sessionId: body.contents.sessionId,
+        userId: body.userId,
+        accept: 'none',
+        date: new Date(),
+      })
+      // if (!this.onPush) return
+      this.playSound()
+      this.alarmInvite(
+        body.contents,
+        () => this.acceptInvite(body.contents.sessionId, body.userId, id),
+        () => this.inviteDenied(body.contents.sessionId, body.userId, id),
+      )
+    },
+    handleEventInviteAccepted(body) {
+      if (!this.onPush) return
+
+      const id = uuidv4()
+      this.addAlarm({
+        id: id,
+        type: 'info_user',
+        info: this.$t('alarm.member_name_from', {
+          name: body.contents.nickName,
+        }),
+        title: '',
+        description: this.$t('alarm.invite_accept'),
+        date: new Date(),
+      })
+
+      this.alarmInviteAccepted(body.contents.nickName)
+    },
+    handleEventInviteDenied(body) {
+      if (!this.onPush) return
+
+      const id = uuidv4()
+      this.addAlarm({
+        id: id,
+        type: 'info_user',
+        info: this.$t('alarm.member_name_from', {
+          name: body.contents.nickName,
+        }),
+        title: '',
+        description: this.$t('alarm.invite_refuse'),
+        date: new Date(),
+      })
+
+      this.alarmInviteDenied(body.contents.nickName)
+    },
+    handleEventLicenseExpiration(body) {
+      this.alarmLicenseExpiration(body.contents.leftLicenseTime)
+    },
+    handleEventLicenseExpired() {
+      if (this.$route.name === 'workspace') {
+        this.clearWorkspace(this.workspace.uuid)
+        this.alarmLicenseHome()
+      } else {
+        this.alarmLicense()
+        const oneMinute = 60 * 1000
+        setTimeout(() => {
+          this.clearWorkspace(this.workspace.uuid)
+          if (!this.$route.name !== 'workspace') {
+            this.$call.leave()
+            this.$router.push({ name: 'workspace' })
+          }
+        }, oneMinute)
+      }
+    },
+
     remove(alarm) {
       this.removeAlarm(alarm.id)
     },
     // 초대 거절
-    async inviteDenied(sessionId, userId) {
+    async inviteDenied(sessionId, userId, id) {
       const contents = {
         nickName: this.account.nickname,
       }
 
       sendPush(EVENT.INVITE_DENIED, [userId], contents)
 
-      // 알람 리스트 업데이트
-      this.inviteResponseAlarm({
-        sessionId: sessionId,
-        accept: 'refuse',
-      })
+      if (id) {
+        // 알람 리스트 업데이트
+        this.updateAlarm({
+          sessionId: sessionId,
+          accept: 'refuse',
+          id: id,
+        })
+      }
+
       this.clearAlarm()
     },
     // 초대 수락
-    async acceptInvite(sessionId, userId) {
+    async acceptInvite(sessionId, userId, id) {
       if (this.$call.session !== null) {
         this.toastError(this.$t('alarm.notice_already_call'))
         return
@@ -373,11 +371,7 @@ export default {
         }
         sendPush(EVENT.INVITE_ACCEPTED, [userId], contents)
 
-        // 알람 리스트 업데이트
-        this.inviteResponseAlarm({
-          sessionId: sessionId,
-          accept: 'accept',
-        })
+        this.removeAlarm(id)
         this.clearAlarm()
       } catch (err) {
         if (err.code === ERROR.REMOTE_ALREADY_REMOVED) {
@@ -412,7 +406,7 @@ export default {
       this.activeSrc = defaultActiveSrc
       this.inactiveSrc = defaultInactiveSrc
       this.size = defaultNoticeIconSize
-      this.placement = deafultPlacement
+      this.placement = defaultPlacement
       this.width = defaultPopoverWidth
     },
   },

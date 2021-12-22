@@ -212,16 +212,19 @@ export default {
       this.touchEvent = false
     },
 
-    scrollToY(y) {
-      this.normalizeVertical(y)
+    scrollToY(y, closePopover = true) {
+      this.normalizeVertical(y, closePopover)
     },
 
     scrollToX(x) {
       this.normalizeHorizontal(x)
     },
 
-    normalizeVertical(next) {
-      this.$eventBus.$emit('popover:scrollClose')
+    normalizeVertical(next, closePopover = true) {
+      if (closePopover) {
+        this.$eventBus.$emit('popover:scrollClose')
+      }
+
       const elementSize = this.getSize()
 
       // Vertical Scrolling

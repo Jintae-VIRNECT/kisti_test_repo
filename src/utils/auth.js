@@ -42,17 +42,16 @@ export let isRegisted = false //이미 등록완료된 상태에서 멤버 상�
 let savedWorkspaceId //기존 workspaceId, workspaceId 변경 확인 하기 위함
 let changingWorkspaceId //변경 요청 중인 workspaceId 변경 완료 응답 받은 후 savedWorksapceId에 저장
 
+const domainRegex = /^(((http(s?)):\/\/)?)([0-9a-zA-Z-]+\.)+[a-zA-Z]{2,6}(:[0-9]+)?(\/\S*)?/
+export const COOKIE_EXPIRE_UNIT = 60 * 60 * 24 //쿠키 expires 값은 24시간이 1 기준으로 들어가고, api응답값의 expireIn은 초단위로 오기 때문에 계산하기 위한 값
+
+export let urlsFromConfigServer = {}
+
 /**
  * 메소드
  */
 export function setTokensToCookies(response) {
-  const cookieOption = {
-    expires: response.expireIn / 3600000,
-    domain:
-      location.hostname.split('.').length === 3
-        ? location.hostname.replace(/.*?\./, '')
-        : location.hostname,
-  }
+  const cookieOption = getCookieOption(urlsFromConfigServer, response.expireIn)
   Cookies.set('accessToken', response.accessToken, cookieOption)
   Cookies.set('refreshToken', response.refreshToken, cookieOption)
   debug('TOKEN::', axios.defaults.headers)
@@ -130,8 +129,8 @@ const initLoginStatus = (
   onRegistrationFailCallback,
   onWorkspaceUpdateFailCallback,
 ) => {
-  if (window.urls && window.urls['ws']) {
-    const wssUrl = window.urls['ws']
+  if (urlsFromConfigServer && urlsFromConfigServer['ws']) {
+    const wssUrl = urlsFromConfigServer['ws']
 
     try {
       resetReConnectInterval() //기존 재접속 인터벌 초기화
@@ -393,7 +392,7 @@ const endLoginStatus = () => {
 }
 
 export const getConfigs = async () => {
-  if (window.urls && window.urls['api']) return
+  if (urlsFromConfigServer && urlsFromConfigServer['api']) return
   const res = await axios.get(
     `${location.origin}/configs?origin=${location.hostname}`,
   )
@@ -418,7 +417,15 @@ export const getConfigs = async () => {
   debug('URLS::', res.data)
 
   setHttpOptions(res.data['api'], TIMEOUT)
-  window.urls = res.data
+  urlsFromConfigServer = res.data
+
+  //개발버전 혹은 디버깅 설정 시에만 동작
+  if (
+    localStorage.getItem('env') === RUNTIME.DEVELOP ||
+    RUNTIME_ENV === RUNTIME.DEVELOP
+  )
+    window.urls = urlsFromConfigServer
+
   setConfigs({
     RUNTIME_ENV,
     TIMEOUT,
@@ -447,14 +454,33 @@ export const getSettings = async () => {
   } catch (err) {}
 }
 
-export const cookieClear = () => {
-  if (/\.?virnect\.com/.test(location.href)) {
-    Cookies.remove('accessToken', { domain: '.virnect.com' })
-    Cookies.remove('refreshToken', { domain: '.virnect.com' })
-  } else {
-    Cookies.remove('accessToken')
-    Cookies.remove('refreshToken')
-  }
+export const clearCookie = () => {
+  const cookieOption = getCookieOption(urlsFromConfigServer)
+  Cookies.remove('accessToken', cookieOption)
+  Cookies.remove('refreshToken', cookieOption)
+}
+
+//도메인, 만료시간에 따라 cookie option 값을 생성하는 함수
+const getCookieOption = (urls, expire) => {
+  const domain = urls.domain
+    ? urls.domain
+    : location.hostname.replace(/.*?\./, '')
+
+  const url = domainRegex.test(location.hostname) ? domain : location.hostname
+
+  if (expire)
+    return {
+      secure: true,
+      sameSite: 'None',
+      expires: expire / COOKIE_EXPIRE_UNIT, //* expire는 초단위, expires 값 세팅 단위는 1이 24시간 단위이므로 맞게 계산해줘야 한다.
+      domain: url,
+    }
+  else
+    return {
+      secure: true,
+      sameSite: 'None',
+      domain: url,
+    }
 }
 
 /**
@@ -539,7 +565,7 @@ class Auth {
     }
   }
   login() {
-    cookieClear()
+    clearCookie()
     location.href = `${URLS['console']}/?continue=${location.href}`
     return this
   }
@@ -552,7 +578,7 @@ class Auth {
     }
 
     endLoginStatus() //로그아웃 상태 업데이트
-    cookieClear()
+    clearCookie()
     isLogin = false
     myInfo = {}
     myWorkspaces = []

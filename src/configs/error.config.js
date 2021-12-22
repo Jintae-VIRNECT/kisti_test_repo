@@ -18,6 +18,9 @@ export const ERROR = {
   //빈 파일을 업로드 시도시
   FILE_DUMMY_ASSUMED: 7002,
 
+  //빈 파일을 업로드 시도시(협업보드,3d공유)
+  FILE_EMPTY: 7016,
+
   //유효하지 않은 확장자를 가진 파일을 업로드 시도시
   FILE_EXTENSION_UNSUPPORT: 7003,
 
@@ -38,4 +41,6 @@ export const ERROR = {
 
   //즐겨찾기 그룹 갯수를 초과한 경우
   WORKSPACE_MEMBER_GROUP_MAX_OVER: 4027,
+
+  MEMBER_UUID_IS_INVALID: 4031,
 }

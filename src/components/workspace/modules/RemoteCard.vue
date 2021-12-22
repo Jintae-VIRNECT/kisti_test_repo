@@ -7,9 +7,8 @@
     :height="height"
     :placement="placement"
     popoverClass="group-menu"
-    @mobileJoin="join"
   >
-    <div class="groupcard-body">
+    <div class="groupcard-body" @click="join">
       <span class="groupcard__leader" v-if="isLeader">Leader</span>
       <div class="groupcard-profile">
         <div class="profile__image">

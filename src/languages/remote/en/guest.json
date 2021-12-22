@@ -6,7 +6,9 @@
     "guest_time_expired_description": "The time limit is complete.<br/>Please select request to prepare to connect.​",
     "guest_license_expired":"A plan for non-member access is not assigned to the workspace to be accessed, or all of them are in use.​",
     "guest_install_mobile_app_description":"Please press the [App Runs] button below to run the VIRNECT Remote App.​",
-    "guest_install_mobile_app_download_description":"If it is not installed, please download the APK file."
+    "guest_install_mobile_app_download_description":"If it is not installed, please download the APK file.",
+    "guest_account_deleted_and_request_account_again":"The assigned guest account has been deleted.\nRequest an accessible account again.",
+    "guest_account_deleted_and_logout":"Account has been deleted.\nLogged out."
 
   }
 }

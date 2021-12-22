@@ -74,17 +74,18 @@ export default {
     },
   },
   methods: {
-    initGuestMember() {
-      this.$eventBus.$emit('initGuestMember')
+    initGuestMember(omitLogout) {
+      this.$eventBus.$emit('initGuestMember', omitLogout)
     },
     resetTimer() {
       this.remainTime = EXPIRE_TIMER
+      if (this.timerId) {
+        clearInterval(this.timerId)
+      }
     },
     async joinAsGuest() {
       if (this.remainTime <= 0) {
-        this.resetTimer()
-        this.initGuestMember()
-        this.startTimer()
+        this.initTimerAndGuestMember()
         return
       }
 
@@ -122,9 +123,21 @@ export default {
         this.remainTime--
       }, 1000)
     },
+    async initTimerAndGuestMember(reason) {
+      this.resetTimer()
+
+      const omitLogout = reason === 'deleted'
+      this.initGuestMember(omitLogout)
+
+      this.startTimer()
+    },
   },
   mounted() {
     this.startTimer()
+    this.$eventBus.$on('initTimerAndGuestMember', this.initTimerAndGuestMember)
+  },
+  beforeMount() {
+    this.$eventBus.$off('initTimerAndGuestMember', this.initTimerAndGuestMember)
   },
 }
 </script>

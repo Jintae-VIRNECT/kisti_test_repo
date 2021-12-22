@@ -160,6 +160,7 @@
     "ar_drawing_max": "You can create up to 30 objects.",
     "ar_exit": "End AR creation task",
     "ar_exit_description": "All AR tasks being created will be ended, <br> would you still wish to quit?",
+    "ar_requesting_permission":"Requesting permission to the AR sharing.",
 
     "chat": "Texting",
     "chat_input": "Enter a text message.",

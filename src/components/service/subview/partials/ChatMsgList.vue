@@ -45,6 +45,9 @@ import ChatSpeechStreaming from './ChatSpeechStreaming'
 import { tts } from 'plugins/remote/translate'
 import { audio, clearAudio } from 'plugins/remote/tts/audio'
 
+const SCROLL_DELAY = 300
+const NO_SCROLL_DELAY = 0
+
 export default {
   name: 'ChatMsgList',
   components: {
@@ -64,7 +67,8 @@ export default {
       handler() {
         this.$nextTick(() => {
           if (this.show && this.$refs['chatListScrollbar']) {
-            this.$refs['chatListScrollbar'].scrollToY(Number.MAX_SAFE_INTEGER)
+            const closePopover = false
+            this.scrollMsgListToY(NO_SCROLL_DELAY, closePopover)
           }
         })
       },
@@ -73,23 +77,18 @@ export default {
     show(val, bVal) {
       this.$nextTick(() => {
         if (val === true && val !== bVal) {
-          this.$refs['chatListScrollbar'].scrollToY(Number.MAX_SAFE_INTEGER)
+          this.scrollMsgListToY(NO_SCROLL_DELAY)
         }
       })
     },
     view() {
-      setTimeout(() => {
-        if (this.$refs['chatListScrollbar']) {
-          this.$refs['chatListScrollbar'].scrollToY(Number.MAX_SAFE_INTEGER)
-        }
-      }, 300)
+      this.scrollMsgListToY(SCROLL_DELAY)
     },
     usingStt() {
-      setTimeout(() => {
-        if (this.$refs['chatListScrollbar']) {
-          this.$refs['chatListScrollbar'].scrollToY(Number.MAX_SAFE_INTEGER)
-        }
-      }, 300)
+      this.scrollMsgListToY(SCROLL_DELAY)
+    },
+    'translate.multiple'() {
+      this.scrollMsgListToY(SCROLL_DELAY)
     },
   },
   methods: {
@@ -126,9 +125,20 @@ export default {
         audio.load()
       })
     },
+    scrollMsgListToY(delay, closePopover = true) {
+      setTimeout(() => {
+        if (this.$refs['chatListScrollbar']) {
+          this.$refs['chatListScrollbar'].scrollToY(
+            Number.MAX_SAFE_INTEGER,
+            closePopover,
+          )
+        }
+      }, delay)
+    },
   },
   mounted() {
-    this.$refs['chatListScrollbar'].scrollToY(99999)
+    const noDelay = 0
+    this.scrollMsgListToY(noDelay)
   },
   beforeDestroy() {
     clearAudio()

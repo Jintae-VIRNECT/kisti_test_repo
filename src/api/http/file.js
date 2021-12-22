@@ -82,13 +82,6 @@ export const uploadRecordFile = async ({
   userId,
   durationSec,
 }) => {
-  console.log({
-    file,
-    sessionId,
-    workspaceId,
-    userId,
-    durationSec,
-  })
   const returnVal = await http('FILE_UPLOAD_RECORD', {
     file,
     sessionId,

@@ -72,7 +72,8 @@ export default {
   .back-btn {
     display: flex;
     align-items: center;
-    width: 7.1rem;
+    width: fit-content;
+    padding-right: 1.2143rem;
     height: 2.8rem;
     margin-bottom: 1rem;
     background-color: $new_color_popup_bg;

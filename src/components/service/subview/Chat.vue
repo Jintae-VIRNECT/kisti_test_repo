@@ -91,7 +91,11 @@ export default {
       handler() {
         this.$nextTick(() => {
           if (this.$refs['chatListScrollbar']) {
-            this.$refs['chatListScrollbar'].scrollToY(Number.MAX_SAFE_INTEGER)
+            const closePopover = false
+            this.$refs['chatListScrollbar'].scrollToY(
+              Number.MAX_SAFE_INTEGER,
+              closePopover,
+            )
           }
         })
       },
@@ -120,7 +124,7 @@ export default {
             status: 'ar-3d',
             type: 'system',
           })
-          // 3D 컨텐츠 모드를 시작합니다.
+          // 3D 콘텐츠 모드를 시작합니다.
           return
         }
       }

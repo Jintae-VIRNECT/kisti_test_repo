@@ -1,6 +1,6 @@
 import { mapGetters, mapActions, mapMutations } from 'vuex'
 import toastMixin from 'mixins/toast'
-import configmMixin from 'mixins/confirm'
+import confirmMixin from 'mixins/confirm'
 import { VIEW, ACTION } from 'configs/view.config'
 import { DEVICE } from 'configs/device.config'
 import {
@@ -14,8 +14,11 @@ import {
 } from 'configs/remote.config'
 import { getResolutionScale } from 'utils/settingOptions'
 
+const PERMISSION_DEFAULT = 'default'
+const PERMISSION_CANCELED = 'canceled'
+
 export default {
-  mixins: [toastMixin, configmMixin],
+  mixins: [toastMixin, confirmMixin],
 
   data() {
     return {
@@ -110,7 +113,11 @@ export default {
     goTab(type) {
       if (type === this.view) return //현재 탭과 동일한 경우
 
-      if (this.isAr3dLoading) return //3d 컨텐츠 로딩 중 이동 불가
+      //3d 컨텐츠 로딩 중 이동 불가
+      if (this.isAr3dLoading) {
+        this.toastDefault(this.$t('service.ar_3d_loading_toast'))
+        return
+      }
 
       if (this.checkDisconnected()) {
         return
@@ -136,7 +143,7 @@ export default {
         if (type === VIEW.AR) {
           if (this.checkArRequestPermission()) {
             this.$call.sendCapturePermission([this.mainView.connectionId])
-            this.toastDefault(this.$t('service.toast_request_permission'))
+            this.showArPermissionRequest()
           }
         } else {
           this.setView(type)
@@ -190,6 +197,31 @@ export default {
       )
     },
 
+    showArPermissionRequest() {
+      const options = {
+        allowEscapeKey: false,
+        allowOutsideClick: false,
+      }
+
+      this.confirmDefault(
+        this.$t('service.ar_requesting_permission'),
+        {
+          text: this.$t('button.cancel'),
+          action: () => {
+            this.$call.sendArFeatureStop()
+
+            if (this.mainView.permission === PERMISSION_DEFAULT) {
+              this.updateParticipant({
+                connectionId: this.mainView.connectionId,
+                permission: PERMISSION_CANCELED,
+              })
+            }
+          },
+        },
+        options,
+      )
+    },
+
     /**
      * AR 요청이 가능한지 확인
      */
@@ -234,18 +266,32 @@ export default {
     },
 
     handlePermissionRes(receive) {
+      this.confirmClose()
+
       const data = JSON.parse(receive.data)
 
       if (data.from === this.account.uuid) return
 
-      if (
-        this.account.roleType === ROLE.LEADER &&
-        data.type === CAPTURE_PERMISSION.RESPONSE
-      ) {
+      const isLeader = this.account.roleType === ROLE.LEADER
+      const isPermissionResponse = data.type === CAPTURE_PERMISSION.RESPONSE
+
+      const idx = this.participants.findIndex(
+        user => user.connectionId === receive.from.connectionId,
+      )
+
+      const isCanceled =
+        idx >= 0
+          ? this.participants[idx].permission === PERMISSION_CANCELED
+          : false
+
+      if (isLeader && isPermissionResponse) {
         this.updateParticipant({
           connectionId: receive.from.connectionId,
           permission: data.isAllowed,
         })
+
+        if (isCanceled) return
+
         if (this.view !== VIEW.AR) {
           const sendSignal = true
           data.isAllowed ? this.startAr(sendSignal) : this.showArRejected()
@@ -253,6 +299,8 @@ export default {
       }
     },
     startAr(sendSignal = false) {
+      this.confirmClose()
+
       this.toastDefault(
         this.$t('service.toast_ar_start', { name: this.mainView.nickname }),
       )

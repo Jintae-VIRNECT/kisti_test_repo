@@ -33,6 +33,7 @@
 
     <create-room-invite
       :users="users"
+      :subGroups="subGroups"
       :selection="selection"
       @userSelect="selectUser"
       @inviteRefresh="inviteRefresh"
@@ -69,6 +70,10 @@ export default {
     },
     currentUser: {
       type: Array,
+    },
+    subGroups: {
+      type: Array,
+      default: () => [],
     },
   },
   data() {

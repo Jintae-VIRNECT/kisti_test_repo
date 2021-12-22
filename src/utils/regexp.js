@@ -57,3 +57,8 @@ export const validJsonString = str => {
 
   return res
 }
+
+export const checkSpecialCharacters = str => {
+  const pattern = /[~!@#$%^&*()_+|<>?:{}]/g
+  return pattern.test(str)
+}

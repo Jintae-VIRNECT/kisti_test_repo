@@ -48,6 +48,7 @@ import toastMixin from 'mixins/toast'
 import ToolButton from 'ToolButton'
 
 import { CAMERA } from 'configs/device.config'
+import { CAMERA_STATE } from 'configs/status.config'
 
 export default {
   name: 'ToolZoomLevel',
@@ -82,7 +83,7 @@ export default {
       if (this.mainView && this.mainView.id) {
         return this.mainView.camera
       }
-      return -1
+      return CAMERA_STATE.UNAVAILABLE
     },
   },
   watch: {
@@ -134,7 +135,7 @@ export default {
       this.changeZoomLevel(1)
     },
     changeZoomLevel(level) {
-      if (this.cameraStatus === -1) {
+      if (this.cameraStatus === CAMERA_STATE.UNAVAILABLE) {
         this.toastDefault(this.$t('service.camera_permission'))
         return
       }

@@ -79,11 +79,13 @@ export default {
       this.select3dObject()
     },
     async select3dObject() {
-      //기존 공유 중인 3D 오브젝트가 있는지 체크
-      if (
+      //현재 기존 공유 중인 3D 오브젝트가 있거나, 3d 모델을 이미 로딩 중인 경우
+      const is3dLoadingOrSharing =
         this.share3dContent.objectName &&
-        this.ar3dShareStatus === AR_3D_FILE_SHARE_STATUS.COMPLETE
-      ) {
+        (this.ar3dShareStatus === AR_3D_FILE_SHARE_STATUS.COMPLETE ||
+          this.ar3dShareStatus === AR_3D_FILE_SHARE_STATUS.START)
+
+      if (is3dLoadingOrSharing) {
         this.toastDefault(this.$t('service.ar_3d_exist'))
         return false
       }

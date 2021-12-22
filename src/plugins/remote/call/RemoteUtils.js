@@ -97,9 +97,7 @@ export const addSessionEventListener = session => {
   session.on('connectionDestroyed', eventListener.connectionDestroyed)
 
   // user leave by system
-  session.on(SIGNAL.SYSTEM, () => {
-    logger('room', 'evict by system')
-  })
+  session.on(SIGNAL.SYSTEM, eventListener.signalEvictedBySystem)
 
   /** 메인뷰 변경 */
 

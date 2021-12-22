@@ -175,7 +175,7 @@ export const AR_3D_FILE_SHARE_STATUS = {
 }
 
 /**
- * 시그널 - 캡쳐 권한 제어
+ * 시그널 - 캡처 권한 제어
  */
 export const CAPTURE_PERMISSION = {
   REQUEST: 'request',
@@ -183,10 +183,11 @@ export const CAPTURE_PERMISSION = {
 }
 
 /**
- * 시그널 - ??
+ * 시그널 - 서비스 서버 메시지
  */
 export const SYSTEM = {
   EVICT: 'evict',
+  DELETED_ACCOUNT: 'deletedAccount',
 }
 
 /**
