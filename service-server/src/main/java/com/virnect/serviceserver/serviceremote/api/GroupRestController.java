@@ -25,7 +25,7 @@ import com.virnect.data.dto.response.group.FavoriteGroupResponse;
 import com.virnect.data.dto.response.group.RemoteGroupListResponse;
 import com.virnect.data.dto.response.group.RemoteGroupResponse;
 import com.virnect.data.error.ErrorCode;
-import com.virnect.data.error.exception.RestServiceException;
+import com.virnect.data.error.exception.RemoteServiceException;
 import com.virnect.data.global.common.ApiResponse;
 import com.virnect.data.infra.utils.LogMessage;
 import com.virnect.serviceserver.serviceremote.application.GroupService;
@@ -57,12 +57,12 @@ public class GroupRestController {
 			"createRemoteGroup"
 		);
 		if (Strings.isBlank(workspaceId) || Strings.isBlank(userId)) {
-			throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
+			throw new RemoteServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
 		}
-		ApiResponse<RemoteGroupResponse> responseData = groupService.createRemoteGroup(workspaceId, userId, groupRequest);
-		return ResponseEntity.ok(responseData);
+		RemoteGroupResponse responseData = groupService.createRemoteGroup(
+			workspaceId, userId, groupRequest);
+		return ResponseEntity.ok(new ApiResponse<>(responseData));
 	}
-
 
 	@ApiOperation(value = "[MASTER] Get member groups", notes = "멤버 그룹을 조회합니다")
 	@GetMapping(value = "members/group/{workspaceId}")
@@ -80,10 +80,11 @@ public class GroupRestController {
 			"getRemoteGroups"
 		);
 		if (Strings.isBlank(workspaceId) || Strings.isBlank(userId)) {
-			throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
+			throw new RemoteServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
 		}
-		ApiResponse<RemoteGroupListResponse> responseData = groupService.getRemoteGroups(workspaceId, userId, includeOneself);
-		return ResponseEntity.ok(responseData);
+		RemoteGroupListResponse responseData = groupService.getRemoteGroups(
+			workspaceId, userId, includeOneself);
+		return ResponseEntity.ok(new ApiResponse<>(responseData));
 	}
 
 	@ApiOperation(value = "[MASTER] Get selected member group detail information", notes = "멤버그룹을 상세조회합니다")
@@ -106,9 +107,9 @@ public class GroupRestController {
 			"getRemoteGroupDetailInfo"
 		);
 		if (Strings.isBlank(workspaceId) || Strings.isBlank(groupId) || Strings.isBlank(userId)) {
-			throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
+			throw new RemoteServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
 		}
-		ApiResponse<RemoteGroupResponse> responseData = groupService.getRemoteGroupDetail(
+		RemoteGroupResponse responseData = groupService.getRemoteGroupDetail(
 			workspaceId,
 			groupId,
 			userId,
@@ -117,7 +118,7 @@ public class GroupRestController {
 			includeOneself,
 			accessTypeFilter
 		);
-		return ResponseEntity.ok(responseData);
+		return ResponseEntity.ok(new ApiResponse<>(responseData));
 	}
 
 	@ApiOperation(value = "[MASTER] Update member group", notes = "멤버 그룹정보를 수정합니다")
@@ -138,15 +139,15 @@ public class GroupRestController {
 			"updateRemoteGroup"
 		);
 		if (Strings.isBlank(workspaceId) || Strings.isBlank(userId) || Strings.isBlank(groupId)) {
-			throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
+			throw new RemoteServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
 		}
-		ApiResponse<RemoteGroupResponse> responseData = groupService.updateRemoteGroup(
+		RemoteGroupResponse responseData = groupService.updateRemoteGroup(
 			workspaceId,
 			userId,
 			groupId,
 			groupRequest
 		);
-		return ResponseEntity.ok(responseData);
+		return ResponseEntity.ok(new ApiResponse<>(responseData));
 	}
 
 	@ApiOperation(value = "[MASTER] Delete member group", notes = "멤버 그룹을 삭제합니다")
@@ -166,10 +167,10 @@ public class GroupRestController {
 			"deleteRemoteGroup"
 		);
 		if (Strings.isBlank(workspaceId) || Strings.isBlank(userId) || Strings.isBlank(groupId)) {
-			throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
+			throw new RemoteServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
 		}
-		ApiResponse<ResultResponse> responseData = groupService.deleteRemoteGroup(workspaceId, userId, groupId);
-		return ResponseEntity.ok(responseData);
+		ResultResponse responseData = groupService.deleteRemoteGroup(workspaceId, userId, groupId);
+		return ResponseEntity.ok(new ApiResponse<>(responseData));
 	}
 
 	@ApiOperation(value = "[NORMAL USER] Create member favorite group", notes = "개인별 멤버 그룹을 생성합니다")
@@ -189,10 +190,11 @@ public class GroupRestController {
 			"createFavoriteGroup"
 		);
 		if (Strings.isBlank(workspaceId) || Strings.isBlank(userId)) {
-			throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
+			throw new RemoteServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
 		}
-		ApiResponse<FavoriteGroupResponse> responseData = groupService.createFavoriteGroup(workspaceId, userId, groupRequest);
-		return ResponseEntity.ok(responseData);
+		FavoriteGroupResponse responseData = groupService.createFavoriteGroup(
+			workspaceId, userId, groupRequest);
+		return ResponseEntity.ok(new ApiResponse<>(responseData));
 	}
 
 	@ApiOperation(value = "[NORMAL USER] Get member favorite groups", notes = "개인별 멤버 그룹을 조회합니다")
@@ -211,10 +213,11 @@ public class GroupRestController {
 			"getFavoriteGroups"
 		);
 		if (Strings.isBlank(workspaceId) || Strings.isBlank(userId)) {
-			throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
+			throw new RemoteServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
 		}
-		ApiResponse<FavoriteGroupListResponse> responseData = groupService.getFavoriteGroups(workspaceId, userId, includeOneself);
-		return ResponseEntity.ok(responseData);
+		FavoriteGroupListResponse responseData = groupService.getFavoriteGroups(
+			workspaceId, userId, includeOneself);
+		return ResponseEntity.ok(new ApiResponse<>(responseData));
 	}
 
 	@ApiOperation(value = "[NORMAL USER] Get selected member favorite group detail information", notes = "개인별 멤버그룹을 상세조회합니다")
@@ -237,9 +240,9 @@ public class GroupRestController {
 			"getFavoriteGroupDetailInfo"
 		);
 		if (Strings.isBlank(workspaceId) || Strings.isBlank(groupId) || Strings.isBlank(userId)) {
-			throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
+			throw new RemoteServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
 		}
-		ApiResponse<FavoriteGroupResponse> responseData = groupService.getFavoriteGroupDetail(
+		FavoriteGroupResponse responseData = groupService.getFavoriteGroupDetail(
 			workspaceId,
 			groupId,
 			userId,
@@ -248,7 +251,7 @@ public class GroupRestController {
 			includeOneself,
 			accessTypeFilter
 		);
-		return ResponseEntity.ok(responseData);
+		return ResponseEntity.ok(new ApiResponse<>(responseData));
 	}
 
 	@ApiOperation(value = "[NORMAL USER] Update member favorite group", notes = "개인별 멤버 그룹정보를 수정합니다")
@@ -269,15 +272,15 @@ public class GroupRestController {
 			"updateFavoriteGroup"
 		);
 		if (Strings.isBlank(workspaceId) || Strings.isBlank(groupId) || Strings.isBlank(userId)) {
-			throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
+			throw new RemoteServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
 		}
-		ApiResponse<FavoriteGroupResponse> responseData = groupService.updateFavoriteGroup(
+		FavoriteGroupResponse responseData = groupService.updateFavoriteGroup(
 			workspaceId,
 			userId,
 			groupId,
 			groupRequest
 		);
-		return ResponseEntity.ok(responseData);
+		return ResponseEntity.ok(new ApiResponse<>(responseData));
 	}
 
 	@ApiOperation(value = "[NORMAL USER] Delete member favorite group", notes = "개인별 멤버 그룹을 삭제합니다")
@@ -297,9 +300,9 @@ public class GroupRestController {
 			"deleteFavoriteGroup"
 		);
 		if (Strings.isBlank(workspaceId) || Strings.isBlank(groupId) || Strings.isBlank(userId)) {
-			throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
+			throw new RemoteServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
 		}
-		ApiResponse<ResultResponse> responseData = groupService.deleteFavoriteGroup(workspaceId, userId, groupId);
-		return ResponseEntity.ok(responseData);
+		ResultResponse responseData = groupService.deleteFavoriteGroup(workspaceId, userId, groupId);
+		return ResponseEntity.ok(new ApiResponse<>(responseData));
 	}
 }

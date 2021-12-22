@@ -9,7 +9,6 @@ import java.time.LocalDateTime;
 
 import com.virnect.data.domain.BaseTimeEntity;
 
-//@DynamicUpdate
 @Entity
 @Getter
 @Setter

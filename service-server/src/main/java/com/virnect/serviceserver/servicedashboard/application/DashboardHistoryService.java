@@ -22,8 +22,8 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import com.virnect.data.application.record.RecordRestService;
 import com.virnect.data.application.account.AccountRestService;
+import com.virnect.data.application.record.RecordRestService;
 import com.virnect.data.application.workspace.WorkspaceRestService;
 import com.virnect.data.dao.file.FileRepository;
 import com.virnect.data.dao.file.RecordFileRepository;
@@ -45,7 +45,7 @@ import com.virnect.data.dto.rest.UserInfoListResponse;
 import com.virnect.data.dto.rest.UserInfoResponse;
 import com.virnect.data.dto.rest.WorkspaceMemberInfoResponse;
 import com.virnect.data.error.ErrorCode;
-import com.virnect.data.error.exception.RestServiceException;
+import com.virnect.data.error.exception.RemoteServiceException;
 import com.virnect.data.global.common.ApiResponse;
 import com.virnect.data.global.util.ListUtils;
 import com.virnect.data.global.util.paging.CustomPaging;
@@ -97,7 +97,7 @@ public class DashboardHistoryService {
 	private final DashboardRecordFileDetailMapper dashboardRecordFileDetailMapper;
 	private final OngoingRoomInfoMapper ongoingRoomInfoMapper;
 
-	public ApiResponse<RoomHistoryInfoListResponse> getRoomHistory(
+	public RoomHistoryInfoListResponse getRoomHistory(
 		String workspaceId, String userId, RoomHistoryListRequest request
 	) {
 		List<RoomHistoryInfoResponse> roomHistories = new ArrayList<>();
@@ -112,6 +112,12 @@ public class DashboardHistoryService {
 			case END:
 				ListUtils.addAllIfNotNull(roomHistories, getMyEndRoomHistory(request, workspaceId, userId));
 				break;
+		}
+		if (CollectionUtils.isEmpty(roomHistories)) {
+			return RoomHistoryInfoListResponse.builder()
+				.roomHistoryInfoList(Collections.emptyList())
+				.pageMeta(PagingUtils.emptyPagingBuilder())
+				.build();
 		}
 		return handleData(workspaceId, userId, request, roomHistories);
 	}
@@ -255,8 +261,9 @@ public class DashboardHistoryService {
 
 	public RoomDetailInfoResponse getOngoingRoomDetail(String workspaceId, String sessionId) {
 
-		Room ongoingRoom = roomRepository.findRoomByWorkspaceIdAndSessionIdForWrite(workspaceId, sessionId).orElseThrow(()
-			-> new RestServiceException(ErrorCode.ERR_ROOM_NOT_FOUND));
+		Room ongoingRoom = roomRepository.findRoomByWorkspaceIdAndSessionIdForWrite(workspaceId, sessionId)
+			.orElseThrow(()
+				-> new RemoteServiceException(ErrorCode.ERR_ROOM_NOT_FOUND));
 
 		RoomDetailInfoResponse roomDetailInfoResponse = dashboardRoomDetailInfoMapper.toDto(ongoingRoom);
 		roomDetailInfoResponse.setSessionType(ongoingRoom.getSessionProperty().getSessionType());
@@ -266,7 +273,8 @@ public class DashboardHistoryService {
 			.map(dashboardMemberInfoMapper::toDto)
 			.collect(Collectors.toList());
 
-		memberInfoResponses.removeIf(memberInfoResponse -> memberInfoResponse.getMemberStatus().equals(MemberStatus.EVICTED));
+		memberInfoResponses.removeIf(
+			memberInfoResponse -> memberInfoResponse.getMemberStatus().equals(MemberStatus.EVICTED));
 
 		roomDetailInfoResponse.setMemberList(memberInfoResponses);
 
@@ -293,9 +301,10 @@ public class DashboardHistoryService {
 	) {
 
 		RoomHistory endRoom = roomHistoryRepository.findRoomHistoryByWorkspaceIdAndSessionId(workspaceId, sessionId)
-			.orElseThrow(() -> new RestServiceException(ErrorCode.ERR_HISTORY_ROOM_NOT_FOUND));
+			.orElseThrow(() -> new RemoteServiceException(ErrorCode.ERR_HISTORY_ROOM_NOT_FOUND));
 
-		RoomHistoryDetailInfoResponse roomHistoryDetailInfoResponse = dashboardRoomHistoryDetailInfoMapper.toDto(endRoom);
+		RoomHistoryDetailInfoResponse roomHistoryDetailInfoResponse = dashboardRoomHistoryDetailInfoMapper.toDto(
+			endRoom);
 		roomHistoryDetailInfoResponse.setSessionType(endRoom.getSessionPropertyHistory().getSessionType());
 
 		List<MemberInfoResponse> memberInfoList = endRoom.getMemberHistories()
@@ -325,21 +334,15 @@ public class DashboardHistoryService {
 		return roomHistoryDetailInfoResponse;
 	}
 
-	public ApiResponse<RoomHistoryInfoListResponse> handleData(
+	public RoomHistoryInfoListResponse handleData(
 		String workspaceId,
 		String userId,
 		RoomHistoryListRequest request,
 		List<RoomHistoryInfoResponse> roomHistories
 	) {
-		if (CollectionUtils.isEmpty(roomHistories)) {
-			return new ApiResponse<>(
-				RoomHistoryInfoListResponse.builder()
-					.roomHistoryInfoList(Collections.emptyList())
-					.pageMeta(PagingUtils.emptyPagingBuilder())
-					.build());
-		}
-
-		List<WorkspaceMemberInfoResponse> workspaceMembers = workspaceRestService.getWorkspaceMembers(workspaceId).getData().getMemberInfoList();
+		List<WorkspaceMemberInfoResponse> workspaceMembers = workspaceRestService.getWorkspaceMembers(workspaceId)
+			.getData()
+			.getMemberInfoList();
 		List<FileDetailInfoResponse> localRecFileAll = getLocalRecordFileList(
 			workspaceId,
 			//roomHistory.getSessionId(),
@@ -350,7 +353,9 @@ public class DashboardHistoryService {
 			//roomHistory.getSessionId(),
 			false
 		);
-		List<RecordingFiles> serverRecFileAll = recordRestService.getServerRecordFileList(workspaceId, "DASHBOARD").getData().getInfos();
+		List<RecordingFiles> serverRecFileAll = recordRestService.getServerRecordFileList(workspaceId, "DASHBOARD")
+			.getData()
+			.getInfos();
 		if (CollectionUtils.isEmpty(serverRecFileAll)) {
 			serverRecFileAll = new ArrayList<>();
 		}
@@ -418,7 +423,8 @@ public class DashboardHistoryService {
 			request.getSortOrder()
 		);
 
-		CustomPaging customPaging = PagingUtils.customPaging(request.getPage(), roomHistories.size(), request.getSize(), roomHistories.isEmpty());
+		CustomPaging customPaging = PagingUtils.customPaging(
+			request.getPage(), roomHistories.size(), request.getSize(), roomHistories.isEmpty());
 
 		// 데이터 range
 		roomHistories = IntStream
@@ -436,11 +442,10 @@ public class DashboardHistoryService {
 			.last(customPaging.isLast())
 			.build();
 
-		return new ApiResponse<>(
-			RoomHistoryInfoListResponse.builder()
+		return RoomHistoryInfoListResponse.builder()
+			.roomHistoryInfoList(roomHistories)
 			.pageMeta(pageMeta)
-			.roomHistoryInfoList(roomHistories).build()
-		);
+			.build();
 	}
 
 	public List<FileInfoResponse> getAttachedFileList(
@@ -456,7 +461,7 @@ public class DashboardHistoryService {
 					.collect(Collectors.toList());
 			}
 		} catch (Exception exception) {
-			throw new RestServiceException(ErrorCode.ERR_FILE_GET_SIGNED_EXCEPTION);
+			throw new RemoteServiceException(ErrorCode.ERR_FILE_GET_SIGNED_EXCEPTION);
 		}
 		return fileInfoResponses;
 	}
@@ -483,7 +488,7 @@ public class DashboardHistoryService {
 				fileDetailInfoResponses.add(fileDetailInfoResponse);
 			}
 		} catch (Exception exception) {
-			throw new RestServiceException(ErrorCode.ERR_FILE_GET_SIGNED_EXCEPTION);
+			throw new RemoteServiceException(ErrorCode.ERR_FILE_GET_SIGNED_EXCEPTION);
 		}
 		return fileDetailInfoResponses;
 	}

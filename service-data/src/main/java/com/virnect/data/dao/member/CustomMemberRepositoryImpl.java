@@ -13,7 +13,7 @@ import com.virnect.data.domain.member.Member;
 import com.virnect.data.domain.member.MemberHistory;
 import com.virnect.data.domain.member.MemberType;
 
-public class CustomMemberRepositoryImpl  extends QuerydslRepositorySupport implements CustomMemberRepository {
+public class CustomMemberRepositoryImpl extends QuerydslRepositorySupport implements CustomMemberRepository {
 
 	private final JPAQueryFactory query;
 
@@ -26,25 +26,25 @@ public class CustomMemberRepositoryImpl  extends QuerydslRepositorySupport imple
 	public Optional<Member> findRoomLeaderBySessionId(String workspaceId, String sessionId) {
 		return Optional.ofNullable(
 			query
-			.selectFrom(member)
-			.where(
-				member.workspaceId.eq(workspaceId),
-				member.sessionId.eq(sessionId),
-				member.memberType.eq(MemberType.LEADER)
-			)
-			.fetchFirst());
+				.selectFrom(member)
+				.where(
+					member.workspaceId.eq(workspaceId),
+					member.sessionId.eq(sessionId),
+					member.memberType.eq(MemberType.LEADER)
+				)
+				.fetchFirst());
 	}
 
 	@Override
 	public Optional<Member> findBySessionIdAndUuid(String sessionId, String uuid) {
 		return Optional.ofNullable(
 			query
-			.selectFrom(member)
-			.where(
-				member.sessionId.eq(sessionId),
-				member.uuid.eq(uuid)
-			)
-			.fetchFirst());
+				.selectFrom(member)
+				.where(
+					member.sessionId.eq(sessionId),
+					member.uuid.eq(uuid)
+				)
+				.fetchFirst());
 	}
 
 	@Override
@@ -57,6 +57,18 @@ public class CustomMemberRepositoryImpl  extends QuerydslRepositorySupport imple
 			)
 			.distinct()
 			.fetch();
+	}
+
+	@Override
+	public Optional<Member> findGuestMemberByWorkspaceIdAndUuid(String workspaceId, String uuid) {
+		return Optional.ofNullable(
+			query
+				.selectFrom(member)
+				.where(
+					member.workspaceId.eq(workspaceId),
+					member.uuid.eq(uuid)
+				)
+				.fetchFirst());
 	}
 
 }

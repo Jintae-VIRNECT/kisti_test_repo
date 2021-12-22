@@ -16,8 +16,8 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import com.virnect.data.application.record.RecordRestService;
 import com.virnect.data.application.account.AccountRestService;
+import com.virnect.data.application.record.RecordRestService;
 import com.virnect.data.application.workspace.WorkspaceRestService;
 import com.virnect.data.dao.file.FileRepository;
 import com.virnect.data.dao.file.RecordFileRepository;
@@ -28,7 +28,7 @@ import com.virnect.data.dto.rest.ListRecordingFilesResponse;
 import com.virnect.data.dto.rest.UserInfoResponse;
 import com.virnect.data.dto.rest.WorkspaceMemberInfoResponse;
 import com.virnect.data.error.ErrorCode;
-import com.virnect.data.error.exception.RestServiceException;
+import com.virnect.data.error.exception.RemoteServiceException;
 import com.virnect.data.global.common.ApiResponse;
 import com.virnect.data.infra.file.IFileManagementService;
 import com.virnect.serviceserver.servicedashboard.dto.mapper.file.DashboardFileInfoMapper;
@@ -64,22 +64,19 @@ public class DashboardFileService {
 	private final DashboardRecordFileDetailMapper dashboardRecordFileDetailMapper;
 	private final DashboardFilePreSignedMapper dashboardFilePreSignedMapper;
 	private final DashboardRecordFilePreSignedMapper dashboardRecordFilePreSignedMapper;
-
-	/*String generateDirPath(String... args) {
-		StringBuilder stringBuilder;
-		stringBuilder = new StringBuilder();
-		for (String argument : args) {
-			stringBuilder.append(argument).append("/");
-		}
-		return stringBuilder.toString();
-	}*/
-
+	
 	private String generateDirPath(String workspaceId, String sessionId) {
 		StringBuilder stringBuilder = new StringBuilder();
-		stringBuilder.append("workspace").append("/").append(workspaceId).append("/").append("remote").append("/").append(sessionId).append("/");
+		stringBuilder.append("workspace")
+			.append("/")
+			.append(workspaceId)
+			.append("/")
+			.append("remote")
+			.append("/")
+			.append(sessionId)
+			.append("/");
 		return stringBuilder.toString();
 	}
-
 
 	public FileInfoListResponse getAttachedFileList(
 		String workspaceId,
@@ -96,11 +93,12 @@ public class DashboardFileService {
 				.collect(Collectors.toList());
 
 			for (FileInfoResponse file : fileInfoList) {
-				ApiResponse<WorkspaceMemberInfoResponse> workspaceMemberInfo = workspaceRestService.getWorkspaceMember(workspaceId, file.getUuid());
+				ApiResponse<WorkspaceMemberInfoResponse> workspaceMemberInfo = workspaceRestService.getWorkspaceMember(
+					workspaceId, file.getUuid());
 				file.setNickName(workspaceMemberInfo.getData().getNickName());
 			}
 		} catch (Exception exception) {
-			throw new RestServiceException(ErrorCode.ERR_FILE_GET_SIGNED_EXCEPTION);
+			throw new RemoteServiceException(ErrorCode.ERR_FILE_GET_SIGNED_EXCEPTION);
 		}
 		return new FileInfoListResponse(fileInfoList);
 	}
@@ -112,9 +110,11 @@ public class DashboardFileService {
 	) {
 		List<FileDetailInfoResponse> fileDetailInfoList = new ArrayList<>();
 		try {
-			List<RecordFile> recordFiles = recordFileRepository.findByWorkspaceIdAndSessionIdAndDeleted(workspaceId, sessionId, deleted);
+			List<RecordFile> recordFiles = recordFileRepository.findByWorkspaceIdAndSessionIdAndDeleted(
+				workspaceId, sessionId, deleted);
 			for (RecordFile recordFile : recordFiles) {
-				ApiResponse<UserInfoResponse> feignResponse = accountRestService.getUserInfoByUserId(recordFile.getUuid());
+				ApiResponse<UserInfoResponse> feignResponse = accountRestService.getUserInfoByUserId(
+					recordFile.getUuid());
 
 				FileUserInfoResponse fileUserInfoResponse = dashboardFileUserInfoMapper.toDto(feignResponse.getData());
 				FileDetailInfoResponse fileDetailInfoResponse = dashboardRecordFileDetailMapper.toDto(recordFile);
@@ -124,7 +124,7 @@ public class DashboardFileService {
 			}
 			fileDetailInfoList.stream().sorted(Comparator.comparing(FileDetailInfoResponse::getCreatedDate));
 		} catch (Exception exception) {
-			throw new RestServiceException(ErrorCode.ERR_FILE_NOT_FOUND);
+			throw new RemoteServiceException(ErrorCode.ERR_FILE_NOT_FOUND);
 		}
 		return new FileDetailInfoListResponse(fileDetailInfoList);
 	}
@@ -139,7 +139,7 @@ public class DashboardFileService {
 		try {
 			responseData = recordRestService.getServerRecordFileList(workspaceId, userId, sessionId, order).getData();
 		} catch (Exception exception) {
-			throw new RestServiceException(ErrorCode.ERR_FILE_GET_SIGNED_EXCEPTION);
+			throw new RemoteServiceException(ErrorCode.ERR_FILE_GET_SIGNED_EXCEPTION);
 		}
 		return responseData;
 	}
@@ -151,12 +151,13 @@ public class DashboardFileService {
 	) {
 		FilePreSignedResponse filePreSignedResponse;
 		try {
-			File file = fileRepository.findByWorkspaceIdAndSessionIdAndObjectName(workspaceId, sessionId, objectName).orElse(null);
+			File file = fileRepository.findByWorkspaceIdAndSessionIdAndObjectName(workspaceId, sessionId, objectName)
+				.orElse(null);
 			if (ObjectUtils.isEmpty(file)) {
-				throw new RestServiceException(ErrorCode.ERR_FILE_NOT_FOUND);
+				throw new RemoteServiceException(ErrorCode.ERR_FILE_NOT_FOUND);
 			}
 			String url = fileManagementService.filePreSignedUrl(
-				generateDirPath(workspaceId, sessionId),	// bucket path
+				generateDirPath(workspaceId, sessionId),    // bucket path
 				objectName,
 				EXPIRY,
 				file.getName(),
@@ -166,7 +167,7 @@ public class DashboardFileService {
 			filePreSignedResponse.setExpiry(EXPIRY);
 			filePreSignedResponse.setUrl(url);
 		} catch (IOException | NoSuchAlgorithmException | InvalidKeyException exception) {
-			throw new RestServiceException(ErrorCode.ERR_FILE_GET_SIGNED_EXCEPTION);
+			throw new RemoteServiceException(ErrorCode.ERR_FILE_GET_SIGNED_EXCEPTION);
 		}
 		return filePreSignedResponse;
 	}
@@ -178,13 +179,14 @@ public class DashboardFileService {
 	) {
 		FilePreSignedResponse filePreSignedResponse;
 		try {
-			RecordFile recordFile = recordFileRepository.findByWorkspaceIdAndSessionIdAndObjectName(workspaceId, sessionId, objectName).orElse(null);
+			RecordFile recordFile = recordFileRepository.findByWorkspaceIdAndSessionIdAndObjectName(
+				workspaceId, sessionId, objectName).orElse(null);
 			if (ObjectUtils.isEmpty(recordFile)) {
-				throw new RestServiceException(ErrorCode.ERR_FILE_NOT_FOUND);
+				throw new RemoteServiceException(ErrorCode.ERR_FILE_NOT_FOUND);
 			}
 
 			String url = fileManagementService.filePreSignedUrl(
-				generateDirPath(workspaceId, sessionId),	// bucket path
+				generateDirPath(workspaceId, sessionId),    // bucket path
 				objectName,
 				EXPIRY,
 				recordFile.getName(),
@@ -194,7 +196,7 @@ public class DashboardFileService {
 			filePreSignedResponse.setExpiry(EXPIRY);
 			filePreSignedResponse.setUrl(url);
 		} catch (IOException | NoSuchAlgorithmException | InvalidKeyException exception) {
-			throw new RestServiceException(ErrorCode.ERR_FILE_GET_SIGNED_EXCEPTION);
+			throw new RemoteServiceException(ErrorCode.ERR_FILE_GET_SIGNED_EXCEPTION);
 		}
 
 		return filePreSignedResponse;
@@ -209,7 +211,7 @@ public class DashboardFileService {
 		try {
 			responseUrl = recordRestService.getServerRecordFileDownloadUrl(workspaceId, userId, id).getData();
 		} catch (Exception exception) {
-			throw new RestServiceException(ErrorCode.ERR_FILE_GET_SIGNED_EXCEPTION);
+			throw new RemoteServiceException(ErrorCode.ERR_FILE_GET_SIGNED_EXCEPTION);
 		}
 		return responseUrl;
 	}
@@ -219,9 +221,10 @@ public class DashboardFileService {
 		String sessionId,
 		String objectName
 	) {
-		File file = fileRepository.findByWorkspaceIdAndSessionIdAndObjectName(workspaceId, sessionId, objectName).orElse(null);
+		File file = fileRepository.findByWorkspaceIdAndSessionIdAndObjectName(workspaceId, sessionId, objectName)
+			.orElse(null);
 		if (ObjectUtils.isEmpty(file)) {
-			throw new RestServiceException(ErrorCode.ERR_FILE_GET_SIGNED_EXCEPTION);
+			throw new RemoteServiceException(ErrorCode.ERR_FILE_GET_SIGNED_EXCEPTION);
 		}
 		try {
 			fileRepository.delete(file);
@@ -231,7 +234,7 @@ public class DashboardFileService {
 				+ "file" + "/"
 				+ file.getObjectName();
 			if (!fileManagementService.removeObject(stringBuilder)) {
-				throw new RestServiceException(ErrorCode.ERR_FILE_DELETE_FAILED);
+				throw new RemoteServiceException(ErrorCode.ERR_FILE_DELETE_FAILED);
 			}
 		} catch (IOException | NoSuchAlgorithmException | InvalidKeyException exception) {
 			exception.printStackTrace();
@@ -248,9 +251,10 @@ public class DashboardFileService {
 		String sessionId,
 		String objectName
 	) {
-		RecordFile file = recordFileRepository.findByWorkspaceIdAndSessionIdAndObjectName(workspaceId, sessionId, objectName).orElse(null);
+		RecordFile file = recordFileRepository.findByWorkspaceIdAndSessionIdAndObjectName(
+			workspaceId, sessionId, objectName).orElse(null);
 		if (ObjectUtils.isEmpty(file)) {
-			throw new RestServiceException(ErrorCode.ERR_FILE_NOT_FOUND);
+			throw new RemoteServiceException(ErrorCode.ERR_FILE_NOT_FOUND);
 		}
 		try {
 			recordFileRepository.delete(file);
@@ -260,7 +264,7 @@ public class DashboardFileService {
 				+ "record" + "/"
 				+ file.getObjectName();
 			if (!fileManagementService.removeObject(stringBuilder)) {
-				throw new RestServiceException(ErrorCode.ERR_FILE_DELETE_FAILED);
+				throw new RemoteServiceException(ErrorCode.ERR_FILE_DELETE_FAILED);
 			}
 		} catch (IOException | NoSuchAlgorithmException | InvalidKeyException exception) {
 			exception.printStackTrace();
@@ -285,7 +289,7 @@ public class DashboardFileService {
 				id
 			).getData();
 		} catch (Exception exception) {
-			throw new RestServiceException(ErrorCode.ERR_FILE_DELETE_EXCEPTION);
+			throw new RemoteServiceException(ErrorCode.ERR_FILE_DELETE_EXCEPTION);
 		}
 		return responseData;
 	}

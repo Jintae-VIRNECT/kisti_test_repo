@@ -9,19 +9,10 @@ import com.virnect.data.domain.BaseTimeEntity;
 import com.virnect.data.domain.DeviceType;
 import com.virnect.data.domain.room.Room;
 
-/**
- * Member Domain Model Class
- * DATE:
- * AUTHOR:
- * EMAIL:
- * DESCRIPTION:
- *
- */
 @Entity
 @Getter
 @Setter
 @Table(name = "members")
-//@EqualsAndHashCode(of = {"id", "uuid"}, callSuper = false)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Member extends BaseTimeEntity {
 
