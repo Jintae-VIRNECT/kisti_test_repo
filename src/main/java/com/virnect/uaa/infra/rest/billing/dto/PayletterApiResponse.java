@@ -7,7 +7,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-public class BillingRestResponse<T> {
+public class PayletterApiResponse<T> {
 	private T data;
 	private BillingRestResult result;
 
