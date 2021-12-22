@@ -11,8 +11,9 @@ const pjson = require('./package.json')
  */
 async function getConfig(serviceName, branch) {
   const { data } = await axios.get(
-    `${process.env.CONFIG_SERVER ||
-      'http://192.168.6.3:6383'}/${serviceName}/${branch}`,
+    `${
+      process.env.CONFIG_SERVER || 'http://192.168.6.3:6383'
+    }/${serviceName}/${branch}`,
   )
   return data.propertySources[0].source
 }

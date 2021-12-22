@@ -18,8 +18,8 @@ export default {
     SET_AUTH(state, obj) {
       state.auth = obj
     },
-    LOGOUT() {
-      auth.logout()
+    async LOGOUT() {
+      await auth.logout()
       location.reload()
     },
   },

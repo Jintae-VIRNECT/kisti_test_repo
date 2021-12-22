@@ -1,3 +1,8 @@
+button {
+  border: 0;
+  outline: 0;
+}
+
 #__nuxt {
   #headerSection {
     position: fixed;
@@ -57,4 +62,26 @@
   .el-tabs__active-bar {
     background-color: #1655bf;
   }
+}
+
+.app-fade-enter-active,
+.app-fade-leave-active {
+  // position: absolute;
+  // top: 0;
+  // width: 100%;
+  // height: 100%;
+  transition: opacity 0.3s;
+  // transition-delay: .3s;
+}
+
+.app-fade-enter,
+.app-fade-leave-to {
+  opacity: 0;
+  z-index: 1;
+}
+
+.app-fade-leave,
+.app-fade-enter-to {
+  opacity: 1;
+  z-index: 2;
 }

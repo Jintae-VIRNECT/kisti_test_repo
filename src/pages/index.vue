@@ -1,34 +1,56 @@
 <template>
   <div id="home">
-    <div class="visual">
+    <div id="subVisualSection" class="visual">
       <h3 v-html="$t('home.visual.title')" />
       <p v-html="$t('home.visual.desc')" />
     </div>
-    <div class="ribbon" v-html="$t('home.notice')" />
-    <el-tabs v-model="activeTab" @tab-click="tabClick">
-      <el-tab-pane
-        v-for="(product, name) in products"
-        :label="$t(`home.${name}`)"
-        :name="name"
-        :key="name"
-      >
-        <el-row v-for="category in product.categories" :key="category">
-          <el-col :md="5" :span="24">
-            <h4>{{ category }}</h4>
-          </el-col>
-          <el-col :md="19" :span="24">
-            <Item
-              v-for="app in product.list.filter(
-                app => app.deviceType === category,
-              )"
-              :key="app.id"
-              :app="app"
-              :activeTab="activeTab"
+    <div class="ribbon" v-html="$t('home.notice')" v-if="!$isOnpremise" />
+    <client-only>
+      <snb :products="products" :activeTab="activeTab" @tabClick="tabClick" />
+    </client-only>
+    <div class="download-contents-wrapper">
+      <article class="download-contents" v-if="isLoading">
+        <VirnectSkeleton style="width: 120px; height: 30px" />
+        <section class="item">
+          <div class="info-wrapper">
+            <VirnectSkeleton style="width: 100px; height: 20px" />
+            <VirnectSkeleton style="width: 240px; height: 40px" />
+            <VirnectSkeleton
+              style="width: 60px; height: 20px; margin-top: 28px"
             />
-          </el-col>
-        </el-row>
-      </el-tab-pane>
-    </el-tabs>
+            <VirnectSkeleton style="width: 140px; height: 16px" />
+          </div>
+          <div class="button-wrapper">
+            <VirnectSkeleton style="width: 100%; height: 37px" />
+            <VirnectSkeleton style="width: 100%; height: 37px" />
+            <VirnectSkeleton
+              style="
+                width: 100px;
+                height: 30px;
+                margin-left: auto;
+                margin-top: 28px;
+              "
+            />
+          </div>
+        </section>
+      </article>
+      <template v-else>
+        <Item
+          v-for="(category, prod) of products[activeTab]"
+          :key="prod"
+          :app="category"
+          :activeTab="activeTab"
+        />
+      </template>
+
+      <figure v-if="isEmpty && !isLoading">
+        <img src="~assets/images/No_file@2x.png" />
+        <figcaption>
+          <p class="desc">설치 파일이 등록되지 않았습니다.</p>
+          <p class="noti">관리자에게 문의해 주세요</p>
+        </figcaption>
+      </figure>
+    </div>
   </div>
 </template>
 
@@ -44,10 +66,9 @@ export default {
   },
   data() {
     return {
+      isLoading: true,
       activeTab: null,
-      isMobile: false,
-      snbTop: 0,
-      didScroll: 0,
+      isEmpty: false,
       products: {
         remote: [],
         make: [],
@@ -63,37 +84,28 @@ export default {
       if (tab === 'track') {
         window.open(this.trackDownloadUrl, '_blank')
         document.querySelector(`#tab-${oldTab}`).click()
+        this.activeTab = oldTab
         return
       }
       window.history.replaceState({}, null, tab)
       if (!this.products[tab].length) {
         this.products[tab] = await this.loadList(tab)
+        this.isEmpty = this.products[tab].length === 0 ? true : false
       }
     },
     async '$i18n.locale'() {
       this.products[this.activeTab] = await this.loadList(this.activeTab)
     },
   },
+  computed: {
+    isMobile() {
+      return this.$store.getters['mobile/isMobile']
+    },
+  },
   filters,
   methods: {
-    snbNav() {
-      const scrollY = window.pageYOffset
-      const tab = document.querySelector('.el-tabs')
-      this.snbTop = tab.offsetTop
-      this.isMobile = document.body.clientWidth < 1200
-      if (this.isMobile) {
-        this.snbTop -= 64
-      }
-      if (scrollY > this.snbTop) {
-        tab.classList.add('sticky')
-      } else {
-        tab.classList.remove('sticky')
-      }
-    },
-    tabClick() {
-      if (window.pageYOffset > this.snbTop) {
-        window.scrollTo(0, this.snbTop)
-      }
+    tabClick(product) {
+      this.activeTab = product
     },
     storeId(productName) {
       return app => {
@@ -103,16 +115,13 @@ export default {
       }
     },
     async loadList(productName) {
-      const data = await this.$api('APP_LIST', {
+      const { appInfoList } = await this.$api('APP_LIST', {
         route: { productName },
       })
-      const categories = new Set()
-      data.appInfoList.forEach(app => categories.add(app.deviceType))
-
-      return {
-        categories,
-        list: data.appInfoList.map(this.storeId(productName)),
-      }
+      this.isEmpty = this.products[this.activeTab].length === 0 ? true : false
+      if (!this.$isOnpremise) {
+        return appInfoList.map(this.storeId(productName))
+      } else return appInfoList
     },
   },
   mounted() {
@@ -123,10 +132,23 @@ export default {
         '/view': 'view',
         '/track': 'track',
       }[this.redirectPath] || 'remote'
-    window.addEventListener('scroll', this.snbNav)
-  },
-  beforeDestroy() {
-    window.removeEventListener('scroll', this.snbNav)
+    if (this.$isOnpremise) {
+      this.activeTab =
+        {
+          '/remote': 'remote',
+          '/make': 'make',
+          '/view': 'view',
+        }[this.redirectPath] || 'remote'
+
+      this.products = {
+        remote: [],
+        make: [],
+        view: [],
+      }
+    }
+    setTimeout(() => {
+      this.isLoading = false
+    }, 400)
   },
 }
 </script>

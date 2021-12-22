@@ -1557,16 +1557,13 @@
   dependencies:
     "@types/node" "*"
 
-"@virnect/components@^1.8.3":
-  version "1.8.3"
-  resolved "http://192.168.6.3:4873/@virnect%2fcomponents/-/components-1.8.3.tgz#cda14bb62a2ec8083ae3e52f6497157fe5d60881"
-  integrity sha512-t3jOjp8yFndmE0ZQlqT4izvJsrXuZvI3It67MH4XRlxysVeXNV8kHl5Zuoy97QO5yqOq5mmNqCSe5eO35eL+4Q==
+"@virnect/components@1.9.8":
+  version "1.9.8"
+  resolved "http://192.168.6.3:4873/@virnect%2fcomponents/-/components-1.9.8.tgz#f2d059db7ac556c48a33ef90cad736dbf5b0a7bf"
+  integrity sha512-ZGTsWDVWb1+m7eqFPteQp6KsvKNFOikHyDKax3gFV94VrrlhNo6VvdgQcisQz75B5VvjLYfKTNVTpmWY06kpOw==
   dependencies:
-    "@virnect/ui-assets" "^1.1.20"
-    "@vue/composition-api" "^1.0.0-rc.2"
-    js-cookie "^2.2.1"
+    "@virnect/ui-assets" "^1.9.8"
     v-tooltip "^2.1.3"
-    vue-demi "^0.7.1"
 
 "@virnect/eslint-config@^1.0.3":
   version "1.0.4"
@@ -1598,10 +1595,10 @@
     dotenv "^8.1.0"
     log4js "^6.1.0"
 
-"@virnect/platform-auth@^1.0.2":
-  version "1.0.2"
-  resolved "http://192.168.6.3:4873/@virnect%2fplatform-auth/-/platform-auth-1.0.2.tgz#5b48268ecf0d517ed20b2033de1a5fa93a7e91e8"
-  integrity sha512-h7Rjizzvzu4KBOQmGlcIgRxusBDjk3RPRmpElUpo4gKuzCWu5OlAXiQ+W07iLIuXYZ5eeSIIdnhs9SZucd2DTg==
+"@virnect/platform-auth@^1.0.7":
+  version "1.0.7"
+  resolved "http://192.168.6.3:4873/@virnect%2fplatform-auth/-/platform-auth-1.0.7.tgz#36c06fc9c3a1c9d5971f51e769591f721a6d9c84"
+  integrity sha512-H2ZV0ZWR4HTPjGo1HwHSUTYAtIoe0RE377FpMTlRNq8IH2aFMIbBTL1GwX+REVVqw4SR7nhZ6FErjnE2DXwlTQ==
   dependencies:
     axios "^0.19.2"
     js-cookie "^2.2.1"
@@ -1621,15 +1618,10 @@
     stylelint-prettier "^1.1.2"
     stylelint-scss "^3.18.0"
 
-"@virnect/ui-assets@1.8.1":
-  version "1.8.1"
-  resolved "http://192.168.6.3:4873/@virnect%2fui-assets/-/ui-assets-1.8.1.tgz#7d4daa045429c37abaff8b6a15c38ff141a7c67e"
-  integrity sha512-G4ESXROUhFZtrS56FXPe2GD7QNlATy2Ocb+f00cRAdhOgVQhout+Ayj3TotLY8uP1AJvbZSyAu9/MMY95xmbHQ==
-
-"@virnect/ui-assets@^1.1.20":
-  version "1.8.0"
-  resolved "http://192.168.6.3:4873/@virnect%2fui-assets/-/ui-assets-1.8.0.tgz#721585058481b9ea7fcffb3155a4ae4c246daae0"
-  integrity sha512-2voFSGMG9S9uUUTvcNZ1t1AEIkGU5R/8IrE8zuYK9PuxWhW+p3Xux+N1pIjzqIyuxlZL7dfNgrWr6BSQPZ/bEQ==
+"@virnect/ui-assets@^1.9.8":
+  version "1.9.8"
+  resolved "http://192.168.6.3:4873/@virnect%2fui-assets/-/ui-assets-1.9.8.tgz#868f8d8e82604490e3b9797714f556e4a74b6ddf"
+  integrity sha512-GMfJ63CEo5+Fc5Ly6R4ORkqu4P31ta9zCdb2YX80w+HbJdQeJ20AVh2+y8dsmn2hkaPjbFUbvTxsLVKAkAGwUA==
 
 "@vue/babel-helper-vue-jsx-merge-props@^1.2.1":
   version "1.2.1"
@@ -1726,13 +1718,6 @@
     vue-template-es2015-compiler "^1.9.0"
   optionalDependencies:
     prettier "^1.18.2"
-
-"@vue/composition-api@^1.0.0-rc.2":
-  version "1.0.0-rc.14"
-  resolved "https://registry.yarnpkg.com/@vue/composition-api/-/composition-api-1.0.0-rc.14.tgz#4803fbccf3f3c770416e69095010c7bc0c4aa1c3"
-  integrity sha512-WKbOiy1zk8loM7ma88fOH0yacOEfMIQb0IZJEq561A+4C8GvLSqVSLT5K1iBVkzzJ07Pha8ntbeWSUQlBhRDKg==
-  dependencies:
-    tslib "^2.3.0"
 
 "@webassemblyjs/ast@1.9.0":
   version "1.9.0"
@@ -10541,7 +10526,7 @@ tslib@^1.9.0:
   resolved "https://registry.yarnpkg.com/tslib/-/tslib-1.14.1.tgz#cf2d38bdc34a134bcaf1091c41f6619e2f672d00"
   integrity sha512-Xni35NKzjgMrwevysHTCArtLDpPvye8zV/0E4EyYn43P7/7qvQwPh9BGkHewbMulVntbigmcT7rdX3BNo9wRJg==
 
-tslib@^2.0.3, tslib@^2.3.0:
+tslib@^2.0.3:
   version "2.3.0"
   resolved "https://registry.yarnpkg.com/tslib/-/tslib-2.3.0.tgz#803b8cdab3e12ba581a4ca41c8839bbb0dacb09e"
   integrity sha512-N82ooyxVNm6h1riLCoyS9e3fuJ3AMG2zIZs2Gd1ATcSFjSA23Q0fzjjZeh0jbJvWVDZ0cJT8yaNNaaXHzueNjg==
@@ -11025,11 +11010,6 @@ vue-client-only@^2.0.0:
   version "2.1.0"
   resolved "https://registry.yarnpkg.com/vue-client-only/-/vue-client-only-2.1.0.tgz#1a67a47b8ecacfa86d75830173fffee3bf8a4ee3"
   integrity sha512-vKl1skEKn8EK9f8P2ZzhRnuaRHLHrlt1sbRmazlvsx6EiC3A8oWF8YCBrMJzoN+W3OnElwIGbVjsx6/xelY1AA==
-
-vue-demi@^0.7.1:
-  version "0.7.5"
-  resolved "https://registry.yarnpkg.com/vue-demi/-/vue-demi-0.7.5.tgz#88dee7492fc99a0f911ff03fc02c658fa2a79af8"
-  integrity sha512-eFSQSvbQdY7C9ujOzvM6tn7XxwLjn0VQDXQsiYBLBwf28Na+2nTQR4BBBcomhmdP6mmHlBKAwarq6a0BPG87hQ==
 
 vue-eslint-parser@^7.0.0:
   version "7.8.0"

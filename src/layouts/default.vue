@@ -1,21 +1,23 @@
 <template>
-  <div>
+  <div :class="{ onpremise: $isOnpremise }">
     <VirnectHeader
       :env="$env"
       :subTitle="$t('home.title')"
       :showStatus="showSection"
       :userInfo="auth.myInfo"
       :urls="$url"
+      @isMobile="isMobile"
       @logout="$store.commit('auth/LOGOUT')"
     />
     <main>
       <nuxt />
     </main>
-    <VirnectFooter />
+    <VirnectFooter v-if="!$isOnpremise" />
   </div>
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
 export default {
   middleware: ['default'],
   head() {
@@ -30,13 +32,21 @@ export default {
     return {
       showSection: {
         profile: true,
-        link: true,
+        portal: true,
       },
     }
   },
   computed: {
-    auth() {
-      return this.$store.getters['auth/auth']
+    ...mapGetters({
+      auth: 'auth/auth',
+      title: 'layout/title',
+      logo: 'layout/logo',
+      favicon: 'layout/favicon',
+    }),
+  },
+  methods: {
+    isMobile(str) {
+      this.$store.commit('mobile/IS_MOBILE', str)
     },
   },
   beforeMount() {
@@ -54,7 +64,6 @@ export default {
     // 언어 선택 쿼리
     const lang = this.$route.query.lang
     if (this.$i18n.locales.includes(lang)) {
-      this.$store.dispatch('CHANGE_LANG', lang)
       this.$i18n.locale = lang
     }
   },
