@@ -1,12 +1,13 @@
 RELEASE
 
 New Features
-- 신규 타겟 타입(Image) 추가 (DEV-800)
+- 프로젝트 활동기록 기능 추가 (https://virtualconnection.atlassian.net/browse/DEV-433)
 
 Bug Fixes
-- 컨텐츠 리소스 복사 에러 수정 (DEV-665)
+- 파일 복제 에러 개선 (https://virtualconnection.atlassian.net/browse/DEV-1668)
 
 Limitation
-- 없음
+- 프로젝트 수정 후 공유 권한 체크 (https://virtualconnection.atlassian.net/browse/DEV-1519)
+- JVM MAX HEAP SIZE 변경 (https://virtualconnection.atlassian.net/browse/DEV-1725)
 
 Copyright (C) 2020, VIRNECT CO., LTD. - All Rights Reserved
