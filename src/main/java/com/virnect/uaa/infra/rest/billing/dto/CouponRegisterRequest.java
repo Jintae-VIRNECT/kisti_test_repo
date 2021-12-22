@@ -2,14 +2,13 @@ package com.virnect.uaa.infra.rest.billing.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 @Getter
-@Setter
 @NoArgsConstructor
-public class BillingCouponRegisterRequest {
+public class CouponRegisterRequest {
 	@JsonProperty(value = "sitecode")
 	private int siteCode;
 	@JsonProperty(value = "couponid")
@@ -20,6 +19,17 @@ public class BillingCouponRegisterRequest {
 	private String userName;
 	@JsonProperty(value = "userno")
 	private long userNumber;
+
+	@Builder
+	public CouponRegisterRequest(
+		int siteCode, int couponId, String userEmail, String userName, long userNumber
+	) {
+		this.siteCode = siteCode;
+		this.couponId = couponId;
+		this.userEmail = userEmail;
+		this.userName = userName;
+		this.userNumber = userNumber;
+	}
 
 	@Override
 	public String toString() {

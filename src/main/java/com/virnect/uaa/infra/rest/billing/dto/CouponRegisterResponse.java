@@ -7,7 +7,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class BillingCouponRegisterResponse {
+public class CouponRegisterResponse {
 	@JsonProperty(value = "CouponName")
 	private String couponName;
 	@JsonProperty(value = "CouponType")

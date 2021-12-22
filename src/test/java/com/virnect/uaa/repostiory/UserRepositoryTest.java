@@ -17,14 +17,13 @@ import com.virnect.uaa.domain.user.dao.user.UserRepository;
 import com.virnect.uaa.domain.user.domain.User;
 
 @ExtendWith(SpringExtension.class)
-// @DataJpaTest
 @SpringBootTest
 @ActiveProfiles("test")
-// @Import(JpaTestConfiguration.class)
 public class UserRepositoryTest {
 	List<String> userUUIDList = Arrays.asList(
-		"4122a7b8e1d31aee921d36298b7e8709", "rtR0MD7SXx4Du", "2JzEzFpeoyFGO", "NEJqNNdPUTxUT", "YtRO0fhoUlYax", "9ll0ulGiX53RB",
-		"2HhRIGWBF93qA", "haL4NHlQJ8SU7", "wsigZkkAK5blx","5m3EsEVyQ05sw", "Si0JileQIYUO5", "iJL2m319R3Hxl"
+		"4122a7b8e1d31aee921d36298b7e8709", "rtR0MD7SXx4Du", "2JzEzFpeoyFGO", "NEJqNNdPUTxUT", "YtRO0fhoUlYax",
+		"9ll0ulGiX53RB",
+		"2HhRIGWBF93qA", "haL4NHlQJ8SU7", "wsigZkkAK5blx", "5m3EsEVyQ05sw", "Si0JileQIYUO5", "iJL2m319R3Hxl"
 	);
 	@Autowired
 	private UserRepository userRepository;

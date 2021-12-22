@@ -26,7 +26,7 @@ import com.virnect.uaa.infra.email.context.MailMessageContext;
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-@ActiveProfiles("local")
+@ActiveProfiles("test")
 public class EmailServiceTest {
 	String RECEIVE_EMAIL = "sky456139@virnect.com";
 
