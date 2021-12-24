@@ -130,6 +130,12 @@ public class GroupService {
 		for (RemoteGroup remoteGroup : remoteGroups) {
 			List<RemoteGroupMemberResponse> remoteGroupMembers = mapperWorkspaceToRemoteGroupMember(
 				remoteGroup.getGroupMembers(), workspaceMembers);
+
+			for (RemoteGroupMemberResponse remoteGroupMemberResponse : remoteGroupMembers) {
+				remoteGroupMemberResponse.setAccessType(
+					loadAccessType(workspaceId, remoteGroupMemberResponse.getUuid()));
+			}
+			
 			groupsResponse.add(buildRemoteGroupResponse(remoteGroup, remoteGroupMembers));
 		}
 		groupsResponse.add(makeEtcGroup(workspaceId, remoteGroups, workspaceMembers));
