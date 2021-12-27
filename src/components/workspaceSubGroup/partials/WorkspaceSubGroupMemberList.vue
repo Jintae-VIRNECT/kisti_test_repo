@@ -15,10 +15,10 @@
       ></icon-button>
     </div>
     <div class="sub-group-member__body">
-      <scroller v-if="users.length > 0">
+      <scroller v-if="filteredUsers.length > 0">
         <div>
           <wide-card
-            v-for="(user, idx) of users"
+            v-for="(user, idx) of filteredUsers"
             :key="idx"
             :customClass="{
               choice: true,
@@ -67,6 +67,7 @@ import Scroller from 'Scroller'
 import Profile from 'Profile'
 import WideCard from 'WideCard'
 import IconButton from 'IconButton'
+import { ROLE } from 'configs/remote.config'
 
 export default {
   name: 'WorkspaceSubGroupMemberList',
@@ -76,7 +77,6 @@ export default {
     WideCard,
     IconButton,
   },
-
   data() {
     return {
       selectedGroupId: '',
@@ -114,6 +114,11 @@ export default {
     },
   },
   computed: {
+    filteredUsers() {
+      return this.users.filter(user => {
+        return user.role !== ROLE.GUEST
+      })
+    },
     totalNum() {
       if (this.total === false) {
         return this.users.length

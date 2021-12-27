@@ -72,7 +72,7 @@ export default {
       default: false,
     },
     users: {
-      tpye: Array,
+      type: Array,
       default: () => [],
     },
     total: {
