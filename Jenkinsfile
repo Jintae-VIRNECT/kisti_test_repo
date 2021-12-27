@@ -15,9 +15,16 @@ pipeline {
         PREVIOUS_VERSION = sh(returnStdout: true, script: 'git fetch --tags origin master && git semver get || git semver minor').trim()
         PREVIOUS_VERSION_PARENT_COMMIT = sh(returnStdout: true, script: "git log --pretty=%P -n 1 ${PREVIOUS_VERSION}").trim()
         NEXT_VERSION = getNextSemanticVersion(from: [type: 'COMMIT', value: "${PREVIOUS_VERSION_PARENT_COMMIT}"], to: [type: 'COMMIT', value: 'HEAD']).toString()
+        SLACK_CHANNEL = '#server_jenkins'
     }
 
     stages {
+        stage ('start') {
+            steps {
+                slackSend (channel: env.SLACK_CHANNEL, color: '#FFFF00', message: "STARTED: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]' (${env.BUILD_URL})")
+            }
+        }
+      
         stage('version update and compatibility check') {
             when { anyOf { branch 'master'; branch 'staging'; branch 'develop'} }
             environment {
@@ -369,6 +376,15 @@ pipeline {
             }                
 
             post {
+                success {
+                    slackSend (channel: SLACK_CHANNEL, color: '#00FF00', message: "SUCCESSFUL: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]' (${env.BUILD_URL})")
+                }
+                failure {
+                    slackSend (channel: SLACK_CHANNEL, color: '#FF0000', message: "FAILED: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]' (${env.BUILD_URL})")
+                }
+                aborted {
+                    slackSend (channel: SLACK_CHANNEL, color: '#808080', message: "ABORTED: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]' (${env.BUILD_URL})")
+                }
                 always {
                     jiraSendDeploymentInfo site: "${JIRA_URL}", environmentId: 'seoul-prod', environmentName: 'seoul-prod', environmentType: 'production'
                 }
