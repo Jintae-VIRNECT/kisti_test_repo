@@ -11,8 +11,7 @@
         :key="menu.key"
         @click="goTab(menu.key)"
       >
-        <span class="layer"></span>
-        {{ $t(menu.text) }}
+        <span>{{ $t(menu.text) }}</span>
       </button>
     </div>
     <div class="footer-button-container">
@@ -271,7 +270,6 @@ export default {
     margin-bottom: 1.6rem;
 
     > button {
-      position: relative;
       min-width: 8.7rem;
       //height: 2.8rem;
       margin: 0 0.3rem;
@@ -279,15 +277,19 @@ export default {
       color: $new_color_text_main;
       border-radius: 1.4rem;
       pointer-events: all;
-      @include fontLevel(75);
+
+      span {
+        position: relative;
+        @include fontLevel(75);
+      }
 
       &.active {
         background-color: rgba($new_color_bg_tab_active_rgb, 0.5);
       }
-      &.notice::after {
+      &.notice > span::after {
         position: absolute;
-        top: 2px;
-        right: 10px;
+        top: -2px;
+        right: -9px;
         width: 0.6rem;
         height: 0.6rem;
         background-color: #d9333a;
