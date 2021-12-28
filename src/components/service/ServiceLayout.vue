@@ -82,6 +82,7 @@
       @addPdfHistory="mobileAddPdfHistory"
       @uploading="onUploading"
       @uploaded="onUploaded"
+      @uploadFailed="onUploadFailed"
     ></mobile-footer>
     <reconnect-modal :visible.sync="connectVisible"></reconnect-modal>
     <setting-modal></setting-modal>
@@ -387,6 +388,9 @@ export default {
       this.uploadingFile = fileName
     },
     onUploaded() {
+      this.uploadingFile = ''
+    },
+    onUploadFailed() {
       this.uploadingFile = ''
     },
     showAccountDeleted() {

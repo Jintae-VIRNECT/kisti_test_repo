@@ -44,6 +44,7 @@
         <mobile-upload-button
           @uploading="onFileUploading"
           @uploaded="onFileUploaded"
+          @uploadFailed="onFileUploadFailed"
         ></mobile-upload-button>
       </template>
 
@@ -57,6 +58,7 @@
           :fileType="FILE_TYPE.OBJECT"
           @uploading="onFileUploading"
           @uploaded="on3dFileUploaded"
+          @uploadFailed="onFileUploadFailed"
         ></mobile-upload-button>
       </template>
     </div>
@@ -158,6 +160,10 @@ export default {
       this.uploadingFile = ''
       this.$emit('uploaded')
       this.getFileList()
+    },
+    onFileUploadFailed() {
+      this.uploadingFile = ''
+      this.$emit('uploadFailed')
     },
     //협업보드 파일 목록 조회
     async getFileList() {

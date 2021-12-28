@@ -34,11 +34,19 @@ export default {
   methods: {
     fileChangeHandler(event) {
       const file = event.target.files[0]
-      this.$emit('uploading', file.name)
-      this.loadFile(file, () => this.$emit('uploaded'), this.fileType)
+      this.$emit('uploading', file.name) //업로드 스피너 실행
+      this.loadFile(
+        file,
+        () => this.$emit('uploaded'),
+        this.fileType,
+        this.uploadFailed,
+      )
     },
     upload() {
       this.$refs['uploadFile'].click()
+    },
+    uploadFailed() {
+      this.$emit('uploadFailed')
     },
   },
 }
