@@ -907,6 +907,9 @@
       &.ar::before {
         mask-image: url(~assets/image/call/ic_chat_ar.svg);
       }
+      &.ar-3d::before {
+        mask-image: url(~assets/image/call/chat/icon_3D_object.svg);
+      }
       &.board::before {
         mask-image: url(~assets/image/call/ic_chat_board.svg);
       }
