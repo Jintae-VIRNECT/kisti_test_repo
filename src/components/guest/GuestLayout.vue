@@ -122,7 +122,9 @@ export default {
           this.onRegistrationFail,
         )
       } catch (err) {
-        if (err.code === ERROR.GUEST_USER_NOT_FOUND) {
+        if (err.code === ERROR.ASSIGNED_GUEST_USER_IS_NOT_ENOUGH) {
+          this.showGuestExpiredAlarm()
+        } else if (err.code === ERROR.GUEST_USER_NOT_FOUND) {
           this.showGuestExpiredAlarm()
         } else {
           console.error(err)
@@ -216,13 +218,7 @@ export default {
         await this.initGuestMember()
       }
     } catch (err) {
-      if (err.code === ERROR.ASSIGNED_GUEST_USER_IS_NOT_ENOUGH) {
-        this.showGuestExpiredAlarm()
-      } else if (err.code === ERROR.GUEST_USER_NOT_FOUND) {
-        this.showGuestExpiredAlarm()
-      } else {
-        console.error(err)
-      }
+      console.error(err)
     }
   },
   beforeDestroy() {
