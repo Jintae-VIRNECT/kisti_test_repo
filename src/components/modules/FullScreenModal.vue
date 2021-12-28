@@ -83,6 +83,6 @@ export default {
 .fullscreen-modal--body {
   display: flex;
   flex-direction: column;
-  height: 100%;
+  height: calc(100% - 5.4rem);
 }
 </style>

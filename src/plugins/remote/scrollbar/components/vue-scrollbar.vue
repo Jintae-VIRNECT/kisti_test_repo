@@ -106,6 +106,7 @@ export default {
       if (!this.canScroll) {
         return
       }
+
       // Make sure the content height is not changed
       this.calculateSize(() => {
         // Set the wheel step
@@ -159,6 +160,7 @@ export default {
     // DRAG EVENT JUST FOR TOUCH DEVICE~
     startDrag(e) {
       this.touchEvent = e
+      this.hover = true
 
       const evt = e.changedTouches ? e.changedTouches[0] : e
 
@@ -171,6 +173,7 @@ export default {
 
     onDrag(e) {
       if (this.dragging) {
+        this.hover = true
         // safari browser 확대 이슈로 hide (touch-action: pinch-zoom)
         // e.preventDefault()
         // e.stopPropagation()
@@ -210,6 +213,9 @@ export default {
     stopDrag(e) {
       this.dragging = false
       this.touchEvent = false
+      setTimeout(() => {
+        if (!this.dragging) this.hover = false
+      }, 1500)
     },
 
     scrollToY(y, closePopover = true) {

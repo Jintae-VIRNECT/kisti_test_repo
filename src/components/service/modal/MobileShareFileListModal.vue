@@ -6,35 +6,44 @@
     @close="close"
   >
     <transition name="mobile-file-list__left">
-      <ul v-show="!pdfFile || !pdfFile.id" class="mobile-file-list">
-        <template v-for="file of fileList">
-          <sharing-pdf
-            v-if="file.contentType === 'application/pdf'"
-            :ref="'sharing_' + file.objectName"
-            :key="'sharing_' + file.objectName"
-            :fileInfo="file"
-            @pdfView="pdfView(file)"
-          ></sharing-pdf>
-          <sharing-image
-            v-else-if="!checkIs3d(file.name)"
-            :key="'sharing_' + file.objectName"
-            :fileInfo="file"
-            @shareImage="shareImage"
-          ></sharing-image>
-          <sharing-3d-object
-            v-else
-            :key="'sharing_3d_' + file.objectName"
-            :shared="isShareStart"
-            :fileInfo="file"
-            @3dFileListUpdate="on3dFileListUpdated"
-            @get3dFileList="get3dFileList"
-          ></sharing-3d-object>
-        </template>
-        <sharing-file-spinner
-          v-if="uploadingFile"
-          :fileName="uploadingFile"
-        ></sharing-file-spinner>
-      </ul>
+      <vue2-scrollbar
+        ref="mobile-upload-list-scroll"
+        class="mobile-file-list-wrapper"
+      >
+        <ul
+          v-show="!pdfFile || !pdfFile.id"
+          class="mobile-file-list"
+          ref="mobile-file-list"
+        >
+          <template v-for="file of fileList">
+            <sharing-pdf
+              v-if="file.contentType === 'application/pdf'"
+              :ref="'sharing_' + file.objectName"
+              :key="'sharing_' + file.objectName"
+              :fileInfo="file"
+              @pdfView="pdfView(file)"
+            ></sharing-pdf>
+            <sharing-image
+              v-else-if="!checkIs3d(file.name)"
+              :key="'sharing_' + file.objectName"
+              :fileInfo="file"
+              @shareImage="shareImage"
+            ></sharing-image>
+            <sharing-3d-object
+              v-else
+              :key="'sharing_3d_' + file.objectName"
+              :shared="isShareStart"
+              :fileInfo="file"
+              @3dFileListUpdate="on3dFileListUpdated"
+              @get3dFileList="get3dFileList"
+            ></sharing-3d-object>
+          </template>
+          <sharing-file-spinner
+            v-if="uploadingFile"
+            :fileName="uploadingFile"
+          ></sharing-file-spinner>
+        </ul>
+      </vue2-scrollbar>
     </transition>
     <transition name="mobile-file-list__right">
       <pdf-view
@@ -53,6 +62,7 @@ import Sharing3dObject from '../ar/3dcontents/Sharing3dObject'
 import PdfView from '../share/partials/SharePdfView'
 import FullScreenModal from 'FullScreenModal'
 import toastMixin from 'mixins/toast'
+import { isOverflowY } from 'utils/element.js'
 
 import {
   SIGNAL,
@@ -109,6 +119,22 @@ export default {
         if (newVal.length > 0) {
           this.$nextTick(() => {
             this.$emit('rendered')
+
+            const isNotOverflow = !isOverflowY(
+              this.$refs['mobile-file-list'],
+              this.$refs['mobile-upload-list-scroll'].$el,
+            )
+
+            const isRowReduced =
+              oldVal.length - newVal.length > 0 && newVal.length % 2 === 0
+
+            const isScrollEnd =
+              this.$refs['mobile-upload-list-scroll'].$el.scrollHeight <
+              this.$refs['mobile-file-list'].scrollHeight
+
+            //overflow 해제 시, 스크롤이 끝인 상태에서 마지막 행이 제거되면 scroll의 최하단 업데이트
+            if (isNotOverflow || (isRowReduced && isScrollEnd))
+              this.$refs['mobile-upload-list-scroll'].scrollToY(999999)
           })
         }
         //file목록의 변화가 생긴 결과가 목록이 빈 경우는 자동으로 파일목록 창을 닫는다.
@@ -236,6 +262,19 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.mobile-file-list-wrapper.vue-scrollbar__wrapper {
+  width: 100%;
+  flex: 1;
+  margin-bottom: 0;
+  margin-left: 0;
+  padding-bottom: 0;
+  height: 100%;
+  .vue-scrollbar__scrollbar-vertical {
+    opacity: 0.5;
+    background-color: transparent;
+  }
+}
+
 .mobile-file-list {
   display: grid;
   grid-template-columns: 1fr 1fr;
