@@ -16,7 +16,7 @@ import callMixin from 'mixins/call'
 import errorMsgMixin from 'mixins/errorMsg'
 import confirmMixin from 'mixins/confirm'
 
-import { isRegisted } from 'utils/auth'
+import auth, { isRegisted } from 'utils/auth'
 import { mapActions, mapGetters } from 'vuex'
 
 import { joinOpenRoomAsGuest } from 'api/http/guest'
@@ -119,8 +119,9 @@ export default {
           } else if (err.code === 4021) {
             if (room.isGuest) {
               this.confirmDefault(this.$t('alarm.invite_fail_maxuser'), {
-                action: () => {
-                  location.href = `${URLS['console']}/?continue=${location.href}`
+                action: async () => {
+                  await auth.logout(false)
+                  location.href = `${URLS['console']}`
                 },
               })
             } else {
