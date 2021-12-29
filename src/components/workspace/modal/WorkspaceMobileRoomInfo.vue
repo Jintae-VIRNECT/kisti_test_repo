@@ -26,7 +26,6 @@
           </button>
         </div>
       </section>
-
       <keep-alive>
         <room-info
           v-if="tabview === 'group'"
