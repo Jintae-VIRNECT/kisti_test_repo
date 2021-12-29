@@ -12,6 +12,7 @@
           :participant="participant"
           @selectMain="selectMain(participant)"
           @kickout="kickout(participant.id)"
+          @mute="mute"
         ></participant-video>
         <article v-if="!openRoom && isLeader && !isMaxLength" key="append">
           <div class="participant-video append more" @click="openInviteModal">
