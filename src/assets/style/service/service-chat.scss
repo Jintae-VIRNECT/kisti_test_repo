@@ -1146,6 +1146,12 @@
         background-color: $new_color_bg_button_primary;
         border-radius: 4px;
         @include fontLevel(100);
+        
+        &:disabled,
+        &.disabled {
+          background-color: #213d62;
+          cursor: default;
+        }
       }
     }
   }
