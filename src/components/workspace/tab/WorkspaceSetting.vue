@@ -116,7 +116,16 @@ export default {
           text: this.$t('workspace.setting_audio'),
         })
       }
-      if (!this.isTablet && (this.useLocalRecording || this.useRecording)) {
+
+      const isMobileUseServerRecording =
+        this.useRecording && (this.isMobileSize || this.isTablet)
+
+      const isPcUseRecording =
+        !this.isMobileSize &&
+        !this.isTablet &&
+        (this.useLocalRecording || this.useRecording)
+
+      if (isMobileUseServerRecording || isPcUseRecording) {
         menu.push({
           key: 'record',
           text: this.$t('workspace.setting_record'),

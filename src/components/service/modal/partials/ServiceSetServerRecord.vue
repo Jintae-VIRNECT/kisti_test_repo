@@ -1,7 +1,7 @@
 <template>
   <section class="service-setting__view">
     <p class="service-setting--header" :class="{ disable: isServerRecording }">
-      {{ $t('service.setting_server_record') }}
+      {{ isMobileSize ? '' : $t('service.setting_server_record') }}
       <span v-if="isServerRecording" class="service-setting--warning">
         {{ $t('service.setting_server_record_warning') }}
       </span>
@@ -16,7 +16,7 @@
         value="value"
         text="text"
         :selectedValue.sync="serverMaxRecordTime"
-        :targetElement="'.modal'"
+        :targetElement="'.service-mobile-setting-modal'"
       >
       </r-select>
     </div>
@@ -34,7 +34,7 @@
         value="value"
         text="text"
         :selectedValue.sync="serverRecordResolution"
-        :targetElement="'.modal'"
+        :targetElement="'.service-mobile-setting-modal'"
       >
       </r-select>
     </div>
@@ -102,3 +102,48 @@ export default {
   },
 }
 </script>
+
+<style lang="scss">
+@import '~assets/style/mixin';
+
+@include responsive-mobile {
+  .service-setting__view {
+    width: 100%;
+    padding: 2rem 1.6rem;
+    .service-setting--header {
+      margin-bottom: 0px;
+    }
+
+    .service-setting__row {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+
+      .service-setting__text {
+        @include fontLevel(100);
+        margin-bottom: 0.8rem;
+        color: $new_color_text_sub;
+      }
+      .service-setting__selector {
+        width: 100%;
+      }
+      .service-setting__selector > .select-label {
+        width: 100%;
+        height: 4rem;
+        @include fontLevel(100);
+        color: $new_color_text_main;
+        &::after {
+          top: 50%;
+          width: 2rem;
+          height: 2rem;
+          transform: translateY(-50%);
+        }
+      }
+    }
+
+    .service-setting__row:nth-child(2) {
+      margin-bottom: 1.6rem;
+    }
+  }
+}
+</style>

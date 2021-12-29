@@ -24,6 +24,9 @@
         <service-set-pointing
           v-if="tabView === 'pointing'"
         ></service-set-pointing>
+        <service-set-server-record
+          v-else-if="tabView === 'server-record'"
+        ></service-set-server-record>
         <service-mobile-set-translate v-else></service-mobile-set-translate>
       </div>
     </div>
@@ -33,14 +36,17 @@
 <script>
 import FullScreenModal from '../../modules/FullScreenModal'
 import ServiceSetPointing from './partials/ServiceSetPointing'
+import ServiceSetServerRecord from './partials/ServiceSetServerRecord'
 import ServiceMobileSetTranslate from './partials/ServiceMobileSetTranslate'
 import { ROLE } from 'configs/remote.config'
+import { mapGetters } from 'vuex'
 
 export default {
   name: 'MobileSettingModal',
   components: {
     FullScreenModal,
     ServiceSetPointing,
+    ServiceSetServerRecord,
     ServiceMobileSetTranslate,
   },
   props: {
@@ -59,6 +65,7 @@ export default {
     }
   },
   computed: {
+    ...mapGetters(['useRecording']),
     isLeader() {
       return this.account.roleType === ROLE.LEADER
     },
@@ -69,11 +76,22 @@ export default {
           text: this.$t('service.setting_pointing'),
         },
         {
+          key: 'server-record',
+          text: this.$t('service.setting_server_record'),
+        },
+        {
           key: 'translate',
           text: this.$t('service.setting_translate'),
         },
       ]
-      if (!this.isLeader) menus = menus.filter(item => item.key === 'translate')
+      if (!this.isLeader) {
+        //리더가 아닌 경우
+        menus = menus.filter(item => item.key === 'translate')
+      } else if (!this.useRecording) {
+        //리더인 경우에서 서버 녹화 활성화 안된 경우
+        menus.splice(1, 1)
+      }
+
       return menus
     },
   },
