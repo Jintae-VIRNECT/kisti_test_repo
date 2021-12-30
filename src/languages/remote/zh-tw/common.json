@@ -50,7 +50,8 @@
 	"request_again": "再次請求",
 	"connect_web": "連接Web",
 	"run_app":"App運行",
-  "previous": "以前的"
+  "previous": "以前的",
+	"create":"生成"
   },
   "date": {
 	"lastday": "[昨天] A",

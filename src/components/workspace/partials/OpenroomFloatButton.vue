@@ -9,12 +9,13 @@
 <script>
 import FloatButton from 'FloatButton'
 import roomMixin from 'mixins/room'
+import confirmMixin from 'mixins/confirm'
 
 export default {
   components: {
     FloatButton,
   },
-  mixins: [roomMixin],
+  mixins: [roomMixin, confirmMixin],
   computed: {
     shortName() {
       if (this.account.nickname.length > 10) {
@@ -27,12 +28,17 @@ export default {
   methods: {
     onClick() {
       //this.$eventBus.$emit('open:modal:createOpen')
-      this.startRemote({
-        title: `${this.shortName}'s Room`,
-        description: '',
-        imageUrl: '',
-        imageFile: null,
-        open: true,
+      this.confirmCancel(this.$t('workspace.confirm_open_room_start'), {
+        text: this.$t('button.create'),
+        action: () => {
+          this.startRemote({
+            title: `${this.shortName}'s Room`,
+            description: '',
+            imageUrl: '',
+            imageFile: null,
+            open: true,
+          })
+        },
       })
     },
   },

@@ -50,7 +50,8 @@
     "request_again":"Request",
     "connect_web":"Connect to the web",
     "run_app":"App runs",
-    "previous": "Previous"
+    "previous": "Previous",
+    "create":"Create"
   },
   "date": {
     "lastday": "[Yesterday]",

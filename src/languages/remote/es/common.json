@@ -50,7 +50,8 @@
 	"request_again": "Volver a solicitar",
 	"connect_web": "Conectar a la red",
 	"run_app":"Ejecutar la app",
-  "previous": "anterior"
+  "previous": "anterior",
+	"create":"Crear"
   },
   "date": {
 	"lastday": "[Ayer]A",
