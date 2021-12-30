@@ -67,6 +67,11 @@
       >
         <button slot="reference" class="widecard-tools__menu-button"></button>
         <ul class="groupcard-popover">
+          <li v-if="isMobileSize">
+            <button class="group-pop__button" @click="$emit('createRoom')">
+              {{ $t('button.restart') }}
+            </button>
+          </li>
           <li>
             <button class="group-pop__button" @click="$emit('openRoomInfo')">
               {{ $t('button.show_detail') }}
