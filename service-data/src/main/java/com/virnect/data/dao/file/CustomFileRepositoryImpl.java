@@ -51,7 +51,9 @@ public class CustomFileRepositoryImpl extends QuerydslRepositorySupport implemen
 		return query.selectFrom(file)
 			.where(
 				file.workspaceId.eq(workspaceId),
-				file.deleted.eq(delete)
+				file.deleted.eq(delete),
+				file.objectName.contains("thumbnail").not(),
+				file.objectName.contains("buffer0.bin").not()
 			).fetch();
 	}
 
