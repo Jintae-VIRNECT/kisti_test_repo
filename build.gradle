@@ -24,6 +24,9 @@ repositories {
 ext {
     set('springCloudVersion', "Hoxton.SR10")
     set('mapstructVersion', '1.4.2.Final')
+    jacocoExcludes = [
+        
+    ]
 }
 
 dependencies {
