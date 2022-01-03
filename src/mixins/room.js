@@ -71,129 +71,89 @@ export default {
           room.videoRestrictedMode
 
         if (showVideoRestrictModal) {
-          this.connectCancel(
-            this.$t('workspace.confirm_video_restrict_join'),
-            {
-              text: this.$t('button.connect'),
-              action: () => {
-                this.doJoin(room, role)
-              },
-            },
-            {
-              text: this.$t('button.cancel'),
-              action: () => {
-                this.clicked = false
-              },
-            },
-          )
+          this.showVideoRestrictMessage({ room, role })
         } else {
           return await this.doJoin(room, role)
         }
       } catch (err) {
-        this.clicked = false
-        this.$eventBus.$emit('roomloading:show', { toggle: false })
-        this.roomClear()
-        if (this['init'] && typeof this['init'] === 'function') {
-          this.init()
-        }
-        if (typeof err === 'string') {
-          console.error(err)
-          if (err === 'nodevice') {
-            this.toastError(this.$t('workspace.error_no_connected_device'))
-            return false
-          } else if (err.toLowerCase() === 'requested device not found') {
-            this.toastError(this.$t('workspace.error_no_device'))
-            return false
-          } else if (err.toLowerCase() === 'device access deined') {
-            this.$eventBus.$emit('devicedenied:show')
-            return false
-          }
-        } else {
-          console.error(`${err.message} (${err.code})`)
-          if (err.code === ERROR.REMOTE_ALREADY_REMOVED) {
-            this.showErrorToast(err.code)
-            return false
-          } else if (err.code === ERROR.REMOTE_ALREADY_INVITE) {
-            this.showErrorToast(err.code)
-            return false
-          } else if (err.code === 4021) {
-            if (room.isGuest) {
-              this.confirmDefault(this.$t('alarm.invite_fail_maxuser'), {
-                action: async () => {
-                  await auth.logout(false)
-                  location.href = `${URLS['console']}`
-                },
-              })
-            } else {
-              this.toastError(
-                this.$t('workspace.remote_access_overflow', {
-                  num: room.maxUserCount,
-                }),
-              )
-            }
-
-            return false
-          } else if (err.code === ERROR.MEMBER_UUID_IS_INVALID) {
-            this.confirmDefault(
-              this.$t('guest.guest_account_deleted_and_request_account_again'),
-              {
-                action: async () => {
-                  const reason = 'deleted'
-                  this.$eventBus.$emit('initTimerAndGuestMember', reason)
-                },
-                text: this.$t('button.request_again'),
-              },
-            )
-          }
-        }
-        this.toastError(this.$t('workspace.remote_invite_impossible'))
+        this.handleJoinError({ err, room })
       }
     },
+    showVideoRestrictMessage({ room, role }) {
+      this.connectCancel(
+        this.$t('workspace.confirm_video_restrict_join'),
+        {
+          text: this.$t('button.connect'),
+          action: () => {
+            this.doJoin(room, role)
+          },
+        },
+        {
+          text: this.$t('button.cancel'),
+          action: () => {
+            this.clicked = false
+          },
+        },
+      )
+    },
     async doJoin(room, role) {
-      this.$eventBus.$emit('roomloading:show', {
-        toggle: true,
-        isOpenRoom: room.sessionType === 'OPEN' ? true : false,
-        isJoin: true,
-      })
-
-      const options = await this.getDeviceId()
-      const mediaStream = await this.$call.getStream(options)
-
-      let res = null
-      if (room.isGuest) {
-        res = await joinOpenRoomAsGuest({
-          uuid: this.account.uuid,
-          memberType: ROLE.GUEST,
-          deviceType: DEVICE.WEB,
-          sessionId: room.sessionId,
-          workspaceId: this.workspace.uuid,
+      try {
+        this.$eventBus.$emit('roomloading:show', {
+          toggle: true,
+          isOpenRoom: room.sessionType === 'OPEN' ? true : false,
+          isJoin: true,
         })
-      } else {
-        res = await joinRoom({
-          uuid: this.account.uuid,
-          memberType: role,
-          deviceType: DEVICE.WEB,
-          sessionId: room.sessionId,
-          workspaceId: this.workspace.uuid,
-        })
-      }
 
-      this.setRoomInfo({
-        ...room,
-        audioRestrictedMode: res.audioRestrictedMode,
-        videoRestrictedMode: res.videoRestrictedMode,
-      })
+        const options = await this.getDeviceId()
+        const mediaStream = await this.$call.getStream(options)
 
-      const joinRtn = await this.$call.connect(res, role, options, mediaStream)
-      if (joinRtn) {
-        this.$nextTick(() => {
-          this.$router.push({ name: 'service' })
+        const getJoinParams = () => {
+          return {
+            uuid: this.account.uuid,
+            deviceType: DEVICE.WEB,
+            sessionId: room.sessionId,
+            workspaceId: this.workspace.uuid,
+          }
+        }
+
+        let res = null
+        if (room.isGuest) {
+          res = await joinOpenRoomAsGuest({
+            ...getJoinParams(),
+            memberType: ROLE.GUEST,
+          })
+        } else {
+          res = await joinRoom({
+            ...getJoinParams(),
+            memberType: role,
+          })
+        }
+
+        this.setRoomInfo({
+          ...room,
+          audioRestrictedMode: res.audioRestrictedMode,
+          videoRestrictedMode: res.videoRestrictedMode,
         })
-        return true
-      } else {
-        this.roomClear()
-        console.error('>>>join room fail')
-        this.clicked = false
+
+        const joinRtn = await this.$call.connect(
+          res,
+          role,
+          options,
+          mediaStream,
+        )
+
+        if (joinRtn) {
+          this.$nextTick(() => {
+            this.$router.push({ name: 'service' })
+          })
+          return true
+        } else {
+          this.roomClear()
+          console.error('>>>join room fail')
+          this.clicked = false
+        }
+      } catch (err) {
+        this.handleJoinError({ err, room })
       }
     },
 
@@ -235,48 +195,43 @@ export default {
 
         let createdRes
 
+        const getRoomParams = () => {
+          return {
+            client: 'DESKTOP',
+            userId: this.account.uuid,
+            title: info.title,
+            description: info.description,
+            leaderId: this.account.uuid,
+            participantIds: selectedUserIds,
+            workspaceId: this.workspace.uuid,
+            companyCode: this.targetCompany,
+            videoRestrictedMode:
+              this.restrictedMode.video && this.useScreenStrict,
+            audioRestrictedMode:
+              this.restrictedMode.audio && this.useScreenStrict,
+          }
+        }
+
         //sessionId : props
-        if (
+        const isCreateRoom =
           this.sessionId &&
           this.sessionId.length > 0 &&
           info.imageUrl &&
           info.imageUrl !== 'default'
-        ) {
-          //api
+
+        if (isCreateRoom) {
           createdRes = await restartRoom({
-            client: 'DESKTOP',
-            userId: this.account.uuid,
-            title: info.title,
-            description: info.description,
-            leaderId: this.account.uuid,
-            participantIds: selectedUserIds,
-            workspaceId: this.workspace.uuid,
+            ...getRoomParams(),
             sessionId: this.sessionId,
             sessionType: isOpenRoom ? ROOM_STATUS.OPEN : ROOM_STATUS.PRIVATE,
-            companyCode: this.targetCompany,
-            videoRestrictedMode:
-              this.restrictedMode.video && this.useScreenStrict,
-            audioRestrictedMode:
-              this.restrictedMode.audio && this.useScreenStrict,
           })
         } else {
-          //api
           createdRes = await createRoom({
-            client: 'DESKTOP',
-            userId: this.account.uuid,
-            title: info.title,
-            description: info.description,
-            leaderId: this.account.uuid,
-            participantIds: selectedUserIds,
-            workspaceId: this.workspace.uuid,
+            ...getRoomParams(),
             sessionType: isOpenRoom ? ROOM_STATUS.OPEN : ROOM_STATUS.PRIVATE,
-            companyCode: this.targetCompany,
-            videoRestrictedMode:
-              this.restrictedMode.video && this.useScreenStrict,
-            audioRestrictedMode:
-              this.restrictedMode.audio && this.useScreenStrict,
           })
         }
+
         if (info.imageFile) {
           const res = await updateRoomProfile({
             profile: info.imageFile,
@@ -311,6 +266,7 @@ export default {
           videoRestrictedMode: createdRes.videoRestrictedMode,
           audioRestrictedMode: createdRes.audioRestrictedMode,
         })
+
         if (connRes) {
           this.clicked = false
           this.$eventBus.$emit('popover:close')
@@ -324,33 +280,105 @@ export default {
           this.clicked = false
         }
       } catch (err) {
-        this.clicked = false
-        this.$eventBus.$emit('roomloading:show', { toggle: false })
-        this.roomClear() //vuex action
-        if (typeof err === 'string') {
-          console.error(err)
-          if (err === 'nodevice') {
-            this.toastError(this.$t('workspace.error_no_connected_device'))
-            return
-          } else if (err.toLowerCase() === 'requested device not found') {
-            this.toastError(this.$t('workspace.error_no_device'))
-            return
-          } else if (err.toLowerCase() === 'device access deined') {
-            this.$eventBus.$emit('devicedenied:show')
-            return
-          }
-        } else if (err.code === 7003) {
-          this.toastError(this.$t('service.file_type'))
-        } else if (err.code === 7004) {
-          this.toastError(this.$t('service.file_maxsize'))
-        } else if (err.code === 7017) {
-          this.toastError(this.$t('alarm.file_storage_capacity_full'))
-        } else {
-          console.error(`${err.message} (${err.code})`)
-          if (err.code) {
-            this.toastError(this.$t('confirm.network_error'))
-          }
+        this.handleRoomCreateError(err)
+      }
+    },
+
+    /**
+     * 협업 생성(재시작)시 발생하는 에러 처리
+     * @param {Error} err
+     */
+    handleRoomCreateError(err) {
+      this.clicked = false
+      this.$eventBus.$emit('roomloading:show', { toggle: false })
+      this.roomClear() //vuex action
+      if (typeof err === 'string') {
+        this.handleDeviceError(err)
+      } else if (err.code === 7003) {
+        this.toastError(this.$t('service.file_type'))
+      } else if (err.code === 7004) {
+        this.toastError(this.$t('service.file_maxsize'))
+      } else if (err.code === 7017) {
+        this.toastError(this.$t('alarm.file_storage_capacity_full'))
+      } else {
+        console.error(`${err.message} (${err.code})`)
+        if (err.code) {
+          this.toastError(this.$t('confirm.network_error'))
         }
+      }
+    },
+
+    /***
+     * 협업 참여시 발생하는 에러 처리
+     * @param {Error}} err 에러 객체
+     * @param {Object} room room 정보
+     */
+    handleJoinError({ err, room }) {
+      this.clicked = false
+      this.$eventBus.$emit('roomloading:show', { toggle: false })
+      this.roomClear()
+
+      // WorkspaceRemote.vue의 init을 호출하기 위함. 솔직히 좋은 패턴은 아닌듯
+      if (this['init'] && typeof this['init'] === 'function') {
+        this.init()
+      }
+
+      if (typeof err === 'string') {
+        this.handleDeviceError(err)
+        return
+      } else {
+        console.error(`${err.message} (${err.code})`)
+        if (err.code === ERROR.REMOTE_ALREADY_REMOVED) {
+          this.showErrorToast(err.code)
+          return false
+        } else if (err.code === ERROR.REMOTE_ALREADY_INVITE) {
+          this.showErrorToast(err.code)
+          return false
+        } else if (err.code === 4021) {
+          if (room.isGuest) {
+            this.confirmDefault(this.$t('alarm.invite_fail_maxuser'), {
+              action: async () => {
+                await auth.logout(false)
+                location.href = `${URLS['console']}`
+              },
+            })
+          } else {
+            this.toastError(
+              this.$t('workspace.remote_access_overflow', {
+                num: room.maxUserCount,
+              }),
+            )
+          }
+
+          return false
+        } else if (err.code === ERROR.MEMBER_UUID_IS_INVALID) {
+          this.confirmDefault(
+            this.$t('guest.guest_account_deleted_and_request_account_again'),
+            {
+              action: async () => {
+                const reason = 'deleted'
+                this.$eventBus.$emit('initTimerAndGuestMember', reason)
+              },
+              text: this.$t('button.request_again'),
+            },
+          )
+        }
+      }
+      this.toastError(this.$t('workspace.remote_invite_impossible'))
+    },
+
+    /**
+     * 장치 관련 에러 처리
+     * @param {Error} err 에러 객체
+     */
+    handleDeviceError(err) {
+      console.error(err)
+      if (err === 'nodevice') {
+        this.toastError(this.$t('workspace.error_no_connected_device'))
+      } else if (err.toLowerCase() === 'requested device not found') {
+        this.toastError(this.$t('workspace.error_no_device'))
+      } else if (err.toLowerCase() === 'device access deined') {
+        this.$eventBus.$emit('devicedenied:show')
       }
     },
   },
