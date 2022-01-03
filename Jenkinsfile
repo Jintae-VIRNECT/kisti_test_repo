@@ -23,7 +23,7 @@ pipeline {
                 slackSend (channel: env.SLACK_CHANNEL, color: '#FFFF00', message: "STARTED: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]' (${env.BUILD_URL})")
             }
         }
-
+        
         stage ('compatibility check') {
             when { anyOf { branch 'master'; branch 'staging'; branch 'develop'} }
             environment {
@@ -48,8 +48,31 @@ pipeline {
                 }
             }
         }
-        
+
+        stage ('version update commit check') {
+            when {
+                branch 'master'
+            }
+            environment {
+                IS_UPDATE_COMMIT = sh(script: "git log -1 | grep 'chore: SOFTWARE VERSION UPDATED'", returnStatus: true)
+            }
+            steps {
+                script {
+                    if (env.IS_UPDATE_COMMIT == '0') {
+                        echo "version update commit, not running..."
+                        echo "clean up current directory"
+                        deleteDir()
+                        currentBuild.getRawBuild().getExecutor().interrupt(Result.SUCCESS)
+                        sleep(1)
+                    }
+                }
+            }
+        }
+
         stage ('jacoco coverage analysis') {
+            when {
+                branch 'develop'
+            }
             steps {
                 sh '''
                     chmod +x ./gradlew && ./gradlew jacocoTestReport || IS_FAIL=true
@@ -64,6 +87,9 @@ pipeline {
         }
 
         stage ('sonarqube code analysis') {
+            when {
+                branch 'develop'
+            }
             environment {
                 scannerHome = tool 'sonarqube-scanner'
             }
@@ -75,12 +101,28 @@ pipeline {
                     waitForQualityGate abortPipeline: true
                 }
             }
-        }            
+        }
+
+        stage ('edit gradle version') {
+            steps {
+                script {
+                    if ("${BRANCH_NAME}" == 'master') {
+                        sh '''
+                            sed -i "/version =/ c\\version = \'${NEXT_VERSION}\'" build.gradle
+                        '''
+                    } else {
+                        sh '''
+                            sed -i "/version =/ c\\version = \'${NEXT_VERSION}-${BRANCH_NAME}-${BUILD_NUMBER}\'" build.gradle
+                        '''
+                    }
+                }
+            }
+        }
 
         stage ('build docker image') {
             steps {
                 script {
-                    APP = docker.build("""${REPO_NAME}:${BRANCH_NAME}.${BUILD_NUMBER}""", "-f ./docker/Dockerfile .")
+                    APP = docker.build("""${REPO_NAME}:${NEXT_VERSION}-${BRANCH_NAME}-${BUILD_NUMBER}""", "-f ./docker/Dockerfile .")
                 }
             }
             post {
@@ -94,7 +136,7 @@ pipeline {
             steps {
                 script {
                     docker.withRegistry("""https://${NEXUS_REGISTRY}""", "jenkins_to_nexus") {
-                        APP.push("${BRANCH_NAME}.${BUILD_NUMBER}")
+                        APP.push("${NEXT_VERSION}-${BRANCH_NAME}-${BUILD_NUMBER}")
 
                         if ("${BRANCH_NAME}" == 'master') {
                             APP.push("${NEXT_VERSION}")
@@ -110,7 +152,7 @@ pipeline {
             steps {
                 script {
                     docker.withRegistry("https://$aws_ecr_address", 'ecr:ap-northeast-2:aws-ecr-credentials') {
-                        APP.push("${BRANCH_NAME}.${BUILD_NUMBER}")
+                        APP.push("${NEXT_VERSION}-${BRANCH_NAME}-${BUILD_NUMBER}")
 
                         if ("${BRANCH_NAME}" == 'master') {
                             APP.push("${NEXT_VERSION}")
@@ -122,8 +164,11 @@ pipeline {
         }
 
         stage ('image scanning') {
+            when {
+                branch 'develop'
+            }
             steps {
-                writeFile file: 'anchore_images', text: "${NEXUS_REGISTRY}/${REPO_NAME}:${BRANCH_NAME}.${BUILD_NUMBER}"
+                writeFile file: 'anchore_images', text: "${NEXUS_REGISTRY}/${REPO_NAME}:${NEXT_VERSION}-${BRANCH_NAME}-${BUILD_NUMBER}"
                 anchore name: 'anchore_images'
             }
         }
@@ -195,7 +240,7 @@ pipeline {
                                         execCommand: 'aws ecr get-login --region ap-northeast-2 --no-include-email | bash'
                                     ),
                                     sshTransfer(
-                                        execCommand: "docker pull ${aws_ecr_address}/${REPO_NAME}:${BRANCH_NAME}.${BUILD_NUMBER}"
+                                        execCommand: "docker pull ${aws_ecr_address}/${REPO_NAME}:${NEXT_VERSION}-${BRANCH_NAME}-${BUILD_NUMBER}"
                                     ),
                                     sshTransfer(
                                         execCommand: """
@@ -210,7 +255,7 @@ pipeline {
                                                     -e WRITE_YOUR=ENVIRONMENT_VARIABLE_HERE \
                                                     -e eureka.instance.ip-address=`hostname -I | awk  \'{print \$1}\'` \
                                                     -p ${PORT}:${PORT} \
-                                                    --name=${REPO_NAME} ${aws_ecr_address}/${REPO_NAME}:${BRANCH_NAME}.${BUILD_NUMBER}
+                                                    --name=${REPO_NAME} ${aws_ecr_address}/${REPO_NAME}:${NEXT_VERSION}-${BRANCH_NAME}-${BUILD_NUMBER}
                                         """
                                     )
                                 ]
@@ -227,25 +272,30 @@ pipeline {
             }
         }
 
-        stage ('create release on github') {
+        stage ('git push and create release on github') {
             when { branch 'master'; expression { env.PREVIOUS_VERSION != env.NEXT_VERSION } }
             steps {
                 script {
-                    env.CHANGE_LOG = gitChangelog returnType: 'STRING', 
-                        from: [type: 'REF', value: "${PREVIOUS_VERSION}"],
-                        to: [type: 'REF', value: 'master'],
-                        template: "{{#tags}}{{#ifContainsBreaking commits}}### Breaking Changes \\r\\n {{#commits}}{{#ifCommitBreaking .}}{{#eachCommitScope .}} **{{.}}** {{/eachCommitScope}}{{{commitDescription .}}}([{{hash}}](https://github.com/{{ownerName}}/{{repoName}}/commit/{{hash}})) \\r\\n {{/ifCommitBreaking}}{{/commits}}{{/ifContainsBreaking}} {{#ifContainsType commits type='feat'}} ### Features \\r\\n {{#commits}}{{#ifCommitType . type='feat'}}{{#eachCommitScope .}} **{{.}}** {{/eachCommitScope}}{{{commitDescription .}}}([{{hash}}](https://github.com/{{ownerName}}/{{repoName}}/commit/{{hash}})) \\r\\n {{/ifCommitType}}{{/commits}}{{/ifContainsType}} {{#ifContainsType commits type='fix'}}### Bug Fixes \\r\\n {{#commits}}{{#ifCommitType . type='fix'}}{{#eachCommitScope .}} **{{.}}** {{/eachCommitScope}}{{{commitDescription .}}}([{{hash}}](https://github.com/{{ownerName}}/{{repoName}}/commit/{{hash}})) \\r\\n {{/ifCommitType}}{{/commits}}{{/ifContainsType}} \\r\\n Copyright (C) 2020, VIRNECT CO., LTD. - All Rights Reserved \\r\\n {{/tags}}"
-                    
-                    // create git tag on github
                     withCredentials([string(credentialsId: 'github_api_access_token', variable: 'TOKEN')]) {
                         sh '''
-                        curl \
-                            -X POST \
-                            -H "Accept: application/vnd.github.manifold-preview" \
-                            -H "Authorization: token $TOKEN" \
-                            -H "Content-Type: application/json" \
-                            https://api.github.com/repos/virnect-corp/$REPO_NAME/releases \
-                            -d '{"tag_name": "'"${NEXT_VERSION}"'", "target_commitish": "'"$GIT_COMMIT"'", "name": "'"$NEXT_VERSION"'", "draft": false, "prerelease": false, "body": "'"$CHANGE_LOG"'"}'
+                            git add build.gradle
+                            git commit -m "chore: SOFTWARE VERSION UPDATED"
+                            git push https://$TOKEN@github.com/virnect-corp/$REPO_NAME.git
+                        '''
+
+                        env.CHANGE_LOG = gitChangelog returnType: 'STRING', 
+                            from: [type: 'REF', value: "${PREVIOUS_VERSION}"],
+                            to: [type: 'REF', value: 'master'],
+                            template: "{{#tags}}{{#ifContainsBreaking commits}}### Breaking Changes \\r\\n {{#commits}}{{#ifCommitBreaking .}}{{#eachCommitScope .}} **{{.}}** {{/eachCommitScope}}{{{commitDescription .}}}([{{hash}}](https://github.com/{{ownerName}}/{{repoName}}/commit/{{hash}})) \\r\\n {{/ifCommitBreaking}}{{/commits}}{{/ifContainsBreaking}} {{#ifContainsType commits type='feat'}} ### Features \\r\\n {{#commits}}{{#ifCommitType . type='feat'}}{{#eachCommitScope .}} **{{.}}** {{/eachCommitScope}}{{{commitDescription .}}}([{{hash}}](https://github.com/{{ownerName}}/{{repoName}}/commit/{{hash}})) \\r\\n {{/ifCommitType}}{{/commits}}{{/ifContainsType}} {{#ifContainsType commits type='fix'}}### Bug Fixes \\r\\n {{#commits}}{{#ifCommitType . type='fix'}}{{#eachCommitScope .}} **{{.}}** {{/eachCommitScope}}{{{commitDescription .}}}([{{hash}}](https://github.com/{{ownerName}}/{{repoName}}/commit/{{hash}})) \\r\\n {{/ifCommitType}}{{/commits}}{{/ifContainsType}} \\r\\n Copyright (C) 2020, VIRNECT CO., LTD. - All Rights Reserved \\r\\n {{/tags}}"
+                                                
+                        sh '''
+                            curl \
+                                -X POST \
+                                -H "Accept: application/vnd.github.manifold-preview" \
+                                -H "Authorization: token $TOKEN" \
+                                -H "Content-Type: application/json" \
+                                https://api.github.com/repos/virnect-corp/$REPO_NAME/releases \
+                                -d '{"tag_name": "'"${NEXT_VERSION}"'", "target_commitish": "master", "name": "'"$NEXT_VERSION"'", "draft": false, "prerelease": false, "body": "'"$CHANGE_LOG"'"}'
                         '''
                     }
                 }
@@ -294,7 +344,7 @@ pipeline {
                         ]
                     )
                 }
-            }
+            }                
 
             post {
                 always {
@@ -313,7 +363,7 @@ pipeline {
         }
         aborted {
             slackSend (channel: env.SLACK_CHANNEL, color: '#808080', message: "ABORTED: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]' (${env.BUILD_URL})")
-        }         
+        }
         cleanup {
             echo 'clean up current directory'
             deleteDir()
