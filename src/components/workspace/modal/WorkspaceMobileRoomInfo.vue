@@ -30,6 +30,7 @@
         <room-info
           v-if="tabview === 'group'"
           :room="room"
+          :image.sync="mobileProfileImage"
           :isLeader="isLeader"
           :isHistory="isHistory"
           @update="update"
@@ -95,7 +96,9 @@ export default {
     },
   },
   data() {
-    return {}
+    return {
+      mobileProfileImage: 'default',
+    }
   },
   methods: {
     close() {
@@ -110,6 +113,9 @@ export default {
     kickout(id) {
       this.$emit('kickout', id)
     },
+  },
+  mounted() {
+    this.mobileProfileImage = this.image
   },
 }
 Header
