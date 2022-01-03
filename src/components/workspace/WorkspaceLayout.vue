@@ -334,8 +334,10 @@ export default {
     setTabTop() {
       this.tabTop = this.$refs['tabSection'].$el.offsetTop
     },
-    logoutGuest(userType) {
+    async logoutGuest(userType) {
       if (userType === USER_TYPE.GUEST_USER) {
+        const redirect = false
+        await auth.logout(redirect)
         location.href = `${URLS['console']}`
       }
     },
