@@ -20,6 +20,9 @@ sourceCompatibility = '1.8'
 ext {
     springCloudVersion = 'Hoxton.SR10'
     mapstructVersion = '1.4.2.Final'
+    jacocoExcludes = [
+        
+    ]
 }
 
 configurations {
