@@ -13,10 +13,42 @@ pipeline {
         BRANCH_NAME = "${BRANCH_NAME.toLowerCase().trim()}"
         APP = ' '
         PREVIOUS_VERSION = sh(returnStdout: true, script: 'git semver get || git semver minor').trim()
-        NEXT_VERSION = getNextSemanticVersion(majorPattern: '.*[Bb]REAKING CHANGE[;:].*', minorPattern: '.*[Ff]eat[;:].*', patchPattern: '.*[Ff]ix[;:].*').toString()
+        NEXT_VERSION = getNextSemanticVersion(to: [type: 'REF', value: 'HEAD'], patchPattern: '^[Ff]ix.*').toString()
+        SLACK_CHANNEL = '#server_jenkins'
     }
 
     stages {
+        stage ('start') {
+            steps {
+                slackSend (channel: env.SLACK_CHANNEL, color: '#FFFF00', message: "STARTED: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]' (${env.BUILD_URL})")
+            }
+        }
+
+        stage ('compatibility check') {
+            when { anyOf { branch 'master'; branch 'staging'; branch 'develop'} }
+            environment {
+                IS_REBASE_MERGE_FROM_MASTER = sh(script: "git branch --contains ${PREVIOUS_VERSION} | grep ${BRANCH_NAME}", returnStatus: true)
+            }
+            steps {
+                script {
+                    echo """
+                    LATEST RELEASE VERSION: ${PREVIOUS_VERSION} \n
+                    NEXT VERSION: ${NEXT_VERSION} \n
+                    """
+                    if (env.IS_REBASE_MERGE_FROM_MASTER != '0') {
+                        echo """버전 호환이 맞지 않습니다. 아래 명령어를 통해 Rebase Merge 후 다시 시도해 주세요. \n
+                            git rabase origin/master \n
+                            git push -f origin ${BRANCH_NAME} \n
+                        """
+                        
+                        deleteDir()
+                        currentBuild.getRawBuild().getExecutor().interrupt(Result.ABORTED)
+                        sleep(1)
+                    }
+                }
+            }
+        }
+        
         stage ('jacoco coverage analysis') {
             steps {
                 sh '''
@@ -299,7 +331,7 @@ pipeline {
                         ]
                     )
                 }
-            }                
+            }
 
             post {
                 always {
