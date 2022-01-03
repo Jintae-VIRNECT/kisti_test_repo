@@ -137,7 +137,7 @@ pipeline {
             steps {
                 sh '''
                     docker login ${NEXUS_REGISTRY}
-                    docker pull ${NEXUS_REGISTRY}/${REPO_NAME}:${BRANCH_NAME}.${BUILD_NUMBER}
+                    docker pull ${NEXUS_REGISTRY}/${REPO_NAME}:${NEXT_VERSION}-${BRANCH_NAME}-${BUILD_NUMBER}
 
                     count=`docker ps -a | grep ${REPO_NAME} | wc -l`
 
@@ -150,11 +150,9 @@ pipeline {
                             -e CONFIG_SERVER=http://192.168.6.3:6383 \
                             -e WRITE_YOUR=ENVIRONMENT_VARIABLE_HERE \
                             -p ${PORT}:${PORT} \
-                            --name=${REPO_NAME} ${NEXUS_REGISTRY}/${REPO_NAME}:${BRANCH_NAME}.${BUILD_NUMBER}
+                            --name=${REPO_NAME} ${NEXUS_REGISTRY}/${REPO_NAME}:${NEXT_VERSION}-${BRANCH_NAME}-${BUILD_NUMBER}
                     else
-                        echo "Found a running container. Downloading old swagger api docs..."                        
-                        wget http://localhost:${PORT}/v2/api-docs -O /var/lib/jenkins/Swagger-Diff/Diff/${REPO_NAME}_old.json
-
+                        echo "Found a running container. Downloading old swagger api docs..."
                         echo "stop the running container..."
                         docker stop ${REPO_NAME} && docker rm ${REPO_NAME}
 
@@ -165,40 +163,7 @@ pipeline {
                             -e CONFIG_SERVER=http://192.168.6.3:6383 \
                             -e WRITE_YOUR=ENVIRONMENT_VARIABLE_HERE \
                             -p ${PORT}:${PORT} \
-                            --name=${REPO_NAME} ${NEXUS_REGISTRY}/${REPO_NAME}:${BRANCH_NAME}.${BUILD_NUMBER}
-
-                        sleep 3
-
-                        echo "Downloading new swagger api docs..."
-                        wget http://localhost:${PORT}/v2/api-docs -O /var/lib/jenkins/Swagger-Diff/Diff/${REPO_NAME}_new.json
-
-                        echo "Running swagger diff..."
-                        if [ `diff /var/lib/jenkins/Swagger-Diff/Diff/${REPO_NAME}_old.json /var/lib/jenkins/Swagger-Diff/Diff/${REPO_NAME}_new.json | wc -l` -gt 0 ];
-                        then 
-                            echo "Swagger Changed."
-                            curl -H "Content-Type: application/json" --data \
-                                '{ \
-                                    "summary": "Swagger Change", \
-                                    "sections" : [ \
-                                        { \
-                                            "facts": [ \
-                                                { \
-                                                    "name": "Swagger Service", \
-                                                    "value": "'"$REPO_NAME"'" \
-                                                }, \
-                                                { \
-                                                    "name": "Information", \
-                                                    "value": "'"`java -jar /var/lib/jenkins/Swagger-Diff/Jar/swagger-diff.jar -old /var/lib/jenkins/Swagger-Diff/Diff/${REPO_NAME}_old.json -new /var/lib/jenkins/Swagger-Diff/Diff/${REPO_NAME}_new.json`"'" \
-                                                } \
-                                            ], \
-                                            "markdown": true \
-                                        } \
-                                    ] \
-                                }' ${TEAMS_SWAGGER_CHANNEL}
-                        else 
-                            echo "It has not changed."
-                        fi
-                        rm -f /var/lib/jenkins/Swagger-Diff/Diff/${REPO_NAME}_old.json /var/lib/jenkins/Swagger-Diff/Diff/${REPO_NAME}_new.json
+                            --name=${REPO_NAME} ${NEXUS_REGISTRY}/${REPO_NAME}:${NEXT_VERSION}-${BRANCH_NAME}-${BUILD_NUMBER}
                     fi
                 '''
             }
@@ -294,8 +259,6 @@ pipeline {
                 
             steps {
                 script {
-                    //echo "deploy production"
-                
                     // pull and run container
                     sshPublisher(
                         continueOnError: false, failOnError: true,
@@ -342,6 +305,15 @@ pipeline {
     }
 
     post {
+        success {
+            slackSend (channel: env.SLACK_CHANNEL, color: '#00FF00', message: "SUCCESSFUL: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]' (${env.BUILD_URL})")
+        }
+        failure {
+            slackSend (channel: env.SLACK_CHANNEL, color: '#FF0000', message: "FAILED: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]' (${env.BUILD_URL})")
+        }
+        aborted {
+            slackSend (channel: env.SLACK_CHANNEL, color: '#808080', message: "ABORTED: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]' (${env.BUILD_URL})")
+        }         
         cleanup {
             echo 'clean up current directory'
             deleteDir()
