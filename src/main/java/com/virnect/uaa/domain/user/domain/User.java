@@ -158,17 +158,16 @@ public class User extends BaseTimeEntity {
 	 * @param seatUserSequence - Guest 계정 번호 정보(1..N)
 	 */
 	@Builder(builderClassName = "ByRegisterGuestMemberUserBuilder",
-			 builderMethodName = "ByRegisterGuestMemberUserBuilder")
+			 builderMethodName = "byRegisterGuestMemberUserBuilder")
 	public User(
 		User masterUser,
 		String workspaceUUID,
 		String encodedPassword,
 		int seatUserSequence
 	) {
-		String uuid = UUID.randomUUID().toString().replaceAll("-", "");
 		String seatUserNickName = String.format("GuestUser-%d", seatUserSequence);
 		this.master = masterUser;
-		this.uuid = uuid;
+		this.uuid = UUID.randomUUID().toString().replace("-", "");
 		// seat user email format is seatUserUUID@workspaceUUID.com
 		this.email = String.format("%s@%s.com", uuid, workspaceUUID);
 		this.password = encodedPassword;
