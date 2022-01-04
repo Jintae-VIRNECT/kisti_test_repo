@@ -120,9 +120,15 @@ export default {
   },
   watch: {
     viewAction(newVal, beforeVal) {
+      const isNewViewAR = [
+        ACTION.AR_POINTING,
+        ACTION.AR_AREA,
+        ACTION.AR_3D,
+      ].includes(newVal)
+
       //종료 시그널 전송 부분
       //ar 드로잉 모드 종료
-      if (beforeVal === ACTION.AR_DRAWING) {
+      if (beforeVal === ACTION.AR_DRAWING && isNewViewAR) {
         this.$call.sendArDrawing(AR_DRAWING.END_DRAWING)
       }
       //3d 공유 모드 종료 : ar 3d 컨텐츠 모드 해제 및 공유 중인 데이터/상태 초기화
