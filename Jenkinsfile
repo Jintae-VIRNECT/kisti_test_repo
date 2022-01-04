@@ -183,9 +183,7 @@ pipeline {
                 sh '''
                     docker login ${NEXUS_REGISTRY}
                     docker pull ${NEXUS_REGISTRY}/${REPO_NAME}:${NEXT_VERSION}-${BRANCH_NAME}-${BUILD_NUMBER}
-
                     count=`docker ps -a | grep ${REPO_NAME} | wc -l`
-
                     if [ $count -eq 0 ]
                     then 
                         echo "There are no running containers. Starting a new container..."
@@ -200,7 +198,6 @@ pipeline {
                         echo "Found a running container. Downloading old swagger api docs..."
                         echo "stop the running container..."
                         docker stop ${REPO_NAME} && docker rm ${REPO_NAME}
-
                         echo "Starting a new container..."
                         docker run --restart=on-failure:10 \
                             -d \
@@ -246,7 +243,6 @@ pipeline {
                                         execCommand: """
                                             echo '${REPO_NAME} Container stop and delete'
                                             docker stop ${REPO_NAME} && docker rm ${REPO_NAME} 
-
                                             echo '${REPO_NAME} New Container start'
                                             docker run --restart=on-failure:10 \
                                                     -d \
@@ -326,7 +322,6 @@ pipeline {
                                         execCommand: """
                                             echo '${REPO_NAME} Container stop and delete'
                                             docker stop ${REPO_NAME} && docker rm ${REPO_NAME} 
-
                                             echo '${REPO_NAME} New Container start'
                                             docker run --restart=on-failure:10 \
                                                 -d \
