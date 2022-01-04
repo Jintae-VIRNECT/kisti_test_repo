@@ -182,6 +182,6 @@ bootJar {
         )
     }
     //archiveFileName.set("RM-Service-${archiveVersion.get()}.${archiveExtension.get()}")
-    archiveFileName.set("rm-service")
+    archiveFileName.set("rm-service.jar")
     //destinationDirectory.set(project.file("${rootProject.buildDir}/libs/${archiveBaseName}"))
 }
