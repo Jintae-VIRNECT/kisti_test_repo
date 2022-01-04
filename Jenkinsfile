@@ -102,17 +102,17 @@ pipeline {
                 }
             }
         }
-
+        // rm-service is multiproject. different from other service.
         stage ('edit gradle version') {
             steps {
                 script {
                     if ("${BRANCH_NAME}" == 'master') {
                         sh '''
-                            sed -i "/version =/ c\\version = \'${NEXT_VERSION}\'" build.gradle
+                            sed -i "/version =/ c\\    version = \"${NEXT_VERSION}\"" build.gradle
                         '''
                     } else {
                         sh '''
-                            sed -i "/version =/ c\\version = \'${NEXT_VERSION}-${BRANCH_NAME}-${BUILD_NUMBER}\'" build.gradle
+                            sed -i "/version =/ c\\    version = \"${NEXT_VERSION}-${BRANCH_NAME}-${BUILD_NUMBER}\"" build.gradle
                         '''
                     }
                 }

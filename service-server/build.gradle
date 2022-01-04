@@ -181,6 +181,7 @@ bootJar {
                 "Implementation-Version": "2.0 revision 2223v6"
         )
     }
-    archiveFileName.set("RM-Service-${archiveVersion.get()}.${archiveExtension.get()}")
+    //archiveFileName.set("RM-Service-${archiveVersion.get()}.${archiveExtension.get()}")
+    archiveFileName.set("rm-service")
     //destinationDirectory.set(project.file("${rootProject.buildDir}/libs/${archiveBaseName}"))
 }
