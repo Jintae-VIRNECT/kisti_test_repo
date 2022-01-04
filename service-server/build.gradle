@@ -11,8 +11,15 @@
 //—————————————————————————————————————————————————————————————————————————————————————————————————
 // This block encapsulates custom properties and makes them available to
 // all modules in the project.
+plugins {
+    id("jacoco")
+}
+
 ext {
     set("springCloudVersion", "Hoxton.SR10")
+    jacocoExcludes = [
+        
+    ]
 }
 
 configurations {
@@ -132,6 +139,34 @@ dependencies {
 //—————————————————————————————————————————————————————————————————————————————————————————————————
 test {
     useJUnitPlatform()
+    systemProperty("spring.active.profiles", "test")
+    environment("VIRNECT_ENV", "test")
+    finalizedBy jacocoTestReport
+}
+
+/**
+ * Jacoco Configuration
+ */
+
+jacoco {
+    toolVersion = "0.8.7"
+}
+
+jacocoTestReport {
+    dependsOn test
+
+    reports {
+        csv.enabled true
+        xml.enabled true
+    }
+
+    afterEvaluate {
+        classDirectories.setFrom(files(classDirectories.files.collect {
+            fileTree(dir: it, exclude: jacocoExcludes)
+        }))
+    }
+
+    finalizedBy jacocoTestCoverageVerification
 }
 
 bootJar {
