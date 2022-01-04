@@ -65,7 +65,7 @@
       ></slider>
     </section>
     <section class="setting-section list horizon translate">
-      <figure class="setting-section__translate">
+      <figure v-if="!isMobileSize" class="setting-section__translate">
         <div
           class="setting-section__title"
           :class="{ disabled: !useTranslate }"
