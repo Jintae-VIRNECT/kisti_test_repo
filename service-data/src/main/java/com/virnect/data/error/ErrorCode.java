@@ -62,7 +62,9 @@ public enum ErrorCode {
 	ERR_GROUP_MEMBER_COUNT_OVER(4027, "remote group member over count"),
 	ERR_GROUP_MEMBER_ALREADY_JOINED(4030, "There are already joined member"),
 	ERR_MEMBER_INVALID(4031, "This member uuid is invalid"),
-
+	ERR_GROUP_NAME_DUPLICATE(4032, "This group name is duplicated"),
+	ERR_GROUP_NAME_IS_NULL(4033, "This group name is null"),
+	ERR_GROUP_MEMBER_IS_EMPTY(4034, "remote group member is empty"),
 	// Guest 관련 에러
 	ERR_GUEST_USER_NOT_ENOUGH(4028, "Not enough unassigned guest users"),
 	ERR_GUEST_USER_NOT_FOUND(4029, " Guest user not found"),

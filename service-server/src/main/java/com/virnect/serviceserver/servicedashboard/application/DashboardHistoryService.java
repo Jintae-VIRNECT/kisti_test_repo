@@ -390,7 +390,7 @@ public class DashboardHistoryService {
 			roomHistory.setServerRecord(
 				serverRecFileAll
 					.stream()
-					.filter(recordFiles -> recordFiles.getSessionId().equals(roomHistory.getSessionId()))
+					.filter(recordingFiles -> recordingFiles.getSessionId().equals(roomHistory.getSessionId()))
 					.count()
 			);
 			roomHistory.setLocalRecord(
@@ -402,7 +402,7 @@ public class DashboardHistoryService {
 			roomHistory.setAttach(
 				attachFileAll
 					.stream()
-					.filter(recordFiles -> recordFiles.getSessionId().equals(roomHistory.getSessionId()))
+					.filter(fileInfoResponse -> fileInfoResponse.getSessionId().equals(roomHistory.getSessionId()))
 					.count()
 			);
 		}
