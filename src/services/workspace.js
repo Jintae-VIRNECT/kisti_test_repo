@@ -79,7 +79,9 @@ export default {
         workspaceId: activeWorkspaceGetter().uuid,
       },
     })
-    return memberInfoList.map(member => new Member(member))
+    return memberInfoList
+      .filter(member => member.role !== 'GUEST')
+      .map(member => new Member(member))
   },
   /**
    * 워크스페이스 시작
