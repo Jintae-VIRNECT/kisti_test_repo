@@ -21,7 +21,7 @@ import com.virnect.uaa.domain.user.dto.response.UserInfoResponse;
 @ExtendWith(SpringExtension.class)
 @ActiveProfiles("test")
 @SpringBootTest
-public class InternalUserInformationServiceTest {
+class InternalUserInformationServiceTest {
 	@Autowired
 	private InternalUserInformationServiceImpl internalUserInformationService;
 
