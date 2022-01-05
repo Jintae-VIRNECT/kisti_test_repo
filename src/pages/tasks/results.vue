@@ -23,7 +23,11 @@
           />
         </el-col>
         <el-col class="right">
-          <SearchbarKeyword ref="keyword" :value.sync="resultsSearch" />
+          <SearchbarKeyword
+            ref="keyword"
+            :value.sync="resultsSearch"
+            @change="page = 1"
+          />
         </el-col>
       </el-row>
       <!-- 테이블 -->

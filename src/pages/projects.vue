@@ -38,6 +38,7 @@
             ref="keyword"
             :value.sync="projectsSearch"
             placeholder="projectTitle"
+            @change="projectsPage = 1"
           />
         </el-col>
       </el-row>

@@ -72,10 +72,13 @@ export default {
     const { filter, sort, keyword, page, table, mine } = this.$refs
 
     // 각 컴포넌트에 이벤트 리스너 적용
-    if (keyword)
+    if (keyword) {
+      // 키워드 검색 시 1페이지로 이동
       keyword.$on('change', val =>
-        this.emitChangedSearchParams({ search: val }),
+        this.emitChangedSearchParams({ search: val, page: 1 }),
       )
+    }
+
     if (sort)
       sort.$on('change', val => this.emitChangedSearchParams({ sort: val }))
     if (page)

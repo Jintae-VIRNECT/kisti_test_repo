@@ -17,7 +17,11 @@
           <SearchbarMine ref="mine" :mineLabel="$t('troubles.list.myTm')" />
         </el-col>
         <el-col class="right">
-          <SearchbarKeyword ref="keyword" :value.sync="troubleSearch" />
+          <SearchbarKeyword
+            ref="keyword"
+            :value.sync="troubleSearch"
+            @change="troublesPage = 1"
+          />
         </el-col>
       </el-row>
 
