@@ -582,9 +582,9 @@ public class ProjectService {
 				throw new ContentServiceException(ErrorCode.ERR_PROJECT_UPDATE_INVALID_LICENSE);
 			}
 			//최대 업로드 사용량 체크
-			long projectFileSize = fileDownloadService.getFileSize(projectUpdateRequest.getProject());
+			long newProjectFileSize = fileDownloadService.getFileSize(projectUpdateRequest.getProject());
 			if (!checkWorkspaceMaxStorage(
-				project.getWorkspaceUUID(), projectFileSize - project.getSize()
+				project.getWorkspaceUUID(), newProjectFileSize - project.getSize()
 			)) {
 				throw new ContentServiceException(ErrorCode.ERR_PROJECT_UPLOAD_MAX_STORAGE);
 			}
@@ -594,6 +594,7 @@ public class ProjectService {
 			String newProjectPath = fileUploadService.copyByFileObject(
 				projectUpdateRequest.getProject(), PROJECT_DIRECTORY, project.getWorkspaceUUID(), projectUUID);
 			project.setPath(newProjectPath);
+			project.setSize(newProjectFileSize);
 			//업데이트 원본파일 삭제
 			fileUploadService.deleteByFileUrl(projectUpdateRequest.getProject());
 
