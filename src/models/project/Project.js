@@ -22,6 +22,7 @@ export default class Project extends Model {
     this.workspaceUUID = json.workspaceUUID
     this.uploaderUUID = json.uploaderUUID
     this.uploaderName = json.uploaderName
+    this.uploaderNickname = json.uploaderNickname
     this.uploaderProfile =
       json.uploaderProfile === 'default'
         ? require('assets/images/icon/ic-user-profile.svg')
