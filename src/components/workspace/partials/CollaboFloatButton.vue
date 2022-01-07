@@ -31,6 +31,7 @@ export default {
     position: fixed;
     right: 10px;
     bottom: 30px;
+    display: flex;
     background-color: $new_color_bg_button_primary;
   }
 }

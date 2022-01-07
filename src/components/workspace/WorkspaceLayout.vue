@@ -36,12 +36,12 @@
       :isOpenRoom="isOpenRoom"
       :isJoin="isJoin"
     ></room-loading>
-    <collabo-float-button
-      v-if="workspace && workspace.uuid && tabName !== 'setting'"
-    ></collabo-float-button>
     <openroom-float-button
-      v-if="workspace && workspace.uuid && tabName !== 'setting'"
+      v-if="workspace && workspace.uuid && tabName === 'user'"
     ></openroom-float-button>
+    <collabo-float-button
+      v-if="workspace && workspace.uuid && tabName === 'user'"
+    ></collabo-float-button>
   </section>
 </template>
 
