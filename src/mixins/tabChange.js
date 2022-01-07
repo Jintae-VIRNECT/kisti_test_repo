@@ -77,6 +77,12 @@ export default {
         this.toastDefault(this.$t('service.toast_leave_leader'))
         //this.showImage({})  //리더 떠나도 협업 보드는 초기화 시키지 않는다. 더이상 리더만 협업보드를 활성화 시킬 수 있는 게 아니므로
       }
+
+      //리더가 떠나면 AR 공유를 종료
+      const isArView = this.view === VIEW.AR
+      if (isArView) {
+        this.$call.sendArFeatureStop()
+      }
     },
 
     viewForce() {
