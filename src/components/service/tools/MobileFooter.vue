@@ -21,6 +21,7 @@
           @selectMember="openParticipantModal"
         ></mobile-more-button>
         <mobile-capture-button
+          v-if="isLeader"
           :disabled="!isMainViewOn"
         ></mobile-capture-button>
         <mobile-flash-button></mobile-flash-button>
