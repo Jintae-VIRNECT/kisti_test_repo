@@ -147,11 +147,18 @@ export default {
     if (from.name !== 'workspace' && from.name !== 'connectioninfo') {
       next({ name: 'workspace' })
     }
-    next()
+    next(vm => {
+      const sessionId = vm.$store.getters.roomInfo.sessionId
+      if (!sessionId) {
+        vm.$router.push({ name: 'workspace' })
+      }
+    })
   },
   beforeRouteLeave(to, from, next) {
     Store.commit('callClear')
     Store.dispatch('callReset')
+    Store.dispatch('roomClear')
+
     next()
   },
   mixins: [localRecorderMixin, serverRecordMixin, confirmMixin],
