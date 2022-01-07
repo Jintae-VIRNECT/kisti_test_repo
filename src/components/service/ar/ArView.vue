@@ -30,14 +30,19 @@
 import { mapGetters, mapActions, mapMutations } from 'vuex'
 import { VIEW, ACTION } from 'configs/view.config'
 import {
+  AR_FEATURE,
   SIGNAL,
   AR_DRAWING,
   ROLE,
   AR_3D_CONTENT_SHARE,
   AR_3D_FILE_SHARE_STATUS,
 } from 'configs/remote.config'
-import { CAMERA } from 'configs/device.config'
+import { CAMERA, DEVICE } from 'configs/device.config'
 import { CAMERA_STATE } from 'configs/status.config'
+
+import toastMixin from 'mixins/toast'
+import confirmMixin from 'mixins/confirm'
+import arEventQueueMixin from 'mixins/arEventQueue'
 
 import Loading3d from './3dcontents/Loading3d'
 import ArVideo from './ArVideo'
@@ -49,6 +54,7 @@ const MODE_CHANGE_DELAY = 3000
 
 export default {
   name: 'ARView',
+  mixins: [toastMixin, confirmMixin, arEventQueueMixin],
   components: {
     Loading3d,
     ArVideo,
@@ -120,6 +126,9 @@ export default {
   },
   watch: {
     viewAction(newVal, beforeVal) {
+    
+      this.debug('ArView :: viewAction changed ::', beforeVal, '=>', newVal)
+      
       const isNewViewAR = [
         ACTION.AR_POINTING,
         ACTION.AR_AREA,
@@ -135,6 +144,7 @@ export default {
       else if (beforeVal === ACTION.AR_3D) {
         //AR내에 모드 변경시에만 3d모드 종료 시그널을 보내고, AR기능 자체의 종료인 경우 보내지 않는다.
         if (this.view === VIEW.AR) {
+          this.debug('ArView :: send stop 3d share mode signal')
           this.$call.sendAr3dSharing(AR_3D_CONTENT_SHARE.STOP_SHARE)
         }
         this.SHOW_3D_CONTENT({})
@@ -142,18 +152,8 @@ export default {
         this.SET_IS_3D_POSITION_PICKING(false)
       }
 
-      //시작 시그널 전송 부분
-      //3d 공유 기능 시작
-      if (newVal === ACTION.AR_3D) {
-        const targetUserId = this.mainView.id
-
-        //시그널 전송 : start 3D contents share
-        this.$call.sendAr3dSharing(AR_3D_CONTENT_SHARE.START_SHARE, {
-          targetUserId,
-        })
-      }
       //3d 공유 -> ar 드로잉으로 모드 전환 시
-      else if (beforeVal === ACTION.AR_3D && newVal === ACTION.AR_AREA) {
+      if (beforeVal === ACTION.AR_3D && newVal === ACTION.AR_AREA) {
         this.loadingFrame = true
         setTimeout(() => {
           this.loadingFrame = false
@@ -171,8 +171,9 @@ export default {
       'SHOW_3D_CONTENT',
       'SET_AR_3D_SHARE_STATUS',
       'SET_IS_3D_POSITION_PICKING',
+      'updateParticipant',
     ]),
-    ...mapActions(['showArImage', 'setAction']),
+    ...mapActions(['showArImage', 'setAction', 'addChat', 'setView']),
     receiveSignal(receive) {
       const data = JSON.parse(receive.data)
 
@@ -233,12 +234,106 @@ export default {
 
       if (!type) return false
 
-      if (type === AR_3D_CONTENT_SHARE.START_SHARE && !this.isLeader) {
-        this.setAction(ACTION.AR_3D)
-      } else if (type === AR_3D_CONTENT_SHARE.STOP_SHARE) {
+      this.startShare(event)
+      if (type === AR_3D_CONTENT_SHARE.STOP_SHARE) {
         if (this.viewAction !== ACTION.AR_3D) return false
         this.setAction(ACTION.AR_POINTING) //기본 포인팅 모드로 전환
       } else return false
+    },
+
+    checkArFeature(receive) {
+      let data
+
+      if (!receive.receive) data = JSON.parse(receive.data)
+      else data = receive.data
+
+      if (data.from === this.account.uuid) return
+      if (this.account.roleType === ROLE.LEADER) {
+        if (data.type === AR_FEATURE.FEATURE) {
+          if ('hasArFeature' in data) {
+            this.updateParticipant({
+              connectionId: receive.from.connectionId,
+              hasArFeature: data.hasArFeature,
+            })
+            if (data.hasArFeature === false) {
+              this.addChat({
+                status: 'ar-unsupport',
+                type: 'system',
+              })
+            }
+          }
+        }
+      } else {
+        if (
+          data.type === AR_FEATURE.START_AR_FEATURE &&
+          this.view !== VIEW.AR
+        ) {
+          this.startAr()
+        } else if (data.type === AR_FEATURE.STOP_AR_FEATURE) {
+          this.toastDefault(this.$t('service.toast_ar_exit'))
+          this.setView(VIEW.STREAM)
+        }
+      }
+    },
+
+    startAr(sendSignal = false) {
+      this.debug('ArView :: startAr')
+
+      this.confirmClose()
+
+      this.toastDefault(
+        this.$t('service.toast_ar_start', { name: this.mainView.nickname }),
+      )
+
+      this.addChat({
+        status: 'ar-start',
+        name: this.mainView.nickname,
+        type: 'system',
+      })
+
+      if (sendSignal) {
+        this.$call.sendArFeatureStart(this.mainView.id)
+      }
+
+      this.setView(VIEW.AR)
+
+      //AR 공유 기기가 홀로렌즈인 경우 : 3d 공유 기능모드로만 사용
+      if (this.mainView.deviceType === DEVICE.HOLOLENS) {
+        this.activate3dShareMode()
+      }
+    },
+
+    activate3dShareMode() {
+      this.setAction(ACTION.AR_3D)
+
+      const targetUserId = this.mainView.id
+
+      this.toastDefault(this.$t('service.chat_ar_3d_start'))
+
+      //시그널 전송 : start 3D contents share
+      this.$call.sendAr3dSharing(AR_3D_CONTENT_SHARE.START_SHARE, {
+        targetUserId,
+      })
+    },
+
+    startShare(event) {
+      let type
+
+      if (!event.receive) type = JSON.parse(event.data).type
+      else type = event.data.type
+
+      if (
+        type === AR_3D_CONTENT_SHARE.START_SHARE &&
+        !this.isLeader &&
+        this.viewAction !== ACTION.AR_3D
+      ) {
+        this.setAction(ACTION.AR_3D)
+      }
+    },
+
+    receiveQueuedSignal(event) {
+      this.startShare(event)
+      this.checkArFeature(event)
     },
 
     //증강된 3D 콘텐츠 제거
@@ -304,13 +399,19 @@ export default {
   },
   created() {
     this.$eventBus.$on(SIGNAL.AR_DRAWING, this.receiveSignal)
-    this.$eventBus.$on(SIGNAL.AR_3D, this.receiveSignal3d)
     this.$eventBus.$on(`control:${ACTION.AR_3D}:clear`, this.clear3dObject)
+
+    this.$eventBus.$on(SIGNAL.AR_FEATURE, this.checkArFeature)
+    this.$eventBus.$on(SIGNAL.AR_3D, this.receiveSignal3d)
+    this.$eventBus.$on(SIGNAL.AR_FROM_VUEX, this.receiveQueuedSignal)
   },
   beforeDestroy() {
     this.$eventBus.$off(SIGNAL.AR_DRAWING, this.receiveSignal)
-    this.$eventBus.$off(SIGNAL.AR_3D, this.receiveSignal3d)
     this.$eventBus.$off(`control:${ACTION.AR_3D}:clear`, this.clear3dObject)
+
+    this.$eventBus.$off(SIGNAL.AR_FEATURE, this.checkArFeature)
+    this.$eventBus.$off(SIGNAL.AR_3D, this.receiveSignal3d)
+    this.$eventBus.$off(SIGNAL.AR_FROM_VUEX, this.receiveQueuedSignal)
   },
 }
 </script>

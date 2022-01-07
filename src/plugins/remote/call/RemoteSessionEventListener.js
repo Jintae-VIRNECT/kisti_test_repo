@@ -15,6 +15,8 @@ import {
   FILE,
   DRAWING,
   SYSTEM,
+  AR_3D_CONTENT_SHARE,
+  AR_FEATURE,
 } from 'configs/remote.config'
 import { CAMERA as CAMERA_STATUS } from 'configs/device.config'
 
@@ -448,7 +450,17 @@ const signalCapturePermission = event => {
 
 /** AR feature */
 const signalArFeature = event => {
-  window.vue.$eventBus.$emit(SIGNAL.AR_FEATURE, event)
+  const data = JSON.parse(event.data)
+
+  //큐가 활성화된 상태고, START_SHARE 이벤트인 경우 Vuex에 저장해둔다.
+  //해당 이벤트를 필요로하는 component가 활성화 되었을 경우 해당 vuex내 값을 큐처럼 순차적으로 처리한다.
+  if (
+    queueAvtivated &&
+    (data.type === AR_FEATURE.FEATURE ||
+      data.type === AR_FEATURE.START_AR_FEATURE)
+  )
+    Store.commit('addArEvent', { data, receive: event })
+  else window.vue.$eventBus.$emit(SIGNAL.AR_FEATURE, event)
 }
 
 /** AR Pointing */
@@ -463,7 +475,13 @@ const signalArDrawing = event => {
 
 /** AR 3D 콘텐츠 모드*/
 const signalAr3dContent = event => {
-  window.vue.$eventBus.$emit(SIGNAL.AR_3D, event)
+  const data = JSON.parse(event.data)
+
+  //큐가 활성화된 상태고, START_SHARE 이벤트인 경우 Vuex에 저장해둔다.
+  //해당 이벤트를 필요로하는 component가 활성화 되었을 경우 해당 vuex내 값을 큐처럼 순차적으로 처리한다.
+  if (queueAvtivated && data.type === AR_3D_CONTENT_SHARE.START_SHARE)
+    Store.commit('addArEvent', { data, receive: event })
+  else window.vue.$eventBus.$emit(SIGNAL.AR_3D, event)
 }
 
 /** 계정 삭제로 인해 서비스 서버에서 강퇴 처리*/
