@@ -29,6 +29,7 @@
 <script>
 import { SPOT_CONTROL_ACTIVE } from 'configs/env.config'
 import { mapGetters } from 'vuex'
+import { ROLE } from 'configs/remote.config'
 
 const MENU = {
   CAMERA_CONTROL: 'CAMERA_CONTROL',
@@ -69,6 +70,9 @@ export default {
     isPreparing() {
       return this.serverRecordStatus === 'PREPARE'
     },
+    isLeader() {
+      return this.account.roleType === ROLE.LEADER
+    },
     menus() {
       return [
         {
@@ -87,7 +91,7 @@ export default {
           title: this.isRecording
             ? this.$t('service.record_server_end')
             : this.$t('service.record_server'),
-          visible: this.useRecording,
+          visible: this.useRecording && this.isLeader,
         },
         {
           class: 'member',
