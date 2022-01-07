@@ -97,13 +97,6 @@ export default {
           visible: true,
         },
         {
-          class: 'location',
-          name: MENU.LOCATION,
-          icon: require('assets/image/call/mdpi_icon_location_new.svg'),
-          title: this.$t('service.map_information'),
-          visible: this.isOnpremise,
-        },
-        {
           class: 'spot-control',
           name: MENU.SPOT_CONTROL,
           icon: require('assets/image/call/mdpi_icon_spot_new.svg'),
