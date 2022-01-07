@@ -43,7 +43,7 @@
           </div>
           <div
             class="popover-profile__link"
-            v-if="useLocalRecording && !isSafari"
+            v-if="useLocalRecording && !isSafari && !isMobileSize"
           >
             <button @click="fileList">
               {{ $t('common.local_record_file') }}
