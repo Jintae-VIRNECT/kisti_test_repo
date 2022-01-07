@@ -56,6 +56,7 @@ export default {
     visible(newVal) {
       if (newVal) {
         this.participant = newVal
+        this.isMuted = this.participant.mute
         this.initMenus()
       }
     },
