@@ -209,7 +209,7 @@ export default {
       })
     },
     addMember() {
-      if (this.isMaxUserAmount) {
+      if (this.availableMember >= this.maximum) {
         this.errorMessage('Error: 900')
       } else {
         this.userInfoList.push(new CreateMember())
@@ -232,7 +232,7 @@ export default {
       this.initAvailablePlans()
     },
     async submit() {
-      if (this.isMaxUserAmount) {
+      if (this.availableMember > this.maximum) {
         this.errorMessage('Error: 900')
         return
       }
@@ -305,9 +305,6 @@ export default {
     },
     cssVars() {
       return this.$i18n.locale
-    },
-    isMaxUserAmount() {
-      return this.availableMember >= this.maximum
     },
   },
 }

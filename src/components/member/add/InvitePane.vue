@@ -139,7 +139,7 @@ export default {
       })
     },
     addMember() {
-      if (this.isMaxUserAmount) {
+      if (this.availableMember >= this.maximum) {
         this.errorMessage('Error: 900')
       } else {
         this.userInfoList.push(new InviteMember())
@@ -162,7 +162,7 @@ export default {
       this.initAvailablePlans()
     },
     async submit() {
-      if (this.isMaxUserAmount) {
+      if (this.availableMember > this.maximum) {
         this.errorMessage('Error: 900')
         return
       }
@@ -213,9 +213,6 @@ export default {
     },
     availableMember() {
       return this.membersTotal + this.userInfoList.length
-    },
-    isMaxUserAmount() {
-      return this.availableMember >= this.maximum
     },
   },
 }
