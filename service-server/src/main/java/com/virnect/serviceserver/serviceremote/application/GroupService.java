@@ -135,7 +135,7 @@ public class GroupService {
 				remoteGroupMemberResponse.setAccessType(
 					loadAccessType(workspaceId, remoteGroupMemberResponse.getUuid()));
 			}
-			
+
 			groupsResponse.add(buildRemoteGroupResponse(remoteGroup, remoteGroupMembers));
 		}
 		groupsResponse.add(makeEtcGroup(workspaceId, remoteGroups, workspaceMembers));
@@ -168,6 +168,12 @@ public class GroupService {
 
 		List<RemoteGroupMemberResponse> remoteGroupMembers = mapperWorkspaceToRemoteGroupMember(
 			remoteGroup.getGroupMembers(), workspaceMembers);
+
+		for (RemoteGroupMemberResponse remoteGroupMemberResponse : remoteGroupMembers) {
+			remoteGroupMemberResponse.setAccessType(
+				loadAccessType(workspaceId, remoteGroupMemberResponse.getUuid()));
+		}
+		
 		if (accessTypeFilter) {
 			for (Iterator<RemoteGroupMemberResponse> groupMemberIterator = remoteGroupMembers.iterator(); groupMemberIterator.hasNext(); ) {
 				AccessStatus targetUser = accessStatusService.getAccessStatus(
