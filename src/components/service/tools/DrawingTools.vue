@@ -15,7 +15,7 @@
         ></clear-all>
         <div class="division"></div>
         <color :disableTooltip="true"></color>
-        <drawing-lock @click="onDrawingLock"></drawing-lock>
+        <drawing-lock></drawing-lock>
       </div>
       <button class="tools-toggle-btn" :class="{ active }" @click="toggle">
         <img src="~assets/image/call/icn_dropdown_new.svg" alt="dropdown" />
@@ -50,8 +50,6 @@ import {
   DrawingLock,
 } from './partials'
 import { ROLE } from 'configs/remote.config'
-import { mapActions } from 'vuex'
-import { ACTION } from 'configs/view.config'
 import toolStatusMixin from 'mixins/toolStatus'
 
 export default {
@@ -72,8 +70,6 @@ export default {
   data() {
     return {
       active: false,
-      DRAWING_LOCK: Object.freeze(ACTION.DRAWING_LOCK),
-      DRAWING_LINE: Object.freeze(ACTION.DRAWING_LINE),
     }
   },
   computed: {
@@ -83,16 +79,8 @@ export default {
   },
   watch: {},
   methods: {
-    ...mapActions(['setAction']),
     toggle() {
       this.active = !this.active
-      if (this.active) {
-        this.setAction(this.DRAWING_LINE)
-      }
-    },
-    onDrawingLock() {
-      this.active = false
-      this.setAction(this.DRAWING_LOCK)
     },
   },
 

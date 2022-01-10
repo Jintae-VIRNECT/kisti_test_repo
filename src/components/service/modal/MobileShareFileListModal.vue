@@ -116,7 +116,7 @@ export default {
           oldVal && oldVal.length > 0 && newVal.length === 0 && this.modalShow
 
         //fileList가 조회되고, pdf 목록과 dom이 모두 생성된 후에 부모에 있는 callback을 실행하기 위해 이벤트 전달
-        if (newVal.length > 0) {
+        if (oldVal && newVal && newVal.length > 0) {
           this.$nextTick(() => {
             this.$emit('rendered')
 
