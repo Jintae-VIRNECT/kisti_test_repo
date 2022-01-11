@@ -39,19 +39,30 @@
 //toastNotify
 .toasted .primary.default,
 .toasted.toasted-primary.remote-toast.default,
+//default
+.toasted .primary.info,
+.toasted.toasted-primary.remote-toast.info,
 //toastError
 .toasted .primary.error,
 .toasted.toasted-primary.remote-toast.error, 
 .toasted.toasted-primary.remote-toast.error.info {
-  padding: 3px 18px;
+  padding: 15px 18px;
+  min-height: 50px;
+  padding-right: 64px;
+  text-align: start;
   &.mobile {
-    padding: 0.02rem 1.6rem;
+    min-height: 4.4rem;
+    padding: 1.2rem 1.6rem;
+    padding-right: 6.4rem;
+    justify-content: flex-start;
     .action.icon {
       margin-left: 0;
     }
   }
   .action.icon {
-    margin-left: 40px;
+    position: absolute;
+    right: 16px;
+    //margin-left: 40px;
   }
 }
 
@@ -88,11 +99,10 @@
   // border-radius: 3px;
   // box-shadow: 0 3px 8px 0 rgba(16, 16, 17, 0.5),
   //   0 1px 3px 0 rgba(16, 16, 17, 0.14);
-  padding: 16px 18px;
-  &.mobile {
-    justify-content: center;
-    padding: 1.2rem 1.6rem;
-  }
+  //padding: 16px 18px;
+  // &.mobile {
+  //   padding: 0.04rem 1.6rem;
+  // }
 }
 .toasted .primary.notice,
 .toasted.toasted-primary.remote-toast.notify {

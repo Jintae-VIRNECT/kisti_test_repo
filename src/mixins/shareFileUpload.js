@@ -19,11 +19,17 @@ export default {
   },
   methods: {
     //협업보드, ar 3d공유 파일 업로드 함수 공통 사용
-    async loadFile(file, callback = () => {}, fileType = FILE_TYPE.SHARE) {
+    async loadFile(
+      file,
+      callback = () => {},
+      fileType = FILE_TYPE.SHARE,
+      failedCallback = () => {},
+    ) {
       if (file) {
         if (file.size > maxFileSize) {
           this.toastError(this.$t('service.file_maxsize'))
           this.clearUploadFile()
+          failedCallback()
           return false
         }
 
@@ -67,6 +73,8 @@ export default {
             }
           } catch (err) {
             this.removeUploadSpinner()
+            this.clearUploadFile()
+            failedCallback()
 
             switch (err.code) {
               case ERROR.FILE_EXTENSION_UNSUPPORT: //미지원 파일 확장자
@@ -89,6 +97,7 @@ export default {
           callback()
         } else {
           this.clearUploadFile()
+          failedCallback()
           this.removeUploadSpinner()
           this.toastError(this.$t('service.file_type'))
           return false

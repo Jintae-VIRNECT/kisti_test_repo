@@ -49,7 +49,12 @@ export default {
         className: this.className,
         type: 'info',
         duration: 3000,
-        action: null,
+        action: {
+          icon: 'close',
+          onClick: (e, toastObject) => {
+            toastObject.goAway(0)
+          },
+        },
         containerClass: 'toast-default',
         ...options,
       })

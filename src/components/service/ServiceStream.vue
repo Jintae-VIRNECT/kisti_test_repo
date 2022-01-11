@@ -5,6 +5,15 @@
     ></stream-tools>
     <menus v-if="!isMobileSize"></menus>
     <main-video></main-video>
+    <mobile-stt-button v-if="isSttBtnVisible"></mobile-stt-button>
+    <div class="mobile-stt-layer" :class="{ active: isSttActivated }">
+      <transition name="hide-bottom">
+        <chat-speech
+          v-if="isSttActivated"
+          @hidespeech="useStt(false)"
+        ></chat-speech>
+      </transition>
+    </div>
   </div>
 </template>
 
@@ -12,7 +21,9 @@
 import StreamTools from './tools/StreamTools'
 import Menus from './tools/Menus'
 import MainVideo from './stream/MainVideo'
-import { mapGetters } from 'vuex'
+import MobileSttButton from './stream/partials/MobileSttButton'
+import ChatSpeech from './subview/partials/ChatSpeech'
+import { mapActions, mapGetters } from 'vuex'
 
 export default {
   name: 'ServiceStream',
@@ -20,9 +31,20 @@ export default {
     StreamTools,
     Menus,
     MainVideo,
+    MobileSttButton,
+    ChatSpeech,
   },
   computed: {
-    ...mapGetters(['viewForce']),
+    ...mapGetters(['viewForce', 'translate', 'usingStt']),
+    isSttBtnVisible() {
+      return this.translate.flag && this.isMobileSize
+    },
+    isSttActivated() {
+      return this.isMobileSize && this.usingStt && this.translate.sttSync
+    },
+  },
+  methods: {
+    ...mapActions(['useStt']),
   },
 }
 </script>

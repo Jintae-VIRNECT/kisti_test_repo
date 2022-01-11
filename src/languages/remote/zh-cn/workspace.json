@@ -30,6 +30,7 @@
 	"confirm_force_logout_received": "已被导师强制退出。",
 	"confirm_force_logout_unavailable": "先生/女士连接合作且无法退出。",
 	"confirm_video_restrict_join": "[影像限制模式]连接至合作室。\n领导可远程控制相机。\n[连接]选择时，被看作同意控制相机。",
+	"confirm_open_room_start": "用不指定参与者的开放方式\n生成合作间。",
 
 	"history": "最近记录",
 	"remote": "远程合作",

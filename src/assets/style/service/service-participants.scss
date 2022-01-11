@@ -257,10 +257,10 @@
 }
 .participant-video__name-text {
   display: flex;
-  width: fit-content;
-  max-width: 100%;
+  width: 100%;
+  max-width: 39vw;
   margin: auto;
-  text-align: center;
+  justify-content: center;
   > span {
     display: inline-block;
     max-width: 100%;
@@ -415,6 +415,7 @@
         display: flex;
         align-items: center;
         justify-content: center;
+        min-width: 2.7rem;
         width: 2.7rem;
         height: 1.8rem;
         padding: 0;

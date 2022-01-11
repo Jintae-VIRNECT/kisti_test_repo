@@ -104,7 +104,6 @@ export default {
       'useTranslate',
       'allowLocalRecord',
     ]),
-
     isLeader() {
       return this.account.roleType === ROLE.LEADER
     },

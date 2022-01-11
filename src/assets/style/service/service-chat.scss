@@ -907,6 +907,9 @@
       &.ar::before {
         mask-image: url(~assets/image/call/ic_chat_ar.svg);
       }
+      &.ar-3d::before {
+        mask-image: url(~assets/image/call/chat/icon_3D_object.svg);
+      }
       &.board::before {
         mask-image: url(~assets/image/call/ic_chat_board.svg);
       }
@@ -1137,12 +1140,18 @@
         @include ellipsis;
       }
       .chat-down__bar--button {
-        width: 8rem;
+        padding: 0 1.6rem;
         height: 3rem;
         color: $new_color_text_main;
         background-color: $new_color_bg_button_primary;
         border-radius: 4px;
         @include fontLevel(100);
+        
+        &:disabled,
+        &.disabled {
+          background-color: #213d62;
+          cursor: default;
+        }
       }
     }
   }

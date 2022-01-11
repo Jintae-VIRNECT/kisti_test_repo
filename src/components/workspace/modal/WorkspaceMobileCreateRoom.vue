@@ -9,7 +9,7 @@
       <div class="selected-header">
         <h1>{{ $t('workspace.create_remote_selected') }}</h1>
         <p class="selected-status">
-          {{ `${onlineMemeberOfSelection}/${selection.length}` }}
+          {{ `${selection.length}/${maxSelect}` }}
         </p>
         <button
           class="user-list-toggle-btn"
@@ -56,6 +56,7 @@ import FullScreenModal from '../../modules/FullScreenModal'
 import CreateRoomInvite from '../partials/ModalCreateRoomInvite'
 import ProfileList from 'ProfileList'
 import confirmMixin from 'mixins/confirm'
+import { maxParticipants } from 'utils/callOptions'
 
 export default {
   components: {
@@ -67,6 +68,7 @@ export default {
   data() {
     return {
       selectedListVisible: false,
+      maxSelect: maxParticipants - 1,
     }
   },
   props: {
@@ -116,9 +118,6 @@ export default {
         return this.account.nickname
       }
     },
-    onlineMemeberOfSelection() {
-      return this.selection.filter(user => user.accessType === 'LOGIN').length
-    },
   },
   watch: {
     selection(cur, prev) {
@@ -127,7 +126,6 @@ export default {
       }
     },
   },
-
   methods: {
     close() {
       this.beforeClose()

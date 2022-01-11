@@ -72,7 +72,7 @@ const FILE_ZIP = {
 }
 const FILE_PDF = {
   key: 'pdf',
-  ext: [],
+  ext: ['pdf'],
   mime: [
     /* ETC */
     'application/pdf',
@@ -144,7 +144,42 @@ const FILE_IMAGE = {
 }
 const FILE_DOC = {
   key: 'doc',
-  ext: [],
+  ext: [
+    'doc',
+    'docx',
+    'docm',
+    'dot',
+    'dotx',
+    'dotm',
+    'xls',
+    'xlsx',
+    'xlsm',
+    'xlsb',
+    'xlt',
+    'xltx',
+    'xltxm',
+    'ppt',
+    'pptx',
+    'pptm',
+    'pot',
+    'potx',
+    'potm',
+    'pps',
+    'ppsx',
+    'ppsm',
+    'ppa',
+    'hwp',
+    'hwt',
+    'hwpx',
+    'hwtx',
+    'rtf',
+    'odp',
+    'odt',
+    'ar',
+    'psd',
+    'txt',
+    'csv',
+  ],
   mime: [
     /* MS Office */
     'application/msword', // .doc, .dot
@@ -179,6 +214,18 @@ const FILE_DOC = {
     'application/vnd.hancom.hwpx', // .hwpx
   ],
 }
+
+//사파리 모바일 에서만 video, audio type을 제외하기 위해 사용
+export const fileTypesExceptVideoRelation = () => {
+  return [
+    ...FILE_3D.ext.map(ext => `.${ext}`),
+    ...FILE_PDF.ext.map(ext => `.${ext}`),
+    ...FILE_ZIP.ext.map(ext => `.${ext}`),
+    ...FILE_IMAGE.ext.map(ext => `.${ext}`),
+    ...FILE_DOC.ext.map(ext => `.${ext}`),
+  ].join(', ')
+}
+
 /**
  * get file type
  * @return {String} '3d', 'zip', 'pdf', 'audio', 'video', 'image', 'doc', 'file'

@@ -77,6 +77,7 @@
       :beforeClose="beforeClose"
       :tabview="tabview"
       :memberList="memberList"
+      :image.sync="image"
       @tabChange="tabChange"
       @update="update"
       @kickout="kickout"

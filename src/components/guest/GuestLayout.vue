@@ -122,7 +122,9 @@ export default {
           this.onRegistrationFail,
         )
       } catch (err) {
-        if (err.code === ERROR.GUEST_USER_NOT_FOUND) {
+        if (err.code === ERROR.ASSIGNED_GUEST_USER_IS_NOT_ENOUGH) {
+          this.showGuestExpiredAlarm()
+        } else if (err.code === ERROR.GUEST_USER_NOT_FOUND) {
           this.showGuestExpiredAlarm()
         } else {
           console.error(err)
@@ -158,7 +160,9 @@ export default {
     },
     showGuestExpiredAlarm() {
       this.confirmDefault(this.$t('guest.guest_license_expired'), {
-        action: () => {
+        action: async () => {
+          const redirect = false
+          await auth.logout(redirect)
           location.href = `${URLS['console']}`
         },
       })
@@ -199,6 +203,8 @@ export default {
     try {
       //파라미터 유효성 체크
       if (this.workspaceId === undefined || this.sessionId === undefined) {
+        const redirect = false
+        await auth.logout(redirect)
         location.href = `${URLS['console']}`
         console.error('invalid params')
         return
@@ -216,13 +222,7 @@ export default {
         await this.initGuestMember()
       }
     } catch (err) {
-      if (err.code === ERROR.ASSIGNED_GUEST_USER_IS_NOT_ENOUGH) {
-        this.showGuestExpiredAlarm()
-      } else if (err.code === ERROR.GUEST_USER_NOT_FOUND) {
-        this.showGuestExpiredAlarm()
-      } else {
-        console.error(err)
-      }
+      console.error(err)
     }
   },
   beforeDestroy() {

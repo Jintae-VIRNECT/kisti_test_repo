@@ -82,6 +82,7 @@
       @addPdfHistory="mobileAddPdfHistory"
       @uploading="onUploading"
       @uploaded="onUploaded"
+      @uploadFailed="onUploadFailed"
     ></mobile-footer>
     <reconnect-modal :visible.sync="connectVisible"></reconnect-modal>
     <setting-modal></setting-modal>
@@ -146,12 +147,38 @@ export default {
     if (from.name !== 'workspace' && from.name !== 'connectioninfo') {
       next({ name: 'workspace' })
     }
-    next()
+    next(vm => {
+      const sessionId = vm.$store.getters.roomInfo.sessionId
+      if (!sessionId) {
+        vm.$router.push({ name: 'workspace' })
+      }
+    })
   },
   beforeRouteLeave(to, from, next) {
-    Store.commit('callClear')
-    Store.dispatch('callReset')
-    next()
+    //세션 id가 없는 상태로 접근시 다시 home으로 이동하게됨
+    //이때는 confirm 없이 이동처리
+    //ex.. 협업 종료후 back key로 home -> service 접근시
+    if (!this.$store.getters.roomInfo.sessionId) {
+      return next()
+    }
+
+    const resetCall = () => {
+      Store.commit('callClear')
+      Store.dispatch('callReset')
+      Store.dispatch('roomClear')
+      this.$call.leave()
+    }
+
+    //모바일 화면 일때 협업 종료 및 home 화면 이동시 alert 출력
+    if (this.isMobileSize) {
+      if (confirm(this.$t('service.room_exit_question'))) {
+        resetCall()
+        return next()
+      }
+    } else {
+      resetCall()
+      return next()
+    }
   },
   mixins: [localRecorderMixin, serverRecordMixin, confirmMixin],
   components: {
@@ -389,6 +416,9 @@ export default {
     onUploaded() {
       this.uploadingFile = ''
     },
+    onUploadFailed() {
+      this.uploadingFile = ''
+    },
     showAccountDeleted() {
       this.confirmDefault(this.$t('guest.guest_account_deleted_and_logout'), {
         action: () => {
@@ -419,8 +449,12 @@ export default {
     }
 
     this.initTimeout()
-    window.onbeforeunload = () => {
-      return true
+
+    //mobile에서 onbeforeunload는 beforerouteleave에서 처리하므로, 정의하지 않음.
+    if (!this.isMobileSize) {
+      window.onbeforeunload = () => {
+        return true
+      }
     }
 
     navigator.mediaDevices.ondevicechange = this.onDeviceChange

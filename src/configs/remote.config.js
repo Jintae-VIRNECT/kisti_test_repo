@@ -27,6 +27,7 @@ export const SIGNAL = {
   LINKFLOW: 'signal:linkflow',
   LOCATION: 'signal:location',
   DRAWING_FROM_VUEX: 'signal:drawingFromVuex',
+  AR_FROM_VUEX: 'signal:arFromVuex',
   AR_3D: 'signal:3dContentsShare',
 }
 

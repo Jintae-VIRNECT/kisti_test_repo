@@ -64,7 +64,12 @@
             <button class="btn line imageinput regist" @click="imageUpload">
               {{ $t('button.image_regist') }}
             </button>
-            <button class="btn line imageinput delete" @click="remove">
+
+            <button
+              :disabled="!canDelete"
+              class="btn line imageinput delete"
+              @click="remove"
+            >
               {{ $t('button.image_remove') }}
             </button>
           </div>
@@ -216,6 +221,11 @@ export default {
       }
 
       return false
+    },
+    canDelete() {
+      return (
+        this.image === 'default' || this.image === '' || this.image === null
+      )
     },
   },
   watch: {

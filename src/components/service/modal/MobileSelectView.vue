@@ -26,7 +26,10 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
+
 import confirmMixin from 'mixins/confirm'
+import toastMixin from 'mixins/toast'
 
 const MENU = {
   SHARE_VIEW: 'SHARE_VIEW',
@@ -37,7 +40,7 @@ const MENU = {
 
 export default {
   name: 'MobileSelectView',
-  mixins: [confirmMixin],
+  mixins: [confirmMixin, toastMixin],
 
   props: {
     visible: {
@@ -53,6 +56,7 @@ export default {
     visible(newVal) {
       if (newVal) {
         this.participant = newVal
+        this.isMuted = this.participant.mute
         this.initMenus()
       }
     },
@@ -65,6 +69,7 @@ export default {
     }
   },
   computed: {
+    ...mapGetters(['viewForce']),
     muteVisible() {
       return this.participant.id !== this.account.uuid
     },
@@ -118,6 +123,11 @@ export default {
       this.close()
     },
     selectMainView() {
+      if (this.viewForce === true) {
+        this.toastDefault(this.$t('service.participant_sharing_cannot_change'))
+        return
+      }
+
       this.$emit('normal')
       this.close()
     },

@@ -1,12 +1,12 @@
 import { mapGetters, mapActions, mapMutations } from 'vuex'
 import toastMixin from 'mixins/toast'
 import confirmMixin from 'mixins/confirm'
+
 import { VIEW, ACTION } from 'configs/view.config'
 import { DEVICE } from 'configs/device.config'
 import {
   DRAWING,
   SIGNAL,
-  AR_FEATURE,
   CAPTURE_PERMISSION,
   ROLE,
   AR_3D_FILE_SHARE_STATUS,
@@ -76,6 +76,12 @@ export default {
       if (!val && val !== bVal && this.participants.length > 0) {
         this.toastDefault(this.$t('service.toast_leave_leader'))
         //this.showImage({})  //리더 떠나도 협업 보드는 초기화 시키지 않는다. 더이상 리더만 협업보드를 활성화 시킬 수 있는 게 아니므로
+      }
+
+      //리더가 떠나면 AR 공유를 종료
+      const isArView = this.view === VIEW.AR
+      if (isArView) {
+        this.$call.sendArFeatureStop()
       }
     },
 
@@ -299,6 +305,7 @@ export default {
       }
     },
     startAr(sendSignal = false) {
+      this.debug('tabChange :: startAr')
       this.confirmClose()
 
       this.toastDefault(
@@ -319,6 +326,7 @@ export default {
 
       //AR 공유 기기가 홀로렌즈인 경우 : 3d 공유 기능모드로만 사용
       if (this.mainView.deviceType === DEVICE.HOLOLENS) {
+        this.debug('tabChange :: hololense ar 3d start')
         this.activate3dShareMode()
       }
     },
@@ -341,34 +349,7 @@ export default {
         type: 'system',
       })
     },
-    checkArFeature(receive) {
-      const data = JSON.parse(receive.data)
 
-      if (data.from === this.account.uuid) return
-      if (this.account.roleType === ROLE.LEADER) {
-        if (data.type === AR_FEATURE.FEATURE) {
-          if ('hasArFeature' in data) {
-            this.updateParticipant({
-              connectionId: receive.from.connectionId,
-              hasArFeature: data.hasArFeature,
-            })
-            if (data.hasArFeature === false) {
-              this.addChat({
-                status: 'ar-unsupport',
-                type: 'system',
-              })
-            }
-          }
-        }
-      } else {
-        if (data.type === AR_FEATURE.START_AR_FEATURE) {
-          this.startAr()
-        } else if (data.type === AR_FEATURE.STOP_AR_FEATURE) {
-          this.toastDefault(this.$t('service.toast_ar_exit'))
-          this.setView(VIEW.STREAM)
-        }
-      }
-    },
     //협업보드 공유 종료 메시지 수신 시
     receiveEndDrawing({ data }) {
       if (data.type === DRAWING.END_DRAWING) {
@@ -408,13 +389,11 @@ export default {
   /* Lifecycles */
   created() {
     this.$eventBus.$on(SIGNAL.CAPTURE_PERMISSION, this.handlePermissionRes)
-    this.$eventBus.$on(SIGNAL.AR_FEATURE, this.checkArFeature)
     this.$eventBus.$on(SIGNAL.DRAWING, this.receiveEndDrawing)
   },
 
   beforeDestroy() {
     this.$eventBus.$off(SIGNAL.CAPTURE_PERMISSION, this.handlePermissionRes)
-    this.$eventBus.$off(SIGNAL.AR_FEATURE, this.checkArFeature)
     this.$eventBus.$off(SIGNAL.DRAWING, this.receiveEndDrawing)
   },
 }

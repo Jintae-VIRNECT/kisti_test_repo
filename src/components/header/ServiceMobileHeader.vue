@@ -7,7 +7,7 @@
 
     <div class="mobile-header-tools">
       <chat :tooltipActive="false"></chat>
-      <button class="mobile-header-tools__leave" @click.once="leave"></button>
+      <button class="mobile-header-tools__leave" @click="leave"></button>
     </div>
   </div>
 </template>
@@ -48,14 +48,15 @@ export default {
       }, 1000)
     },
     //pc인 경우 HeaderServiceTools에서 처리된다(동일함수)
+    // this.$call.leave() 는 ServiceLayout.vue의 beforeRouteLeave에서 처리된다
     leave() {
       try {
-        this.$call.leave()
+        // this.$call.leave()
 
         if (this.account.roleType === ROLE.GUEST) {
           window.history.back()
         } else {
-          this.$router.push({ name: 'workspace' })
+          this.$router.push({ name: 'workspace', params: 'leave' })
         }
       } catch (err) {
         if (this.account.roleType === ROLE.GUEST) {

@@ -11,8 +11,7 @@
         :key="menu.key"
         @click="goTab(menu.key)"
       >
-        <span class="layer"></span>
-        {{ $t(menu.text) }}
+        <span>{{ $t(menu.text) }}</span>
       </button>
     </div>
     <div class="footer-button-container">
@@ -22,6 +21,7 @@
           @selectMember="openParticipantModal"
         ></mobile-more-button>
         <mobile-capture-button
+          v-if="isLeader"
           :disabled="!isMainViewOn"
         ></mobile-capture-button>
         <mobile-flash-button></mobile-flash-button>
@@ -45,11 +45,12 @@
         <mobile-upload-button
           @uploading="onFileUploading"
           @uploaded="onFileUploaded"
+          @uploadFailed="onFileUploadFailed"
         ></mobile-upload-button>
       </template>
 
-      <!-- ar 공유 & 3d 공유 -->
-      <template v-else-if="view === VIEW.AR && viewAction === ACTION.AR_3D">
+      <!-- 리더 & ar 공유 & 3d 공유 -->
+      <template v-else-if="is3dFileUiVisible">
         <mobile-file-list-button
           :disabled="ar3dFileList.length === 0 && uploadingFile === ''"
           @openFileListModal="open3dFileListModal"
@@ -58,6 +59,7 @@
           :fileType="FILE_TYPE.OBJECT"
           @uploading="onFileUploading"
           @uploaded="on3dFileUploaded"
+          @uploadFailed="onFileUploadFailed"
         ></mobile-upload-button>
       </template>
     </div>
@@ -126,6 +128,13 @@ export default {
     isLeader() {
       return this.account.roleType === ROLE.LEADER
     },
+    is3dFileUiVisible() {
+      return (
+        this.isLeader &&
+        this.view === VIEW.AR &&
+        this.viewAction === ACTION.AR_3D
+      )
+    },
   },
   watch: {
     viewAction: {
@@ -159,6 +168,10 @@ export default {
       this.uploadingFile = ''
       this.$emit('uploaded')
       this.getFileList()
+    },
+    onFileUploadFailed() {
+      this.uploadingFile = ''
+      this.$emit('uploadFailed')
     },
     //협업보드 파일 목록 조회
     async getFileList() {
@@ -271,7 +284,6 @@ export default {
     margin-bottom: 1.6rem;
 
     > button {
-      position: relative;
       min-width: 8.7rem;
       //height: 2.8rem;
       margin: 0 0.3rem;
@@ -279,15 +291,19 @@ export default {
       color: $new_color_text_main;
       border-radius: 1.4rem;
       pointer-events: all;
-      @include fontLevel(75);
+
+      span {
+        position: relative;
+        @include fontLevel(75);
+      }
 
       &.active {
         background-color: rgba($new_color_bg_tab_active_rgb, 0.5);
       }
-      &.notice::after {
+      &.notice > span::after {
         position: absolute;
-        top: 2px;
-        right: 10px;
+        top: -2px;
+        right: -9px;
         width: 0.6rem;
         height: 0.6rem;
         background-color: #d9333a;

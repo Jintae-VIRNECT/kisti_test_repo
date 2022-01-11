@@ -36,12 +36,12 @@
       :isOpenRoom="isOpenRoom"
       :isJoin="isJoin"
     ></room-loading>
-    <collabo-float-button
-      v-if="workspace && workspace.uuid && tabName !== 'setting'"
-    ></collabo-float-button>
     <openroom-float-button
-      v-if="workspace && workspace.uuid && tabName !== 'setting'"
+      v-if="workspace && workspace.uuid && tabName === 'user'"
     ></openroom-float-button>
+    <collabo-float-button
+      v-if="workspace && workspace.uuid && tabName === 'user'"
+    ></collabo-float-button>
   </section>
 </template>
 
@@ -334,8 +334,10 @@ export default {
     setTabTop() {
       this.tabTop = this.$refs['tabSection'].$el.offsetTop
     },
-    logoutGuest(userType) {
+    async logoutGuest(userType) {
       if (userType === USER_TYPE.GUEST_USER) {
+        const redirect = false
+        await auth.logout(redirect)
         location.href = `${URLS['console']}`
       }
     },

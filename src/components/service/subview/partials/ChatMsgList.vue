@@ -22,13 +22,13 @@
       </transition>
       <transition name="hide-bottom">
         <chat-speech
-          v-if="usingStt && translate.sttSync"
+          v-if="isSttSyncAvailable"
           @hidespeech="useStt(false)"
         ></chat-speech>
       </transition>
       <transition name="hide-bottom">
         <chat-speech-streaming
-          v-if="usingStt && !translate.sttSync"
+          v-if="isSttStreamAvailable"
           @hidespeech="useStt(false)"
         ></chat-speech-streaming>
       </transition>
@@ -58,6 +58,12 @@ export default {
   },
   computed: {
     ...mapGetters(['chatList', 'view', 'translate', 'usingStt', 'speaker']),
+    isSttSyncAvailable() {
+      return !this.isMobileSize && this.usingStt && this.translate.sttSync
+    },
+    isSttStreamAvailable() {
+      return !this.isMobileSize && this.usingStt && !this.translate.sttSync
+    },
   },
   props: {
     show: Boolean,

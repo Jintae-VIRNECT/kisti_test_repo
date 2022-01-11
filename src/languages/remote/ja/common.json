@@ -50,7 +50,8 @@
     "request_again":"再要求",
     "connect_web":"Web接続​",
     "run_app":"App実行",
-    "previous": "前の"
+    "previous": "前の",
+    "create":"生成"
   },
   "date": {
     "lastday": "[昨日] A",

@@ -35,9 +35,10 @@
             <mic-test> </mic-test>
           </template>
 
-          <template v-else-if="menus[tabIdx].key === 'record'">
-            <set-record v-if="!isTablet && useLocalRecording"></set-record>
-            <set-server-record v-if="useRecording"></set-server-record>
+          <template v-else-if="menus[tabIdx].key === 'record' && useRecording">
+            <!-- 로컬 녹화는 모바일 기기에서 지원하지 않음 -->
+            <set-server-record></set-server-record
+            ><!--서버녹화-->
           </template>
           <template v-else-if="menus[tabIdx].key === 'language'">
             <set-language></set-language>
@@ -72,7 +73,6 @@ export default {
     MicTest,
     SetLanguage,
     SetTranslate: () => import('./WorkspaceSetTranslate'),
-    SetRecord: () => import('./WorkspaceSetRecord'),
     SetServerRecord: () => import('./WorkspaceSetServerRecord'),
     SetFeature: () => import('./WorkspaceSetFeature'),
   },
@@ -97,7 +97,7 @@ export default {
     },
   },
   computed: {
-    ...mapGetters(['useRecording', 'useLocalRecording']),
+    ...mapGetters(['useRecording']),
   },
   methods: {
     tabChange(idx) {
