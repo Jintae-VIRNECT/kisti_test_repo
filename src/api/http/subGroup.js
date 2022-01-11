@@ -1,5 +1,7 @@
 import http from 'api/gateway'
 
+import { memberSort } from 'utils/sort'
+
 /**
  * 워크스페이스에 있는 하위 멤버 그룹 목록 조회
  *
@@ -23,6 +25,7 @@ export const getSubGroups = async ({
   returnVal.groupInfoResponseList = returnVal.groupInfoResponseList.map(
     (subGroup, index) => {
       subGroup.index = index + 1
+      subGroup.remoteGroupMemberResponses.sort(memberSort)
       return subGroup
     },
   )
