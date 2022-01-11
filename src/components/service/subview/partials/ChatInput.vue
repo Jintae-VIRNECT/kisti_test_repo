@@ -35,7 +35,7 @@
       />
       <template v-if="fileList.length === 0">
         <button
-          v-if="translate.flag"
+          v-if="isSttBtnVisible"
           class="chat-input__form-speech"
           @click="doStt"
         >
@@ -121,6 +121,9 @@ export default {
       } else {
         return '.*'
       }
+    },
+    isSttBtnVisible() {
+      return this.translate.flag && !this.isMobileSize
     },
   },
   watch: {
