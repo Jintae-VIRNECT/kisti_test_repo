@@ -2,7 +2,10 @@ package com.virnect.uaa.infra.file;
 
 import java.io.File;
 import java.io.IOException;
+import java.time.LocalDate;
+import java.util.UUID;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 /**
@@ -41,4 +44,25 @@ public interface FileService {
 	 * @return - 파일 데이터
 	 */
 	File getFile(final String url);
+
+	/**
+	 * 파일 확장자 추출
+	 * @param filename - 파일명
+	 * @return - 파일 확장자 정보 (ex: .png)
+	 */
+	default String getExtensionFromFileName(String filename) {
+		if (StringUtils.isEmpty(filename) || filename.lastIndexOf('.') == -1) {
+			return "";
+		}
+		return filename.substring(filename.lastIndexOf('.'));
+	}
+
+	/**
+	 * 유니크한 파일명 생성
+	 * @param extension - 파일 확장자명
+	 * @return - 유니크한 파일명(확장자 포함)
+	 */
+	default String generateUniqueFileName(String extension) {
+		return LocalDate.now() + "_" + UUID.randomUUID().toString().replace("-", "") + extension;
+	}
 }

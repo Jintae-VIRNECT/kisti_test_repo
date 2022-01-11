@@ -143,6 +143,22 @@ public class UserCustomRepositoryImpl extends QuerydslRepositorySupport implemen
 			.fetch();
 	}
 
+	@Override
+	public List<User> findAllChildUsers(User masterUser) {
+		return query
+			.selectFrom(user)
+			.where(user.master.eq(masterUser))
+			.fetch();
+	}
+
+	@Override
+	public long deleteAllByIdIn(List<Long> deleteUserIds) {
+		return query
+			.delete(user)
+			.where(user.id.in(deleteUserIds))
+			.execute();
+	}
+
 	/**
 	 *
 	 *  다이나믹쿼리를 위한 조건 메서드

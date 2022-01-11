@@ -1,18 +1,18 @@
-package com.virnect.uaa.global.config;
+package com.virnect.uaa.infra.file.config;
 
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Profile;
 
 import io.minio.MinioClient;
 
-@Profile(value = {"dev", "local", "develop", "onpremise"})
-@Configuration
-public class MinioConfiguration {
+import com.virnect.uaa.infra.file.MinioFileService;
+
+@TestConfiguration
+public class MinioTestConfiguration {
 	@Value("${minio.access-key}")
 	private String accessKey;
 	@Value("${minio.secret-key}")
@@ -28,5 +28,10 @@ public class MinioConfiguration {
 			.build();
 		minioClient.ignoreCertCheck();
 		return minioClient;
+	}
+
+	@Bean
+	public MinioFileService minioFileService(MinioClient minioClient) {
+		return new MinioFileService(minioClient);
 	}
 }
