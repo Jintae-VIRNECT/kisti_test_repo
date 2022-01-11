@@ -6,9 +6,9 @@ spring:
     url: jdbc:h2:mem:users
     username: sa
     password:
-    h2:
-      console:
-        enabled: true
+  h2:
+    console:
+      enabled: true
   jpa:
     hibernate:
       ddl-auto: create-drop
@@ -45,13 +45,14 @@ spring:
 logging:
   level:
     com.virnect.user.application.*: DEBUG
+    org.hibernate.type.descriptor.sql: TRACE
 
 eureka:
   instance:
     prefer-ip-address: true
   client:
     service-url:
-      defaultZone: http://192.168.6.3:8761/eureka
+      defaultZone: http://192.168.6.3:8761/eusreka
     registry-fetch-interval-seconds: 3
     enabled: false
 
@@ -97,12 +98,13 @@ management:
     tags:
       application: ${spring.application.name}
 
+
 minio:
-    access-key: "virnect"
-    secret-key: "Qjsprxm13@$"
-    server: "https://192.168.6.3:2838"
-    bucket: "virnect-platform"
-    resource: "profile"
+  access-key: "virnect"
+  secret-key: "Qjsprxm13@$"
+  server: "https://192.168.6.3:2838"
+  bucket: "virnect-platform"
+  resource: "user/profile"
 
 cookie:
   session:
@@ -121,3 +123,16 @@ payletter:
   api: "http://localhost:8883"
   coupon: 1
   enabled: true
+
+
+cloud:
+  aws:
+    credentials:
+      access-key: AKIARQGLJD3UCFBXNUWQ
+      secret-key: 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
+    region:
+      auto: true
+    s3:
+      bucket:
+        name: virnect-platform-qa
+        resource: user/profile

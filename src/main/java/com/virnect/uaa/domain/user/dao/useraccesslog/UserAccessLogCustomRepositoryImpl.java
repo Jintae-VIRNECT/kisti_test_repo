@@ -1,21 +1,30 @@
 package com.virnect.uaa.domain.user.dao.useraccesslog;
 
-import org.springframework.data.jpa.repository.support.QuerydslRepositorySupport;
+import static com.virnect.uaa.domain.user.domain.QUserAccessLog.*;
 
-import com.virnect.uaa.domain.user.domain.QUserAccessLog;
+import java.util.List;
+
+import com.querydsl.jpa.impl.JPAQueryFactory;
+
 import com.virnect.uaa.domain.user.domain.User;
-import com.virnect.uaa.domain.user.domain.UserAccessLog;
 
-public class UserAccessLogCustomRepositoryImpl extends QuerydslRepositorySupport
-	implements UserAccessLogCustomRepository {
+public class UserAccessLogCustomRepositoryImpl implements UserAccessLogCustomRepository {
+	private final JPAQueryFactory query;
 
-	public UserAccessLogCustomRepositoryImpl() {
-		super(UserAccessLog.class);
+	public UserAccessLogCustomRepositoryImpl(JPAQueryFactory query) {
+		this.query = query;
 	}
 
 	@Override
 	public long deleteAllUserAccessLogByUser(User user) {
-		QUserAccessLog qUserAccessLog = QUserAccessLog.userAccessLog;
-		return delete(qUserAccessLog).where(qUserAccessLog.user.eq(user)).execute();
+		return query.delete(userAccessLog).where(userAccessLog.user.eq(user)).execute();
+	}
+
+	@Override
+	public long deleteAllByUserIn(List<User> users) {
+		return query
+			.delete(userAccessLog)
+			.where(userAccessLog.user.in(users))
+			.execute();
 	}
 }

@@ -37,4 +37,8 @@ public interface UserCustomRepository {
 	List<User> findAllSeatUsersByWorkspaceId(String workspaceId);
 
 	List<String> findAllSeatUserNicknames(User masterUser);
+
+	List<User> findAllChildUsers(User masterUser);
+
+	long deleteAllByIdIn(List<Long> deleteUserIds);
 }

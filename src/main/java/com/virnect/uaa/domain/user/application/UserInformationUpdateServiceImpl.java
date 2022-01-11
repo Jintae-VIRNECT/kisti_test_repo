@@ -2,6 +2,8 @@ package com.virnect.uaa.domain.user.application;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -30,6 +32,7 @@ import com.virnect.uaa.domain.user.dto.response.UserSecessionResponse;
 import com.virnect.uaa.domain.user.error.UserAccountErrorCode;
 import com.virnect.uaa.domain.user.exception.UserServiceException;
 import com.virnect.uaa.domain.user.mapper.UserInfoMapper;
+import com.virnect.uaa.infra.file.Default;
 import com.virnect.uaa.infra.file.FileService;
 
 @Slf4j
@@ -126,13 +129,16 @@ public class UserInformationUpdateServiceImpl implements UserInformationUpdateSe
 		// 3. Register current user as secession user
 		registerUserToSecessionUser(user, userSecessionRequest.getReason());
 
-		// 4. Delete current user information
+		// 4. Delete child user which current user set as master
+		deleteChildUser(user);
+
+		// 5. Delete current user information
 		deleteUserInformation(user);
 
-		// 5. Delete user account
+		// 6. Delete user account
 		userRepository.delete(user);
 
-		// 6. secession process to related service
+		// 7. secession process to related service
 		return secessionProcessService.sendSecessionRequestToAllExternalService(userSecessionRequest, user);
 	}
 
@@ -154,14 +160,45 @@ public class UserInformationUpdateServiceImpl implements UserInformationUpdateSe
 		log.info("[USER_SECESSION] - {}", secessionUser);
 	}
 
-	private void deleteUserInformation(User user) {
-		// Delete user profile image
-		fileService.delete(user.getProfile());
+	public void deleteChildUser(User user) {
+		// delete guest and workspace_users
+		List<User> childUsers = userRepository.findAllChildUsers(user);
+
+		// Delete user account permission
+		userPermissionRepository.deleteAllByUserIn(childUsers);
+
+		// Delete user otp code information
+		userOTPRepository.deleteAllByEmailIn(
+			childUsers.stream().map(User::getEmail).collect(Collectors.toList())
+		);
+
+		// Delete user access log history
+		userAccessLogRepository.deleteAllByUserIn(childUsers);
+
+		// Delete user profiles
+		for (User deleteUser : childUsers) {
+			if (!Default.USER_PROFILE.isValueEquals(deleteUser.getProfile())) {
+				fileService.delete(deleteUser.getProfile());
+			}
+		}
+
+		// Delete All user
+		userRepository.deleteAllByIdIn(childUsers.stream().map(User::getId).collect(Collectors.toList()));
+	}
+
+	public void deleteUserInformation(User user) {
 		// Delete user account permission
 		userPermissionRepository.deleteAllUserPermissionByUser(user);
+
 		// Delete user otp code information
 		userOTPRepository.deleteAllByEmail(user.getEmail());
+
 		// Delete user access log history
 		userAccessLogRepository.deleteAllUserAccessLogByUser(user);
+
+		// Delete user profiles
+		if (!Default.USER_PROFILE.isValueEquals(user.getProfile())) {
+			fileService.delete(user.getProfile());
+		}
 	}
 }
