@@ -1,37 +1,16 @@
 package com.virnect.workspace.application.workspaceuser;
 
-import com.virnect.workspace.application.license.LicenseRestService;
-import com.virnect.workspace.application.license.dto.LicenseRevokeResponse;
-import com.virnect.workspace.application.license.dto.MyLicenseInfoListResponse;
-import com.virnect.workspace.application.license.dto.MyLicenseInfoResponse;
-import com.virnect.workspace.application.license.dto.WorkspaceLicensePlanInfoResponse;
-import com.virnect.workspace.application.remote.RemoteRestService;
-import com.virnect.workspace.application.user.UserRestServiceHandler;
-import com.virnect.workspace.application.user.dto.request.*;
-import com.virnect.workspace.application.user.dto.response.*;
-import com.virnect.workspace.dao.workspace.WorkspaceRepository;
-import com.virnect.workspace.dao.workspacepermission.WorkspacePermissionRepository;
-import com.virnect.workspace.dao.workspacerole.WorkspaceRoleRepository;
-import com.virnect.workspace.dao.workspaceuser.WorkspaceUserRepository;
-import com.virnect.workspace.dao.workspaceuserpermission.WorkspaceUserPermissionRepository;
-import com.virnect.workspace.domain.rest.LicenseStatus;
-import com.virnect.workspace.domain.workspace.*;
-import com.virnect.workspace.dto.request.*;
-import com.virnect.workspace.dto.response.*;
-import com.virnect.workspace.event.cache.UserWorkspacesDeleteEvent;
-import com.virnect.workspace.event.history.HistoryAddEvent;
-import com.virnect.workspace.event.message.MailContextHandler;
-import com.virnect.workspace.event.message.MailSendEvent;
-import com.virnect.workspace.exception.WorkspaceException;
-import com.virnect.workspace.global.common.ApiResponse;
-import com.virnect.workspace.global.common.CustomPageHandler;
-import com.virnect.workspace.global.common.CustomPageResponse;
-import com.virnect.workspace.global.common.mapper.rest.RestMapStruct;
-import com.virnect.workspace.global.constant.Mail;
-import com.virnect.workspace.global.constant.Permission;
-import com.virnect.workspace.global.error.ErrorCode;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import java.io.IOException;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Locale;
+import java.util.Optional;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Profile;
@@ -45,11 +24,68 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.servlet.view.RedirectView;
 import org.thymeleaf.context.Context;
 
-import java.io.IOException;
-import java.time.LocalDateTime;
-import java.util.*;
-import java.util.function.Function;
-import java.util.stream.Collectors;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+
+import com.virnect.workspace.application.license.LicenseRestService;
+import com.virnect.workspace.application.license.dto.LicenseRevokeResponse;
+import com.virnect.workspace.application.license.dto.MyLicenseInfoListResponse;
+import com.virnect.workspace.application.license.dto.MyLicenseInfoResponse;
+import com.virnect.workspace.application.license.dto.WorkspaceLicensePlanInfoResponse;
+import com.virnect.workspace.application.remote.RemoteRestService;
+import com.virnect.workspace.application.user.UserRestServiceHandler;
+import com.virnect.workspace.application.user.dto.request.GuestMemberRegistrationRequest;
+import com.virnect.workspace.application.user.dto.request.MemberRegistrationRequest;
+import com.virnect.workspace.application.user.dto.request.MemberUserPasswordChangeRequest;
+import com.virnect.workspace.application.user.dto.response.MemberUserPasswordChangeResponse;
+import com.virnect.workspace.application.user.dto.response.UserInfoListRestResponse;
+import com.virnect.workspace.application.user.dto.response.UserInfoRestResponse;
+import com.virnect.workspace.application.user.dto.response.UserProfileUpdateResponse;
+import com.virnect.workspace.dao.workspace.WorkspaceRepository;
+import com.virnect.workspace.dao.workspacepermission.WorkspacePermissionRepository;
+import com.virnect.workspace.dao.workspacerole.WorkspaceRoleRepository;
+import com.virnect.workspace.dao.workspaceuser.WorkspaceUserRepository;
+import com.virnect.workspace.dao.workspaceuserpermission.WorkspaceUserPermissionRepository;
+import com.virnect.workspace.domain.rest.LicenseStatus;
+import com.virnect.workspace.domain.workspace.Role;
+import com.virnect.workspace.domain.workspace.UserType;
+import com.virnect.workspace.domain.workspace.Workspace;
+import com.virnect.workspace.domain.workspace.WorkspacePermission;
+import com.virnect.workspace.domain.workspace.WorkspaceRole;
+import com.virnect.workspace.domain.workspace.WorkspaceUser;
+import com.virnect.workspace.domain.workspace.WorkspaceUserPermission;
+import com.virnect.workspace.dto.request.MemberAccountCreateInfo;
+import com.virnect.workspace.dto.request.MemberAccountCreateRequest;
+import com.virnect.workspace.dto.request.MemberAccountDeleteRequest;
+import com.virnect.workspace.dto.request.MemberGuestCreateRequest;
+import com.virnect.workspace.dto.request.MemberGuestDeleteRequest;
+import com.virnect.workspace.dto.request.MemberKickOutRequest;
+import com.virnect.workspace.dto.request.MemberProfileUpdateRequest;
+import com.virnect.workspace.dto.request.MemberUpdateRequest;
+import com.virnect.workspace.dto.request.WorkspaceInviteRequest;
+import com.virnect.workspace.dto.request.WorkspaceMemberPasswordChangeRequest;
+import com.virnect.workspace.dto.response.MemberProfileUpdateResponse;
+import com.virnect.workspace.dto.response.MemberSeatDeleteResponse;
+import com.virnect.workspace.dto.response.PageMetadataRestResponse;
+import com.virnect.workspace.dto.response.WorkspaceMemberInfoListResponse;
+import com.virnect.workspace.dto.response.WorkspaceMemberPasswordChangeResponse;
+import com.virnect.workspace.dto.response.WorkspaceNewMemberInfoResponse;
+import com.virnect.workspace.dto.response.WorkspaceUserInfoListResponse;
+import com.virnect.workspace.dto.response.WorkspaceUserInfoResponse;
+import com.virnect.workspace.dto.response.WorkspaceUserLicenseInfoResponse;
+import com.virnect.workspace.dto.response.WorkspaceUserLicenseListResponse;
+import com.virnect.workspace.event.cache.UserWorkspacesDeleteEvent;
+import com.virnect.workspace.event.history.HistoryAddEvent;
+import com.virnect.workspace.event.message.MailContextHandler;
+import com.virnect.workspace.event.message.MailSendEvent;
+import com.virnect.workspace.exception.WorkspaceException;
+import com.virnect.workspace.global.common.ApiResponse;
+import com.virnect.workspace.global.common.CustomPageHandler;
+import com.virnect.workspace.global.common.CustomPageResponse;
+import com.virnect.workspace.global.common.mapper.rest.RestMapStruct;
+import com.virnect.workspace.global.constant.Mail;
+import com.virnect.workspace.global.constant.Permission;
+import com.virnect.workspace.global.error.ErrorCode;
 
 /**
  * Project: PF-Workspace
@@ -856,13 +892,11 @@ public abstract class WorkspaceUserService {
 			.orElseThrow(() -> new WorkspaceException(ErrorCode.ERR_WORKSPACE_NOT_FOUND));
 		if (!passwordChangeRequest.getRequestUserId().equals(passwordChangeRequest.getUserId())) {
 			// 요청한 사람이 마스터 또는 매니저여야 한다.
-			if (requestUserPermission.getWorkspaceRole().getRole() != Role.MASTER
-				|| requestUserPermission.getWorkspaceRole().getRole() != Role.MANAGER) {
+			if (!isMasterOrManagerRole(requestUserPermission.getWorkspaceRole())){
 				throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_INVALID_PERMISSION);
 			}
 			// 매니저 유저는 매니저 유저를 수정 할 수 없다.
-			if (requestUserPermission.getWorkspaceRole().getRole() == Role.MANAGER
-				&& updateUserPermission.getWorkspaceRole().getRole() == Role.MANAGER) {
+			if (isBothManagerRole(requestUserPermission.getWorkspaceRole(),updateUserPermission.getWorkspaceRole())) {
 				throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_INVALID_PERMISSION);
 			}
 		}
