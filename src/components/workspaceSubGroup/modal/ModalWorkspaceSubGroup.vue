@@ -188,6 +188,8 @@ export default {
           this.toastError(
             this.$t('subgroup.error_there_are_already_configured_members'),
           )
+        } else if (err.code === 4032) {
+          this.toastError(this.$t('subgroup.error_same_group_name_exists'))
         } else {
           console.error(err)
         }
