@@ -269,7 +269,9 @@
 	"guest_invite_email_transport_succeed": "已用郵箱發送連接URL。",
 	"guest_invite_email_transport_failed": "發送郵件失敗。",
 	"guest_invite_email_please_input_email_address": "請輸入郵箱地址。",
-	"guest_invite_email_validation_failed": "不是正確的郵箱形式。"
+	"guest_invite_email_validation_failed": "不是正確的郵箱形式。",
+
+	"room_exit_question":"確定要結束協作嗎？"
     
   }
 }

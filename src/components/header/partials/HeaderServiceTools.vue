@@ -75,9 +75,10 @@ export default {
   },
   methods: {
     //모바일인 경우 ServiceMobileHeader에서 처리된다(동일함수)
+    // this.$call.leave() 는 ServiceLayout.vue의 beforeRouteLeave에서 처리된다
     leave() {
       try {
-        this.$call.leave()
+        // this.$call.leave()
 
         if (this.account.roleType === ROLE.GUEST) {
           window.history.back()
