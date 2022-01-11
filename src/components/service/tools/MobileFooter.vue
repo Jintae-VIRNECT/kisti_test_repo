@@ -49,8 +49,8 @@
         ></mobile-upload-button>
       </template>
 
-      <!-- ar 공유 & 3d 공유 -->
-      <template v-else-if="view === VIEW.AR && viewAction === ACTION.AR_3D">
+      <!-- 리더 & ar 공유 & 3d 공유 -->
+      <template v-else-if="is3dFileUiVisible">
         <mobile-file-list-button
           :disabled="ar3dFileList.length === 0 && uploadingFile === ''"
           @openFileListModal="open3dFileListModal"
@@ -127,6 +127,13 @@ export default {
     },
     isLeader() {
       return this.account.roleType === ROLE.LEADER
+    },
+    is3dFileUiVisible() {
+      return (
+        this.isLeader &&
+        this.view === VIEW.AR &&
+        this.viewAction === ACTION.AR_3D
+      )
     },
   },
   watch: {
