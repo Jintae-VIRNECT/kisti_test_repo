@@ -31,7 +31,7 @@ export default {
     },
     border: {
       type: Boolean,
-      dafeult: true,
+      default: true,
     },
   },
   methods: {

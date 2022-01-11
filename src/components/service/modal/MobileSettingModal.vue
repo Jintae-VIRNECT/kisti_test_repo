@@ -27,6 +27,9 @@
         <service-set-server-record
           v-else-if="tabView === 'server-record'"
         ></service-set-server-record>
+        <service-set-local-record
+          v-else-if="tabView === 'local-record' && isLeader"
+        ></service-set-local-record>
         <service-mobile-set-translate v-else></service-mobile-set-translate>
       </div>
     </div>
@@ -38,6 +41,7 @@ import FullScreenModal from '../../modules/FullScreenModal'
 import ServiceSetPointing from './partials/ServiceSetPointing'
 import ServiceSetServerRecord from './partials/ServiceSetServerRecord'
 import ServiceMobileSetTranslate from './partials/ServiceMobileSetTranslate'
+import ServiceSetLocalRecord from './partials/ServiceSetLocalRecord'
 import { ROLE } from 'configs/remote.config'
 import { mapGetters } from 'vuex'
 
@@ -48,11 +52,11 @@ export default {
     ServiceSetPointing,
     ServiceSetServerRecord,
     ServiceMobileSetTranslate,
+    ServiceSetLocalRecord,
   },
   props: {
     visible: {
       type: Boolean,
-      dafault: true,
     },
     beforeClose: {
       type: Function,
@@ -78,6 +82,10 @@ export default {
         {
           key: 'server-record',
           text: this.$t('service.setting_server_record'),
+        },
+        {
+          key: 'local-record',
+          text: this.$t('service.setting_local_record'),
         },
         {
           key: 'translate',
