@@ -1,22 +1,25 @@
 <template>
   <div class="drawing-canvas">
-    <tooltip
-      v-if="showExitButton"
-      :content="`${$t('service.drawing')} ${$t('button.exit')}`"
-      customClass="drawing-box__exit-btn-tooltip"
-    >
-      <button
-        slot="body"
-        class="drawing-box__exit-btn"
-        @click="exitDrawing"
-      ></button>
-    </tooltip>
-    <canvas id="drawingCanvas" ref="drawingCanvas"></canvas>
-    <canvas id="cursorCanvas"></canvas>
-    <div
-      style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;visibility: hidden"
-    >
-      <canvas id="backCanvas" ref="backCanvas"></canvas>
+    <div ref="pinchzoom-layer">
+      <tooltip
+        v-if="showExitButton"
+        :content="`${$t('service.drawing')} ${$t('button.exit')}`"
+        customClass="drawing-box__exit-btn-tooltip"
+        placement="left"
+      >
+        <button
+          slot="body"
+          class="drawing-box__exit-btn"
+          @click="exitDrawing"
+        ></button>
+      </tooltip>
+      <canvas id="drawingCanvas" ref="drawingCanvas"></canvas>
+      <canvas id="cursorCanvas"></canvas>
+      <div
+        style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;visibility: hidden"
+      >
+        <canvas id="backCanvas" ref="backCanvas"></canvas>
+      </div>
     </div>
   </div>
 </template>
@@ -38,6 +41,7 @@ import DrawingAction from './DrawingAction'
 import MixinToast from 'mixins/toast'
 import { hexToRGBA } from 'utils/color'
 import Tooltip from 'Tooltip'
+import PinchZoom from 'pinch-zoom-js'
 
 const MOBILE_FIX_LINE_SIZE = 3
 
@@ -88,6 +92,15 @@ export default {
     ...mapGetters(['tools', 'view', 'viewAction', 'myInfo']),
     uuid() {
       return this.account.uuid
+    },
+  },
+  watch: {
+    viewAction(newVal) {
+      if (newVal === ACTION.DRAWING_LOCK && this.isMobileSize) {
+        if (this.pinchZoom) this.pinchZoom.enable()
+      } else {
+        if (this.pinchZoom) this.pinchZoom.disable()
+      }
     },
   },
   methods: {
@@ -253,7 +266,36 @@ export default {
       this.receiveRender()
       this.optimizeCanvasSize() //캔버스 사이즈, scale, 브러시, 커서 크기를 명시적으로 초기화/업데이트 한다.
 
+      this.$nextTick(() => this.initPinchZoom())
+
       return this.canvas
+    },
+
+    initPinchZoom() {
+      const el = this.$refs['pinchzoom-layer']
+      this.pinchZoom = new PinchZoom(el, {
+        minZoom: 1,
+        maxZoom: 5,
+        animationDuration: 0,
+        draggableUnzoomed: false,
+        tapZoomFactor: 2,
+        onZoomEnd: object => {
+          //zoom in 이 되지 않은 상태에서 두개 손가락으로 panning을 하는 경우 이미지가 중앙을 벗어난채로 유지되는 현상이 발생함
+          //zoom in 되지 않은 상태에서 바운더리 벗어나는 현상을 방지하기 위해 아래 로직을 추가하였음
+          if (object.zoomFactor === 1) {
+            //이벤트 콜백에서 실행되는 transform 이후에 원위치로 교정해줘야 하기 떄문에 timeout으로 딜레이를 부여함.
+            //object.initionOffset에서 기존 위치 offset 값을 얻을 수 있음
+            setTimeout(() => {
+              document.querySelector(
+                '.pinch-zoom-container',
+              ).firstChild.style.transform = `translate(
+                ${Math.abs(object.initialOffset.x)}px,  
+                ${Math.abs(object.initialOffset.y)}px)`
+            }, 50)
+          }
+        },
+      })
+      this.pinchZoom.disable()
     },
 
     optimizeCanvasSize() {
