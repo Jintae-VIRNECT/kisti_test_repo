@@ -14,7 +14,6 @@
         :placeholder="$t('subgroup.group_name')"
         :value.sync="groupNameInput"
         :valid.sync="groupNameInValid"
-        validate="validName"
         :validMessage="groupNameInvalidMessage"
         type="text"
         :count="20"
@@ -31,7 +30,7 @@
         @userSelect="selectUser"
         @inviteRefresh="refreshUser"
       ></member-list>
-      <button class="btn save-group" :disabled="saveDisable" @click="save">
+      <button class="btn save-group" :disabled="!canSave" @click="save">
         {{ $t('button.confirm') }} {{ '(' + selection.length + ')' }}
       </button>
     </div>
@@ -72,7 +71,7 @@ export default {
       default: false,
     },
     users: {
-      tpye: Array,
+      type: Array,
       default: () => [],
     },
     total: {
@@ -109,20 +108,26 @@ export default {
     },
     groupNameInvalidMessage() {
       const inputLength = this.groupNameInput.length
+
       if (inputLength === 0) {
         return this.$t('subgroup.error_enter_group_name')
-      } else if (inputLength < 2 && inputLength > 0) {
-        return this.$t('subgroup.error_please_input_more_two_letter')
-      } else if (this.selection.length < 1) {
-        return this.$t('subgroup.error_please_select_at_least_one_member')
-      } else {
-        return this.$t('subgroup.error_please_input_without_name')
       }
+
+      if (inputLength < 2 && inputLength > 0) {
+        return this.$t('subgroup.error_please_input_more_two_letter')
+      }
+
+      if (this.selection.length < 1) {
+        return this.$t('subgroup.error_please_select_at_least_one_member')
+      }
+
+      return ''
     },
-    saveDisable() {
-      return (
-        this.selection.length === 0 || this.groupNameInValid || this.isSaving
-      )
+    canSave() {
+      const hasSelection = this.selection.length > 0
+      const validGroupNameLength = this.groupNameInput.length > 1
+
+      return hasSelection && validGroupNameLength && !this.isSaving
     },
   },
   watch: {
@@ -136,22 +141,6 @@ export default {
       } else {
         this.selection = []
         this.groupNameInput = ''
-      }
-    },
-    groupNameInput() {
-      if (this.groupNameInput.length < 2 || this.selection.length < 1) {
-        this.groupNameInValid = true
-      }
-    },
-    selection() {
-      if (this.selection.length < 1) {
-        this.groupNameInValid = true
-      } else {
-        this.groupNameInValid = false
-      }
-
-      if (this.groupNameInput.length < 2) {
-        this.groupNameInValid = true
       }
     },
   },
@@ -199,6 +188,8 @@ export default {
           this.toastError(
             this.$t('subgroup.error_there_are_already_configured_members'),
           )
+        } else if (err.code === 4032) {
+          this.toastError(this.$t('subgroup.error_same_group_name_exists'))
         } else {
           console.error(err)
         }

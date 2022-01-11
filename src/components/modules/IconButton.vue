@@ -35,7 +35,7 @@ export default {
       default: '',
     },
     imgSrc: {
-      tpye: String,
+      type: String,
       default: '',
     },
     activeImgSrc: {

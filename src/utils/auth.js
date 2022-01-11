@@ -136,7 +136,8 @@ const getWsSettings = async () => {
 
     document.title = `${settings.workspaceTitle} | Dashboard`
     const favicon = document.querySelector("link[rel*='icon']")
-    favicon.href = settings.favicon
+
+    if (favicon) favicon.href = settings.favicon
 
     setConfigs({
       whiteLogo: settings.whiteLogo,
