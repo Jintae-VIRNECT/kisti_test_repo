@@ -81,7 +81,8 @@ export default {
       return !/APK/.test(extension)
     },
     submitDisabled() {
-      if (/APK/.test(this.extension)) {
+      const extension = this.getFileExtension(this.file.name)
+      if (/APK/.test(extension)) {
         if (this.form.files.length === 0) return true
         else return false
       } else {
@@ -162,6 +163,7 @@ export default {
       this.$refs.form.resetFields()
       this.$refs.form.clearValidate()
       this.showMe = false
+      this.form.files = []
     },
     async submit() {
       try {
