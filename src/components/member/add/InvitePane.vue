@@ -90,9 +90,10 @@
       </el-form>
     </section>
     <section class="invite-pane__footer">
-      <el-button @click="addMember">
+      <el-button @click.native="addMember">
         {{ $t('members.add.addMember') }}
       </el-button>
+
       <el-button
         type="primary"
         @click="submit"
