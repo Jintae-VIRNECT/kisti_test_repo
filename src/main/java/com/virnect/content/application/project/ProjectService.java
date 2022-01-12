@@ -352,6 +352,7 @@ public class ProjectService {
 	 * @param pageRequest - 페이징 정보
 	 * @return - 프로젝트 정보 목록
 	 */
+	@Transactional(readOnly = true)
 	public ProjectInfoListResponse getProjectListByUserRole(
 		String workspaceUUID, String userUUID, List<SharePermission> sharePermissionList,
 		List<EditPermission> editPermissionList, List<Mode> modeList, List<TargetType> targetTypeList, String search,
@@ -404,7 +405,8 @@ public class ProjectService {
 	 * @param project - 프로젝트 entity
 	 * @return - 프로젝트 상세 정보 dto
 	 */
-	private ProjectInfoResponse generateProjectResponse(Project project) {
+	@Transactional(readOnly = true)
+	public ProjectInfoResponse generateProjectResponse(Project project) {
 		ProjectInfoResponse projectInfoResponse = projectResponseMapper.projectToResponse(project);
 		//모드 정보
 		projectInfoResponse.setModeList(

@@ -15,7 +15,6 @@ import com.virnect.content.domain.rest.Role;
 @Getter
 @Setter
 public class WorkspaceUserResponse {
-	private Long id;
 	private String uuid;
 	private String name;
 	private String nickName;
@@ -25,7 +24,6 @@ public class WorkspaceUserResponse {
 	@Override
 	public String toString() {
 		return "MemberInfoDTO{" +
-			"id=" + id +
 			", uuid='" + uuid + '\'' +
 			", name='" + name + '\'' +
 			", nickName='" + nickName + '\'' +

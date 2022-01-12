@@ -588,12 +588,13 @@ public class ContentService {
 	 * @param search        - 검색어(컨텐츠명 / 사용자명)
 	 * @param shared        - 공유여부
 	 * @param pageable      - 페이징
+	 * @param targetType
 	 * @return - 컨텐츠 목록
 	 */
 	@Transactional(readOnly = true)
 	public ApiResponse<ContentInfoListResponse> getContentList(
 		String workspaceUUID, String userUUID, String search, String shared, String converteds, Pageable pageable,
-		String targetType
+		List<String> targetType
 	) {
 		List<ContentInfoResponse> contentInfoList;
 		Map<String, UserInfoResponse> userInfoMap = new HashMap<>();

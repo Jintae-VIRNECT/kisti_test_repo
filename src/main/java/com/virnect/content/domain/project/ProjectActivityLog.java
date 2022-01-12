@@ -46,9 +46,6 @@ public class ProjectActivityLog extends BaseTimeEntity {
 	@Column(name = "activity_property")
 	private String activityProperty;
 
-	@Column(name = "user_id", nullable = false)
-	private Long userId;
-
 	@Column(name = "user_uuid", nullable = false)
 	private String userUUID;
 
@@ -74,7 +71,6 @@ public class ProjectActivityLog extends BaseTimeEntity {
 	) {
 		this.activity = activity;
 		this.activityProperty = activityProperty;
-		this.userId = workspaceUserInfo.getId();
 		this.userUUID = workspaceUserInfo.getUuid();
 		this.userName = workspaceUserInfo.getName();
 		this.userNickname = workspaceUserInfo.getNickName();
