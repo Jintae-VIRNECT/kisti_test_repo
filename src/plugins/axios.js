@@ -146,7 +146,7 @@ export async function fileDownloadApi(name, option = {}) {
     const contentDisposition = res.headers['content-disposition']
     let fileName = ''
 
-    if (typeof res.data === 'object') {
+    if (res.data.type !== 'application/json') {
       if (contentDisposition) {
         const [fileNameMatch] = contentDisposition
           .split(';')
@@ -159,14 +159,20 @@ export async function fileDownloadApi(name, option = {}) {
         url: window.URL.createObjectURL(res.data),
         fileName,
       }
-    } else if (res.data.code === 8003 || res.data.code === 8005) {
-      if (process.client) location.href = context.$url.console
-      throw new Error(`${res.data.code}: ${res.data.message}`)
     } else {
-      const error = new Error(`${res.data.code}: ${res.data.message}`)
-      if (res.data.code) error.code = res.data.code
-      console.error(error)
-      throw error
+      // Blob 데이터를 -> string -> object 로 변환작업.
+      const text = await res.data.text()
+      const response = JSON.parse(text)
+
+      if (response.code === 8003 || response.code === 8005) {
+        if (process.client) location.href = context.$url.console
+        throw new Error(`${response.code}: ${response.message}`)
+      } else {
+        const error = new Error(`${response.code}: ${response.message}`)
+        if (response.code) error.code = response.code
+        console.error(error)
+        throw error
+      }
     }
   } catch (e) {
     // cancel

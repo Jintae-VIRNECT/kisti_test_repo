@@ -283,7 +283,7 @@ export default {
     initProgressStatus(isStart) {
       this.loading = isStart
       this.showProgressModal = isStart
-      this.progress = 0
+      if (isStart) this.progress = 0
     },
     // mars 파일 다운로드 메서드
     async projectsDownload() {
@@ -305,10 +305,15 @@ export default {
         )
         setTimeout(() => this.download(url, fileName), 500)
       } catch (e) {
-        const message =
-          e.code === 'cancel'
-            ? this.$t('common.message.fileRequestCancel')
-            : this.$t('common.error')
+        let message
+        if (e.code === 'cancel')
+          message = this.$t('common.message.fileRequestCancel')
+        else if (e.code === 5000)
+          message = this.$t('projects.info.message.deleteNotExist')
+        else if (e.code === 5041)
+          message = this.$t('projects.info.message.downloadFailsPhrase')
+        else message = this.$t('common.error')
+
         this.$message.error({
           message,
           duration: 4000,
