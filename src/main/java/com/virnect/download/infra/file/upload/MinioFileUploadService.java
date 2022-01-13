@@ -26,7 +26,7 @@ import com.virnect.download.global.error.ErrorCode;
 
 @Slf4j
 @Service
-@Profile({"local", "develop", "onpremise"})
+@Profile({"local", "develop", "onpremise", "test"})
 @RequiredArgsConstructor
 public class MinioFileUploadService implements FileUploadService {
 	private final MinioClient minioClient;

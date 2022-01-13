@@ -1,0 +1,77 @@
+spring:
+  datasource:
+    driver-class-name: org.h2.Driver
+    url: jdbc:h2:mem:downloads
+    username: sa
+    password:
+  h2:
+    console:
+      enabled: true
+  jpa:
+    hibernate:
+      ddl-auto: create
+    database-platform: H2
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+  cloud:
+    loadbalancer:
+      ribbon:
+        enabled: true
+
+logging:
+  level:
+    com.virnect.workspace.application.*: DEBUG
+
+## Server Configuration
+server:
+  port: 8086
+
+## Project Configuration
+file:
+  upload-path: "app/"
+  url: "http://192.168.6.3:${server.port}/download/"
+  allowed-extension: "apk,exe,appx,appxbundle"
+
+## Eureka Server Configuration
+eureka:
+  instance:
+    prefer-ip-address: true
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka
+    registry-fetch-interval-seconds: 3
+    enabled: false
+
+## AWS Storage
+cloud:
+  aws:
+    credentials:
+      access-key: AKIARQGLJD3UCFBXNUWQ
+      secret-key: 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
+    region:
+      auto: true
+    s3:
+      bucket:
+        name: "virnect-download"
+    cdn: "https://file.virnect.com/"
+
+## Minio
+minio:
+  access-key: "virnect"
+  secret-key: "Qjsprxm13@$"
+  server: "https://192.168.6.3:2838"
+  bucket: "virnect-download"
+  bucket-resource: "app"
+
+## feign
+workspace-server:
+  ribbon:
+    listOfServers: http://192.168.6.3:8082
+
+feign:
+  client:
+    config:
+      default:
+        loggerLevel: FULL

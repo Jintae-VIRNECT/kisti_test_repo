@@ -67,9 +67,4 @@ public class AdminAppUploadRequest {
 	public boolean isApkApp() {
 		return Files.getFileExtension(Objects.requireNonNull(uploadAppFile.getOriginalFilename())).equals("apk");
 	}
-
-	@ApiModelProperty(hidden = true)
-	public boolean isExeApp() {
-		return Files.getFileExtension(Objects.requireNonNull(uploadAppFile.getOriginalFilename())).equals("exe");
-	}
 }
