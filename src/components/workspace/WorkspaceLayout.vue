@@ -85,6 +85,14 @@ export default {
       })
     }
   },
+  // beforeRouteLeave(to, from, next) {
+  //   console.log('show alert')
+
+  //   if (confirm(this.$t('service.room_exit_question'))) {
+  //     return next()
+  //   }
+  //   return next()
+  // },
   mixins: [
     confirmMixin,
     langMixin,
@@ -341,6 +349,29 @@ export default {
         location.href = `${URLS['console']}`
       }
     },
+    initHistoryBackEvent() {
+      window.history.pushState({}, '', document.location.href)
+
+      window.onpopstate = () => {
+        this.confirmCancel(
+          this.$t('workspace.confirm_leave_service'),
+          {
+            text: this.$t('button.confirm'),
+            action: async () => {
+              const redirect = false
+              await auth.logout(redirect)
+              location.href = `${URLS['console']}`
+            },
+          },
+          {
+            text: this.$t('button.cancel'),
+            action: () => {
+              window.history.pushState({}, '', document.location.href)
+            },
+          },
+        )
+      }
+    },
   },
 
   /* Lifecycles */
@@ -362,6 +393,10 @@ export default {
     this.$eventBus.$on('filelist:open', this.toggleList)
     this.$eventBus.$on('devicedenied:show', this.showDeviceDenied)
     this.$eventBus.$on('roomloading:show', this.showRoomLoading)
+
+    if (this.isMobileSize) {
+      this.initHistoryBackEvent()
+    }
   },
   beforeDestroy() {
     window.removeEventListener('resize', this.setTabTop)

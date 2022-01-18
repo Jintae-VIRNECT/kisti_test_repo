@@ -31,6 +31,7 @@
 	"confirm_force_logout_unavailable": "Usted ha entrado en la Colabo y no puede cerrar sesión.",
 	"confirm_video_restrict_join": "[Modo Restricciones de Video] Conectar a la Sala de Colabo.\nLa cámara se puede coltrolar de forma remota por el líder.\nCuando seleccione [Conectar], estará automáticamente acuerdo con el control de cámara.",
 	"confirm_open_room_start": "Crear una sala de Colabo de forma abierta\nsin designar a participantes.",
+	"confirm_leave_service":"Cierre la sesión del servicio.",
 
 	"history": "Historial reciente",
 	"remote": "Colabo Remota",
