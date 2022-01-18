@@ -31,6 +31,7 @@
     "confirm_force_logout_unavailable": "はコラボレーションにアクセスしたため、ログアウトできません。",
     "confirm_video_restrict_join":"[映像制限モード]コラボレーションルームに接続します。\nリーダーによって、リモートでカメラが制御されることがあります。\n[接続]を選択すると、カメラ制御の合意されます。",
     "confirm_open_room_start": "参加者指定しないまま、オープン形で\n協業ルームを生成します。",
+    "confirm_leave_service":"サービスをログアウトします。",
 
     "history": "最近履歴",
     "remote": "リモート協業",
