@@ -234,27 +234,27 @@ public abstract class WorkspaceUserService {
 	private List<WorkspaceUserInfoResponse> generateWorkspaceUserListResponse(
 		List<WorkspaceUserPermission> workspaceUserPermissionList
 	) {
-		return workspaceUserPermissionList.stream().map(workspaceUserPermission -> {
+		List<WorkspaceUserInfoResponse> workspaceUserInfoResponseList = new ArrayList<>();
+		workspaceUserPermissionList.forEach(workspaceUserPermission -> {
 			//1. REST - USER_SERVER : 유저 정보 조회
 			UserInfoRestResponse userInfoResponse = userRestServiceHandler.getUserRequest(
 				workspaceUserPermission.getWorkspaceUser().getUserId());
-			if (userInfoResponse.isEmtpy()) {
-				throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_USER_NOT_FOUND);
+			if (!userInfoResponse.isEmtpy()) {
+				WorkspaceUserInfoResponse workspaceUserInfoResponse = restMapStruct.userInfoRestResponseToWorkspaceUserInfoResponse(
+					userInfoResponse);
+				workspaceUserInfoResponse.setRole(workspaceUserPermission.getWorkspaceRole().getRole());
+				workspaceUserInfoResponse.setJoinDate(workspaceUserPermission.getWorkspaceUser().getCreatedDate());
+				workspaceUserInfoResponse.setRoleId(workspaceUserPermission.getWorkspaceRole().getId());
+				//2. REST - LICENSE_SERVER : 유저의 라이선스 정보 조회
+				String[] userLicenseProducts = getUserLicenseProducts(
+					workspaceUserPermission.getWorkspaceUser().getWorkspace().getUuid(),
+					workspaceUserPermission.getWorkspaceUser().getUserId()
+				);
+				workspaceUserInfoResponse.setLicenseProducts(userLicenseProducts);
+				workspaceUserInfoResponseList.add(workspaceUserInfoResponse);
 			}
-
-			WorkspaceUserInfoResponse workspaceUserInfoResponse = restMapStruct.userInfoRestResponseToWorkspaceUserInfoResponse(
-				userInfoResponse);
-			workspaceUserInfoResponse.setRole(workspaceUserPermission.getWorkspaceRole().getRole());
-			workspaceUserInfoResponse.setJoinDate(workspaceUserPermission.getWorkspaceUser().getCreatedDate());
-			workspaceUserInfoResponse.setRoleId(workspaceUserPermission.getWorkspaceRole().getId());
-			//2. REST - LICENSE_SERVER : 유저의 라이선스 정보 조회
-			String[] userLicenseProducts = getUserLicenseProducts(
-				workspaceUserPermission.getWorkspaceUser().getWorkspace().getUuid(),
-				workspaceUserPermission.getWorkspaceUser().getUserId()
-			);
-			workspaceUserInfoResponse.setLicenseProducts(userLicenseProducts);
-			return workspaceUserInfoResponse;
-		}).collect(Collectors.toList());
+		});
+		return workspaceUserInfoResponseList;
 	}
 
 	private String[] getUserLicenseProducts(String workspaceId, String userId) {
