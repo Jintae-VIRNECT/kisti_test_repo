@@ -15,6 +15,7 @@ ext {
             "com/virnect/uaa/global/config/**",
             "**/dto/**",
             "**/infra/rest/**",
+            "**/infra/file/**",
             "**/domain/**",
             "src/main/resources/**",
             "**/*Config.*",
