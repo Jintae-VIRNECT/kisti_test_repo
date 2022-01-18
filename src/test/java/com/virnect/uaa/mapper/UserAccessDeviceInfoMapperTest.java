@@ -7,11 +7,13 @@ import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import com.google.gson.Gson;
@@ -30,6 +32,10 @@ import com.virnect.uaa.domain.user.mapper.UserInfoMapper;
 @ActiveProfiles("test")
 @Import(TestGsonConfiguration.class)
 @SpringBootTest
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
+@Sql(
+	scripts = {"classpath:data/users.sql"}
+)
 public class UserAccessDeviceInfoMapperTest {
 	@Autowired
 	private UserAccessLogRepository userAccessLogRepository;
