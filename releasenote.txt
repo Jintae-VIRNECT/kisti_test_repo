@@ -1,13 +1,12 @@
 RELEASE
 
 New Features
-- 프로젝트 활동기록 기능 추가 (https://virtualconnection.atlassian.net/browse/DEV-433)
+- 없음
 
 Bug Fixes
-- 파일 복제 에러 개선 (https://virtualconnection.atlassian.net/browse/DEV-1668)
+- 프로젝트 파일 사이즈 업데이트 에러 수정 (DPLA-4228)
 
 Limitation
-- 프로젝트 수정 후 공유 권한 체크 (https://virtualconnection.atlassian.net/browse/DEV-1519)
-- JVM MAX HEAP SIZE 변경 (https://virtualconnection.atlassian.net/browse/DEV-1725)
+- 컨텐츠 목록 조회 시 multiple target 필터링 기능 추가 (DEV-2507)
 
 Copyright (C) 2020, VIRNECT CO., LTD. - All Rights Reserved
