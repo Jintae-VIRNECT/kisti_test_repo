@@ -13,7 +13,7 @@ import errorList from './gateway.error.json'
 import networkError from './network.error.json'
 import { clearCookie } from 'utils/auth'
 import qs from 'qs'
-import { TIMEOUT } from 'configs/env.config'
+import { TIMEOUT, URLS } from 'configs/env.config'
 
 const URL = API
 const TOKEN = Cookies.get('accessToken')
@@ -194,11 +194,11 @@ const errorHandler = function(err) {
         // console.error(error.message)
         // "Unexpected Server Error, Please contact Administrator"
         break
-      // case 8003:
+      case 8003:
       case 8005:
         // console.error(error.message)
         clearCookie()
-        window.location.reload()
+        location.href = `${URLS['console']}/?continue=${location.href}`
         break
       // case 'Network Error':
       //   sessionStorage.clear()
