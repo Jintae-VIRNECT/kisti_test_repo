@@ -44,7 +44,7 @@
             />
           </el-form-item>
         </el-form>
-        <p>
+        <p v-if="file.updateStatus === 'ACTIVE'">
           {{ $t('workspace.onpremiseSetting.upload.modal.explanation') }}
         </p>
       </div>

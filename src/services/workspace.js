@@ -428,6 +428,7 @@ export default {
         file.name = app.name
         file.version = app.version
         file.released = app.released
+        file.updateStatus = app.updateStatus
         return file
       } else return file
     })

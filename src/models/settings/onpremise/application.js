@@ -19,6 +19,9 @@ export default class Application extends Model {
     this.deviceModel = json.deviceModel ?? ''
     this.operationSystem = json.operationSystem ?? ''
     this.productName = json.productName ?? ''
+
+    // 업데이트 알림
+    this.updateStatus = json.deviceSupportUpdateStatus ?? 'INACTIVE'
   }
 
   generatorFileName(appUrl) {
@@ -101,7 +104,7 @@ export const productList = {
       released: 'YY.MM.DD HH:DD',
       deviceModel: 'SMARTPHONE_TABLET',
       operationSystem: 'ANDROID',
-      productName: 'MAKE',
+      productName: 'VIEW',
     }),
     new Application({
       category: 'Hololens',
@@ -111,7 +114,7 @@ export const productList = {
       released: 'YY.MM.DD HH:DD',
       deviceModel: 'HOLOLENS_2',
       operationSystem: 'WINDOWS_UWP',
-      productName: 'MAKE',
+      productName: 'VIEW',
     }),
     new Application({
       category: 'Rearwear',
@@ -121,7 +124,7 @@ export const productList = {
       released: 'YY.MM.DD HH:DD',
       deviceModel: 'HTM-1',
       operationSystem: 'ANDROID',
-      productName: 'MAKE',
+      productName: 'VIEW',
     }),
   ],
 }
