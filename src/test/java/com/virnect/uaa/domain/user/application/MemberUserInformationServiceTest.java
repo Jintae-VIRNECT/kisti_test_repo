@@ -3,11 +3,13 @@ package com.virnect.uaa.domain.user.application;
 import static org.assertj.core.api.Assertions.*;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,6 +26,10 @@ import java.util.Optional;
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
 @ActiveProfiles("test")
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
+@Sql(
+	scripts = {"classpath:data/users.sql"}
+)
 class MemberUserInformationServiceTest {
 	@Autowired
 	UserRepository userRepository;
@@ -38,7 +44,7 @@ class MemberUserInformationServiceTest {
 	@Transactional
 	void registerNewMember() {
 		//given
-		Optional<User> masterUser = userRepository.findByEmail("sky4561393@virnect.com");
+		Optional<User> masterUser = userRepository.findByEmail("sky456139@virnect.com");
 
 		MemberRegistrationRequest memberRegistrationRequest = new MemberRegistrationRequest();
 		memberRegistrationRequest.setMasterUUID(masterUser.get().getUuid());

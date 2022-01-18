@@ -11,7 +11,7 @@ spring:
       enabled: true
   jpa:
     hibernate:
-      ddl-auto: create-drop
+      ddl-auto: update
     database-platform: H2
     show-sql: true
     properties:
