@@ -22,7 +22,8 @@
             </template>
             <OnpremiseDownloadDragZone
               v-if="visible"
-              :extensionList="getExtensionList(file.name)"
+              :file="file"
+              :extensionList="file.extensionList"
               @fileTypeError="fileError"
               @fileData="fileData"
             />
@@ -117,23 +118,33 @@ export default {
     },
     getDescription() {
       let result = ''
-      if (this.getType(this.file.name) === 'Undefined') return result
+      if (this.getType(this.file.extensionList) === 'Undefined') return result
 
       let spanTagString = ''
-      if (this.getType(this.file.name) === 'Array') {
-        this.file.name.forEach(item => {
-          spanTagString += ` <span>${this.getFileExtension(item)}</span>,`
-        })
-        // 마지막 항목의 쉼표 제거
-        spanTagString = spanTagString.slice(0, -1)
-      } else if (this.getType(this.file.name) === 'String') {
-        spanTagString += `<span>${this.getFileExtension(this.file.name)}</span>`
+      this.file.extensionList.forEach(extension => {
+        spanTagString += ` <span>${extension.toUpperCase()}</span>,`
+      })
+      // 마지막 항목의 쉼표 제거
+      spanTagString = spanTagString.slice(0, -1)
+
+      if (this.file.extensionList.includes('apk')) {
+        result = this.$t(
+          'workspace.onpremiseSetting.upload.modal.description1',
+          {
+            category: `<span>${this.file.category}</span>`,
+            extension: spanTagString,
+          },
+        )
+      } else {
+        result = this.$t(
+          'workspace.onpremiseSetting.upload.modal.description2',
+          {
+            category: `<span>${this.file.category}</span>`,
+            extension: spanTagString,
+          },
+        )
       }
 
-      result = this.$t('workspace.onpremiseSetting.upload.modal.description', {
-        category: `<span>${this.file.category}</span>`,
-        extension: spanTagString,
-      })
       return result
     },
     getFileExtension(str) {
@@ -141,15 +152,6 @@ export default {
 
       const array = str.split('.')
       return array[array.length - 1].toUpperCase()
-    },
-    getExtensionList(value) {
-      let result = null
-      if (this.getType(value) === 'Array') {
-        result = value.map(val => val.slice(val.indexOf('.') + 1))
-      } else {
-        result = [this.getFileExtension(value)]
-      }
-      return result
     },
     cancelFileUpload() {
       this.showProgressModal = false

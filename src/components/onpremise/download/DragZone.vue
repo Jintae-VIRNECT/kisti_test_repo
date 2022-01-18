@@ -16,7 +16,7 @@
           {{
             $tc(
               'workspace.onpremiseSetting.upload.modal.drag',
-              file.format.toUpperCase(),
+              file.format.toString().toUpperCase(),
             )
           }}
         </p>
@@ -36,7 +36,7 @@
         @change="e => changedFile(e, idx, file.format)"
         :name="file.format"
         :ref="file.format"
-        :accept="`.${file.format}`"
+        :accept="getFileAccept(file.format)"
       />
     </li>
   </ul>
@@ -58,27 +58,59 @@ export default {
     }
   },
   props: {
+    file: {
+      type: Object,
+      required: true,
+    },
     extensionList: {
       type: Array,
       required: true,
     },
   },
   methods: {
+    getFileAccept(formats) {
+      if (typeof formats === 'string') {
+        return `.${formats.toLowerCase()}`
+      } else {
+        return formats
+          .map(format => {
+            return `.${format.toLowerCase()}`
+          })
+          .toString()
+      }
+    },
     setList() {
-      this.fileList = this.extensionList.map(format => {
-        return {
-          fileSelected: false,
-          format,
-          fileName: '',
-          file: null,
-          dragged: false,
-        }
-      })
+      if (this.file.category === 'iOS') {
+        this.fileList = this.extensionList.map(format => {
+          return {
+            fileSelected: false,
+            format,
+            fileName: '',
+            file: null,
+            dragged: false,
+          }
+        })
+      } else {
+        this.fileList = [
+          {
+            fileSelected: false,
+            format: [...this.extensionList],
+            fileName: '',
+            file: null,
+            dragged: false,
+          },
+        ]
+      }
     },
     fileSet(file, idx, format) {
       const dropFormat = file.name.slice(file.name.lastIndexOf('.') + 1)
 
-      if (dropFormat.toLowerCase() !== format.toLowerCase()) {
+      if (
+        !format
+          .toLocaleString()
+          .toLowerCase()
+          .includes(dropFormat.toLowerCase())
+      ) {
         this.$message.error({
           message: this.$tc(
             'workspace.onpremiseSetting.upload.error.wrongExtension',

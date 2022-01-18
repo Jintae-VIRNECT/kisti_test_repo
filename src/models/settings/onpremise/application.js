@@ -8,6 +8,7 @@ export default class Application extends Model {
     super()
     this.category = json.deviceType ?? json.category
     this.name = json.appUrl ? this.generatorFileName(json.appUrl) : json.name
+    this.extensionList = json.extensionList ?? json.extensionList
     this.version = json.version
     this.released = json.releaseTime ?? json.released
 
@@ -31,6 +32,7 @@ export const productList = {
     new Application({
       category: 'Mobile',
       name: ['{file_name}.apk'],
+      extensionList: ['apk'],
       version: '2.5.10',
       released: 'YY.MM.DD HH:DD',
       deviceModel: 'SMARTPHONE_TABLET',
@@ -40,6 +42,7 @@ export const productList = {
     // new Application({
     //   category: 'iOS',
     //   name: ['{file_name}.plist', '{file_name}.ipa'],
+    //   extensionList: ['plist', 'ipa'],
     //   version: '2.5.10',
     //   released: 'YY.MM.DD HH:DD',
     //   deviceModel: 'SMARTPHONE_TABLET',
@@ -48,7 +51,8 @@ export const productList = {
     // }),
     new Application({
       category: 'Hololens',
-      name: ['{file_name}.appx'],
+      name: ['{file_name}.appx', '{file_name}.appxbundle'],
+      extensionList: ['appx', 'appxbundle'],
       version: '2.5.10',
       released: 'YY.MM.DD HH:DD',
       deviceModel: 'HOLOLENS_2',
@@ -58,6 +62,7 @@ export const productList = {
     new Application({
       category: 'Realwear',
       name: ['{file_name}.apk'],
+      extensionList: ['apk'],
       version: '2.5.10',
       released: 'YY.MM.DD HH:DD',
       deviceModel: 'HMT_SERIES',
@@ -67,6 +72,7 @@ export const productList = {
     new Application({
       category: 'Linkflow',
       name: ['{file_name}.apk'],
+      extensionList: ['apk'],
       version: '2.5.10',
       released: 'YY.MM.DD HH:DD',
       deviceModel: 'FITT/NEXX',
@@ -78,6 +84,7 @@ export const productList = {
     new Application({
       category: 'PC',
       name: ['{file_name}.exe'],
+      extensionList: ['exe'],
       version: '2.5.10',
       released: 'YY.MM.DD HH:DD',
       deviceModel: 'WINDOWS_10',
@@ -89,6 +96,7 @@ export const productList = {
     new Application({
       category: 'Mobile',
       name: ['{file_name}.apk'],
+      extensionList: ['apk'],
       version: '2.5.10',
       released: 'YY.MM.DD HH:DD',
       deviceModel: 'SMARTPHONE_TABLET',
@@ -98,6 +106,7 @@ export const productList = {
     new Application({
       category: 'Hololens',
       name: ['{file_name}.appx'],
+      extensionList: ['appx', 'appxbundle'],
       version: '2.5.10',
       released: 'YY.MM.DD HH:DD',
       deviceModel: 'HOLOLENS_2',
@@ -107,6 +116,7 @@ export const productList = {
     new Application({
       category: 'Rearwear',
       name: ['{file_name}.apk'],
+      extensionList: ['apk'],
       version: '2.5.10',
       released: 'YY.MM.DD HH:DD',
       deviceModel: 'HTM-1',
