@@ -1,5 +1,8 @@
 <template>
-  <div class="drawing-canvas">
+  <div
+    class="drawing-canvas"
+    :class="{ 'not-mobile': !isMobileSize && !isTablet }"
+  >
     <div ref="pinchzoom-layer">
       <tooltip
         v-if="showExitButton"
@@ -86,6 +89,7 @@ export default {
 
       resizeObserveIntervalId: null,
       parentOffsetWidth: 0,
+      pinchZoom: null,
     }
   },
   computed: {
@@ -272,6 +276,8 @@ export default {
     },
 
     initPinchZoom() {
+      if (this.pinchZoom) return
+
       const el = this.$refs['pinchzoom-layer']
       this.pinchZoom = new PinchZoom(el, {
         minZoom: 1,
@@ -291,7 +297,7 @@ export default {
               ).firstChild.style.transform = `translate(
                 ${Math.abs(object.initialOffset.x)}px,  
                 ${Math.abs(object.initialOffset.y)}px)`
-            }, 50)
+            }, 150)
           }
         },
       })
@@ -387,6 +393,9 @@ export default {
     },
 
     exitDrawing() {
+      if (this.pinchZoom) {
+        this.pinchZoom.disable()
+      }
       this.$emit('exitDrawing')
     },
   },
@@ -411,6 +420,16 @@ export default {
 </script>
 
 <style lang="scss">
+.drawing-canvas.not-mobile > .pinch-zoom-container > div {
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  margin: auto;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
 .drawing-toolbox {
   position: fixed;
   top: 74px;
