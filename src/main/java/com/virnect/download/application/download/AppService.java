@@ -408,7 +408,7 @@ public class AppService {
 		String deviceType, String deviceModel, String productName
 	) {
 		return deviceRepository.findByTypeAndModelAndProduct_Name(
-			deviceType.toUpperCase(), deviceModel.toUpperCase(), productName.toUpperCase())
+				deviceType.toUpperCase(), deviceModel.toUpperCase(), productName.toUpperCase())
 			.orElseThrow(() -> new AppServiceException(ErrorCode.ERR_APP_UPLOAD_FAIL_DEVICE_INFO_NOT_FOUND));
 	}
 
@@ -416,10 +416,6 @@ public class AppService {
 		// 버전 코드 중복 체크 및 중복 시 예외 발생
 		if (appRepository.existAppVersionCode(device, os, versionCode)) {
 			throw new AppServiceException(ErrorCode.ERR_APP_UPLOAD_FAIL_DUPLICATE_VERSION);
-		}
-		// 현재 앱 버전 코드가 기존 최신 버전 보다 낮은 버전 코드의 경우 예외 발생
-		if (appRepository.isLowerThanPreviousAppVersionCode(device, os, versionCode)) {
-			throw new AppServiceException(ErrorCode.ERR_APP_UPLOAD_FAIL_VERSION_IS_LOWER);
 		}
 	}
 }
