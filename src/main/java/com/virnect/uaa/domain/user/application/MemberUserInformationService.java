@@ -181,6 +181,7 @@ public class MemberUserInformationService {
 	public int calculateNextSeatUserNumber(User masterUser) {
 		List<Integer> seatUserSequenceNumbers = userRepository.findAllSeatUserNicknames(masterUser)
 			.stream()
+			.filter(nickname -> nickname.startsWith("GuestUser-"))
 			.map(nickname -> Integer.parseInt(nickname.split("-")[1]))
 			.sorted()
 			.collect(Collectors.toList());
