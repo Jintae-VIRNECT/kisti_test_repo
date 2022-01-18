@@ -4,12 +4,10 @@ New Features
 - 없음
 
 Bug Fixes
-- 게스트 유저 삭제 시 리모트 서버 호출 (https://virtualconnection.atlassian.net/browse/DEV-889)
-- 구축형 멤버 삭제 시 마스터 비밀번호 체크 (https://virtualconnection.atlassian.net/browse/DEV-1506)
-- 구축형 게스트 멤버 삭제 시 마스터 비밀번호 체크 (https://virtualconnection.atlassian.net/browse/DEV-1738)
+- 존재하지 않는 유저 에러 처리 변경 (DEV-2512)
+- 워크스페이스 전용계정 패스워드 변경 실패 에러 수정 (DEV-4167)
 
 Limitation
-- 페이징 처리 없이 워크스페이스 전체 멤버 조회 기능 추가 (https://virtualconnection.atlassian.net/browse/DEV-1488)
-- 구축형 초기 구동 시 버킷 체크 로직 제거 (https://virtualconnection.atlassian.net/browse/DEV-1324)
+- 없음
 
 Copyright (C) 2020, VIRNECT CO., LTD. - All Rights Reserved
