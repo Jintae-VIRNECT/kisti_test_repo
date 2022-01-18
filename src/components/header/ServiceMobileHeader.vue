@@ -8,6 +8,7 @@
     <div class="mobile-header-tools">
       <chat :tooltipActive="false"></chat>
       <button class="mobile-header-tools__leave" @click="leave"></button>
+      <notice v-show="false"></notice>
     </div>
   </div>
 </template>
@@ -15,11 +16,13 @@
 <script>
 import { mapGetters } from 'vuex'
 import Chat from './tools/Chat'
+import Notice from './tools/Notice'
 import { ROLE } from 'configs/remote.config'
 
 export default {
   components: {
     Chat,
+    Notice,
   },
   data() {
     return {
