@@ -336,8 +336,8 @@ export default {
     },
     async logoutGuest(userType) {
       if (userType === USER_TYPE.GUEST_USER) {
-        const redirect = false
-        await auth.logout(redirect)
+        //no redirect
+        await auth.logout(false)
         location.href = `${URLS['console']}`
       }
     },

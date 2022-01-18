@@ -23,6 +23,8 @@ import { getGuestRoomInfo } from 'api/http/guest'
 import roomMixin from 'mixins/room'
 import { ROLE } from 'configs/remote.config'
 import { ERROR } from 'configs/error.config'
+import { URLS } from 'configs/env.config'
+
 import auth from 'utils/auth'
 
 const EXPIRE_TIMER = 120 //120초
@@ -111,6 +113,14 @@ export default {
           this.confirmDefault(this.$t('workspace.remote_already_removed'), {
             action: async () => {
               await auth.logout()
+            },
+          })
+        } else if (err.code === ERROR.AUTHENTICATION_ERROR) {
+          this.confirmDefault(this.$t('guest.guest_license_expired'), {
+            action: async () => {
+              //no redirect
+              await auth.logout(false)
+              location.href = `${URLS['console']}`
             },
           })
         } else {
