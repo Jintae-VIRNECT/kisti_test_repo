@@ -82,17 +82,15 @@ export default {
       await getSettings()
       next(vm => {
         vm.$call.leave()
+
+        if (to.name === 'workspace' && from.name === 'service') {
+          vm.$data.showLeaveMessage = false
+        } else {
+          vm.$data.showLeaveMessage = true
+        }
       })
     }
   },
-  // beforeRouteLeave(to, from, next) {
-  //   console.log('show alert')
-
-  //   if (confirm(this.$t('service.room_exit_question'))) {
-  //     return next()
-  //   }
-  //   return next()
-  // },
   mixins: [
     confirmMixin,
     langMixin,
@@ -127,6 +125,8 @@ export default {
       isJoin: false,
       inited: false,
       tabName: 'remote',
+
+      showLeaveMessage: true,
     }
   },
   watch: {
@@ -353,6 +353,12 @@ export default {
       window.history.pushState({}, '', document.location.href)
 
       window.onpopstate = () => {
+        //service -> home 화면 접근시 호출되는 경우를 방지하기 위함.
+        if (!this.showLeaveMessage) {
+          this.showLeaveMessage = true
+          return
+        }
+
         this.confirmCancel(
           this.$t('workspace.confirm_leave_service'),
           {
