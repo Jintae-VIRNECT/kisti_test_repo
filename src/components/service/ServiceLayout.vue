@@ -486,6 +486,9 @@ export default {
   },
 
   mounted() {
+    //예상하지 못한 동작을 막기 위해서 리셋
+    window.onpopstate = () => {}
+
     if (this.restrictedRoom) {
       this.toastDefault(this.$t('service.toast_video_restrict_mode'))
     }
