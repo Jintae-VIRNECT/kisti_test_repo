@@ -177,7 +177,8 @@
         "notCheckId": "There are accounts that did not check availability.",
         "notHaveAnyPlan": "You need to allocate at least one plan to the account you are creating.",
         "fail": "Failed to add a member, please try again later. If a same problem occurs, please contact a network adminitrator.",
-        "usableId": "It's a usable ID."
+        "usableId": "It's a usable ID.",
+        "addedId": "This is the ID included in the account creation list. Please enter a different ID."
       }
     },
     "guest": {

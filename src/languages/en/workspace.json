@@ -121,7 +121,8 @@
         "title": "Upload install file",
         "modal": {
           "title": "Registering {n} installation file",
-          "description": "Please register the {extension} file and version information when registering {category} installation file.",
+          "description1": "Please register the {extension} file when registering {category} installation file.",
+          "description2": "Please register the {extension} file and version information when registering {category} installation file.",
           "attach": "Attach file",
           "version": "Version infomation",
           "placeholder": "Please enter version information. (e.g. X.X.X.X)",

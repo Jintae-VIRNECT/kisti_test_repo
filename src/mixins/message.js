@@ -16,6 +16,7 @@ export default {
         1018: 'members.add.message.memberWithdrawal',
         1021: 'members.setting.message.notChangeMasterPlan',
         2201: 'members.create.message.idDuplicated',
+        2202: 'members.create.message.addedId',
         6000: 'workspace.onpremiseSetting.upload.error.fail',
         6001: 'workspace.onpremiseSetting.upload.error.size',
         6002: 'workspace.onpremiseSetting.upload.error.notExtension',

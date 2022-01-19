@@ -38,6 +38,7 @@
             ref="keyword"
             :value.sync="projectsSearch"
             placeholder="projectTitle"
+            @change="projectsPage = 1"
           />
         </el-col>
       </el-row>
@@ -78,7 +79,7 @@
             <ColumnUser
               :label="$t('projects.allprojects.column.uploader')"
               prop="uploaderUUID"
-              nameProp="uploaderName"
+              nameProp="uploaderNickname"
               imageProp="uploaderProfile"
               :width="160"
             />

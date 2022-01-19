@@ -117,7 +117,8 @@
         "deleteFailsPhrase": "지정된 프로젝트 파일을 찾을 수 없거나, 편집권한이 없습니다.",
         "sharePermissionRelease": "해당 프로젝트의 공유 권한이 해제되었습니다.​",
         "editPermissionRelease": "해당 프로젝트의 편집 권한이 해제되었습니다.​",
-        "downloadFailMaxSize": "파일용량이 {0}MB 초과되어 파일을 다운로드할  수 없습니다."
+        "downloadFailMaxSize": "파일용량이 {0}MB 초과되어 파일을 다운로드할  수 없습니다.",
+        "downloadFailsPhrase": "해당 프로젝트의 다운로드 권한이 없습니다."
       },
       "download": {
         "title": "파일 다운로드 중",

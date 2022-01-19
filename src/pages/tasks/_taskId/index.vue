@@ -49,7 +49,11 @@
             :label="$t(tab.label)"
           />
         </el-tabs>
-        <SearchbarKeyword ref="keyword" :value.sync="subTaskSearch" />
+        <SearchbarKeyword
+          ref="keyword"
+          :value.sync="subTaskSearch"
+          @change="subTaskPage = 1"
+        />
       </el-row>
 
       <!-- 버튼 영역 -->

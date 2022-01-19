@@ -171,6 +171,11 @@ export default {
       // 아이디를 입력하지 않고 중복체크 불가
       if (!member.id.length) return false
 
+      // 서버에서 중복 체크하기 전에 계정 생성 목록에 중복된 아이디 체크
+      if (this.userInfoList.filter(user => user.id === member.id).length >= 2) {
+        return this.errorMessage('Error: 2202')
+      }
+
       try {
         const result = await workspaceService.checkMembersId(member.id)
         if (result) {
@@ -209,7 +214,7 @@ export default {
       })
     },
     addMember() {
-      if (this.isMaxUserAmount) {
+      if (this.availableMember >= this.maximum) {
         this.errorMessage('Error: 900')
       } else {
         this.userInfoList.push(new CreateMember())
@@ -232,7 +237,7 @@ export default {
       this.initAvailablePlans()
     },
     async submit() {
-      if (this.isMaxUserAmount) {
+      if (this.availableMember > this.maximum) {
         this.errorMessage('Error: 900')
         return
       }
@@ -305,9 +310,6 @@ export default {
     },
     cssVars() {
       return this.$i18n.locale
-    },
-    isMaxUserAmount() {
-      return this.availableMember >= this.maximum
     },
   },
 }

@@ -90,9 +90,10 @@
       </el-form>
     </section>
     <section class="invite-pane__footer">
-      <el-button @click="addMember">
+      <el-button @click.native="addMember">
         {{ $t('members.add.addMember') }}
       </el-button>
+
       <el-button
         type="primary"
         @click="submit"
@@ -139,7 +140,7 @@ export default {
       })
     },
     addMember() {
-      if (this.isMaxUserAmount) {
+      if (this.availableMember >= this.maximum) {
         this.errorMessage('Error: 900')
       } else {
         this.userInfoList.push(new InviteMember())
@@ -162,7 +163,7 @@ export default {
       this.initAvailablePlans()
     },
     async submit() {
-      if (this.isMaxUserAmount) {
+      if (this.availableMember > this.maximum) {
         this.errorMessage('Error: 900')
         return
       }
@@ -213,9 +214,6 @@ export default {
     },
     availableMember() {
       return this.membersTotal + this.userInfoList.length
-    },
-    isMaxUserAmount() {
-      return this.availableMember >= this.maximum
     },
   },
 }

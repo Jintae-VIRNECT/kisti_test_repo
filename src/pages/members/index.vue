@@ -27,7 +27,11 @@
           />
         </el-col>
         <el-col class="right">
-          <SearchbarKeyword ref="keyword" :value.sync="memberSearch" />
+          <SearchbarKeyword
+            ref="keyword"
+            :value.sync="memberSearch"
+            @change="membersPage = 1"
+          />
           <el-button type="primary" @click="addMember" v-if="canAddMember">
             {{ $t('members.allMembers.addMember') }}
           </el-button>

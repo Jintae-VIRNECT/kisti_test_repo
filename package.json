@@ -15,7 +15,7 @@
     "lint:style": "stylelint --fix  src/**/*.{css,scss}",
     "lint:vueStyle": "stylelint --fix src/**/*.vue --custom-syntax postcss-html",
     "prepare": "husky install",
-    "test": "jest --coverage"
+    "test": "jest --coverage --verbose"
   },
   "dependencies": {
     "@nuxt/postcss8": "^1.1.3",

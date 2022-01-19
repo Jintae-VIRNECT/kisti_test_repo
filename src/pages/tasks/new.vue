@@ -20,7 +20,11 @@
           />
         </el-col>
         <el-col class="right">
-          <SearchbarKeyword ref="keyword" :value.sync="contentsSearch" />
+          <SearchbarKeyword
+            ref="keyword"
+            :value.sync="contentsSearch"
+            @change="contentsPage = 1"
+          />
         </el-col>
       </el-row>
       <!-- 리스트 -->
