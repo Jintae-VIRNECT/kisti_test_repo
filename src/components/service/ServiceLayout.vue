@@ -162,23 +162,12 @@ export default {
       return next()
     }
 
-    const resetCall = () => {
-      Store.commit('callClear')
-      Store.dispatch('callReset')
-      Store.dispatch('roomClear')
-      this.$call.leave()
-    }
+    Store.commit('callClear')
+    Store.dispatch('callReset')
+    Store.dispatch('roomClear')
+    this.$call.leave()
 
-    //모바일 화면 일때 협업 종료 및 home 화면 이동시 alert 출력
-    if (this.isMobileSize) {
-      if (confirm(this.$t('service.room_exit_question'))) {
-        resetCall()
-        return next()
-      }
-    } else {
-      resetCall()
-      return next()
-    }
+    return next()
   },
   mixins: [localRecorderMixin, serverRecordMixin, confirmMixin],
   components: {
@@ -497,6 +486,9 @@ export default {
   },
 
   mounted() {
+    //예상하지 못한 동작을 막기 위해서 리셋
+    window.onpopstate = () => {}
+
     if (this.restrictedRoom) {
       this.toastDefault(this.$t('service.toast_video_restrict_mode'))
     }

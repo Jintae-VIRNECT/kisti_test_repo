@@ -87,8 +87,8 @@ export default {
     async initGuestMember(omitLogout = false) {
       try {
         if (!omitLogout) {
-          const redirect = false
-          await auth.logout(redirect)
+          //no redirect
+          await auth.logout(false)
         }
 
         const guestInfo = await getGuestInfo({ workspaceId: this.workspaceId })
@@ -161,8 +161,8 @@ export default {
     showGuestExpiredAlarm() {
       this.confirmDefault(this.$t('guest.guest_license_expired'), {
         action: async () => {
-          const redirect = false
-          await auth.logout(redirect)
+          //no redirect
+          await auth.logout(false)
           location.href = `${URLS['console']}`
         },
       })
@@ -203,8 +203,8 @@ export default {
     try {
       //파라미터 유효성 체크
       if (this.workspaceId === undefined || this.sessionId === undefined) {
-        const redirect = false
-        await auth.logout(redirect)
+        //no redirect
+        await auth.logout(false)
         location.href = `${URLS['console']}`
         console.error('invalid params')
         return

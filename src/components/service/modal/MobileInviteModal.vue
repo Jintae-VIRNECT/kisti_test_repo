@@ -7,7 +7,7 @@
   >
     <section class="mobile-inviteroom__selected" v-if="userList.length > 0">
       <div class="selected-header">
-        <h1>{{ $t('workspace.create_remote_selected') }}</h1>
+        <h1>{{ $t('service.invite_unconnected_list') }}</h1>
         <p class="selected-status">
           {{ `${selection.length}/${maxSelect}` }}
         </p>

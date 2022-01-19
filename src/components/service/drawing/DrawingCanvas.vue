@@ -1,6 +1,6 @@
 <template>
   <div class="drawing-canvas">
-    <div ref="pinchzoom-layer">
+    <div class="pinchzoom-layer" ref="pinchzoom-layer">
       <tooltip
         v-if="showExitButton"
         :content="`${$t('service.drawing')} ${$t('button.exit')}`"
@@ -86,6 +86,11 @@ export default {
 
       resizeObserveIntervalId: null,
       parentOffsetWidth: 0,
+
+      pinchZoom: null,
+      //pinchzoom 내 중앙 배치하기 위한 offset
+      offsetX: 0,
+      offsetY: 0,
     }
   },
   computed: {
@@ -271,7 +276,37 @@ export default {
       return this.canvas
     },
 
+    //pinch zoom 내 canvas에 해당하는 element를 중앙으로 배치하기 위한 offset 값 계산
+    optimizePinchZoomLayer() {
+      const pzContainerEl = document.querySelector('.pinch-zoom-container')
+      const pzLayerEl = document.querySelector('.pinchzoom-layer')
+
+      this.offsetY = (pzContainerEl.clientHeight - pzLayerEl.clientHeight) / 2
+
+      this.offsetX = (pzContainerEl.clientWidth - pzLayerEl.clientWidth) / 2
+
+      //중앙으로 배치되는 offset으로 업데이트
+      pzLayerEl.style.transform = `translate(
+                ${this.offsetX}px,  
+                ${this.offsetY}px)`
+    },
+
+    updatePinchZoomOffset() {
+      this.pinchZoom.initialOffset.x = -this.offsetX
+      this.pinchZoom.offset.x = -this.offsetX
+
+      this.pinchZoom.initialOffset.y = -this.offsetY
+      this.pinchZoom.offset.y = -this.offsetY
+    },
+
     initPinchZoom() {
+      //이미 pinchzoom 객체가 선언되어 dom이 추가된 경우 재생성 되지 않도록 방지하되, offset만 재계산한다
+      if (document.querySelector('.pinch-zoom-container')) {
+        this.optimizePinchZoomLayer()
+        this.updatePinchZoomOffset() //이미지가 변경되어 이미지 크기가 변경되는 경우, pinchzoom 객체 내에 offset 값을 업데이트 해준다.
+        return
+      }
+
       const el = this.$refs['pinchzoom-layer']
       this.pinchZoom = new PinchZoom(el, {
         minZoom: 1,
@@ -284,14 +319,13 @@ export default {
           //zoom in 되지 않은 상태에서 바운더리 벗어나는 현상을 방지하기 위해 아래 로직을 추가하였음
           if (object.zoomFactor === 1) {
             //이벤트 콜백에서 실행되는 transform 이후에 원위치로 교정해줘야 하기 떄문에 timeout으로 딜레이를 부여함.
-            //object.initionOffset에서 기존 위치 offset 값을 얻을 수 있음
             setTimeout(() => {
               document.querySelector(
                 '.pinch-zoom-container',
               ).firstChild.style.transform = `translate(
                 ${Math.abs(object.initialOffset.x)}px,  
                 ${Math.abs(object.initialOffset.y)}px)`
-            }, 50)
+            }, 100)
           }
         },
       })
@@ -353,6 +387,10 @@ export default {
     windowResize() {
       this.optimizeCanvasSize()
       this.keepPositionInBounds(this.canvas)
+      if (document.querySelector('.pinch-zoom-container')) {
+        this.optimizePinchZoomLayer()
+        this.updatePinchZoomOffset()
+      }
     },
 
     //드로잉 브러시 lineWidth가 변경될 때마다 실제 브러쉬 크기를 캔버스 사이즈에 비례하여 업데이트하는 함수
@@ -387,6 +425,9 @@ export default {
     },
 
     exitDrawing() {
+      if (this.pinchZoom) {
+        this.pinchZoom.disable()
+      }
       this.$emit('exitDrawing')
     },
   },
@@ -411,6 +452,16 @@ export default {
 </script>
 
 <style lang="scss">
+.drawing-canvas.not-mobile > .pinch-zoom-container > div {
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  margin: auto;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
 .drawing-toolbox {
   position: fixed;
   top: 74px;

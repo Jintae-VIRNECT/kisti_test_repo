@@ -11,11 +11,15 @@
           <profile
             :image="user.profile"
             :thumbStyle="{ width: size, height: size }"
-            :remove="remove && !user.currentInvited"
+            :remove="isRemoveActive(user)"
             @remove="onRemove(user)"
             :status="accessType(user.accessType)"
           ></profile>
-          <button class="kickout-btn" @click="kickout(user, idx)">
+          <button
+            v-if="isRemoveActive(user) === false"
+            class="kickout-btn"
+            @click="kickout(user, idx)"
+          >
             {{ $t('button.kickout') }}
           </button>
         </div>
@@ -127,6 +131,9 @@ export default {
     },
   },
   methods: {
+    isRemoveActive(user) {
+      return this.remove && !user.currentInvited
+    },
     onRemove(user) {
       this.$emit('remove', user)
     },
