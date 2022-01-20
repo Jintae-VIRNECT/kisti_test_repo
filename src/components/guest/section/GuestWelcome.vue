@@ -118,9 +118,14 @@ export default {
         } else if (err.code === ERROR.AUTHENTICATION_ERROR) {
           this.confirmDefault(this.$t('guest.guest_license_expired'), {
             action: async () => {
-              //no redirect
-              await auth.logout(false)
-              location.href = `${URLS['console']}`
+              try {
+                //no redirect
+                await auth.logout(false)
+              } catch (err) {
+                console.error(err)
+              } finally {
+                location.href = `${URLS['console']}`
+              }
             },
           })
         } else {
