@@ -4,6 +4,9 @@
       <p class="createroom-user__title">
         {{ $t('workspace.create_select_member_list') }}
         <span class="createroom-user__number">{{ totalNum }}</span>
+        <span v-if="maxSelect" class="selected-status">
+          {{ `${selection.length}/${maxSelect}` }}
+        </span>
       </p>
       <r-select-check
         v-if="showMemberGroupSelect && !isMobileSize"
@@ -161,6 +164,9 @@ export default {
       default: () => {
         return []
       },
+    },
+    maxSelect: {
+      type: Number,
     },
     loading: {
       type: Boolean,
