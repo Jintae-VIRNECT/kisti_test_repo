@@ -2,6 +2,7 @@ export default class Signup {
   constructor() {
     this.email = ''
     this.password = ''
+    this.passwordConfirm = ''
     this.firstName = ''
     this.lastName = ''
     this.birth = ''
