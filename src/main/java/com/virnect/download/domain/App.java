@@ -13,6 +13,9 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
+import org.hibernate.envers.Audited;
+import org.hibernate.envers.NotAudited;
+
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -39,6 +42,7 @@ import lombok.Setter;
 	}
 )
 @NoArgsConstructor
+@Audited
 public class App extends TimeEntity {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -59,14 +63,17 @@ public class App extends TimeEntity {
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "device_id", nullable = false)
+	@NotAudited
 	private Device device;
 
 	@JoinColumn(name = "product_id")
 	@ManyToOne(fetch = FetchType.LAZY)
+	@NotAudited
 	private Product product;
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "os_id", nullable = false)
+	@NotAudited
 	private OS os;
 
 	@Column(name = "version_name", nullable = false)

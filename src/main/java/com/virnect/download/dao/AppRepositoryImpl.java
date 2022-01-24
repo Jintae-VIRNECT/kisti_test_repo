@@ -17,6 +17,7 @@ import lombok.extern.slf4j.Slf4j;
 import com.virnect.download.domain.App;
 import com.virnect.download.domain.Device;
 import com.virnect.download.domain.OS;
+import com.virnect.download.domain.Product;
 import com.virnect.download.dto.domain.DeviceLatestVersionCodeDto;
 import com.virnect.download.dto.domain.QDeviceLatestVersionCodeDto;
 
@@ -31,22 +32,6 @@ import com.virnect.download.dto.domain.QDeviceLatestVersionCodeDto;
 @RequiredArgsConstructor
 public class AppRepositoryImpl implements AppRepositoryCustom {
 	private final JPAQueryFactory query;
-
-	@Override
-	public List<App> getActiveAppList(List<Long> deviceIds, List<Long> latestVersionCodes) {
-		return query
-			.select(app)
-			.from(app)
-			.innerJoin(app.os, oS).fetchJoin()
-			.innerJoin(app.device, device).fetchJoin()
-			.where(
-				app.appStatus.eq(ACTIVE),
-				app.device.id.in(deviceIds),
-				app.versionCode.in(latestVersionCodes)
-			)
-			.orderBy(app.id.asc())
-			.fetch();
-	}
 
 	@Override
 	public Long getLatestVersionCodeByPackageName(String packageName) {
@@ -100,41 +85,6 @@ public class AppRepositoryImpl implements AppRepositoryCustom {
 	}
 
 	@Override
-	public Optional<App> getLatestVersionActiveAppInfoByDeviceAndOs(
-		Device device, OS os
-	) {
-		return Optional.ofNullable(
-			query
-				.selectFrom(app)
-				.where(app.device.eq(device))
-				.where(app.os.eq(os))
-				.where(app.appStatus.eq(ACTIVE))
-				.orderBy(app.versionCode.desc())
-				.fetchFirst());
-	}
-
-	@Override
-	public boolean existAppVersionCode(Device device, OS os, Long versionCode) {
-		return (query.selectFrom(app)
-			.where(
-				app.device.eq(device), app.os.eq(os),
-				app.versionCode.eq(versionCode)
-			)
-			.fetchFirst()) != null;
-	}
-
-	@Override
-	public boolean isLowerThanPreviousAppVersionCode(Device device, OS os, Long versionCode) {
-		return (query.select(app.versionCode)
-			.from(app)
-			.where(
-				app.device.eq(device), app.os.eq(os)
-			)
-			.orderBy(app.versionCode.desc())
-			.fetchFirst()) > versionCode;
-	}
-
-	@Override
 	public App getActiveAppByDeviceLatestVersionCode(
 		DeviceLatestVersionCodeDto deviceLatestVersionCodeDto
 	) {
@@ -152,6 +102,18 @@ public class AppRepositoryImpl implements AppRepositoryCustom {
 			.fetchFirst();
 	}
 
+	@Override
+	public Optional<App> getAppByProductAndOsAndDevice(
+		Product product, OS os, Device device
+	) {
+		return Optional.ofNullable(
+			query
+				.selectFrom(app)
+				.where(app.product.eq(product), app.os.eq(os), app.device.eq(device))
+				.orderBy(app.createdDate.desc())
+				.fetchFirst()
+		);
+	}
 
 	@Override
 	public long registerSigningKeyByPackageName(String packageName, String signingKey) {

@@ -17,8 +17,6 @@ import com.virnect.download.dto.domain.DeviceLatestVersionCodeDto;
  * DESCRIPTION:
  */
 public interface AppRepositoryCustom {
-	List<App> getActiveAppList(List<Long> deviceIds, List<Long> latestVersionCodes);
-
 	Long getLatestVersionCodeByPackageName(String packageName);
 
 	Optional<App> getLatestVersionActiveAppInfoByPackageName(String packageName);
@@ -29,11 +27,7 @@ public interface AppRepositoryCustom {
 
 	List<DeviceLatestVersionCodeDto> getLatestVersionInfoPerDeviceOfProduct(String productName);
 
-	Optional<App> getLatestVersionActiveAppInfoByDeviceAndOs(Device device, OS os);
-
-	boolean existAppVersionCode(Device device, OS os, Long versionCode);
-
-	boolean isLowerThanPreviousAppVersionCode(Device device, OS os, Long versionCode);
-
 	App getActiveAppByDeviceLatestVersionCode(DeviceLatestVersionCodeDto deviceLatestVersionCodeDto);
+
+	Optional<App> getAppByProductAndOsAndDevice(Product product, OS os, Device device);
 }

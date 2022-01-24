@@ -76,7 +76,7 @@ public class AppService {
 			apkMeta.getPackageName());
 
 		if (previousAppInfo.isPresent()) {
-			newAppVersionCodeValidation(apkMeta.getPackageName(), apkMeta.getVersionCode());
+			//newAppVersionCodeValidation(apkMeta.getPackageName(), apkMeta.getVersionCode());
 			applicationSignature = previousAppInfo.get().getSignature();
 		}
 
@@ -326,42 +326,34 @@ public class AppService {
 			adminAppUploadRequest.getProductName()
 		);
 
-		String applicationSignature = adminAppUploadRequest.getSigningKey();
 		String packageName = null;
-		String versionName = null;
-		Long versionCode = null;
+		String versionName = adminAppUploadRequest.getVersionName();
+		Long versionCode = adminAppUploadRequest.getVersionCode();
 
-		//1-3. apk 파일 버전 유효성 검증
+		//1-3. apk metadata 파싱
 		if (adminAppUploadRequest.isApkApp()) {
 			ApkMeta apkMeta = parsingAppInfo(adminAppUploadRequest.getUploadAppFile());
 			packageName = apkMeta.getPackageName();
 			versionName = apkMeta.getVersionName();
 			versionCode = apkMeta.getVersionCode();
-
-			Optional<App> latestActiveApp = appRepository.getLatestVersionActiveAppInfoByPackageName(packageName);
-			if (latestActiveApp.isPresent()) {
-				newAppVersionCodeValidation(packageName, versionCode);
-				applicationSignature = latestActiveApp.get().getSignature();
-			}
 		}
 
-		//1-4. apk 제외한 파일 버전 유효성 검증
-		if (!adminAppUploadRequest.isApkApp()) {
-			versionName = adminAppUploadRequest.getVersionName();
-			versionCode = adminAppUploadRequest.getVersionCode();
-			if (StringUtils.isEmpty(versionName) || StringUtils.isEmpty(versionCode)) {
-				throw new AppServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
-			}
-			Optional<App> latestActiveApp = appRepository.getLatestVersionActiveAppInfoByDeviceAndOs(device, os);
-			if (latestActiveApp.isPresent()) {
-				newAppVersionCodeValidation(device, os, versionCode);
-			}
+		if (StringUtils.isEmpty(versionName) || versionCode == null) {
+			throw new AppServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
 		}
 
-		//2-1. 파일 업로드
-		String appUploadUrl = fileUploadService.upload(adminAppUploadRequest.getUploadAppFile());
+		Optional<App> latestApp = appRepository.getAppByProductAndOsAndDevice(product, os, device);
 
-		//2-2. 앱 정보 저장
+		if (latestApp.isPresent()) {
+			App app = latestApp.get();
+			app.setVersionCode(versionCode);
+			app.setVersionName(versionName);
+			app.setPackageName(packageName);
+			app.setAppUrl(fileUploadService.upload(adminAppUploadRequest.getUploadAppFile()));
+			appRepository.save(app);
+			return responseMapper.appToAdminAppUploadResponse(app);
+		}
+
 		App app = App.builder()
 			.uuid(generateAppUUID())
 			.device(device)
@@ -370,15 +362,13 @@ public class AppService {
 			.packageName(packageName)
 			.versionName(versionName)
 			.versionCode(versionCode)
-			.appUrl(appUploadUrl)
+			.appUrl(fileUploadService.upload(adminAppUploadRequest.getUploadAppFile()))
 			.imageUrl("")
-			.signature(applicationSignature)
+			.signature(adminAppUploadRequest.getSigningKey())
 			.appStatus(AppStatus.ACTIVE)
 			.appUpdateStatus(AppUpdateStatus.REQUIRED)
 			.build();
 		appRepository.save(app);
-
-		//2-3. 응답
 		return responseMapper.appToAdminAppUploadResponse(app);
 	}
 
@@ -412,10 +402,4 @@ public class AppService {
 			.orElseThrow(() -> new AppServiceException(ErrorCode.ERR_APP_UPLOAD_FAIL_DEVICE_INFO_NOT_FOUND));
 	}
 
-	private void newAppVersionCodeValidation(Device device, OS os, long versionCode) {
-		// 버전 코드 중복 체크 및 중복 시 예외 발생
-		if (appRepository.existAppVersionCode(device, os, versionCode)) {
-			throw new AppServiceException(ErrorCode.ERR_APP_UPLOAD_FAIL_DUPLICATE_VERSION);
-		}
-	}
 }

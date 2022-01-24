@@ -4,11 +4,9 @@ New Features
 - 없음
 
 Bug Fixes
-- 없음
+- 관리자 앱 업로드 프로세스 변경 (DEV-2516)
 
 Limitation
-- 디바이스별 자동업데이트 지원여부 플래그 추가 (DEV-2495)
-- 하위버전도 업로드 가능하도록 변경 (DEV-2509)
-
+- 없음
 
 Copyright (C) 2020, VIRNECT CO., LTD. - All Rights Reserved
