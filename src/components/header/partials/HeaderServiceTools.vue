@@ -14,7 +14,7 @@
 
     <notice v-if="isNotGuest"></notice>
 
-    <call-time></call-time>
+    <call-time :callTime="callTime"></call-time>
 
     <button class="header-tools__leave" @click.once="leave">
       {{ $t('button.leave') }}
@@ -45,6 +45,11 @@ export default {
     CallTime,
     Chat,
     SpotControl,
+  },
+  props: {
+    callTime: {
+      type: Number,
+    },
   },
   data() {
     return {

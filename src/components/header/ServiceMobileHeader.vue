@@ -2,7 +2,7 @@
   <div class="mobile-header-service">
     <div class="mobile-header-info">
       <h1>{{ roomInfo.title }}</h1>
-      <h1>{{ `${min}:${sec}` }}</h1>
+      <h1>{{ callTime | timeFilter }}</h1>
     </div>
 
     <div class="mobile-header-tools">
@@ -24,32 +24,15 @@ export default {
     Chat,
     Notice,
   },
-  data() {
-    return {
-      timer: null,
-      time: 0,
-      min: '00',
-      sec: '00',
-    }
+  props: {
+    callTime: {
+      type: Number,
+    },
   },
   computed: {
     ...mapGetters(['roomInfo']),
   },
   methods: {
-    //협업 소요시간을 표기하기 위한 타이머 시작
-    startTimer() {
-      this.timer = setInterval(() => {
-        this.time++
-
-        //분
-        const min = parseInt(this.time / 60)
-        this.min = min < 10 ? '0' + min : min
-
-        //초
-        const sec = this.time % 60
-        this.sec = sec < 10 ? '0' + sec : sec
-      }, 1000)
-    },
     //pc인 경우 HeaderServiceTools에서 처리된다(동일함수)
     // this.$call.leave() 는 ServiceLayout.vue의 beforeRouteLeave에서 처리된다
     leave() {
@@ -71,14 +54,9 @@ export default {
     },
   },
   mounted() {
-    this.startTimer()
     this.$eventBus.$on('call:logout', this.leave)
   },
   beforeDestroy() {
-    clearInterval(this.timer)
-    this.time = 0
-    this.min = 0
-    this.sec = 0
     this.$eventBus.$off('call:logout', this.leave)
   },
 }
