@@ -119,7 +119,7 @@ export default {
       if (this.isTablet && this.isSafari) {
         return fileTypesExceptVideoRelation()
       } else {
-        return '.*'
+        return '*.*'
       }
     },
     isSttBtnVisible() {
