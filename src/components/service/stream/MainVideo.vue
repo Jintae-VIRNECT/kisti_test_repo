@@ -375,7 +375,7 @@ export default {
         this.optimizeVideoSize()
         this.loaded = true
         this.$eventBus.$emit('video:loaded', true)
-        if (this.isSafari && this.isTablet) {
+        if (this.isSafari && this.isMobileDevice) {
           this.checkBackgroundStream()
         }
       })

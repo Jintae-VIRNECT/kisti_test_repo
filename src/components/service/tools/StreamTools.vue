@@ -12,7 +12,7 @@
     <template v-else>
       <pointing></pointing>
       <color></color>
-      <template v-if="!isTablet && !isSafari && !isMobileSize">
+      <template v-if="!isMobileDevice && !isSafari && !isMobileSize">
         <div class="division"></div>
         <screen-share></screen-share>
       </template>

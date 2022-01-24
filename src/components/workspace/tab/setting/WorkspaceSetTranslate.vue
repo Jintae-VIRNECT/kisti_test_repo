@@ -22,7 +22,7 @@
             <tooltip
               :customClass="['tooltip-guide', { disabled: !useTranslate }]"
               :content="$t('workspace.setting_translate_language_tooltip')"
-              :placement="isTablet ? 'bottom' : 'right'"
+              :placement="isMobileDevice ? 'bottom' : 'right'"
               :effect="isMobileSize ? '' : 'blue'"
               :guide="true"
               @hide="helpIconActive = false"

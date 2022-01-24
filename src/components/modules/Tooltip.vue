@@ -80,7 +80,7 @@ export default {
   },
   methods: {
     enter(e) {
-      if (this.isTablet) {
+      if (this.isMobileDevice) {
         if (e.type === 'mouseenter') return
         this.show = true
         this.$emit('active')

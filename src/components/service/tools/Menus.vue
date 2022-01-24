@@ -8,7 +8,7 @@
           :disabled="!hasMainView"
         ></server-record>
       </template>
-      <template v-if="!isSafari && useLocalRecording">
+      <template v-if="!isSafari && !isMobileDevice && useLocalRecording">
         <local-record :disabled="!hasMainView"></local-record>
         <local-record-list></local-record-list>
       </template>

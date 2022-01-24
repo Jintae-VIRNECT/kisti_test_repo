@@ -18,7 +18,7 @@
               v-if="!isMobileSize"
               customClass="tooltip-guide"
               :content="$t('workspace.setting_camera_restrict_info')"
-              :placement="isTablet ? 'bottom' : 'right'"
+              :placement="isMobileDevice ? 'bottom' : 'right'"
               effect="blue"
               :guide="true"
             >
