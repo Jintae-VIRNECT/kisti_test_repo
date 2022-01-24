@@ -25,7 +25,7 @@ import com.virnect.download.exception.AppServiceException;
 import com.virnect.download.global.common.ApiResponse;
 import com.virnect.download.global.error.ErrorCode;
 
-@Profile({"onpremise","test"})
+@Profile({"onpremise", "test"})
 @Slf4j
 @RestController
 @RequestMapping("/download/app")
