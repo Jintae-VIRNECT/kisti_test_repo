@@ -7,7 +7,12 @@ import {
 } from '@vue/composition-api'
 import dayjs from 'dayjs'
 import { alertMessage } from 'mixins/alert'
-import { emailValidate, userBirth, validBirth } from 'mixins/validate'
+import {
+  emailValidate,
+  userBirth,
+  validBirth,
+  passValidate,
+} from 'mixins/validate'
 import emailAuth from 'service/slice/emailAuth.slice'
 
 const createI18nArray = (root, i18nArrayKey) => {
@@ -27,7 +32,6 @@ const eventPrevent = e => {
 }
 
 export default function terms(props, root, signup) {
-  const passwordConfirm = ref('')
   const birth = ref({
     year: '',
     month: '',
@@ -116,10 +120,11 @@ export default function terms(props, root, signup) {
   const nextBtn = computed(() => {
     if (!check.value) return false
     if (
-      signup.value.password !== passwordConfirm.value &&
-      passwordConfirm.value !== ''
+      signup.value.password !== signup.value.passwordConfirm &&
+      signup.value.passwordConfirm !== ''
     )
       return false
+    if (!passValidate(signup.value.password)) return false
     if (signup.value.lastName === '' || signup.value.firstName === '')
       return false
 
@@ -208,7 +213,6 @@ export default function terms(props, root, signup) {
     signup,
     subscriptionPath,
     serviceInfoLists,
-    passwordConfirm,
     birth,
     timeSet,
     check,
