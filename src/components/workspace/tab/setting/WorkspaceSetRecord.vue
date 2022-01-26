@@ -26,7 +26,7 @@
           <tooltip
             customClass="tooltip-guide"
             :content="$t('workspace.setting_record_interval_tooltip')"
-            :placement="isTablet ? 'bottom' : 'right'"
+            :placement="isMobileDevice ? 'bottom' : 'right'"
             effect="blue"
             :guide="true"
           >
@@ -56,7 +56,7 @@
           <tooltip
             customClass="tooltip-guide"
             :content="$t('workspace.setting_record_resolution_tooltip')"
-            :placement="isTablet ? 'bottom' : 'right'"
+            :placement="isMobileDevice ? 'bottom' : 'right'"
             effect="blue"
             :guide="true"
           >

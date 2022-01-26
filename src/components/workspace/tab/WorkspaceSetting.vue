@@ -38,7 +38,9 @@
             </template>
 
             <template v-else-if="menus[tabIdx].key === 'record'">
-              <set-record v-if="!isTablet && useLocalRecording"></set-record>
+              <set-record
+                v-if="!isMobileDevice && useLocalRecording"
+              ></set-record>
               <set-server-record v-if="useRecording"></set-server-record>
             </template>
             <template v-else-if="menus[tabIdx].key === 'language'">
@@ -118,11 +120,11 @@ export default {
       }
 
       const isMobileUseServerRecording =
-        this.useRecording && (this.isMobileSize || this.isTablet)
+        this.useRecording && (this.isMobileSize || this.isMobileDevice)
 
       const isPcUseRecording =
         !this.isMobileSize &&
-        !this.isTablet &&
+        !this.isMobileDevice &&
         (this.useLocalRecording || this.useRecording)
 
       if (isMobileUseServerRecording || isPcUseRecording) {

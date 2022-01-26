@@ -279,7 +279,7 @@ export default {
     ...mapActions(['setMainView', 'addChat']),
     mediaPlay() {
       this.$nextTick(() => {
-        if (this.isSafari && this.isTablet) {
+        if (this.isSafari && this.isMobileDevice) {
           this.checkBackgroundStream()
         }
       })

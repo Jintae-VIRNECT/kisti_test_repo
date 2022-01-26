@@ -116,10 +116,10 @@ export default {
     ]),
     inputAccept() {
       //모바일 사파리에서 비디오 촬영 진입시 이슈 발생하여 video, audio type은 파일 타입에서 제외
-      if (this.isTablet && this.isSafari) {
+      if (this.isMobileDevice && this.isSafari) {
         return fileTypesExceptVideoRelation()
       } else {
-        return '.*'
+        return '*.*'
       }
     },
     isSttBtnVisible() {
@@ -146,7 +146,7 @@ export default {
       if (this.inputText.length > 200) {
         this.inputText = this.inputText.substr(0, 200)
         this.toastDefault(this.$t('service.chat_text_exceed'), {
-          position: this.isTablet ? 'bottom-center' : 'top-center',
+          position: this.isMobileDevice ? 'bottom-center' : 'top-center',
         })
       }
     },

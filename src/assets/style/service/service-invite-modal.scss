@@ -164,6 +164,12 @@
       height: 100%;
     }
 
+    .createroom-user__title > .selected-status {
+      margin-left: 0.8rem;
+      @include fontLevel(150);
+      color: $new_color_text_blue;
+    }
+
     .btn.mobile-inviteroom__button {
       min-height: 4.8rem;
       margin: 0 1.6rem 1.6rem;
@@ -188,10 +194,6 @@
       h1 {
         margin-right: 0.8rem;
         opacity: 0.8;
-      }
-      .selected-status {
-        @include fontLevel(150);
-        color: $new_color_text_blue;
       }
       .user-list-toggle-btn {
         position: absolute;

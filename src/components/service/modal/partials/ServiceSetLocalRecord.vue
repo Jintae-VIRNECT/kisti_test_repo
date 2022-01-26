@@ -48,7 +48,7 @@
           <tooltip
             customClass="tooltip-guide"
             :content="$t('service.setting_record_time_tooltip')"
-            :placement="isTablet ? 'bottom' : 'right'"
+            :placement="isMobileDevice ? 'bottom' : 'right'"
             effect="blue"
             guide
           >
@@ -78,7 +78,7 @@
           <tooltip
             customClass="tooltip-guide"
             :content="$t('service.setting_record_resolution_tooltip')"
-            :placement="isTablet ? 'bottom' : 'right'"
+            :placement="isMobileDevice ? 'bottom' : 'right'"
             effect="blue"
             guide
           >
@@ -170,7 +170,7 @@ export default {
     ...mapGetters(['localRecord', 'localRecordStatus', 'allowLocalRecord']),
 
     useRecordTargetCtrl() {
-      return !this.isTablet && !this.isSafari
+      return !this.isMobileDevice && !this.isSafari
     },
 
     useRecordSetting() {
