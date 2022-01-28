@@ -126,9 +126,8 @@ export default {
   },
   watch: {
     viewAction(newVal, beforeVal) {
-    
       this.debug('ArView :: viewAction changed ::', beforeVal, '=>', newVal)
-      
+
       const isNewViewAR = [
         ACTION.AR_POINTING,
         ACTION.AR_AREA,
@@ -241,11 +240,20 @@ export default {
       } else return false
     },
 
-    checkArFeature(receive) {
+    checkArFeature(received) {
       let data
+      let receive
 
-      if (!receive.receive) data = JSON.parse(receive.data)
-      else data = receive.data
+      //received event directly from signal listener
+      if (!received.receive) {
+        data = JSON.parse(received.data)
+        receive = received
+      }
+      //received event from vuex
+      else {
+        data = received.data
+        receive = received.receive
+      }
 
       if (data.from === this.account.uuid) return
       if (this.account.roleType === ROLE.LEADER) {

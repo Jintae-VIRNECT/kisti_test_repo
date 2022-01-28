@@ -37,10 +37,14 @@ export default {
       this.setAction(ACTION.AR_3D)
 
       const targetUserId = this.mainView.id
-      //시그널 전송 : start 3D contents share
-      this.$call.sendAr3dSharing(AR_3D_CONTENT_SHARE.START_SHARE, {
-        targetUserId,
-      })
+
+      //ar 드로잉 -> 3d 공유 시, end ar drawing -> signal3d start 순서 보장하기 위해 timeout 추가
+      setTimeout(() => {
+        //시그널 전송 : start 3D contents share
+        this.$call.sendAr3dSharing(AR_3D_CONTENT_SHARE.START_SHARE, {
+          targetUserId,
+        })
+      }, 500)
     },
   },
 }
