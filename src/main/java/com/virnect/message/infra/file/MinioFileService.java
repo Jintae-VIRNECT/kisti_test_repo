@@ -33,7 +33,7 @@ import com.virnect.message.global.error.ErrorCode;
  * EMAIL: ljk@virnect.com
  * DESCRIPTION:
  */
-@Profile({"local", "develop"})
+@Profile({"local", "develop","test"})
 @Slf4j
 @Component
 @RequiredArgsConstructor
