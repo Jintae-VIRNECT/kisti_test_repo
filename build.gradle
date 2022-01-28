@@ -8,7 +8,7 @@ plugins {
 }
 
 group = 'com.virnect'
-version = '1.2.28.0'
+version = '1.2.28'
 sourceCompatibility = '1.8'
 
 configurations {
