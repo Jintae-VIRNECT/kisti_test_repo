@@ -27,15 +27,10 @@ import lombok.extern.slf4j.Slf4j;
 @Component
 @RequiredArgsConstructor
 public class S3FileService implements FileService {
+	private final AmazonS3 amazonS3Client;
 
 	@Value("${cloud.aws.s3.bucket.name}")
 	private String bucketName;
-
-	private AmazonS3 amazonS3Client;
-
-	public S3FileService(AmazonS3 amazonS3) {
-		this.amazonS3Client = amazonS3;
-	}
 
 	@Override
 	public byte[] getObjectBytes(String objectName) throws IOException {
