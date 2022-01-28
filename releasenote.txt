@@ -1,7 +1,7 @@
 RELEASE
 
 New Features
-- 이벤트 메세지 발송 기능 추가
+- 없음
 
 Bug Fixes
 - ROI 첨부파일 메일 전송 에러 수정
