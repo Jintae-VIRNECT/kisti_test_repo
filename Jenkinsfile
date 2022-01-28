@@ -8,7 +8,7 @@ pipeline {
 
     environment {
         REPO_URL = sh(returnStdout: true, script: 'git config --get remote.origin.url').trim()
-        REPO_NAME = sh(returnStdout: true, script: 'git config --get remote.origin.url | rev | cut -f 1 -d "/" | rev | sed "s/.git//gi";sed "/^ *$/d"').toLowerCase().trim() 
+        REPO_NAME = sh(returnStdout: true, script: 'git config --get remote.origin.url | rev | cut -f 1 -d "/" | rev | sed "s/.git//gi";sed "/^ *$/d"').toLowerCase().trim()
         PORT = sh(returnStdout: true, script: 'cat docker/Dockerfile | egrep EXPOSE | awk \'{print $2}\'').trim()
         BRANCH_NAME = "${BRANCH_NAME.toLowerCase().trim()}"
         APP = ' '
@@ -40,7 +40,7 @@ pipeline {
                             git rabase origin/master \n
                             git push -f origin ${BRANCH_NAME} \n
                         """
-                        
+
                         deleteDir()
                         currentBuild.getRawBuild().getExecutor().interrupt(Result.ABORTED)
                         sleep(1)
@@ -96,7 +96,7 @@ pipeline {
             steps {
                 withSonarQubeEnv('sonarqube') {
                     sh "${scannerHome}/bin/sonar-scanner"
-                }                
+                }
                 timeout(time: 5, unit: 'MINUTES') {
                     waitForQualityGate abortPipeline: true
                 }
@@ -131,7 +131,7 @@ pipeline {
                 }
             }
         }
-        
+
         stage ('save image to nexus') {
             steps {
                 script {
@@ -173,22 +173,22 @@ pipeline {
                 anchore name: 'anchore_images'
             }
         }
- */
+  */
 
         stage ('deploy to development') {
             when {
                 branch 'develop'
             }
-                
+
             steps {
                 // develop
                 script {
                     withCredentials([usernamePassword(credentialsId: 'server_credentials', passwordVariable: 'PASSWORD', usernameVariable: 'USERNAME')]) {
                         def remote = [:]
-                        remote.name = "${NEXT_VERSION}-${BRANCH_NAME}-${BUILD_NUMBER}" 
+                        remote.name = "${NEXT_VERSION}-${BRANCH_NAME}-${BUILD_NUMBER}"
                         remote.host = "${DEV_SERVER}"
-                        remote.allowAnyHosts = true 
-                        remote.user = USERNAME 
+                        remote.allowAnyHosts = true
+                        remote.user = USERNAME
                         remote.password = PASSWORD
                         remote.failOnError = true
 
@@ -210,10 +210,10 @@ pipeline {
                 script {
                     withCredentials([usernamePassword(credentialsId: 'server_credentials', passwordVariable: 'PASSWORD', usernameVariable: 'USERNAME')]) {
                         def remote = [:]
-                        remote.name = "${NEXT_VERSION}-${BRANCH_NAME}-${BUILD_NUMBER}" 
+                        remote.name = "${NEXT_VERSION}-${BRANCH_NAME}-${BUILD_NUMBER}"
                         remote.host = "${DEV_ONPREMISE_SERVER}"
-                        remote.allowAnyHosts = true 
-                        remote.user = USERNAME 
+                        remote.allowAnyHosts = true
+                        remote.user = USERNAME
                         remote.password = PASSWORD
                         remote.failOnError = true
 
@@ -232,7 +232,7 @@ pipeline {
                 }
             }
 
-            
+
 
             post {
                 always {
@@ -246,16 +246,16 @@ pipeline {
             when {
                 branch 'freezing'
             }
-                
+
             steps {
                 // freezing
                 script {
                     withCredentials([usernamePassword(credentialsId: 'server_credentials', passwordVariable: 'PASSWORD', usernameVariable: 'USERNAME')]) {
                         def remote = [:]
-                        remote.name = "${NEXT_VERSION}-${BRANCH_NAME}-${BUILD_NUMBER}" 
+                        remote.name = "${NEXT_VERSION}-${BRANCH_NAME}-${BUILD_NUMBER}"
                         remote.host = "${DEV_FREEZING_SERVER}"
-                        remote.allowAnyHosts = true 
-                        remote.user = USERNAME 
+                        remote.allowAnyHosts = true
+                        remote.user = USERNAME
                         remote.password = PASSWORD
                         remote.failOnError = true
 
@@ -277,10 +277,10 @@ pipeline {
                 script {
                     withCredentials([usernamePassword(credentialsId: 'server_credentials', passwordVariable: 'PASSWORD', usernameVariable: 'USERNAME')]) {
                         def remote = [:]
-                        remote.name = "${NEXT_VERSION}-${BRANCH_NAME}-${BUILD_NUMBER}" 
+                        remote.name = "${NEXT_VERSION}-${BRANCH_NAME}-${BUILD_NUMBER}"
                         remote.host = "${DEV_ONPREMISE_SERVER}"
-                        remote.allowAnyHosts = true 
-                        remote.user = USERNAME 
+                        remote.allowAnyHosts = true
+                        remote.user = USERNAME
                         remote.password = PASSWORD
                         remote.failOnError = true
 
@@ -298,7 +298,7 @@ pipeline {
                     }
                 }
 */
-            }            
+            }
 
             post {
                 always {
@@ -311,7 +311,7 @@ pipeline {
             when {
                 branch 'staging'
             }
-                
+
             steps {
                 script {
                     sshPublisher(
@@ -330,7 +330,7 @@ pipeline {
                                     sshTransfer(
                                         execCommand: """
                                             echo '${REPO_NAME} Container stop and delete'
-                                            docker stop ${REPO_NAME} && docker rm ${REPO_NAME} 
+                                            docker stop ${REPO_NAME} && docker rm ${REPO_NAME}
 
                                             echo '${REPO_NAME} New Container start'
                                             docker run --restart=on-failure:10 \
@@ -348,7 +348,7 @@ pipeline {
                         ]
                     )
                 }
-                
+
                 // onpremise
                 script {
                     sshPublisher(
@@ -367,7 +367,7 @@ pipeline {
                                     sshTransfer(
                                         execCommand: """
                                             echo '${REPO_NAME} Container stop and delete'
-                                            docker stop ${REPO_NAME} && docker rm ${REPO_NAME} 
+                                            docker stop ${REPO_NAME} && docker rm ${REPO_NAME}
 
                                             echo '${REPO_NAME} New Container start'
                                             docker run --restart=on-failure:10 \
@@ -385,7 +385,7 @@ pipeline {
                     )
                 }
             }
-            
+
             post {
                 always {
                     jiraSendDeploymentInfo site: "${JIRA_URL}", environmentId: 'aws-stging', environmentName: 'aws-stging', environmentType: 'staging'
@@ -405,11 +405,11 @@ pipeline {
                             git push https://$TOKEN@github.com/virnect-corp/$REPO_NAME.git
                         '''
 
-                        env.CHANGE_LOG = gitChangelog returnType: 'STRING', 
+                        env.CHANGE_LOG = gitChangelog returnType: 'STRING',
                             from: [type: 'REF', value: "${PREVIOUS_VERSION}"],
                             to: [type: 'REF', value: 'master'],
                             template: "{{#tags}}{{#ifContainsBreaking commits}}### Breaking Changes \\r\\n {{#commits}}{{#ifCommitBreaking .}}{{#eachCommitScope .}} **{{.}}** {{/eachCommitScope}}{{{commitDescription .}}}([{{hash}}](https://github.com/{{ownerName}}/{{repoName}}/commit/{{hash}})) \\r\\n {{/ifCommitBreaking}}{{/commits}}{{/ifContainsBreaking}} {{#ifContainsType commits type='feat'}} ### Features \\r\\n {{#commits}}{{#ifCommitType . type='feat'}}{{#eachCommitScope .}} **{{.}}** {{/eachCommitScope}}{{{commitDescription .}}}([{{hash}}](https://github.com/{{ownerName}}/{{repoName}}/commit/{{hash}})) \\r\\n {{/ifCommitType}}{{/commits}}{{/ifContainsType}} {{#ifContainsType commits type='fix'}}### Bug Fixes \\r\\n {{#commits}}{{#ifCommitType . type='fix'}}{{#eachCommitScope .}} **{{.}}** {{/eachCommitScope}}{{{commitDescription .}}}([{{hash}}](https://github.com/{{ownerName}}/{{repoName}}/commit/{{hash}})) \\r\\n {{/ifCommitType}}{{/commits}}{{/ifContainsType}} \\r\\n Copyright (C) 2020, VIRNECT CO., LTD. - All Rights Reserved \\r\\n {{/tags}}"
-                                                
+
                         sh '''
                             curl \
                                 -X POST \
@@ -428,7 +428,7 @@ pipeline {
             when {
                 branch 'master'
             }
-                
+
             steps {
                 script {
                     echo "deploy production"
@@ -450,7 +450,7 @@ pipeline {
                                     sshTransfer(
                                         execCommand: """
                                             echo '${REPO_NAME} Container stop and delete'
-                                            docker stop ${REPO_NAME} && docker rm ${REPO_NAME} 
+                                            docker stop ${REPO_NAME} && docker rm ${REPO_NAME}
 
                                             echo '${REPO_NAME} New Container start'
                                             docker run --restart=on-failure:10 \
@@ -467,7 +467,7 @@ pipeline {
                         ]
                     )
                 }
-            }                
+            }
 
             post {
                 always {
