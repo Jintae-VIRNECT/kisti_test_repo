@@ -122,11 +122,7 @@ sourceSets {
 ext {
     springCloudVersion = 'Hoxton.SR10'
     jacocoExcludes = [
-<<<<<<< HEAD
 
-=======
-        
->>>>>>> 1a095af (ci: sonarqube, slack, jacoco, version automation)
     ]
 }
 
