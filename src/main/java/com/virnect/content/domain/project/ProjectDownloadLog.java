@@ -26,7 +26,7 @@ import com.virnect.content.domain.BaseTimeEntity;
 @Setter
 @Entity
 @Table(name = "project_download_log", indexes = {
-	@Index(name = "IDX_workspace_uuid", columnList = "workspace_uuid,created_at")
+	@Index(name = "IDX_workspace_uuid", columnList = "workspace_uuid")
 })
 @NoArgsConstructor
 public class ProjectDownloadLog extends BaseTimeEntity {
