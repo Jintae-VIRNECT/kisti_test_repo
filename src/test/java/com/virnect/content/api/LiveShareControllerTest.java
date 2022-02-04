@@ -29,10 +29,9 @@ class LiveShareControllerTest {
 	@DisplayName("join live share room")
 	void joinLiveShareRoom() throws Exception {
 		String contentUUID = "3ac931f7-5b3b-4807-ac6e-61ae5d138204";
-		String workspaceUUID = "4d6eab0860969a50acbfa4599fbb5ae8";
-		String userUUID = "498b1839dc29ed7bb2ee90ad6985c608";
+		String userUUID = "4a65aa94523efe5391b0541bbbcf97a3";
 		String url = String.format(
-			"/contents/%s/liveShare?workspaceUUID=%s&userUUID=%s", contentUUID, workspaceUUID, userUUID);
+			"/contents/%s/liveShare?userUUID=%s", contentUUID, userUUID);
 
 		mockMvc.perform(
 				MockMvcRequestBuilders
@@ -40,6 +39,24 @@ class LiveShareControllerTest {
 					.contentType(MediaType.APPLICATION_JSON))
 			.andDo(print())
 			.andExpect(status().isOk())
+			.andReturn();
+	}
+
+	@Test
+	@DisplayName("join live share room by invalid workspace user")
+	void joinLiveShareRoom_invalidWorkspaceUser() throws Exception {
+		String contentUUID = "3ac931f7-5b3b-4807-ac6e-61ae5d138204";
+		String userUUID = "bbbb";
+		String url = String.format(
+			"/contents/%s/liveShare?userUUID=%s", contentUUID, userUUID);
+
+		mockMvc.perform(
+				MockMvcRequestBuilders
+					.post(url)
+					.contentType(MediaType.APPLICATION_JSON))
+			.andDo(print())
+			.andExpect(status().isOk())
+			.andExpect(jsonPath("$.code").value(9999))
 			.andReturn();
 	}
 }

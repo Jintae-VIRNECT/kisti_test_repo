@@ -109,9 +109,11 @@ dependencies {
     // feign oktthp
     implementation 'io.github.openfeign:feign-okhttp'
 
-
     // Json web token
     implementation 'io.jsonwebtoken:jjwt:0.9.1'
+
+    // Rabbitmq
+    implementation 'org.springframework.boot:spring-boot-starter-amqp'
 }
 
 test {

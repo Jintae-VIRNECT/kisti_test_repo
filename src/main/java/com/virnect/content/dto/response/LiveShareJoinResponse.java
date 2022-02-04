@@ -11,16 +11,17 @@ import com.virnect.content.domain.Role;
 
 @Getter
 @RequiredArgsConstructor
-public class LiveShareResponse {
+public class LiveShareJoinResponse {
 	private final Long roomId;
 	private final String userUUID;
 	private final Role role;
-	private final LocalDateTime createdDate;
+	private final LocalDateTime joinedDate;
+
 	@Builder
-	public LiveShareResponse(LiveShareUser liveShareUser) {
+	public LiveShareJoinResponse(LiveShareUser liveShareUser) {
 		this.roomId = liveShareUser.getRoomId();
 		this.userUUID = liveShareUser.getUserUUID();
 		this.role = liveShareUser.getUserRole();
-		this.createdDate = liveShareUser.getCreatedDate();
+		this.joinedDate = liveShareUser.getCreatedDate();
 	}
 }
