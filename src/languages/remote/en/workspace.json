@@ -99,6 +99,7 @@
     "setting_stt": "Voice recognition method(STT)",
     "setting_stt_sync": "Voice recording",
     "setting_stt_streaming": "Streaming",
+    "setting_stt_safari_warning":"STT is not available in the current version of Safari Browser. Please update your OS to the latest version.",
     "setting_tts": "Voice conversion settings(TTS)",
     "setting_tts_allow": "Allow voice conversion",
     "setting_translate_disable_message": "Please turn on the use of translation.​",

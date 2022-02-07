@@ -1,6 +1,6 @@
 'use strict'
 const webpack = require('webpack')
-const merge = require('webpack-merge')
+const { merge } = require('webpack-merge')
 const CleanWebpackPlugin = require('clean-webpack-plugin')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 const baseWebpackConfig = require('./webpack.base.conf')
@@ -36,7 +36,8 @@ const productionWebpackConfig = merge(baseWebpackConfig(mode), {
       chunks: ['extra'],
     }),
     new MiniCssExtractPlugin({
-      filename: './assets/style/[name].[hash:5].css',
+      filename: './assets/style/[name].[contenthash].css',
+      ignoreOrder: true,
     }),
     new CompressionPlugin({
       filename: '[path][base].gz[query]',

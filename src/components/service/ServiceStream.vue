@@ -23,6 +23,7 @@ import Menus from './tools/Menus'
 import MainVideo from './stream/MainVideo'
 import MobileSttButton from './stream/partials/MobileSttButton'
 import ChatSpeech from './subview/partials/ChatSpeech'
+import { getIOSversion } from 'utils/appCheck'
 import { mapActions, mapGetters } from 'vuex'
 
 export default {
@@ -37,7 +38,13 @@ export default {
   computed: {
     ...mapGetters(['viewForce', 'translate', 'usingStt']),
     isSttBtnVisible() {
-      return this.translate.flag && this.isMobileSize
+      const version = getIOSversion()
+
+      if (version > 0 && version < 14) {
+        return false
+      } else {
+        return this.translate.flag && this.isMobileSize
+      }
     },
     isSttActivated() {
       return this.isMobileSize && this.usingStt && this.translate.sttSync

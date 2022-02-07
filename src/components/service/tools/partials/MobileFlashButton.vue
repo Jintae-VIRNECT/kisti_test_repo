@@ -1,8 +1,8 @@
 <template>
   <button
     class="mobile-flash-btn"
-    :class="{ on: status }"
-    :disabled="disable"
+    :class="{ on: isFlashOn }"
+    :disabled="isFlashDisable"
     @click="clickHandler"
   ></button>
 </template>

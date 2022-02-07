@@ -4,6 +4,8 @@ const { join, resolve } = require('path')
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 const autoprefixer = require('autoprefixer')
 
+const VueLoaderPlugin = require('vue-loader/lib/plugin')
+
 const config = mode => {
   const isProduction = mode === 'production'
 
@@ -14,8 +16,9 @@ const config = mode => {
       account: './src/apps/account/app.js',
       test: './src/apps/test/app.js',
     },
+    plugins: [autoprefixer, new VueLoaderPlugin()],
     output: {
-      filename: 'assets/scripts/[name].js',
+      filename: 'assets/scripts/[name].[contenthash].js',
       path: resolve(__dirname, '../dist'),
       publicPath: '/',
       chunkFilename: 'assets/scripts/chunks/[id].js',
@@ -65,8 +68,7 @@ const config = mode => {
             {
               loader: 'css-loader',
               options: {
-                sourceMap: !isProduction,
-                plugins: () => [autoprefixer()],
+                sourceMap: true,
               },
             },
           ],
@@ -78,14 +80,13 @@ const config = mode => {
             {
               loader: 'css-loader',
               options: {
-                sourceMap: !isProduction,
-                plugins: () => [autoprefixer()],
+                sourceMap: true,
               },
             },
             {
               loader: 'sass-loader',
               options: {
-                sourceMap: !isProduction,
+                sourceMap: true,
               },
             },
           ],
@@ -95,61 +96,37 @@ const config = mode => {
           use: [
             {
               loader: 'html-loader',
-              options: {
-                root: resolve(__dirname, '../src/assets'),
-                attrs: ['img:src', 'img:srcset'],
-              },
             },
           ],
         },
         {
-          test: /assets\/image\/|\.(png|jpg|jpeg|gif|svg|svgz)(\?.+)?$/,
+          test: /assets\/image\/|\.(svg|svgz)(\?.+)?$/,
           exclude: /favicon\.ico$/,
-          use: [
-            {
-              loader: 'url-loader',
-              options: {
-                limit: 10000,
-                fallback: 'file-loader',
-                name: 'assets/image/[name].[hash:5].[ext]',
-              },
-            },
-          ],
+          type: 'asset/inline',
+        },
+        {
+          test: /assets\/image\/|\.(png|jpg|jpeg|gif)(\?.+)?$/,
+          exclude: /favicon\.ico$/,
+          type: 'asset/resource',
+          generator: {
+            filename: 'assets/image/[name].[contenthash].[ext]',
+          },
         },
         {
           test: /assets\/font\/|\.(eot|ttf|otf|woff|woff2|svg)(\?.+)?$/,
           exclude: [/image/],
-          use: [
-            {
-              loader: 'file-loader',
-              options: {
-                name: 'assets/font/[name].[hash:5].[ext]',
-              },
-            },
-          ],
+          type: 'asset/resource',
+          generator: {
+            filename: 'assets/font/[name].[contenthash].[ext]',
+          },
         },
         {
           test: /assets\/media\/|\.(mp4|ogg|mp3|pdf)$/,
-          use: [
-            {
-              loader: 'file-loader',
-              options: {
-                name: 'assets/media/[name].[hash:5].[ext]',
-              },
-            },
-          ],
+          type: 'asset/resource',
+          generator: {
+            filename: 'assets/media/[name].[contenthash].[ext]',
+          },
         },
-        // {
-        //   test: /static\/js\/|\.(js)$/,
-        //   use: [
-        //     {
-        //       loader: 'file-loader',
-        //       options: {
-        //         name: 'static/js/[name].[hash:5].[ext]',
-        //       },
-        //     },
-        //   ],
-        // },
       ],
     },
     performance: {

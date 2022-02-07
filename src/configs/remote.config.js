@@ -215,6 +215,14 @@ export const LOCATION = {
   STOPPED: 'stopped', //GPS 기능 off or 전체 화면 공유로 인한 위치 정보 공유 중단
 }
 
+/**
+ * 안드로이드 APP에게 현재 background 상태 정보 전달
+ * 모바일 웹 에서만 사용됨.
+ */
+export const APP = {
+  BACKGROUND: 'isBackground',
+}
+
 export const USER_TYPE = {
   GUEST_USER: 'GUEST_USER',
 }

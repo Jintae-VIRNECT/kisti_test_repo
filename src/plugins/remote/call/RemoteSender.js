@@ -13,7 +13,7 @@ import {
   AR_FEATURE,
   FILE,
   CONTROL,
-  LINKFLOW,
+  APP,
 } from 'configs/remote.config'
 import {
   FLASH as FLASH_STATUS,
@@ -429,6 +429,27 @@ const screenSharing = (enable, target = null) => {
     data: JSON.stringify(params),
   })
 }
+
+/**
+ * 모바일 웹 유저가 백그라운드 상태가 되었을 때, 안드로이드 앱 유저에게
+ * 백그라운드가 되었다고 알려주는 signal
+ *
+ * @BROADCATE
+ * @param {Boolean} enable
+ * @param {String} id : target id
+ */
+const backgroundStatus = (enable, target) => {
+  const params = {
+    type: APP.BACKGROUND,
+    isBackground: enable,
+  }
+  _.session.signal({
+    type: SIGNAL.APP,
+    to: target,
+    data: JSON.stringify(params),
+  })
+}
+
 export default {
   chat,
   file,
@@ -451,4 +472,5 @@ export default {
   flash,
   cameraZoom,
   screenSharing,
+  backgroundStatus,
 }

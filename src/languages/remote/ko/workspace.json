@@ -99,6 +99,7 @@
     "setting_stt": "음성 인식 방식(STT)",
     "setting_stt_sync": "음성 녹음",
     "setting_stt_streaming": "스트리밍",
+    "setting_stt_safari_warning":"현재 버전의 Safari Browser에서는 STT가 사용 불가능합니다. OS를 최신 버전으로 업데이트 해주세요.",
     "setting_tts": "음성 변환 설정(TTS)",
     "setting_tts_allow": "음성 변환 사용 허용",
     "setting_translate_disable_message": "번역 사용을 켜주세요.",

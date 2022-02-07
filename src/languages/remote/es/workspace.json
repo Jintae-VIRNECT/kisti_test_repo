@@ -99,6 +99,7 @@
 	"setting_stt": "Método de grabación de voz",
 	"setting_stt_sync": "Grabación de voz",
 	"setting_stt_streaming": "Streaming",
+	"setting_stt_safari_warning":"STT no está disponible en la versión actual del navegador Safari. Actualice su sistema operativo a la última versión.",
 	"setting_tts": "Configuración de conversión de voz",
 	"setting_tts_allow": "Permitir la conversión de voz",
 	"setting_translate_disable_message": "Por favor active el uso de traducción.",

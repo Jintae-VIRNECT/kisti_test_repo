@@ -249,6 +249,14 @@
     }
   }
 
+  .mobile-setting-wrapper{
+    .setting-view-stt-warning {
+      color: $color_red;
+      @include fontLevel(75);
+      margin-bottom: 15px;
+    }
+  }
+
   .setting-view {
     padding: 2rem 1.6rem;
     color: $new_color_text_main;

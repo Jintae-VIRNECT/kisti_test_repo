@@ -399,6 +399,8 @@ const _ = {
     })
   },
 
+  sendBackgroundStatus: sender.backgroundStatus,
+
   setFrameRate: async fps => {
     if (_.publisher && _.publisher.stream) {
       const track = _.publisher.stream.getVideoTracks()[0]
