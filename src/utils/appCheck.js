@@ -27,3 +27,24 @@ export const getIntentLink = async info => {
   const intentLink = `intent://remote?workspaceId=${info.workspaceId}&sessionId=${info.sessionId}#$d#Intent;scheme=virnect;action=android.intent.action.VIEW;category=android.intent.category.BROWSABLE;package=${info.packageName};end`
   return intentLink
 }
+
+/**
+ * iOS의 version을 반환한다.
+ *
+ * iOS가 아니라면 0 반환
+ * @returns {Number} iOS version
+ *
+ */
+export const getIOSversion = () => {
+  const agent = window.navigator.userAgent
+  const start = agent.indexOf('OS ')
+
+  const isIPhone = agent.indexOf('iPhone') > -1
+  const isIpad = agent.indexOf('iPad') > -1
+
+  if ((isIPhone || isIpad) && start > -1) {
+    return Number(agent.substr(start + 3, 3).replace('_', '.'))
+  }
+
+  return 0
+}

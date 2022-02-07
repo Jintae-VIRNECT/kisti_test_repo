@@ -362,6 +362,17 @@ const mutations = {
   addArEvent(state, eventData) {
     state.arEventQueue.push(eventData)
   },
+  updateMyInfo(state, param) {
+    for (let key in param) {
+      if (key in state.participants[0] && param[key] !== null) {
+        if (key === 'connectionId') continue
+        state.participants[0][key] = param[key]
+        if (state.participants[0].id === state.mainView.id) {
+          state.mainView[key] = param[key]
+        }
+      }
+    }
+  },
 }
 
 const actions = {

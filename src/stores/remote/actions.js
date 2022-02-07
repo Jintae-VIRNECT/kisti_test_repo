@@ -104,6 +104,9 @@ export default {
     if ('video' in payload) {
       commit(types.SETTINGS.SET_VIDEO_DEVICE, payload['video'])
     }
+    if ('flash' in payload) {
+      commit(types.SETTINGS.SET_FLASH_DEVICE, payload['flash'])
+    }
   },
   /**
    * set Record
@@ -184,5 +187,13 @@ export default {
    */
   setAutoServerRecord({ commit }, status) {
     commit(types.SETTINGS.SET_AUTO_SERVER_RECORD, status)
+  },
+
+  /**
+   * 모바일 웹 반응형 only
+   * @param {Boolean} status 브라우저 백그라운드 여부
+   */
+  setIsBrowserBackground({ commit }, status) {
+    commit(types.SET_IS_BROWSER_BACKGROUND, status)
   },
 }

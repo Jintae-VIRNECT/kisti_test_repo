@@ -99,6 +99,7 @@
     "setting_stt": "音声認識方法 (STT)",
     "setting_stt_sync": "音声録音",
     "setting_stt_streaming": "ストリーミング",
+    "setting_stt_safari_warning":"現在のバージョンのSafari Browserでは、STTは使用できません。 OSを最新バージョンにアップデートしてください。",
     "setting_tts": "音声変換設定(TTS)",
     "setting_tts_allow": "音声変換使用許可",
     "setting_translate_disable_message": "翻訳使用をオンにしてください。",

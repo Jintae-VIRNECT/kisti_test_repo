@@ -4,6 +4,7 @@ import _, { addSubscriber, removeSubscriber } from './Remote'
 import { URLS } from 'configs/env.config'
 
 import auth from 'utils/auth'
+import { flashStatus } from './RemoteSender'
 
 import {
   SIGNAL,
@@ -159,12 +160,17 @@ const signalVideo = event => {
     Store.dispatch('setMainView', { id: data.id, force: true })
 
     const participants = Store.getters['participants']
+    let leader = null
     participants.forEach(pt => {
+      if (pt.roleType === ROLE.LEADER) leader = pt
       Store.commit('updateParticipant', {
         connectionId: pt.connectionId,
         currentWatching: data.id,
       })
     })
+
+    //현재 플래시 상태를 리더에게 전송해서 플래시 상태에 대한 싱크를 맞춘다
+    _.sendFlashStatus(Store.getters['myInfo'].flash, [leader.connectionId])
   } else if (data.type === VIDEO.SCREEN_SHARE) {
     const isLeader = _.account.roleType === ROLE.LEADER
     const participants = Store.getters['participants']

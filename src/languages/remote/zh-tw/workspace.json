@@ -99,6 +99,7 @@
 	"setting_stt": "語音識別方式（STT）",
 	"setting_stt_sync": "錄音",
 	"setting_stt_streaming": "流媒體",
+	"setting_stt_safari_warning":"STT 在當前版本的 Safari 瀏覽器中不可用。 請將您的操作系統更新到最新版本。",
 	"setting_tts": "設置語音轉換（TTS）",
 	"setting_tts_allow": "允許使用語音轉換",
 	"setting_translate_disable_message": "請使用翻譯。",

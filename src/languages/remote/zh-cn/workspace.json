@@ -99,6 +99,7 @@
 	"setting_stt": "语音识别方式（STT）",
 	"setting_stt_sync": "录音",
 	"setting_stt_streaming": "流媒体",
+	"setting_stt_safari_warning":"STT 在当前版本的 Safari 浏览器中不可用。 请将您的操作系统更新到最新版本。",
 	"setting_tts": "设置语音转换（TTS）",
 	"setting_tts_allow": "允许使用语音转换",
 	"setting_translate_disable_message": "请使用翻译。",

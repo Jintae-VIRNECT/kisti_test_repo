@@ -1,6 +1,10 @@
 <template>
   <div>
     <section class="setting-section list">
+      <p v-if="showSTTwarning && isMobileSize" class="setting-view-stt-warning">
+        {{ $t('workspace.setting_stt_safari_warning') }}
+      </p>
+
       <div class="setting-section__title main">
         {{ $t('workspace.setting_translate') }}
       </div>
@@ -104,6 +108,7 @@ import Slider from 'Slider'
 import Tooltip from 'Tooltip'
 import toastMixin from 'mixins/toast'
 import { mapActions, mapGetters } from 'vuex'
+import { getIOSversion } from 'utils/appCheck'
 
 export default {
   name: 'WorkspaceSetTranslate',
@@ -126,6 +131,11 @@ export default {
   },
   computed: {
     ...mapGetters(['translate', 'languageCodes']),
+    showSTTwarning() {
+      const version = getIOSversion()
+
+      return version > 0 && version < 14 ? true : false
+    },
   },
   watch: {
     useTranslate(flag) {

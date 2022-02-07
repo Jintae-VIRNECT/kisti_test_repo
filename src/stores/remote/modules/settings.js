@@ -8,6 +8,7 @@ import {
 } from '../mutation-types'
 import { RECORD_TARGET } from 'utils/recordOptions'
 import { resolution } from 'utils/settingOptions'
+import { FLASH as FLASH_STATUS } from 'configs/device.config'
 
 const state = {
   mic: {
@@ -24,6 +25,7 @@ const state = {
     quality: '720',
     fps: 30,
   },
+  flash: FLASH_STATUS.FLASH_NONE,
   localRecordInfo: {
     time: '60',
     interval: '1',
@@ -59,6 +61,9 @@ const state = {
 }
 
 const mutations = {
+  [SETTINGS.SET_FLASH_DEVICE](state, flash) {
+    state.flash = flash
+  },
   [SETTINGS.SET_MIC_DEVICE](state, mic) {
     Object.assign(state.mic, mic)
   },
@@ -136,6 +141,7 @@ const getters = {
   mic: state => state.mic,
   speaker: state => state.speaker,
   video: state => state.video,
+  flash: state => state.flash,
   localRecord: state => state.localRecordInfo,
   serverRecord: state => state.serverRecordInfo,
   allowLocalRecord: state => state.allow.localRecord,

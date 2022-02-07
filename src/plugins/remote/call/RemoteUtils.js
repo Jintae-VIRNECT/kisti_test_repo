@@ -4,10 +4,7 @@ import eventListener from './RemoteSessionEventListener'
 
 import { SIGNAL, CONTROL, ROLE, LOCATION } from 'configs/remote.config'
 
-import {
-  FLASH as FLASH_STATUS,
-  CAMERA as CAMERA_STATUS,
-} from 'configs/device.config'
+import { CAMERA as CAMERA_STATUS } from 'configs/device.config'
 
 import { getUserInfo } from 'api/http/account'
 import { logger } from 'utils/logger'
@@ -28,7 +25,11 @@ export const addSessionEventListener = session => {
           event.connection.connectionId,
         ])
         _.sendResolution(null, [event.connection.connectionId])
-        _.sendFlashStatus(FLASH_STATUS.FLASH_NONE, [
+        _.sendFlashStatus(Store.getters['flash'], [
+          event.connection.connectionId,
+        ])
+
+        _.sendBackgroundStatus(Store.getters['isBrowserBackground'], [
           event.connection.connectionId,
         ])
       }
@@ -218,7 +219,7 @@ const setUserObject = event => {
     cameraStatus: 'default',
     zoomLevel: 1, // zoom 레벨
     zoomMax: 1, // zoom 최대 레벨
-    flash: 'default', // flash 제어
+    flash: Store.getters['flash'], // flash 지원 여부
     screenShare: false,
     currentWatching: uuid, //현재 자신이 보고있는 참가자 uuid
   }

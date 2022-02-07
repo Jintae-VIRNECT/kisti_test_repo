@@ -138,6 +138,7 @@ import confirmMixin from 'mixins/confirm'
 
 import Store from 'stores/remote/store'
 import { checkInput } from 'utils/deviceCheck'
+import { getVisibilityName } from 'utils/pageVisibility'
 import ReconnectModal from './modal/ReconnectModal'
 
 import { mapGetters, mapActions, mapMutations } from 'vuex'
@@ -262,7 +263,12 @@ export default {
   },
   methods: {
     ...mapMutations(['SET_CHAT_ACTIVE']),
-    ...mapActions(['useStt', 'setTool']),
+    ...mapActions([
+      'useStt',
+      'setTool',
+      'setDevices',
+      'setIsBrowserBackground',
+    ]),
     changeOrientation(event) {
       if (!this.myInfo || !this.myInfo.stream) return
       const tracks = this.myInfo.stream.getVideoTracks()
@@ -417,6 +423,50 @@ export default {
         text: this.$t('button.logout'),
       })
     },
+    initBrowserBackgroundListener() {
+      const { visibilityChange } = getVisibilityName()
+
+      document.addEventListener(
+        visibilityChange,
+        this.handleVisibilityChange,
+        false,
+      )
+    },
+    removeBrowserBackgroundListener() {
+      const { visibilityChange } = getVisibilityName()
+
+      document.removeEventListener(
+        visibilityChange,
+        this.handleVisibilityChange,
+        false,
+      )
+    },
+    handleVisibilityChange() {
+      const { hidden } = getVisibilityName()
+      const isBackground = document[hidden]
+
+      if (isBackground) {
+        this.setDevices({
+          video: {
+            isOn: false,
+          },
+        })
+        this.$call.sendBackgroundStatus(true)
+        this.$call.sendCamera(CAMERA.CAMERA_OFF)
+        this.$call.sendCamera(CAMERA.APP_IS_BACKGROUND)
+        this.setIsBrowserBackground(true)
+      } else {
+        const video = !this.video.isOn
+        this.setDevices({
+          video: {
+            isOn: video,
+          },
+        })
+        this.$call.sendCamera(video ? CAMERA.CAMERA_ON : CAMERA.CAMERA_OFF)
+        this.$call.sendBackgroundStatus(false)
+        this.setIsBrowserBackground(false)
+      }
+    },
   },
 
   /* Lifecycles */
@@ -447,8 +497,14 @@ export default {
     }
 
     navigator.mediaDevices.ondevicechange = this.onDeviceChange
+
+    if (this.isMobileSize) {
+      this.initBrowserBackgroundListener()
+    }
+
     window.addEventListener('keydown', this.stopLocalRecordByKeyPress)
     window.addEventListener('orientationchange', this.changeOrientation)
+
     this.$call.addListener('sessionDisconnected', this.reconnect)
     this.$eventBus.$on('video:fullscreen', this.setFullScreen)
     this.$eventBus.$on('video:loaded', this.setVideoLoaded)
@@ -468,6 +524,11 @@ export default {
 
     window.onbeforeunload = () => {}
     navigator.mediaDevices.ondevicechange = () => {}
+
+    if (this.isMobileSize) {
+      this.removeBrowserBackgroundListener()
+    }
+
     window.removeEventListener('keydown', this.stopLocalRecordByKeyPress)
     window.removeEventListener('orientationchange', this.changeOrientation)
 

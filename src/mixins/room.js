@@ -6,7 +6,7 @@ import {
   getRoomInfo,
 } from 'api/http/room'
 import { ROLE } from 'configs/remote.config'
-import { DEVICE } from 'configs/device.config'
+import { DEVICE, FLASH as FLASH_STATUS } from 'configs/device.config'
 import { ROOM_STATUS } from 'configs/status.config'
 import { ERROR } from 'configs/error.config'
 import { URLS } from 'configs/env.config'
@@ -32,7 +32,54 @@ export default {
     ...mapGetters(['targetCompany', 'restrictedMode', 'useScreenStrict']),
   },
   methods: {
-    ...mapActions(['roomClear', 'setRoomInfo']),
+    ...mapActions(['roomClear', 'setRoomInfo', 'setDevices']),
+    //모바일 사용자의 플래시 사용여부를 체크하기 위한 함수
+    async getFlashStatus(mediaStream) {
+      //지원하는 모바일 브라우저 체크 (chrome과 opera만 지원 가능)
+      const isMobileBrowserSupport =
+        this.isMobileSize &&
+        (navigator.userAgent.includes('Chrome') ||
+          navigator.userAgent.includes('Opera') ||
+          navigator.userAgent.includes('OPR'))
+
+      this.debug(
+        'mobile::flash::isMobileBrowserSupport::',
+        isMobileBrowserSupport,
+      )
+
+      //지원하는 브라우저인 경우
+      if (isMobileBrowserSupport) {
+        try {
+          const videoTrack = mediaStream.getVideoTracks()[0]
+          const imgCapture = new ImageCapture(videoTrack)
+
+          //ImageCapture 객체가 정상적으로 선언되지 않는 경우 판단 불가, 플래시 지원 안함
+          if (imgCapture === undefined || imgCapture === null)
+            return FLASH_STATUS.FLASH_NONE
+
+          //플래시 지원 여부 정보 조회
+          const caps = await imgCapture.getPhotoCapabilities()
+
+          this.debug('mobile::camera::capabilities::', caps)
+
+          //플래시 지원 여부
+          const isFlashSupport =
+            !!caps.torch ||
+            ('fillLightMode' in caps &&
+              caps.fillLightMode.length != 0 &&
+              caps.fillLightMode != 'none')
+
+          this.debug('mobile::camera::flashSupport::', isFlashSupport)
+
+          return isFlashSupport
+            ? FLASH_STATUS.FLASH_OFF //플래시 지원하는 경우 플래시가 꺼진 상태 값으로 세팅한다
+            : FLASH_STATUS.FLASH_NONE //플래시 지원 안함
+        } catch (e) {
+          console.error(e)
+          return FLASH_STATUS.FLASH_NONE //플래시 지원 여부 확인 중 에러 발생하면 플래시 지원안함으로 판단
+        }
+      } else return FLASH_STATUS.FLASH_NONE //지원하지 않는 브라우저의 경우, 플래시 지원 안함
+    },
     async join(room, showRestrictAgreeModal = true) {
       this.logger('>>> JOIN ROOM')
 
@@ -96,6 +143,8 @@ export default {
         },
       )
     },
+
+    //협업참가(참가자 혹은 리더)
     async doJoin(room, role) {
       try {
         this.$eventBus.$emit('roomloading:show', {
@@ -135,6 +184,13 @@ export default {
           videoRestrictedMode: res.videoRestrictedMode,
         })
 
+        //check mobile flash support
+        const flashStatus = await this.getFlashStatus(mediaStream)
+        //flash 상태 vuex에 저장
+        this.setDevices({
+          flash: flashStatus,
+        })
+
         const joinRtn = await this.$call.connect(
           res,
           role,
@@ -157,7 +213,7 @@ export default {
       }
     },
 
-    //원격 협업 시작
+    //원격 협업 시작(리더)
     //info : {title, description, imageFile, imageUrl, open}
     async startRemote(info) {
       try {
@@ -244,6 +300,13 @@ export default {
             this.toastError(this.$t('alarm.file_storage_about_to_limit'))
           }
         }
+
+        //check mobile flash support
+        const flashStatus = await this.getFlashStatus(mediaStream)
+        //flash 상태 vuex에 저장
+        this.setDevices({
+          flash: flashStatus,
+        })
 
         const connRes = await this.$call.connect(
           createdRes,
