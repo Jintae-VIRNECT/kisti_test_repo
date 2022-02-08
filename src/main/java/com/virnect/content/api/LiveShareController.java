@@ -1,6 +1,8 @@
 package com.virnect.content.api;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.handler.annotation.DestinationVariable;
+import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -44,5 +46,14 @@ public class LiveShareController {
 		LiveShareJoinResponse responseMessage = liveShareService.joinLiveShareRoom(
 			contentUUID, userUUID);
 		return ResponseEntity.ok(new ApiResponse<>(responseMessage));
+	}
+
+	@MessageMapping("/api/contents/{contentUUID}/room/{roomId}")
+	public void publishContentWriteMessage(
+		@DestinationVariable("contentUUID") String contentUUID, @DestinationVariable("roomId") String roomId,
+		String message
+	) {
+		log.info("[PUB_CONTENT_WRITING_MESSAGE] CONTENT : {}, ROOM : {}", contentUUID, roomId);
+		liveShareService.publishContentWriteMessage(contentUUID, roomId, message);
 	}
 }

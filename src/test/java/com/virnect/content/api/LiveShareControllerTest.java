@@ -10,6 +10,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -21,6 +22,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 @ActiveProfiles("test")
 @AutoConfigureMockMvc
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+@Import(EmbeddedRabbitmqConfiguration.class)
 class LiveShareControllerTest {
 	@Autowired
 	private MockMvc mockMvc;
@@ -30,8 +32,7 @@ class LiveShareControllerTest {
 	void joinLiveShareRoom() throws Exception {
 		String contentUUID = "3ac931f7-5b3b-4807-ac6e-61ae5d138204";
 		String userUUID = "4a65aa94523efe5391b0541bbbcf97a3";
-		String url = String.format(
-			"/contents/%s/liveShare?userUUID=%s", contentUUID, userUUID);
+		String url = String.format("/contents/%s/liveShare?userUUID=%s", contentUUID, userUUID);
 
 		mockMvc.perform(
 				MockMvcRequestBuilders
@@ -59,4 +60,5 @@ class LiveShareControllerTest {
 			.andExpect(jsonPath("$.code").value(9999))
 			.andReturn();
 	}
+
 }

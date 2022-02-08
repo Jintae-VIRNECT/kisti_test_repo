@@ -18,7 +18,7 @@ version = '1.4.2'
 sourceCompatibility = '1.8'
 
 ext {
-    springCloudVersion = 'Hoxton.SR10'
+    springCloudVersion = 'Hoxton.SR11'
     mapstructVersion = '1.4.2.Final'
     jacocoExcludes = [
 
@@ -114,6 +114,11 @@ dependencies {
 
     // Rabbitmq
     implementation 'org.springframework.boot:spring-boot-starter-amqp'
+    testCompile 'com.github.fridujo:rabbitmq-mock:1.1.1'
+
+    // Websocket
+    implementation 'org.springframework.boot:spring-boot-starter-websocket'
+
 }
 
 test {

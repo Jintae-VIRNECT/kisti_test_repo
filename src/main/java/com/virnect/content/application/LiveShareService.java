@@ -2,6 +2,7 @@ package com.virnect.content.application;
 
 import java.util.List;
 
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
@@ -23,7 +24,6 @@ import com.virnect.content.dto.rest.WorkspaceUserResponse;
 import com.virnect.content.exception.ContentServiceException;
 import com.virnect.content.global.common.ApiResponse;
 import com.virnect.content.global.error.ErrorCode;
-import com.virnect.content.infra.message.MessageService;
 
 @Slf4j
 @Service
@@ -32,7 +32,7 @@ public class LiveShareService {
 	private final LiveShareUserRepository liveShareUserRepository;
 	private final LiveShareRoomRepository liveShareRoomRepository;
 	private final ContentRepository contentRepository;
-	private final MessageService messageService;
+	private final RabbitTemplate rabbitTemplate;
 	private final WorkspaceRestService workspaceRestService;
 
 	@Transactional
@@ -55,7 +55,7 @@ public class LiveShareService {
 				.build();
 			liveShareUserRepository.save(newLiveShareUser);
 
-			sendActiveUserUpdateMessage(contentUUID, activeRoom.getId());
+			publishActiveUserUpdateMessage(contentUUID, activeRoom.getId());
 
 			return new LiveShareJoinResponse(newLiveShareUser);
 		}
@@ -72,7 +72,7 @@ public class LiveShareService {
 			.build();
 		liveShareUserRepository.save(newLiveShareUser);
 
-		sendActiveUserUpdateMessage(contentUUID, newLiveShareRoom.getId());
+		publishActiveUserUpdateMessage(contentUUID, newLiveShareRoom.getId());
 		return new LiveShareJoinResponse(newLiveShareUser);
 
 	}
@@ -89,15 +89,24 @@ public class LiveShareService {
 		}
 	}
 
-	private void sendActiveUserUpdateMessage(String contentUUID, Long roomId) {
-		List<LiveShareUserUpdatePushRequest> pushRequest = liveShareUserRepository.getActiveUserListByRoomId(
-			roomId);
-		String exchangeName = "amp.topic";
+	private void publishActiveUserUpdateMessage(String contentUUID, Long roomId) {
+		List<LiveShareUserUpdatePushRequest> pushRequest = liveShareUserRepository.getActiveUserListByRoomId(roomId);
 		String routingKey = String.format("push.contents.%s.room.%s", contentUUID, roomId);
-		messageService.convertAndSend(exchangeName, routingKey, pushRequest);
+		publishTopicMessage(routingKey, pushRequest);
+	}
+
+	public void publishContentWriteMessage(String contentUUID, String roomId, String message) {
+		String routingKey = String.format("api.contents.%s.room.%s", contentUUID, roomId);
+		publishTopicMessage(routingKey, message);
+	}
+
+	private void publishTopicMessage(String routingKey, Object message) {
+		String exchangeName = "amq.topic";
+		rabbitTemplate.convertAndSend(exchangeName, routingKey, message);
 		log.info(
-			"[JOIN_LIVE_SHARE_ROOM] ACTIVE USER UPDATE MESSAGE SEND ! EXCHANGE : {}, ROUTING : {}, MESSAGE : {} ",
-			exchangeName, routingKey, pushRequest.toString()
+			"[RABBITMQ][CONVERT_AND_SEND] ACTIVE USER UPDATE MESSAGE SEND ! EXCHANGE : {}, ROUTING : {}", exchangeName,
+			routingKey
 		);
 	}
+
 }
