@@ -34,7 +34,8 @@ public class GatewayExceptionHandler implements ErrorWebExceptionHandler {
 		"com.virnect.gateway.error.GatewayExceptionHandler");
 
 	private String errorMessage(ErrorCode error) {
-		return "{\"code\":" + error.getCode() + ",\"message\":\"" + error.getMessage() + "\",\"data\":{}}";
+		return "{\"code\":" + error.getCode() + ", \"service\":\"gateway\", \"message\":\"" + error.getMessage()
+			+ "\",\"data\":{}}";
 	}
 
 	@Override
