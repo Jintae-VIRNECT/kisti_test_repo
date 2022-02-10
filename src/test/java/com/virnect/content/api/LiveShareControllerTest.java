@@ -22,7 +22,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 @ActiveProfiles("test")
 @AutoConfigureMockMvc
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-@Import(EmbeddedRabbitmqConfiguration.class)
+@Import({TestRabbitmqConfiguration.class, TestRedisConfiguration.class})
 class LiveShareControllerTest {
 	@Autowired
 	private MockMvc mockMvc;

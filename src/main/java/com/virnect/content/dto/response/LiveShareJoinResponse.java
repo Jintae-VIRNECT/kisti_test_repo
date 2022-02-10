@@ -15,6 +15,7 @@ public class LiveShareJoinResponse {
 	private final Long roomId;
 	private final String userUUID;
 	private final Role role;
+	private final String latestData;
 	private final LocalDateTime joinedDate;
 
 	@Builder
@@ -22,6 +23,16 @@ public class LiveShareJoinResponse {
 		this.roomId = liveShareUser.getRoomId();
 		this.userUUID = liveShareUser.getUserUUID();
 		this.role = liveShareUser.getUserRole();
+		this.latestData = "";
+		this.joinedDate = liveShareUser.getCreatedDate();
+	}
+
+	@Builder
+	public LiveShareJoinResponse(LiveShareUser liveShareUser, String latestData) {
+		this.roomId = liveShareUser.getRoomId();
+		this.userUUID = liveShareUser.getUserUUID();
+		this.role = liveShareUser.getUserRole();
+		this.latestData = latestData;
 		this.joinedDate = liveShareUser.getCreatedDate();
 	}
 }

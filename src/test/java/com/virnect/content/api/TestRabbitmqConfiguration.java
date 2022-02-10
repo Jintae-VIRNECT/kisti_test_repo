@@ -23,7 +23,7 @@ import com.github.fridujo.rabbitmq.mock.compatibility.MockConnectionFactoryFacto
 import com.github.fridujo.rabbitmq.mock.exchange.MockTopicExchange;
 
 @TestConfiguration
-public class EmbeddedRabbitmqConfiguration {
+public class TestRabbitmqConfiguration {
 	@Bean
 	ConnectionFactory connectionFactory() {
 		return new CachingConnectionFactory(

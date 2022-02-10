@@ -1,5 +1,7 @@
 package com.virnect.content.global.config;
 
+import javax.annotation.PostConstruct;
+
 import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
@@ -10,8 +12,11 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 
+import lombok.extern.slf4j.Slf4j;
+
 @Configuration
 @Profile("!test")
+@Slf4j
 public class RabbitmqConfiguration {
 	@Value("${spring.rabbitmq.host}")
 	private String host;
@@ -23,6 +28,14 @@ public class RabbitmqConfiguration {
 	private String username;
 	@Value("${spring.rabbitmq.password}")
 	private String password;
+
+	@PostConstruct
+	public void init() {
+		log.info("[RABBITMQ_CONFIG] Host >> [{}]", host);
+		log.info("[RABBITMQ_CONFIG] Port >> [{}]", port);
+		log.info("[RABBITMQ_CONFIG] VirtualHost >> [{}]", virtualHost);
+		log.info("[RABBITMQ_CONFIG] Username >> [{}], Password >> [{}]", username, password);
+	}
 
 	@Bean
 	public CachingConnectionFactory connectionFactory() {

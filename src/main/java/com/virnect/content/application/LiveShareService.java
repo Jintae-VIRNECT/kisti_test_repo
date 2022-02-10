@@ -1,8 +1,10 @@
 package com.virnect.content.application;
 
+import java.time.Duration;
 import java.util.List;
 
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
@@ -29,11 +31,16 @@ import com.virnect.content.global.error.ErrorCode;
 @Service
 @RequiredArgsConstructor
 public class LiveShareService {
+	private static final String REDIS_KEY_PREFIX = "liveShare:";
+	private static final String EXCHANGE_NAME = "amq.topic";
+	private static final Duration REDIS_KEY_TTL = Duration.ofDays(28L);
+
 	private final LiveShareUserRepository liveShareUserRepository;
 	private final LiveShareRoomRepository liveShareRoomRepository;
 	private final ContentRepository contentRepository;
 	private final RabbitTemplate rabbitTemplate;
 	private final WorkspaceRestService workspaceRestService;
+	private final StringRedisTemplate redisTemplate;
 
 	@Transactional
 	public LiveShareJoinResponse joinLiveShareRoom(
@@ -57,7 +64,10 @@ public class LiveShareService {
 
 			publishActiveUserUpdateMessage(contentUUID, activeRoom.getId());
 
-			return new LiveShareJoinResponse(newLiveShareUser);
+			String key = REDIS_KEY_PREFIX + activeRoom.getId();
+			String latestData = redisTemplate.opsForValue().get(key);
+
+			return new LiveShareJoinResponse(newLiveShareUser, latestData);
 		}
 		LiveShareRoom newLiveShareRoom = LiveShareRoom.liveShareRoomBuilder()
 			.contentUUID(contentUUID)
@@ -96,15 +106,19 @@ public class LiveShareService {
 	}
 
 	public void publishContentWriteMessage(String contentUUID, String roomId, String message) {
+		String key = REDIS_KEY_PREFIX + roomId;
+		redisTemplate.opsForValue().set(key, String.valueOf(message), REDIS_KEY_TTL);
+		log.info("[MEMORY_DB][SET_VALUE] SUCCESS ! KEY : {}", key);
+
 		String routingKey = String.format("api.contents.%s.room.%s", contentUUID, roomId);
 		publishTopicMessage(routingKey, message);
 	}
 
 	private void publishTopicMessage(String routingKey, Object message) {
-		String exchangeName = "amq.topic";
-		rabbitTemplate.convertAndSend(exchangeName, routingKey, message);
+		rabbitTemplate.convertAndSend(EXCHANGE_NAME, routingKey, message);
 		log.info(
-			"[RABBITMQ][CONVERT_AND_SEND] ACTIVE USER UPDATE MESSAGE SEND ! EXCHANGE : {}, ROUTING : {}", exchangeName,
+			"[MESSAGE_BROKER][CONVERT_AND_SEND] ACTIVE USER UPDATE MESSAGE SEND ! EXCHANGE : {}, ROUTING : {}",
+			EXCHANGE_NAME,
 			routingKey
 		);
 	}
