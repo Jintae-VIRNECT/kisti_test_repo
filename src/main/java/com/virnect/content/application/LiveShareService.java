@@ -110,6 +110,10 @@ public class LiveShareService {
 		redisTemplate.opsForValue().set(key, String.valueOf(message), REDIS_KEY_TTL);
 		log.info("[MEMORY_DB][SET_VALUE] SUCCESS ! KEY : {}", key);
 
+		String latestData = redisTemplate.opsForValue().get(key);
+		System.out.println(latestData);
+
+
 		String routingKey = String.format("api.contents.%s.room.%s", contentUUID, roomId);
 		publishTopicMessage(routingKey, message);
 	}

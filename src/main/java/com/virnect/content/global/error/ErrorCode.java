@@ -68,10 +68,12 @@ public enum ErrorCode {
 
 	//프로젝트 삭제
 	ERR_PROJECT_DELETE(5050, "Project delete fail."),
-	ERR_PROJECT_DELETE_INVALID_PERMISSION(5051, "Project delete fail. Because user have invalid project edit permission."),
+	ERR_PROJECT_DELETE_INVALID_PERMISSION(
+		5051, "Project delete fail. Because user have invalid project edit permission."),
 
 	// 공통 에러
 	ERR_INVALID_REQUEST_PARAMETER(8001, "Invalid request parameter cause api errors"),
+	ERR_API_AUTHENTICATION(8003, "Authentication Error"),
 	ERR_UNEXPECTED_SERVER_ERROR(9999, "Unexpected Server Error, Please contact Administrator");
 
 	private final int code;

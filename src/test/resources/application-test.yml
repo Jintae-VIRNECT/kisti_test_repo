@@ -50,8 +50,6 @@ minio:
   bucket: "virnect-platform"
 
 
-
-
 ## Eureka Server Configuration
 eureka:
   instance:
@@ -75,3 +73,7 @@ account-server:
 workspace-server:
   ribbon:
     listOfServers: http://192.168.6.3:8082
+
+security:
+  jwt-config:
+    secret: "2020-tcenriv-platform-392"
