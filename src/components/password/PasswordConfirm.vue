@@ -21,6 +21,7 @@
       type="password"
       name="passwordConfirm"
       clearable
+      @input="e => watchInput(e, 'passwordConfirm')"
       :class="{
         'input-danger':
           password !== passwordConfirm ||
@@ -47,7 +48,7 @@ export default {
       return passValidate(props.pass.password)
     })
     const password = ref(props.pass.password)
-    const passwordConfirm = ref('')
+    const passwordConfirm = ref(props.pass.passwordConfirm)
     const watchInput = (val, key) => {
       emit('watchInput', val, key)
     }
