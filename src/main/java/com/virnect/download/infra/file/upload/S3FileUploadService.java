@@ -57,7 +57,7 @@ public class S3FileUploadService implements FileUploadService {
 		objectMetadata.setContentType(file.getContentType());
 		objectMetadata.setContentLength(file.getSize());
 		objectMetadata.setHeader("filename", file.getOriginalFilename());
-		objectMetadata.setContentDisposition("attachment; filename=\"" + file.getOriginalFilename() +"\"");
+		objectMetadata.setContentDisposition("attachment; filename=\"" + file.getOriginalFilename() + "\"");
 
 		// 3. 스트림으로 aws s3에 업로드
 		PutObjectRequest putObjectRequest = null;
@@ -92,4 +92,5 @@ public class S3FileUploadService implements FileUploadService {
 	public boolean delete(String url) {
 		return false;
 	}
+
 }

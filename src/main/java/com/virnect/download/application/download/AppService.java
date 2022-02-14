@@ -1,14 +1,13 @@
 package com.virnect.download.application.download;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-import javax.persistence.EntityManager;
-
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
@@ -48,6 +47,7 @@ import com.virnect.download.dto.response.SignedAppInfoResponse;
 import com.virnect.download.dto.response.WorkspaceInfoListResponse;
 import com.virnect.download.dto.response.WorkspaceInfoResponse;
 import com.virnect.download.exception.AppServiceException;
+import com.virnect.download.exception.DownloadException;
 import com.virnect.download.global.common.ApiResponse;
 import com.virnect.download.global.common.ResponseMapper;
 import com.virnect.download.global.error.ErrorCode;
@@ -64,9 +64,19 @@ public class AppService {
 	private final FileUploadService fileUploadService;
 	private final ResponseMapper responseMapper;
 	private final WorkspaceRestService workspaceRestService;
-	private final EntityManager entityManager;
+
+	@Value("#{'${file.allowed-extension}'.split(',')}")
+	private List<String> extensionWhiteList;
+	@Value("#{'${file.allowed-mime-type}'.split(',')}")
+	private List<String> mimeTypeWhiteList;
+
+	private static final String PRODUCT_REMOTE = "REMOTE";
+	private static final String EXTENSION_APK = "apk";
+	private static final String VERSION_PREFIX = "v";
+	private static final String REGEXP_FILE_NAME_CHECK = "^([A-Z]+_[A-Z]+_[0-9]{7}\\.[a-z]+)$";
 
 	@Transactional
+
 	public ApiResponse<AppUploadResponse> applicationUploadAndRegister(AppUploadRequest appUploadRequest) {
 		// 1. APK 파일 파싱
 		ApkMeta apkMeta = parsingAppInfo(appUploadRequest.getUploadAppFile());
@@ -90,7 +100,7 @@ public class AppService {
 		// 2. application artifact upload
 		String appUploadUrl = fileUploadService.upload(appUploadRequest.getUploadAppFile());
 
-		App apps = App.builder()
+		App apps = App.appBuilder()
 			.uuid(generateAppUUID())
 			.device(device)
 			.product(product)
@@ -98,7 +108,6 @@ public class AppService {
 			.packageName(apkMeta.getPackageName())
 			.versionName(apkMeta.getVersionName())
 			.versionCode(apkMeta.getVersionCode())
-			//.appOriginUrl(appUploadUrl)
 			.appUrl(appUploadUrl)
 			.imageUrl("")
 			.signature(applicationSignature)
@@ -170,7 +179,7 @@ public class AppService {
 		return tokens[1] + "-" + tokens[4];
 	}
 
-	private ApkMeta parsingAppInfo(MultipartFile app) {
+	public ApkMeta parsingAppInfo(MultipartFile app) {
 		if (app == null || app.isEmpty()) {
 			log.error("Upload Application file is empty or set as null");
 			throw new AppServiceException(ErrorCode.ERR_APP_UPLOAD_FAIL);
@@ -181,7 +190,7 @@ public class AppService {
 			log.info(apkMeta.toString());
 			apkFile.close();
 			return apkMeta;
-		} catch (IOException e) {
+		} catch (Exception e) {
 			log.error("APK Parsing Error", e);
 			throw new AppServiceException(ErrorCode.ERR_APP_UPLOAD_FAIL);
 		}
@@ -239,21 +248,20 @@ public class AppService {
 		List<App> updateAppList = appRepository.getAppByPackageNameAndSignature(
 			signingKeyRegisterRequest.getPackageName(), signingKeyRegisterRequest.getSigningKey());
 
-		List<SignedAppInfoResponse> signedAppInfoResponses = updateAppList.stream()
-			.map(app -> {
-				SignedAppInfoResponse appInfo = new SignedAppInfoResponse();
-				appInfo.setUuid(app.getUuid());
-				appInfo.setVersion(app.getVersionName());
-				appInfo.setDeviceType(app.getDevice().getType());
-				appInfo.setOperationSystem(app.getOs().getName());
-				appInfo.setPackageName(app.getPackageName());
-				appInfo.setAppUrl(app.getAppUrl());
-				appInfo.setProductName(app.getProduct().getName());
-				appInfo.setUpdateRequired(app.getAppUpdateStatus().equals(AppUpdateStatus.REQUIRED));
-				appInfo.setCreatedDate(app.getCreatedDate());
-				appInfo.setAppInfoUpdatedDate(app.getUpdatedDate());
-				return appInfo;
-			}).collect(Collectors.toList());
+		List<SignedAppInfoResponse> signedAppInfoResponses = updateAppList.stream().map(app -> {
+			SignedAppInfoResponse appInfo = new SignedAppInfoResponse();
+			appInfo.setUuid(app.getUuid());
+			appInfo.setVersion(app.getVersionName());
+			appInfo.setDeviceType(app.getDevice().getType());
+			appInfo.setOperationSystem(app.getOs().getName());
+			appInfo.setPackageName(app.getPackageName());
+			appInfo.setAppUrl(app.getAppUrl());
+			appInfo.setProductName(app.getProduct().getName());
+			appInfo.setUpdateRequired(app.getAppUpdateStatus().equals(AppUpdateStatus.REQUIRED));
+			appInfo.setCreatedDate(app.getCreatedDate());
+			appInfo.setAppInfoUpdatedDate(app.getUpdatedDate());
+			return appInfo;
+		}).collect(Collectors.toList());
 		return new ApiResponse<>(new AppSigningKetRegisterResponse(signedAppInfoResponses));
 	}
 
@@ -315,70 +323,139 @@ public class AppService {
 	public AdminAppUploadResponse adminApplicationUploadAndRegister(
 		AdminAppUploadRequest adminAppUploadRequest, String userUUID
 	) {
-		//1-1. 마스터 유저인지 검증
-		masterUserValidation(userUUID);
+		MultipartFile file = adminAppUploadRequest.getUploadAppFile();
 
-		//1-2. product, os, device 검증
+		if (file.getSize() <= 0) {
+			throw new AppServiceException(ErrorCode.ERR_APP_UPLOAD_EMPTY_APPLICATION_FILE);
+		}
+
+		if (StringUtils.isEmpty(file.getOriginalFilename())) {
+			throw new AppServiceException(ErrorCode.ERR_APP_UPLOAD_INVALID_FILE_NAME);
+		}
+
+		String extension = getExtension(file.getOriginalFilename());
+		if (!extensionWhiteList.contains(extension)) {
+			log.error("[ADMIN_APP_UPLOAD] File extension not support. extension : {}", extension);
+			throw new AppServiceException(ErrorCode.ERR_APP_UPLOAD_FILE_EXTENSION_NOT_SUPPORT);
+		}
+
+		if (!mimeTypeWhiteList.contains(file.getContentType())) {
+			log.error("[ADMIN_APP_UPLOAD] File extension not support. file content-type : {}", file.getContentType());
+			throw new AppServiceException(ErrorCode.ERR_APP_UPLOAD_FILE_EXTENSION_NOT_SUPPORT);
+		}
+
+		masterUserValidationCheck(userUUID);
+
 		Product product = getProduct(adminAppUploadRequest.getProductName());
 		OS os = getOS(adminAppUploadRequest.getOperationSystem());
-		Device device = getDevice(
-			adminAppUploadRequest.getDeviceType(), adminAppUploadRequest.getDeviceModel(),
+		Device device = getDevice(adminAppUploadRequest.getDeviceType(), adminAppUploadRequest.getDeviceModel(),
 			adminAppUploadRequest.getProductName()
 		);
 
-		String packageName = null;
-		String versionName = adminAppUploadRequest.getVersionName();
-		Long versionCode = adminAppUploadRequest.getVersionCode();
+		fileNameValidationCheck(
+			file.getOriginalFilename(), adminAppUploadRequest.getProductName(), adminAppUploadRequest.getDeviceType());
 
-		//1-3. apk metadata 파싱
-		if (adminAppUploadRequest.isApkApp()) {
-			ApkMeta apkMeta = parsingAppInfo(adminAppUploadRequest.getUploadAppFile());
-			packageName = apkMeta.getPackageName();
-			versionName = apkMeta.getVersionName();
-			versionCode = apkMeta.getVersionCode();
-		}
+		String versionCode = getVersionCodeByFileName(file.getOriginalFilename());
+		String versionName = getVersionName(versionCode);
+		newAppVersionCodeValidation(device, os, Long.parseLong(versionCode));
 
-		if (StringUtils.isEmpty(versionName) || versionCode == null) {
-			throw new AppServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
-		}
+		String uploadedUrl = fileUploadService.upload(adminAppUploadRequest.getUploadAppFile());
 
-		Optional<App> latestApp = appRepository.getAppByProductAndOsAndDevice(product, os, device);
-
-		if (latestApp.isPresent()) {
-			App app = latestApp.get();
-			app.setVersionCode(versionCode);
-			app.setVersionName(versionName);
-			app.setPackageName(packageName);
-			app.setAppUrl(fileUploadService.upload(adminAppUploadRequest.getUploadAppFile()));
-			appRepository.save(app);
-			return responseMapper.appToAdminAppUploadResponse(app);
-		}
-
-		App app = App.builder()
+		App app = App.appByAdminBuilder()
 			.uuid(generateAppUUID())
 			.device(device)
 			.product(product)
 			.os(os)
-			.packageName(packageName)
-			.versionName(versionName)
-			.versionCode(versionCode)
-			.appUrl(fileUploadService.upload(adminAppUploadRequest.getUploadAppFile()))
-			.imageUrl("")
+			.versionName(VERSION_PREFIX + versionName)
+			.versionCode(Long.parseLong(versionCode))
+			.appUrl(uploadedUrl)
 			.signature(adminAppUploadRequest.getSigningKey())
-			.appStatus(AppStatus.ACTIVE)
-			.appUpdateStatus(AppUpdateStatus.REQUIRED)
 			.build();
+
+		if (product.getName().equals(PRODUCT_REMOTE) && extension.equals(EXTENSION_APK)) {
+			ApkMeta apkMeta = parsingAppInfo(file);
+			app.setPackageName(apkMeta.getPackageName());
+			appRepository.getLatestVersionActiveAppInfoByPackageName(apkMeta.getPackageName())
+				.ifPresent(current -> app.setSignature(current.getSignature()));
+		}
+
 		appRepository.save(app);
 		return responseMapper.appToAdminAppUploadResponse(app);
 	}
 
-	private void masterUserValidation(String userUUID) {
+	private String getExtension(String fileName) {
+		int dotIndex = fileName.lastIndexOf('.');
+		if (dotIndex == -1) {
+			throw new DownloadException(ErrorCode.ERR_APP_UPLOAD_INVALID_FILE_NAME);
+		}
+
+		return fileName.substring(dotIndex + 1);
+	}
+
+	// {product}_{device_type}_{version_code}.{extension}
+	private String getVersionCodeByFileName(String fileName) {
+		String[] productAndDeviceAndVersionAndExtension = StringUtils.delimitedListToStringArray(fileName, "_");
+
+		String versionAndExtension = productAndDeviceAndVersionAndExtension[2];
+
+		if (StringUtils.isEmpty(versionAndExtension)) {
+			throw new DownloadException(ErrorCode.ERR_APP_UPLOAD_INVALID_FILE_NAME);
+		}
+
+		int dotIndex = versionAndExtension.lastIndexOf('.');
+		if (dotIndex == -1) {
+			throw new DownloadException(ErrorCode.ERR_APP_UPLOAD_INVALID_FILE_NAME);
+		}
+		return versionAndExtension.substring(0, dotIndex);
+	}
+
+	// {product}_{device_type}_{version_code}.{extension}
+	private void fileNameValidationCheck(String fileName, String requestProduct, String requestDevice) {
+		log.info("File Name Check. >> {}", fileName);
+		boolean fileNameMatch = Pattern.matches(REGEXP_FILE_NAME_CHECK, fileName);
+		if (!fileNameMatch) {
+			log.error("not matched file name regex.");
+			throw new DownloadException(ErrorCode.ERR_APP_UPLOAD_INVALID_FILE_NAME);
+		}
+
+		String[] productAndDeviceAndVersionAndExtension = StringUtils.delimitedListToStringArray(fileName, "_");
+
+		String product = productAndDeviceAndVersionAndExtension[0];
+		if (StringUtils.isEmpty(product) || !requestProduct.equals(product)) {
+			log.error("not matched file name and request product. product by request : {}, product by file name : {}",
+				requestProduct, product
+			);
+			throw new DownloadException(ErrorCode.ERR_APP_UPLOAD_INVALID_FILE_NAME);
+		}
+
+		String device = productAndDeviceAndVersionAndExtension[1];
+
+		if (StringUtils.isEmpty(device) || !requestDevice.equals(device)) {
+			log.error("not matched file name and request device. device by request : {}, device by file name : {}",
+				requestDevice, device
+			);
+			throw new DownloadException(ErrorCode.ERR_APP_UPLOAD_INVALID_FILE_NAME);
+		}
+	}
+
+	//version_code => major(1 digit).minor(1 digit).patch(2 digit).optional(3 digit)
+	//1302000 ---> 1.3.2
+	private String getVersionName(String versionCode) {
+		String major = String.valueOf(versionCode.charAt(0));
+		String minor = String.valueOf(versionCode.charAt(1));
+		long patch = Long.parseLong(versionCode.substring(2, 4));
+		long optional = Long.parseLong(versionCode.substring(4));
+		if (optional == 0L) {
+			return major + "." + minor + "." + patch;
+		}
+		return major + "." + minor + "." + patch + "." + optional;
+	}
+
+	private void masterUserValidationCheck(String userUUID) {
 		log.info("[REST - WORKSPACE SERVER][GET MY WORKSPACE LIST] request user uuid : {}", userUUID);
-		ApiResponse<WorkspaceInfoListResponse> apiResponse = workspaceRestService.getMyWorkspaceInfoList(
-			userUUID);
+		ApiResponse<WorkspaceInfoListResponse> apiResponse = workspaceRestService.getMyWorkspaceInfoList(userUUID);
 		if (apiResponse.getCode() != 200 || CollectionUtils.isEmpty(apiResponse.getData().getWorkspaceList())) {
-			log.error(
-				"[REST - WORKSPACE SERVER][GET MY WORKSPACE LIST] response code : {}, response message : {}",
+			log.error("[REST - WORKSPACE SERVER][GET MY WORKSPACE LIST] response code : {}, response message : {}",
 				apiResponse.getCode(), apiResponse.getMessage()
 			);
 			throw new AppServiceException(ErrorCode.ERR_APP_UPLOAD_FAIL_WORKSPACE_INVALID_PERMISSION);
@@ -400,6 +477,20 @@ public class AppService {
 		return deviceRepository.findByTypeAndModelAndProduct_Name(
 				deviceType.toUpperCase(), deviceModel.toUpperCase(), productName.toUpperCase())
 			.orElseThrow(() -> new AppServiceException(ErrorCode.ERR_APP_UPLOAD_FAIL_DEVICE_INFO_NOT_FOUND));
+	}
+
+	private void newAppVersionCodeValidation(Device device, OS os, long versionCode) {
+		// 버전 코드 중복 체크 및 중복 시 예외 발생
+		if (appRepository.existAppVersionCode(device, os, versionCode)) {
+			throw new AppServiceException(ErrorCode.ERR_APP_UPLOAD_FAIL_DUPLICATE_VERSION);
+		}
+		// 현재 앱 버전 코드가 기존 최신 버전 보다 낮은 버전 코드의 경우 예외 발생
+		Long latestVersion = appRepository.getLatestVersionByDeviceAndOs(device, os);
+		if (latestVersion != null && latestVersion > 0L) {
+			if (latestVersion > versionCode) {
+				throw new AppServiceException(ErrorCode.ERR_APP_UPLOAD_FAIL_VERSION_IS_LOWER);
+			}
+		}
 	}
 
 }

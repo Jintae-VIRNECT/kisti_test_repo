@@ -39,6 +39,7 @@ file:
   upload-path: "app/"
   url: "http://192.168.6.3:${server.port}/download/"
   allowed-extension: "apk,exe,appx,appxbundle"
+  allowed-mime-type: "application/x-msdownload,application/vnd.android.package-archive,application/octet-stream"
 
 ## Eureka Server Configuration
 eureka:

@@ -30,4 +30,8 @@ public interface AppRepositoryCustom {
 	App getActiveAppByDeviceLatestVersionCode(DeviceLatestVersionCodeDto deviceLatestVersionCodeDto);
 
 	Optional<App> getAppByProductAndOsAndDevice(Product product, OS os, Device device);
+
+	boolean existAppVersionCode(Device device, OS os, long versionCode);
+
+	Long getLatestVersionByDeviceAndOs(Device device, OS os);
 }

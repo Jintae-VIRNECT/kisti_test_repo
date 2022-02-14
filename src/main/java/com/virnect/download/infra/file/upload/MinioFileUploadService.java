@@ -87,4 +87,5 @@ public class MinioFileUploadService implements FileUploadService {
 	public boolean delete(String url) {
 		return false;
 	}
+
 }

@@ -58,7 +58,7 @@ public class App extends TimeEntity {
 	@Column(name = "guide_url")
 	private String guideUrl;
 
-	@Column(name = "image_url", nullable = false)
+	@Column(name = "image_url")
 	private String imageUrl;
 
 	@ManyToOne(fetch = FetchType.LAZY)
@@ -102,8 +102,8 @@ public class App extends TimeEntity {
 	@Column(name = "guide_download_count", columnDefinition = "BIGINT default 0", nullable = false)
 	private Long guideDownloadCount;
 
-	@Builder
-	App(
+	@Builder(builderClassName = "AppBuilder", builderMethodName = "appBuilder")
+	public App(
 		String uuid, String appUrl, String guideUrl, String imageUrl, Device device, Product product, OS os,
 		String versionName, Long versionCode,
 		String packageName, String signature, AppUpdateStatus appUpdateStatus, AppStatus appStatus
@@ -121,6 +121,28 @@ public class App extends TimeEntity {
 		this.signature = signature;
 		this.appUpdateStatus = appUpdateStatus;
 		this.appStatus = appStatus;
+		this.appDownloadCount = 0L;
+		this.guideDownloadCount = 0L;
+	}
+
+	@Builder(builderClassName = "AppByAdminBuilder", builderMethodName = "appByAdminBuilder")
+	public App(
+		String uuid, String appUrl, Device device, Product product, OS os,
+		String versionName, Long versionCode, String signature
+	) {
+		this.uuid = uuid;
+		this.appUrl = appUrl;
+		this.guideUrl = null;
+		this.imageUrl = null;
+		this.device = device;
+		this.product = product;
+		this.os = os;
+		this.versionName = versionName;
+		this.versionCode = versionCode;
+		this.packageName = null;
+		this.signature = signature;
+		this.appUpdateStatus = AppUpdateStatus.REQUIRED;
+		this.appStatus = AppStatus.ACTIVE;
 		this.appDownloadCount = 0L;
 		this.guideDownloadCount = 0L;
 	}

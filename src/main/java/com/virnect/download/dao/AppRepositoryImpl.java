@@ -116,6 +116,27 @@ public class AppRepositoryImpl implements AppRepositoryCustom {
 	}
 
 	@Override
+	public boolean existAppVersionCode(Device device, OS os, long versionCode) {
+		return (query.selectFrom(app)
+			.where(
+				app.device.eq(device), app.os.eq(os),
+				app.versionCode.eq(versionCode)
+			)
+			.fetchFirst()) != null;
+	}
+
+	@Override
+	public Long getLatestVersionByDeviceAndOs(Device device, OS os) {
+		return query.select(app.versionCode)
+			.from(app)
+			.where(
+				app.device.eq(device), app.os.eq(os)
+			)
+			.orderBy(app.versionCode.desc())
+			.fetchFirst();
+	}
+
+	@Override
 	public long registerSigningKeyByPackageName(String packageName, String signingKey) {
 		return query
 			.update(app)
