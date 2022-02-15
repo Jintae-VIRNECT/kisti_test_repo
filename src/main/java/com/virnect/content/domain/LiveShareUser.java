@@ -45,12 +45,22 @@ public class LiveShareUser extends BaseTimeEntity {
 
 	@Builder(builderClassName = "LiveShareUserBuilder", builderMethodName = "liveShareUserBuilder")
 	public LiveShareUser(
-		 Long roomId, String userUUID,
+		Long roomId, String userUUID, String userNickname, String userEmail,
 		Role userRole
 	) {
 		this.roomId = roomId;
 		this.userUUID = userUUID;
+		this.userNickname = userNickname;
+		this.userEmail = userEmail;
 		this.userRole = userRole;
 		this.status = ActiveOrInactive.ACTIVE;
+	}
+
+	public void setUserRole(Role userRole) {
+		this.userRole = userRole;
+	}
+
+	public void setStatus(ActiveOrInactive status) {
+		this.status = status;
 	}
 }

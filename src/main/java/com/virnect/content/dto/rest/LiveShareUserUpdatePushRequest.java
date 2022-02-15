@@ -1,12 +1,11 @@
 package com.virnect.content.dto.rest;
 
-import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
-import com.querydsl.core.annotations.QueryProjection;
-
+import lombok.Builder;
 import lombok.Getter;
 
+import com.virnect.content.domain.LiveShareUser;
 import com.virnect.content.domain.Role;
 
 @Getter
@@ -17,16 +16,15 @@ public class LiveShareUserUpdatePushRequest {
 	private final Role role;
 	private final String joinedDate;
 
-	@QueryProjection
-
+	@Builder
 	public LiveShareUserUpdatePushRequest(
-		String nickname, String email, String uuid, Role role, LocalDateTime createdDate
+		LiveShareUser liveShareUser
 	) {
-		this.nickname = nickname;
-		this.email = email;
-		this.uuid = uuid;
-		this.role = role;
-		this.joinedDate = createdDate.format(DateTimeFormatter.ISO_DATE_TIME);
+		this.nickname = liveShareUser.getUserNickname();
+		this.email = liveShareUser.getUserEmail();
+		this.uuid = liveShareUser.getUserUUID();
+		this.role = liveShareUser.getUserRole();
+		this.joinedDate = liveShareUser.getCreatedDate().format(DateTimeFormatter.ISO_DATE_TIME);
 	}
 
 	@Override

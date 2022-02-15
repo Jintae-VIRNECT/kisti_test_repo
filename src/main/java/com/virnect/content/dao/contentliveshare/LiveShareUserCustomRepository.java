@@ -2,9 +2,9 @@ package com.virnect.content.dao.contentliveshare;
 
 import java.util.List;
 
-import com.virnect.content.dto.rest.LiveShareUserUpdatePushRequest;
+import com.virnect.content.domain.LiveShareUser;
 
 public interface LiveShareUserCustomRepository {
-
-	List<LiveShareUserUpdatePushRequest> getActiveUserListByRoomId(Long roomId);
+	List<LiveShareUser> getActiveUserListByRoomId(Long roomId);
+	long countActiveUserByRoomId(Long roomId);
 }

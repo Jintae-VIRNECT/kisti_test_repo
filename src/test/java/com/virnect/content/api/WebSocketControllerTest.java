@@ -40,13 +40,11 @@ import com.virnect.content.global.security.TokenProvider;
 @ActiveProfiles("test")
 @AutoConfigureMockMvc
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-@Import({TestRabbitmqConfiguration.class, TestRedisConfiguration.class})
+@Import({TestRabbitmqConfiguration.class})
 @DirtiesContext(classMode = BEFORE_CLASS)
 class WebSocketControllerTest {
 	@LocalServerPort
 	private int port;
-	@Autowired
-	private StringRedisTemplate redisTemplate;
 
 	@Autowired
 	private TokenProvider tokenProvider;
@@ -76,9 +74,6 @@ class WebSocketControllerTest {
 				.get(1, TimeUnit.SECONDS);
 			stompSession.send(destination, payload);
 		});
-
-		String value = redisTemplate.opsForValue().get("liveShare:" + roomId);
-		assertEquals(value, payload);
 	}
 
 	private String createAccessToken() {

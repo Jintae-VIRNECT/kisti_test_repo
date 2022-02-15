@@ -22,7 +22,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 @ActiveProfiles("test")
 @AutoConfigureMockMvc
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-@Import({TestRabbitmqConfiguration.class, TestRedisConfiguration.class})
+@Import({TestRabbitmqConfiguration.class})
 class LiveShareControllerTest {
 	@Autowired
 	private MockMvc mockMvc;
@@ -30,8 +30,8 @@ class LiveShareControllerTest {
 	@Test
 	@DisplayName("join live share room")
 	void joinLiveShareRoom() throws Exception {
-		String contentUUID = "3ac931f7-5b3b-4807-ac6e-61ae5d138204";
-		String userUUID = "4a65aa94523efe5391b0541bbbcf97a3";
+		String contentUUID = "1016b7fe-88b2-497f-a04c-98be8fbcccce";
+		String userUUID = "nnTzbBEvPMZpt";
 		String url = String.format("/contents/%s/liveShare?userUUID=%s", contentUUID, userUUID);
 
 		mockMvc.perform(
@@ -40,13 +40,30 @@ class LiveShareControllerTest {
 					.contentType(MediaType.APPLICATION_JSON))
 			.andDo(print())
 			.andExpect(status().isOk())
+			.andExpect(jsonPath("$.code").value(200))
 			.andReturn();
 	}
 
 	@Test
+	@DisplayName("join live share room initialize room")
+	void joinLiveShareRoom_initializeRoom() throws Exception {
+		String contentUUID = "557aec82-18ec-464d-8723-5b699a1910fd";
+		String userUUID = "nnTzbBEvPMZpt";
+		String url = String.format("/contents/%s/liveShare?userUUID=%s", contentUUID, userUUID);
+
+		mockMvc.perform(
+				MockMvcRequestBuilders
+					.post(url)
+					.contentType(MediaType.APPLICATION_JSON))
+			.andDo(print())
+			.andExpect(status().isOk())
+			.andExpect(jsonPath("$.code").value(200))
+			.andReturn();
+	}
+	@Test
 	@DisplayName("join live share room by invalid workspace user")
 	void joinLiveShareRoom_invalidWorkspaceUser() throws Exception {
-		String contentUUID = "3ac931f7-5b3b-4807-ac6e-61ae5d138204";
+		String contentUUID = "1016b7fe-88b2-497f-a04c-98be8fbcccce";
 		String userUUID = "bbbb";
 		String url = String.format(
 			"/contents/%s/liveShare?userUUID=%s", contentUUID, userUUID);
@@ -61,4 +78,55 @@ class LiveShareControllerTest {
 			.andReturn();
 	}
 
+	@Test
+	@DisplayName("join live share room duplicate user")
+	void joinLiveShareRoom_DuplicateUser() throws Exception {
+		String contentUUID = "1016b7fe-88b2-497f-a04c-98be8fbcccce";
+		String userUUID = "498b1839dc29ed7bb2ee90ad6985c608";
+		String url = String.format("/contents/%s/liveShare?userUUID=%s", contentUUID, userUUID);
+
+		mockMvc.perform(
+				MockMvcRequestBuilders
+					.post(url)
+					.contentType(MediaType.APPLICATION_JSON))
+			.andDo(print())
+			.andExpect(status().isOk())
+			.andExpect(jsonPath("$.code").value(4033))
+			.andReturn();
+	}
+
+	@Test
+	@DisplayName("leave live share room")
+	void leaveLiveShareRoom() throws Exception {
+		String contentUUID = "1016b7fe-88b2-497f-a04c-98be8fbcccce";
+		String userUUID = "ouXLjBs6Rmd95";
+		long roomId = 3;
+		String url = String.format("/contents/%s/liveShare/room/%s?userUUID=%s", contentUUID, roomId, userUUID);
+
+		mockMvc.perform(
+				MockMvcRequestBuilders
+					.delete(url)
+					.contentType(MediaType.APPLICATION_JSON))
+			.andDo(print())
+			.andExpect(status().isOk())
+			.andExpect(jsonPath("$.data.result").value(true))
+			.andReturn();
+	}
+	@Test
+	@DisplayName("leave live share room inactive room")
+	void leaveLiveShareRoom_inactiveRoom() throws Exception {
+		String contentUUID = "557aec82-18ec-464d-8723-5b699a1910fd";
+		String userUUID = "ouXLjBs6Rmd95";
+		long roomId = 4;
+		String url = String.format("/contents/%s/liveShare/room/%s?userUUID=%s", contentUUID, roomId, userUUID);
+
+		mockMvc.perform(
+				MockMvcRequestBuilders
+					.delete(url)
+					.contentType(MediaType.APPLICATION_JSON))
+			.andDo(print())
+			.andExpect(status().isOk())
+			.andExpect(jsonPath("$.data.result").value(true))
+			.andReturn();
+	}
 }

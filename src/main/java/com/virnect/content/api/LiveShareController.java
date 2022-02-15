@@ -5,6 +5,7 @@ import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.util.StringUtils;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -19,6 +20,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import com.virnect.content.application.LiveShareService;
 import com.virnect.content.dto.response.LiveShareJoinResponse;
+import com.virnect.content.dto.response.LiveShareLeaveResponse;
 import com.virnect.content.exception.ContentServiceException;
 import com.virnect.content.global.common.ApiResponse;
 import com.virnect.content.global.error.ErrorCode;
@@ -47,6 +49,26 @@ public class LiveShareController {
 		}
 		LiveShareJoinResponse responseMessage = liveShareService.joinLiveShareRoom(
 			contentUUID, userUUID);
+		return ResponseEntity.ok(new ApiResponse<>(responseMessage));
+	}
+
+	@ApiOperation(value = "컨텐츠 실시간 공유 종료", notes = "컨텐츠 실시간 공유 협업 룸에서 나갑니다.")
+	@ApiImplicitParams({
+		@ApiImplicitParam(name = "contentUUID", value = "컨텐츠 식별자", dataType = "string", paramType = "path", required = true, example = "3ac931f7-5b3b-4807-ac6e-61ae5d138204"),
+		@ApiImplicitParam(name = "roomId", value = "협업 룸 식별자", dataType = "string", paramType = "path", required = true, example = "45"),
+		@ApiImplicitParam(name = "userUUID", value = "유저 식별자", dataType = "string", paramType = "query", required = true, example = "4a65aa94523efe5391b0541bbbcf97a3"),
+	})
+	@DeleteMapping("/{contentUUID}/liveShare/room/{roomId}")
+	public ResponseEntity<ApiResponse<LiveShareLeaveResponse>> leaveLiveShareRoom(
+		@PathVariable("contentUUID") String contentUUID, @PathVariable("roomId") Long roomId,
+		@RequestParam("userUUID") String userUUID
+	) {
+		log.info(
+			"[LEAVE_LIVE_SHARE_ROOM] CONTENT : {}, ROOM : {}, USER : {}", contentUUID, roomId, userUUID);
+		if (StringUtils.isEmpty(contentUUID) || StringUtils.isEmpty(userUUID) || roomId == null) {
+			throw new ContentServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
+		}
+		LiveShareLeaveResponse responseMessage = liveShareService.leaveLiveShareRoom(contentUUID, userUUID, roomId);
 		return ResponseEntity.ok(new ApiResponse<>(responseMessage));
 	}
 

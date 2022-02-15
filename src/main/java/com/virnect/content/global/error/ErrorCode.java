@@ -39,6 +39,11 @@ public enum ErrorCode {
 	ERR_CONTENT_UPLOAD_LICENSE_NOT_FOUND(4022, "Content upload fail. Because workspace haven't license plan"),
 	ERR_CONTENT_DOWNLOAD_INVALID_SHARED(4023, "Content upload fail. Contents is not shared."),
 
+	ERR_CONTENT_LIVE_SHARE_ROOM_NOT_FOUND(4030, "Content live share join room not found."),
+	ERR_CONTENT_LIVE_SHARE_ROOM_USER_NOT_FOUND(4031, "Content live share room user not found."),
+	ERR_CONTENT_LIVE_SHARE_JOIN_MAX_USER(4032, "Content live share join fail. Over max room user limit."),
+	ERR_CONTENT_LIVE_SHARE_JOIN_DUPLICATE(4033, "Content live share join fail. Already joined user."),
+
 	// 타겟 관련
 	ERR_TARGET_DATA_ALREADY_EXIST(4101, "Target insert fail. Because this target data already exist."),
 
