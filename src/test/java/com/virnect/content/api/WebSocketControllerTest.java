@@ -18,7 +18,6 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.context.annotation.Import;
-import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.messaging.converter.MappingJackson2MessageConverter;
 import org.springframework.messaging.simp.stomp.StompHeaders;
 import org.springframework.messaging.simp.stomp.StompSession;
@@ -60,7 +59,7 @@ class WebSocketControllerTest {
 		stompClient.setMessageConverter(new MappingJackson2MessageConverter());
 		String contentUUID = "3ac931f7-5b3b-4807-ac6e-61ae5d138204";
 		String roomId = "1";
-		String destination = String.format("/topic/api/contents/%s/room/%s", contentUUID, roomId);
+		String destination = String.format("/topic/api/contents/%s/rooms/%s", contentUUID, roomId);
 		String connectUrl = String.format("ws://localhost:%d/websocket", port);
 		String payload = "payload";
 

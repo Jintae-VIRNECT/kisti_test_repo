@@ -1,13 +1,11 @@
 package com.virnect.content.application;
 
-import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
-import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
@@ -25,22 +23,23 @@ import com.virnect.content.domain.Content;
 import com.virnect.content.domain.LiveShareRoom;
 import com.virnect.content.domain.LiveShareUser;
 import com.virnect.content.domain.Role;
+import com.virnect.content.dto.request.LiveShareRoomLeaveRequest;
 import com.virnect.content.dto.response.LiveShareJoinResponse;
 import com.virnect.content.dto.response.LiveShareLeaveResponse;
+import com.virnect.content.dto.response.LiveShareUserRoleUpdateResponse;
 import com.virnect.content.dto.rest.LiveShareUserUpdatePushRequest;
 import com.virnect.content.dto.rest.UserInfoResponse;
 import com.virnect.content.dto.rest.WorkspaceUserResponse;
 import com.virnect.content.exception.ContentServiceException;
 import com.virnect.content.global.common.ApiResponse;
 import com.virnect.content.global.error.ErrorCode;
+import com.virnect.content.global.util.CurrentUserUtils;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class LiveShareService {
-	private static final String REDIS_KEY_PREFIX = "liveShare:";
 	private static final String EXCHANGE_NAME = "amq.topic";
-	private static final Duration REDIS_KEY_TTL = Duration.ofDays(28L);
 	private static final int MAX_ROOM_USER_AMOUNT = 8;
 
 	private final LiveShareUserRepository liveShareUserRepository;
@@ -48,13 +47,14 @@ public class LiveShareService {
 	private final ContentRepository contentRepository;
 	private final RabbitTemplate rabbitTemplate;
 	private final WorkspaceRestService workspaceRestService;
-	private final StringRedisTemplate redisTemplate;
 	private final UserRestService userRestService;
 
 	@Transactional
 	public LiveShareJoinResponse joinLiveShareRoom(
-		String contentUUID, String userUUID
+		String contentUUID
 	) {
+		String userUUID = CurrentUserUtils.getUserUUID();
+
 		Content content = contentRepository.findByUuid(contentUUID)
 			.orElseThrow(() -> new ContentServiceException(ErrorCode.ERR_CONTENT_NOT_FOUND));
 		String workspaceUUID = content.getWorkspaceUUID();
@@ -143,12 +143,12 @@ public class LiveShareService {
 			.map(liveShareUser -> LiveShareUserUpdatePushRequest.builder().liveShareUser(liveShareUser).build())
 			.collect(Collectors.toList());
 
-		String routingKey = String.format("push.contents.%s.room.%s", contentUUID, roomId);
+		String routingKey = String.format("push.contents.%s.rooms.%s", contentUUID, roomId);
 		publishTopicMessage(routingKey, pushRequest);
 	}
 
 	public void publishContentWriteMessage(String contentUUID, String roomId, String message) {
-		String routingKey = String.format("api.contents.%s.room.%s", contentUUID, roomId);
+		String routingKey = String.format("api.contents.%s.rooms.%s", contentUUID, roomId);
 		publishTopicMessage(routingKey, message);
 	}
 
@@ -163,22 +163,24 @@ public class LiveShareService {
 
 	@Transactional
 	public LiveShareLeaveResponse leaveLiveShareRoom(
-		String contentUUID, String userUUID, Long roomId
+		String contentUUID, Long roomId,
+		LiveShareRoomLeaveRequest liveShareRoomLeaveRequest
 	) {
-		LiveShareRoom activeRoom = liveShareRoomRepository.getActiveRoomById(roomId)
+		String userUUID = CurrentUserUtils.getUserUUID();
+		LiveShareRoom room = liveShareRoomRepository.getActiveRoomById(roomId)
 			.orElseThrow(() -> new ContentServiceException(ErrorCode.ERR_CONTENT_LIVE_SHARE_ROOM_NOT_FOUND));
 
-		List<LiveShareUser> liveShareUserList = liveShareUserRepository.getActiveUserListByRoomId(
+		List<LiveShareUser> userList = liveShareUserRepository.getActiveUserListByRoomId(
 			roomId);
-		LiveShareUser leaveUser = liveShareUserList.stream()
+		LiveShareUser leaveUser = userList.stream()
 			.filter(liveShareUser -> liveShareUser.getUserUUID().equals(userUUID))
 			.findAny()
-			.orElseThrow(() -> new ContentServiceException(ErrorCode.ERR_CONTENT_LIVE_SHARE_ROOM_USER_NOT_FOUND));
+			.orElseThrow(() -> new ContentServiceException(ErrorCode.ERR_CONTENT_LIVE_SHARE_USER_NOT_FOUND));
 
-		if (liveShareUserList.size() != 1) {
+		if (userList.size() != 1) {
 			//두번째로 들어온 사용자에게 리더 양도
 			if (Role.LEADER.equals(leaveUser.getUserRole())) {
-				Optional.ofNullable(liveShareUserList.get(1)).ifPresent(secondJoinedUser -> {
+				Optional.ofNullable(userList.get(1)).ifPresent(secondJoinedUser -> {
 					secondJoinedUser.setUserRole(Role.LEADER);
 					liveShareUserRepository.save(secondJoinedUser);
 				});
@@ -188,11 +190,47 @@ public class LiveShareService {
 			return new LiveShareLeaveResponse(true, LocalDateTime.now());
 		}
 
+		if (StringUtils.isEmpty(liveShareRoomLeaveRequest.getData())) {
+			throw new ContentServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
+		}
+
 		liveShareUserRepository.delete(leaveUser);
 
-		activeRoom.setStatus(ActiveOrInactive.INACTIVE);
-		liveShareRoomRepository.save(activeRoom);
+		room.setData(liveShareRoomLeaveRequest.getData());
+		room.setStatus(ActiveOrInactive.INACTIVE);
+		liveShareRoomRepository.save(room);
 
 		return new LiveShareLeaveResponse(true, LocalDateTime.now());
+	}
+
+	@Transactional
+	public LiveShareUserRoleUpdateResponse updateLiveShareUserRole(
+		String contentUUID, String updateUserUUD, Long roomId
+	) {
+		String userUUID = CurrentUserUtils.getUserUUID();
+
+		LiveShareRoom room = liveShareRoomRepository.getActiveRoomById(roomId)
+			.orElseThrow(() -> new ContentServiceException(ErrorCode.ERR_CONTENT_LIVE_SHARE_ROOM_NOT_FOUND));
+		LiveShareUser currentUser = liveShareUserRepository.getActiveUserByRoomIdAndUserUUID(
+			room.getId(), userUUID).orElseThrow(() -> new ContentServiceException(
+			ErrorCode.ERR_CONTENT_LIVE_SHARE_USER_NOT_FOUND));
+		LiveShareUser updateUser = liveShareUserRepository.getActiveUserByRoomIdAndUserUUID(
+			room.getId(), updateUserUUD).orElseThrow(() -> new ContentServiceException(
+			ErrorCode.ERR_CONTENT_LIVE_SHARE_USER_NOT_FOUND));
+		
+		if (!Role.LEADER.equals(currentUser.getUserRole())) {
+			throw new ContentServiceException(ErrorCode.ERR_CONTENT_LIVE_SHARE_USER_UPDATE);
+		}
+
+		currentUser.setUserRole(Role.FOLLOWER);
+		liveShareUserRepository.save(currentUser);
+
+		updateUser.setUserRole(Role.LEADER);
+		liveShareUserRepository.save(updateUser);
+
+		publishActiveUserUpdateMessage(contentUUID, room.getId());
+
+		return new LiveShareUserRoleUpdateResponse(true, LocalDateTime.now());
+
 	}
 }

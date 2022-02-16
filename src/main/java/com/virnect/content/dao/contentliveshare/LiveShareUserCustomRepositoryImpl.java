@@ -3,6 +3,7 @@ package com.virnect.content.dao.contentliveshare;
 import static com.virnect.content.domain.QLiveShareUser.*;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.jpa.repository.support.QuerydslRepositorySupport;
 
@@ -32,5 +33,17 @@ public class LiveShareUserCustomRepositoryImpl extends QuerydslRepositorySupport
 			from(liveShareUser).select(liveShareUser)
 				.where(liveShareUser.status.eq(ActiveOrInactive.ACTIVE), liveShareUser.roomId.eq(roomId))
 				.fetchCount();
+	}
+
+	@Override
+	public Optional<LiveShareUser> getActiveUserByRoomIdAndUserUUID(Long roomId, String userUUID) {
+		return Optional.ofNullable(
+			from(liveShareUser).select(liveShareUser)
+				.where(
+					liveShareUser.status.eq(ActiveOrInactive.ACTIVE), liveShareUser.roomId.eq(roomId),
+					liveShareUser.userUUID.eq(userUUID)
+				)
+				.fetchOne()
+		);
 	}
 }

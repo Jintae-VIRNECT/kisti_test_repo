@@ -109,5 +109,9 @@ VALUES (21, '2022-02-09 05:29:09', '2022-02-09 05:29:09', 3, 'ACTIVE', NULL, NUL
         'ouXLjBs6Rmd95');
 INSERT INTO `live_share_user` (`live_share_user_id`, `created_at`, `updated_at`, `room_id`, `status`, `user_email`,
                                `user_nickname`, `user_role`, `user_uuid`)
+VALUES (22, '2022-02-09 05:29:09', '2022-02-09 05:29:09', 3, 'ACTIVE', NULL, NULL, 'FOLLOWER',
+        'XpzzPw8dQOjgS');
+INSERT INTO `live_share_user` (`live_share_user_id`, `created_at`, `updated_at`, `room_id`, `status`, `user_email`,
+                               `user_nickname`, `user_role`, `user_uuid`)
 VALUES (23, '2022-02-09 05:29:09', '2022-02-09 05:29:09', 4, 'ACTIVE', NULL, NULL, 'LEADER',
         'ouXLjBs6Rmd95');

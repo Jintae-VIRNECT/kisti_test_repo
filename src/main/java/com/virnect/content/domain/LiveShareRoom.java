@@ -34,9 +34,13 @@ public class LiveShareRoom extends BaseTimeEntity {
 	@Column(name = "status", nullable = false)
 	private ActiveOrInactive status;
 
+	@Lob
+	@Column(name = "data")
+	private String data;
+
 	@Builder(builderClassName = "LiveShareRoomBuilder", builderMethodName = "liveShareRoomBuilder")
 	public LiveShareRoom(
-		 String contentUUID, String workspaceUUID
+		String contentUUID, String workspaceUUID
 	) {
 		this.contentUUID = contentUUID;
 		this.workspaceUUID = workspaceUUID;
@@ -45,5 +49,9 @@ public class LiveShareRoom extends BaseTimeEntity {
 
 	public void setStatus(ActiveOrInactive status) {
 		this.status = status;
+	}
+
+	public void setData(String data) {
+		this.data = data;
 	}
 }
