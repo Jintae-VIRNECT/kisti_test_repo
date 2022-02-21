@@ -1,5 +1,6 @@
 package com.virnect.download.application.download;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -37,6 +38,7 @@ import com.virnect.download.dto.request.AdminAppUploadRequest;
 import com.virnect.download.dto.request.AppInfoUpdateRequest;
 import com.virnect.download.dto.request.AppSigningKeyRegisterRequest;
 import com.virnect.download.dto.request.AppUploadRequest;
+import com.virnect.download.dto.response.AdminAppDeleteResponse;
 import com.virnect.download.dto.response.AdminAppUploadResponse;
 import com.virnect.download.dto.response.AppDetailInfoResponse;
 import com.virnect.download.dto.response.AppSigningKetRegisterResponse;
@@ -71,9 +73,12 @@ public class AppService {
 	private List<String> mimeTypeWhiteList;
 
 	private static final String PRODUCT_REMOTE = "REMOTE";
+	private static final String PRODUCT_VIEW = "VIEW";
 	private static final String EXTENSION_APK = "apk";
 	private static final String VERSION_PREFIX = "v";
-	private static final String REGEXP_FILE_NAME_CHECK = "^([A-Z]+_[A-Z]+_[0-9]{7}\\.[a-z]+)$";
+	private static final String SEPARATOR_DOT = ".";
+	private static final String SEPARATOR_UNDER_BAR = "_";
+	private static final String REGEXP_FILE_NAME_CHECK = "^([a-zA-Z]+_[a-zA-Z]+_[0-9]{7}\\.[a-z]+)$";
 
 	@Transactional
 
@@ -320,7 +325,7 @@ public class AppService {
 	}
 
 	@Transactional
-	public AdminAppUploadResponse adminApplicationUploadAndRegister(
+	public AdminAppUploadResponse uploadApplication(
 		AdminAppUploadRequest adminAppUploadRequest, String userUUID
 	) {
 		MultipartFile file = adminAppUploadRequest.getUploadAppFile();
@@ -356,7 +361,9 @@ public class AppService {
 			file.getOriginalFilename(), adminAppUploadRequest.getProductName(), adminAppUploadRequest.getDeviceType());
 
 		String versionCode = getVersionCodeByFileName(file.getOriginalFilename());
-		String versionName = getVersionName(versionCode);
+		String versionName = product.getName().equals(PRODUCT_VIEW) ? getVersionName(versionCode, 1, 2, 2, 2) :
+			getVersionName(versionCode, 1, 1, 2, 3);
+
 		newAppVersionCodeValidation(device, os, Long.parseLong(versionCode));
 
 		String uploadedUrl = fileUploadService.upload(adminAppUploadRequest.getUploadAppFile());
@@ -384,7 +391,7 @@ public class AppService {
 	}
 
 	private String getExtension(String fileName) {
-		int dotIndex = fileName.lastIndexOf('.');
+		int dotIndex = fileName.lastIndexOf(SEPARATOR_DOT);
 		if (dotIndex == -1) {
 			throw new DownloadException(ErrorCode.ERR_APP_UPLOAD_INVALID_FILE_NAME);
 		}
@@ -394,7 +401,8 @@ public class AppService {
 
 	// {product}_{device_type}_{version_code}.{extension}
 	private String getVersionCodeByFileName(String fileName) {
-		String[] productAndDeviceAndVersionAndExtension = StringUtils.delimitedListToStringArray(fileName, "_");
+		String[] productAndDeviceAndVersionAndExtension = StringUtils.delimitedListToStringArray(
+			fileName, SEPARATOR_UNDER_BAR);
 
 		String versionAndExtension = productAndDeviceAndVersionAndExtension[2];
 
@@ -402,7 +410,7 @@ public class AppService {
 			throw new DownloadException(ErrorCode.ERR_APP_UPLOAD_INVALID_FILE_NAME);
 		}
 
-		int dotIndex = versionAndExtension.lastIndexOf('.');
+		int dotIndex = versionAndExtension.lastIndexOf(SEPARATOR_DOT);
 		if (dotIndex == -1) {
 			throw new DownloadException(ErrorCode.ERR_APP_UPLOAD_INVALID_FILE_NAME);
 		}
@@ -418,10 +426,11 @@ public class AppService {
 			throw new DownloadException(ErrorCode.ERR_APP_UPLOAD_INVALID_FILE_NAME);
 		}
 
-		String[] productAndDeviceAndVersionAndExtension = StringUtils.delimitedListToStringArray(fileName, "_");
+		String[] productAndDeviceAndVersionAndExtension = StringUtils.delimitedListToStringArray(
+			fileName, SEPARATOR_UNDER_BAR);
 
 		String product = productAndDeviceAndVersionAndExtension[0];
-		if (StringUtils.isEmpty(product) || !requestProduct.equals(product)) {
+		if (StringUtils.isEmpty(product) || !requestProduct.equalsIgnoreCase(product)) {
 			log.error("not matched file name and request product. product by request : {}, product by file name : {}",
 				requestProduct, product
 			);
@@ -430,7 +439,7 @@ public class AppService {
 
 		String device = productAndDeviceAndVersionAndExtension[1];
 
-		if (StringUtils.isEmpty(device) || !requestDevice.equals(device)) {
+		if (StringUtils.isEmpty(device) || !requestDevice.equalsIgnoreCase(device)) {
 			log.error("not matched file name and request device. device by request : {}, device by file name : {}",
 				requestDevice, device
 			);
@@ -438,17 +447,24 @@ public class AppService {
 		}
 	}
 
-	//version_code => major(1 digit).minor(1 digit).patch(2 digit).optional(3 digit)
-	//1302000 ---> 1.3.2
-	private String getVersionName(String versionCode) {
-		String major = String.valueOf(versionCode.charAt(0));
-		String minor = String.valueOf(versionCode.charAt(1));
-		long patch = Long.parseLong(versionCode.substring(2, 4));
-		long optional = Long.parseLong(versionCode.substring(4));
+	//version_code => major.minor.patch.optional
+	private String getVersionName(
+		String versionCode, int majorDigit, int minorDigit, int patchDigit, int optionalDigit
+	) {
+		long major = Long.parseLong(versionCode.substring(0, majorDigit));
+		long minor = Long.parseLong(versionCode.substring(majorDigit, majorDigit + minorDigit));
+		long patch = Long.parseLong(
+			versionCode.substring(majorDigit + minorDigit, majorDigit + minorDigit + patchDigit));
+		long optional = Long.parseLong(versionCode.substring(
+			majorDigit + minorDigit + patchDigit,
+			majorDigit + minorDigit + patchDigit + optionalDigit
+		));
+
 		if (optional == 0L) {
-			return major + "." + minor + "." + patch;
+			return major + SEPARATOR_DOT + minor + SEPARATOR_DOT + patch;
 		}
-		return major + "." + minor + "." + patch + "." + optional;
+		return major + SEPARATOR_DOT + minor + SEPARATOR_DOT + patch + SEPARATOR_DOT + optional;
+
 	}
 
 	private void masterUserValidationCheck(String userUUID) {
@@ -493,4 +509,16 @@ public class AppService {
 		}
 	}
 
+	public AdminAppDeleteResponse deleteApplication(String appUUID, String userUUID) {
+		App app = appRepository.findByUuid(appUUID)
+			.orElseThrow(() -> new DownloadException(ErrorCode.ERR_APP_INFO_NOT_FOUND));
+
+		masterUserValidationCheck(userUUID);
+
+		fileUploadService.delete(app.getAppUrl());
+
+		appRepository.delete(app);
+
+		return new AdminAppDeleteResponse(true, LocalDateTime.now());
+	}
 }

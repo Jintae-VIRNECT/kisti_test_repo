@@ -36,7 +36,7 @@ class AdminControllerTest {
 
 	@Test
 	@DisplayName("admin app upload")
-	void adminApkAppUploadRequestHandler() throws Exception {
+	void uploadApplication() throws Exception {
 		String url = "/download/app/register/admin";
 
 		MockMultipartFile uploadAppFile = new MockMultipartFile(
@@ -61,7 +61,7 @@ class AdminControllerTest {
 
 	@Test
 	@DisplayName("admin app upload with invalid file name")
-	void adminApkAppUploadRequestHandler_emptyVersion() throws Exception {
+	void uploadApplication_emptyVersion() throws Exception {
 		String url = "/download/app/register/admin";
 		MockMultipartFile uploadAppFile = new MockMultipartFile(
 			"uploadAppFile", "makeInstaller.exe", "application/octet-stream", "make".getBytes());
@@ -85,7 +85,7 @@ class AdminControllerTest {
 
 	@Test
 	@DisplayName("admin app upload with lower version")
-	void adminApkAppUploadRequestHandler_lowerVersion() throws Exception {
+	void uploadApplication_lowerVersion() throws Exception {
 		String url = "/download/app/register/admin";
 		MockMultipartFile uploadAppFile = new MockMultipartFile(
 			"uploadAppFile", "MAKE_PC_1302000.exe", "application/octet-stream", "make".getBytes());
@@ -109,7 +109,7 @@ class AdminControllerTest {
 
 	@Test
 	@DisplayName("admin app upload with invalid file mime type")
-	void adminApkAppUploadRequestHandler_invalidMimeType() throws Exception {
+	void uploadApplication_invalidMimeType() throws Exception {
 		String url = "/download/app/register/admin";
 		MockMultipartFile uploadAppFile = new MockMultipartFile(
 			"uploadAppFile", "MAKE_PC_1302002.exe", "application/json", "make".getBytes());
@@ -133,7 +133,7 @@ class AdminControllerTest {
 
 	@Test
 	@DisplayName("admin app upload with remote apk")
-	void adminApkAppUploadRequestHandler_remoteApk() throws Exception {
+	void uploadApplication_remoteApk() throws Exception {
 		String url = "/download/app/register/admin";
 
 		MockMultipartFile uploadAppFile = new MockMultipartFile(
@@ -155,6 +155,23 @@ class AdminControllerTest {
 			.andDo(print())
 			.andExpect(status().isOk())
 			.andExpect(jsonPath("$.code").value(ErrorCode.ERR_APP_UPLOAD_FAIL.getCode()))
+			.andReturn();
+	}
+
+	@Test
+	@DisplayName("admin app delete")
+	void deleteApplication() throws Exception {
+		String appUUID = "5ca2-5bf164fc3c76";
+		String url = String.format("/download/app/%s/admin", appUUID);
+
+		MDC.put("userUUID", "498b1839dc29ed7bb2ee90ad6985c608");
+
+		mockMvc.perform(MockMvcRequestBuilders
+				.delete(url)
+			)
+			.andDo(print())
+			.andExpect(status().isOk())
+			.andExpect(jsonPath("$.code").value(200))
 			.andReturn();
 	}
 }

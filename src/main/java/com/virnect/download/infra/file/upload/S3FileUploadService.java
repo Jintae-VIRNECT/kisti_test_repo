@@ -90,7 +90,10 @@ public class S3FileUploadService implements FileUploadService {
 
 	@Override
 	public boolean delete(String url) {
-		return false;
+		String objectName = bucketName + "/" + url.substring(url.lastIndexOf("/") + 1);
+		log.info("[AWS S3] DELETE OBJECT. URL : {}, KEY : {}", url, objectName);
+		amazonS3Client.deleteObject(bucketName, objectName);
+		return true;
 	}
 
 }
