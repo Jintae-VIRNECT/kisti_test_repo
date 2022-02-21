@@ -9,7 +9,7 @@ let envConfig = {}
 let urlConfig = {}
 let sslConfig = {}
 
-const localIp = '192.168.13.72'
+const localIp = 'localhost'
 
 const localUrls = {
   www: `https://${localIp}:9010`,

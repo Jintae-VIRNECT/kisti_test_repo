@@ -12,16 +12,48 @@ pipeline {
         PORT = sh(returnStdout: true, script: 'cat docker/Dockerfile | egrep EXPOSE | awk \'{print $2}\'').trim()
         BRANCH_NAME = "${BRANCH_NAME.toLowerCase().trim()}"
         APP = ' '
-        PREVIOUS_VERSION = sh(returnStdout: true, script: 'git fetch --tags origin master && git semver get || git semver minor').trim()
-        PREVIOUS_VERSION_PARENT_COMMIT = sh(returnStdout: true, script: "git log --pretty=%P -n 1 ${PREVIOUS_VERSION}").trim()
-        NEXT_VERSION = getNextSemanticVersion(from: [type: 'COMMIT', value: "${PREVIOUS_VERSION_PARENT_COMMIT}"], to: [type: 'COMMIT', value: 'HEAD']).toString()
+        PREVIOUS_VERSION = sh(returnStdout: true, script: 'git semver get || git semver minor').trim()
+        NEXT_VERSION = getNextSemanticVersion(to: [type: 'REF', value: 'HEAD'], patchPattern: '^[Ff]ix.*').toString()
+        SLACK_CHANNEL = '#server_jenkins'
     }
 
     stages {
-        stage('version update and compatibility check') {
+        stage ('start') {
+            steps {
+                slackSend (channel: env.SLACK_CHANNEL, color: '#FFFF00', message: "STARTED: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]' (${env.BUILD_URL})")
+            }
+        }
+      
+        stage ('compatibility check') {
             when { anyOf { branch 'master'; branch 'staging'; branch 'develop'} }
             environment {
-                APP_VERSION = sh(returnStdout: true, script: 'cat package.json | grep \"version\" | awk -F ":" \'{print \$2}\' | sed "s/[\\",\\,]//g"').trim()
+                IS_REBASE_MERGE_FROM_MASTER = sh(script: "git branch --contains ${PREVIOUS_VERSION} | grep ${BRANCH_NAME}", returnStatus: true)
+            }
+            steps {
+                script {
+                    echo """
+                    LATEST RELEASE VERSION: ${PREVIOUS_VERSION} \n
+                    NEXT VERSION: ${NEXT_VERSION} \n
+                    """
+                    if (env.IS_REBASE_MERGE_FROM_MASTER != '0') {
+                        echo """버전 호환이 맞지 않습니다. 아래 명령어를 통해 Rebase Merge 후 다시 시도해 주세요. \n
+                            git rabase origin/master \n
+                            git push -f origin ${BRANCH_NAME} \n
+                        """
+                        
+                        deleteDir()
+                        currentBuild.getRawBuild().getExecutor().interrupt(Result.ABORTED)
+                        sleep(1)
+                    }
+                }
+            }
+        }
+
+        stage ('version update commit check') {
+            when {
+                branch 'master'
+            }
+            environment {
                 IS_UPDATE_COMMIT = sh(script: "git log -1 | grep 'chore: SOFTWARE VERSION UPDATED'", returnStatus: true)
             }
             steps {
@@ -32,17 +64,7 @@ pipeline {
                         deleteDir()
                         currentBuild.getRawBuild().getExecutor().interrupt(Result.SUCCESS)
                         sleep(1)
-                    } else if ((env.APP_VERSION != env.PREVIOUS_VERSION)) {
-                        echo "Version compatibility with master branch is not correct. Pull and merge from the master branch. not running..."
-                        echo 'clean up current directory'
-                        deleteDir()
-                        currentBuild.getRawBuild().getExecutor().interrupt(Result.ABORTED)
-                        sleep(1)
                     }
-
-                    echo "PREVIOUS TAG VERSION: ${PREVIOUS_VERSION}"
-                    echo "NEXT TAG VERSION: ${NEXT_VERSION}"
-                    echo "APP VERSION: ${APP_VERSION}"
                 }
             }
         }
@@ -308,7 +330,7 @@ pipeline {
 
                         env.CHANGE_LOG = gitChangelog returnType: 'STRING', 
                             from: [type: 'REF', value: "${PREVIOUS_VERSION}"],
-                            to: [type: 'REF', value: 'HEAD'],
+                            to: [type: 'REF', value: 'master'],
                             template: "{{#tags}}{{#ifContainsBreaking commits}}### Breaking Changes \\r\\n {{#commits}}{{#ifCommitBreaking .}}{{#eachCommitScope .}} **{{.}}** {{/eachCommitScope}}{{{commitDescription .}}}([{{hash}}](https://github.com/{{ownerName}}/{{repoName}}/commit/{{hash}})) \\r\\n {{/ifCommitBreaking}}{{/commits}}{{/ifContainsBreaking}} {{#ifContainsType commits type='feat'}} ### Features \\r\\n {{#commits}}{{#ifCommitType . type='feat'}}{{#eachCommitScope .}} **{{.}}** {{/eachCommitScope}}{{{commitDescription .}}}([{{hash}}](https://github.com/{{ownerName}}/{{repoName}}/commit/{{hash}})) \\r\\n {{/ifCommitType}}{{/commits}}{{/ifContainsType}} {{#ifContainsType commits type='fix'}}### Bug Fixes \\r\\n {{#commits}}{{#ifCommitType . type='fix'}}{{#eachCommitScope .}} **{{.}}** {{/eachCommitScope}}{{{commitDescription .}}}([{{hash}}](https://github.com/{{ownerName}}/{{repoName}}/commit/{{hash}})) \\r\\n {{/ifCommitType}}{{/commits}}{{/ifContainsType}} \\r\\n Copyright (C) 2020, VIRNECT CO., LTD. - All Rights Reserved \\r\\n {{/tags}}"
                                                     
                         sh '''
@@ -375,8 +397,16 @@ pipeline {
             }
         }
     }
-
     post {
+        success {
+            slackSend (channel: SLACK_CHANNEL, color: '#00FF00', message: "SUCCESSFUL: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]' (${env.BUILD_URL})")
+        }
+        failure {
+            slackSend (channel: SLACK_CHANNEL, color: '#FF0000', message: "FAILED: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]' (${env.BUILD_URL})")
+        }
+        aborted {
+            slackSend (channel: SLACK_CHANNEL, color: '#808080', message: "ABORTED: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]' (${env.BUILD_URL})")
+        }
         cleanup {
             echo 'clean up current directory'
             deleteDir()
