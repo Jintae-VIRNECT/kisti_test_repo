@@ -62,9 +62,7 @@ function IsAllowBrowser(req) {
 function IsMobileBrowser(req) {
   const userAgent = req.headers['user-agent'] || ''
   const isMobile =
-    userAgent.includes('CriOS') ||
-    userAgent.includes('mobileApp') ||
-    userAgent.includes('iPhone')
+    userAgent.includes('CriOS') || userAgent.includes('mobileApp')
 
   return isMobile
 }
