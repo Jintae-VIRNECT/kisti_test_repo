@@ -1,0 +1,25 @@
+{
+  "subgroup":{
+    "setting":"群组设置​",
+    "description":"设置工作区的子组。（最多 10 个）",
+    "etc_member_count":"未配置成员 ：",
+    "add_group":"添加群组",
+    "group_name":"团队名字",
+    "group_member":"组员​",
+    "member":"成员",
+    "update":"调整​",
+    "delete":"删除​",
+    "add_and_delete":"添加/修改组",
+    "error_enter_group_name":"请输入小组名称。",
+    "error_same_group_name_exists":"存在相同的组名。​",
+    "error_please_select_at_least_one_member":"请至少选择 1 位成员。",
+    "error_please_input_more_two_letter":"已经有配置的成员。",
+    "error_there_are_already_configured_members":"已经有配置的成员。",
+    "error_please_input_without_name":"合作名称中应排除特殊字符。",
+    "all":"全部",
+    "etc":"等等​",
+    "create_select_member_list": "可选择的成员名单",
+    "invite_max": "已经超出可以选择的成员人数。",
+    "no_group":"尚未创建任何组。​"
+  }
+}

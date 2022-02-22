@@ -433,7 +433,7 @@ export default {
 }
 </script>
 
-<style lang="postcss" scoped>
+<style lang="scss" scoped>
 .vc-day {
   position: relative;
   z-index: 1;

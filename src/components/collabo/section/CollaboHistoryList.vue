@@ -56,7 +56,6 @@ export default {
       isMaster: false,
 
       historyList: [],
-      curPage: 0,
       paging: false,
       pageMeta: {
         currentPage: 0,

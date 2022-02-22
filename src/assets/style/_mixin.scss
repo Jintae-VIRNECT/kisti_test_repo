@@ -126,8 +126,8 @@
 }
 @mixin profileMask($innerColor, $borderWidth, $borderColor) {
   position: relative;
-  mask: url("~assets/image/icon_bg.svg") no-repeat;
-  mask-size: 100%;
+  -webkit-mask: url("~assets/image/icon_bg.svg") no-repeat;
+  -webkit-mask-size: 100%;
   overflow: hidden;
   background-color: $borderColor;
   &:before {
@@ -140,8 +140,10 @@
     background-color: $innerColor;
     transform: translate(-50%, -50%);
     content: "";
-    mask: url("~assets/image/icon_bg.svg") no-repeat;
+    mask:url("~assets/image/icon_bg.svg") no-repeat;
+    -webkit-mask: url("~assets/image/icon_bg.svg") no-repeat;
     mask-size: 100%;
+    -webkit-mask-size: 100%;
   }
 }
 
@@ -186,6 +188,12 @@
   60%,
   80% {
     transform: translateX(-1%);
+  }
+}
+
+@mixin hover {
+  @media (hover: hover) and (pointer: fine) {
+    @content;
   }
 }
 

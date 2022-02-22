@@ -1,0 +1,25 @@
+{
+  "subgroup":{
+    "setting":"Configuración de grupo",
+    "description":"Configure un subgrupo de un espacio de trabajo (hasta 10)​",
+    "etc_member_count":"miembros no configurados :",
+    "add_group":"Añadir grupo",
+    "group_name":"Nombre del grupo​",
+    "group_member":"Miembro del grupo​",
+    "member":"Miembro",
+    "update":"Modificar",
+    "delete":"Borrar",
+    "add_and_delete":"Agregar/Modificar Grupos​",
+    "error_enter_group_name":"Ingrese el nombre del grupo.",
+    "error_same_group_name_exists":"El mismo nombre de grupo existe.",
+    "error_please_select_at_least_one_member":"Seleccione al menos 1 miembro.​",
+    "error_please_input_more_two_letter":"El nombre de Nombre del grupo ​ser más de 2 caracteres.",
+    "error_there_are_already_configured_members":"Ya hay miembros configurados.",
+    "error_please_input_without_name":"El nombre de Colabo no puede contener caracteres especiales.",
+    "all":"Todas​",
+    "etc":"etc.​",
+    "create_select_member_list": "Lista de miembros disponibles para seleccionar",
+    "invite_max": "Se ha excedido el número máximo de miembros seleccionables.",
+    "no_group":"No se ha creado ningún grupo.​"
+  }
+}

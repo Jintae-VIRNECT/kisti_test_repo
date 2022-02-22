@@ -25,33 +25,24 @@ VIRNECT DashBoard Web frontend project
 
 ```
 @vue/cli 4.5.7
-npm -> 6.14.8
-node -> v12.16.1
+yarn -> 1.22.4
+node -> 14.17.0
 ```
 
 ## Build
 
 ```
-npm install
-npm run build
+package.json 참조
 ```
 
 ## Running the application
 
-| Type | script | description |
-|------|--------|-------------|
-|Develop    | npm run serve         | Run in local webpack |
-|Build      | npm run build         | Build script in production|
-|Run Node server with develop       |    npm run start:develop       
-|Run Node server with staging       |    npm run start:staging       
-|Run Node server with onpremise     |    npm run start:op            
-|Run Node server with production    |    npm run start:production    
-|Docker      | npm  run start       | Run node server in Docker |
-
+package.json 참조
 
 ## Running the application with Docker
 
 #### Build docker image from dockerfile
 ```shell script
 docker build -t rm-dashboard .
+
 ```

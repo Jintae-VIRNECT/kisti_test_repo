@@ -1,0 +1,118 @@
+@import "~assets/style/vars";
+@import "~assets/style/mixin";
+
+.sub-group-member {
+  display: flex;
+  flex-direction: column;
+  width: 45.714em;
+  margin: 0.714em;
+  margin-bottom: 2.143em;
+  // border: solid 1px #fff;
+}
+.sub-group-member__header {
+  position: relative;
+  width: 100%;
+  margin-bottom: 1.5em;
+  > .icon-button {
+    position: absolute;
+    top: -0.571em;
+    right: 0;
+  }
+}
+.sub-group-member__title {
+  color: $color_text_main;
+}
+.sub-group-member__number {
+  display: inline-block;
+  margin-left: 0.643em;
+  padding: 1px 0.857em;
+  color: #ffffff;
+  font-size: 0.929em;
+  line-height: 1.357em;
+  background-color: #495c83;
+  border-radius: 0.857em;
+}
+.sub-group-member__button {
+  position: absolute;
+  top: 0;
+  right: 0;
+  color: $color_text_main;
+  font-size: 0.929em;
+  opacity: 0.72;
+  &::before {
+    position: absolute;
+    top: -0.143em;
+    left: -1.571em;
+    width: 1.571em;
+    height: 1.571em;
+    background: url(~assets/image/workspace/ic_renew.svg) 50% no-repeat;
+    content: "";
+  }
+
+  &:hover,
+  &:active {
+    opacity: 1;
+  }
+}
+
+.sub-group-member__body {
+  position: relative;
+  flex: 1 1 auto;
+}
+
+.widecard.choice {
+  background-color: #ffffff;
+  border: solid 1px transparent;
+  cursor: pointer;
+  
+  @include hover {
+    &:hover,
+    &:active {
+      background-color: rgb(245, 249, 255);
+      border: 1px solid rgb(147, 195, 255);
+    }
+  }
+  &.selected {
+    border: 2px solid rgb(15, 117, 245);
+    border-color: $color_primary;
+  }
+}
+
+.sub-group-member__empty {
+  display: flex;
+  width: 100%;
+  height: 100%;
+  background-color: $color_darkgray_600;
+}
+.sub-group-member__empty-box {
+  margin: auto;
+  text-align: center;
+  > img {
+    width: 23.214em;
+  }
+}
+.sub-group-member__empty-title {
+  // padding-top: 28.571em;
+  color: $color_text_sub;
+  font-size: 1.714em;
+  text-align: center;
+}
+.sub-group-member__empty-description {
+  color: rgba($color_text_sub, 0.5);
+  font-weight: 300;
+  font-size: 1.429em;
+  text-align: center;
+}
+
+.sub-group-member__loading {
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: flex;
+  width: 100%;
+  height: 100%;
+  background-color: #eaedf3;
+}
+.sub-group-member__loading-logo {
+  margin: auto;
+}

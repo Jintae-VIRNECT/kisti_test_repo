@@ -1,0 +1,25 @@
+{
+  "subgroup":{
+    "setting":"グループの設定​",
+    "description":"ワークスペースのサブグループを設定します。（最大10個）​",
+    "etc_member_count":"未設定のメンバー :",
+    "add_group":"グループを追加",
+    "group_name":"グループ名",
+    "group_member":"グループメンバー",
+    "member":"メンバー​",
+    "update":"変更​​",
+    "delete":"削除​​",
+    "add_and_delete":"グループの追加/変更",
+    "error_enter_group_name":"グループ名を入力してください。​",
+    "error_same_group_name_exists":"同じグループ名があります。",
+    "error_please_select_at_least_one_member":"メンバーを1人以上選択してください。",
+    "error_please_input_more_two_letter":"グループ名は２字以上入力してください。",
+    "error_there_are_already_configured_members":"すでに設定されたメンバーがいます。",
+    "error_please_input_without_name":"特殊文字は協業名から除外してください。",
+    "all":"全体​",
+    "etc":"等​",
+    "create_select_member_list": "選択可能メンバーリスト",
+    "invite_max": "選択可能メンバー数を超えました。",
+    "no_group":"グループは作成されていません。​"
+  }
+}

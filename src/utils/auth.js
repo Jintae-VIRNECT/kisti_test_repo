@@ -29,20 +29,25 @@ const intervalTime = 5 * 60 * 1000 // 5 minutes
 const renewvalTime = 10 * 60 // 5 minutes
 let interval
 
+const domainRegex =
+  /^(((http(s?)):\/\/)?)([0-9a-zA-Z-]+\.)+[a-zA-Z]{2,6}(:[0-9]+)?(\/\S*)?/
+
+export const COOKIE_EXPIRE_UNIT = 60 * 60 * 24 //쿠키 expires 값은 24시간이 1 기준으로 들어가고, api응답값의 expireIn은 초단위로 오기 때문에 계산하기 위한 값
+
 /**
  * 메소드
  */
-function setTokensToCookies(response) {
-  const cookieOption = {
-    expires: response.expireIn / 3600000,
-    domain:
-      location.hostname.split('.').length === 3
-        ? location.hostname.replace(/.*?\./, '')
-        : location.hostname,
-  }
-  Cookies.set('accessToken', response.accessToken, cookieOption)
-  Cookies.set('refreshToken', response.refreshToken, cookieOption)
-  debug('TOKEN::', axios.defaults.headers)
+function setTokensToCookies(urls, response) {
+  Cookies.set(
+    'accessToken',
+    response.accessToken,
+    getCookieOption(urls, response.expireIn),
+  )
+  Cookies.set(
+    'refreshToken',
+    response.refreshToken,
+    getCookieOption(urls, response.expireIn),
+  )
 }
 
 const tokenInterval = async () => {
@@ -61,7 +66,7 @@ const tokenInterval = async () => {
     let response = await tokenRequest(params)
 
     if (response.refreshed === true) {
-      setTokensToCookies(response)
+      setTokensToCookies(window.urls, response)
     }
   }
 }
@@ -131,7 +136,8 @@ const getWsSettings = async () => {
 
     document.title = `${settings.workspaceTitle} | Dashboard`
     const favicon = document.querySelector("link[rel*='icon']")
-    favicon.href = settings.favicon
+
+    if (favicon) favicon.href = settings.favicon
 
     setConfigs({
       whiteLogo: settings.whiteLogo,
@@ -141,13 +147,29 @@ const getWsSettings = async () => {
 }
 
 export const cookieClear = () => {
-  if (/\.?virnect\.com/.test(location.href)) {
-    Cookies.remove('accessToken', { domain: '.virnect.com' })
-    Cookies.remove('refreshToken', { domain: '.virnect.com' })
-  } else {
-    Cookies.remove('accessToken')
-    Cookies.remove('refreshToken')
-  }
+  Cookies.remove('accessToken', getCookieOption(window.urls))
+  Cookies.remove('refreshToken', getCookieOption(window.urls))
+}
+
+const getCookieOption = (urls, expire) => {
+  const domain = urls.domain
+    ? urls.domain
+    : location.hostname.replace(/.*?\./, '')
+
+  const url = domainRegex.test(location.hostname) ? domain : location.hostname
+  if (expire)
+    return {
+      secure: true,
+      sameSite: 'None',
+      expires: expire / COOKIE_EXPIRE_UNIT, //* expire는 초단위, expires 값 세팅 단위는 1이 24시간 단위이므로 맞게 계산해줘야 한다.
+      domain: url,
+    }
+  else
+    return {
+      secure: true,
+      sameSite: 'None',
+      domain: url,
+    }
 }
 
 /**

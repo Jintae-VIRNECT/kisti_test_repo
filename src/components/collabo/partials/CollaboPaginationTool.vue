@@ -9,7 +9,7 @@
         class="pagination-tool__link page"
         :class="{ current: page === curPage }"
         :key="index"
-        @click="setCurrrent(page)"
+        @click="setCurrent(page)"
       >
         {{ page }}
       </div>
@@ -45,7 +45,7 @@ export default {
   watch: {
     currentPage(page) {
       this.emitFlag = false
-      this.curPage = page
+      this.curPage = page + 1
       if (page === 0) {
         this.curPage = 1
       }
@@ -65,7 +65,7 @@ export default {
     },
   },
   methods: {
-    setCurrrent(page) {
+    setCurrent(page) {
       this.emitFlag = true
       this.curPage = page
     },

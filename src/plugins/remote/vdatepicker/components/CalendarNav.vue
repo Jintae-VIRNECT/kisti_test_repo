@@ -249,7 +249,7 @@ export default {
 }
 </script>
 
-<style lang="postcss">
+<style lang="scss">
 .vc-nav-arrow {
   display: flex;
   align-items: center;

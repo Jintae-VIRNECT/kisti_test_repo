@@ -76,4 +76,17 @@ export default {
 
   /* WORKSPACE - MEMBER */
   MEMBER_INFO: ['GET', '/workspaces/{workspaceId}/members/info'],
+
+  /* WORKSPACE SUB GROUP */
+  SUB_GROUPS: ['GET', '/remote/members/group/{workspaceId}'],
+  SUB_GROUP_ITEM: ['GET', '/remote/members/group/{workspaceId}/{groupId}'],
+  CREATE_SUB_GROUP: ['POST', '/remote/members/group/{workspaceId}/{userId}'],
+  UPDATE_SUB_GROUP: [
+    'PUT',
+    '/remote/members/group/{workspaceId}/{userId}/{groupId}',
+  ],
+  DELETE_SUB_GROUP: [
+    'DELETE',
+    '/remote/members/group/{workspaceId}/{userId}/{groupId}',
+  ],
 }
