@@ -1,33 +1,38 @@
 <template>
-  <el-card class="item">
-    <el-row>
-      <el-col :xs="24" :sm="13">
-        <h6 v-html="app.os" />
-        <h5 v-html="app.deviceName" />
+  <article class="download-contents">
+    <h3>{{ app.deviceType }}</h3>
+    <section class="item">
+      <div class="info-wrapper">
+        <p class="os">{{ app.os }}</p>
+        <p class="title" v-html="app.deviceName"></p>
         <p class="version">{{ app.version }}</p>
         <p class="release">Released: {{ app.releaseTime | dateFormat }}</p>
-      </el-col>
-      <el-col :xs="24" :sm="11">
-        <el-button v-if="app.storeId" type="primary" @click="store(app)">
-          {{ downloadText(app) }}
-        </el-button>
-        <el-button
+      </div>
+      <div class="button-wrapper">
+        <VirnectButton
+          v-if="app.storeId"
+          :label="downloadText(app.os)"
+          type="primary"
+          block
+          @onClick="store(app)"
+        />
+        <VirnectButton
           v-if="app.appUrl"
-          :type="app.storeId ? 'simple' : 'primary'"
-          @click="link('app', app)"
-        >
-          {{ $t('home.download') }}
-        </el-button>
-        <el-button
-          type="text"
-          @click="link('guide', app)"
+          :label="$t('home.download')"
+          :type="app.storeId ? null : 'primary'"
+          block
+          @onClick="link('app', app)"
+        />
+        <VirnectButton
+          class="guide-button"
+          :label="$t('home.guide')"
           :disabled="!app.guideUrl"
-        >
-          {{ $t('home.guide') }}
-        </el-button>
-      </el-col>
-    </el-row>
-  </el-card>
+          clear
+          @onClick="link('guide', app)"
+        />
+      </div>
+    </section>
+  </article>
 </template>
 
 <script>
@@ -50,12 +55,11 @@ export default {
     ...filters,
   },
   methods: {
-    downloadText(app) {
-      let str = this.$t('home.download')
-      if (app.os === 'Android') str = 'Google Play'
-      if (app.os === 'iOS') str = 'App Store'
-      if (app.os === 'Windows(UWP)') str = 'Microsoft Store'
-      return str
+    downloadText(os) {
+      if (os === 'Android') return 'Google Play'
+      if (os === 'iOS') return 'App Store'
+      if (os === 'Windows(UWP)') return 'Microsoft Store'
+      return this.$t('home.download')
     },
     async download(type, app) {
       let uri, downloadUrl
@@ -100,82 +104,3 @@ export default {
   },
 }
 </script>
-
-<style lang="scss">
-.el-tabs__content .item.el-card {
-  margin-bottom: 24px;
-  box-shadow: none;
-  &:last-child {
-    margin-bottom: 0;
-  }
-
-  .el-card__body {
-    padding: 32px 32px 32px 40px;
-  }
-
-  .el-col:first-child {
-    line-height: normal;
-    text-align: left;
-
-    h6 {
-      font-size: 18px;
-    }
-    h5 {
-      color: $color-primary;
-      font-weight: bold;
-      font-size: 26px;
-    }
-    .version {
-      margin: 20px 0 8px;
-      font-size: 20px;
-    }
-    .release {
-      color: #8e95a1;
-    }
-  }
-  .el-col:last-child {
-    padding-left: 15px;
-    text-align: right;
-
-    button {
-      display: block;
-      width: 100%;
-    }
-    button + button {
-      margin: 8px 0 0 0;
-    }
-    button.el-button--text {
-      position: absolute;
-      right: 0;
-      bottom: 0;
-      width: auto;
-      height: 34px;
-      padding: 7px 20px;
-    }
-  }
-
-  @include responsive-to(max, 'medium') {
-    .el-card__body {
-      padding: 28px 12px 24px;
-    }
-    .el-col:first-child {
-      margin-bottom: 29px;
-      text-align: center;
-      h6 {
-        font-size: 16px;
-      }
-      h5 {
-        font-size: 24px;
-      }
-    }
-    .el-col:last-child {
-      padding: 0 24px;
-      button.el-button--text {
-        position: inherit;
-        width: 100%;
-        margin-top: 16px;
-      }
-    }
-  }
-}
-</style>
