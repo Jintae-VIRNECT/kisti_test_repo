@@ -7,15 +7,16 @@ const axios = require('axios')
 
 let envConfig = {}
 let urlConfig = {}
+let sslConfig = {}
 
-const localIp = '192.168.13.72'
+const localIp = 'localhost'
 
 const localUrls = {
   www: `https://${localIp}:9010`,
   console: `https://${localIp}:8883`,
   api: 'https://192.168.6.3:8073',
   accout: 'https://localhost:8822',
-  workstation: 'https://localhost:8878',
+  workstation: `https://${localIp}:8878`,
   download: 'https://localhost:8833',
   remote: 'https://localhost:8886',
   pay: `https://${localIp}:7070`,
@@ -33,6 +34,9 @@ class Config {
   get urlConfig() {
     return urlConfig
   }
+  get sslConfig() {
+    return sslConfig
+  }
 
   async init() {
     const { data } = await axios.get(
@@ -41,7 +45,13 @@ class Config {
     const res = await axios.get(
       `${configServer}/login-web/${env === 'local' ? 'develop' : env}`,
     )
-    urlConfig = data.propertySources[0].source
+    Object.entries(data.propertySources[0].source).map(([key, v]) => {
+      if (!/ssl./.test(key)) {
+        urlConfig[key] = v
+      } else {
+        sslConfig[key.slice(4)] = v
+      }
+    })
     envConfig = res.data.propertySources[0].source
     urlConfig.timeout = res.data.propertySources[0].source.API_TIMEOUT
     urlConfig.ssl = res.data.propertySources[0].source.SSL_ENV

@@ -9,9 +9,9 @@ const metaData = {
       title: 'VIRNECT Login center',
       description:
         '증강현실 기술기업 버넥트는 고객의 요구에 맞는 최고의 솔루션을 제공합니다. 산업에 특화된 AR 솔루션으로 공정 오류 감소, 생산 시간 단축 등 산업 효율성 향상을 지원합니다.',
-      image: 'https://www.virnect.com/og_img.png',
+      image: '/og_img.png',
       site_name: 'VIRNECT',
-      url: 'https://console.virnect.com',
+      // url: 'https://console.virnect.com',
       type: 'website',
     },
   },
@@ -21,9 +21,9 @@ const metaData = {
     og: {
       title: 'VIRNECT Login center',
       description: 'Post COVID-19,	Solve industrial problems remotely',
-      image: 'https://www.virnect.com/og_img.png',
+      image: '/og_img.png',
       site_name: 'VIRNECT Login center',
-      url: 'https://console.virnect.com/?lang=en',
+      // url: 'https://console.virnect.com/?lang=en',
       type: 'website',
     },
   },
@@ -38,7 +38,6 @@ const metaHTML = lang => {
       <meta property="og:description" content="${metaData[lang].og.description}">
       <meta property="og:image" content="${metaData[lang].og.image}">
       <meta property="og:site_name" content="${metaData[lang].og.site_name}">
-      <meta property="og:url" content="${metaData[lang].og.url}">
       <meta property="og:type" content="${metaData[lang].og.type}">
     </head>
   </html>`
@@ -80,7 +79,7 @@ const metaHEAD = (html, lang) => {
       <meta name="viewport" content="width=device-width,initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
       <meta http-equiv="X-UA-Compatible" content="IE=Edge, Chrome=1">
       <meta name="format-detection" content="telephone=no,email=no">
-      <link rel="icon" type="image/x-icon" href="https://virnect.com/favicon.ico">
+      <link rel="icon" type="image/x-icon" href="/favicon.ico">
       <title>${metaData[lang].title}</title>
       <meta name="title" content="${metaData[lang].title}">
       <meta name="description" content="${metaData[lang].description}">
@@ -88,7 +87,6 @@ const metaHEAD = (html, lang) => {
       <meta property="og:description" content="${metaData[lang].og.description}">
       <meta property="og:image" content="${metaData[lang].og.image}">
       <meta property="og:site_name" content="${metaData[lang].og.site_name}">
-      <meta property="og:url" content="${metaData[lang].og.url}">
       <meta property="og:type" content="${metaData[lang].og.type}">
       <link rel="shortcut icon" href="/favicon.ico">
       ${append}

@@ -18,3 +18,7 @@ yarn.lock
 *.ntvs*
 *.njsproj
 *.sln
+
+
+/cypress
+/coverage

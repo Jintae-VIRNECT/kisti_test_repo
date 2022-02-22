@@ -6,13 +6,13 @@
 
 ``` bash
 # install
-npm run i
+yarn
 
 # local serve with hot reload at localhost:8888
-npm run dev
+yarn dev:onpremise
 
 # build
-npm run build
+yarn build
 
 # run node server localhost:8883
-npm run start
+yarn start:dev

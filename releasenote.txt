@@ -10,11 +10,13 @@ v1.2.26.3
 비밀번호 5번 실패시 차단
 Bug Fixes
 -
-v1.3.8.1
-https://virtualconnection.atlassian.net/browse/DPLA-3446
-https://virtualconnection.atlassian.net/browse/DPLA-3473
-https://virtualconnection.atlassian.net/browse/DPLA-3475
-https://virtualconnection.atlassian.net/browse/DPLA-3472
+1.4.0
+- [[DPLA-3482](https://virtualconnection.atlassian.net/browse/DPLA-3482)] 이메일인증 완료 후 언어변경 시 인증완료 버튼명 변경되지 않는 현상 개선
+- [[DEVCENTER-5035](https://virtualconnection.atlassian.net/browse/DEVCENTER-5035)] 국문일 때 멤버 리스트 디자인 깨지는 현상 개선
+- [[DEVCENTER-4997](https://virtualconnection.atlassian.net/browse/DEVCENTER-4997)] ui-assets, component 모듈 v1.8.8 로 업그레이드
+- [[DEVCENTER-5014](https://virtualconnection.atlassian.net/browse/DEVCENTER-5014)] VirnectHeader 컴포넌트에서 Link, 계정관리 기능 삭제하기
 
+Refactor
+- 패스워드 미리보기 기능 삭제
 
 Copyright (C) 2020, VIRNECT CO., LTD. - All Rights Reserved
