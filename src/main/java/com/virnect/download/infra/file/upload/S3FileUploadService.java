@@ -39,7 +39,7 @@ public class S3FileUploadService implements FileUploadService {
 	private String cdnUrl;
 
 	@Override
-	public String upload(MultipartFile file) throws IOException {
+	public String upload(MultipartFile file) {
 		log.info("[AWS S3 UPLOADER] - UPLOAD BEGIN");
 		if (file.getSize() <= 0) {
 			throw new AppServiceException(ErrorCode.ERR_APP_UPLOAD_EMPTY_APPLICATION_FILE);
@@ -57,13 +57,19 @@ public class S3FileUploadService implements FileUploadService {
 		objectMetadata.setContentType(file.getContentType());
 		objectMetadata.setContentLength(file.getSize());
 		objectMetadata.setHeader("filename", file.getOriginalFilename());
-		objectMetadata.setContentDisposition(String.format("attachment; filename=\"%s\"", file.getOriginalFilename()));
+		objectMetadata.setContentDisposition("attachment; filename=\"" + file.getOriginalFilename() +"\"");
 
 		// 3. 스트림으로 aws s3에 업로드
+		PutObjectRequest putObjectRequest = null;
 		try {
-			PutObjectRequest putObjectRequest = new PutObjectRequest(
+			putObjectRequest = new PutObjectRequest(
 				bucketName, fileUploadPath + file.getOriginalFilename(), file.getInputStream(), objectMetadata
 			);
+		} catch (IOException e) {
+			log.error("[AWS_FILE_UPLOAD_ERROR] - {}", e.getMessage(), e);
+			throw new AppServiceException(ErrorCode.ERR_APP_UPLOAD_FAIL);
+		}
+		try {
 			amazonS3Client.putObject(putObjectRequest);
 			log.info("[AWS S3 UPLOADER] - UPLOAD END");
 			String url = amazonS3Client.getUrl(bucketName, fileUploadPath + file.getOriginalFilename())

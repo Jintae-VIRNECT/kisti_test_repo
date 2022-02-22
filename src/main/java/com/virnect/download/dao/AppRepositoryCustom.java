@@ -3,9 +3,10 @@ package com.virnect.download.dao;
 import java.util.List;
 import java.util.Optional;
 
-import com.querydsl.core.Tuple;
-
 import com.virnect.download.domain.App;
+import com.virnect.download.domain.Device;
+import com.virnect.download.domain.OS;
+import com.virnect.download.domain.Product;
 import com.virnect.download.dto.domain.DeviceLatestVersionCodeDto;
 
 /**
@@ -16,15 +17,17 @@ import com.virnect.download.dto.domain.DeviceLatestVersionCodeDto;
  * DESCRIPTION:
  */
 public interface AppRepositoryCustom {
-	List<App> getActiveAppList(List<Long> deviceIds, List<Long> latestVersionCodes);
-
 	Long getLatestVersionCodeByPackageName(String packageName);
 
-	Optional<App> getLatestVersionAppInfoByPackageName(String packageName);
+	Optional<App> getLatestVersionActiveAppInfoByPackageName(String packageName);
 
 	long registerSigningKeyByPackageName(String packageName, String signingKey);
 
-	List<App> findByPackageNameAndSignature(String packageName, String signature);
+	List<App> getAppByPackageNameAndSignature(String packageName, String signature);
 
 	List<DeviceLatestVersionCodeDto> getLatestVersionInfoPerDeviceOfProduct(String productName);
+
+	App getActiveAppByDeviceLatestVersionCode(DeviceLatestVersionCodeDto deviceLatestVersionCodeDto);
+
+	Optional<App> getAppByProductAndOsAndDevice(Product product, OS os, Device device);
 }

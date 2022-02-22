@@ -4,10 +4,11 @@ plugins {
     id "com.ewerk.gradle.plugins.querydsl" version "1.0.10"
     id "io.franzbecker.gradle-lombok" version "3.3.0"
     id 'java'
+    id 'jacoco'
 }
 
 group = 'com.virnect'
-version = '1.0'
+version = '1.4.0'
 sourceCompatibility = '1.8'
 
 configurations {
@@ -22,6 +23,10 @@ repositories {
 
 ext {
     set('springCloudVersion', "Hoxton.SR10")
+    set('mapstructVersion', '1.4.2.Final')
+    jacocoExcludes = [
+
+    ]
 }
 
 dependencies {
@@ -30,6 +35,7 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-web'
     compileOnly 'org.projectlombok:lombok'
     runtimeOnly 'mysql:mysql-connector-java'
+    runtimeOnly 'com.h2database:h2'
     annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
     annotationProcessor 'org.projectlombok:lombok'
     testImplementation('org.springframework.boot:spring-boot-starter-test') {
@@ -78,10 +84,25 @@ dependencies {
 
     // feign oktthp
     implementation 'io.github.openfeign:feign-okhttp'
+
+    // map struct
+    implementation "org.mapstruct:mapstruct:${mapstructVersion}"
+    annotationProcessor "org.mapstruct:mapstruct-processor:${mapstructVersion}"
+    testAnnotationProcessor "org.mapstruct:mapstruct-processor:${mapstructVersion}"
+
+    // Json web token
+    implementation 'io.jsonwebtoken:jjwt:0.9.1'
+
+    // Open Feign
+    implementation 'org.springframework.cloud:spring-cloud-starter-openfeign'
+
 }
 
 test {
     useJUnitPlatform()
+    systemProperty("spring.active.profiles", "test")
+    systemProperty("VIRNECT_ENV", "test")
+    finalizedBy jacocoTestReport
 }
 
 // querydsl 적용
@@ -135,4 +156,37 @@ task unpackJar(type: Copy) {
 
 build {
     finalizedBy unpackJar
+}
+
+/**
+ * Jacoco Configuration
+ */
+
+jacoco {
+    toolVersion = "0.8.7"
+}
+
+jacocoTestReport {
+    dependsOn test
+
+    reports {
+        csv.enabled true
+        xml.enabled true
+    }
+
+    afterEvaluate {
+        classDirectories.setFrom(files(classDirectories.files.collect {
+            fileTree(dir: it, exclude: jacocoExcludes)
+        }))
+    }
+
+    finalizedBy jacocoTestCoverageVerification
+}
+
+jacocoTestCoverageVerification {
+    afterEvaluate {
+        classDirectories.setFrom(files(classDirectories.files.collect {
+            fileTree(dir: it, exclude: jacocoExcludes)
+        }))
+    }
 }

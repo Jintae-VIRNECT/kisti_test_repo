@@ -1,4 +1,4 @@
-package com.virnect.download.application;
+package com.virnect.download.application.download;
 
 import java.util.List;
 import java.util.Locale;
@@ -47,17 +47,8 @@ public class DownloadService {
 			productName.toUpperCase()
 		);
 
-		List<Long> deviceIds = latestAppVersionOfPerDeviceByProductName
-			.stream()
-			.map(DeviceLatestVersionCodeDto::getDeviceId)
-			.collect(Collectors.toList());
+		List<App> apps = latestAppVersionOfPerDeviceByProductName.stream().map(appRepository::getActiveAppByDeviceLatestVersionCode).collect(Collectors.toList());
 
-		List<Long> latestVersionCodes = latestAppVersionOfPerDeviceByProductName
-			.stream()
-			.map(DeviceLatestVersionCodeDto::getVersionCode)
-			.collect(Collectors.toList());
-
-		List<App> apps = appRepository.getActiveAppList(deviceIds, latestVersionCodes);
 		List<AppInfoResponse> appInfoResponseList = apps.stream().map(app -> {
 			AppInfoResponse appInfoResponse = modelMapper.map(app, AppInfoResponse.class);
 			appInfoResponse.setDeviceType(app.getDevice().getTypeDescription());
@@ -67,7 +58,7 @@ public class DownloadService {
 				appInfoResponse.setDeviceName(app.getDevice().getModelDescription());
 			}
 			appInfoResponse.setOs(app.getOs().getDescription());
-			appInfoResponse.setReleaseTime(app.getCreatedDate());
+			appInfoResponse.setReleaseTime(app.getUpdatedDate());
 			appInfoResponse.setVersion("v" + app.getVersionName());
 			return appInfoResponse;
 		}).collect(Collectors.toList());

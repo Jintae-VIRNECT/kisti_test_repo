@@ -4,12 +4,9 @@ New Features
 - 없음
 
 Bug Fixes
-- 없음
+- 관리자 앱 업로드 프로세스 변경 (DEV-2516)
 
 Limitation
-- 다운로드 앱 리스트 조회시 os 정보 추가 (DEVCENTER-4102)
-- 다운로드 앱 스토어 링크 정보 삭제 (DEVCENTER-4102)
-- 리모트 링크플로우 유저 가이드 링크 추가
-
+- 없음
 
 Copyright (C) 2020, VIRNECT CO., LTD. - All Rights Reserved

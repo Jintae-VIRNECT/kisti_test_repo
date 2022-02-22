@@ -56,7 +56,7 @@ public class S3FileDownloadService implements FileDownloadService {
         objectMetadata.setContentType(MediaType.APPLICATION_OCTET_STREAM_VALUE);
         objectMetadata.setContentLength(multipartFile.getSize());
         objectMetadata.setHeader("filename", fileName);
-        objectMetadata.setContentDisposition(String.format("attachment; filename=\"%s\"", fileName));
+        objectMetadata.setContentDisposition("attachment; filename=\"" + fileName + "\"");
 
         PutObjectRequest putObjectRequest = new PutObjectRequest(bucketName, objectName, multipartFile.getInputStream(), objectMetadata).withCannedAcl(CannedAccessControlList.PublicRead);
 

@@ -15,6 +15,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import com.virnect.download.domain.App;
+import com.virnect.download.domain.Device;
+import com.virnect.download.domain.OS;
+import com.virnect.download.domain.Product;
 import com.virnect.download.dto.domain.DeviceLatestVersionCodeDto;
 import com.virnect.download.dto.domain.QDeviceLatestVersionCodeDto;
 
@@ -31,22 +34,6 @@ public class AppRepositoryImpl implements AppRepositoryCustom {
 	private final JPAQueryFactory query;
 
 	@Override
-	public List<App> getActiveAppList(List<Long> deviceIds, List<Long> latestVersionCodes) {
-		return query
-			.select(app)
-			.from(app)
-			.innerJoin(app.os, oS).fetchJoin()
-			.innerJoin(app.device, device).fetchJoin()
-			.where(
-				app.appStatus.eq(ACTIVE),
-				app.device.id.in(deviceIds),
-				app.versionCode.in(latestVersionCodes)
-			)
-			.orderBy(app.id.asc())
-			.fetch();
-	}
-
-	@Override
 	public Long getLatestVersionCodeByPackageName(String packageName) {
 		return query
 			.select(app.versionCode.max())
@@ -55,7 +42,7 @@ public class AppRepositoryImpl implements AppRepositoryCustom {
 	}
 
 	@Override
-	public Optional<App> getLatestVersionAppInfoByPackageName(String packageName) {
+	public Optional<App> getLatestVersionActiveAppInfoByPackageName(String packageName) {
 		return Optional.ofNullable(
 			query
 				.selectFrom(app)
@@ -70,7 +57,7 @@ public class AppRepositoryImpl implements AppRepositoryCustom {
 	}
 
 	@Override
-	public List<App> findByPackageNameAndSignature(String packageName, String signature) {
+	public List<App> getAppByPackageNameAndSignature(String packageName, String signature) {
 
 		return query
 			.selectFrom(app)
@@ -95,6 +82,37 @@ public class AppRepositoryImpl implements AppRepositoryCustom {
 			)
 			.groupBy(app.device.id)
 			.fetch();
+	}
+
+	@Override
+	public App getActiveAppByDeviceLatestVersionCode(
+		DeviceLatestVersionCodeDto deviceLatestVersionCodeDto
+	) {
+		return query
+			.select(app)
+			.from(app)
+			.innerJoin(app.os, oS).fetchJoin()
+			.innerJoin(app.device, device).fetchJoin()
+			.where(
+				app.appStatus.eq(ACTIVE),
+				app.device.id.eq(deviceLatestVersionCodeDto.getDeviceId()),
+				app.versionCode.eq(deviceLatestVersionCodeDto.getVersionCode())
+			)
+			.orderBy(app.id.asc())
+			.fetchFirst();
+	}
+
+	@Override
+	public Optional<App> getAppByProductAndOsAndDevice(
+		Product product, OS os, Device device
+	) {
+		return Optional.ofNullable(
+			query
+				.selectFrom(app)
+				.where(app.product.eq(product), app.os.eq(os), app.device.eq(device))
+				.orderBy(app.createdDate.desc())
+				.fetchFirst()
+		);
 	}
 
 	@Override
