@@ -147,6 +147,7 @@
     background-color: $new_color_bg;
     border: 0.15rem solid $new_color_line_border;
     border-radius: 0.6rem;
+    cursor: pointer;
 
     &.open {
       background-color: #283434; //@추가 color
@@ -211,14 +212,20 @@
       }
     }
 
-    .room-leader {
-      @include fontLevel(75);
-      margin-right: 0.8rem;
-      color: $new_color_text_sub;
-    }
-    .room-member {
-      @include fontLevel(75);
-      color: $new_color_text_blue; //@추가 color
+    .room-member-info {
+      display: flex;
+      width: 48vw;
+      .room-leader {
+        @include fontLevel(75);
+        max-width: 32vw;
+        margin-right: 0.8rem;
+        color: $new_color_text_sub;
+        @include ellipsis();
+      }
+      .room-member {
+        @include fontLevel(75);
+        color: $new_color_text_blue; //@추가 color
+      }
     }
   }
 

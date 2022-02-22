@@ -2,18 +2,20 @@
   <section class="tab-view">
     <div class="mobile-setting-wrapper">
       <nav class="setting-nav">
-        <ul>
-          <tab-button
-            v-for="(menu, idx) of menus"
-            :key="menu.key"
-            :text="menu.text"
-            :active="tabIdx === idx"
-            @click.native="tabChange(idx)"
-          ></tab-button>
-        </ul>
+        <perfect-scrollbar>
+          <ul>
+            <tab-button
+              v-for="(menu, idx) of menus"
+              :key="menu.key"
+              :text="menu.text"
+              :active="tabIdx === idx"
+              @click.native="tabChange(idx)"
+            ></tab-button>
+          </ul>
+        </perfect-scrollbar>
       </nav>
 
-      <div class="setting-view">
+      <div class="setting-view" :class="menus[tabIdx].key">
         <div class="setting-view__header">{{ menus[tabIdx].mobileText }}</div>
 
         <div class="setting-view__body">
@@ -33,9 +35,10 @@
             <mic-test> </mic-test>
           </template>
 
-          <template v-else-if="menus[tabIdx].key === 'record'">
-            <set-record v-if="!isTablet && useLocalRecording"></set-record>
-            <set-server-record v-if="useRecording"></set-server-record>
+          <template v-else-if="menus[tabIdx].key === 'record' && useRecording">
+            <!-- 로컬 녹화는 모바일 기기에서 지원하지 않음 -->
+            <set-server-record></set-server-record
+            ><!--서버녹화-->
           </template>
           <template v-else-if="menus[tabIdx].key === 'language'">
             <set-language></set-language>
@@ -53,6 +56,7 @@
 </template>
 
 <script>
+import { PerfectScrollbar } from 'vue2-perfect-scrollbar'
 import TabButton from '../../partials/WorkspaceTabButton'
 import SetVideo from './WorkspaceSetVideo'
 import SetAudio from './WorkspaceSetAudio'
@@ -62,13 +66,13 @@ import { mapGetters } from 'vuex'
 
 export default {
   components: {
+    PerfectScrollbar,
     TabButton,
     SetVideo,
     SetAudio,
     MicTest,
     SetLanguage,
     SetTranslate: () => import('./WorkspaceSetTranslate'),
-    SetRecord: () => import('./WorkspaceSetRecord'),
     SetServerRecord: () => import('./WorkspaceSetServerRecord'),
     SetFeature: () => import('./WorkspaceSetFeature'),
   },
@@ -93,14 +97,17 @@ export default {
     },
   },
   computed: {
-    ...mapGetters(['useRecording', 'useLocalRecording']),
+    ...mapGetters(['useRecording']),
   },
   methods: {
     tabChange(idx) {
       this.$emit('tabChange', idx)
+      this.$nextTick(() => {
+        this.$eventBus.$emit('settingTabChanged')
+      })
     },
   },
 }
 </script>
 
-<style></style>
+<style src="vue2-perfect-scrollbar/dist/vue2-perfect-scrollbar.css" />

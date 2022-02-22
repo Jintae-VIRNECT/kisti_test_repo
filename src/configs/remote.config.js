@@ -27,6 +27,8 @@ export const SIGNAL = {
   LINKFLOW: 'signal:linkflow',
   LOCATION: 'signal:location',
   DRAWING_FROM_VUEX: 'signal:drawingFromVuex',
+  AR_FROM_VUEX: 'signal:arFromVuex',
+  AR_3D: 'signal:3dContentsShare',
 }
 
 /**
@@ -153,7 +155,28 @@ export const AR_DRAWING_ACTION = {
 }
 
 /**
- * 시그널 - 캡쳐 권한 제어
+ * AR 3D 공유 정의
+ */
+export const AR_3D_CONTENT_SHARE = {
+  START_SHARE: 'start3dContentsShare',
+  STOP_SHARE: 'stop3dContentsShare',
+  CONTENT_AUGUMENTED: '3dContentsAugmented',
+  FILE_SHARE: '3dContentsFileShare',
+  CLEAR_CONTENTS: '3dContentsClear',
+
+  // ADDED: 'added', //파일 추가
+  // DELETED: 'deleted', //파일 제거
+}
+
+export const AR_3D_FILE_SHARE_STATUS = {
+  START: 'start',
+  CANCEL: 'cancel',
+  COMPLETE: 'complete',
+  ERROR: 'error',
+}
+
+/**
+ * 시그널 - 캡처 권한 제어
  */
 export const CAPTURE_PERMISSION = {
   REQUEST: 'request',
@@ -161,10 +184,11 @@ export const CAPTURE_PERMISSION = {
 }
 
 /**
- * 시그널 - ??
+ * 시그널 - 서비스 서버 메시지
  */
 export const SYSTEM = {
   EVICT: 'evict',
+  DELETED_ACCOUNT: 'deletedAccount',
 }
 
 /**
@@ -191,6 +215,30 @@ export const LOCATION = {
   STOPPED: 'stopped', //GPS 기능 off or 전체 화면 공유로 인한 위치 정보 공유 중단
 }
 
+/**
+ * 안드로이드 APP에게 현재 background 상태 정보 전달
+ * 모바일 웹 에서만 사용됨.
+ */
+export const APP = {
+  BACKGROUND: 'isBackground',
+}
+
 export const USER_TYPE = {
   GUEST_USER: 'GUEST_USER',
+}
+
+export const FILE_TYPE = {
+  SHARE: 'SHARE',
+  OBJECT: 'OBJECT',
+}
+
+export const ACCEPTABLE_FILE_TYPE = {
+  SHARE: [
+    'image/jpeg',
+    'image/png',
+    'image/bmp',
+    'image/gif',
+    'application/pdf',
+  ],
+  OBJECT: ['obj' /*, 'gltf', 'glb'*/], //gltf 업로드는 추후 지원 여부 결정
 }

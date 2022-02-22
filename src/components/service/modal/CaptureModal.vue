@@ -17,6 +17,7 @@
             {{ $t('service.capture_recapture') }}
           </p>
         </button>
+        <div v-if="isMobileSize" class="divider"></div>
         <button class="capture-tools_button" @click="save">
           <p>
             <img src="~assets/image/call/ic_download.svg" />
@@ -24,7 +25,7 @@
           </p>
         </button>
       </div>
-      <button class="capture-share" @click="share">
+      <button v-if="isLeader" class="capture-share" @click="share">
         <p>
           <img src="~assets/image/call/ic_share.svg" />
           {{ $t('service.capture_image_share') }}
@@ -44,8 +45,8 @@ import { VIEW } from 'configs/view.config'
 import { ERROR } from 'configs/error.config'
 
 import { base64ToBlob } from 'utils/file'
-import { drawingUpload } from 'api/http/drawing'
-import { DRAWING } from 'configs/remote.config'
+import { remoteFileUpload } from 'api/http/drawing'
+import { DRAWING, ROLE, FILE_TYPE } from 'configs/remote.config'
 import toastMixin from 'mixins/toast'
 import errorMsgMixin from 'mixins/errorMsg'
 
@@ -69,6 +70,9 @@ export default {
   },
   computed: {
     ...mapGetters(['view', 'roomInfo']),
+    isLeader() {
+      return this.account.roleType === ROLE.LEADER
+    },
   },
   watch: {
     file: {
@@ -152,8 +156,9 @@ export default {
 
       let res = null
       try {
-        res = await drawingUpload({
+        res = await remoteFileUpload({
           file: file,
+          fileType: FILE_TYPE.SHARE,
           sessionId: this.roomInfo.sessionId,
           userId: this.account.uuid,
           workspaceId: this.workspace.uuid,
@@ -352,6 +357,84 @@ export default {
   &:active {
     > p {
       opacity: 1;
+    }
+  }
+}
+
+@include responsive-mobile {
+  .capture {
+    bottom: 9.8rem;
+    left: 50%;
+    width: 91%;
+    background-color: $new_color_popup_bg;
+    border: none;
+    border-radius: 0.6rem;
+    transform: translateX(-50%);
+  }
+  .capture-header {
+    display: flex;
+    align-items: center;
+    height: 4.9rem;
+  }
+  .capture-header__title {
+    color: $new_color_text_main;
+    @include fontLevel(100);
+  }
+  .capture-header__close {
+    right: 1.6rem;
+    width: 2rem;
+    height: 2rem;
+    background: url(~assets/image/call/mdpi_icon_close_new.svg) center no-repeat;
+  }
+  .capture-body {
+    .capture-image {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      height: 31.5vh;
+      background-color: $new_color_sub_border;
+      img {
+        top: unset;
+        left: unset;
+        max-width: 100%;
+        max-height: 100%;
+        transform: unset;
+      }
+    }
+
+    .capture-tools {
+      .divider {
+        height: 3rem;
+        border-right: 1px solid $new_color_bg_button_sub;
+      }
+      button > p {
+        align-items: center;
+        @include fontLevel(100);
+        color: $new_color_text_sub;
+        img {
+          width: 2.8rem;
+          height: 2.8rem;
+          margin-right: 0.8rem;
+        }
+      }
+    }
+
+    .capture-share {
+      width: calc(100% - 3.2rem);
+      margin: 1.4rem 1.6rem 1.6rem 1.6rem;
+      color: $new_color_text_main;
+      background-color: $new_color_bg_button_sub;
+      border-radius: 4px;
+      p {
+        align-items: center;
+        @include fontLevel(75);
+        img {
+          width: 2.8rem;
+          height: 2.8rem;
+          margin-right: 0.8rem;
+        }
+      }
     }
   }
 }

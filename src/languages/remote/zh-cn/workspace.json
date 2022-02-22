@@ -30,6 +30,8 @@
 	"confirm_force_logout_received": "已被导师强制退出。",
 	"confirm_force_logout_unavailable": "先生/女士连接合作且无法退出。",
 	"confirm_video_restrict_join": "[影像限制模式]连接至合作室。\n领导可远程控制相机。\n[连接]选择时，被看作同意控制相机。",
+	"confirm_open_room_start": "用不指定参与者的开放方式\n生成合作间。",
+	"confirm_leave_service":"终止服务。",
 
 	"history": "最近记录",
 	"remote": "远程合作",
@@ -97,6 +99,7 @@
 	"setting_stt": "语音识别方式（STT）",
 	"setting_stt_sync": "录音",
 	"setting_stt_streaming": "流媒体",
+	"setting_stt_safari_warning":"STT 在当前版本的 Safari 浏览器中不可用。 请将您的操作系统更新到最新版本。",
 	"setting_tts": "设置语音转换（TTS）",
 	"setting_tts_allow": "允许使用语音转换",
 	"setting_translate_disable_message": "请使用翻译。",
@@ -202,6 +205,7 @@
 	"workspace_member_group_member": "收藏夹成员",
 	"workspace_member_group_member_no_selection": "无选择",
 	"workspace_member_group_count_valid":"请至少选择 1 位成员。",
+	"workspace_member_sub_group_etc":"其他组",
 
 	"workspace_select": "选择工作区"
   }

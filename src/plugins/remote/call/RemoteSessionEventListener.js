@@ -4,6 +4,7 @@ import _, { addSubscriber, removeSubscriber } from './Remote'
 import { URLS } from 'configs/env.config'
 
 import auth from 'utils/auth'
+import { flashStatus } from './RemoteSender'
 
 import {
   SIGNAL,
@@ -14,6 +15,9 @@ import {
   VIDEO,
   FILE,
   DRAWING,
+  SYSTEM,
+  AR_3D_CONTENT_SHARE,
+  AR_FEATURE,
 } from 'configs/remote.config'
 import { CAMERA as CAMERA_STATUS } from 'configs/device.config'
 
@@ -156,12 +160,17 @@ const signalVideo = event => {
     Store.dispatch('setMainView', { id: data.id, force: true })
 
     const participants = Store.getters['participants']
+    let leader = null
     participants.forEach(pt => {
+      if (pt.roleType === ROLE.LEADER) leader = pt
       Store.commit('updateParticipant', {
         connectionId: pt.connectionId,
         currentWatching: data.id,
       })
     })
+
+    //현재 플래시 상태를 리더에게 전송해서 플래시 상태에 대한 싱크를 맞춘다
+    _.sendFlashStatus(Store.getters['myInfo'].flash, [leader.connectionId])
   } else if (data.type === VIDEO.SCREEN_SHARE) {
     const isLeader = _.account.roleType === ROLE.LEADER
     const participants = Store.getters['participants']
@@ -447,7 +456,17 @@ const signalCapturePermission = event => {
 
 /** AR feature */
 const signalArFeature = event => {
-  window.vue.$eventBus.$emit(SIGNAL.AR_FEATURE, event)
+  const data = JSON.parse(event.data)
+
+  //큐가 활성화된 상태고, START_SHARE 이벤트인 경우 Vuex에 저장해둔다.
+  //해당 이벤트를 필요로하는 component가 활성화 되었을 경우 해당 vuex내 값을 큐처럼 순차적으로 처리한다.
+  if (
+    queueAvtivated &&
+    (data.type === AR_FEATURE.FEATURE ||
+      data.type === AR_FEATURE.START_AR_FEATURE)
+  )
+    Store.commit('addArEvent', { data, receive: event })
+  else window.vue.$eventBus.$emit(SIGNAL.AR_FEATURE, event)
 }
 
 /** AR Pointing */
@@ -458,6 +477,25 @@ const signalArPointing = event => {
 /** AR Drawing */
 const signalArDrawing = event => {
   window.vue.$eventBus.$emit(SIGNAL.AR_DRAWING, event)
+}
+
+/** AR 3D 콘텐츠 모드*/
+const signalAr3dContent = event => {
+  const data = JSON.parse(event.data)
+
+  //큐가 활성화된 상태고, START_SHARE 이벤트인 경우 Vuex에 저장해둔다.
+  //해당 이벤트를 필요로하는 component가 활성화 되었을 경우 해당 vuex내 값을 큐처럼 순차적으로 처리한다.
+  if (queueAvtivated && data.type === AR_3D_CONTENT_SHARE.START_SHARE)
+    Store.commit('addArEvent', { data, receive: event })
+  else window.vue.$eventBus.$emit(SIGNAL.AR_3D, event)
+}
+
+/** 계정 삭제로 인해 서비스 서버에서 강퇴 처리*/
+const signalEvictedBySystem = event => {
+  const data = JSON.parse(event.data)
+  if (data.type === SYSTEM.DELETED_ACCOUNT) {
+    window.vue.$eventBus.$emit(SYSTEM.DELETED_ACCOUNT, event)
+  }
 }
 
 export default {
@@ -480,4 +518,6 @@ export default {
   signalArFeature,
   signalArPointing,
   signalArDrawing,
+  signalAr3dContent,
+  signalEvictedBySystem,
 }

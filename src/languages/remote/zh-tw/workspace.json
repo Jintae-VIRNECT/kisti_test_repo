@@ -30,6 +30,8 @@
 	"confirm_force_logout_received": "已被導師強制退出。",
 	"confirm_force_logout_unavailable": "先生/女士連接合作且無法退出。",
 	"confirm_video_restrict_join": "[影像限制模式]連接至合作室。\n領導可遠程控制相機。\n[連接]選擇時，被看作同意控制相機。",
+	"confirm_open_room_start": "用不指定參與者的開放方式\n生成合作間。",
+	"confirm_leave_service":"終止服務。",
 
 	"history": "最近記錄",
 	"remote": "遠程合作",
@@ -97,6 +99,7 @@
 	"setting_stt": "語音識別方式（STT）",
 	"setting_stt_sync": "錄音",
 	"setting_stt_streaming": "流媒體",
+	"setting_stt_safari_warning":"STT 在當前版本的 Safari 瀏覽器中不可用。 請將您的操作系統更新到最新版本。",
 	"setting_tts": "設置語音轉換（TTS）",
 	"setting_tts_allow": "允許使用語音轉換",
 	"setting_translate_disable_message": "請使用翻譯。",
@@ -202,6 +205,7 @@
 	"workspace_member_group_member": "收藏夾成員",
 	"workspace_member_group_member_no_selection": "無選擇",
 	"workspace_member_group_count_valid":"請至少選擇 1 位成員。",
+	"workspace_member_sub_group_etc":"其他组",
 
 	"workspace_select": "選擇工作區"
   }

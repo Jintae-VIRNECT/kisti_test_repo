@@ -61,3 +61,13 @@ export const AUTH_STATUS = {
  * 멤버 상태
  */
 export const MEMBER_STATUS = ['login', 'join', 'logout']
+
+/**
+ * 카메라 상태
+ */
+export const CAMERA_STATE = {
+  BACKGROUND: 'background',
+  ON: 'on',
+  OFF: 'off',
+  UNAVAILABLE: -1,
+}

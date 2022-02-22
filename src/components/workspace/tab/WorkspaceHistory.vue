@@ -199,6 +199,7 @@ export default {
 
     //재시작
     async createRoom(sessionId, sessionType) {
+      this.$eventBus.$emit('popover:close')
       this.sessionId = sessionId
       if (sessionType === ROOM_STATUS.OPEN) {
         this.showOpenRestart = !this.showOpenRestart

@@ -9,7 +9,7 @@
 
     <div
       class="service-setting__row"
-      v-if="!isTablet && !isSafari"
+      v-if="useRecordTargetCtrl"
       :class="{ disable: isLocalRecording }"
     >
       <p class="service-setting__text">
@@ -25,7 +25,7 @@
       </div>
     </div>
 
-    <template v-if="!isSafari">
+    <template v-if="useRecordSetting">
       <div class="service-setting__row" :class="{ disable: isLocalRecording }">
         <p class="service-setting__text">
           {{ $t('service.setting_record_max_time') }}
@@ -48,7 +48,7 @@
           <tooltip
             customClass="tooltip-guide"
             :content="$t('service.setting_record_time_tooltip')"
-            :placement="isTablet ? 'bottom' : 'right'"
+            :placement="isMobileDevice ? 'bottom' : 'right'"
             effect="blue"
             guide
           >
@@ -78,7 +78,7 @@
           <tooltip
             customClass="tooltip-guide"
             :content="$t('service.setting_record_resolution_tooltip')"
-            :placement="isTablet ? 'bottom' : 'right'"
+            :placement="isMobileDevice ? 'bottom' : 'right'"
             effect="blue"
             guide
           >
@@ -101,19 +101,30 @@
         </r-select>
       </div>
     </template>
-    <div
-      class="service-setting__row"
-      v-if="isLeader"
-      :class="{ disable: isLocalRecording }"
-    >
-      <p class="service-setting__text">
-        {{ $t('service.setting_local_record_participant') }}
-      </p>
-      <r-check
-        :text="$t('service.setting_local_record_allow')"
-        :value.sync="localRecording"
-      ></r-check>
-    </div>
+    <template v-if="isLeader">
+      <div
+        class="service-setting__row"
+        v-if="!isMobileSize"
+        :class="{ disable: isLocalRecording }"
+      >
+        <p class="service-setting__text">
+          {{ $t('service.setting_local_record_participant') }}
+        </p>
+        <r-check
+          :text="$t('service.setting_local_record_allow')"
+          :value.sync="localRecording"
+        ></r-check>
+      </div>
+      <figure v-else-if="isMobileSize" class="setting__figure">
+        <p class="setting__label">
+          {{ $t('service.setting_local_record_participant') }}
+        </p>
+        <check
+          :text="$t('service.setting_local_record_allow')"
+          :value.sync="localRecording"
+        ></check>
+      </figure>
+    </template>
   </section>
 </template>
 
@@ -126,6 +137,7 @@ import {
 } from 'utils/recordOptions'
 
 import RCheck from 'RemoteCheckBox'
+import Check from 'Check'
 import RSelect from 'RemoteSelect'
 import RRadio from 'RemoteRadio'
 import Tooltip from 'Tooltip'
@@ -140,6 +152,7 @@ export default {
   components: {
     RSelect,
     RCheck,
+    Check,
     RRadio,
     Tooltip,
   },
@@ -155,6 +168,15 @@ export default {
   },
   computed: {
     ...mapGetters(['localRecord', 'localRecordStatus', 'allowLocalRecord']),
+
+    useRecordTargetCtrl() {
+      return !this.isMobileDevice && !this.isSafari
+    },
+
+    useRecordSetting() {
+      return !this.isSafari && !this.isMobileSize
+    },
+
     localRecTimeOpt() {
       const options = localRecTime.map(time => {
         return {
@@ -257,3 +279,24 @@ export default {
   },
 }
 </script>
+
+<style lang="scss">
+@import '~assets/style/mixin';
+
+@include responsive-mobile {
+  .service-setting__view {
+    width: 100%;
+    padding: 2rem 1.6rem;
+
+    .setting__figure {
+      .setting__label {
+        @include fontLevel(100);
+        margin-bottom: 0.8rem;
+      }
+      .check {
+        @include responsive-check-toggle;
+      }
+    }
+  }
+}
+</style>

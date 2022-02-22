@@ -192,6 +192,39 @@
   @include clearfix;
 }
 
+@mixin share-list-transition {
+  .share-list__left-enter-active,
+  .share-list__left-leave-active,
+  .share-list__right-enter-active,
+  .share-list__right-leave-active {
+    transition: left ease 0.4s;
+  }
+  .share-list__left-enter {
+    left: -100%;
+  }
+  .share-list__left-enter-to {
+    left: 0;
+  }
+  .share-list__left-leave {
+    left: 0;
+  }
+  .share-list__left-leave-to {
+    left: -100%;
+  }
+  .share-list__right-enter {
+    left: 100%;
+  }
+  .share-list__right-enter-to {
+    left: 0;
+  }
+  .share-list__right-leave {
+    left: 0;
+  }
+  .share-list__right-leave-to {
+    left: 100%;
+  }
+}
+
 /* Motion */
 .shake {
   animation: shake 0.6s linear alternate;
@@ -367,6 +400,39 @@ root div에 theme 설정
   }
 }
 
+@mixin mobile-circle-btn($color) {
+  position: relative;
+  width: 6rem;
+  height: 6rem;
+  margin: 0 1rem;
+  background-color: $color;
+  border-radius: 50%;
+}
+
+@mixin mobile-circle-btn-icon($url) {
+  &::after {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 2.4rem;
+    height: 2.4rem;
+    background: url($url) center/2.4rem no-repeat;
+    transform: translate(-50%, -50%);
+    content: "";
+  }
+}
+
+@mixin mobile-circle-btn-disabled($color, $iconColor, $url) {
+  &:disabled {
+    background-color: $color;
+    &::after {
+      mask-image: url($url);
+      background: none;
+      background-color: $iconColor;
+    }
+  }
+}
+
 @mixin responsive-popover {
   &.popover {
     background-color: #606a77; //@추가 color
@@ -416,6 +482,18 @@ root div에 theme 설정
 //반응형 모바일 (360px) ~ 767px
 @mixin responsive-mobile {
   @media screen and (max-width: $responsive_m_max) {
+    @content;
+  }
+}
+
+@mixin responsive-tablet {
+  @media screen and (min-width: $responsive_tab_min) and (max-width: $responsive_tab_max) {
+    @content;
+  }
+}
+
+@mixin responsive-tablet-mobile {
+  @media screen and (max-width: $responsive_tab_max) {
     @content;
   }
 }

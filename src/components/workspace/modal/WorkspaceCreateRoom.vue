@@ -18,10 +18,10 @@
         ></create-room-info>
         <create-room-invite
           :users="users"
+          :subGroups="subGroups"
           :selection="selection"
           @userSelect="selectUser"
           @inviteRefresh="inviteRefresh"
-          @selectedgroupid="getGroupMembers"
           :loading="loading"
           :showMemberGroupSelect="true"
           :groupList="groupList"
@@ -33,9 +33,12 @@
       :btnLoading="clicked"
       :roomInfo="roomInfo"
       :users="users"
+      :subGroups="subGroups"
       :selection="selection"
       :beforeClose="beforeClose"
       :loading="loading"
+      :showMemberGroupSelect="true"
+      :groupList="groupList"
       @userSelect="selectUser"
       @inviteRefresh="inviteRefresh"
       @startRemote="startRemote"
@@ -80,11 +83,14 @@ export default {
       loading: false,
 
       groupList: [],
+      subGroups: [],
 
       roomInfo: {},
       maxSelect: maxParticipants - 1,
       visiblePcFlag: false,
       visibleMobileFlag: false,
+
+      totalUserCount: 0,
     }
   },
 
@@ -102,7 +108,6 @@ export default {
       this.visibleFlag = flag
     },
   },
-
   methods: {
     reset() {
       this.selection = []
@@ -173,6 +178,12 @@ export default {
   },
 
   /* Lifecycles */
+  mounted() {
+    this.$eventBus.$on('update::selectedgroupid', this.getGroupMembers)
+  },
+  beforeDestroy() {
+    this.$eventBus.$off('update::selectedgroupid', this.getGroupMembers)
+  },
 }
 </script>
 

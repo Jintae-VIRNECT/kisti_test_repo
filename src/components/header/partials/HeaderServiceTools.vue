@@ -12,10 +12,9 @@
 
     <speaker></speaker>
 
-    <!-- 서비스 반응형 추가 후 props 제거 -->
-    <notice v-if="isNotGuest" fixSize="2.429rem" fixSrc tempClass></notice>
+    <notice v-if="isNotGuest"></notice>
 
-    <call-time></call-time>
+    <call-time :callTime="callTime"></call-time>
 
     <button class="header-tools__leave" @click.once="leave">
       {{ $t('button.leave') }}
@@ -47,6 +46,11 @@ export default {
     Chat,
     SpotControl,
   },
+  props: {
+    callTime: {
+      type: Number,
+    },
+  },
   data() {
     return {
       hideStream: false,
@@ -75,9 +79,11 @@ export default {
     },
   },
   methods: {
+    //모바일인 경우 ServiceMobileHeader에서 처리된다(동일함수)
+    // this.$call.leave() 는 ServiceLayout.vue의 beforeRouteLeave에서 처리된다
     leave() {
       try {
-        this.$call.leave()
+        // this.$call.leave()
 
         if (this.account.roleType === ROLE.GUEST) {
           window.history.back()

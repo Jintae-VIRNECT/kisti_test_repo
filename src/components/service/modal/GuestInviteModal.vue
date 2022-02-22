@@ -1,92 +1,91 @@
 <template>
-  <modal
-    :visible.sync="visibleFlag"
-    :showClose="true"
-    width="39.4286rem"
-    height="30rem"
-    :beforeClose="beforeClose"
-    class="service-guest-invite"
-    :title="$t('service.guest_invite_url')"
-  >
-    <div class="guest-invite">
-      <div class="guest-invite__header">
-        <img src="~assets/image/call/ic_link.svg" alt="link" />
-        <p>{{ $t('service.guest_invite_with_url') }}</p>
-      </div>
+  <div>
+    <modal
+      :visible.sync="visiblePcFlag"
+      :showClose="true"
+      width="39.4286rem"
+      height="30rem"
+      :beforeClose="beforeClose"
+      class="service-guest-invite"
+      :title="$t('service.guest_invite_url')"
+    >
+      <div class="guest-invite">
+        <label-input-button
+          label="inviteUrl"
+          :inputText.sync="inviteUrl"
+          :iconImgPath="require('assets/image/call/ic_link.svg')"
+          :title="$t('service.guest_invite_with_url')"
+          :buttonText="$t('button.copy_url')"
+          @buttonClick="copyUrl"
+          isButtonPrimaryColor
+          isInputReadOnly
+          useButton
+        >
+        </label-input-button>
 
-      <figure class="guest-invite__input-url border-bottom">
-        <input
-          v-model="inviteUrl"
-          class="input"
-          ref="inviteUrl"
-          aria-label="inviteUrl"
-          readonly
-        />
-        <button class="btn copy-url" @click="copyUrl">
-          {{ $t('button.copy_url') }}
-        </button>
-      </figure>
+        <hr class="guest-invite--divider" />
 
-      <hr class="guest-invite--divider" />
-
-      <div class="guest-invite__header">
-        <img src="~assets/image/call/ic_mail.svg" alt="mail" />
-        <p>{{ $t('service.guest_invite_send_email') }}</p>
-      </div>
-      <figure class="guest-invite__input-url">
-        <input
-          v-model="emailAddress"
-          class="input"
-          ref="emailAddress"
-          aria-label="emailAddress"
+        <label-input-button
+          label="emailAddress"
+          :inputText.sync="emailAddress"
+          :iconImgPath="require('assets/image/call/ic_mail.svg')"
+          :title="$t('service.guest_invite_send_email')"
+          :buttonText="$t('button.send_email')"
+          :linkHref="mailToLink('mailto')"
+          @buttonClick="send"
           :placeholder="
             $t('service.guest_invite_email_please_input_email_address')
           "
-        />
-
-        <a
-          v-if="isOnpremise"
-          class="btn send-email mail-to"
-          :href="mailToLink('mailto')"
-          target="_blank"
+          :useButton="!isOnpremise"
         >
-          {{ $t('button.send_email') }}</a
-        >
-        <button v-else class="btn send-email" @click="send">
-          {{ $t('button.send_email') }}
-        </button>
-      </figure>
-    </div>
-    <template v-slot:footer>
-      <footer class="guest-invite__footer">
-        <img
-          slot="body"
-          guide
-          class="setting__tooltip--icon"
-          src="~assets/image/ic_tool_tip_grey.svg"
-        />
-        <p>{{ $t('service.guest_invite_description') }}</p>
-      </footer>
-    </template>
-  </modal>
+        </label-input-button>
+      </div>
+      <template v-slot:footer>
+        <footer class="guest-invite__footer">
+          <img
+            slot="body"
+            guide
+            class="setting__tooltip--icon"
+            src="~assets/image/ic_tool_tip_grey.svg"
+          />
+          <p>{{ $t('service.guest_invite_description') }}</p>
+        </footer>
+      </template>
+    </modal>
+    <mobile-guest-invite-modal
+      :visible.sync="visibleMobileFlag"
+      :beforeClose="beforeClose"
+      :inviteUrl.sync="inviteUrl"
+      :emailAddress.sync="emailAddress"
+      :linkHref="mailToLink('mailto')"
+      @copyUrl="copyUrl"
+      @send="send"
+    >
+    </mobile-guest-invite-modal>
+  </div>
 </template>
 
 <script>
 import Modal from 'Modal'
 
 import toastMixin from 'mixins/toast'
+import responsiveModalVisibleMixin from 'mixins/responsiveModalVisible'
 
 import { sendEmail } from 'api/http/mail'
 
 import { mapGetters } from 'vuex'
+import MobileGuestInviteModal from './MobileGuestInviteModal'
+import LabelInputButton from './partials/LabelInputButton'
 
 import { validEmail } from 'utils/regexp.js'
 
 export default {
   name: 'GuestInviteModal',
-  mixins: [toastMixin],
+  mixins: [toastMixin, responsiveModalVisibleMixin],
   components: {
     Modal,
+    MobileGuestInviteModal,
+    LabelInputButton,
   },
   props: {
     visible: {
@@ -115,6 +114,7 @@ export default {
       if (flag) {
         this.inviteUrl = this.getInviteUrl('web')
       }
+      this.setVisiblePcOrMobileFlag(flag)
     },
   },
   methods: {
@@ -220,77 +220,6 @@ export default {
     font-size: 0.9286rem;
   }
 }
-
-.guest-invite__input-url {
-  display: flex;
-  align-items: center;
-  width: 35.1429rem;
-  height: 3.4286rem;
-  padding: 0.9286rem 0rem 0.9286rem 1.1429rem;
-  color: #fff;
-  font-size: 1em;
-  background-color: #1a1a1b;
-  border: solid 1px #303030;
-  border-radius: 3px;
-  &::placeholder {
-    color: rgba(#979fb0, 0.7);
-  }
-
-  & > input {
-    width: 26.2143rem;
-    height: 1.4286rem;
-    overflow-y: hidden;
-    color: #fff;
-    font-weight: normal;
-    font-size: 1rem;
-    letter-spacing: 0px;
-    background-color: #1a1a1b;
-    border: none;
-    outline: none;
-    resize: none;
-  }
-  &::placeholder {
-    color: rgba(#979fb0, 0.7);
-  }
-  &:hover {
-    border: solid 1px #585858;
-  }
-  &:focus-within {
-    border: solid 1px $color_primary;
-  }
-
-  .btn {
-    width: 7rem;
-    height: 2.5714rem;
-    padding: 0;
-    color: #ffffff;
-    font-weight: 500;
-    font-size: 0.9286rem;
-    border-radius: 2px;
-
-    &.send-email {
-      padding: 0;
-      line-height: 1.0714rem;
-      white-space: normal;
-      background: #616872;
-      border-radius: 2px;
-
-      &:hover {
-        background: #494c5b;
-      }
-
-      &:active {
-        background-color: $color_darkgray_400;
-      }
-    }
-
-    &.mail-to {
-      padding: 0.5714rem;
-      text-align: center;
-    }
-  }
-}
-
 .guest-invite--divider {
   width: 100%;
   margin-top: 2.0714rem;
@@ -299,13 +228,5 @@ export default {
   border-right: none;
   border-bottom: none;
   border-left: none;
-}
-
-.guest-invite__header {
-  display: flex;
-  margin-bottom: 0.7857rem;
-  > p {
-    margin-left: 0.5714rem;
-  }
 }
 </style>

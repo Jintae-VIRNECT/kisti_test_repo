@@ -147,3 +147,78 @@
   bottom: 0;
   width: 100%;
 }
+
+@include responsive-mobile {
+  .service-mobile-inviteroom-modal.fullscreen-modal {
+    z-index: 102;
+    .fullscreen-modal--body {
+      display: flex;
+    }
+
+    h1 {
+      @include fontLevel(200);
+      color: $new_color_text_main;
+    }
+
+    .createroom-user {
+      height: 100%;
+    }
+
+    .createroom-user__title > .selected-status {
+      margin-left: 0.8rem;
+      @include fontLevel(150);
+      color: $new_color_text_blue;
+    }
+
+    .btn.mobile-inviteroom__button {
+      min-height: 4.8rem;
+      margin: 0 1.6rem 1.6rem;
+      color: $new_color_text_main;
+      background-color: $new_color_bg_button_primary;
+      border-radius: 0.4rem;
+      @include fontLevel(200);
+      &:disabled {
+        opacity: 0.4;
+      }
+    }
+  }
+
+  .mobile-inviteroom__selected {
+    position: relative;
+    border-bottom: 6px solid $new_color_sub_border;
+
+    .selected-header {
+      display: flex;
+      align-items: center;
+      padding: 1.6rem;
+      h1 {
+        margin-right: 0.8rem;
+        opacity: 0.8;
+      }
+      .user-list-toggle-btn {
+        position: absolute;
+        top: 1.6rem;
+        right: 2rem;
+        width: 2.4rem;
+        height: 2.4rem;
+        background: url(~assets/image/ic_dropdown_20.svg) 50% no-repeat;
+        background-size: 120%;
+        transition: 0.3s;
+
+        &.off {
+          transform: rotate(180deg);
+        }
+      }
+    }
+    .profilelist {
+      padding: 0 1rem 1.6rem 1.35rem;
+      .profilelist-user {
+        margin: 0 0.5rem;
+      }
+      .profilelist-user__image {
+        margin: 0 0.85rem;
+        overflow: visible;
+      }
+    }
+  }
+}

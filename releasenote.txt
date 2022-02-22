@@ -1,11 +1,13 @@
-RELEASE v2.4.8.10
+RELEASE v2.5.1.5
 
 ### New Features
+- 모바일 반응형 추가
+- ar 3d 오브젝트 공유 기능 추가
+- 홀로렌즈 ar 기능 지원 (3d 오브젝트 공유 기능만)
+- PC 협업보드 종료 버튼 추가
 ### Bug Fixes
-- 협업보드 캐시파일 cors 이슈 수정, pdf/이미지 구분 처리
 ### Improvement
+- 협업보드 파일 업로드 중 스피너 추가
 ### UI
 ### Limitation
 ### Chore
-
-Copyright (C) 2021, VIRNECT CO., LTD. - All Rights Reserved

@@ -140,7 +140,9 @@
     opacity: 0.8;
     .createroom-user__number {
       @include fontLevel(50);
-      margin-top: 0.2rem;
+      padding-top: 0.3rem;
+      padding-bottom: 0.3rem;
+      color: $new_color_text_main;
       background-color: $new_color_bg_icon;
     }
   }

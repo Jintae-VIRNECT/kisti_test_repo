@@ -17,7 +17,7 @@
     </vue2-scrollbar>
     <div v-else class="chat-list__empty">
       <div class="chat-list__empty-inner">
-        <img src="~assets/image/img_nofile.svg" />
+        <img :src="noFileImgSrc" />
         <p>{{ $t('common.no_sharing_file') }}</p>
       </div>
     </div>
@@ -60,6 +60,10 @@ export default {
   },
   computed: {
     ...mapGetters(['view', 'roomInfo']),
+    noFileImgSrc() {
+      if (this.isMobileSize) return require('assets/image/img_nofile_new.svg')
+      else return require('assets/image/img_nofile.svg')
+    },
   },
   watch: {
     show(val) {

@@ -138,6 +138,7 @@ const getDefaultState = () => {
     myTempStream: null, //MediaStream
     screenSharing: false,
     fileShareEventQueue: [], //이벤트가 누락되는 것을 방지하기 위해 이벤트를 저장하는 LIST, 큐처럼 첫번째 요소부터 순차적으로 item을 사용
+    arEventQueue: [],
   }
 }
 
@@ -358,6 +359,20 @@ const mutations = {
   addFileShareEvent(state, eventData) {
     state.fileShareEventQueue.push(eventData)
   },
+  addArEvent(state, eventData) {
+    state.arEventQueue.push(eventData)
+  },
+  updateMyInfo(state, param) {
+    for (let key in param) {
+      if (key in state.participants[0] && param[key] !== null) {
+        if (key === 'connectionId') continue
+        state.participants[0][key] = param[key]
+        if (state.participants[0].id === state.mainView.id) {
+          state.mainView[key] = param[key]
+        }
+      }
+    }
+  },
 }
 
 const actions = {
@@ -403,6 +418,7 @@ const getters = {
   myTempStream: state => state.myTempStream,
   screenSharing: state => state.screenSharing,
   fileShareEventQueue: state => state.fileShareEventQueue,
+  arEventQueue: state => state.arEventQueue,
 }
 
 export default {

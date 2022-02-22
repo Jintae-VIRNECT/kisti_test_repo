@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="16px" height="16px" viewBox="0 0 16 16" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>mdpi/icon_3D_object</title>
+    <g id="3D-Object-공유" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="3DO_0510-_채팅-알림_공통-" transform="translate(-89.000000, -225.000000)">
+            <g id="Group-2" transform="translate(16.000000, 114.000000)">
+                <g id="notifi15" transform="translate(73.000000, 109.000000)">
+                    <g id="Group-3" transform="translate(0.000000, 2.000000)">
+                        <rect id="tr14" opacity="0.410109747" x="0" y="0" width="16" height="16"></rect>
+                        <g id="icon/av/airplay_24px-2" fill="#868C94" fill-rule="nonzero">
+                            <path d="M13,4.48 L8.6,1.936 C8.232,1.72 7.768,1.72 7.4,1.936 L3,4.48 C2.632,4.696 2.4,5.088 2.4,5.52 L2.4,10.6 C2.4,11.032 2.632,11.424 3,11.64 L7.4,14.184 C7.768,14.4 8.232,14.4 8.6,14.184 L13,11.64 C13.368,11.424 13.6,11.032 13.6,10.6 L13.6,5.52 C13.6,5.088 13.368,4.696 13,4.48 Z M4,10.368 L4,6.672 L7.2,8.528 L7.2,12.216 L4,10.368 L4,10.368 Z M8,7.144 L4.8,5.288 L8,3.44 L11.2,5.288 L8,7.144 Z M8.8,12.216 L8.8,8.528 L12,6.672 L12,10.368 L8.8,12.216 Z M4,0 L1.2,0 C0.536,0 0,0.536 0,1.2 L0,4 L1.6,4 L1.6,1.6 L4,1.6 L4,0 Z M12,0 L14.8,0 C15.464,0 16,0.536 16,1.2 L16,4 L14.4,4 L14.4,1.6 L12,1.6 L12,0 Z M4,16 L1.2,16 C0.536,16 0,15.464 0,14.8 L0,12 L1.6,12 L1.6,14.4 L4,14.4 L4,16 Z M12,16 L14.8,16 C15.464,16 16,15.464 16,14.8 L16,12 L14.4,12 L14.4,14.4 L12,14.4 L12,16 Z" id="Shape"></path>
+                        </g>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

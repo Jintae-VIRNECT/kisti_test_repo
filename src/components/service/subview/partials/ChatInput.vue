@@ -35,7 +35,7 @@
       />
       <template v-if="fileList.length === 0">
         <button
-          v-if="translate.flag"
+          v-if="isSttBtnVisible"
           class="chat-input__form-speech"
           @click="doStt"
         >
@@ -88,6 +88,7 @@ import { uploadFile } from 'api/http/file'
 
 import errorMsgMixin from 'mixins/errorMsg'
 import toastMixin from 'mixins/toast'
+import { fileTypesExceptVideoRelation } from 'utils/fileTypes'
 
 export default {
   name: 'ChatInput',
@@ -114,12 +115,15 @@ export default {
       'useStorage',
     ]),
     inputAccept() {
-      //타블렛은 비디오 업로드 불가능하게 제한 - 카메라 이슈 있음
-      if (this.isTablet) {
-        return 'image/*'
+      //모바일 사파리에서 비디오 촬영 진입시 이슈 발생하여 video, audio type은 파일 타입에서 제외
+      if (this.isMobileDevice && this.isSafari) {
+        return fileTypesExceptVideoRelation()
       } else {
-        return '.*'
+        return '*.*'
       }
+    },
+    isSttBtnVisible() {
+      return this.translate.flag && !this.isMobileSize
     },
   },
   watch: {
@@ -142,7 +146,7 @@ export default {
       if (this.inputText.length > 200) {
         this.inputText = this.inputText.substr(0, 200)
         this.toastDefault(this.$t('service.chat_text_exceed'), {
-          position: this.isTablet ? 'bottom-center' : 'top-center',
+          position: this.isMobileDevice ? 'bottom-center' : 'top-center',
         })
       }
     },

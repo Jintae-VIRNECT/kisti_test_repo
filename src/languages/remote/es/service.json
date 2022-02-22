@@ -112,7 +112,7 @@
 	"setting_record_target": "Objetivo de grabación",
 	"setting_record_max_time": "Tiempo máximo de grabación",
 	"setting_record_interval": "Intervalo máximo de grabación",
-	"setting_record_time_tooltip": "Crear archivos de grabación local prolongadamente puede causar sobrecarga en su PC por lo cual recomendamos fijar intervalos de tiempo para crear archivos de grabación.",
+	"setting_record_time_tooltip": "Crear archivos de grabación <br /> local prolongadamente puede causar <br /> sobrecarga en su PC por lo cual recomendamos <br /> fijar intervalos de tiempo para crear archivos de grabación.",
 	"setting_record_resolution": "Resolución de grabación",
 	"setting_record_resolution_tooltip": "En caso de la resolución es de 720p (HD) o superior, el servicio puede interrumpirse, dependiendo del rendimiento de su PC. ",
 	"setting_server_record": "Configurar el servidor de grabación",
@@ -141,14 +141,26 @@
 	
 	"ar_capute": "Captura de AR",
 	"ar_pointing": "Pointing de AR",
+	"ar_3d": "Contenido 3D",
 	"ar_area": "Configuración de área RA",
 	"ar_area_description": "Configuración de área RA",
 	"ar_pointing_max": "Toque el lugar en el que quiere con la flecha 3D de RA. Puede crear hasta 30 flechas.",
+	"chat_ar_3d_start": "Inicie el modo de contenido 3D.",
+	"ar_3d_start":"Inicie el modo de contenido 3D. Seleccione un archivo de la lista de archivos.",
+	"ar_3d_converting":"La conversión del archivo cargado está en curso.<br/>Por favor intente otra vez más tarde.",
+	"ar_3d_position_pick":"Haga clic en el video para enviar el contenido 3D a la ubicación deseada.",
+	"ar_3d_loading_toast":"No se puede mover a otro menú mientras se está emitiendo contenido 3D.",
+	"ar_3d_loading_header_title": "Generando contenido 3D…",
+	"ar_3d_loading_title":"La salida de contenido 3D<br/>al video del participante está en progreso.",
+	"ar_3d_load_cancel":"Se canceló la salida de contenido 3D.",
+	"ar_3d_exist":"Se está emitiendo contenido.\nElimínelo y vuelva a intentarlo.",
+  "ar_3d_converting_fail":"Error de conversión de archivo.",
 	"ar_area_setting": "Se configura el área RA. Se activa la función RA dentro del área determinada.",
 	"ar_area_success": "El área de RA está configurada. Comience a dibujar en RA.",
 	"ar_drawing_max": "Puede crear hasta 30 objetos.",
 	"ar_exit": "Terminar la creación de tareas en RA.",
 	"ar_exit_description": "Todas las tareas en RA se terminan. <br> ¿Está seguro de que desea terminar?",
+	"ar_requesting_permission":"Solicitando permiso para compartir AR.",
 	
 	"chat": "Chat",
 	"chat_input": "Introduzca su mensaje.",
@@ -182,6 +194,7 @@
 	"file_choice_num": "Seleccionar {number}",
 	"file_remove": "Eliminar archivos",
 	"file_upload": "Subir archivos",
+	"file_upload_mobile_guide": "El botón de carga de archivos en la parte inferior le<br/>permite cargar un archivo para compartir.",
 	"file_upload_maxnum": "Actualmente solo puede subir un archivo a la vez.",
 	"file_upload_maxsize": "Se ha superado el límite de tamaño de archivos adjuntos.",
 	"file_image_notsupport": "No se soporta este formato de imagen.",
@@ -215,6 +228,7 @@
 	
 	"record_server_start_message": "Se inicia la grabación del servidor.",
 	"record_server_start_failed": "No puede iniciar la grabación del servidor. Por favor intente otra vez.",
+	"record_server_end": "Terminar la grabación de servidor",
 	"record_server_end_message": "Se termina la grabación del servidor.",
 	"record_server_over_max_count": "El servidor ha alcanzado el número máximo de vídeos para grabar simultáneamente.\nPor favor intente otra vez más tarde.",
 	"record_server_no_storage": "No hay suficiente espacio para almacenar archivos grabados.\nPor favor póngase en contacto con el administrador. ",
@@ -227,6 +241,7 @@
 	
 	"camera_control": "Control de Cámara",
 	"camera_control_allow": "Permitir Control de Cámara",
+	"camera_control_limit": "Bloqueo de control de cámara",
 	"camera_control_every_on": "Activar todas las cámaras",
 	"camera_control_every_off": "Desactivar todas las cámaras",
 	
@@ -239,6 +254,7 @@
 	"map_cannot_use_gps": "No se puede usar el GPS.",
 	"map_timeout": "Incapaz de verificar la información GPS. Por favor compruebe si el GPS está activado por el participante solicitado.",
 	
+	"spot_control": "Control de Spot",
 	"spot_networ_error": "La conexión con Spot se ha interrumpido debido problemas de la red/servidor.\n¿Quiere conectar de nuevo?",
 	"spot_connecting": "Conectando a Spot…",
 	"spot_reconnecting": "Reconectando a Spot…",
@@ -253,7 +269,9 @@
 	"guest_invite_email_transport_succeed": "La URL de conexión ha sido enviada por correo electrónico.",
 	"guest_invite_email_transport_failed": "El envío de correos electrónicos ha fallado.",
 	"guest_invite_email_please_input_email_address": "Por favor introduzca la dirección de correo electrónico.",
-	"guest_invite_email_validation_failed": "Formato de dirección de correo electrónico incorrecto."
+	"guest_invite_email_validation_failed": "Formato de dirección de correo electrónico incorrecto.",
+
+	"room_exit_question":"¿Seguro que quieres terminar la colaboración?"
 
   }
 }

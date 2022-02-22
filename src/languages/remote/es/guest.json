@@ -6,6 +6,9 @@
 
 	"guest_time_expired_description": "Se alcanzó el límite de tiempo.\nPor favor Solicite de nuevo\n para preparar la conexión.",
 	"guest_license_expired": "No existen planes asignados de acceso al Espcio de trabajo para usuarios no registrados, o todos ya están en uso.",
-	"guest_install_mobile_app_description": "Por favor instale la VIRNECT Remote App.\nDespués de la instalación de la App, seleccione la URL otra vez."
+	"guest_install_mobile_app_description": "Por favor instale la VIRNECT Remote App.\nDespués de la instalación de la App, seleccione la URL otra vez.",
+	"guest_install_mobile_app_download_description": "Si no está instalado, descargue el archivo APK.",
+	"guest_account_deleted_and_request_account_again":"La cuenta de invitado asignada ha sido eliminada.\nSolicite una cuenta accesible nuevamente.",
+	"guest_account_deleted_and_logout":"La cuenta ha sido eliminada.\nDesconectado.​"
   }
 }

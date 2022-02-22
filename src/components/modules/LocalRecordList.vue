@@ -83,6 +83,7 @@ import Modal from 'Modal'
 import RemoteTable from 'RemoteTable'
 import IconButton from 'IconButton'
 import IDBHelper from 'utils/idbHelper'
+import { fileSizeFilter } from 'utils/file'
 import JSZip from 'jszip'
 import FileSaver from 'file-saver'
 import { mapGetters, mapActions } from 'vuex'
@@ -268,16 +269,8 @@ export default {
         return `${hours}${hText} ${minutes}${mText} ${seconds}${sText}`
       }
 
-      const fileSizeRender = size => {
-        const mb = 1048576
-
-        if (size >= mb) {
-          size = size / 1024 / 1024
-          return `${size.toFixed(1)}MB`
-        } else {
-          size = size / 1024
-          return `${size.toFixed(1)}KB`
-        }
+      const fileSizeRender = fileSize => {
+        return fileSizeFilter(fileSize)
       }
 
       renderOpts.push(

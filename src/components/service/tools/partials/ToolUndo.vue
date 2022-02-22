@@ -1,8 +1,9 @@
 <template>
   <tool-button
     :text="$t('service.tool_undo')"
-    :disabled="!isAvailable"
+    :disabled="disabled"
     :active="status"
+    :disableTooltip="disableTooltip"
     :src="require('assets/image/ic-tool-undo.svg')"
     @click.stop="clickHandler"
   ></tool-button>
@@ -10,7 +11,7 @@
 
 <script>
 import toolMixin from './toolMixin'
-import { VIEW, ACTION } from 'configs/view.config'
+import { VIEW } from 'configs/view.config'
 
 export default {
   name: 'ToolUndo',
@@ -18,32 +19,11 @@ export default {
   data() {
     return {
       status: false,
-      available: false,
     }
-  },
-  computed: {
-    isAvailable() {
-      if (this.disabled) {
-        return false
-      } else {
-        return this.available
-      }
-    },
-  },
-  watch: {
-    //협업보드에서 다른 탭 전환 되더라도 undo 버튼을 비활성화하지 않는다.
-    //view() {
-    //this.available = false
-    //},
-    viewAction(val) {
-      if ([ACTION.AR_POINTING, ACTION.AR_DRAWING].includes(val)) {
-        this.available = false
-      }
-    },
   },
   methods: {
     clickHandler() {
-      if (!this.isAvailable) return
+      if (this.disabled) return
       this.status = true
       let listener
       if (this.view === VIEW.DRAWING) {
@@ -56,17 +36,6 @@ export default {
         this.status = false
       }, 100)
     },
-    setAvailable(use) {
-      this.available = use
-    },
-  },
-
-  /* Lifecycling */
-  created() {
-    this.$eventBus.$on(`tool:undo`, this.setAvailable)
-  },
-  beforeDestroy() {
-    this.$eventBus.$off(`tool:undo`, this.setAvailable)
   },
 }
 </script>

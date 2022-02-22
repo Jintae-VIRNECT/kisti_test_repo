@@ -1,10 +1,19 @@
 <template>
   <section class="guest-welcome">
     <div class="guest-welcome__body">
-      <p class="guest-welcome__nickname" v-html="welcomeText"></p>
-      <div class="guest-welcome__name">
-        {{ $t('guest.guest_join_description_2') }}
-      </div>
+      <p
+        v-if="!isExpired"
+        class="guest-welcome__nickname"
+        v-html="welcomeText"
+      ></p>
+      <div
+        class="guest-welcome__name"
+        v-html="
+          isExpired
+            ? $t('guest.guest_time_expired_description')
+            : $t('guest.guest_join_description_2')
+        "
+      ></div>
       <button class="btn join" @click="joinAsGuest" v-html="joinText"></button>
     </div>
   </section>
@@ -14,6 +23,8 @@ import { getGuestRoomInfo } from 'api/http/guest'
 import roomMixin from 'mixins/room'
 import { ROLE } from 'configs/remote.config'
 import { ERROR } from 'configs/error.config'
+import { URLS } from 'configs/env.config'
+
 import auth from 'utils/auth'
 
 const EXPIRE_TIMER = 120 //120초
@@ -46,6 +57,10 @@ export default {
         return this.$t('button.join_sec', { time: this.remainTime })
       }
     },
+    isExpired() {
+      if (this.remainTime <= 0) return true
+      else return false
+    },
   },
   watch: {
     remainTime() {
@@ -53,19 +68,26 @@ export default {
         clearInterval(this.timerId)
       }
     },
+    joinText: {
+      immediate: true,
+      handler(newVal) {
+        this.$emit('joinText', newVal)
+      },
+    },
   },
   methods: {
-    initGuestMember() {
-      this.$eventBus.$emit('initGuestMember')
+    initGuestMember(omitLogout) {
+      this.$eventBus.$emit('initGuestMember', omitLogout)
     },
     resetTimer() {
       this.remainTime = EXPIRE_TIMER
+      if (this.timerId) {
+        clearInterval(this.timerId)
+      }
     },
     async joinAsGuest() {
       if (this.remainTime <= 0) {
-        this.resetTimer()
-        this.initGuestMember()
-        this.startTimer()
+        this.initTimerAndGuestMember()
         return
       }
 
@@ -93,6 +115,19 @@ export default {
               await auth.logout()
             },
           })
+        } else if (err.code === ERROR.AUTHENTICATION_ERROR) {
+          this.confirmDefault(this.$t('guest.guest_license_expired'), {
+            action: async () => {
+              try {
+                //no redirect
+                await auth.logout(false)
+              } catch (err) {
+                console.error(err)
+              } finally {
+                location.href = `${URLS['console']}`
+              }
+            },
+          })
         } else {
           console.error(err)
         }
@@ -103,9 +138,21 @@ export default {
         this.remainTime--
       }, 1000)
     },
+    async initTimerAndGuestMember(reason) {
+      this.resetTimer()
+
+      const omitLogout = reason === 'deleted'
+      this.initGuestMember(omitLogout)
+
+      this.startTimer()
+    },
   },
   mounted() {
     this.startTimer()
+    this.$eventBus.$on('initTimerAndGuestMember', this.initTimerAndGuestMember)
+  },
+  beforeMount() {
+    this.$eventBus.$off('initTimerAndGuestMember', this.initTimerAndGuestMember)
   },
 }
 </script>

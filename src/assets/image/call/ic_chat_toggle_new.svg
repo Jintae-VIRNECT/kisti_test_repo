@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="40px" height="40px" viewBox="0 0 40 40" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>CA4B255F-D06B-493A-BAF3-A2A3A6403A49@1x</title>
+    <defs>
+        <path d="M18,-1.13686838e-13 L2,-1.13686838e-13 C0.9,-1.13686838e-13 0.01,0.9 0.01,2 L0,20 L4,16 L18,16 C19.1,16 20,15.1 20,14 L20,2 C20,0.9 19.1,-1.13686838e-13 18,-1.13686838e-13 Z M16,12 L4,12 L4,10 L16,10 L16,12 Z M14,9 L4,9 L4,7 L14,7 L14,9 Z M16,6 L4,6 L4,4 L16,4 L16,6 Z" id="path-1"></path>
+        <filter x="-15.0%" y="-15.0%" width="130.0%" height="130.0%" filterUnits="objectBoundingBox" id="filter-2">
+            <feOffset dx="0" dy="0" in="SourceAlpha" result="shadowOffsetOuter1"></feOffset>
+            <feGaussianBlur stdDeviation="1" in="shadowOffsetOuter1" result="shadowBlurOuter1"></feGaussianBlur>
+            <feColorMatrix values="0 0 0 0 0   0 0 0 0 0   0 0 0 0 0  0 0 0 0.2 0" type="matrix" in="shadowBlurOuter1"></feColorMatrix>
+        </filter>
+    </defs>
+    <g id="Remote_Main_Mobile" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Icon" transform="translate(-766.000000, -874.000000)">
+            <g id="40-x-40" transform="translate(36.000000, 818.000000)">
+                <g id="ic_collabo_Chat" transform="translate(720.000000, 46.000000)">
+                    <g id="ic_collabo_gnb_chat" transform="translate(10.000000, 10.000000)">
+                        <rect id="top_icon_chat" opacity="0.495814732" x="0" y="0" width="40" height="40"></rect>
+                        <g id="icn" opacity="0.96" transform="translate(10.000000, 11.000000)" fill-rule="nonzero">
+                            <g id="Shape">
+                                <use fill="black" fill-opacity="1" filter="url(#filter-2)" xlink:href="#path-1"></use>
+                                <use fill="#FFFFFF" xlink:href="#path-1"></use>
+                            </g>
+                        </g>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

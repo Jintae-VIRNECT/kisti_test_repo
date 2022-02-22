@@ -1,9 +1,9 @@
 <template>
-  <section class="remote-layout">
+  <section class="remote-layout guest">
     <template v-if="serviceMode === 'web'">
       <header-section></header-section>
       <vue2-scrollbar
-        classes="remote-wrapper"
+        classes="remote-wrapper guest"
         ref="wrapperScroller"
         :onMaxScroll="handleMaxScroll"
       >
@@ -44,7 +44,6 @@ import GuestMobile from './GuestMobile'
 import DeviceDenied from '../workspace/modal/WorkspaceDeviceDenied'
 
 import auth, { setTokensToCookies } from 'utils/auth'
-
 import { initAudio } from 'plugins/remote/tts/audio'
 
 export default {
@@ -85,38 +84,52 @@ export default {
   methods: {
     ...mapActions(['setCompanyInfo', 'updateAccount', 'changeWorkspace']),
 
-    async initGuestMember() {
-      await auth.logout(false)
+    async initGuestMember(omitLogout = false) {
+      try {
+        if (!omitLogout) {
+          //no redirect
+          await auth.logout(false)
+        }
 
-      const guestInfo = await getGuestInfo({ workspaceId: this.workspaceId })
+        const guestInfo = await getGuestInfo({ workspaceId: this.workspaceId })
 
-      if (guestInfo.uuid === null) {
-        throw { code: ERROR.GUEST_USER_NOT_FOUND }
+        if (guestInfo.uuid === null) {
+          this.showGuestExpiredAlarm()
+          return
+        }
+
+        this.updateAccount({
+          ...guestInfo,
+          roleType: ROLE.GUEST,
+        })
+
+        setTokensToCookies(guestInfo)
+
+        const wsInfo = await getWorkspaceInfo({ workspaceId: this.workspaceId })
+
+        this.changeWorkspace(wsInfo)
+
+        this.checkCompany(guestInfo.uuid, this.workspaceId)
+
+        await auth.init()
+
+        auth.initAuthConnection(
+          this.workspaceId,
+          this.onDuplicatedRegistration,
+          this.onRemoteExitReceived,
+          this.onForceLogoutReceived,
+          this.onWorkspaceDuplicated,
+          this.onRegistrationFail,
+        )
+      } catch (err) {
+        if (err.code === ERROR.ASSIGNED_GUEST_USER_IS_NOT_ENOUGH) {
+          this.showGuestExpiredAlarm()
+        } else if (err.code === ERROR.GUEST_USER_NOT_FOUND) {
+          this.showGuestExpiredAlarm()
+        } else {
+          console.error(err)
+        }
       }
-
-      this.updateAccount({
-        ...guestInfo,
-        roleType: ROLE.GUEST,
-      })
-
-      setTokensToCookies(guestInfo)
-
-      const wsInfo = await getWorkspaceInfo({ workspaceId: this.workspaceId })
-
-      this.changeWorkspace(wsInfo)
-
-      this.checkCompany(guestInfo.uuid, this.workspaceId)
-
-      await auth.init()
-
-      auth.initAuthConnection(
-        this.workspaceId,
-        this.onDuplicatedRegistration,
-        this.onRemoteExitReceived,
-        this.onForceLogoutReceived,
-        this.onWorkspaceDuplicated,
-        this.onRegistrationFail,
-      )
     },
     async checkCompany(uuid, workspaceId) {
       const res = await getCompanyInfo({
@@ -147,8 +160,15 @@ export default {
     },
     showGuestExpiredAlarm() {
       this.confirmDefault(this.$t('guest.guest_license_expired'), {
-        action: () => {
-          location.href = `${URLS['console']}`
+        action: async () => {
+          try {
+            //no redirect
+            await auth.logout(false)
+          } catch (err) {
+            console.error(err)
+          } finally {
+            location.href = `${URLS['console']}`
+          }
         },
       })
     },
@@ -164,6 +184,13 @@ export default {
     showDeviceDenied() {
       this.showDenied = true
     },
+    scrollToBottom() {
+      this.$nextTick(() => {
+        this.$refs['wrapperScroller'].scrollToY(
+          this.$refs['wrapperScroller'].$el.scrollHeight,
+        )
+      })
+    },
   },
 
   async created() {
@@ -176,9 +203,13 @@ export default {
   },
 
   async mounted() {
+    this.$eventBus.$on('settingTabChanged', this.scrollToBottom)
+
     try {
       //파라미터 유효성 체크
       if (this.workspaceId === undefined || this.sessionId === undefined) {
+        //no redirect
+        await auth.logout(false)
         location.href = `${URLS['console']}`
         console.error('invalid params')
         return
@@ -196,16 +227,11 @@ export default {
         await this.initGuestMember()
       }
     } catch (err) {
-      if (err.code === ERROR.ASSIGNED_GUEST_USER_IS_NOT_ENOUGH) {
-        this.showGuestExpiredAlarm()
-      } else if (err.code === ERROR.GUEST_USER_NOT_FOUND) {
-        this.showGuestExpiredAlarm()
-      } else {
-        console.error(err)
-      }
+      console.error(err)
     }
   },
   beforeDestroy() {
+    this.$eventBus.$off('settingTabChanged', this.scrollToBottom)
     this.$eventBus.$off('initGuestMember', this.initGuestMember)
     this.$eventBus.$off('updateServiceMode', this.updateServiceMode)
     this.$eventBus.$off('devicedenied:show', this.showDeviceDenied)

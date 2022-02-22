@@ -48,7 +48,10 @@
 	"send_email": "发送邮件",
 	"join_sec": "连接({time} 秒)",
 	"request_again": "再次请求",
-	"connect_web": "连接Web"
+	"connect_web": "连接Web",
+	"run_app":"App运行",
+  "previous": "以前的",
+	"create":"生成"
   },
   "date": {
 	"lastday": "[昨天] A",

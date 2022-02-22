@@ -127,3 +127,22 @@ export const resetOrientation = async file => {
     )
   })
 }
+
+/**
+ * 파일 사이즈를 MB표기로 반환
+ *
+ * 0.05MB 이하는 모두 0.1MB로 표기
+ *
+ * @param {Number} size 파일 사이즈(byte)
+ * @returns {String} MB 표기로 변환된 파일 사이즈
+ */
+export const fileSizeFilter = size => {
+  const fiftyKB = 51200 //50KB
+  const dividedByMB = size / 1024 / 1024
+
+  if (size <= fiftyKB) {
+    return `0.1MB`
+  } else {
+    return `${dividedByMB.toFixed(1)}MB`
+  }
+}

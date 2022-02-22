@@ -1,11 +1,25 @@
 <template>
   <div class="drawing-canvas">
-    <canvas id="drawingCanvas" ref="drawingCanvas"></canvas>
-    <canvas id="cursorCanvas"></canvas>
-    <div
-      style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;visibility: hidden"
-    >
-      <canvas id="backCanvas" ref="backCanvas"></canvas>
+    <div class="pinchzoom-layer" ref="pinchzoom-layer">
+      <tooltip
+        v-if="showExitButton"
+        :content="`${$t('service.drawing')} ${$t('button.exit')}`"
+        customClass="drawing-box__exit-btn-tooltip"
+        placement="left"
+      >
+        <button
+          slot="body"
+          class="drawing-box__exit-btn"
+          @click="exitDrawing"
+        ></button>
+      </tooltip>
+      <canvas id="drawingCanvas" ref="drawingCanvas"></canvas>
+      <canvas id="cursorCanvas"></canvas>
+      <div
+        style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;visibility: hidden"
+      >
+        <canvas id="backCanvas" ref="backCanvas"></canvas>
+      </div>
     </div>
   </div>
 </template>
@@ -26,11 +40,21 @@ import DrawingAction from './DrawingAction'
 
 import MixinToast from 'mixins/toast'
 import { hexToRGBA } from 'utils/color'
+import Tooltip from 'Tooltip'
+import PinchZoom from 'pinch-zoom-js'
+
+const MOBILE_FIX_LINE_SIZE = 3
 
 export default {
   name: 'DrawingCanvas',
+  components: {
+    Tooltip,
+  },
   props: {
     file: Object,
+    showExitButton: {
+      type: Boolean,
+    },
   },
   mixins: [
     MixinToast,
@@ -62,12 +86,26 @@ export default {
 
       resizeObserveIntervalId: null,
       parentOffsetWidth: 0,
+
+      pinchZoom: null,
+      //pinchzoom 내 중앙 배치하기 위한 offset
+      offsetX: 0,
+      offsetY: 0,
     }
   },
   computed: {
     ...mapGetters(['tools', 'view', 'viewAction', 'myInfo']),
     uuid() {
       return this.account.uuid
+    },
+  },
+  watch: {
+    viewAction(newVal) {
+      if (newVal === ACTION.DRAWING_LOCK && this.isMobileSize) {
+        if (this.pinchZoom) this.pinchZoom.enable()
+      } else {
+        if (this.pinchZoom) this.pinchZoom.disable()
+      }
     },
   },
   methods: {
@@ -157,7 +195,9 @@ export default {
       if (canvas) {
         //커서를 생성하지만 실제 캔버스 사이즈에 비례한 커서와 브러쉬 사이즈는 캔버스 사이즈가 업데이트 된 후 재 설정된다
         //optimizeCanvasSize함수에서 실제 드로잉 브러쉬와 커서 사이즈가 캔버스 사이즈에 비례하게 계산되어 정해진다.
-        const width = this.tools.lineWidth
+        const width = this.isMobileSize
+          ? MOBILE_FIX_LINE_SIZE
+          : this.tools.lineWidth
 
         // Set custom cursor
         canvas.freeDrawingBrush.width = width
@@ -231,7 +271,65 @@ export default {
       this.receiveRender()
       this.optimizeCanvasSize() //캔버스 사이즈, scale, 브러시, 커서 크기를 명시적으로 초기화/업데이트 한다.
 
+      this.$nextTick(() => this.initPinchZoom())
+
       return this.canvas
+    },
+
+    //pinch zoom 내 canvas에 해당하는 element를 중앙으로 배치하기 위한 offset 값 계산
+    optimizePinchZoomLayer() {
+      const pzContainerEl = document.querySelector('.pinch-zoom-container')
+      const pzLayerEl = document.querySelector('.pinchzoom-layer')
+
+      this.offsetY = (pzContainerEl.clientHeight - pzLayerEl.clientHeight) / 2
+
+      this.offsetX = (pzContainerEl.clientWidth - pzLayerEl.clientWidth) / 2
+
+      //중앙으로 배치되는 offset으로 업데이트
+      pzLayerEl.style.transform = `translate(
+                ${this.offsetX}px,  
+                ${this.offsetY}px)`
+    },
+
+    updatePinchZoomOffset() {
+      this.pinchZoom.initialOffset.x = -this.offsetX
+      this.pinchZoom.offset.x = -this.offsetX
+
+      this.pinchZoom.initialOffset.y = -this.offsetY
+      this.pinchZoom.offset.y = -this.offsetY
+    },
+
+    initPinchZoom() {
+      //이미 pinchzoom 객체가 선언되어 dom이 추가된 경우 재생성 되지 않도록 방지하되, offset만 재계산한다
+      if (document.querySelector('.pinch-zoom-container')) {
+        this.optimizePinchZoomLayer()
+        this.updatePinchZoomOffset() //이미지가 변경되어 이미지 크기가 변경되는 경우, pinchzoom 객체 내에 offset 값을 업데이트 해준다.
+        return
+      }
+
+      const el = this.$refs['pinchzoom-layer']
+      this.pinchZoom = new PinchZoom(el, {
+        minZoom: 1,
+        maxZoom: 5,
+        animationDuration: 0,
+        draggableUnzoomed: false,
+        tapZoomFactor: 2,
+        onZoomEnd: object => {
+          //zoom in 이 되지 않은 상태에서 두개 손가락으로 panning을 하는 경우 이미지가 중앙을 벗어난채로 유지되는 현상이 발생함
+          //zoom in 되지 않은 상태에서 바운더리 벗어나는 현상을 방지하기 위해 아래 로직을 추가하였음
+          if (object.zoomFactor === 1) {
+            //이벤트 콜백에서 실행되는 transform 이후에 원위치로 교정해줘야 하기 떄문에 timeout으로 딜레이를 부여함.
+            setTimeout(() => {
+              document.querySelector(
+                '.pinch-zoom-container',
+              ).firstChild.style.transform = `translate(
+                ${Math.abs(object.initialOffset.x)}px,  
+                ${Math.abs(object.initialOffset.y)}px)`
+            }, 100)
+          }
+        },
+      })
+      this.pinchZoom.disable()
     },
 
     optimizeCanvasSize() {
@@ -267,7 +365,9 @@ export default {
       cursor.setHeight(canvas.getHeight())
 
       //드로잉 굵기를 현재 창 크기에서 캔버스 사이즈 기준으로 계산
-      this.updateCanvasBrushWidth(this.tools.lineWidth)
+      this.updateCanvasBrushWidth(
+        this.isMobileSize ? MOBILE_FIX_LINE_SIZE : this.tools.lineWidth,
+      )
 
       canvas.backgroundImage.set({
         scaleX: canvasSize.scale / scale,
@@ -287,6 +387,10 @@ export default {
     windowResize() {
       this.optimizeCanvasSize()
       this.keepPositionInBounds(this.canvas)
+      if (document.querySelector('.pinch-zoom-container')) {
+        this.optimizePinchZoomLayer()
+        this.updatePinchZoomOffset()
+      }
     },
 
     //드로잉 브러시 lineWidth가 변경될 때마다 실제 브러쉬 크기를 캔버스 사이즈에 비례하여 업데이트하는 함수
@@ -319,6 +423,13 @@ export default {
         this.resizeObserveIntervalId = null
       }
     },
+
+    exitDrawing() {
+      if (this.pinchZoom) {
+        this.pinchZoom.disable()
+      }
+      this.$emit('exitDrawing')
+    },
   },
   /* Lifecycles */
   beforeDestroy() {
@@ -341,6 +452,16 @@ export default {
 </script>
 
 <style lang="scss">
+.drawing-canvas.not-mobile > .pinch-zoom-container > div {
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  margin: auto;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
 .drawing-toolbox {
   position: fixed;
   top: 74px;

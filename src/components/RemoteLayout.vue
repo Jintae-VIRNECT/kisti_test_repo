@@ -34,7 +34,7 @@ export default {
     this.$eventBus.$on('reJoin', () => {
       this.key++
     })
-    if (this.isTablet) {
+    if (this.isMobileDevice) {
       let viewport = document.querySelector('meta[name=viewport]')
       this.attr = viewport.getAttribute('content')
       document.body.onorientationchange = this.viewPointSetting

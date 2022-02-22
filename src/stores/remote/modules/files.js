@@ -14,6 +14,7 @@ import {
   REMOVE_PDF_PAGE,
   SET_CAPTURE,
   CALL_ACTION_SET,
+  SHOW_3D_CONTENT,
 } from '../mutation-types'
 
 const state = {
@@ -24,6 +25,7 @@ const state = {
   shareFile: {},
   shareArImage: {},
   captureFile: {},
+  share3dContent: {},
 }
 
 const mutations = {
@@ -89,6 +91,9 @@ const mutations = {
   },
   [SET_CAPTURE](state, imgInfo) {
     state.captureFile = Object.assign({}, imgInfo)
+  },
+  [SHOW_3D_CONTENT](state, content) {
+    state.share3dContent = Object.assign({}, content)
   },
 }
 
@@ -189,6 +194,7 @@ const getters = {
   shareFile: state => state.shareFile,
   shareArImage: state => state.shareArImage,
   captureFile: state => state.captureFile,
+  share3dContent: state => state.share3dContent,
 }
 
 export default {

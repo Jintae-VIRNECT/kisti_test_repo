@@ -43,7 +43,7 @@ function calcOffset(element) {
 }
 
 const RIGHT_TOLERANCE = 10 //우측 여유 영역
-const TOP_TOLERANCE = 10 //bottom-end 일때 useTopMargin이 true이면 top에 10px 여유추가
+//const TOP_TOLERANCE = 10 //bottom-end 일때 useTopMargin이 true이면 top에 10px 여유추가
 
 export default {
   name: 'Popover',
@@ -109,8 +109,8 @@ export default {
       default: '.remote-layout',
     },
     useTopMargin: {
-      type: Boolean,
-      default: false,
+      type: Number,
+      default: 0,
     },
   },
   data() {
@@ -150,7 +150,7 @@ export default {
       switch (this.trigger) {
         case 'click':
           window.addEventListener('click', this.windowClickHandler)
-          if (this.isTablet) {
+          if (this.isMobileDevice) {
             this.$el.addEventListener('touchstart', this.togglePopover)
           } else {
             this.$el.addEventListener('click', this.togglePopover)
@@ -240,10 +240,8 @@ export default {
           top -= (popover.offsetHeight - reference.offsetHeight) / 2
         }
       }
-      //true시 10px를 추가함.
-      if (this.useTopMargin) {
-        top = top + TOP_TOLERANCE
-      }
+
+      top = top + this.useTopMargin
 
       this.$set(this.style, 'top', top + 'px')
       this.$set(this.style, 'left', left + 'px')
@@ -275,7 +273,7 @@ export default {
       }
     },
     togglePopover(e) {
-      if (this.isTablet) {
+      if (this.isMobileDevice) {
         e.stopPropagation()
       }
       if (true === this.visible) {
@@ -321,7 +319,7 @@ export default {
   position: absolute;
   top: 0;
   left: 0;
-  z-index: 100;
+  z-index: 101;
   min-width: 17.143em;
   overflow: hidden;
   // background-color: #fff;

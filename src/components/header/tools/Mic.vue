@@ -1,5 +1,5 @@
 <template>
-  <tooltip :content="`${$t('common.mic')} on/off`">
+  <tooltip :active="tooltipActive" :content="`${$t('common.mic')} on/off`">
     <toggle-button
       slot="body"
       customClass="toggle-header mic"
@@ -30,6 +30,10 @@ export default {
     size: {
       type: String,
       default: '2.429rem',
+    },
+    tooltipActive: {
+      type: Boolean,
+      default: true,
     },
   },
   computed: {

@@ -30,6 +30,8 @@
 	"confirm_force_logout_received": "Usted está forzado el cierre de sesión.",
 	"confirm_force_logout_unavailable": "Usted ha entrado en la Colabo y no puede cerrar sesión.",
 	"confirm_video_restrict_join": "[Modo Restricciones de Video] Conectar a la Sala de Colabo.\nLa cámara se puede coltrolar de forma remota por el líder.\nCuando seleccione [Conectar], estará automáticamente acuerdo con el control de cámara.",
+	"confirm_open_room_start": "Crear una sala de Colabo de forma abierta\nsin designar a participantes.",
+	"confirm_leave_service":"Cierre la sesión del servicio.",
 
 	"history": "Historial reciente",
 	"remote": "Colabo Remota",
@@ -97,6 +99,7 @@
 	"setting_stt": "Método de grabación de voz",
 	"setting_stt_sync": "Grabación de voz",
 	"setting_stt_streaming": "Streaming",
+	"setting_stt_safari_warning":"STT no está disponible en la versión actual del navegador Safari. Actualice su sistema operativo a la última versión.",
 	"setting_tts": "Configuración de conversión de voz",
 	"setting_tts_allow": "Permitir la conversión de voz",
 	"setting_translate_disable_message": "Por favor active el uso de traducción.",
@@ -202,6 +205,7 @@
 	"workspace_member_group_member": "Miembros de Favoritos",
 	"workspace_member_group_member_no_selection": "No seleccionar",
 	"workspace_member_group_count_valid":"Seleccione al menos 1 miembro.",
+	"workspace_member_sub_group_etc":"grupo etc",
 
 	"workspace_select": "Seleccionar Espacio de trabajo"
   }

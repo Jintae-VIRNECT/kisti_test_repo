@@ -267,3 +267,135 @@
   margin: auto 0.5rem;
   background-color: rgba($color_white, 0.18);
 }
+
+@include responsive-mobile {
+  .tools {
+    right: 1.6rem;
+    bottom: 50%;
+    left: unset;
+    flex-direction: column;
+    align-items: center;
+    background-color: transparent;
+    border: none;
+    border-radius: 6px;
+    transform: translate(0, 50%);
+
+    > .mobile-tools-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      height: 0;
+      overflow: hidden;
+      background-color: #3d454f;
+      opacity: 0;
+      transition: all 0.3s;
+      &.active {
+        padding-bottom: 6px;
+        opacity: 1;
+        border-top-left-radius: 0.6rem;
+        border-top-right-radius: 0.6rem;
+      }
+      &.drawing.active.leader {
+        height: 28.9rem;
+      }
+      &.drawing.active {
+        height: 24.3rem;
+      }
+      &.stream.active {
+        height: 9.8rem;
+      }
+      &.ar.active {
+        height: 19.6rem;
+      }
+      &.ar-3d.active{
+        height: 5.2rem;
+      }
+      > button {
+        margin-top: 6px;
+      }
+    }
+
+    .ar .division {
+      margin-bottom: 0px;
+    }
+
+    div.division {
+      width: 2.4rem;
+      height: 1px;
+      min-height: 1px;
+      margin-top: 6px;
+    }
+
+    .tooltip {
+      margin-top: 6px;
+    }
+
+    .tooltip > button.tool {
+      width: 4rem;
+      height: 4rem;
+      opacity: 1;
+      &.disabled {
+        opacity: 0.5;
+      }
+
+      > .line-color {
+        width: 2rem;
+        height: 2rem;
+      }
+      > img {
+        object-fit: none;
+      }
+
+      &.active {
+        &::before {
+          width: 3.2rem;
+          height: 3.2rem;
+          background-color: #677280;
+          border-radius: 6px;
+        }
+      }
+    }
+
+    .tools-toggle-btn {
+      width: 4rem;
+      height: 4rem;
+      margin-top: 0;
+      background-color: #121314;
+      border-radius: 6px;
+      transform: rotate(0deg);
+      &.active {
+        //margin-top: 6px;
+        border-bottom-right-radius: 0;
+        border-bottom-left-radius: 0;
+        transform: rotate(180deg);
+      }
+    }
+  }
+
+  .tools > .mobile-ar-tools-btn {
+    margin-top: 8px;
+    background-color: #121314;
+    border-radius: 6px;
+  }
+
+  .drawing .picker--container {
+    top: 57%;
+  }
+
+  .stream .picker--container {
+    top: 0;
+  }
+
+  .ar .picker--container {
+    top: 60%;
+  }
+
+  .picker--container {
+    position: fixed;
+    //top: 57%;
+    left: -180%;
+    .picker--range__guage {
+      margin-top: -2px;
+    }
+  }
+}

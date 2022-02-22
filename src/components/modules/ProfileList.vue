@@ -3,7 +3,7 @@
     <figure
       class="profilelist-user"
       :style="customStyle"
-      v-for="user of showUsers"
+      v-for="(user, idx) of showUsers"
       :key="user.uuid"
     >
       <tooltip :content="user.nickName">
@@ -11,10 +11,17 @@
           <profile
             :image="user.profile"
             :thumbStyle="{ width: size, height: size }"
-            :remove="remove"
+            :remove="isRemoveActive(user)"
             @remove="onRemove(user)"
             :status="accessType(user.accessType)"
           ></profile>
+          <button
+            v-if="isRemoveActive(user) === false"
+            class="kickout-btn"
+            @click="kickout(user, idx)"
+          >
+            {{ $t('button.kickout') }}
+          </button>
         </div>
         <!-- <img
           class="profilelist-user__image"
@@ -124,6 +131,9 @@ export default {
     },
   },
   methods: {
+    isRemoveActive(user) {
+      return this.remove && !user.currentInvited
+    },
     onRemove(user) {
       this.$emit('remove', user)
     },
@@ -132,6 +142,9 @@ export default {
         if (accessType) return accessType.toLowerCase()
         return ''
       } else return null
+    },
+    kickout(participant, idx) {
+      this.$emit('kickout', { participant, idx })
     },
   },
 }
@@ -181,6 +194,9 @@ export default {
     width: 2.571em;
     height: 2.571em;
   }
+  .kickout-btn {
+    display: none;
+  }
 }
 .profilelist-user__nickname {
   display: none;
@@ -213,6 +229,27 @@ export default {
     width: 4.3rem;
     height: 4.3rem;
     background-color: $new_color_bg_sub;
+    .kickout-btn {
+      position: absolute;
+      top: 0;
+      left: 0;
+      display: block;
+      width: 1.429em;
+      height: 1.429em;
+      background-color: #ff3939;
+      border-radius: 50%;
+      @include ir;
+      &:after {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 0.714em;
+        height: 1px;
+        background-color: #fff;
+        transform: translate(-50%, -50%);
+        content: '';
+      }
+    }
   }
   .profilelist-user__nickname {
     display: block;

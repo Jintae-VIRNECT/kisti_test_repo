@@ -2,11 +2,13 @@
 import {
   SETTINGS,
   TOGGLE_CHAT,
+  SET_CHAT_ACTIVE,
   ALLOW_RESET,
   SET_SPOT_FULLSCREEN,
 } from '../mutation-types'
 import { RECORD_TARGET } from 'utils/recordOptions'
 import { resolution } from 'utils/settingOptions'
+import { FLASH as FLASH_STATUS } from 'configs/device.config'
 
 const state = {
   mic: {
@@ -23,6 +25,7 @@ const state = {
     quality: '720',
     fps: 30,
   },
+  flash: FLASH_STATUS.FLASH_NONE,
   localRecordInfo: {
     time: '60',
     interval: '1',
@@ -51,12 +54,16 @@ const state = {
   serverRecordStatus: 'STOP', // 'WAIT', 'START', 'STOP', 'PREPARE'
 
   chatBox: false,
+  chatActive: false,
 
   isSpotFullscreen: false,
   autoServerRecord: false,
 }
 
 const mutations = {
+  [SETTINGS.SET_FLASH_DEVICE](state, flash) {
+    state.flash = flash
+  },
   [SETTINGS.SET_MIC_DEVICE](state, mic) {
     Object.assign(state.mic, mic)
   },
@@ -118,6 +125,10 @@ const mutations = {
     state.chatBox = flag
   },
 
+  [SET_CHAT_ACTIVE](state, active) {
+    state.chatActive = active
+  },
+
   [SET_SPOT_FULLSCREEN](state, isFullscreen) {
     state.isSpotFullscreen = isFullscreen
   },
@@ -130,6 +141,7 @@ const getters = {
   mic: state => state.mic,
   speaker: state => state.speaker,
   video: state => state.video,
+  flash: state => state.flash,
   localRecord: state => state.localRecordInfo,
   serverRecord: state => state.serverRecordInfo,
   allowLocalRecord: state => state.allow.localRecord,
@@ -153,6 +165,7 @@ const getters = {
   },
 
   chatBox: state => state.chatBox,
+  chatActive: state => state.chatActive,
 
   isSpotFullscreen: state => state.isSpotFullscreen,
 

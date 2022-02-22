@@ -65,4 +65,47 @@
   }
   &.screen {
   }
+  .mobile-stt-layer{
+    display: none;
+  }
+}
+
+@include responsive-mobile {
+  .service-wrapper.remote-wrapper {
+    height: 100%;
+    margin-top: 0;
+  }
+
+  .main-wrapper {
+    height: 100%;
+    margin-bottom: 0;
+
+    &.shareview {
+      width: 100%;
+      margin-left: 0;
+    }
+  }
+
+  .main-body > .mobile-stt-layer{
+      display: block;
+      z-index: 3;
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left:0;
+      right: 0;
+      background-color: rgba(#121314, 0.6);
+      opacity: 0;
+      transition: opacity 0.3s;
+      pointer-events: none;
+
+      &.active{
+        opacity: 1;
+        pointer-events: all;
+      }
+
+      .chat-speech{
+        position: absolute;
+      }
+  }
 }

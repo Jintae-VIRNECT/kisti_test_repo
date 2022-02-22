@@ -4,9 +4,11 @@
     "guest_join_description_2": "制限時間内に接続してください。​​",
 
 
-    "guest_time_expired_description": "制限時間が終了しました。\n接続の準備をするには、再要求を選択してください。",
+    "guest_time_expired_description": "制限時間が終了しました。<br/>接続の準備をするには、再要求を選択してください。",
     "guest_license_expired":"接続ワークスペースに非会員の接続用プランが割り当てられていないか、または両方を使用しています。​",
     "guest_install_mobile_app_description":"VIRNECT Remote Appを下の[App実行]ボタンを押して実行してください。​",
-    "guest_install_mobile_app_download_description":"インストールされていない場合はAPKファイルをダウンロードしてください。"
+    "guest_install_mobile_app_download_description":"インストールされていない場合はAPKファイルをダウンロードしてください。",
+    "guest_account_deleted_and_request_account_again":"割り当てられたゲストアカウントが削除されました。\nアクセス可能なアカウントを再リクエストしてください。",
+    "guest_account_deleted_and_logout":"アカウントが削除されました。\nログアウトされます。"
   }
 }

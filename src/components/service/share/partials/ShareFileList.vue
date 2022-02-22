@@ -28,44 +28,45 @@
             :fileInfo="file"
           ></sharing-image>
         </template>
+        <!-- 업로드 로딩 역할 -->
+        <sharing-file-spinner
+          v-if="uploadingFileName"
+          :fileName="uploadingFileName"
+        ></sharing-file-spinner>
       </ol>
     </vue2-scrollbar>
   </div>
 </template>
 
 <script>
-import { mapActions, mapGetters } from 'vuex'
+import { mapActions } from 'vuex'
 import SharingImage from './SharingImage'
 import SharingPdf from './SharingPdf'
+import SharingFileSpinner from './SharingFileSpinner'
 
-import toastMixin from 'mixins/toast'
-import errorMsgMixin from 'mixins/errorMsg'
+import shareFileUploadMixin from 'mixins/shareFileUpload'
+import fileShareEventQueueMixin from 'mixins/fileShareEventQueue'
 
-import { drawingUpload, drawingList, drawingDownload } from 'api/http/drawing'
+import { remoteFileList, remoteFileDownload } from 'api/http/drawing'
 
-import { SIGNAL, DRAWING } from 'configs/remote.config'
-import { ERROR } from 'configs/error.config'
+import { SIGNAL, DRAWING, FILE_TYPE } from 'configs/remote.config'
 
 import { isOverflowY } from 'utils/element.js'
-import { resetOrientation } from 'utils/file'
-import { setQueueAct } from 'plugins/remote/call/RemoteSessionEventListener'
 
-const maxFileSize = 1024 * 1024 * 20
 export default {
   name: 'ShareFileList',
-  mixins: [toastMixin, errorMsgMixin],
+  mixins: [shareFileUploadMixin, fileShareEventQueueMixin],
   components: {
     SharingImage,
     SharingPdf,
+    SharingFileSpinner,
   },
   data() {
     return {
+      uploadingFileName: '',
       sharingList: [],
       cbGetFileList: () => {},
     }
-  },
-  computed: {
-    ...mapGetters(['roomInfo', 'fileShareEventQueue']),
   },
   watch: {
     sharingList(val, oldVal) {
@@ -80,21 +81,6 @@ export default {
         })
       }
     },
-    //해당 component 생성 전에 발생했던 이벤트를 vuex에 저장해두고 처리한다.
-    fileShareEventQueue: {
-      immediate: true,
-      handler(newVal) {
-        if (newVal.length) {
-          //해당 component에 created에서 이벤트버스 리스너가 활성화된 후 이벤트를 발생 시킨다
-          this.$nextTick(() => {
-            this.$eventBus.$emit(
-              SIGNAL.DRAWING_FROM_VUEX,
-              this.fileShareEventQueue.shift(), //첫번째 요소부터 실행 시키고, 제거
-            )
-          })
-        } else setQueueAct(false) //큐 안에 데이터를 모두 처리한 후 큐는 비활성화 한다. (정상적으로 시그널데이터를 바로 이벤트로 발생시키도록)
-      },
-    },
   },
   methods: {
     ...mapActions(['addFile', 'addHistory']),
@@ -108,17 +94,18 @@ export default {
     },
     addFileClick(file) {
       if (file) {
-        this.loadFile(file)
+        this.loadFile(file, () => this.getFileList())
       } else {
         this.$refs['uploadFile'].click()
       }
     },
     fileChangeHandler(event) {
       const file = event.target.files[0]
-      this.loadFile(file)
+      this.loadFile(file, () => this.getFileList())
     },
     async getFileList() {
-      const res = await drawingList({
+      const res = await remoteFileList({
+        fileType: FILE_TYPE.SHARE,
         sessionId: this.roomInfo.sessionId,
         workspaceId: this.workspace.uuid,
       })
@@ -126,87 +113,6 @@ export default {
       this.$nextTick(() => {
         this.cbGetFileList()
       })
-    },
-    async loadFile(file) {
-      if (file) {
-        if (file.size > maxFileSize) {
-          this.toastError(this.$t('service.file_maxsize'))
-          this.clearUploadFile()
-          return false
-        }
-
-        const isAcceptable = [
-          'image/jpeg',
-          'image/png',
-          'image/bmp',
-          'image/gif',
-          'application/pdf',
-        ].includes(file.type)
-
-        let res = null
-
-        if (isAcceptable) {
-          //image의 경우 orientation 교정 실행
-          if (
-            ['image/jpeg', 'image/png', 'image/bmp', 'image/gif'].includes(
-              file.type,
-            )
-          ) {
-            const resetedFile = await resetOrientation(file)
-            if (resetedFile) file = resetedFile
-          }
-
-          try {
-            res = await drawingUpload({
-              file: file,
-              sessionId: this.roomInfo.sessionId,
-              userId: this.account.uuid,
-              workspaceId: this.workspace.uuid,
-            })
-
-            if (res.usedStoragePer >= 90) {
-              this.toastError(this.$t('alarm.file_storage_about_to_limit'))
-            } else {
-              this.toastDefault(this.$t('alarm.file_uploaded'))
-            }
-          } catch (err) {
-            switch (err.code) {
-              case ERROR.FILE_EXTENSION_UNSUPPORT: //미지원 파일 확장자
-              case ERROR.FILE_STORAGE_CAPACITY_FULL: //파일 스토리지 용량 초과
-              case ERROR.FILE_ENCRYPTED: //암호화 파일
-                this.showErrorToast(err.code)
-                break
-              default:
-                if (err.code) {
-                  this.toastError(this.$t('confirm.network_error'))
-                }
-            }
-            return false
-          }
-
-          this.$call.sendDrawing(DRAWING.ADDED, {
-            deleted: false, //false
-            expired: false, //false
-            sessionId: res.sesssionId,
-            name: res.name,
-            objectName: res.objectName,
-            contentType: res.contentType, // "image/jpeg", "image/bmp", "image/gif", "application/pdf",
-            size: res.size,
-            createdDate: res.createdDate,
-            expirationDate: res.expirationDate,
-            width: res.width, //pdf 는 0
-            height: res.height,
-          })
-          this.clearUploadFile()
-          this.getFileList()
-        } else {
-          this.toastError(this.$t('service.file_type'))
-          return false
-        }
-      }
-    },
-    clearUploadFile() {
-      this.$refs['uploadFile'].value = ''
     },
     loadPdf(data) {
       if (this.sharingList.length === 0) {
@@ -227,7 +133,7 @@ export default {
           this.loadPdf(data)
           // this.$eventBus.$emit(`loadPdf_${data.objectName}`, data.index + 1)
         } else {
-          const res = await drawingDownload({
+          const res = await remoteFileDownload({
             sessionId: this.roomInfo.sessionId,
             workspaceId: this.workspace.uuid,
             objectName: data.objectName,
@@ -261,10 +167,6 @@ export default {
     this.$eventBus.$off('addFile', this.addFileClick)
     this.$eventBus.$off(SIGNAL.DRAWING_FROM_VUEX, this.fileShare)
     this.$eventBus.$off(SIGNAL.DRAWING, this.fileShare)
-  },
-  destroyed() {
-    //해당 component가 제거되면 다시 queue를 활성화 시키도록한다.
-    setQueueAct(true)
   },
 }
 </script>

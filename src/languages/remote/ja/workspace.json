@@ -30,7 +30,8 @@
     "confirm_force_logout_received": "マスターによって強制的にログアウトされます。",
     "confirm_force_logout_unavailable": "はコラボレーションにアクセスしたため、ログアウトできません。",
     "confirm_video_restrict_join":"[映像制限モード]コラボレーションルームに接続します。\nリーダーによって、リモートでカメラが制御されることがあります。\n[接続]を選択すると、カメラ制御の合意されます。",
-
+    "confirm_open_room_start": "参加者指定しないまま、オープン形で\n協業ルームを生成します。",
+    "confirm_leave_service":"サービスをログアウトします。",
 
     "history": "最近履歴",
     "remote": "リモート協業",
@@ -98,6 +99,7 @@
     "setting_stt": "音声認識方法 (STT)",
     "setting_stt_sync": "音声録音",
     "setting_stt_streaming": "ストリーミング",
+    "setting_stt_safari_warning":"現在のバージョンのSafari Browserでは、STTは使用できません。 OSを最新バージョンにアップデートしてください。",
     "setting_tts": "音声変換設定(TTS)",
     "setting_tts_allow": "音声変換使用許可",
     "setting_translate_disable_message": "翻訳使用をオンにしてください。",
@@ -204,6 +206,7 @@
     "workspace_member_group_member":"コラボグループメンバー",
     "workspace_member_group_member_no_selection" :"選択しない​",
     "workspace_member_group_count_valid":"メンバーを1人以上選択してください。",
+    "workspace_member_sub_group_etc":"等グループ",
 
     "workspace_select":"ワークスペース選択"
   }

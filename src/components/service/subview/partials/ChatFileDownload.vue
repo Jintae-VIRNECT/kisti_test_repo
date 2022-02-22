@@ -59,7 +59,7 @@ export default {
           })
 
           //타블렛 사파리가 파일을 현재 페이지에서 열어버리는 동작을 막기 위함.
-          if (this.isTablet && this.isSafari) {
+          if (this.isMobileDevice && this.isSafari) {
             const usingNewTab = true
             downloadByURL(res, usingNewTab)
           } else {

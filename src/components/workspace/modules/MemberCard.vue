@@ -302,7 +302,7 @@ export default {
     margin-bottom: 0.1rem;
     color: $new_color_text_main;
     white-space: normal;
-    text-align: left;
+    text-align: center;
     text-overflow: ellipsis;
     word-wrap: break-word;
     word-break: break-all;

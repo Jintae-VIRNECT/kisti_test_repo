@@ -4,10 +4,7 @@ import eventListener from './RemoteSessionEventListener'
 
 import { SIGNAL, CONTROL, ROLE, LOCATION } from 'configs/remote.config'
 
-import {
-  FLASH as FLASH_STATUS,
-  CAMERA as CAMERA_STATUS,
-} from 'configs/device.config'
+import { CAMERA as CAMERA_STATUS } from 'configs/device.config'
 
 import { getUserInfo } from 'api/http/account'
 import { logger } from 'utils/logger'
@@ -28,7 +25,11 @@ export const addSessionEventListener = session => {
           event.connection.connectionId,
         ])
         _.sendResolution(null, [event.connection.connectionId])
-        _.sendFlashStatus(FLASH_STATUS.FLASH_NONE, [
+        _.sendFlashStatus(Store.getters['flash'], [
+          event.connection.connectionId,
+        ])
+
+        _.sendBackgroundStatus(Store.getters['isBrowserBackground'], [
           event.connection.connectionId,
         ])
       }
@@ -97,9 +98,7 @@ export const addSessionEventListener = session => {
   session.on('connectionDestroyed', eventListener.connectionDestroyed)
 
   // user leave by system
-  session.on(SIGNAL.SYSTEM, () => {
-    logger('room', 'evict by system')
-  })
+  session.on(SIGNAL.SYSTEM, eventListener.signalEvictedBySystem)
 
   /** 메인뷰 변경 */
 
@@ -145,9 +144,10 @@ export const addSessionEventListener = session => {
   session.on(SIGNAL.AR_POINTING, eventListener.signalArPointing)
 
   /** AR Drawing */
-  session.on(SIGNAL.AR_DRAWING, event => {
-    window.vue.$eventBus.$emit(SIGNAL.AR_DRAWING, event)
-  })
+  session.on(SIGNAL.AR_DRAWING, eventListener.signalArDrawing)
+
+  /** AR 3D Contents */
+  session.on(SIGNAL.AR_3D, eventListener.signalAr3dContent)
 
   /** 위치 정보*/
   session.on(SIGNAL.LOCATION, event => {
@@ -219,7 +219,7 @@ const setUserObject = event => {
     cameraStatus: 'default',
     zoomLevel: 1, // zoom 레벨
     zoomMax: 1, // zoom 최대 레벨
-    flash: 'default', // flash 제어
+    flash: Store.getters['flash'], // flash 지원 여부
     screenShare: false,
     currentWatching: uuid, //현재 자신이 보고있는 참가자 uuid
   }

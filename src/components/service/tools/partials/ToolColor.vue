@@ -5,6 +5,7 @@
       :active="status"
       @click.stop="clickHandler"
       :disabled="disabled"
+      :disableTooltip="disableTooltip"
     >
       <span class="line-color" :style="{ backgroundColor: pick }">{{
         pick

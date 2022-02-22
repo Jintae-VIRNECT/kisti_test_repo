@@ -4,7 +4,7 @@
       class="chat-item__profile"
       v-if="!hideProfile"
       :image="chat.profile"
-      :thumbStyle="{ width: '2.143rem', height: '2.143rem' }"
+      :thumbStyle="profileThumbStyle"
     ></profile>
     <div class="chat-item__body" :class="[chat.type, { hidden: hideProfile }]">
       <div class="chat-item__body--chatbox">
@@ -70,13 +70,13 @@
 
 <script>
 import Profile from 'Profile'
-import FileSaver from 'file-saver'
+
 import linkifyHtml from 'linkifyjs/html'
 import { systemClass, systemText } from './chatUtils'
 import { downloadFile } from 'api/http/file'
 import { mapGetters, mapActions } from 'vuex'
 import { translate as doTranslate } from 'plugins/remote/translate'
-import { downloadByURL } from 'utils/file'
+import { downloadByURL, fileSizeFilter } from 'utils/file'
 import { checkFileType } from 'utils/fileTypes'
 import toastMixin from 'mixins/toast'
 import confirmMixin from 'mixins/confirm'
@@ -99,6 +99,10 @@ export default {
   },
   computed: {
     ...mapGetters(['roomInfo', 'translate']),
+    profileThumbStyle() {
+      if (this.isMobileSize) return { width: '3rem', height: '3rem' }
+      else return { width: '2.143rem', height: '2.143rem' }
+    },
     isTranslate() {
       if (
         this.translateText.length > 0 &&
@@ -226,16 +230,7 @@ export default {
       return chatText ? chatText.replace(/\n/gi, '<br>') : ''
     },
     fileSize() {
-      let size = this.chat.file.size
-      const mb = 1048576
-
-      if (size >= mb) {
-        size = size / 1024 / 1024
-        return `${size.toFixed(1)}MB`
-      } else {
-        size = size / 1024
-        return `${size.toFixed(1)}KB`
-      }
+      return fileSizeFilter(this.chat.file.size)
     },
   },
   methods: {
@@ -249,7 +244,7 @@ export default {
           userId: this.account.uuid,
         })
         //타블렛 사파리가 파일을 현재 페이지에서 열어버리는 동작을 막기 위함.
-        if (this.isTablet && this.isSafari) {
+        if (this.isMobileDevice && this.isSafari) {
           const usingNewTab = true
           downloadByURL(res, usingNewTab)
         } else {

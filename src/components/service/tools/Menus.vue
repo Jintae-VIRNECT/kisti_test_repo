@@ -8,7 +8,7 @@
           :disabled="!hasMainView"
         ></server-record>
       </template>
-      <template v-if="!isSafari && useLocalRecording">
+      <template v-if="!isSafari && !isMobileDevice && useLocalRecording">
         <local-record :disabled="!hasMainView"></local-record>
         <local-record-list></local-record-list>
       </template>
@@ -61,6 +61,7 @@ export default {
     isSettingVisible() {
       if (this.isSafari && !this.isLeader && !this.useTranslate) {
         return false
+        //safari에서는 로컬녹화 설정이 지원되지 않음. 따라서 사파리 브라우저에서 리더가 아니고 번역기능을 사용하지 않으면 세팅창이 필요가 없으므로 visible false
       } else {
         return true
       }

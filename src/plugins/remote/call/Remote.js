@@ -255,6 +255,14 @@ const _ = {
   sendArDrawing: sender.arDrawing,
 
   /**
+   * @TARGET
+   * AR drawing
+   * @param {String} type = remote.config.AR_3D
+   * @param {Object} params (문서참조)
+   */
+  sendAr3dSharing: sender.ar3dContentShare,
+
+  /**
    * @BROADCATE
    * @TARGET
    * my video stream control
@@ -390,6 +398,8 @@ const _ = {
       type: SIGNAL.LOCATION,
     })
   },
+
+  sendBackgroundStatus: sender.backgroundStatus,
 
   setFrameRate: async fps => {
     if (_.publisher && _.publisher.stream) {

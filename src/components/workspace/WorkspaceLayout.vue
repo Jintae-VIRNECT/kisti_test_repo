@@ -36,12 +36,12 @@
       :isOpenRoom="isOpenRoom"
       :isJoin="isJoin"
     ></room-loading>
-    <collabo-float-button
-      v-if="workspace && workspace.uuid && tabName !== 'setting'"
-    ></collabo-float-button>
     <openroom-float-button
-      v-if="workspace && workspace.uuid && tabName !== 'setting'"
+      v-if="workspace && workspace.uuid && tabName === 'user'"
     ></openroom-float-button>
+    <collabo-float-button
+      v-if="workspace && workspace.uuid && tabName === 'user'"
+    ></collabo-float-button>
   </section>
 </template>
 
@@ -82,6 +82,12 @@ export default {
       await getSettings()
       next(vm => {
         vm.$call.leave()
+
+        if (to.name === 'workspace' && from.name === 'service') {
+          vm.$data.showLeaveMessage = false
+        } else {
+          vm.$data.showLeaveMessage = true
+        }
       })
     }
   },
@@ -119,6 +125,8 @@ export default {
       isJoin: false,
       inited: false,
       tabName: 'remote',
+
+      showLeaveMessage: true,
     }
   },
   watch: {
@@ -334,9 +342,40 @@ export default {
     setTabTop() {
       this.tabTop = this.$refs['tabSection'].$el.offsetTop
     },
-    logoutGuest(userType) {
+    async logoutGuest(userType) {
       if (userType === USER_TYPE.GUEST_USER) {
+        //no redirect
+        await auth.logout(false)
         location.href = `${URLS['console']}`
+      }
+    },
+    initHistoryBackEvent() {
+      window.history.pushState({}, '', document.location.href)
+
+      window.onpopstate = () => {
+        //service -> home 화면 접근시 호출되는 경우를 방지하기 위함.
+        if (!this.showLeaveMessage) {
+          this.showLeaveMessage = true
+          return
+        }
+
+        this.confirmCancel(
+          this.$t('workspace.confirm_leave_service'),
+          {
+            text: this.$t('button.confirm'),
+            action: async () => {
+              const redirect = false
+              await auth.logout(redirect)
+              location.href = `${URLS['console']}`
+            },
+          },
+          {
+            text: this.$t('button.cancel'),
+            action: () => {
+              window.history.pushState({}, '', document.location.href)
+            },
+          },
+        )
       }
     },
   },
@@ -360,6 +399,10 @@ export default {
     this.$eventBus.$on('filelist:open', this.toggleList)
     this.$eventBus.$on('devicedenied:show', this.showDeviceDenied)
     this.$eventBus.$on('roomloading:show', this.showRoomLoading)
+
+    if (this.isMobileSize) {
+      this.initHistoryBackEvent()
+    }
   },
   beforeDestroy() {
     window.removeEventListener('resize', this.setTabTop)

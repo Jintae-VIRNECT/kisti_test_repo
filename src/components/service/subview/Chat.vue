@@ -7,6 +7,8 @@
         </div>
       </div>
 
+      <button class="chat-header__close" @click="closeChatBox"></button>
+
       <ul class="chat-header__menu" v-if="useStorage">
         <li class="chat-header__selector" :class="{ active: showChat }">
           <button
@@ -14,7 +16,7 @@
             @click="toggleMenu('chat')"
           >
             <p class="chat-header__selector--text">
-              <img src="~assets/image/call/chat_ic_chat_w.svg" />
+              <img class="selector-chat" :src="chatIconSrc" />
               {{ $t('service.chat') }}
             </p>
           </button>
@@ -25,7 +27,7 @@
             @click="toggleMenu('file')"
           >
             <p class="chat-header__selector--text">
-              <img src="~assets/image/call/chat_ic_folder_w.svg" />
+              <img class="selector-file" :src="fileIconSrc" />
               {{ $t('service.file') }}
             </p>
           </button>
@@ -75,13 +77,25 @@ export default {
     showChat() {
       return this.show === 'chat'
     },
+    chatIconSrc() {
+      if (this.isMobileSize) return null
+      else return require('assets/image/call/chat_ic_chat_w.svg')
+    },
+    fileIconSrc() {
+      if (this.isMobileSize) return null
+      else return require('assets/image/call/chat_ic_folder_w.svg')
+    },
   },
   watch: {
     chatList: {
       handler() {
         this.$nextTick(() => {
           if (this.$refs['chatListScrollbar']) {
-            this.$refs['chatListScrollbar'].scrollToY(Number.MAX_SAFE_INTEGER)
+            const closePopover = false
+            this.$refs['chatListScrollbar'].scrollToY(
+              Number.MAX_SAFE_INTEGER,
+              closePopover,
+            )
           }
         })
       },
@@ -103,6 +117,14 @@ export default {
             type: 'system',
           })
           // AR 영역이 설정되었습니다.
+          return
+        }
+        if (val === ACTION.AR_3D) {
+          this.addChat({
+            status: 'ar-3d',
+            type: 'system',
+          })
+          // 3D 콘텐츠 모드를 시작합니다.
           return
         }
       }
@@ -139,9 +161,12 @@ export default {
     },
   },
   methods: {
-    ...mapActions(['addChat']),
+    ...mapActions(['addChat', 'toggleChat']),
     toggleMenu(menu) {
       this.show = menu
+    },
+    closeChatBox() {
+      this.toggleChat(false)
     },
   },
 

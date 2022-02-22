@@ -11,9 +11,9 @@ import { logger, debug } from 'utils/logger'
 import axios from '../axios'
 import errorList from './gateway.error.json'
 import networkError from './network.error.json'
-import { cookieClear } from 'utils/auth'
+import { clearCookie } from 'utils/auth'
 import qs from 'qs'
-import { TIMEOUT } from 'configs/env.config'
+import { TIMEOUT, URLS } from 'configs/env.config'
 
 const URL = API
 const TOKEN = Cookies.get('accessToken')
@@ -85,6 +85,8 @@ const sender = async function(constant, params, headers = {}, custom) {
         parameter.append(param, params[param])
       }
       debug(option)
+    } else if (custom && custom.authorization === false) {
+      delete axios.defaults.headers.common['Authorization']
     } else {
       option.headers['Content-Type'] = 'application/json'
     }
@@ -192,11 +194,11 @@ const errorHandler = function(err) {
         // console.error(error.message)
         // "Unexpected Server Error, Please contact Administrator"
         break
-      // case 8003:
+      case 8003:
       case 8005:
         // console.error(error.message)
-        cookieClear()
-        window.location.reload()
+        clearCookie()
+        location.href = `${URLS['console']}/?continue=${location.href}`
         break
       // case 'Network Error':
       //   sessionStorage.clear()

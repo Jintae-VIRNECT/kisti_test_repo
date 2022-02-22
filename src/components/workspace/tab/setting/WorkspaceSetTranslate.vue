@@ -1,6 +1,10 @@
 <template>
   <div>
     <section class="setting-section list">
+      <p v-if="showSTTwarning && isMobileSize" class="setting-view-stt-warning">
+        {{ $t('workspace.setting_stt_safari_warning') }}
+      </p>
+
       <div class="setting-section__title main">
         {{ $t('workspace.setting_translate') }}
       </div>
@@ -22,7 +26,7 @@
             <tooltip
               :customClass="['tooltip-guide', { disabled: !useTranslate }]"
               :content="$t('workspace.setting_translate_language_tooltip')"
-              :placement="isTablet ? 'bottom' : 'right'"
+              :placement="isMobileDevice ? 'bottom' : 'right'"
               :effect="isMobileSize ? '' : 'blue'"
               :guide="true"
               @hide="helpIconActive = false"
@@ -65,7 +69,7 @@
       ></slider>
     </section>
     <section class="setting-section list horizon translate">
-      <figure class="setting-section__translate">
+      <figure v-if="!isMobileSize" class="setting-section__translate">
         <div
           class="setting-section__title"
           :class="{ disabled: !useTranslate }"
@@ -104,6 +108,7 @@ import Slider from 'Slider'
 import Tooltip from 'Tooltip'
 import toastMixin from 'mixins/toast'
 import { mapActions, mapGetters } from 'vuex'
+import { getIOSversion } from 'utils/appCheck'
 
 export default {
   name: 'WorkspaceSetTranslate',
@@ -126,6 +131,11 @@ export default {
   },
   computed: {
     ...mapGetters(['translate', 'languageCodes']),
+    showSTTwarning() {
+      const version = getIOSversion()
+
+      return version > 0 && version < 14 ? true : false
+    },
   },
   watch: {
     useTranslate(flag) {

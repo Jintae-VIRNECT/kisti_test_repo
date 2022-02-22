@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="24px" height="24px" viewBox="0 0 24 24" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>268EDE0D-629C-44D2-82D7-01620B0F34F9@1x</title>
+    <g id="Remote_Main_remote" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="RWS_0100-_접속-화면_기본-기능-(리더)_더보기-메뉴" transform="translate(-86.000000, -418.000000)">
+            <g id="more_lists" transform="translate(70.000000, 310.000000)">
+                <g id="more_list_sever-rec" transform="translate(0.000000, 100.000000)">
+                    <g id="more_icon_server-rec" transform="translate(16.000000, 8.000000)">
+                        <g transform="translate(2.000000, 2.000000)">
+                            <path d="M10,0.75 C12.5543209,0.75 14.8668164,1.78534317 16.5407339,3.45926064 C18.2146586,5.13318532 19.25,7.44568969 19.25,10 C19.25,12.5543048 18.2146515,14.8668042 16.5407278,16.5407278 C14.8668042,18.2146515 12.5543048,19.25 10,19.25 C7.44569523,19.25 5.13319578,18.2146515 3.45927216,16.5407278 C1.78534855,14.8668042 0.75,12.5543048 0.75,10 C0.75,7.44569523 1.78534855,5.13319578 3.45927216,3.45927216 C5.13319578,1.78534855 7.44569523,0.75 10,0.75 Z" id="Path" stroke="#FFFFFF" stroke-width="1.5" fill-rule="nonzero"></path>
+                            <circle id="Oval" fill="#FFFFFF" cx="10" cy="10" r="4"></circle>
+                        </g>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

@@ -1,83 +1,101 @@
 <template>
-  <modal
-    :title="$t('service.invite_title')"
-    width="50.857em"
-    height="60.143em"
-    :showClose="true"
-    :visible.sync="visibleFlag"
-    :beforeClose="beforeClose"
-    customClass="service-invite"
-  >
-    <div class="invite-modal__body">
-      <div class="invite-modal__current">
-        <div class="invite-modal__current-title">
-          <p>
-            {{ $t('service.invite_unconnected_list') }}
-          </p>
-          <tooltip
-            customClass="tooltip-guide"
-            :content="$t('service.invite_unconnected_remove')"
-            placement="right"
-            effect="blue"
-            :guide="true"
-          >
-            <img
-              slot="body"
-              class="setting__tooltip--icon"
-              src="~assets/image/ic_tool_tip.svg"
-            />
-          </tooltip>
-        </div>
-
-        <div class="invite-modal__current-list">
-          <figure
-            class="invite-modal__current-user"
-            v-for="(user, idx) of currentUser"
-            :key="user.uuid"
-          >
-            <tooltip :content="user.nickname || user.nickName">
-              <div class="invite-modal__profile" slot="body">
-                <profile
-                  :image="user ? user.profile : 'default'"
-                  :thumbStyle="{ width: '3.714em', height: '3.714em' }"
-                ></profile>
-                <button
-                  class="invite-modal__current-kickout"
-                  @click="kickoutConfirm(user, idx)"
-                >
-                  {{ $t('button.kickout') }}
-                </button>
-              </div>
-              <span>{{ user.nickname || user.nickName }}</span>
+  <div>
+    <modal
+      :title="$t('service.invite_title')"
+      width="50.857em"
+      height="60.143em"
+      :showClose="true"
+      :visible.sync="visiblePcFlag"
+      :beforeClose="beforeClose"
+      customClass="service-invite"
+    >
+      <div class="invite-modal__body">
+        <div class="invite-modal__current">
+          <div class="invite-modal__current-title">
+            <p>
+              {{ $t('service.invite_unconnected_list') }}
+            </p>
+            <tooltip
+              customClass="tooltip-guide"
+              :content="$t('service.invite_unconnected_remove')"
+              placement="right"
+              effect="blue"
+              :guide="true"
+            >
+              <img
+                slot="body"
+                class="setting__tooltip--icon"
+                src="~assets/image/ic_tool_tip.svg"
+              />
             </tooltip>
-          </figure>
+          </div>
+
+          <div class="invite-modal__current-list">
+            <figure
+              class="invite-modal__current-user"
+              v-for="user of currentUser"
+              :key="user.uuid"
+            >
+              <tooltip :content="user.nickname || user.nickName">
+                <div class="invite-modal__profile" slot="body">
+                  <profile
+                    :image="user ? user.profile : 'default'"
+                    :thumbStyle="{ width: '3.714em', height: '3.714em' }"
+                  ></profile>
+                  <button
+                    class="invite-modal__current-kickout"
+                    @click="kickoutConfirm({ participant: user })"
+                  >
+                    {{ $t('button.kickout') }}
+                  </button>
+                </div>
+                <span>{{ user.nickname || user.nickName }}</span>
+              </tooltip>
+            </figure>
+          </div>
         </div>
+        <room-invite
+          :users="users"
+          :subGroups="invitableSubGroups"
+          :selection="selection"
+          :total="users.length"
+          :loading="loading"
+          @userSelect="selectUser"
+          @inviteRefresh="init"
+        ></room-invite>
       </div>
-      <room-invite
-        :users="users"
-        :selection="selection"
-        :total="users.length"
-        :loading="loading"
-        @userSelect="selectUser"
-        @inviteRefresh="init"
-      ></room-invite>
-    </div>
-    <div slot="footer" class="invite-modal__footer">
-      <p
-        class="invite-modal__selected-title"
-        v-html="
-          $t('service.invite_selected', {
-            num: selection.length,
-            max: maxSelect,
-          })
-        "
-      ></p>
-      <profile-list :users="selection" size="2.143em"></profile-list>
-      <button class="btn" :disabled="selection.length === 0" @click="invite">
-        {{ $t('service.invite_require') }}
-      </button>
-    </div>
-  </modal>
+      <div slot="footer" class="invite-modal__footer">
+        <p
+          class="invite-modal__selected-title"
+          v-html="
+            $t('service.invite_selected', {
+              num: selection.length,
+              max: maxSelect,
+            })
+          "
+        ></p>
+        <profile-list :users="selection" size="2.143em"></profile-list>
+        <button class="btn" :disabled="selection.length === 0" @click="invite">
+          {{ $t('service.invite_require') }}
+        </button>
+      </div>
+    </modal>
+    <mobile-invite-modal
+      :visible.sync="visibleMobileFlag"
+      :maxSelect="maxSelect"
+      :roomInfo="roomInfo"
+      :users="users"
+      :subGroups="invitableSubGroups"
+      :currentUser="currentUserWithFlag"
+      :selection="selection"
+      :beforeClose="beforeClose"
+      :loading="loading"
+      @userSelect="selectUser"
+      @inviteRefresh="init"
+      @invite="invite"
+      @kickout="kickoutConfirm"
+    ></mobile-invite-modal>
+  </div>
 </template>
 
 <script>
@@ -86,31 +104,41 @@ import Profile from 'Profile'
 import ProfileList from 'ProfileList'
 import RoomInvite from 'components/workspace/partials/ModalCreateRoomInvite'
 import Tooltip from 'Tooltip'
+import MobileInviteModal from './MobileInviteModal.vue'
 
 import { mapGetters, mapActions } from 'vuex'
 import toastMixin from 'mixins/toast'
 import confirmMixin from 'mixins/confirm'
-import { inviteRoom, kickoutMember, invitableList } from 'api/http/member'
+import {
+  inviteRoom,
+  kickoutMember,
+  invitableList,
+  getSubGroups,
+} from 'api/http/member'
 import { getRoomInfo as roomInfo } from 'api/http/room'
 import { memberSort } from 'utils/sort'
+import responsiveModalVisibleMixin from 'mixins/responsiveModalVisible'
+
 export default {
   name: 'InviteModal',
-  mixins: [toastMixin, confirmMixin],
+  mixins: [toastMixin, confirmMixin, responsiveModalVisibleMixin],
   components: {
     Modal,
     Profile,
     ProfileList,
     RoomInvite,
     Tooltip,
+    MobileInviteModal,
   },
   data() {
     return {
       selection: [],
-      visibleFlag: false,
       users: [],
       loading: false,
       currentUser: [],
       currentLength: 0,
+      subGroups: [],
+      invitableSubGroups: [],
     }
   },
   props: {
@@ -124,18 +152,29 @@ export default {
     maxSelect() {
       return this.roomInfo.maxUserCount - this.currentLength
     },
+    currentUserWithFlag() {
+      return this.currentUser.map(user => {
+        user.currentInvited = true
+        return user
+      })
+    },
   },
   watch: {
-    visible(flag) {
+    async visible(flag) {
       if (flag) {
         this.init()
       } else {
         this.selection = []
-        this.visibleFlag = false
         this.users = []
         this.loading = false
       }
-      this.visibleFlag = flag
+      this.setVisiblePcOrMobileFlag(flag)
+    },
+    subGroups() {
+      this.updateInvitableSubGroups()
+    },
+    users() {
+      this.updateInvitableSubGroups()
     },
   },
   methods: {
@@ -146,7 +185,7 @@ export default {
     beforeClose() {
       this.$emit('update:visible', false)
     },
-    kickoutConfirm(participant, idx) {
+    kickoutConfirm({ participant }) {
       this.serviceConfirmCancel(
         this.$t('service.participant_kick_confirm', {
           name: participant.nickName,
@@ -155,7 +194,7 @@ export default {
           text: this.$t('button.confirm'),
           action: () => {
             this.$emit('kickout')
-            this.kickout(participant.uuid, idx)
+            this.kickout(participant.uuid)
           },
         },
         {
@@ -163,7 +202,7 @@ export default {
         },
       )
     },
-    async kickout(participantId, idx) {
+    async kickout(participantId) {
       const params = {
         sessionId: this.roomInfo.sessionId,
         workspaceId: this.workspace.uuid,
@@ -171,13 +210,12 @@ export default {
         participantId,
       }
       const res = await kickoutMember(params)
+
       if (res.result === true) {
         this.toastNotify(this.$t('confirm.access_removed'))
-
-        this.currentUser.slice(idx, 1)[0]
-        this.init()
         this.removeMember(participantId)
       }
+
       this.init()
     },
     selectUser(user) {
@@ -195,6 +233,7 @@ export default {
     init() {
       this.getInviteList()
       this.getRoomInfo()
+      this.getSubGroups()
     },
     async getInviteList() {
       this.loading = true
@@ -218,6 +257,14 @@ export default {
       )
       this.currentUser = unloadUsers
     },
+    async getSubGroups() {
+      const res = await getSubGroups({
+        workspaceId: this.workspace.uuid,
+        userId: this.account.uuid,
+        etcText: this.$t('workspace.workspace_member_sub_group_etc'),
+      })
+      this.subGroups = res.groupInfoResponseList
+    },
     async invite() {
       const participantIds = []
       for (let select of this.selection) {
@@ -234,10 +281,24 @@ export default {
         this.addMember(this.selection)
 
         this.toastNotify(this.$t('service.invite_success'))
+
         this.$nextTick(() => {
-          this.visibleFlag = false
+          this.$emit('update:visible', false)
         })
       }
+    },
+    updateInvitableSubGroups() {
+      const clonedSubGroups = JSON.parse(JSON.stringify(this.subGroups))
+      this.invitableSubGroups = clonedSubGroups.map(subGroup => {
+        subGroup.remoteGroupMemberResponses = subGroup.remoteGroupMemberResponses.filter(
+          member => {
+            return this.users.some(user => {
+              return user.uuid === member.uuid
+            })
+          },
+        )
+        return subGroup
+      })
     },
   },
 

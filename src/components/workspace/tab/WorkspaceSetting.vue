@@ -38,7 +38,9 @@
             </template>
 
             <template v-else-if="menus[tabIdx].key === 'record'">
-              <set-record v-if="!isTablet && useLocalRecording"></set-record>
+              <set-record
+                v-if="!isMobileDevice && useLocalRecording"
+              ></set-record>
               <set-server-record v-if="useRecording"></set-server-record>
             </template>
             <template v-else-if="menus[tabIdx].key === 'language'">
@@ -116,7 +118,16 @@ export default {
           text: this.$t('workspace.setting_audio'),
         })
       }
-      if (!this.isTablet && (this.useLocalRecording || this.useRecording)) {
+
+      const isMobileUseServerRecording =
+        this.useRecording && (this.isMobileSize || this.isMobileDevice)
+
+      const isPcUseRecording =
+        !this.isMobileSize &&
+        !this.isMobileDevice &&
+        (this.useLocalRecording || this.useRecording)
+
+      if (isMobileUseServerRecording || isPcUseRecording) {
         menu.push({
           key: 'record',
           text: this.$t('workspace.setting_record'),
@@ -162,6 +173,7 @@ export default {
     tabChange(idx) {
       this.$eventBus.$emit('popover:close')
       this.$eventBus.$emit('scroll:reset:workspace')
+      this.$eventBus.$emit('search:clear')
       this.$nextTick(() => {
         this.tabIdx = idx
       })
@@ -204,6 +216,8 @@ export default {
 
   /* Lifecycles */
   async created() {
+    this.$eventBus.$emit('search:clear')
+
     navigator.mediaDevices.ondevicechange = this.onDeviceChange
     const permission = await getPermission({
       video: true,

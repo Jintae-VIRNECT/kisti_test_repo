@@ -1,15 +1,38 @@
 <template>
   <div class="drawing-tools tools">
-    <line-mode></line-mode>
-    <line-width></line-width>
-    <text-mode></text-mode>
-    <text-size></text-size>
-    <color></color>
-    <div class="division"></div>
-    <undo></undo>
-    <redo></redo>
-    <clear></clear>
-    <clear-all v-if="isLeader"></clear-all>
+    <template v-if="isMobileSize">
+      <div
+        class="mobile-tools-container drawing"
+        :class="{ active, leader: isLeader }"
+      >
+        <undo :disableTooltip="true" :disabled="!toolStatus.undo"></undo>
+        <redo :disableTooltip="true" :disabled="!toolStatus.redo"></redo>
+        <clear :disableTooltip="true" :disabled="!toolStatus.clear"></clear>
+        <clear-all
+          v-if="isLeader"
+          :disableTooltip="true"
+          :disabled="!toolStatus.clearAll"
+        ></clear-all>
+        <div class="division"></div>
+        <color :disableTooltip="true"></color>
+        <drawing-lock></drawing-lock>
+      </div>
+      <button class="tools-toggle-btn" :class="{ active }" @click="toggle">
+        <img src="~assets/image/call/icn_dropdown_new.svg" alt="dropdown" />
+      </button>
+    </template>
+    <template v-else>
+      <line-mode></line-mode>
+      <line-width></line-width>
+      <text-mode></text-mode>
+      <text-size></text-size>
+      <color></color>
+      <div class="division"></div>
+      <undo :disabled="!toolStatus.undo"></undo>
+      <redo :disabled="!toolStatus.redo"></redo>
+      <clear :disabled="!toolStatus.clear"></clear>
+      <clear-all v-if="isLeader" :disabled="!toolStatus.clearAll"></clear-all>
+    </template>
   </div>
 </template>
 
@@ -24,8 +47,10 @@ import {
   Redo,
   Clear,
   ClearAll,
+  DrawingLock,
 } from './partials'
 import { ROLE } from 'configs/remote.config'
+import toolStatusMixin from 'mixins/toolStatus'
 
 export default {
   name: 'DrawingTools',
@@ -39,9 +64,13 @@ export default {
     Redo,
     Clear,
     ClearAll,
+    DrawingLock,
   },
+  mixins: [toolStatusMixin],
   data() {
-    return {}
+    return {
+      active: false,
+    }
   },
   computed: {
     isLeader() {
@@ -49,10 +78,18 @@ export default {
     },
   },
   watch: {},
-  methods: {},
+  methods: {
+    toggle() {
+      this.active = !this.active
+    },
+  },
 
   /* Lifecycles */
-  beforeDestroy() {},
-  mounted() {},
+  created() {
+    this.activateToolStatusUpdateListener()
+  },
+  beforeDestroy() {
+    this.deactivateToolStatusUpdateListener()
+  },
 }
 </script>

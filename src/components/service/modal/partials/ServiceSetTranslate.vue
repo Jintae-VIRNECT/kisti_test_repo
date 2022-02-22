@@ -22,7 +22,7 @@
         <tooltip
           customClass="tooltip-guide"
           :content="$t('service.setting_translate_language_tooltip')"
-          :placement="isTablet ? 'bottom' : 'right'"
+          :placement="isMobileDevice ? 'bottom' : 'right'"
           effect="blue"
           guide
         >

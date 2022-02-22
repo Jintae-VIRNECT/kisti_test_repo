@@ -30,6 +30,8 @@
     "confirm_force_logout_received": "You have been forced to log out by the master.",
     "confirm_force_logout_unavailable": "has accessed the collaboration and cannot log out.",
     "confirm_video_restrict_join": "[Video Restriction Mode] Connect to the collabo room.\nThe camera can be remotely controlled by the leader.\nIf you select [Connect], you agree to camera control.",
+    "confirm_open_room_start": "Create a public Collabo room\nwithout designating a participant.",
+    "confirm_leave_service":"Logout the service.",
 
     "history": "Recent history",
     "remote": "Remote Collabo",
@@ -97,6 +99,7 @@
     "setting_stt": "Voice recognition method(STT)",
     "setting_stt_sync": "Voice recording",
     "setting_stt_streaming": "Streaming",
+    "setting_stt_safari_warning":"STT is not available in the current version of Safari Browser. Please update your OS to the latest version.",
     "setting_tts": "Voice conversion settings(TTS)",
     "setting_tts_allow": "Allow voice conversion",
     "setting_translate_disable_message": "Please turn on the use of translation.​",
@@ -203,6 +206,7 @@
     "workspace_member_group_member":"Favorite member",
     "workspace_member_group_member_no_selection" :"Do not select​",
     "workspace_member_group_count_valid":"Please select at least 1 member.",
+    "workspace_member_sub_group_etc":"etc group",
 
     "workspace_select":"Select Workspace"
   }

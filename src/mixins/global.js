@@ -51,7 +51,7 @@ export default {
         userAgent.includes('Safari')
       )
     },
-    isTablet() {
+    isMobileDevice() {
       const userAgent = navigator.userAgent || ''
       const isIpadSafari =
         !userAgent.includes('Chrome') &&

@@ -1,5 +1,8 @@
 <template>
   <div class="main-video">
+    <p v-if="viewForce" class="main-video__sharing-user">
+      {{ mainView.nickname }}
+    </p>
     <div
       class="main-video__box"
       @mouseenter="hoverTools = true"
@@ -9,6 +12,16 @@
         hidden: !loaded || emptyStream,
       }"
     >
+      <pinch-zoom-layer
+        v-if="
+          (isLeader || mainView.id === account.uuid) &&
+            isMobileSize &&
+            viewForce &&
+            viewAction !== ACTION.STREAM_POINTING
+        "
+        @zoomLevelChanged="onZoomLevelChanged"
+      ></pinch-zoom-layer>
+
       <!-- 메인 비디오 뷰 -->
       <video
         ref="mainVideo"
@@ -30,7 +43,11 @@
               class="btn small main-video__sharing-button active"
               @click="cancelSharing"
             >
-              {{ $t('button.stream_sharing_cancel') }}
+              {{
+                isMobileSize
+                  ? $t('button.stream_sharing')
+                  : $t('button.stream_sharing_cancel')
+              }}
             </button>
             <button v-else class="btn small main-video__sharing-button">
               {{ $t('button.stream_sharing') }}
@@ -40,7 +57,11 @@
 
         <!-- 녹화 시간 정보 -->
         <div class="main-video__recording">
-          <div class="main-video__recording--time" v-if="serverTimer">
+          <div
+            class="main-video__recording--time"
+            v-if="serverTimer"
+            :class="{ 'sharing-on': viewForce }"
+          >
             <p class="server">
               {{ serverTime | timeFilter }}
             </p>
@@ -57,14 +78,23 @@
           class="main-video__pointing"
         ></pointing>
 
+        <!-- zoom 레벨 표시(모바일) -->
+        <div
+          v-if="isMobileSize && showZoomLevel"
+          class="main-video__zoom--level"
+        >
+          <span>{{ zoomLevel }}</span>
+        </div>
+
         <!-- 디바이스 컨트롤 뷰 -->
         <template v-if="allowTools">
           <transition name="opacity">
-            <video-tools v-if="hoverTools"></video-tools>
+            <video-tools v-if="hoverTools && !isMobileSize"></video-tools>
           </transition>
         </template>
         <transition name="opacity">
           <fullscreen
+            v-if="!isMobileSize"
             :hide.sync="hideFullBtn"
             v-show="!hideFullBtn"
           ></fullscreen>
@@ -75,42 +105,33 @@
       <transition name="opacity">
         <!-- 영상이 없을 경우 -->
         <div class="main-video__empty-inner" v-if="resolutions.length === 0">
-          <img src="~assets/image/img_novideo.svg" />
+          <img :src="noVideoSrc" />
           <p>{{ $t('service.stream_no_video') }}</p>
           <p class="inner-discription">
             {{ $t('service.stream_no_worker') }}
           </p>
         </div>
         <div class="main-video__empty-inner" v-else>
-          <img src="~assets/image/call/img_select_video.svg" />
+          <img :src="selectVideoSrc" />
           <p v-html="$t('service.stream_choice')"></p>
         </div>
       </transition>
       <!-- 영상 초기화 로딩 -->
       <transition name="opacity">
-        <div class="main-video__empty-inner loading" v-if="initing">
-          <img src="~assets/image/gif_loading.svg" />
-        </div>
+        <video-loading v-if="initing"></video-loading>
       </transition>
     </div>
     <transition name="opacity">
       <div class="main-video__empty" v-if="emptyStream">
         <transition name="opacity">
           <!-- 영상 백그라운드 및 정지 표출 -->
-          <div class="main-video__empty-inner" v-if="mainView.me !== true">
-            <img src="~assets/image/img_video_stop.svg" />
-            <p>{{ $t('service.stream_stop') }}</p>
-            <p
-              class="inner-discription"
-              v-if="cameraStatus !== -1 && cameraStatus.state === 'background'"
-              v-html="$t('service.stream_background')"
-            ></p>
-            <p class="inner-discription" v-else>
-              {{ $t('service.stream_stoped') }}
-            </p>
-          </div>
+          <video-stopped
+            v-if="mainView.me !== true"
+            :cameraStatus="cameraStatus"
+          ></video-stopped>
+          <!-- 영상이 없을 경우 -->
           <div class="main-video__empty-inner" v-else>
-            <img src="~assets/image/img_novideo.svg" />
+            <img :src="noVideoSrc" />
             <p>{{ $t('service.stream_off') }}</p>
           </div>
         </transition>
@@ -124,10 +145,13 @@ import { mapActions, mapGetters } from 'vuex'
 import { ROLE } from 'configs/remote.config'
 import { ACTION } from 'configs/view.config'
 import { CAMERA, FLASH } from 'configs/device.config'
+import { CAMERA_STATE } from 'configs/status.config'
 
 import Pointing from './StreamPointing'
 import VideoTools from './MainVideoTools'
 import Fullscreen from './tools/Fullscreen'
+import VideoLoading from './partials/VideoLoading'
+import VideoStopped from './partials/VideoStopped'
 import shutterMixin from 'mixins/shutter'
 import toastMixin from 'mixins/toast'
 
@@ -138,9 +162,13 @@ export default {
     Pointing,
     VideoTools,
     Fullscreen,
+    VideoLoading,
+    VideoStopped,
+    PinchZoomLayer: () => import('./partials/PinchZoomLayer'),
   },
   data() {
     return {
+      ACTION: Object.freeze(ACTION),
       status: 'good', // good, normal, bad
       hoverTools: false,
       loaded: false,
@@ -158,6 +186,9 @@ export default {
       hideFullBtn: false,
 
       backInterval: null,
+
+      showZoomLevel: false,
+      zoomLevel: 'x1.0',
     }
   },
   computed: {
@@ -172,6 +203,16 @@ export default {
       view: 'view',
       screenSharing: 'screenSharing',
     }),
+    noVideoSrc() {
+      return this.isMobileSize
+        ? require('assets/image/call/img_novideo_new.svg')
+        : require('assets/image/call/img_novideo.svg')
+    },
+    selectVideoSrc() {
+      return this.isMobileSize
+        ? require('assets/image/call/img_select_video_new.svg')
+        : require('assets/image/call/img_select_video.svg')
+    },
     isLeader() {
       return this.account.roleType === ROLE.LEADER
     },
@@ -191,24 +232,28 @@ export default {
       return this.resolutions[idx]
     },
     cameraStatus() {
-      if (this.mainView && this.mainView.id) {
-        if (this.mainView.cameraStatus === CAMERA.CAMERA_OFF) {
-          return {
-            state: 'off',
-            id: this.mainView.id,
-          }
-        } else if (this.mainView.cameraStatus === CAMERA.APP_IS_BACKGROUND) {
-          return {
-            state: 'background',
-            id: this.mainView.id,
-          }
+      const hasMainView = this.mainView && this.mainView.id
+
+      if (hasMainView) {
+        const id = this.mainView.id
+        let state = CAMERA_STATE.ON
+
+        const isCameraOff = this.mainView.cameraStatus === CAMERA.CAMERA_OFF
+        const isAppBackground =
+          this.mainView.cameraStatus === CAMERA.APP_IS_BACKGROUND
+
+        if (isCameraOff) {
+          state = CAMERA_STATE.OFF
+        } else if (isAppBackground) {
+          state = CAMERA_STATE.BACKGROUND
         }
+
         return {
-          state: 'on',
-          id: this.mainView.id,
+          state,
+          id,
         }
       } else {
-        return -1
+        return CAMERA_STATE.UNAVAILABLE
       }
     },
     allowTools() {
@@ -217,7 +262,7 @@ export default {
       }
       if (
         this.viewForce === true &&
-        this.account.roleType === ROLE.LEADER &&
+        this.isLeader &&
         this.viewAction !== ACTION.STREAM_POINTING
       ) {
         if (
@@ -233,9 +278,10 @@ export default {
       }
     },
     emptyStream() {
-      const validCameraStatus = this.cameraStatus !== -1
-      const cameraOff = this.cameraStatus.state === 'off'
-      const cameraBackground = this.cameraStatus.state === 'background'
+      const validCameraStatus = this.cameraStatus !== CAMERA_STATE.UNAVAILABLE
+      const cameraOff = this.cameraStatus.state === CAMERA_STATE.OFF
+      const cameraBackground =
+        this.cameraStatus.state === CAMERA_STATE.BACKGROUND
       const screenSharing = this.mainView.screenShare
 
       return (
@@ -301,12 +347,12 @@ export default {
     cameraStatus: {
       deep: true,
       handler(status) {
-        if (status === -1) {
+        if (status === CAMERA_STATE.UNAVAILABLE) {
           this.$eventBus.$emit('video:loaded', false)
           return
         }
 
-        this.$eventBus.$emit('video:loaded', status.state === 'on')
+        this.$eventBus.$emit('video:loaded', status.state === CAMERA_STATE.ON)
       },
     },
     localRecordStatus(status) {
@@ -329,7 +375,7 @@ export default {
         this.optimizeVideoSize()
         this.loaded = true
         this.$eventBus.$emit('video:loaded', true)
-        if (this.isSafari && this.isTablet) {
+        if (this.isSafari && this.isMobileDevice) {
           this.checkBackgroundStream()
         }
       })
@@ -461,6 +507,16 @@ export default {
       setTimeout(() => {
         this.optimizeVideoSize()
       }, 500)
+    },
+    onZoomLevelChanged(zoomLevel) {
+      clearTimeout(this.timeoutId)
+      this.timeoutId = null
+
+      this.showZoomLevel = true
+      this.zoomLevel = `x${zoomLevel}`
+      this.timeoutId = setTimeout(() => {
+        this.showZoomLevel = false
+      }, 2000)
     },
   },
 

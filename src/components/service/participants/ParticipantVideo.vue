@@ -17,6 +17,9 @@
           ref="participant-video"
           @play="mediaPlay"
         ></video>
+        <span class="participant-video__leader" v-if="isLeader && isMobileSize">
+          Leader
+        </span>
       </div>
       <div class="participant-video__profile" v-else>
         <img
@@ -25,15 +28,11 @@
           :src="profileUrl"
           @error="onImageError"
         />
-        <div class="participant-video__profile-dim"></div>
-        <profile
-          :thumbStyle="{
-            width: '4.571rem',
-            height: '4.571rem',
-            margin: '10px auto 0',
-          }"
-          :image="participant.path"
-        ></profile>
+        <div
+          v-if="isMobileSize && participant.path !== 'default'"
+          class="participant-video__profile-dim"
+        ></div>
+        <profile :thumbStyle="thumbStyle" :image="participant.path"></profile>
         <audio
           v-if="!participant.me"
           :srcObject.prop="participant.stream"
@@ -42,6 +41,9 @@
           loop
           :muted="isMuted"
         ></audio>
+        <span class="participant-video__leader" v-if="isLeader && isMobileSize">
+          Leader
+        </span>
       </div>
       <div class="participant-video__mute" v-if="participant.mute"></div>
       <div class="participant-video__status">
@@ -56,23 +58,15 @@
       <div class="participant-video__device">
         <img
           v-if="participant.hasVideo && !participant.video"
-          src="~assets/image/call/ic_video_off.svg"
+          :src="cameraOffIconUrl"
         />
         <template v-if="!isMe">
           <img
             v-if="participant.hasAudio"
-            :src="
-              participant.audio
-                ? require('assets/image/ic_mic_on.svg')
-                : require('assets/image/ic_mic_off.svg')
-            "
+            :src="participant.audio ? micOnIconUrl : micOffIconUrl"
           />
           <img
-            :src="
-              participant.speaker
-                ? require('assets/image/ic_volume_on.svg')
-                : require('assets/image/ic_volume_off.svg')
-            "
+            :src="participant.speaker ? speakerOnIconUrl : speakerOffIconUrl"
           />
         </template>
       </div>
@@ -125,6 +119,7 @@ import { mapGetters, mapActions } from 'vuex'
 import { ROLE } from 'configs/remote.config'
 import { VIEW } from 'configs/view.config'
 import { CAMERA } from 'configs/device.config'
+import { CAMERA_STATE } from 'configs/status.config'
 import { proxyUrl } from 'utils/file'
 import toastMixin from 'mixins/toast'
 import confirmMixin from 'mixins/confirm'
@@ -162,7 +157,45 @@ export default {
       'view',
       'initing',
       'restrictedRoom',
+      'participants',
     ]),
+    cameraOffIconUrl() {
+      return this.isMobileSize
+        ? require('assets/image/call/mdpi_icon_stream_off_new.svg')
+        : require('assets/image/call/ic_video_off.svg')
+    },
+    micOffIconUrl() {
+      return this.isMobileSize
+        ? require('assets/image/call/mdpi_icon_mic_off_new.svg')
+        : require('assets/image/ic_mic_off.svg')
+    },
+    micOnIconUrl() {
+      return this.isMobileSize
+        ? require('assets/image/call/mdpi_icon_mic_new.svg')
+        : require('assets/image/ic_mic_on.svg')
+    },
+    speakerOnIconUrl() {
+      return this.isMobileSize
+        ? require('assets/image/call/mdpi_icon_volume_new.svg')
+        : require('assets/image/ic_volume_on.svg')
+    },
+    speakerOffIconUrl() {
+      return this.isMobileSize
+        ? require('assets/image/call/mdpi_icon_volume_off_new.svg')
+        : require('assets/image/ic_volume_off.svg')
+    },
+    thumbStyle() {
+      return this.isMobileSize
+        ? {
+            width: '4.8rem',
+            height: '4.8rem',
+          }
+        : {
+            width: '4.571rem',
+            height: '4.571rem',
+            margin: '10px auto 0',
+          }
+    },
     profileUrl() {
       if (!this.participant.path) {
         return ''
@@ -194,13 +227,13 @@ export default {
     cameraStatus() {
       if (this.participant.hasVideo) {
         if (this.participant.cameraStatus === CAMERA.CAMERA_OFF) {
-          return 'off'
+          return CAMERA_STATE.OFF
         } else if (this.participant.cameraStatus === CAMERA.APP_IS_BACKGROUND) {
-          return 'background'
+          return CAMERA_STATE.BACKGROUND
         }
-        return 'on'
+        return CAMERA_STATE.ON
       } else {
-        return -1
+        return CAMERA_STATE.UNAVAILABLE
       }
     },
     isMuted() {
@@ -214,22 +247,26 @@ export default {
     'participant.nickname': 'participantInited',
     participant() {},
     cameraStatus(status, oldStatus) {
-      if (status === -1 || oldStatus === -1) return
+      if (
+        status === CAMERA_STATE.UNAVAILABLE ||
+        oldStatus === CAMERA_STATE.UNAVAILABLE
+      )
+        return
       if (status === oldStatus) return
-      if (status === 'off') {
-        if (oldStatus === 'background') return
+      if (status === CAMERA_STATE.OFF) {
+        if (oldStatus === CAMERA_STATE.BACKGROUND) return
         this.addChat({
           name: this.participant.nickname,
           status: 'stream-stop',
           type: 'system',
         })
-      } else if (status === 'background') {
+      } else if (status === CAMERA_STATE.BACKGROUND) {
         this.addChat({
           name: this.participant.nickname,
           status: 'stream-background',
           type: 'system',
         })
-      } else if (status === 'on') {
+      } else if (status === CAMERA_STATE.ON) {
         this.addChat({
           name: this.participant.nickname,
           status: 'stream-start',
@@ -242,7 +279,7 @@ export default {
     ...mapActions(['setMainView', 'addChat']),
     mediaPlay() {
       this.$nextTick(() => {
-        if (this.isSafari && this.isTablet) {
+        if (this.isSafari && this.isMobileDevice) {
           this.checkBackgroundStream()
         }
       })
@@ -317,6 +354,11 @@ export default {
         }
         this.$emit('selectMain')
       } else {
+        //모바일웹 반응형 경우 셀렉트 뷰 메뉴를 표시한다.
+        if (this.isMobileSize) {
+          this.$emit('selectMain')
+          return
+        }
         if (this.view === VIEW.AR) {
           this.toastDefault(this.$t('service.participant_ar_cannot_change'))
           return
@@ -336,8 +378,9 @@ export default {
       event.target.style.display = 'none'
     },
     mute() {
-      const mute = this.participant.mute
-      this.$call.mute(this.participant.connectionId, !mute)
+      //const mute = this.participant.mute
+      //this.$call.mute(this.participant.connectionId, !mute)
+      this.$emit('mute', this.participant)
       this.$nextTick(() => {
         this.$eventBus.$emit('popover:close')
       })
@@ -370,9 +413,15 @@ export default {
   beforeDestroy() {
     if (this.backInterval) clearInterval(this.backInterval)
     if (!this.initing && !this.participant.me && this.$call.session) {
-      this.toastDefault(
-        this.$t('service.chat_leave', { name: this.participant.nickname }),
+      const found = this.participants.findIndex(
+        participant => participant.id === this.participant.id,
       )
+      //실제 참가자가 나간 경우에 토스트 메시지 표시.
+      //모바일의 경우에는 이 component를 사용하지 않아 토스트가 뜨지 않을 것이므로 수정 필요한 부분
+      if (found < 0)
+        this.toastDefault(
+          this.$t('service.chat_leave', { name: this.participant.nickname }),
+        )
     }
   },
 }

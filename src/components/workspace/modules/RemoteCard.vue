@@ -7,9 +7,8 @@
     :height="height"
     :placement="placement"
     popoverClass="group-menu"
-    @mobileJoin="join"
   >
-    <div class="groupcard-body">
+    <div class="groupcard-body" @click="join">
       <span class="groupcard__leader" v-if="isLeader">Leader</span>
       <div class="groupcard-profile">
         <div class="profile__image">
@@ -64,7 +63,7 @@
           <span class="groupcard__leader-mobile" v-if="isLeader">Leader</span>
           <span class="room-title">{{ title ? title : room.title }}</span>
         </div>
-        <div>
+        <div class="room-member-info">
           <span class="room-leader">{{
             `${$t('common.leader')} : ${leader.nickName}`
           }}</span>

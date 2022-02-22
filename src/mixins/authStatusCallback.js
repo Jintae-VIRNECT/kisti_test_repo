@@ -126,8 +126,7 @@ export default {
       }
       //협업 중인 경우 : 팝업 띄운 후 로그인 페이지로 리디렉트
       else if (currentStatus === 'JOIN') {
-        const redirect = false
-        await auth.logout(redirect) //바로 로그아웃 처리하고, 리디렉트는 팝업 엑션에서 실행한다
+        await auth.logout(false) //바로 로그아웃 처리하고, 리디렉트는 팝업 엑션에서 실행한다
 
         const text = this.$t('workspace.confirm_duplicated_session_joined')
         const action = () =>
@@ -154,8 +153,9 @@ export default {
     async onForceLogoutReceived() {
       if (!this.isOnpremise) return
       this.debug('force logout received')
-      const redirect = false
-      await auth.logout(redirect)
+
+      //no redirect
+      await auth.logout(false)
 
       //로그아웃 처리
       const action = () =>

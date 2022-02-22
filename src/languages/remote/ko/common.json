@@ -49,7 +49,9 @@
     "join_sec":"접속 ({time} 초)",
     "request_again":"재요청",
     "connect_web":"Web 접속",
-    "run_app":"App 실행"
+    "run_app":"App 실행",
+    "previous": "이전",
+    "create":"생성"
   },
   "date": {
     "lastday": "[어제] A",

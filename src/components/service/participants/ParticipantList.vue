@@ -6,16 +6,17 @@
           v-if="restrictedRoom && isLeader"
           key="controlBtn"
         ></camera-control>
-        <!-- <div class="participants__view"></div> -->
         <participant-video
           v-for="participant of participants"
           :key="'participant_' + participant.id"
           :participant="participant"
           @selectMain="selectMain(participant)"
           @kickout="kickout(participant.id)"
+          @mute="mute"
         ></participant-video>
         <article v-if="!openRoom && isLeader && !isMaxLength" key="append">
-          <div class="participant-video append more" @click="more">
+          <div class="participant-video append more" @click="openInviteModal">
+            <img src="~assets/image/call/ic_addppl.svg" />
             <p>{{ $t('service.participant_invite') }}</p>
           </div>
         </article>
@@ -24,12 +25,12 @@
             class="participant-video append guest"
             @click="showGuestInviteModal"
           >
+            <img src="~assets/image/call/ic_guest_url.svg" />
             <p>{{ $t('service.guest_invite_url') }}</p>
           </div>
         </article>
       </transition-group>
     </vue2-scrollbar>
-    <invite-modal :visible.sync="invite"></invite-modal>
     <select-view
       :visible.sync="selectview"
       @share="share"
@@ -39,49 +40,18 @@
 </template>
 
 <script>
-import { mapGetters, mapActions } from 'vuex'
-import { SIGNAL, VIDEO, ROLE } from 'configs/remote.config'
-import { kickoutMember } from 'api/http/member'
-import { maxParticipants } from 'utils/callOptions'
-
 import ParticipantVideo from './ParticipantVideo'
-import InviteModal from '../modal/InviteModal'
 import SelectView from '../modal/SelectView'
 import CameraControl from './CameraControl'
+import participantListMixin from 'mixins/participantList'
+
 export default {
   name: 'ParticipantList',
+  mixins: [participantListMixin],
   components: {
     ParticipantVideo,
-    InviteModal,
     SelectView,
     CameraControl,
-  },
-  data() {
-    return {
-      selectview: false,
-      invite: false,
-      force: null,
-    }
-  },
-  computed: {
-    ...mapGetters([
-      'participants',
-      'mainView',
-      'viewForce',
-      'roomInfo',
-      'openRoom',
-      'allowCameraControl',
-      'restrictedRoom',
-    ]),
-    isLeader() {
-      return this.account.roleType === ROLE.LEADER
-    },
-    isGuest() {
-      return this.account.roleType === ROLE.GUEST
-    },
-    isMaxLength() {
-      return this.participants.length === maxParticipants
-    },
   },
   watch: {
     'participants.length': {
@@ -108,85 +78,9 @@ export default {
     },
   },
   methods: {
-    ...mapActions(['setMainView', 'addChat', 'removeMember']),
-    selectMain(participant) {
-      if (this.restrictedRoom) {
-        this.$call.sendVideo(participant.id, true)
-        return
-      }
-      this.selectview = {
-        id: participant.id,
-        nickname: participant.nickname,
-      }
+    openInviteModal() {
+      this.$emit('openInviteModal', true)
     },
-    normal() {
-      this.changeMainView(this.selectview, false)
-    },
-    share() {
-      this.changeMainView(this.selectview, true)
-    },
-    changeMainView(select, force) {
-      this.selectview = false
-      if (
-        this.account.roleType === ROLE.LEADER &&
-        select.id === this.mainView.id &&
-        this.viewForce === force
-      )
-        return
-      this.$call.sendVideo(select.id, force)
-      this.setMainView({ id: select.id, force })
-    },
-    more() {
-      this.invite = !this.invite
-    },
-    showGuestInviteModal() {
-      this.$eventBus.$emit('guestInvite:show', true)
-    },
-    async kickout(participantId) {
-      const params = {
-        sessionId: this.roomInfo.sessionId,
-        workspaceId: this.workspace.uuid,
-        leaderId: this.account.uuid,
-        participantId: participantId,
-      }
-      const rtn = await kickoutMember(params)
-      if (rtn.result === true) {
-        this.removeMember(participantId)
-      }
-      // this.$call.disconnect(this.participant.connectionId)
-    },
-    signalVideo(event) {
-      const data = JSON.parse(event.data)
-      if (data.type === VIDEO.SHARE) {
-        const participant = this.participants.find(user => user.id === data.id)
-        this.addChat({
-          name: participant.nickname,
-          status: this.isLeader ? 'sharing-start-leader' : 'sharing-start',
-          type: 'system',
-        })
-        this.force = data.id
-      } else if (data.type === VIDEO.NORMAL) {
-        if (this.force) {
-          const participant = this.participants.find(
-            user => user.id === this.force,
-          )
-          if (participant) {
-            this.addChat({
-              name: participant.nickname,
-              status: this.isLeader ? 'sharing-stop-leader' : 'sharing-stop',
-              type: 'system',
-            })
-          }
-        }
-        this.force = null
-      }
-    },
-  },
-  beforeDestroy() {
-    this.$eventBus.$off(SIGNAL.VIDEO, this.signalVideo)
-  },
-  created() {
-    this.$eventBus.$on(SIGNAL.VIDEO, this.signalVideo)
   },
 }
 </script>

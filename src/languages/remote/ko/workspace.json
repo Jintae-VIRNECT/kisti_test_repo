@@ -30,6 +30,8 @@
     "confirm_force_logout_received": "마스터에 의해 강제 로그아웃 되었습니다.",
     "confirm_force_logout_unavailable": "님이 협업에 접속하여 로그아웃이 불가능합니다.",
     "confirm_video_restrict_join": "[영상 제한 모드] 협업 룸으로 접속합니다.\n리더에 의해 원격으로 카메라가 제어될 수 있습니다.\n[접속] 선택 시, 카메라 제어의 동의로 간주됩니다.",
+    "confirm_open_room_start": "참가자 지정없이 오픈된 형태로\n협업룸을 생성합니다.",
+    "confirm_leave_service":"서비스를 로그아웃 합니다.",
 
     "history": "최근 기록",
     "remote": "원격 협업",
@@ -97,6 +99,7 @@
     "setting_stt": "음성 인식 방식(STT)",
     "setting_stt_sync": "음성 녹음",
     "setting_stt_streaming": "스트리밍",
+    "setting_stt_safari_warning":"현재 버전의 Safari Browser에서는 STT가 사용 불가능합니다. OS를 최신 버전으로 업데이트 해주세요.",
     "setting_tts": "음성 변환 설정(TTS)",
     "setting_tts_allow": "음성 변환 사용 허용",
     "setting_translate_disable_message": "번역 사용을 켜주세요.",
@@ -202,6 +205,7 @@
     "workspace_member_group_member":"즐겨찾기 멤버",
     "workspace_member_group_member_no_selection" :"선택 없음",
     "workspace_member_group_count_valid":"멤버를 1명 이상 선택해 주세요.",
+    "workspace_member_sub_group_etc":"기타 그룹",
 
     "workspace_select": "워크스페이스 선택"
   }
