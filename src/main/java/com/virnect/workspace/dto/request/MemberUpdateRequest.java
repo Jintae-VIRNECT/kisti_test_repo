@@ -58,6 +58,10 @@ public class MemberUpdateRequest {
         }
         return true;
     }
+    @ApiModelProperty(hidden = true)
+    public boolean isUserSelfUpdateRequest() {
+        return requestUserId.equals(userId);
+    }
 
     @Override
     public String toString() {

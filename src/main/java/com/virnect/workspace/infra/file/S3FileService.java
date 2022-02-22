@@ -1,7 +1,12 @@
 package com.virnect.workspace.infra.file;
 
-import java.util.UUID;
-
+import com.amazonaws.services.s3.AmazonS3;
+import com.amazonaws.services.s3.model.CannedAccessControlList;
+import com.amazonaws.services.s3.model.ObjectMetadata;
+import com.amazonaws.services.s3.model.PutObjectRequest;
+import com.virnect.workspace.exception.WorkspaceException;
+import com.virnect.workspace.global.error.ErrorCode;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FilenameUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
@@ -10,15 +15,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.amazonaws.services.s3.AmazonS3;
-import com.amazonaws.services.s3.model.CannedAccessControlList;
-import com.amazonaws.services.s3.model.ObjectMetadata;
-import com.amazonaws.services.s3.model.PutObjectRequest;
-
-import lombok.extern.slf4j.Slf4j;
-
-import com.virnect.workspace.exception.WorkspaceException;
-import com.virnect.workspace.global.error.ErrorCode;
+import java.io.IOException;
+import java.util.UUID;
 
 /**
  * Project: PF-Admin
@@ -32,74 +30,72 @@ import com.virnect.workspace.global.error.ErrorCode;
 @Service
 public class S3FileService implements FileService {
 
-	@Value("${cloud.aws.s3.bucket.name}")
-	private String bucket;
+    @Value("${cloud.aws.s3.bucket.name}")
+    private String bucket;
 
-	@Value("${cloud.aws.s3.prefix}")
-	private String prefix;
+    @Value("${cloud.aws.s3.bucket.extension}")
+    private String allowExtension;
 
-	@Value("${cloud.aws.s3.bucket.extension}")
-	private String allowExtension;
+    private AmazonS3 amazonS3Client;
 
-	private AmazonS3 amazonS3Client;
+    public S3FileService(AmazonS3 amazonS3) {
+        this.amazonS3Client = amazonS3;
+    }
 
-	public S3FileService(AmazonS3 amazonS3) {
-		this.amazonS3Client = amazonS3;
-	}
+    @Override
+    public String upload(MultipartFile file, String workspaceUUID) {
+        String extension = FilenameUtils.getExtension(file.getOriginalFilename());
+        String uniqueFileName = UUID.randomUUID().toString().replace("-", "") + "." + extension;
+        String objectName = String.format("workspace/%s/profile/%s", workspaceUUID, uniqueFileName);
+        log.info(
+                "[FILE UPLOAD] Upload File Info >> bucket : {}, object : {}, fileSize : {}", bucket, objectName,
+                file.getSize()
+        );
 
-	@Override
-	public String upload(MultipartFile file, String workspaceUUID) {
-		String extension = FilenameUtils.getExtension(file.getOriginalFilename());
-		String uniqueFileName = UUID.randomUUID().toString().replace("-", "") + "." + extension;
-		String objectName = String.format("workspace/%s/profile/%s", workspaceUUID, uniqueFileName);
-		log.info(
-			"[FILE UPLOAD] Upload File Info >> bucket : {}, object : {}, fileSize : {}", bucket, objectName,
-			file.getSize()
-		);
+        ObjectMetadata objectMetadata = new ObjectMetadata();
+        objectMetadata.setContentType(MediaType.APPLICATION_OCTET_STREAM_VALUE);
+        objectMetadata.setContentLength(file.getSize());
+        objectMetadata.setHeader("filename", uniqueFileName);
+        objectMetadata.setContentDisposition(String.format("attachment; filename=\"%s\"", uniqueFileName));
 
-		ObjectMetadata objectMetadata = new ObjectMetadata();
-		objectMetadata.setContentType(MediaType.APPLICATION_OCTET_STREAM_VALUE);
-		objectMetadata.setContentLength(file.getSize());
-		objectMetadata.setHeader("filename", uniqueFileName);
-		objectMetadata.setContentDisposition(String.format("attachment; filename=\"%s\"", uniqueFileName));
+        try {
+            PutObjectRequest putObjectRequest = new PutObjectRequest(
+                    bucket, objectName, file.getInputStream(), objectMetadata);
+            putObjectRequest.withCannedAcl(CannedAccessControlList.PublicRead);
 
-		try {
-			PutObjectRequest putObjectRequest = new PutObjectRequest(
-				bucket, objectName, file.getInputStream(), objectMetadata);
-			putObjectRequest.withCannedAcl(CannedAccessControlList.PublicRead);
+            amazonS3Client.putObject(putObjectRequest);
+            String uploadPath = amazonS3Client.getUrl(bucket, objectName).toExternalForm();
+            log.info("[FILE UPLOAD] Upload Result path : [{}],", uploadPath);
+            return uploadPath;
 
-			amazonS3Client.putObject(putObjectRequest);
-			String uploadPath = amazonS3Client.getUrl(bucket, objectName).toExternalForm();
-			log.info("[FILE UPLOAD] Upload Result path : [{}],", uploadPath);
-			return uploadPath;
+        } catch (IOException e) {
+            log.error(e.getMessage());
+            throw new WorkspaceException(ErrorCode.ERR_UNEXPECTED_SERVER_ERROR);
+        }
 
-		} catch (Exception e) {
-			log.error(e.getMessage());
-			throw new WorkspaceException(ErrorCode.ERR_UNEXPECTED_SERVER_ERROR);
-		}
+    }
 
-	}
+    @Override
+    public void delete(String fileUrl) {
+        String prefix = "https://" + bucket + ".s3." + amazonS3Client.getRegionName() + ".amazonaws.com/";
+        if (!StringUtils.hasText(fileUrl)) {
+            return;
+        }
+        String[] fileSplit = fileUrl.split(prefix);
+        String objectName = fileSplit[fileSplit.length - 1];
 
-	@Override
-	public void delete(String fileUrl) {
-		if (!StringUtils.hasText(fileUrl)) {
-			return;
-		}
-		String[] fileSplit = fileUrl.split(prefix);
-		String objectName = fileSplit[fileSplit.length - 1];
+        if (fileUrl.contains(DefaultImageFile.WORKSPACE_PROFILE_IMG.getName())) {
+            log.info("Not Delete Default File Info >> bucket : {}, object : {}", bucket, objectName);
+        } else {
+            amazonS3Client.deleteObject(bucket, objectName);
+            log.info("Delete File Info >> bucket : {}, object : {}", bucket, objectName);
+        }
 
-		if (fileUrl.contains(DefaultFile.WORKSPACE_PROFILE_IMG.getFileName())) {
-			log.info("Not Delete Default File Info >> bucket : {}, object : {}", bucket, objectName);
-		} else {
-			amazonS3Client.deleteObject(bucket, objectName);
-			log.info("Delete File Info >> bucket : {}, object : {}", bucket, objectName);
-		}
+    }
 
-	}
-
-	@Override
-	public String getDefaultFileUrl(String fileName) {
-		String objectName = String.format("workspace/%s", fileName);
-		return amazonS3Client.getUrl(bucket, objectName).toExternalForm();
-	}
+    @Override
+    public String getDefaultFileUrl(DefaultImageFile defaultImageFile) {
+        String prefix = "https://" + bucket + ".s3." + amazonS3Client.getRegionName() + ".amazonaws.com/";
+        return prefix + "workspace/" + defaultImageFile.getName();
+    }
 }

@@ -1,6 +1,6 @@
 package com.virnect.workspace.application.process;
 
-import com.virnect.workspace.dto.rest.SubProcessCountResponse;
+import com.virnect.workspace.application.process.dto.SubProcessCountResponse;
 import com.virnect.workspace.global.common.ApiResponse;
 import feign.hystrix.FallbackFactory;
 import lombok.extern.slf4j.Slf4j;

@@ -4,7 +4,8 @@ New Features
 - 없음
 
 Bug Fixes
-- 워크스페이스 멤버 초대 이슈 (https://virtualconnection.atlassian.net/browse/DPLA-3810)
+- 존재하지 않는 유저 에러 처리 변경 (DEV-2512)
+- 워크스페이스 전용계정 패스워드 변경 실패 에러 수정 (DEV-4167)
 
 Limitation
 - 없음

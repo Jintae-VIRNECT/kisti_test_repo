@@ -1,31 +1,56 @@
 package com.virnect.workspace.api;
 
-import com.virnect.workspace.application.workspaceuser.WorkspaceUserService;
-import com.virnect.workspace.domain.workspace.Role;
-import com.virnect.workspace.dto.request.*;
-import com.virnect.workspace.dto.response.*;
-import com.virnect.workspace.exception.WorkspaceException;
-import com.virnect.workspace.global.common.ApiResponse;
-import com.virnect.workspace.global.common.PageRequest;
-import com.virnect.workspace.global.error.ErrorCode;
+import java.io.IOException;
+import java.util.List;
+import java.util.Locale;
+
+import javax.validation.Valid;
+
+import org.springframework.http.ResponseEntity;
+import org.springframework.util.StringUtils;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.view.RedirectView;
+
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.context.annotation.Profile;
-import org.springframework.http.ResponseEntity;
-import org.springframework.util.StringUtils;
-import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.view.RedirectView;
 import springfox.documentation.annotations.ApiIgnore;
 
-import javax.validation.Valid;
-import java.io.IOException;
-import java.util.List;
-import java.util.Locale;
+import com.virnect.workspace.application.workspaceuser.WorkspaceUserService;
+import com.virnect.workspace.domain.workspace.Role;
+import com.virnect.workspace.dto.request.MemberAccountCreateRequest;
+import com.virnect.workspace.dto.request.MemberAccountDeleteRequest;
+import com.virnect.workspace.dto.request.MemberGuestCreateRequest;
+import com.virnect.workspace.dto.request.MemberGuestDeleteRequest;
+import com.virnect.workspace.dto.request.MemberKickOutRequest;
+import com.virnect.workspace.dto.request.MemberProfileUpdateRequest;
+import com.virnect.workspace.dto.request.MemberUpdateRequest;
+import com.virnect.workspace.dto.request.WorkspaceInviteRequest;
+import com.virnect.workspace.dto.request.WorkspaceMemberPasswordChangeRequest;
+import com.virnect.workspace.dto.response.MemberProfileUpdateResponse;
+import com.virnect.workspace.dto.response.MemberSeatDeleteResponse;
+import com.virnect.workspace.dto.response.WorkspaceMemberInfoListResponse;
+import com.virnect.workspace.dto.response.WorkspaceMemberPasswordChangeResponse;
+import com.virnect.workspace.dto.response.WorkspaceNewMemberInfoResponse;
+import com.virnect.workspace.dto.response.WorkspaceUserInfoListResponse;
+import com.virnect.workspace.dto.response.WorkspaceUserInfoResponse;
+import com.virnect.workspace.dto.response.WorkspaceUserLicenseListResponse;
+import com.virnect.workspace.exception.WorkspaceException;
+import com.virnect.workspace.global.common.ApiResponse;
+import com.virnect.workspace.global.common.PageRequest;
+import com.virnect.workspace.global.error.ErrorCode;
 
 /**
  * Project: PF-Workspace
@@ -55,6 +80,7 @@ public class WorkspaceUserController {
             @ApiImplicitParam(name = "page", value = "size 대로 나눠진 페이지를 조회할 번호", paramType = "query", defaultValue = "0"),
             @ApiImplicitParam(name = "size", value = "페이징 사이즈", dataType = "number", paramType = "query", defaultValue = "20"),
             @ApiImplicitParam(name = "sort", value = "정렬 옵션 데이터(role, joinDate, email, nickname)", paramType = "query", defaultValue = "role,desc"),
+            @ApiImplicitParam(name = "paging", value = "정렬 여부", paramType = "query", defaultValue = "true"),
     })
     @GetMapping("/{workspaceId}/members")
     public ResponseEntity<ApiResponse<WorkspaceUserInfoListResponse>> getMembers(
@@ -64,12 +90,13 @@ public class WorkspaceUserController {
             @RequestParam(value = "role", required = false) List<Role> role,
             @RequestParam(value = "userType", required = false) String userType,
             @RequestParam(value = "plan", required = false) String plan,
+            @RequestParam(value = "paging", required = false, defaultValue = "true") boolean paging,
             @ApiIgnore PageRequest pageable
     ) {
         if (!StringUtils.hasText(workspaceId)) {
             throw new WorkspaceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
-        WorkspaceUserInfoListResponse responseMessage = workspaceUserService.getMembers(workspaceId, search, filter, role, userType, plan, pageable);
+        WorkspaceUserInfoListResponse responseMessage = workspaceUserService.getMembers(workspaceId, search, filter, role, userType, plan, pageable, paging);
         return ResponseEntity.ok(new ApiResponse<>(responseMessage));
     }
 
@@ -168,7 +195,6 @@ public class WorkspaceUserController {
         return ResponseEntity.ok(apiResponse);
     }
 
-    @Profile("!onpremise")
     @ApiOperation(
             value = "워크스페이스 멤버 초대하기",
             notes = "워크스페이스 내에서 사용자를 초대합니다."
@@ -191,8 +217,6 @@ public class WorkspaceUserController {
                 workspaceId, workspaceInviteRequest, locale);
         return ResponseEntity.ok(apiResponse);
     }
-
-    @Profile("!onpremise")
     @ApiOperation(
             value = "워크스페이스 멤버 초대 수락",
             notes = "초대받은 사용자가 이메일 인증에서 초대를 수락합니다."
@@ -213,7 +237,6 @@ public class WorkspaceUserController {
         return redirectView;
     }
 
-    @Profile("!onpremise")
     @ApiOperation(
             value = "워크스페이스 멤버 초대 거절",
             notes = "초대받은 사용자가 이메일 인증에서 초대를 거절합니다."
@@ -350,7 +373,7 @@ public class WorkspaceUserController {
         return ResponseEntity.ok(new ApiResponse<>(response));
     }
 
-    @ApiOperation(value = "워크스페이스 시트 계정 생성")
+    @ApiOperation(value = "워크스페이스 게스트 계정 생성")
     @ApiImplicitParam(name = "workspaceId", value = "워크스페이스 식별자", dataType = "string", defaultValue = "4d6eab0860969a50acbfa4599fbb5ae8", paramType = "path", required = true)
     @PostMapping("/{workspaceId}/members/guest")
     public ResponseEntity<ApiResponse<WorkspaceMemberInfoListResponse>> createWorkspaceMemberAccount(
@@ -390,13 +413,13 @@ public class WorkspaceUserController {
         return ResponseEntity.ok(new ApiResponse<>(response));
     }
 
-    @ApiOperation(value = "워크스페이스 전용계정/시트계정 프로필 이미지 변경")
+    @ApiOperation(value = "워크스페이스 전용계정/게스트계정 프로필 이미지 변경")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "workspaceId", value = "워크스페이스 식별자", dataType = "string", defaultValue = "4d6eab0860969a50acbfa4599fbb5ae8", paramType = "path", required = true),
             @ApiImplicitParam(name = "profile", value = "워크스페이스 프로필", dataType = "__file", paramType = "form"),
     })
     @PostMapping("/{workspaceId}/members/profile")
-    public ResponseEntity<ApiResponse<MemberProfileUpdateResponse>> deleteWorkspaceMemberAccount(
+    public ResponseEntity<ApiResponse<MemberProfileUpdateResponse>> updateWorkspaceOnlyUserOrGuestUserProfile(
             @PathVariable("workspaceId") String workspaceId,
             @ModelAttribute @Valid MemberProfileUpdateRequest memberProfileUpdateRequest, BindingResult bindingResult
     ) {
@@ -406,7 +429,7 @@ public class WorkspaceUserController {
                             objectError -> log.error("[UPDATE WORKSPACE USER PROFILE] Error message : [{}]", objectError));
             throw new WorkspaceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
-        MemberProfileUpdateResponse response = workspaceUserService.updateWorkspaceUserProfile(workspaceId, memberProfileUpdateRequest);
+        MemberProfileUpdateResponse response = workspaceUserService.updateWorkspaceOnlyUserOrGuestUserProfile(workspaceId, memberProfileUpdateRequest);
         return ResponseEntity.ok(new ApiResponse<>(response));
     }
 
