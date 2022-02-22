@@ -49,7 +49,11 @@
             :label="$t(tab.label)"
           />
         </el-tabs>
-        <SearchbarKeyword ref="keyword" :value.sync="stepsSearch" />
+        <SearchbarKeyword
+          ref="keyword"
+          :value.sync="stepsSearch"
+          @change="stepsPage = 1"
+        />
       </el-row>
 
       <!-- 버튼 영역 -->

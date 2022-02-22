@@ -63,6 +63,7 @@ export default class PlansInfo extends Model {
     }
     this.endDate = json.endDate
     this.planStatus = json.planStatus
+    this.maxUserAmount = json.maxUserAmount
     this.products = [
       new Plan(plans.remote),
       new Plan(plans.make),

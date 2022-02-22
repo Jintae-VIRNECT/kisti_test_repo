@@ -88,6 +88,62 @@
           "placeholder": "Please enter IP address.",
           "warning": "Please enter an IP address to allow access.",
           "error": "It's not in IP format."
+        },
+        "message": {
+          "success": "Successfully updated ip acceess control settings."
+        }
+      },
+      "file": {
+        "cycle": {
+          "title": "File Save Settings",
+          "notUsed": "Not Used",
+          "options": [
+            "1 Month",
+            "3 Month",
+            "6 Month",
+            "12 Month"
+          ],
+          "message": {
+            "success": "Settings saved complete.​",
+            "error": "Failed to save settings.​"
+          }
+        },
+        "recording": {
+          "title": "Server record file deletion cycle",
+          "desc": "Set the deletion cycle of recorded files stored in the server."
+        },
+        "attach": {
+          "title": "Attachment deletion cycle",
+          "desc": "Set the deletion cycle of attachments stored on the server."
+        }
+      },
+      "upload": {
+        "title": "Upload install file",
+        "modal": {
+          "title": "Registering {n} installation file",
+          "description1": "Please register the {extension} file when registering {category} installation file.",
+          "description2": "Please register the {extension} file and version information when registering {category} installation file.",
+          "attach": "Attach file",
+          "version": "Version infomation",
+          "placeholder": "Please enter version information. (e.g. X.X.X.X)",
+          "explanation": "When the installation file upload is completed, an update notification window is created when the app is re-run.",
+          "drag": "Drag the {n} File",
+          "add": "Add File",
+          "progressTitle": "Uploading installation file.",
+          "progressMessage": "The selected installation file is being uploaded.<br>Don't close your browser until done.",
+          "cancel": "Cancel",
+          "versionWarning": "Please enter version information.",
+          "submit": "Register"
+        },
+        "success": "The installation file has been uploaded.",
+        "error": {
+          "fail": "Failed to register installation file. Please try again after a while.",
+          "size": "The file is not correct. Please check again.",
+          "notExtension": "Installation file extension not supported.",
+          "duplicateVersion": "Installation file version is duplicated.",
+          "lowVersion": "Installation file version is lower then latest version duplicated.",
+          "wrongExtension": "Please register the {n} file.",
+          "oneFile": "Please only register one file."
         }
       }
     }

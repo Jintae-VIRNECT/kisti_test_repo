@@ -40,6 +40,7 @@ export default {
       a.download = name
       a.target = '_blank'
       a.dispatchEvent(new MouseEvent('click'))
+      URL.revokeObjectURL(a.href)
     },
     /**
      * 텍스트 픽셀길이 계산

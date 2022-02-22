@@ -19,6 +19,7 @@
         class="virnect-workstation-form"
         :model="form"
         :show-message="false"
+        @submit.native.prevent
       >
         <el-form-item
           class="horizon"
@@ -95,7 +96,7 @@ export default {
       } catch (e) {
         const errMsg =
           {
-            1003: this.$t('members.delete.message.wrongPassword'),
+            1016: this.$t('members.delete.message.wrongPassword'),
           }[e.code] ||
           this.$t('members.delete.message.fail') + ` [ERROR CODE : ${e.code}]`
         // 에러

@@ -15,14 +15,20 @@
           <VirnectThumbnail :size="28" :image="cdn(data.profile)" />
           <span>{{ data.nickname }}</span>
           <el-button
-            v-if="$isOnpremise && canKick"
+            v-if="$isOnpremise && canKick && form.role !== 'GUEST'"
             @click="$emit('change-password')"
           >
             {{ $t('members.password.title') }}
           </el-button>
         </dd>
-        <dt>{{ $t('members.setting.email') }}</dt>
-        <dd>{{ data.email }}</dd>
+        <div v-if="form.role === 'GUEST'">
+          <dt>{{ $t('members.setting.guest.id') }}</dt>
+          <dd>{{ data.uuid }}</dd>
+        </div>
+        <div v-else>
+          <dt>{{ $t('members.setting.email') }}</dt>
+          <dd>{{ data.email }}</dd>
+        </div>
       </dl>
       <el-divider />
       <h6>{{ $t('members.setting.setting') }}</h6>
@@ -67,6 +73,7 @@
                 v-model="form.licenseRemote"
                 :label="plans.remote.label"
                 :amount="plansInfo.remote.unUsedAmount"
+                :isGuest="form.role === 'GUEST'"
               />
             </el-form-item>
           </el-col>
@@ -76,6 +83,7 @@
                 v-model="form.licenseMake"
                 :label="plans.make.label"
                 :amount="plansInfo.make.unUsedAmount"
+                :isGuest="form.role === 'GUEST'"
               />
             </el-form-item>
           </el-col>
@@ -85,6 +93,7 @@
                 v-model="form.licenseView"
                 :label="plans.view.label"
                 :amount="plansInfo.view.unUsedAmount"
+                :isGuest="form.role === 'GUEST'"
               />
             </el-form-item>
           </el-col>
@@ -133,7 +142,9 @@ export default {
     }),
     canChangeRole() {
       return (
-        this.form.role !== 'MASTER' && this.activeWorkspace.role === 'MASTER'
+        this.form.role !== 'MASTER' &&
+        this.form.role !== 'GUEST' &&
+        this.activeWorkspace.role === 'MASTER'
       )
     },
     canKick() {

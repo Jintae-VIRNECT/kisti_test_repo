@@ -6,6 +6,7 @@
       :userInfo="auth.myInfo"
       :urls="$url"
       :logo="{ default: logo }"
+      :regex="/remote|workstation|login|download/"
       @logout="$store.commit('auth/LOGOUT')"
     >
       <template slot="subTitle">
@@ -20,7 +21,7 @@
       </template>
     </VirnectHeader>
     <div>
-      <LayoutTheSidebar :menus="sideMenus" :bottomMenus="sideBottomMenus" />
+      <LayoutTheSidebar :menus="menus" :bottomMenus="bottomMenus" />
       <main>
         <nuxt />
       </main>
@@ -29,7 +30,11 @@
 </template>
 
 <script>
-import { sideMenus, sideBottomMenus } from '@/models/layout'
+import {
+  sideMenus,
+  sideBottomMenus,
+  sideOnpremiseBottomMenus,
+} from '@/models/layout'
 import { mapGetters } from 'vuex'
 
 export default {
@@ -59,8 +64,10 @@ export default {
         profile: true,
         portal: true,
       },
-      sideMenus,
-      sideBottomMenus,
+      menus: sideMenus,
+      bottomMenus: this.$isOnpremise
+        ? sideOnpremiseBottomMenus
+        : sideBottomMenus,
     }
   },
   computed: {
@@ -76,10 +83,6 @@ export default {
   methods: {
     changeActiveWorkspace(workspace) {
       this.$store.commit('auth/SET_ACTIVE_WORKSPACE', workspace.uuid)
-    },
-    test() {
-      console.log(this.$router)
-      this.$router.push('/start')
     },
   },
   mounted() {

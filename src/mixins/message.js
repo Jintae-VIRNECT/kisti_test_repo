@@ -5,17 +5,23 @@ export default {
   data() {
     return {
       message: {
-        800: this.$t('members.setting.message.updateSuccess'),
-        900: this.$t('members.add.message.memberOverflow'),
-        1000: this.$t('common.error'),
-        1002: this.$t('members.add.message.memberAlready'),
-        1003: this.$t('members.delete.message.wrongPassword'),
-        1007: this.$t('members.add.message.notHaveAnyPlan'),
-        1008: this.$t('members.add.message.memberOverflow'),
-        1011: this.$t('members.create.message.idDuplicated'),
-        1018: this.$t('members.add.message.memberWithdrawal'),
-        1021: this.$t('members.setting.message.notChangeMasterPlan'),
-        2201: this.$t('members.create.message.idDuplicated'),
+        800: 'members.setting.message.updateSuccess',
+        900: 'members.add.message.memberOverflow',
+        1000: 'common.error',
+        1002: 'members.add.message.memberAlready',
+        1016: 'members.delete.message.wrongPassword',
+        1007: 'members.add.message.notHaveAnyPlan',
+        1008: 'members.add.message.memberOverflow',
+        1011: 'members.create.message.idDuplicated',
+        1018: 'members.add.message.memberWithdrawal',
+        1021: 'members.setting.message.notChangeMasterPlan',
+        2201: 'members.create.message.idDuplicated',
+        2202: 'members.create.message.addedId',
+        6000: 'workspace.onpremiseSetting.upload.error.fail',
+        6001: 'workspace.onpremiseSetting.upload.error.size',
+        6002: 'workspace.onpremiseSetting.upload.error.notExtension',
+        6007: 'workspace.onpremiseSetting.upload.error.duplicateVersion',
+        6008: 'workspace.onpremiseSetting.upload.error.lowVersion',
       },
     }
   },
@@ -52,8 +58,8 @@ export default {
     getMessage(e) {
       const code = this.errorCode(e) ? this.errorCode(e) : this.successCode(e)
       const message = this.message[code]
-        ? this.message[code]
-        : this.message[1000] + `<br>(${e})`
+        ? this.$t(this.message[code])
+        : `${this.$t(this.message[1000])}<br>(${e})`
       return message
     },
     /**

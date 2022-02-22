@@ -5,6 +5,7 @@
     popper-class="member-plan-select__dropdown"
     multiple
     collapse-tags
+    placeholder=""
     :disabled="activeWorkspace.role !== 'MASTER' || isGuest"
     @change="change"
   >

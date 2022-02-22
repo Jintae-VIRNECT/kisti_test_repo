@@ -69,7 +69,8 @@
         "shared": "Shared",
         "selectMember": "Designated Member",
         "searchMember": "Member Search",
-        "edit": "Edit"
+        "edit": "Edit",
+        "configuration": "Configuration"
       },
       "target": {
         "title": "Target",
@@ -86,11 +87,10 @@
         "upload": "Uploaded a project.",
         "edit": "Changed the permission to edit information to {member}.",
         "shared": "Changed the sharing status to {member}.",
-        "moveTrash": "Moved the project to the Trash.",
-        "backup": "Moved the deleted project to the project list.",
         "download": "Downloaded the project.",
         "empty": "No activity history",
-        "delete": "Deleted the project."
+        "delete": "Deleted the project.",
+        "overwrite": "The project was overwritten."
       },
       "message": {
         "moveTrash": "Move to trash",
@@ -99,7 +99,7 @@
         "delete": "Delete selected project",
         "deleteSure": "Are you sure you want to delete the selected project? <br>Deleted projects are not restored.",
         "deleteSuccess": "The project has been deleted.",
-        "deleteFail": "Failed to delete project. Please try again after a while.",
+        "deleteFail": "Failed to delete {n} projects.",
         "deleteNotExist": "The selected project does not exist in the workspace. Please check again.",
         "updateShareSuccess": "Project share status has changed",
         "updateShareFail": "Failed to change project share state.",
@@ -113,7 +113,16 @@
         "updateEditMemberNotExist": "Only workspace members can be set as edit-designated members.",
         "updateNotExist": "The selected project does not exist in the workspace. Please check again.",
         "backup": "Moved the deleted project to the project list.",
-        "emptySelectMember": "Please select a designation member."
+        "emptySelectMember": "Please select a designation member.",
+        "deleteFailsPhrase": "The specified project file cannot be found or you do not have editing rights.",
+        "sharePermissionRelease": "The sharing permission for that project has been lifted.​",
+        "editPermissionRelease": "Editing rights for that project have been revoked.​",
+        "downloadFailMaxSize": "The file cannot be downloaded because the file size exceeds {0}MB.",
+        "downloadFailsPhrase": "You do not have download rights for that project."
+      },
+      "download": {
+        "title": "Downloading file",
+        "desc": "The selected file is being downloaded.<br>Do not close your browser until finished."
       }
     }
   }

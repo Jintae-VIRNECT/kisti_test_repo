@@ -13,6 +13,7 @@ export default class Task extends Model {
     this.name = json.name
     this.contentUUID = json.contentUUID
     this.contentManagerUUID = json.contentManagerUUID
+    this.workerUUID = json.workerUUID
     this.position = json.position
     this.conditions = json.conditions
     this.state = json.state

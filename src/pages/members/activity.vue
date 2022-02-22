@@ -14,7 +14,7 @@
       <el-row class="btn-wrapper searchbar">
         <!-- <el-col class="left"> </el-col>
         <el-col class="right">
-          <SearchbarKeyword ref="keyword" :value.sync="activitySearch" />
+          <SearchbarKeyword ref="keyword" :value.sync="activitySearch" @change="activityPage = 1" />
         </el-col> -->
       </el-row>
 

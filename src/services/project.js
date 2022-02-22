@@ -1,8 +1,9 @@
-import { api } from '@/plugins/axios'
+import { api, allSettled, fileDownloadApi } from '@/plugins/axios'
 import { store } from '@/plugins/context'
 
 // model
 import Project from '@/models/project/Project'
+import ProjectActivityLog from '@/models/project/ProjectActivityLog'
 
 function activeWorkspaceGetter() {
   return store.getters['auth/activeWorkspace']
@@ -27,6 +28,9 @@ export default {
       delete params.filter
     }
 
+    params.sort =
+      params.sort && params.sort.replace('targetType', 'target.type')
+
     const userUUID = myProfileGetter().uuid
     const workspaceUUID = activeWorkspaceGetter().uuid
 
@@ -46,7 +50,7 @@ export default {
 
     return {
       list: data.projectInfoList.map(project => new Project(project)),
-      total: data.pageMeta.totalElements,
+      pageMeta: data.pageMeta,
     }
   },
   /**
@@ -75,6 +79,73 @@ export default {
         userUUID: myProfileGetter().uuid,
         ...form,
       },
+    })
+  },
+  /**
+   * @description 프로젝트 삭제
+   * @param {Array} projectUUIDList
+   */
+  async deleteProject(projectUUIDList) {
+    const promises = projectUUIDList.map(projectUUID => {
+      return api('PROJECT_DELETE', {
+        route: { projectUUID: projectUUID },
+      })
+    })
+
+    const errors = []
+
+    await allSettled(promises).then(results =>
+      results.forEach((result, i) => {
+        if (result.status === 'rejected') {
+          const { reason } = result
+          errors.push({
+            message: `Error ` + reason.message,
+            projectUUID: projectUUIDList[i],
+          })
+        }
+      }),
+    )
+    if (errors.length) throw errors
+  },
+  /**
+   * @description 프로젝트의 활동 이력 조회
+   * @param {String} projectUUID
+   * @param {Object} form
+   */
+  async searchProjectActivities(projectUUID, form) {
+    const data = await api('PROJECT_ACTIVITIES', {
+      route: { projectUUID },
+      params: {
+        userUUID: myProfileGetter().uuid,
+        size: 10,
+        sort: 'createdDate,desc',
+        ...form,
+      },
+    })
+
+    return {
+      list: data.projectActivityLogList.map(
+        activityLog => new ProjectActivityLog(activityLog),
+      ),
+      pageMeta: data.pageMeta,
+    }
+  },
+  /**
+   * 프로젝트 다운로드
+   * @param {Array} projectUUIDList
+   * @param {requestCallback} onDownloadProgress - 다운로드 퍼센테이지
+   * @returns {Object} url 파일 다운로드, fileName 파일명
+   */
+  async downloadProjects(projectUUIDList, onDownloadProgress, cancelEvent) {
+    return await fileDownloadApi('PROJECT_DOWNLOAD', {
+      params: {
+        userUUID: myProfileGetter().uuid,
+        workspaceUUID: activeWorkspaceGetter().uuid,
+        projectUUIDList: projectUUIDList.join(','),
+      },
+      responseType: 'blob',
+      onDownloadProgress,
+      cancelEvent,
     })
   },
 }

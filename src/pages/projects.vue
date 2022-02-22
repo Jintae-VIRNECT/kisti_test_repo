@@ -30,13 +30,6 @@
         </el-col>
         <el-col class="right">
           <el-button-group>
-            <el-button
-              @click="download(content.target.imgPath, content.contentName)"
-              type="text"
-              :disabled="!true"
-            >
-              <img src="~assets/images/icon/ic-file-download.svg" />
-            </el-button>
             <el-button @click="remove" type="text" :disabled="!canRemove">
               <img src="~assets/images/icon/ic-delete.svg" />
             </el-button>
@@ -45,6 +38,7 @@
             ref="keyword"
             :value.sync="projectsSearch"
             placeholder="projectTitle"
+            @change="projectsPage = 1"
           />
         </el-col>
       </el-row>
@@ -71,7 +65,9 @@
               sortable="custom"
               :width="120"
             />
+            <!-- 임시로 모드영역 숨김처리 -->
             <el-table-column
+              v-if="false"
               prop="modeList"
               :label="$t('projects.allprojects.column.mode')"
               :width="290"
@@ -83,7 +79,7 @@
             <ColumnUser
               :label="$t('projects.allprojects.column.uploader')"
               prop="uploaderUUID"
-              nameProp="uploaderName"
+              nameProp="uploaderNickname"
               imageProp="uploaderProfile"
               :width="160"
             />
@@ -131,27 +127,22 @@ import { mapGetters } from 'vuex'
 import searchMixin from '@/mixins/search'
 import columnsMixin from '@/mixins/columns'
 import utils from '@/mixins/utils'
+import { Loading } from 'element-ui'
 import { projectFilterList, memberRoleFilter } from '@/models/project/Project'
 
 export default {
   mixins: [searchMixin, columnsMixin, utils],
-  async asyncData({ query }) {
-    const projectsSearch = query.search || ''
-    const { list, total } = await projectService.searchProjects({
-      search: projectsSearch,
-    })
-    return {
-      projectsList: list,
-      projectsTotal: total,
-      projectsSearch,
-    }
-  },
   data() {
     return {
       loading: false,
       projectFilterList,
+      projectsSearch: '',
+      projectsSort: 'createdDate,desc',
       projectsPage: 1,
       canRemove: false,
+      projectsList: [],
+      projectsTotal: 0,
+      pageMeta: {},
     }
   },
   methods: {
@@ -162,14 +153,40 @@ export default {
       this.searchProjects()
     },
     async searchProjects() {
+      this.projectsSort = this.searchParams.sort || this.projectsSort
       // this.searchParams 는 searchMixin에서 가져와 사용
-      const { list, total } = await projectService.searchProjects(
-        Object.assign({}, this.searchParams),
+      const { list, pageMeta } = await this.$store.dispatch(
+        'project/getProjectList',
+        Object.assign(
+          {},
+          {
+            ...this.searchParams,
+            sort: this.projectsSort,
+          },
+        ),
       )
       this.projectsList = list
-      this.projectsTotal = total
+      this.pageMeta = pageMeta
+      this.projectsTotal = pageMeta.totalElements
     },
     rowClick(row) {
+      // 현재 프로젝트 리스트 목록을 store에 저장합니다.
+      this.$store.dispatch('project/setProjectState', {
+        list: this.projectsList,
+        pageMeta: this.pageMeta,
+        searchParams: Object.assign(
+          {},
+          {
+            ...this.searchParams,
+            sort: this.projectsSort,
+          },
+        ),
+      })
+      // 클릭한 프로젝트가, 페이징된 프로젝트 목록에서 몇 번째 인덱스인지 계산.
+      this.$store.commit('project/SET_CURRENT_INDEX', row.uuid)
+      // 클릭한 프로젝트까지의 총 프로젝트 갯수를 저장.
+      this.$store.commit('project/SET_CURRENT_TOTAL_ELEMENTS')
+
       this.$router.push(`/projects/${row.uuid}`)
     },
     selectionChanged(selection) {
@@ -189,22 +206,24 @@ export default {
         return false
       }
       try {
+        const selectedProjects = this.$refs.table.selection.map(
+          project => project.uuid,
+        )
+        await projectService.deleteProject(selectedProjects)
+
         this.$message.success({
           message: this.$t('projects.info.message.deleteSuccess'),
           duration: 2000,
           showClose: true,
         })
       } catch (errors) {
-        errors.forEach((e, index) => {
-          setTimeout(() => {
-            this.$message.error({
-              message:
-                this.$t('projects.info.message.deleteFail') +
-                `\n(${e.msg} / contentUUID: ${e.contentUUID})`,
-              duration: 4000,
-              showClose: true,
-            })
-          }, index * 100)
+        this.$message.error({
+          message:
+            this.$tc('projects.info.message.deleteFail', errors.length) +
+            `<br>${this.$t('projects.info.message.deleteFailsPhrase')}`,
+          dangerouslyUseHTMLString: true,
+          duration: 4000,
+          showClose: true,
         })
       }
       this.emitChangedSearchParams()
@@ -214,6 +233,7 @@ export default {
      */
     refreshParams() {
       this.projectFilterList.map(filter => (filter.type.value = ['ALL']))
+      this.projectsSort = 'createdDate,desc'
       this.projectsSearch = ''
       this.projectsPage = 1
 
@@ -274,9 +294,9 @@ export default {
       position: absolute;
       right: 0;
       bottom: 0;
-      width: 220px;
       height: 34px;
       margin-bottom: 7px;
+      padding: 0 30px;
     }
   }
   .searchbar {
@@ -289,7 +309,20 @@ export default {
       margin-right: 20px;
     }
     .filter {
-      width: 25%;
+      width: 22%;
+    }
+    .el-input__inner {
+      width: 120px;
+    }
+    .el-select__tags {
+      flex-wrap: nowrap;
+      max-width: 97px;
+    }
+    .searchbar__filter .selected .el-tag {
+      width: 90px;
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
     }
   }
 }

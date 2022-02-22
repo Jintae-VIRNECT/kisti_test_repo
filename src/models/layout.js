@@ -16,8 +16,14 @@ export const sideMenus = [
   {
     path: '/contents',
     collapse: 'collapseContents',
-    image: require('assets/images/icon/ic-description.svg'),
-    label: 'menu.contents',
+    image: require('assets/images/icon/ic-content.svg'),
+    label: 'menu.content',
+  },
+  {
+    path: '/projects',
+    collapse: 'collapseProjects',
+    image: require('assets/images/icon/ic-project.svg'),
+    label: 'menu.projects',
   },
   {
     divider: true,
@@ -33,6 +39,15 @@ export const sideMenus = [
 export const sideBottomMenus = [
   {
     path: '/workspace/setting',
+    image: require('assets/images/icon/ic-setting.svg'),
+    label: 'menu.workspaceSetting',
+  },
+]
+
+export const sideOnpremiseBottomMenus = [
+  {
+    path: '/workspace/setting',
+    collapse: 'collapseSettings',
     image: require('assets/images/icon/ic-setting.svg'),
     label: 'menu.workspaceSetting',
   },

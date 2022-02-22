@@ -1,8 +1,8 @@
 .project-info-modal .el-dialog__body {
   height: 815px;
   max-height: 870px;
-  padding: 16px 0 28px 24px;
   margin-right: 6px;
+  padding: 16px 0 28px 24px;
 
   .el-row {
     align-items: stretch;
@@ -21,14 +21,15 @@
 
   .infos {
     height: 100%;
-    overflow: scroll;
     padding-right: 20px;
+    overflow: scroll;
   }
 
   .el-tabs {
     margin-bottom: 20px;
   }
   .el-tabs .el-tabs__item {
+    top: -6px;
     height: 40px;
     font-size: 14px;
     line-height: 40px;
@@ -36,8 +37,8 @@
 
   .actionbar {
     height: 36px;
-    text-align: right;
     padding-bottom: 15px;
+    text-align: right;
     .el-button {
       height: 20px;
       margin-left: 16px;
@@ -74,9 +75,9 @@
     height: $heigth;
     margin: $margin;
     padding: $padding;
-    border-radius: 2px;
-    border: solid 1px #e0e5ef;
     background-color: rgba(244, 246, 250, 0.8);
+    border: solid 1px #e0e5ef;
+    border-radius: 2px;
   }
 
   dl.gray-row {
@@ -91,8 +92,8 @@
       & > div {
         display: flex;
         flex-direction: row;
-        justify-content: space-between;
         align-items: center;
+        justify-content: space-between;
         width: 80px;
         dt,
         dd {
@@ -115,9 +116,9 @@
   }
 
   div.activity {
+    top: -10px;
     display: flex;
     align-items: flex-start;
-    top: -10px;
     .el-col:nth-child(1) {
       margin-top: 5px;
     }
@@ -125,13 +126,13 @@
       margin: 0 0 2px 0;
     }
     dd {
-      margin: 0 0 8px 0;
+      margin: 0 0 6px 0;
       overflow: unset;
       white-space: unset;
     }
     span {
-      font-size: 12px;
       color: #98a0a6;
+      font-size: 12px;
     }
     .el-divider {
       margin: 12px 0;
@@ -144,17 +145,17 @@
 
       .el-input__inner {
         height: 36px;
+        color: #0b1f48;
         font-size: 13px;
         line-height: 20px;
-        color: #0b1f48;
       }
     }
     .el-button {
-      width: 56px;
       height: 36px;
+      margin-left: 8px;
+      padding: 0 11px;
       color: #1e242b;
       background-color: #dee1e6;
-      margin-left: 8px;
     }
     dd:nth-child(1n) {
       margin-bottom: 8px;
@@ -189,9 +190,6 @@
     white-space: nowrap;
     text-overflow: ellipsis;
 
-    &.project-uuid {
-      overflow: visible;
-    }
     & > img {
       float: right;
       margin-left: 12px;
@@ -236,13 +234,13 @@
   }
   .no-target {
     display: flex;
-    justify-content: center;
     align-items: center;
+    justify-content: center;
     height: 100%;
     span {
-      font-size: 27px;
-      font-weight: 800;
       color: rgb(110 127 155);
+      font-weight: 800;
+      font-size: 27px;
     }
   }
 

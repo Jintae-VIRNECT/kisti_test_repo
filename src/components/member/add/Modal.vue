@@ -47,19 +47,19 @@
         <MemberAddInvitePane
           v-show="tabName === 'invite'"
           :membersTotal.sync="membersTotal"
-          :maximum.sync="maximum"
+          :maximum.sync="plansInfo.maxUserAmount"
           @updated="updated"
         />
         <MemberAddCreatePane
           v-show="tabName === 'create'"
           :membersTotal.sync="membersTotal"
-          :maximum.sync="maximum"
+          :maximum.sync="plansInfo.maxUserAmount"
           @updated="updated"
         />
         <MemberAddGuestPane
           v-show="tabName === 'guest'"
           :membersTotal.sync="membersTotal"
-          :maximum.sync="maximum"
+          :maximum.sync="plansInfo.maxUserAmount"
           @updated="updated"
         />
       </div>
@@ -69,6 +69,7 @@
 
 <script>
 import modalMixin from '@/mixins/modal'
+import { mapGetters } from 'vuex'
 
 export default {
   mixins: [modalMixin],
@@ -79,7 +80,6 @@ export default {
     return {
       showMe: true,
       tabName: this.$isOnpremise ? 'create' : 'invite',
-      maximum: 49,
     }
   },
   methods: {
@@ -97,6 +97,9 @@ export default {
     },
   },
   computed: {
+    ...mapGetters({
+      plansInfo: 'plan/plansInfo',
+    }),
     cssVars() {
       return this.$isOnpremise ? '4vh' : '11vh'
     },
@@ -107,13 +110,13 @@ export default {
 <style lang="scss">
 #__nuxt .member-add-modal {
   .el-dialog__body {
-    padding: 0;
     max-height: none;
+    padding: 0;
   }
   &--left {
-    border-right: 1px solid #eaeef2;
-    padding: 12px;
     width: 184px;
+    padding: 12px;
+    border-right: 1px solid #eaeef2;
     button:first-child {
       margin-top: 0;
     }
@@ -124,14 +127,23 @@ export default {
   .member-add-modal__content {
     display: flex;
   }
+  .close-button {
+    width: 20px;
+    height: 20px;
+    padding: 0;
+    background: none;
+    &:hover {
+      background: none;
+    }
+  }
   .member-add-modal__tab-button {
+    display: flex;
     width: 160px;
     min-height: 38px;
     margin: 2px 0;
     padding: 9px 12px;
-    border-radius: 3px;
     text-align: left;
-    display: flex;
+    border-radius: 3px;
     &:hover {
       background-color: #eff2f7;
     }

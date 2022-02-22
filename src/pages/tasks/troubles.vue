@@ -17,7 +17,11 @@
           <SearchbarMine ref="mine" :mineLabel="$t('troubles.list.myTm')" />
         </el-col>
         <el-col class="right">
-          <SearchbarKeyword ref="keyword" :value.sync="troubleSearch" />
+          <SearchbarKeyword
+            ref="keyword"
+            :value.sync="troubleSearch"
+            @change="troublesPage = 1"
+          />
         </el-col>
       </el-row>
 
@@ -94,7 +98,9 @@ export default {
       this.searchTroubles()
     },
     async searchTroubles() {
-      const { list, total } = await resultService.searchTroubles()
+      const { list, total } = await resultService.searchTroubles(
+        this.searchParams,
+      )
       this.troublesList = list
       this.troublesTotal = total
     },

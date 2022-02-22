@@ -18,13 +18,19 @@
         class="virnect-workstation-form"
         :model="form"
         :rules="rules"
+        @submit.native.prevent
       >
         <h6>
           <img src="~assets/images/icon/ic-person.svg" />
           <span>{{ `${$t('members.create.createMember')} ${index + 1}` }}</span>
-          <button @click.prevent="clearMember(index)">
+          <el-button
+            v-if="index"
+            class="close-button"
+            @submit.native.prevent
+            @click.prevent="clearMember(index)"
+          >
             <i class="el-icon-close" />
-          </button>
+          </el-button>
         </h6>
         <el-form-item class="horizon" prop="id" required>
           <template slot="label">
@@ -37,6 +43,7 @@
               maxlength="20"
               :disabled="form.duplicateCheck"
               :placeholder="$t('members.create.idPlaceholder')"
+              @keyup.enter.native="idEnterEvent(form, index, valid)"
             />
             <el-button
               type="primary"
@@ -49,7 +56,7 @@
               type="primary"
               v-show="!form.duplicateCheck"
               @click="checkMembersId(form)"
-              :disabled="form.id.length === 0 || !valid"
+              :disabled="!form.id.length || !valid"
               :class="cssVars"
               >{{ $t('members.create.idCheck') }}</el-button
             >
@@ -164,6 +171,11 @@ export default {
       // 아이디를 입력하지 않고 중복체크 불가
       if (!member.id.length) return false
 
+      // 서버에서 중복 체크하기 전에 계정 생성 목록에 중복된 아이디 체크
+      if (this.userInfoList.filter(user => user.id === member.id).length >= 2) {
+        return this.errorMessage('Error: 2202')
+      }
+
       try {
         const result = await workspaceService.checkMembersId(member.id)
         if (result) {
@@ -209,6 +221,7 @@ export default {
       }
     },
     clearMember(index) {
+      if (!index) return false
       this.userInfoList.splice(index, 1)
       this.choosePlan()
     },
@@ -224,6 +237,10 @@ export default {
       this.initAvailablePlans()
     },
     async submit() {
+      if (this.availableMember > this.maximum) {
+        this.errorMessage('Error: 900')
+        return
+      }
       // 유효성 검사
       try {
         await Promise.all(this.$refs.form.map(form => form.validate()))
@@ -266,6 +283,13 @@ export default {
         else {
           this.errorMessage(e)
         }
+      }
+    },
+    idEnterEvent(form, index, valid) {
+      if (valid) {
+        this.checkMembersId(form)
+      } else {
+        this.userInfoList[index].duplicateCheck = false
       }
     },
   },
@@ -337,8 +361,8 @@ export default {
       }
     }
     .el-button {
-      font-size: 13px;
       margin: 0;
+      font-size: 13px;
       &.en {
         width: 133px;
       }
@@ -348,24 +372,24 @@ export default {
   .create-pane__title {
     h6 {
       @include fontLevel(100);
-      color: #0b1f48;
       margin-bottom: 8px;
+      color: #0b1f48;
     }
     p {
       @include fontLevel(75);
-      color: #445168;
       margin-bottom: 16px;
+      color: #445168;
     }
   }
   .create-pane__content {
-    overflow-y: scroll;
+    width: 610px;
     max-height: 498px;
     padding: 0 5px 0 24px;
-    width: 610px;
+    overflow-y: scroll;
     .el-tabs .el-tabs__item {
       height: 40px;
-      line-height: 40px;
       padding: 0 14px;
+      line-height: 40px;
     }
   }
   .create-pane__sub-title {
@@ -374,8 +398,8 @@ export default {
     border-bottom: 1px solid #eaedf3;
     p {
       @include fontLevel(75);
-      color: #0b1f48;
       margin-bottom: 8px;
+      color: #0b1f48;
     }
     .el-divider--horizontal {
       margin: 8px 0 16px 0;
@@ -391,8 +415,8 @@ export default {
   }
   .create-pane__footer {
     display: flex;
-    padding: 24px;
     justify-content: space-between;
+    padding: 24px;
     border-top: 1px solid #edf0f7;
   }
 }
