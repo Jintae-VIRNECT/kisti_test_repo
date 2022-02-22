@@ -1,6 +1,8 @@
 package com.virnect.uaa.domain.user.application;
 
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -15,11 +17,11 @@ import com.virnect.uaa.domain.user.dao.user.UserRepository;
 import com.virnect.uaa.domain.user.dao.useraccesslog.UserAccessLogRepository;
 import com.virnect.uaa.domain.user.dao.userpermission.UserPermissionRepository;
 import com.virnect.uaa.domain.user.domain.User;
+import com.virnect.uaa.domain.user.dto.request.GuestMemberDeleteRequest;
+import com.virnect.uaa.domain.user.dto.request.GuestMemberRegistrationRequest;
 import com.virnect.uaa.domain.user.dto.request.MemberDeleteRequest;
 import com.virnect.uaa.domain.user.dto.request.MemberPasswordUpdateRequest;
 import com.virnect.uaa.domain.user.dto.request.MemberRegistrationRequest;
-import com.virnect.uaa.domain.user.dto.request.GuestMemberDeleteRequest;
-import com.virnect.uaa.domain.user.dto.request.GuestMemberRegistrationRequest;
 import com.virnect.uaa.domain.user.dto.request.UserIdentityCheckRequest;
 import com.virnect.uaa.domain.user.dto.response.MemberPasswordUpdateResponse;
 import com.virnect.uaa.domain.user.dto.response.UserDeleteResponse;
@@ -161,18 +163,42 @@ public class MemberUserInformationService {
 				() -> new UserServiceException(UserAccountErrorCode.ERR_REGISTER_SEAT_MEMBER_MASTER_PERMISSION_DENIED)
 			);
 		String seatUserPassword = masterUser.getUuid() + "_" + guestMemberRegistrationRequest.getWorkspaceUUID();
-		int currentSeatUserCount = (int)userRepository.countCurrentGuestUserNumber(masterUser);
 
-		User seatUser = User.ByRegisterGuestMemberUserBuilder()
+		int nextSeatUserNumber = calculateNextSeatUserNumber(masterUser);
+
+		User seatUser = User.byRegisterGuestMemberUserBuilder()
 			.workspaceUUID(guestMemberRegistrationRequest.getWorkspaceUUID())
 			.masterUser(masterUser)
 			.encodedPassword(passwordEncoder.encode(seatUserPassword))
-			.seatUserSequence(currentSeatUserCount + 1)
+			.seatUserSequence(nextSeatUserNumber)
 			.build();
 
 		userRepository.save(seatUser);
 
 		return userInfoMapper.toUserInfoResponse(seatUser);
+	}
+
+	public int calculateNextSeatUserNumber(User masterUser) {
+		List<Integer> seatUserSequenceNumbers = userRepository.findAllSeatUserNicknames(masterUser)
+			.stream()
+			.filter(nickname -> nickname.matches("^GuestUser-\\d+$"))
+			.map(nickname -> Integer.parseInt(nickname.split("-")[1]))
+			.sorted()
+			.collect(Collectors.toList());
+
+		if (seatUserSequenceNumbers.isEmpty()) {
+			return 1;
+		}
+
+		int lastSequenceNumber = seatUserSequenceNumbers.get(seatUserSequenceNumbers.size() - 1);
+
+		for (int i = 0; i < lastSequenceNumber; i++) {
+			if (seatUserSequenceNumbers.get(i) != i + 1) {
+				return i + 1;
+			}
+		}
+
+		return lastSequenceNumber + 1;
 	}
 
 	/**

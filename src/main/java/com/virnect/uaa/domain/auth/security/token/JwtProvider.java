@@ -1,5 +1,6 @@
 package com.virnect.uaa.domain.auth.security.token;
 
+import java.time.Duration;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Base64;
@@ -142,7 +143,7 @@ public class JwtProvider {
 	}
 
 	public long getAccessTokenExpire() {
-		return tokenProperty.getJwtConfig().getAccessTokenExpire();
+		return Duration.ofMillis(tokenProperty.getJwtConfig().getAccessTokenExpire()).getSeconds();
 	}
 
 	private String getJwtSecret() {

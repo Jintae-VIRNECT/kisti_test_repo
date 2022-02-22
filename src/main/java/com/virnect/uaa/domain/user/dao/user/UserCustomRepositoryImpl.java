@@ -103,11 +103,6 @@ public class UserCustomRepositoryImpl extends QuerydslRepositorySupport implemen
 	}
 
 	@Override
-	public long countCurrentGuestUserNumber(User masterUser) {
-		return query.selectFrom(user).where(user.master.eq(masterUser).and(user.userType.eq(GUEST_USER))).fetchCount();
-	}
-
-	@Override
 	public Optional<User> findSeatUserByMasterAndSeatUserUUID(User masterUser, String uuid) {
 		User seatUser = query.selectFrom(QUser.user)
 			.where(
@@ -135,6 +130,33 @@ public class UserCustomRepositoryImpl extends QuerydslRepositorySupport implemen
 	public List<User> findAllSeatUsersByWorkspaceId(String workspaceId) {
 		String seatUserDomain = "@" + workspaceId + ".com";
 		return query.selectFrom(user).where(user.email.endsWith(seatUserDomain)).fetch();
+	}
+
+	@Override
+	public List<String> findAllSeatUserNicknames(User masterUser) {
+		return query.select(user.nickname)
+			.from(user)
+			.where(
+				user.master.eq(masterUser),
+				user.userType.eq(GUEST_USER)
+			)
+			.fetch();
+	}
+
+	@Override
+	public List<User> findAllChildUsers(User masterUser) {
+		return query
+			.selectFrom(user)
+			.where(user.master.eq(masterUser))
+			.fetch();
+	}
+
+	@Override
+	public long deleteAllByIdIn(List<Long> deleteUserIds) {
+		return query
+			.delete(user)
+			.where(user.id.in(deleteUserIds))
+			.execute();
 	}
 
 	/**

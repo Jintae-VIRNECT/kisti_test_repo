@@ -8,7 +8,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.virnect.uaa.domain.user.domain.User;
-import com.virnect.uaa.domain.user.domain.UserType;
 
 /**
  * Project: user
