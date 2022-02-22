@@ -7,7 +7,7 @@ spring:
     password: virnect1234
   jpa:
     hibernate:
-      ddl-auto: none
+      ddl-auto: update
     show-sql: false
     database-platform: org.hibernate.dialect.MySQL5InnoDBDialect
     properties:
@@ -32,7 +32,7 @@ license-server:
     listOfServers: http://192.168.6.3:8632
 account-server:
   ribbon:
-    listOfServers: http://192.168.6.3:8081
+    listOfServers: http://192.168.6.3:8322
 workspace-server:
   ribbon:
     listOfServers: http://192.168.6.3:8082
@@ -55,7 +55,6 @@ server:
 # File Upload Configuration
 file:
   allowed-extension: ".ares,.mars,.Ares,.Mars"
-  prefix: "https://192.168.6.3:2838/virnect-platform/"
 
 ## FEIGN Configuration
 feign:

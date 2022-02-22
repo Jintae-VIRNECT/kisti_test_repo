@@ -42,11 +42,12 @@ public class MinioDownloadService implements FileDownloadService {
 	@Value("${minio.bucket}")
 	private String bucketName;
 
-	@Value("${file.prefix}")
-	private String prefix;
+	@Value("${minio.server}")
+	private String minioServer;
 
 	@Override
 	public byte[] fileDownloadByFileName(String fileUrl) {
+		String prefix = minioServer + "/" + bucketName + "/";
 		log.info("PARSER - URL: [{}]", fileUrl);
 		String[] fileSplit = fileUrl.split(prefix);
 		String objectName = fileSplit[fileSplit.length - 1];

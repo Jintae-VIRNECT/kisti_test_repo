@@ -83,7 +83,6 @@ public class ProcessCustomRepositoryImpl extends QuerydslRepositorySupport imple
 	) {
 		JPAQuery<Process> query = queryFactory.select(qProcess)
 			.from(qProcess)
-			.join(qProcess.subProcessList, qSubProcess)
 			.join(qProcess.targetList, qTarget)
 			.where(
 				eqWorkspaceUUID(workspaceUUID), inWorkerUUIDOrEqSearch(userUUIDList, search), eqTargetType(targetType))
@@ -157,9 +156,13 @@ public class ProcessCustomRepositoryImpl extends QuerydslRepositorySupport imple
 	) {
 		JPAQuery<Process> query = queryFactory.select(qProcess)
 			.from(qProcess)
-			.join(qProcess.subProcessList, qSubProcess)
+			.leftJoin(qProcess.subProcessList, qSubProcess)//하위작업이 없는 경우도 있으므로 leftJoin.
 			.join(qProcess.targetList, qTarget)
-			.where(eqWorkspaceUUID(workspaceUUID), eqWorkerUUID(myUUID), eqTitle(title), eqTargetType(targetType))
+			.where(
+				eqWorkspaceUUID(workspaceUUID), eqProcessOrSubProcessWorkerUUID(myUUID),
+				eqTitle(title),
+				eqTargetType(targetType)
+			)
 			.groupBy(qProcess.id);
 
 		//TODO: 작업 상태 필터링 부분 쿼리 개선 필요
@@ -185,11 +188,11 @@ public class ProcessCustomRepositoryImpl extends QuerydslRepositorySupport imple
 		return qProcess.workspaceUUID.eq(workspaceUUID);
 	}
 
-	private BooleanExpression eqWorkerUUID(String workerUUID) {
+	private BooleanExpression eqProcessOrSubProcessWorkerUUID(String workerUUID) {
 		if (StringUtils.isEmpty(workerUUID)) {
 			return null;
 		}
-		return qSubProcess.workerUUID.eq(workerUUID);
+		return qProcess.workerUUID.eq(workerUUID).or(qSubProcess.workerUUID.eq(workerUUID));
 	}
 
 	private BooleanExpression eqTitle(String title) {

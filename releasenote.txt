@@ -1,13 +1,13 @@
 RELEASE
 
 New Features
-- 신규 타겟 타입(Image) 추가 (DEV-805)
+- 없음
 
 Bug Fixes
-- 작업 상세조회 시 컨텐츠 사이즈 미응답 에러 수정 (DEV-806)
+- 트러블 메모에 워크스페이스 정보 추가 (https://virtualconnection.atlassian.net/browse/DEV-1488)
+- 작업에 담당자 정보 추가 (https://virtualconnection.atlassian.net/browse/DEV-1256)
 
 Limitation
-- 컨텐츠 타겟 리소스 저장 디렉토리 변경 (DEV-829)
-- 이슈 보고일자 변경 (DEV-664)
+- 없음
 
 Copyright (C) 2020, VIRNECT CO., LTD. - All Rights Reserved
