@@ -26,6 +26,7 @@ import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
@@ -41,6 +42,7 @@ import io.minio.BucketExistsArgs;
 import io.minio.MakeBucketArgs;
 import io.minio.MinioClient;
 import io.minio.PutObjectArgs;
+import io.minio.PutObjectOptions;
 import io.minio.RemoveObjectArgs;
 import io.minio.RemoveObjectsArgs;
 import io.minio.Result;
@@ -436,31 +438,31 @@ public class LocalFileManagementService implements IFileManagementService {
         String objectName = String.format("%s_%s", LocalDate.now(), RandomStringUtils.randomAlphabetic(20));
         StringBuilder objectPath = new StringBuilder();
         switch (fileType) {
-            case FILE: {
+            case FILE:
+            case SHARE: {
                 // check file size
                 if (file.getSize() > MAX_FILE_SIZE) {
                     LogMessage.formedError(
-                            TAG,
-                            "file upload",
-                            "upload",
-                            "this file size over the max size",
-                            String.valueOf(file.getSize())
+                        TAG,
+                        "file upload",
+                        "upload",
+                        "this file size over the max size",
+                        String.valueOf(file.getSize())
                     );
                     return new UploadResult(null, ErrorCode.ERR_FILE_SIZE_LIMIT);
                 }
-
                 try {
                     objectPath.append(dirPath).append(fileBucketName).append("/").append(objectName);
                     minioClient.putObject(PutObjectArgs.builder().bucket(bucketName).object(objectPath.toString())
-                            .stream(file.getInputStream(), file.getInputStream().available(), -1)
-                            .contentType(file.getContentType()).build());
+                        .stream(file.getInputStream(), file.getInputStream().available(), -1)
+                        .contentType(file.getContentType()).build());
                 } catch (MinioException e) {
                     LogMessage.formedError(
-                            TAG,
-                            "file upload",
-                            "upload",
-                            "Upload error occurred",
-                            e.getMessage()
+                        TAG,
+                        "file upload",
+                        "upload",
+                        "Upload error occurred",
+                        e.getMessage()
                     );
                     return new UploadResult(null, ErrorCode.ERR_FILE_UPLOAD_EXCEPTION);
                 }
@@ -484,6 +486,24 @@ public class LocalFileManagementService implements IFileManagementService {
                 }
                 break;
             }
+            case OBJECT: {
+                try {
+                    objectPath.append(dirPath).append(fileBucketName).append("/").append(objectName);
+                    minioClient.putObject(PutObjectArgs.builder().bucket(bucketName).object(objectPath.toString())
+                        .stream(file.getInputStream(), file.getInputStream().available(), -1)
+                        .contentType(file.getContentType()).build());
+                } catch (MinioException e) {
+                    LogMessage.formedError(
+                        TAG,
+                        "file upload",
+                        "upload",
+                        "Upload error occurred",
+                        e.getMessage()
+                    );
+                    return new UploadResult(null, ErrorCode.ERR_FILE_UPLOAD_EXCEPTION);
+                }
+                break;
+            }
         }
 
         LogMessage.formedInfo(
@@ -500,6 +520,46 @@ public class LocalFileManagementService implements IFileManagementService {
                         + "objectPath: " + objectPath + ", " + ", "
                         + "objectName: " + objectName
         );
+        return new UploadResult(objectName, ErrorCode.ERR_SUCCESS);
+    }
+
+    @Override
+    public UploadResult objectFileUpload(InputStream inputStream, String dirPath, String fileOriginalName, String objectName, String objectFilePath) throws
+        IOException, NoSuchAlgorithmException, InvalidKeyException
+    {
+        // check file extension
+        String fileExtension = Files.getFileExtension(Objects.requireNonNull(fileOriginalName)).toLowerCase();
+        if (!fileAllowExtensionList.contains(fileExtension)) {
+            LogMessage.formedError(
+                TAG,
+                "file upload",
+                "upload",
+                "this file is not unsupported",
+                fileOriginalName
+            );
+            return new UploadResult(null, ErrorCode.ERR_FILE_UNSUPPORTED_EXTENSION);
+        }
+        // file upload to create a InputStream for object upload.
+        StringBuilder objectPath = new StringBuilder();
+        //String objectName = String.format("%s_%s", LocalDate.now(), RandomStringUtils.randomAlphabetic(20));
+        try {
+            objectPath.append(dirPath).append(fileBucketName).append("/").append(FilenameUtils.getBaseName(objectFilePath)).append("/").append(objectName);
+                minioClient.putObject(PutObjectArgs.builder()
+                    .bucket(bucketName)
+                    .object(objectPath.toString())
+                    .stream(inputStream, inputStream.available(), -1)
+                    .contentType("model/gltf-binary")
+                    .build());
+        } catch (MinioException e) {
+            LogMessage.formedError(
+                TAG,
+                "file upload",
+                "upload",
+                "Upload error occurred",
+                e.getMessage()
+            );
+            return new UploadResult(null, ErrorCode.ERR_FILE_UPLOAD_EXCEPTION);
+        }
         return new UploadResult(objectName, ErrorCode.ERR_SUCCESS);
     }
 
@@ -881,45 +941,24 @@ public class LocalFileManagementService implements IFileManagementService {
     public String filePreSignedUrl(String dirPath, String objectName, int expiry, String fileName, FileType fileType)
             throws IOException, NoSuchAlgorithmException, InvalidKeyException {
         try {
-            // Create headers
-            /*HttpHeaders httpHeaders = new HttpHeaders();
-            httpHeaders.setContentLength(byteArray.length);
-            httpHeaders.setContentDispositionFormData("attachment", fileName);
-            httpHeaders.setContentType(MediaType.MULTIPART_FORM_DATA);*/
-
             StringBuilder objectPath = new StringBuilder();
             String url = null;
             switch (fileType) {
-                case FILE: {
+                case FILE:
+                case SHARE: {
                     objectPath.append(dirPath).append(fileBucketName).append("/").append(objectName);
-                    /*url = minioClient.getPresignedObjectUrl(
-                            GetPresignedObjectUrlArgs.builder()
-                                    .method(Method.GET)
-                                    .bucket(bucketName)
-                                    .object(objectPath.toString())
-                                    .expiry(1, TimeUnit.DAYS)
-                                    .build()
-                    );*/
                     url = minioClient.getObjectUrl(bucketName, objectPath.toString());
                     LogMessage.formedInfo(
-                            TAG,
-                            "download file url",
-                            "filePreSignedUrl",
-                            "file url result",
-                            url
+                        TAG,
+                        "download file url",
+                        "filePreSignedUrl",
+                        "file url result",
+                        url
                     );
                     break;
                 }
-
                 case RECORD: {
                     objectPath.append(dirPath).append(recordBucketName).append("/").append(objectName).append(".mp4");
-                    /*url = minioClient.getPresignedObjectUrl(
-                            GetPresignedObjectUrlArgs.builder()
-                                    .method(Method.GET)
-                                    .bucket(bucketName)
-                                    .object(objectPath.toString())
-                                    .expiry(1, TimeUnit.DAYS)
-                                    .build());*/
                     url = minioClient.getObjectUrl(bucketName, objectPath.toString());
                     LogMessage.formedInfo(
                             TAG,
@@ -930,6 +969,17 @@ public class LocalFileManagementService implements IFileManagementService {
                     );
                     break;
                 }
+                case OBJECT:
+                    objectPath.append(dirPath).append(fileBucketName).append("/").append(FilenameUtils.getBaseName(objectName)).append("/").append(objectName);
+                    url = minioClient.getObjectUrl(bucketName, objectPath.toString());
+                    LogMessage.formedInfo(
+                        TAG,
+                        "download file url",
+                        "filePreSignedUrl",
+                        "file url result",
+                        url
+                    );
+                    break;
             }
             return url;
         } catch (MinioException e) {

@@ -23,7 +23,7 @@ import com.virnect.data.domain.room.Room;
 import com.virnect.data.domain.room.RoomStatus;
 import com.virnect.data.domain.roomhistory.RoomHistory;
 import com.virnect.data.error.ErrorCode;
-import com.virnect.data.error.exception.RestServiceException;
+import com.virnect.data.error.exception.RemoteServiceException;
 
 @Slf4j
 @Service
@@ -37,39 +37,59 @@ public class SessionTransactionalService {
 
 	//===========================================  Company Services     =================================================//
 	@Transactional
-	public Company updateCompany(Company company) { return companyRepository.save(company); }
+	public Company updateCompany(Company company) {
+		return companyRepository.save(company);
+	}
+
 	@Transactional
-	public Company createCompany(Company company) { return companyRepository.save(company); }
+	public Company createCompany(Company company) {
+		return companyRepository.save(company);
+	}
 
 	//===========================================  Room Services     =================================================//
 	@Transactional
-	public Room createRoom(Room room) { return roomRepository.save(room); }
+	public Room createRoom(Room room) {
+		return roomRepository.save(room);
+	}
+
 	@Transactional
 	public void createSession(String sessionId) {
 		log.info("session create and sessionEventHandler is here");
-		Room room = roomRepository.findBySessionId(sessionId).orElseThrow(() -> new RestServiceException(ErrorCode.ERR_ROOM_NOT_FOUND));
+		Room room = roomRepository.findBySessionId(sessionId)
+			.orElseThrow(() -> new RemoteServiceException(ErrorCode.ERR_ROOM_NOT_FOUND));
 		//set active time
 		LocalDateTime activeTime = LocalDateTime.now();
 		room.setActiveDate(activeTime);
 		room.setRoomStatus(RoomStatus.ACTIVE);
 		roomRepository.save(room);
 	}
+
 	@Transactional(isolation = Isolation.SERIALIZABLE)
 	public Room getRoomForWrite(String workspaceId, String sessionId) {
 		return this.roomRepository.findRoomByWorkspaceIdAndSessionIdForWrite(workspaceId, sessionId).orElse(null);
 	}
+
 	@Transactional
-	public void setRoom(Room room) { this.roomRepository.save(room); }
+	public void setRoom(Room room) {
+		this.roomRepository.save(room);
+	}
+
 	@Transactional
-	public void deleteRoom(Room room) { roomRepository.delete(room); }
+	public void deleteRoom(Room room) {
+		roomRepository.delete(room);
+	}
+
 	@Transactional
-	public Room updateRoom(Room room) { return this.roomRepository.save(room); }
+	public Room updateRoom(Room room) {
+		return this.roomRepository.save(room);
+	}
 
 	//===========================================  Room history Services     =================================================//
 	@Transactional
 	public void setRoomHistory(RoomHistory roomHistory) {
-		boolean result = this.roomHistoryRepository.existsByWorkspaceIdAndSessionId(roomHistory.getWorkspaceId(), roomHistory.getSessionId());
-		if(result) {
+		boolean result = this.roomHistoryRepository.existsByWorkspaceIdAndSessionId(
+			roomHistory.getWorkspaceId(), roomHistory.getSessionId());
+		if (result) {
 			log.error("Duplicate entry {}", roomHistory.getSessionId());
 		} else {
 			this.roomHistoryRepository.save(roomHistory);
@@ -78,12 +98,16 @@ public class SessionTransactionalService {
 
 	//===========================================  Member Services     =================================================//
 	@Transactional
-	public void setMember(Member member) { this.memberRepository.save(member); }
+	public void setMember(Member member) {
+		this.memberRepository.save(member);
+	}
+
 	@Transactional
 	public void updateMember(Room room, List<String> userIds) {
-		for (String userId: userIds) {
-			Member member = memberRepository.findByWorkspaceIdAndSessionIdAndUuid(room.getWorkspaceId(), room.getSessionId(), userId).orElse(null);
-			if(ObjectUtils.isEmpty(member)) {
+		for (String userId : userIds) {
+			Member member = memberRepository.findByWorkspaceIdAndSessionIdAndUuid(
+				room.getWorkspaceId(), room.getSessionId(), userId).orElse(null);
+			if (ObjectUtils.isEmpty(member)) {
 				memberRepository.save(Member.builder()
 					.room(room)
 					.memberType(MemberType.UNKNOWN)
@@ -98,6 +122,7 @@ public class SessionTransactionalService {
 			}
 		}
 	}
+
 	@Transactional
 	public void updateMember(Member member, MemberStatus memberStatus) {
 		if (memberStatus == MemberStatus.EVICTED) {
@@ -105,7 +130,10 @@ public class SessionTransactionalService {
 		}
 		memberRepository.save(member);
 	}
+
 	@Transactional
-	public void deleteMember(Member member) { this.memberRepository.delete(member); }
+	public void deleteMember(Member member) {
+		this.memberRepository.delete(member);
+	}
 
 }

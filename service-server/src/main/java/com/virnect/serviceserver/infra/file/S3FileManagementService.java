@@ -16,6 +16,7 @@ import java.util.Optional;
 
 import javax.annotation.PostConstruct;
 
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
@@ -268,7 +269,8 @@ public class S3FileManagementService implements IFileManagementService {
         String objectName = String.format("%s_%s", LocalDate.now(), RandomStringUtils.randomAlphabetic(20));
         StringBuilder objectPath = new StringBuilder();
         switch (fileType) {
-            case FILE: {
+            case FILE:
+            case SHARE: {
                 // check file size
                 if (file.getSize() > MAX_FILE_SIZE) {
                     LogMessage.formedError(
@@ -289,6 +291,29 @@ public class S3FileManagementService implements IFileManagementService {
 
                 putObjectToAWSS3(bucketName, file, objectPath.toString(), objectMetadata,
                         CannedAccessControlList.PublicRead);
+                break;
+            }
+            case OBJECT: {
+                // check file size
+                if (file.getSize() > MAX_FILE_SIZE) {
+                    LogMessage.formedError(
+                        TAG,
+                        "file upload",
+                        "upload",
+                        "this file size over the max size",
+                        String.valueOf(file.getSize())
+                    );
+                    return new UploadResult(null, ErrorCode.ERR_FILE_SIZE_LIMIT);
+                }
+
+                objectPath.append(dirPath).append(bucketFileName).append("/").append(objectName);
+                // Create headers
+                ObjectMetadata objectMetadata = new ObjectMetadata();
+                objectMetadata.setContentType(file.getContentType());
+                objectMetadata.setContentLength(file.getSize());
+
+                putObjectToAWSS3(bucketName, file, objectPath.toString(), objectMetadata,
+                    CannedAccessControlList.PublicRead);
                 break;
             }
             case RECORD: {
@@ -316,6 +341,28 @@ public class S3FileManagementService implements IFileManagementService {
                         + "dirPath: " + dirPath + ", " + ", "
                         + "objectPath: " + objectPath + ", " + ", "
                         + "objectName: " + objectName
+        );
+        return new UploadResult(objectName, ErrorCode.ERR_SUCCESS);
+    }
+
+    @Override
+    public UploadResult objectFileUpload(InputStream inputStream, String dirPath, String fileOriginalName, String objectName, String objectFilePath) {
+
+        StringBuilder objectPath = new StringBuilder();
+        objectPath.append(dirPath).append(bucketFileName).append("/").append(FilenameUtils.getBaseName(objectFilePath)).append("/").append(objectName);
+        ObjectMetadata objectMetadata = new ObjectMetadata();
+        objectMetadata.setContentType("model/gltf-binary");
+
+        putObjectToAWSS3(bucketName, inputStream, objectPath.toString(), objectMetadata, CannedAccessControlList.PublicRead);
+        LogMessage.formedInfo(
+            TAG,
+            "file upload(object)",
+            "upload",
+            "complete to upload file",
+            "originName: " + objectName + ", "
+                + "dirPath: " + dirPath + ", " + ", "
+                + "objectPath: " + objectPath + ", " + ", "
+                + "objectName: " + objectName
         );
         return new UploadResult(objectName, ErrorCode.ERR_SUCCESS);
     }
@@ -604,19 +651,19 @@ public class S3FileManagementService implements IFileManagementService {
         StringBuilder objectPath = new StringBuilder();
         String url = null;
         switch (fileType) {
+            case SHARE:
             case FILE: {
                 objectPath.append(dirPath).append(bucketFileName).append("/").append(objectName);
                 url = amazonS3Client.getUrl(bucketName, objectPath.toString()).toString();
                 LogMessage.formedInfo(
-                        TAG,
-                        "download file url",
-                        "filePreSignedUrl",
-                        "file url result",
-                        url
+                    TAG,
+                    "download file url",
+                    "filePreSignedUrl",
+                    "file url result",
+                    url
                 );
                 break;
             }
-
             case RECORD: {
                 objectPath.append(dirPath).append(bucketRecordName).append("/").append(objectName).append(".mp4");
                 url = amazonS3Client.getUrl(bucketName, objectPath.toString()).toString();
@@ -629,6 +676,17 @@ public class S3FileManagementService implements IFileManagementService {
                 );
                 break;
             }
+            case OBJECT:
+                objectPath.append(dirPath).append(bucketFileName).append("/").append(FilenameUtils.getBaseName(objectName)).append("/").append(objectName);
+                url = amazonS3Client.getUrl(bucketName, objectPath.toString()).toString();
+                com.virnect.data.infra.utils.LogMessage.formedInfo(
+                    TAG,
+                    "download file url",
+                    "filePreSignedUrl",
+                    "file url result",
+                    url
+                );
+                break;
         }
         return url;
     }
@@ -725,6 +783,29 @@ public class S3FileManagementService implements IFileManagementService {
                     "putObjectToAWSS3",
                     "Upload error occurred",
                     exception.getMessage()
+            );
+        }
+        return amazonS3Client.getUrl(bucketName, fileName).toString();
+
+    }
+
+    private String putObjectToAWSS3(String bucketName, InputStream inputStream, String fileName,
+        ObjectMetadata objectMetadata, CannedAccessControlList cannedAcl) {
+        try {
+            amazonS3Client.putObject(new PutObjectRequest(
+                bucketName,
+                fileName,
+                inputStream,
+                objectMetadata)
+                .withCannedAcl(cannedAcl));
+        } catch (Exception e) {
+            e.printStackTrace();
+            LogMessage.formedError(
+                TAG,
+                "file upload(InputStream)",
+                "putObjectToAWSS3",
+                "Upload error occurred",
+                e.getMessage()
             );
         }
         return amazonS3Client.getUrl(bucketName, fileName).toString();

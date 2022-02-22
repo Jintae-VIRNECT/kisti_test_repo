@@ -26,14 +26,14 @@ import com.virnect.data.dto.constraint.CompanyConstants;
 import com.virnect.data.dto.constraint.LanguageCode;
 import com.virnect.data.dto.constraint.LicenseItem;
 import com.virnect.data.dto.constraint.TranslationItem;
-import com.virnect.serviceserver.serviceremote.dto.mapper.company.CompanyMapper;
 import com.virnect.data.dto.request.company.CompanyRequest;
 import com.virnect.data.dto.request.company.CompanyResponse;
 import com.virnect.data.dto.response.company.CompanyInfoResponse;
 import com.virnect.data.error.ErrorCode;
-import com.virnect.data.global.common.ApiResponse;
+import com.virnect.data.error.exception.RemoteServiceException;
 import com.virnect.data.infra.utils.JsonUtil;
 import com.virnect.data.infra.utils.LogMessage;
+import com.virnect.serviceserver.serviceremote.dto.mapper.company.CompanyMapper;
 
 @Slf4j
 @Service
@@ -47,8 +47,8 @@ public class CompanyService {
 	private final SessionTransactionalService sessionService;
 	private final CompanyRepository companyRepository;
 
-	public ApiResponse<CompanyResponse> createCompany(CompanyRequest companyRequest) {
-		try{
+	public CompanyResponse createCompany(CompanyRequest companyRequest) {
+		try {
 			Company company = Company.builder()
 				.companyCode(companyRequest.getCompanyCode())
 				.workspaceId(companyRequest.getWorkspaceId())
@@ -81,26 +81,23 @@ public class CompanyService {
 			);
 
 			if (ObjectUtils.isEmpty(sessionService.createCompany(company))) {
-				return new ApiResponse<>(ErrorCode.ERR_COMPANY_CREATE_FAIL);
+				throw new RemoteServiceException(ErrorCode.ERR_COMPANY_CREATE_FAIL);
 			}
-			return new ApiResponse<>(
-				CompanyResponse.builder()
+			return CompanyResponse.builder()
 				.workspaceId(company.getWorkspaceId())
 				.licenseName(company.getLicenseName())
 				.sessionType(company.getSessionType())
-				.build()
-			);
+				.build();
+
 		} catch (Exception e) {
-			return new ApiResponse<>(ErrorCode.ERR_COMPANY_CREATE_FAIL);
+			throw new RemoteServiceException(ErrorCode.ERR_COMPANY_CREATE_FAIL);
 		}
 	}
 
-	public ApiResponse<CompanyResponse> updateCompany(CompanyRequest companyRequest) {
+	public CompanyResponse updateCompany(CompanyRequest companyRequest) {
 
-		Company company = companyRepository.findByWorkspaceId(companyRequest.getWorkspaceId()).orElse(null);
-		if (ObjectUtils.isEmpty(company)) {
-			return new ApiResponse<>(ErrorCode.ERR_COMPANY_NOT_EXIST);
-		}
+		Company company = companyRepository.findByWorkspaceId(companyRequest.getWorkspaceId())
+			.orElseThrow(() -> new RemoteServiceException(ErrorCode.ERR_COMPANY_NOT_EXIST));
 
 		try {
 			company.setCompanyCode(companyRequest.getCompanyCode());
@@ -118,52 +115,49 @@ public class CompanyService {
 
 			company.setLanguage(
 				Language.builder()
-				.transKoKr(companyRequest.getLanguage().isTransKoKr())
-				.transEnUs(companyRequest.getLanguage().isTransEnUs())
-				.transJaJp(companyRequest.getLanguage().isTransJaJp())
-				.transZh(companyRequest.getLanguage().isTransZh())
-				.transEsEs(companyRequest.getLanguage().isTransEsEs())
-				.transFrFr(companyRequest.getLanguage().isTransFrFr())
-				.transPlPl(companyRequest.getLanguage().isTransPlPl())
-				.transRuRu(companyRequest.getLanguage().isTransRuRu())
-				.transUkUa(companyRequest.getLanguage().isTransUkUa())
-				.transThTh(companyRequest.getLanguage().isTransThTh())
-				.company(company)
-				.build()
+					.transKoKr(companyRequest.getLanguage().isTransKoKr())
+					.transEnUs(companyRequest.getLanguage().isTransEnUs())
+					.transJaJp(companyRequest.getLanguage().isTransJaJp())
+					.transZh(companyRequest.getLanguage().isTransZh())
+					.transEsEs(companyRequest.getLanguage().isTransEsEs())
+					.transFrFr(companyRequest.getLanguage().isTransFrFr())
+					.transPlPl(companyRequest.getLanguage().isTransPlPl())
+					.transRuRu(companyRequest.getLanguage().isTransRuRu())
+					.transUkUa(companyRequest.getLanguage().isTransUkUa())
+					.transThTh(companyRequest.getLanguage().isTransThTh())
+					.company(company)
+					.build()
 			);
 
 			if (ObjectUtils.isEmpty(sessionService.updateCompany(company))) {
-				return new ApiResponse<>(ErrorCode.ERR_COMPANY_UPDATE_FAIL);
+				throw new RemoteServiceException(ErrorCode.ERR_COMPANY_UPDATE_FAIL);
 			}
-
-			return new ApiResponse<>(
-				CompanyResponse.builder()
+			return CompanyResponse.builder()
 				.workspaceId(company.getWorkspaceId())
 				.licenseName(company.getLicenseName())
 				.sessionType(company.getSessionType())
-				.build()
-			);
+				.build();
 		} catch (Exception e) {
-			return new ApiResponse<>(ErrorCode.ERR_COMPANY_UPDATE_FAIL);
+			throw new RemoteServiceException(ErrorCode.ERR_COMPANY_UPDATE_FAIL);
 		}
 	}
 
-	public ApiResponse<CompanyInfoResponse> getCompanyInfo(
+	public CompanyInfoResponse getCompanyInfo(
 		String workspaceId,
 		String userId,
 		String policyLocation
 	) {
 		Company company = companyRepository.findByWorkspaceId(workspaceId).orElse(null);
-		CompanyInfoResponse companyInfoResponse = null;
+		CompanyInfoResponse companyInfoResponse;
 		try {
 			companyInfoResponse = loadServicePolicy(workspaceId, policyLocation);
 		} catch (IOException e) {
-			new ApiResponse<>(ErrorCode.ERR_IO_EXCEPTION);
+			throw new RemoteServiceException(ErrorCode.ERR_IO_EXCEPTION);
 		}
-		return new ApiResponse<>(companyInfoResponse);
+		return companyInfoResponse;
 	}
 
-	public ApiResponse<CompanyInfoResponse> getCompanyInfoByCompanyCode(
+	public CompanyInfoResponse getCompanyInfoByCompanyCode(
 		String workspaceId,
 		String userId,
 		int companyCode,
@@ -171,21 +165,19 @@ public class CompanyService {
 	) {
 		try {
 			if (companyCode == CompanyConstants.COMPANY_VIRNECT) {
-				return new ApiResponse<>(loadServicePolicy(workspaceId, policyLocation));
+				return loadServicePolicy(workspaceId, policyLocation);
 			}
 		} catch (IOException e) {
-			return new ApiResponse<>(ErrorCode.ERR_IO_EXCEPTION);
+			throw new RemoteServiceException(ErrorCode.ERR_IO_EXCEPTION);
 		}
 
-		Company company = companyRepository.findByWorkspaceId(workspaceId).orElse(null);
-		if (ObjectUtils.isEmpty(company)) {
-			return new ApiResponse<>(ErrorCode.ERR_COMPANY_INVALID_CODE);
-		}
+		Company company = companyRepository.findByWorkspaceId(workspaceId)
+			.orElseThrow(() -> new RemoteServiceException(ErrorCode.ERR_COMPANY_INVALID_CODE));
 
 		CompanyInfoResponse companyInfoResponse = companyMapper.toDto(company);
 		companyInfoResponse.setLanguageCodes(combineLanguageCode(company.getLanguage()));
 
-		return new ApiResponse<>(companyInfoResponse);
+		return companyInfoResponse;
 	}
 
 	private CompanyInfoResponse loadServicePolicy(String workspaceId, String policyLocation) throws IOException {

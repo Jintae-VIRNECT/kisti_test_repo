@@ -62,11 +62,13 @@ public enum ErrorCode {
 	ERR_GROUP_MEMBER_COUNT_OVER(4027, "remote group member over count"),
 	ERR_GROUP_MEMBER_ALREADY_JOINED(4030, "There are already joined member"),
 	ERR_MEMBER_INVALID(4031, "This member uuid is invalid"),
-
+	ERR_GROUP_NAME_DUPLICATE(4032, "This group name is duplicated"),
+	ERR_GROUP_NAME_IS_NULL(4033, "This group name is null"),
+	ERR_GROUP_MEMBER_IS_EMPTY(4034, "remote group member is empty"),
 	// Guest 관련 에러
 	ERR_GUEST_USER_NOT_ENOUGH(4028, "Not enough unassigned guest users"),
 	ERR_GUEST_USER_NOT_FOUND(4029, " Guest user not found"),
-	
+
 	// error code for service validation
 	ERR_LICENSE_NOT_VALIDITY(5001, "License has no validity"),
 	ERR_LICENSE_TYPE_VALIDITY(5002, "License is not the license type"),
@@ -95,12 +97,13 @@ public enum ErrorCode {
 	ERR_FILE_COVERT_FAILED(7011, "File converting is failed"),
 	ERR_FILE_NOT_FOUND(7013, "This file can not found."),
 	ERR_PROFILE_UPLOAD_FAILED(7015, "Profile upload has failed"),
+	ERR_FILE_EMPTY(7016, "This file is empty"),
 
 	// 스토리지 에러,
 	ERR_STORAGE_NOT_SUPPORTED(7012, "Storage service is not supported. Please check storage server url."),
 	ERR_STORAGE_LIMIT_REACHED(7016, "The storage limit is about to be reached"),
 	ERR_STORAGE_CAPACITY_FULL(7017, "The storage capacity is full"),
-	
+
 	ERR_PDF_PASSWORD(7018, "The pdf file is locked"),
 	ERR_MAKE_THUMBNAIL(7019, "Failed to convert the thumbnail file"),
 
@@ -115,7 +118,11 @@ public enum ErrorCode {
 	ERR_SESSION_CLIENT_METADATA_NULL(8010, "Client metadata error"),
 	ERR_SESSION_CLIENT_METADATA_EXCEPTION(8009, "Client metadata error"),
 	ERR_DATA_SAVE_EXCEPTION(8010, "Data save error"),
-	ERR_UNEXPECTED_SERVER_ERROR(9999, "Unexpected Server Error, Please contact Administrator");
+	ERR_UNEXPECTED_SERVER_ERROR(9999, "Unexpected Server Error, Please contact Administrator"),
+
+	NOT_ACCEPTABLE(406, "Not Acceptable"),
+	NOT_FOUND(404, "Not Found"),
+	BAD_REQUEST(400, "Bad Request");
 
 	@ApiModelProperty(value = "에러 코드")
 	private int code;

@@ -32,6 +32,7 @@ public enum EndReason {
 	remoteServiceServerStopped,
 	recordingStoppedByServer,
 	automaticStop,
-	sessionClosedByServer
+	sessionClosedByServer,
+	deletedAccount
 
 }

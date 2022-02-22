@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.support.QuerydslRepositorySupport;
-import org.springframework.util.StringUtils;
 
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -43,7 +42,7 @@ public class CustomRemoteGroupRepositoryImpl extends QuerydslRepositorySupport i
 	}
 
 	@Override
-	public List<RemoteGroup> findByWorkspaceIdAndUserIdArray(String workspaceId, List<String> userIds) {
+	public long findByWorkspaceIdAndUserIdArray(String workspaceId, List<String> userIds) {
 		return query
 			.selectFrom(remoteGroup)
 			.innerJoin(remoteGroup.groupMembers, remoteGroupMember).fetchJoin()
@@ -52,13 +51,11 @@ public class CustomRemoteGroupRepositoryImpl extends QuerydslRepositorySupport i
 				remoteGroupMember.deleted.isFalse(),
 				includeUserIds(userIds)
 			)
-			.orderBy(remoteGroup.groupName.asc())
-			.distinct()
-			.fetch();
+			.fetchCount();
 	}
 
 	@Override
-	public long findByWorkspaceIdGroupCount(
+	public long findGroupCountOfWorkspaceId(
 		String workspaceId
 	) {
 		return query
@@ -77,15 +74,15 @@ public class CustomRemoteGroupRepositoryImpl extends QuerydslRepositorySupport i
 	) {
 		return
 			Optional.ofNullable(
-			query
-			.selectFrom(remoteGroup)
-			.innerJoin(remoteGroup.groupMembers, remoteGroupMember).fetchJoin()
-			.where(
-				remoteGroup.workspaceId.eq(workspaceId),
-				remoteGroup.groupId.eq(groupId),
-				remoteGroupMember.deleted.isFalse()
-			)
-			.fetchFirst());
+				query
+					.selectFrom(remoteGroup)
+					.innerJoin(remoteGroup.groupMembers, remoteGroupMember).fetchJoin()
+					.where(
+						remoteGroup.workspaceId.eq(workspaceId),
+						remoteGroup.groupId.eq(groupId),
+						remoteGroupMember.deleted.isFalse()
+					)
+					.fetchFirst());
 	}
 
 	@Override
@@ -96,15 +93,15 @@ public class CustomRemoteGroupRepositoryImpl extends QuerydslRepositorySupport i
 	) {
 		return Optional.ofNullable(
 			query
-			.selectFrom(remoteGroup)
-			.innerJoin(remoteGroup.groupMembers, remoteGroupMember).fetchJoin()
-			.where(
-				remoteGroup.workspaceId.eq(workspaceId),
-				remoteGroup.groupId.eq(groupId),
-				remoteGroupMember.uuid.notIn(userId),
-				remoteGroupMember.deleted.isFalse()
-			)
-			.fetchFirst());
+				.selectFrom(remoteGroup)
+				.innerJoin(remoteGroup.groupMembers, remoteGroupMember).fetchJoin()
+				.where(
+					remoteGroup.workspaceId.eq(workspaceId),
+					remoteGroup.groupId.eq(groupId),
+					remoteGroupMember.uuid.notIn(userId),
+					remoteGroupMember.deleted.isFalse()
+				)
+				.fetchFirst());
 	}
 
 	@Override
@@ -113,15 +110,26 @@ public class CustomRemoteGroupRepositoryImpl extends QuerydslRepositorySupport i
 	) {
 		return Optional.ofNullable(
 			query
+				.selectFrom(remoteGroup)
+				.innerJoin(remoteGroup.groupMembers, remoteGroupMember).fetchJoin()
+				.where(
+					remoteGroup.workspaceId.eq(workspaceId),
+					remoteGroup.groupId.eq(groupId),
+					remoteGroupMember.deleted.isFalse(),
+					includeOneself(userId, includeOneself)
+				)
+				.fetchFirst());
+	}
+
+	@Override
+	public long findByWorkspaceIdAndGroupName(String workspaceId, String groupName) {
+		return query
 			.selectFrom(remoteGroup)
-			.innerJoin(remoteGroup.groupMembers, remoteGroupMember).fetchJoin()
 			.where(
 				remoteGroup.workspaceId.eq(workspaceId),
-				remoteGroup.groupId.eq(groupId),
-				remoteGroupMember.deleted.isFalse(),
-				includeOneself(userId, includeOneself)
+				remoteGroup.groupName.eq(groupName)
 			)
-			.fetchFirst());
+			.fetchCount();
 	}
 
 	private BooleanExpression includeOneself(String userId, boolean includeOneself) {

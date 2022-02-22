@@ -11,8 +11,15 @@
 //—————————————————————————————————————————————————————————————————————————————————————————————————
 // This block encapsulates custom properties and makes them available to
 // all modules in the project.
+plugins {
+    id("jacoco")
+}
+
 ext {
     set("springCloudVersion", "Hoxton.SR10")
+    jacocoExcludes = [
+        
+    ]
 }
 
 configurations {
@@ -118,6 +125,13 @@ dependencies {
 
     // image orientation
     implementation group: 'com.drewnoakes', name: 'metadata-extractor', version: '2.9.1'
+
+    // obj to gltf
+    implementation group: 'de.javagl', name: 'obj', version: '0.3.0'
+    implementation group: 'de.javagl', name: 'jgltf-model', version: '2.0.0'
+    implementation group: 'de.javagl', name: 'jgltf-impl-v1', version: '2.0.0'
+    implementation group: 'de.javagl', name: 'jgltf-impl-v2', version: '2.0.0'
+    implementation group: 'de.javagl', name: 'jgltf-obj', version: '2.0.0'
 }
 
 //—————————————————————————————————————————————————————————————————————————————————————————————————
@@ -125,6 +139,34 @@ dependencies {
 //—————————————————————————————————————————————————————————————————————————————————————————————————
 test {
     useJUnitPlatform()
+    systemProperty("spring.active.profiles", "test")
+    environment("VIRNECT_ENV", "test")
+    finalizedBy jacocoTestReport
+}
+
+/**
+ * Jacoco Configuration
+ */
+
+jacoco {
+    toolVersion = "0.8.7"
+}
+
+jacocoTestReport {
+    dependsOn test
+
+    reports {
+        csv.enabled true
+        xml.enabled true
+    }
+
+    afterEvaluate {
+        classDirectories.setFrom(files(classDirectories.files.collect {
+            fileTree(dir: it, exclude: jacocoExcludes)
+        }))
+    }
+
+    finalizedBy jacocoTestCoverageVerification
 }
 
 bootJar {
@@ -139,6 +181,7 @@ bootJar {
                 "Implementation-Version": "2.0 revision 2223v6"
         )
     }
-    archiveFileName.set("RM-Service-${archiveVersion.get()}.${archiveExtension.get()}")
+    //archiveFileName.set("RM-Service-${archiveVersion.get()}.${archiveExtension.get()}")
+    archiveFileName.set("rm-service.jar")
     //destinationDirectory.set(project.file("${rootProject.buildDir}/libs/${archiveBaseName}"))
 }
