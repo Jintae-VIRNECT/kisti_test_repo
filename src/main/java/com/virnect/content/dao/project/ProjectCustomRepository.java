@@ -3,13 +3,13 @@ package com.virnect.content.dao.project;
 import java.util.List;
 
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 
 import com.virnect.content.domain.EditPermission;
 import com.virnect.content.domain.Mode;
 import com.virnect.content.domain.SharePermission;
 import com.virnect.content.domain.TargetType;
 import com.virnect.content.domain.project.Project;
+import com.virnect.content.global.common.PageRequest;
 
 /**
  * Project: PF-ContentManagement
@@ -21,12 +21,15 @@ import com.virnect.content.domain.project.Project;
 public interface ProjectCustomRepository {
 	Long getWorkspaceStorageSize(String projectUUID);
 
-	Page<Project> getFilteredProjectPage(
+	Page<Project> getProjectListByFilterList(
 		String workspaceUUID, List<SharePermission> sharePermissionList, List<EditPermission> editPermissionList,
-		List<Mode> modeList, List<TargetType> targetTypeList, String search,  Pageable pageable
+		List<Mode> modeList, List<TargetType> targetTypeList, String search, PageRequest pageRequest
 	);
 
-	Page<Project> getProjectPageByProjectList(List<Project> projectList, Pageable pageable);
+	Page<Project> getProjectListByProjectIdList(List<Long> projectIdList, PageRequest pageRequest);
 
 	long calculateTotalStorageAmountByWorkspaceId(String workspaceId);
+
+	long deleteAllProjectByProjectList(List<Project> projectList);
+
 }

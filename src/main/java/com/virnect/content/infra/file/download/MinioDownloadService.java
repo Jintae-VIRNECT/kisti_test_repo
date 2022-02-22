@@ -1,11 +1,15 @@
 package com.virnect.content.infra.file.download;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
@@ -55,11 +59,9 @@ public class MinioDownloadService implements FileDownloadService {
 	@Value("${minio.server}")
 	private String minioServer;
 
-	@Value("${file.prefix}")
-	private String prefix;
-
 	@Override
 	public ResponseEntity<byte[]> fileDownload(String fileUrl, String range) {
+		String prefix = minioServer + "/" + bucketName + "/";
 		try {
 			log.info("PARSER - URL: [{}]", fileUrl);
 			String[] fileSplit = fileUrl.split(prefix);
@@ -124,6 +126,7 @@ public class MinioDownloadService implements FileDownloadService {
 
 	@Override
 	public long getFileSize(String fileUrl) {
+		String prefix = minioServer + "/" + bucketName + "/";
 		log.info("[MINIO GET FILE SIZE] GET SIZE BEGIN. URL : {}", fileUrl);
 		String[] fileSplit = fileUrl.split(prefix);
 		String objectName = fileSplit[fileSplit.length - 1];
@@ -159,6 +162,8 @@ public class MinioDownloadService implements FileDownloadService {
 
 	@Override
 	public byte[] getFileStreamBytes(String fileUrl) {
+		String prefix = minioServer + "/" + bucketName + "/";
+		log.info("[MINIO FILE DOWNLOAD] URL : {}", fileUrl);
 		String[] fileSplit = fileUrl.split(prefix);
 		String objectName = fileSplit[fileSplit.length - 1];
 		GetObjectArgs getObjectArgs = GetObjectArgs.builder()
@@ -169,6 +174,27 @@ public class MinioDownloadService implements FileDownloadService {
 			return IOUtils.toByteArray((InputStream)objectResponse);
 		} catch (ErrorResponseException | InsufficientDataException | InternalException | InvalidKeyException | InvalidResponseException | NoSuchAlgorithmException | ServerException | XmlParserException | IOException exception) {
 			log.error(exception.getMessage());
+			throw new ContentServiceException(ErrorCode.ERR_CONTENT_DOWNLOAD);
+		}
+	}
+
+	@Override
+	public byte[] multipleFileDownload(List<String> fileUrlList) {
+		try (ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+			 ZipOutputStream zipOutputStream = new ZipOutputStream(byteArrayOutputStream)) {
+			for (String fileUrl : fileUrlList) {
+				log.info("[MINIO FILE DOWNLOAD] URL : {}", fileUrl);
+				String[] fileSplit = fileUrl.split("/");
+				String fileName = fileSplit[fileSplit.length - 1];
+				byte[] fileStream = getFileStreamBytes(fileUrl);
+				zipOutputStream.putNextEntry(new ZipEntry(fileName));
+				zipOutputStream.write(fileStream);
+				zipOutputStream.closeEntry();
+			}
+			zipOutputStream.finish();
+			return byteArrayOutputStream.toByteArray();
+		} catch (IOException e) {
+			log.error(e.getMessage());
 			throw new ContentServiceException(ErrorCode.ERR_CONTENT_DOWNLOAD);
 		}
 	}

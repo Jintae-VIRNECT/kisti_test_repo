@@ -10,15 +10,19 @@ plugins {
     id "io.franzbecker.gradle-lombok" version "3.3.0"
     id "com.github.jk1.dependency-license-report" version "1.13"
     id 'java'
+    id 'jacoco'
 }
 
 group = 'com.virnect'
-version = '1.0.0'
+version = '1.4.0'
 sourceCompatibility = '1.8'
 
 ext {
     springCloudVersion = 'Hoxton.SR10'
     mapstructVersion = '1.4.2.Final'
+    jacocoExcludes = [
+
+    ]
 }
 
 configurations {
@@ -38,15 +42,22 @@ dependencyManagement {
 }
 
 dependencies {
+    // Mapstuct
+    implementation "org.mapstruct:mapstruct:${mapstructVersion}"
+    annotationProcessor "org.mapstruct:mapstruct-processor:${mapstructVersion}"
+    testAnnotationProcessor "org.mapstruct:mapstruct-processor:${mapstructVersion}"
+
+    // Lombok
+    compileOnly 'org.projectlombok:lombok'
+    annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
+    annotationProcessor 'org.projectlombok:lombok'
+
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     implementation 'org.springframework.data:spring-data-envers'
     implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-client'
-    compileOnly 'org.projectlombok:lombok'
     runtimeOnly 'mysql:mysql-connector-java'
-    annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
-    annotationProcessor 'org.projectlombok:lombok'
     testImplementation('org.springframework.boot:spring-boot-starter-test') {
         exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
     }
@@ -97,16 +108,17 @@ dependencies {
 
     // feign oktthp
     implementation 'io.github.openfeign:feign-okhttp'
-    // map struct
-    implementation "org.mapstruct:mapstruct:${mapstructVersion}"
-    annotationProcessor "org.mapstruct:mapstruct-processor:${mapstructVersion}"
-    testAnnotationProcessor "org.mapstruct:mapstruct-processor:${mapstructVersion}"
+
+
+    // Json web token
+    implementation 'io.jsonwebtoken:jjwt:0.9.1'
 }
 
 test {
     useJUnitPlatform()
-    systemProperty("spring.active.profiles", "local")
-    systemProperty("VIRNECT_ENV", "local")
+    systemProperty("spring.active.profiles", "test")
+    systemProperty("VIRNECT_ENV", "test")
+    finalizedBy jacocoTestReport
 }
 
 
@@ -162,4 +174,37 @@ task unpackJar(type: Copy) {
 
 build {
     finalizedBy unpackJar
+}
+
+/**
+ * Jacoco Configuration
+ */
+
+jacoco {
+    toolVersion = "0.8.7"
+}
+
+jacocoTestReport {
+    dependsOn test
+
+    reports {
+        csv.enabled true
+        xml.enabled true
+    }
+
+    afterEvaluate {
+        classDirectories.setFrom(files(classDirectories.files.collect {
+            fileTree(dir: it, exclude: jacocoExcludes)
+        }))
+    }
+
+    finalizedBy jacocoTestCoverageVerification
+}
+
+jacocoTestCoverageVerification {
+    afterEvaluate {
+        classDirectories.setFrom(files(classDirectories.files.collect {
+            fileTree(dir: it, exclude: jacocoExcludes)
+        }))
+    }
 }

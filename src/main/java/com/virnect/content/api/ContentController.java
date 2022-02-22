@@ -29,6 +29,7 @@ import lombok.extern.slf4j.Slf4j;
 import springfox.documentation.annotations.ApiIgnore;
 
 import com.virnect.content.application.ContentService;
+import com.virnect.content.domain.TargetType;
 import com.virnect.content.domain.YesOrNo;
 import com.virnect.content.dto.request.ContentDeleteRequest;
 import com.virnect.content.dto.request.ContentInfoRequest;
@@ -65,7 +66,7 @@ public class ContentController {
 
     @ApiOperation(value = "컨텐츠 목록 조회", notes = "컨텐츠의 목록을 조회. 워크스테이션은 옵션임.")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "workspaceUUID", value = "워크스페이스 식별자", dataType = "string", paramType = "query"),
+            @ApiImplicitParam(name = "workspaceUUID", value = "워크스페이스 식별자", dataType = "string", paramType = "query", example = "4d6eab0860969a50acbfa4599fbb5ae8"),
             @ApiImplicitParam(name = "search", value = "검색어(컨텐츠명/사용자명)", dataType = "string", allowEmptyValue = true, defaultValue = ""),
             @ApiImplicitParam(name = "size", value = "페이징 사이즈", dataType = "number", paramType = "query", defaultValue = "10"),
             @ApiImplicitParam(name = "page", value = "size 대로 나눠진 페이지를 조회할 번호(1부터 시작)", paramType = "query", defaultValue = "1"),
@@ -82,7 +83,7 @@ public class ContentController {
             @RequestParam(value = "shareds", required = false, defaultValue = "ALL") String shareds,
             @RequestParam(value = "converteds", required = false, defaultValue = "ALL") String converteds,
             @RequestParam(value = "userUUID", required = false) String userUUID,
-            @RequestParam(value = "target", required = false, defaultValue = "ALL") String targetType,
+            @RequestParam(value = "target", required = false, defaultValue = "ALL") List<String> targetType,
             @ApiIgnore PageRequest pageable
     ) {
         ApiResponse<ContentInfoListResponse> responseMessage = this.contentService.getContentList(
@@ -101,7 +102,7 @@ public class ContentController {
             @ApiImplicitParam(name = "shareds", value = "공유 필터 옵션 (ALL, YES, NO)", paramType = "query", defaultValue = "ALL"),
             @ApiImplicitParam(name = "userUUID", value = "사용자 식별자", dataType = "string", paramType = "path", required = true, defaultValue = ""),
             @ApiImplicitParam(name = "converteds", value = "컨텐츠의 공정 전환 여부(ALL, YES, NO)", dataType = "string", paramType = "query", defaultValue = "ALL"),
-            @ApiImplicitParam(name = "target", value = "컨텐츠의 타겟 타입(ALL, QR, VTarget)", dataType = "string", paramType = "query", defaultValue = "ALL")
+            @ApiImplicitParam(name = "target", value = "컨텐츠의 타겟 타입(ALL, QR, VTarget)", dataType = "string", paramType = "query", defaultValue = "ALL",allowMultiple = true)
     })
     @GetMapping("/my/{userUUID}")
     public ResponseEntity<ApiResponse<ContentInfoListResponse>> getUserContentList(
@@ -110,12 +111,13 @@ public class ContentController {
             @RequestParam(value = "shareds", defaultValue = "ALL") String shareds,
             @RequestParam(value = "converteds", defaultValue = "ALL") String converteds,
             @RequestParam(value = "workspaceUUID", required = false) String workspaceUUID,
-            @RequestParam(value = "target", required = false, defaultValue = "ALL") String targetType,
+            @RequestParam(value = "target", required = false, defaultValue = "ALL") List<String> targetType,
             @ApiIgnore PageRequest pageable
     ) {
         if (userUUID.isEmpty()) {
             throw new ContentServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
+
         ApiResponse<ContentInfoListResponse> responseMessage = this.contentService.getContentList(
                 workspaceUUID, userUUID, search, shareds, converteds, pageable.of(), targetType);
         return ResponseEntity.ok(responseMessage);
@@ -369,11 +371,12 @@ public class ContentController {
             @PathVariable("workspaceUUID") String workspaceUUID,
             @RequestHeader("serviceID") String requestServiceID
     ) {
+         log.info("[ALL CONTENT DELETE] REQ SERVICE ID : {}, WORKSPACE UUID : {}", requestServiceID, workspaceUUID);
         if (!StringUtils.hasText(workspaceUUID) || !StringUtils.hasText(requestServiceID) || !requestServiceID.equals(
                 "user-server")) {
             throw new ContentServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
-        ContentSecessionResponse responseMessage = contentService.deleteAllContentInfo(workspaceUUID);
+        ContentSecessionResponse responseMessage = contentService.deleteAllContent(workspaceUUID);
         return ResponseEntity.ok(new ApiResponse<>(responseMessage));
     }
 }

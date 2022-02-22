@@ -10,6 +10,7 @@ import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Index;
 import javax.persistence.Lob;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
@@ -27,6 +28,7 @@ import lombok.Setter;
 import com.virnect.content.domain.BaseTimeEntity;
 import com.virnect.content.domain.EditPermission;
 import com.virnect.content.domain.SharePermission;
+import com.virnect.content.domain.TargetType;
 
 /**
  * Project: PF-ContentManagement
@@ -40,7 +42,12 @@ import com.virnect.content.domain.SharePermission;
 @Setter
 @Audited
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Table(name = "project")
+@Table(name = "project", indexes = {
+	@Index(name = "idx_uuid", columnList = "uuid"),
+	@Index(name = "idx_name", columnList = "name"),
+	@Index(name = "idx_user_uuid", columnList = "user_uuid"),
+	@Index(name = "idx_workspace_uuid", columnList = "workspace_uuid")
+})
 public class Project extends BaseTimeEntity {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -90,6 +97,10 @@ public class Project extends BaseTimeEntity {
 	List<ProjectEditUser> projectEditUserList = new ArrayList<>();
 
 	@NotAudited
+	@OneToMany(mappedBy = "project")
+	List<ProjectActivityLog> projectActivityLogList = new ArrayList<>();
+
+	@NotAudited
 	@OneToOne(mappedBy = "project")
 	ProjectTarget projectTarget;
 
@@ -110,5 +121,9 @@ public class Project extends BaseTimeEntity {
 		this.userUUID = userUUID;
 		this.workspaceUUID = workspaceUUID;
 		this.properties = properties;
+	}
+
+	public boolean isFileTypeTarget() {
+		return projectTarget.getType() == TargetType.Image || projectTarget.getType() == TargetType.QR;
 	}
 }

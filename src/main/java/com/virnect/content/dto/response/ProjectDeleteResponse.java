@@ -16,5 +16,6 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class ProjectDeleteResponse {
 	private final boolean result;
+	private final String projectUUID;
 	private final LocalDateTime deletedDate;
 }

@@ -16,7 +16,7 @@ import com.virnect.content.domain.YesOrNo;
 import com.virnect.content.dto.request.DownloadLogAddRequest;
 import com.virnect.content.dto.response.DownloadLogAddResponse;
 import com.virnect.content.dto.rest.LicenseInfoResponse;
-import com.virnect.content.dto.rest.MemberListResponse;
+import com.virnect.content.dto.rest.WorkspaceUserListResponse;
 import com.virnect.content.dto.rest.MyLicenseInfoListResponse;
 import com.virnect.content.dto.rest.MyLicenseInfoResponse;
 import com.virnect.content.event.ContentDownloadHitEvent;
@@ -83,12 +83,12 @@ public class DownloadService {
             log.error("[CONTENT DOWNLOAD][WORKSPACE CHECK] content workspace not matched request workspace. content workspace uuid : [{}], request workspace uuid : [{}]", contentWorkspaceUUID, workspaceUUID);
             throw new ContentServiceException(ErrorCode.ERROR_WORKSPACE);
         }
-        MemberListResponse memberListResponse = workspaceRestService.getSimpleWorkspaceUserList(workspaceUUID).getData();
-        if (CollectionUtils.isEmpty(memberListResponse.getMemberInfoList())) {
+        WorkspaceUserListResponse workspaceUserListResponse = workspaceRestService.getSimpleWorkspaceUserList(workspaceUUID).getData();
+        if (CollectionUtils.isEmpty(workspaceUserListResponse.getMemberInfoList())) {
             log.error("[CONTENT DOWNLOAD][WORKSPACE CHECK] workspace member list is empty");
             throw new ContentServiceException(ErrorCode.ERROR_WORKSPACE);
         }
-        boolean containUser = memberListResponse.getMemberInfoList().stream().anyMatch(memberInfoDTO -> memberInfoDTO.getUuid().equals(memberUUID));
+        boolean containUser = workspaceUserListResponse.getMemberInfoList().stream().anyMatch(memberInfoDTO -> memberInfoDTO.getUuid().equals(memberUUID));
         if (!containUser) {
             log.error("[CONTENT DOWNLOAD][WORKSPACE CHECK] content workspace haven't request user. content workspace uuid : [{}], request user uuid : [{}], containUser : [{}]", contentWorkspaceUUID, memberUUID, containUser);
             throw new ContentServiceException(ErrorCode.ERROR_WORKSPACE);

@@ -1,4 +1,4 @@
-package com.virnect.content.global.common;
+package com.virnect.content.global.filter;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;

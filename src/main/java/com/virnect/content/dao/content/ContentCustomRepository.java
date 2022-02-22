@@ -9,6 +9,7 @@ import org.springframework.data.domain.Pageable;
 import com.querydsl.core.Tuple;
 
 import com.virnect.content.domain.Content;
+import com.virnect.content.domain.TargetType;
 
 /**
  * @author jeonghyeon.chang (johnmark)
@@ -20,18 +21,18 @@ import com.virnect.content.domain.Content;
 public interface ContentCustomRepository {
 	Page<Content> getContent(
 		String workspaceUUID, String userUUID, String search, String shareds, String converteds,
-		List<String> userUUIDList, Pageable pageable, String targetType
+		List<String> userUUIDList, Pageable pageable, List<String> targetType
 	);
 
     Optional<Content> getContentOfTarget(String targetData);
 
 	Long getWorkspaceStorageSize(String workspaceUUID);
 
-	Long getWorkspaceDownload(String workspaceUUID);
-
 	List<Tuple> countByUsers(String workspaceUUID, List<String> userUUIDList);
 
 	Long calculateTotalStorageAmountByWorkspaceId(String workspaceId);
 
 	long deleteAllContentByWorkspaceUUID(String workspaceUUID);
+
+	List<Content> findContentAndTargetListByWorkspaceUUID(String workspaceUUID);
 }

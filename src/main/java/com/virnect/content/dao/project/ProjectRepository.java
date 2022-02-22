@@ -18,5 +18,5 @@ import com.virnect.content.domain.project.Project;
 @Repository
 public interface ProjectRepository extends JpaRepository<Project, Long>, ProjectCustomRepository{
 	Optional<Project> findByUuid(String uuid);
-	List<Project> findByUuidIn(List<String> uuidList);
+	List<Project> findByWorkspaceUUID(String workspaceUUID);
 }

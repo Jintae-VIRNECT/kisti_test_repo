@@ -1,46 +1,37 @@
-INSERT INTO `content`
-     ( `content_id`
-     , `created_at`
-     , `updated_at`
-     , `converted`
-     , `deleted`
-     , `metadata`
-     , `name`
-     , `path`
-     , `properties`
-     , `shared`
-     , `size`
-     , `user_uuid`
-     , `uuid`
-     , `workspace_uuid`
-     , `type_id`
-     , `download_hits`)
-VALUES (85, '2020-05-29 08:05:11', '2020-06-01 09:38:03', 'NO', 'NO', '{"contents":{"id":"42a75efe-f0fe-4b4c-8625-0eed81ceafb3","name":"test_2","uuid":"6993fa89-7bff-4414-b186-d8719730f25f","managerUUID":"498b1839dc29ed7bb2ee90ad6985c608","subProcessTotal":2,"sceneGroups":[{"id":"73e8941e-9e46-4f18-8084-ea60ad3abac3","priority":1,"name":"기본 하위 작업명","jobTotal":2,"scenes":[{"id":"e3a21dc3-a88c-4b1d-8a60-eb0f184c9f99","priority":1,"name":"90도","subJobTotal":1,"reportObjects":[{"id":null,"items":null}]},{"id":"32829587-d688-49f4-bca0-aadec10df17e","priority":2,"name":"동일각도","subJobTotal":1,"reportObjects":[{"id":null,"items":null}]}]},{"id":"dd069a80-63b7-4135-9ed4-38ece22b2e8a","priority":2,"name":"기본 하위 작업명","jobTotal":0,"scenes":null}]}}', 'test_2', 'https://virnect-platform-qa.s3.ap-northeast-2.amazonaws.com/workspace/contents/6993fa89-7bff-4414-b186-d8719730f25f.Ares', '{"TargetID":"42a75efe-f0fe-4b4c-8625-0eed81ceafb3","PropertyInfo":{"73e8941e-9e46-4f18-8084-ea60ad3abac3":{"PropertyInfo":{"sceneGroupTitle":"","sceneGroupDetail":"","ComponentName":"QR각도 테스트","ComponentType":2,"identifier":"73e8941e-9e46-4f18-8084-ea60ad3abac3"},"Child":{"e3a21dc3-a88c-4b1d-8a60-eb0f184c9f99":{"PropertyInfo":{"sceneTitle":"90도","sceneDetail":"","ComponentName":"씬","ComponentType":3,"identifier":"e3a21dc3-a88c-4b1d-8a60-eb0f184c9f99"},"Child":{"ee036da7-683e-4c6f-b907-3f5e1cecc676":{"PropertyInfo":{"color":{"r":1.0,"g":1.0,"b":1.0,"a":1.0},"uvRect":{"x":0.0,"y":0.0,"width":1.0,"height":1.0},"size":{"x":2560.0,"y":1600.0},"resourceName":"01.png","ComponentName":"이미지","ComponentType":102,"identifier":"ee036da7-683e-4c6f-b907-3f5e1cecc676"},"Transform":{"worldPosition":{"x":0.0,"y":0.0,"z":0.0},"worldRotation":{"x":0.0,"y":0.0,"z":0.0},"worldScale":{"x":0.235755533,"y":0.213879913,"z":0.7379639},"screenPosition":{"x":0.0,"y":0.0,"z":0.0},"screenRotation":{"x":0.0,"y":0.0,"z":0.0},"screenScale":{"x":1.0,"y":1.0,"z":1.0},"ScreenMode":0}}}},"32829587-d688-49f4-bca0-aadec10df17e":{"PropertyInfo":{"sceneTitle":"동일각도","sceneDetail":"","ComponentName":"씬","ComponentType":3,"identifier":"32829587-d688-49f4-bca0-aadec10df17e"},"Child":{"f3d4747a-e327-4254-889e-5e26c9cfe8e3":{"PropertyInfo":{"color":{"r":1.0,"g":1.0,"b":1.0,"a":1.0},"uvRect":{"x":0.0,"y":0.0,"width":1.0,"height":1.0},"size":{"x":2560.0,"y":1600.0},"resourceName":"01.png","ComponentName":"이미지","ComponentType":102,"identifier":"f3d4747a-e327-4254-889e-5e26c9cfe8e3"},"Transform":{"worldPosition":{"x":0.0,"y":0.0,"z":0.0},"worldRotation":{"x":90.0,"y":0.0,"z":0.0},"worldScale":{"x":0.202187046,"y":0.2345959,"z":1.0},"screenPosition":{"x":0.0,"y":0.0,"z":0.0},"screenRotation":{"x":0.0,"y":0.0,"z":0.0},"screenScale":{"x":1.0,"y":1.0,"z":1.0},"ScreenMode":0}}}}}},"dd069a80-63b7-4135-9ed4-38ece22b2e8a":{"PropertyInfo":{"sceneGroupTitle":"","sceneGroupDetail":"","ComponentName":"씬 그룹","ComponentType":2,"identifier":"dd069a80-63b7-4135-9ed4-38ece22b2e8a"}}}}', 'NO', 1206, '498b1839dc29ed7bb2ee90ad6985c608', '6993fa89-7bff-4414-b186-d8719730f25f', '4d6eab0860969a50acbfa4599fbb5ae8', NULL, 0)
-     , (86, '2020-06-01 05:20:47', '2020-06-01 05:20:47', 'YES', 'NO', '{"contents":{"id":"42a75efe-f0fe-4b4c-8625-0eed81ceafb3","name":"test_2","managerUUID":"498b1839dc29ed7bb2ee90ad6985c608","subProcessTotal":2,"sceneGroups":[{"id":"73e8941e-9e46-4f18-8084-ea60ad3abac3","priority":1,"name":"기본 하위 작업명","jobTotal":2,"scenes":[{"id":"e3a21dc3-a88c-4b1d-8a60-eb0f184c9f99","priority":1,"name":"90도","subJobTotal":1,"reportObjects":[{}]},{"id":"32829587-d688-49f4-bca0-aadec10df17e","priority":2,"name":"동일각도","subJobTotal":1,"reportObjects":[{}]}]},{"id":"dd069a80-63b7-4135-9ed4-38ece22b2e8a","priority":2,"name":"기본 하위 작업명","jobTotal":0}]}}', 'test_2', 'https://virnect-platform-qa.s3.ap-northeast-2.amazonaws.com/workspace/contents/4e2cfebd-5b16-4dd6-96a4-f2c93e5e241e.Ares', '{"TargetID":"42a75efe-f0fe-4b4c-8625-0eed81ceafb3","PropertyInfo":{"73e8941e-9e46-4f18-8084-ea60ad3abac3":{"PropertyInfo":{"sceneGroupTitle":"","sceneGroupDetail":"","ComponentName":"QR각도 테스트","ComponentType":2,"identifier":"73e8941e-9e46-4f18-8084-ea60ad3abac3"},"Child":{"e3a21dc3-a88c-4b1d-8a60-eb0f184c9f99":{"PropertyInfo":{"sceneTitle":"90도","sceneDetail":"","ComponentName":"씬","ComponentType":3,"identifier":"e3a21dc3-a88c-4b1d-8a60-eb0f184c9f99"},"Child":{"ee036da7-683e-4c6f-b907-3f5e1cecc676":{"PropertyInfo":{"color":{"r":1.0,"g":1.0,"b":1.0,"a":1.0},"uvRect":{"x":0.0,"y":0.0,"width":1.0,"height":1.0},"size":{"x":2560.0,"y":1600.0},"resourceName":"01.png","ComponentName":"이미지","ComponentType":102,"identifier":"ee036da7-683e-4c6f-b907-3f5e1cecc676"},"Transform":{"worldPosition":{"x":0.0,"y":0.0,"z":0.0},"worldRotation":{"x":0.0,"y":0.0,"z":0.0},"worldScale":{"x":0.235755533,"y":0.213879913,"z":0.7379639},"screenPosition":{"x":0.0,"y":0.0,"z":0.0},"screenRotation":{"x":0.0,"y":0.0,"z":0.0},"screenScale":{"x":1.0,"y":1.0,"z":1.0},"ScreenMode":0}}}},"32829587-d688-49f4-bca0-aadec10df17e":{"PropertyInfo":{"sceneTitle":"동일각도","sceneDetail":"","ComponentName":"씬","ComponentType":3,"identifier":"32829587-d688-49f4-bca0-aadec10df17e"},"Child":{"f3d4747a-e327-4254-889e-5e26c9cfe8e3":{"PropertyInfo":{"color":{"r":1.0,"g":1.0,"b":1.0,"a":1.0},"uvRect":{"x":0.0,"y":0.0,"width":1.0,"height":1.0},"size":{"x":2560.0,"y":1600.0},"resourceName":"01.png","ComponentName":"이미지","ComponentType":102,"identifier":"f3d4747a-e327-4254-889e-5e26c9cfe8e3"},"Transform":{"worldPosition":{"x":0.0,"y":0.0,"z":0.0},"worldRotation":{"x":90.0,"y":0.0,"z":0.0},"worldScale":{"x":0.202187046,"y":0.2345959,"z":1.0},"screenPosition":{"x":0.0,"y":0.0,"z":0.0},"screenRotation":{"x":0.0,"y":0.0,"z":0.0},"screenScale":{"x":1.0,"y":1.0,"z":1.0},"ScreenMode":0}}}}}},"dd069a80-63b7-4135-9ed4-38ece22b2e8a":{"PropertyInfo":{"sceneGroupTitle":"","sceneGroupDetail":"","ComponentName":"씬 그룹","ComponentType":2,"identifier":"dd069a80-63b7-4135-9ed4-38ece22b2e8a"}}}}', 'YES', 1206, '498b1839dc29ed7bb2ee90ad6985c608', '4e2cfebd-5b16-4dd6-96a4-f2c93e5e241e', '4d6eab0860969a50acbfa4599fbb5ae8', NULL, 0);
+INSERT INTO `content` (`content_id`, `created_at`, `updated_at`, `converted`, `deleted`, `metadata`, `name`, `path`,
+                       `properties`, `shared`, `size`, `user_uuid`, `uuid`, `workspace_uuid`, `type_id`,
+                       `download_hits`)
+VALUES (601, '2021-12-06 05:23:24', '2021-12-06 05:23:24', 'NO', 'NO', '', 'DPLA-3909',
+        'https://192.168.6.3:2838/virnect-platform/workspace/4560ff80baf346af946f48b037f5af6b/content/3ac931f7-5b3b-4807-ac6e-61ae5d138204.Ares',
+        '{"TargetID":"24d312d9-845c-4349-9892-fc9e46322f6e","TargetSize":10.0,"PropertyInfo":{"ff885ac9-1d28-4849-9b40-42a392660724":{"PropertyInfo":{"sceneGroupTitle":"씬 그룹 1","sceneGroupDetail":"","ComponentName":"씬 그룹 1","ComponentType":2,"identifier":"ff885ac9-1d28-4849-9b40-42a392660724"},"Child":{"d88b0128-674f-446d-af84-783272e73313":{"PropertyInfo":{"sceneTitle":"","sceneType":1,"sceneDetail":"","ComponentName":"씬 3","ComponentType":3,"identifier":"d88b0128-674f-446d-af84-783272e73313"},"Child":{"aa130b3b-8724-4eba-9b8c-ee2f37858687":{"PropertyInfo":{"text":"원점","font":"NotoSansCJKkr-Bold","fontSize":32,"alignment":3,"color":{"r":0.9803922,"g":0.3921569,"b":0.0,"a":1.0},"shadow":0.0,"ComponentName":"텍스트 1","ComponentType":101,"identifier":"aa130b3b-8724-4eba-9b8c-ee2f37858687"}},"372fcd03-33f1-4828-9a2a-26b8d1e5e6d6":{"PropertyInfo":{"text":"10cm","font":"NotoSansCJKkr-Bold","fontSize":32,"alignment":3,"color":{"r":0.9803922,"g":0.3921569,"b":0.0,"a":1.0},"shadow":0.0,"ComponentName":"텍스트 1 Copy 1","ComponentType":101,"identifier":"372fcd03-33f1-4828-9a2a-26b8d1e5e6d6"}},"e75df63d-31bf-41f7-b8da-96ef29ba0ede":{"PropertyInfo":{"text":"뒤","font":"NotoSansCJKkr-Bold","fontSize":32,"alignment":3,"color":{"r":0.9803922,"g":0.3921569,"b":0.0,"a":1.0},"shadow":0.0,"ComponentName":"텍스트 2","ComponentType":101,"identifier":"e75df63d-31bf-41f7-b8da-96ef29ba0ede"}}}}}}}}',
+        'YES', 1384, '4a65aa94523efe5391b0541bbbcf97a3', '3ac931f7-5b3b-4807-ac6e-61ae5d138204',
+        '4560ff80baf346af946f48b037f5af6b', NULL, 0);
 
-INSERT INTO `scene_group`
-     ( `scene_group_id`
-     , `created_at`
-     , `updated_at`
-     , `job_total`
-     , `name`
-     , `priority`
-     , `uuid`
-     , `content_id`
-     )
-VALUES (142, '2020-05-29 08:05:11', '2020-05-29 08:05:11', 2, '기본 하위 작업명', 1, '73e8941e-9e46-4f18-8084-ea60ad3abac3', 85)
-     , (143, '2020-05-29 08:05:11', '2020-05-29 08:05:11', 0, '기본 하위 작업명', 2, 'dd069a80-63b7-4135-9ed4-38ece22b2e8a', 85)
-     , (144, '2020-06-01 05:20:47', '2020-06-01 05:20:47', 2, '기본 하위 작업명', 1, '73e8941e-9e46-4f18-8084-ea60ad3abac3', 86)
-     , (145, '2020-06-01 05:20:47', '2020-06-01 05:20:47', 0, '기본 하위 작업명', 2, 'dd069a80-63b7-4135-9ed4-38ece22b2e8a', 86);
+INSERT INTO `target` (`target_id`, `created_at`, `updated_at`, `data`, `type`, `img_path`, `content_id`, `size`)
+VALUES (514, '2021-12-06 05:23:24', '2021-12-06 05:23:24', 'swQPO%2fS%2fQSDOWIyQFRMTxQdfjrnPdR0HfhGyiduajtM%3d',
+        'VTarget', 'https://192.168.6.3:2838/virnect-platform/workspace/report/virnect_target.png', 601, 10);
 
-INSERT INTO `target`
-     ( `target_id`
-     , `created_at`
-     , `updated_at`
-     , `data`
-     , `type`
-     , `img_path`
-     , `content_id`
-     )
-VALUES (135, '2020-06-01 05:20:47', '2020-06-01 05:20:47', 'testTargetData', 'QR', 'https://virnect-platform-qa.s3.ap-northeast-2.amazonaws.com/workspace/report/2020-05-28_gixq06nylg.jpg', 85),
-       (136, '2020-06-01 05:20:47', '2020-06-01 05:20:47', NULL, NULL, '', 86);
+
+INSERT INTO `scene_group` (`scene_group_id`, `created_at`, `updated_at`, `job_total`, `name`, `priority`, `uuid`,
+                           `content_id`)
+VALUES (11210, '2021-12-06 05:23:24', '2021-12-06 05:23:24', 1, '씬 그룹 1', 1, 'ff885ac9-1d28-4849-9b40-42a392660724',
+        601);
+
+INSERT INTO `project` (`project_id`, `created_at`, `updated_at`, `edit_permission`, `name`, `path`, `properties`, `share_permission`, `size`, `uuid`, `workspace_uuid`, `user_uuid`) VALUES (143, '2022-01-13 04:01:55', '2022-01-13 04:01:55', 'MEMBER', '프로젝트', 'https://192.168.6.3:2838/virnect-platform/workspace/4d6eab0860969a50acbfa4599fbb5ae8/project/10ecd5af-4ac8-4811-a157-0964cfae7725.Mars', '{"propertyName":"프로젝트 이름","propertyObjectList":[{"objectName":"1-depth 첫번째 씬그룹","objectType":"SceneGroup","objectChildList":[{"objectName":"2-depth 씬","objectType":"Scene","objectChildList":[{"objectName":"3-depth 오브젝트111","objectType":"Text","objectChildList":null}]}]}]}', 'MEMBER', 1551, '10ecd5af-4ac8-4811-a157-0964cfae7725', '4d6eab0860969a50acbfa4599fbb5ae8', '498b1839dc29ed7bb2ee90ad6985c608');
+INSERT INTO `project` (`project_id`, `created_at`, `updated_at`, `edit_permission`, `name`, `path`, `properties`, `share_permission`, `size`, `uuid`, `workspace_uuid`, `user_uuid`) VALUES (144, '2022-01-13 04:02:18', '2022-01-13 04:02:18', 'MEMBER', '프로젝트', 'https://192.168.6.3:2838/virnect-platform/workspace/4d6eab0860969a50acbfa4599fbb5ae8/project/2b7ee0c0-88c5-4b03-8850-614e085dba65.Mars', '{"propertyName":"프로젝트 이름","propertyObjectList":[{"objectName":"1-depth 첫번째 씬그룹","objectType":"SceneGroup","objectChildList":[{"objectName":"2-depth 씬","objectType":"Scene","objectChildList":[{"objectName":"3-depth 오브젝트111","objectType":"Text","objectChildList":null}]}]}]}', 'UPLOADER', 1551, '2b7ee0c0-88c5-4b03-8850-614e085dba65', '4d6eab0860969a50acbfa4599fbb5ae8', '498b1839dc29ed7bb2ee90ad6985c608');
+INSERT INTO `project` (`project_id`, `created_at`, `updated_at`, `edit_permission`, `name`, `path`, `properties`, `share_permission`, `size`, `uuid`, `workspace_uuid`, `user_uuid`) VALUES (145, '2022-01-13 04:19:07', '2022-01-13 04:19:07', 'MEMBER', '프로젝트', 'https://192.168.6.3:2838/virnect-platform/workspace/4d6eab0860969a50acbfa4599fbb5ae8/project/08aa5e30-ca07-4dd0-9a4d-ba46dd3da4d6.Mars', '{"propertyName":"프로젝트 이름","propertyObjectList":[{"objectName":"1-depth 첫번째 씬그룹","objectType":"SceneGroup","objectChildList":[{"objectName":"2-depth 씬","objectType":"Scene","objectChildList":[{"objectName":"3-depth 오브젝트111","objectType":"Text","objectChildList":null}]}]}]}', 'MANAGER', 1551, '08aa5e30-ca07-4dd0-9a4d-ba46dd3da4d6', '4d6eab0860969a50acbfa4599fbb5ae8', '498b1839dc29ed7bb2ee90ad6985c608');
+
+INSERT INTO `project_mode` (`project_mode_id`, `created_at`, `updated_at`, `mode`, `project_id`) VALUES (450, '2022-01-13 04:01:55', '2022-01-13 04:01:55', 'TWO_DIMENSINAL', 143);
+INSERT INTO `project_mode` (`project_mode_id`, `created_at`, `updated_at`, `mode`, `project_id`) VALUES (451, '2022-01-13 04:01:55', '2022-01-13 04:01:55', 'THREE_DIMENSINAL', 143);
+INSERT INTO `project_mode` (`project_mode_id`, `created_at`, `updated_at`, `mode`, `project_id`) VALUES (452, '2022-01-13 04:01:55', '2022-01-13 04:01:55', 'TWO_OR_THREE_DIMENSINAL', 143);
+INSERT INTO `project_mode` (`project_mode_id`, `created_at`, `updated_at`, `mode`, `project_id`) VALUES (453, '2022-01-13 04:02:18', '2022-01-13 04:02:18', 'TWO_DIMENSINAL', 144);
+INSERT INTO `project_mode` (`project_mode_id`, `created_at`, `updated_at`, `mode`, `project_id`) VALUES (454, '2022-01-13 04:02:18', '2022-01-13 04:02:18', 'THREE_DIMENSINAL', 144);
+INSERT INTO `project_mode` (`project_mode_id`, `created_at`, `updated_at`, `mode`, `project_id`) VALUES (455, '2022-01-13 04:02:18', '2022-01-13 04:02:18', 'TWO_OR_THREE_DIMENSINAL', 144);
+INSERT INTO `project_mode` (`project_mode_id`, `created_at`, `updated_at`, `mode`, `project_id`) VALUES (456, '2022-01-13 04:19:07', '2022-01-13 04:19:07', 'TWO_DIMENSINAL', 145);
+INSERT INTO `project_mode` (`project_mode_id`, `created_at`, `updated_at`, `mode`, `project_id`) VALUES (457, '2022-01-13 04:19:07', '2022-01-13 04:19:07', 'THREE_DIMENSINAL', 145);
+INSERT INTO `project_mode` (`project_mode_id`, `created_at`, `updated_at`, `mode`, `project_id`) VALUES (458, '2022-01-13 04:19:07', '2022-01-13 04:19:07', 'TWO_OR_THREE_DIMENSINAL', 145);
+
+INSERT INTO `project_target` (`project_target_id`, `created_at`, `updated_at`, `length`, `path`, `type`, `width`, `project_id`, `data`) VALUES (146, '2022-01-13 04:01:55', '2022-01-13 04:01:55', 10, 'https://192.168.6.3:2838/virnect-platform/workspace/report/virnect_target.png', 'VTarget', 10, 143, '0f518d23-9226-4c8d-a488-c6581ef90456');
+INSERT INTO `project_target` (`project_target_id`, `created_at`, `updated_at`, `length`, `path`, `type`, `width`, `project_id`, `data`) VALUES (147, '2022-01-13 04:02:18', '2022-01-13 04:02:18', 10, NULL, 'VR', 10, 144, '0f518d23-9226-4c8d-a488-c6581ef90456');
+INSERT INTO `project_target` (`project_target_id`, `created_at`, `updated_at`, `length`, `path`, `type`, `width`, `project_id`, `data`) VALUES (148, '2022-01-13 04:19:07', '2022-01-13 04:19:07', 10, 'https://192.168.6.3:2838/virnect-platform/workspace/4d6eab0860969a50acbfa4599fbb5ae8/report/2022-01-13_moiwgbo8yp.png', 'QR', 10, 145, '0f518d23-9226-4c8d-a488-c6581ef90456');
+

@@ -22,6 +22,10 @@ public class ProjectUpdateResponse {
 	private final String projectUUID;
 	@ApiModelProperty(value = "프로젝트 업로더 식별자", position = 2, example = "498b1839dc29ed7bb2ee90ad6985c608")
 	private final String uploaderUUID;
-	@ApiModelProperty(value = "프로젝트 업데이트 일자", position = 3, example = "2020-02-15T16:32:13.305")
+	@ApiModelProperty(value = "프로젝트 업로더 공유 권한 여부", position = 3, example = "true")
+	private final boolean uploaderHasSharePermission;
+	@ApiModelProperty(value = "프로젝트 업로더 편집 권한 여부", position = 4, example = "true")
+	private final boolean uploaderHasEditPermission;
+	@ApiModelProperty(value = "프로젝트 업데이트 일자", position = 5, example = "2020-02-15T16:32:13.305")
 	private final LocalDateTime updatedDate;
 }

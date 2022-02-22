@@ -13,5 +13,6 @@ import com.virnect.content.domain.project.ProjectShareUser;
  * DESCRIPTION:
  */
 @Repository
-public interface ProjectShareUerRepository extends JpaRepository<ProjectShareUser, Long> {
+public interface ProjectShareUerRepository
+	extends JpaRepository<ProjectShareUser, Long>, ProjectShareUserCustomRepository {
 }

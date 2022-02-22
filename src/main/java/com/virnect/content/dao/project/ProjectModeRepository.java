@@ -13,5 +13,5 @@ import com.virnect.content.domain.project.ProjectMode;
  * DESCRIPTION:
  */
 @Repository
-public interface ProjectModeRepository extends JpaRepository<ProjectMode, Long> {
+public interface ProjectModeRepository extends JpaRepository<ProjectMode, Long>, ProjectModeCustomRepository {
 }

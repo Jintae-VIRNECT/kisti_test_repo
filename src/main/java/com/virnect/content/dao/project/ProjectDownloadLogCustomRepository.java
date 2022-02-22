@@ -7,5 +7,5 @@ public interface ProjectDownloadLogCustomRepository {
 		String workspaceId, LocalDateTime startDate, LocalDateTime endDate
 	);
 
-	long deleteAllContentDownloadLogByWorkspaceUUID(String workspaceUUID);
+	long deleteAllProjectDownloadLogByWorkspaceUUID(String workspaceUUID);
 }

@@ -2,16 +2,11 @@ package com.virnect.content.application;
 
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -26,9 +21,6 @@ import java.util.stream.Collectors;
 
 import javax.imageio.ImageIO;
 
-import org.apache.commons.fileupload.FileItem;
-import org.apache.commons.fileupload.disk.DiskFileItem;
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
@@ -37,7 +29,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.multipart.commons.CommonsMultipartFile;
 
 import com.querydsl.core.Tuple;
 
@@ -48,10 +39,15 @@ import com.virnect.content.application.license.LicenseRestService;
 import com.virnect.content.application.process.ProcessRestService;
 import com.virnect.content.application.user.UserRestService;
 import com.virnect.content.application.workspace.WorkspaceRestService;
-import com.virnect.content.dao.TypeRepository;
 import com.virnect.content.dao.content.ContentRepository;
 import com.virnect.content.dao.contentdonwloadlog.ContentDownloadLogRepository;
+import com.virnect.content.dao.project.ProjectActivityLogRepository;
+import com.virnect.content.dao.project.ProjectDownloadLogRepository;
+import com.virnect.content.dao.project.ProjectEditUserRepository;
+import com.virnect.content.dao.project.ProjectModeRepository;
 import com.virnect.content.dao.project.ProjectRepository;
+import com.virnect.content.dao.project.ProjectShareUerRepository;
+import com.virnect.content.dao.project.ProjectTargetRepository;
 import com.virnect.content.dao.scenegroup.SceneGroupRepository;
 import com.virnect.content.dao.target.TargetRepository;
 import com.virnect.content.domain.Content;
@@ -60,6 +56,7 @@ import com.virnect.content.domain.Target;
 import com.virnect.content.domain.TargetType;
 import com.virnect.content.domain.Types;
 import com.virnect.content.domain.YesOrNo;
+import com.virnect.content.domain.project.Project;
 import com.virnect.content.dto.PropertiesInfo;
 import com.virnect.content.dto.request.ContentDeleteRequest;
 import com.virnect.content.dto.request.ContentInfoRequest;
@@ -78,8 +75,6 @@ import com.virnect.content.dto.response.ContentUploadResponse;
 import com.virnect.content.dto.response.SceneGroupInfoListResponse;
 import com.virnect.content.dto.response.SceneGroupInfoResponse;
 import com.virnect.content.dto.rest.LicenseInfoResponse;
-import com.virnect.content.dto.rest.MemberInfoDTO;
-import com.virnect.content.dto.rest.MemberListResponse;
 import com.virnect.content.dto.rest.MyLicenseInfoListResponse;
 import com.virnect.content.dto.rest.MyLicenseInfoResponse;
 import com.virnect.content.dto.rest.ProcessInfoResponse;
@@ -87,6 +82,8 @@ import com.virnect.content.dto.rest.UserInfoListResponse;
 import com.virnect.content.dto.rest.UserInfoResponse;
 import com.virnect.content.dto.rest.WorkspaceInfoListResponse;
 import com.virnect.content.dto.rest.WorkspaceInfoResponse;
+import com.virnect.content.dto.rest.WorkspaceUserListResponse;
+import com.virnect.content.dto.rest.WorkspaceUserResponse;
 import com.virnect.content.exception.ContentServiceException;
 import com.virnect.content.global.common.ApiResponse;
 import com.virnect.content.global.common.PageMetadataResponse;
@@ -118,15 +115,19 @@ public class ContentService {
 	private final ContentRepository contentRepository;
 	private final SceneGroupRepository sceneGroupRepository;
 	private final TargetRepository targetRepository;
-	private final TypeRepository typeRepository;
 	private final ContentDownloadLogRepository contentDownloadLogRepository;
 	private final UserRestService userRestService;
 	private final ProcessRestService processRestService;
 	private final WorkspaceRestService workspaceRestService;
 	private final LicenseRestService licenseRestService;
-	private final MetadataService metadataService;
 	private final ModelMapper modelMapper;
 	private final ProjectRepository projectRepository;
+	private final ProjectDownloadLogRepository projectDownloadLogRepository;
+	private final ProjectTargetRepository projectTargetRepository;
+	private final ProjectModeRepository projectModeRepository;
+	private final ProjectShareUerRepository projectShareUerRepository;
+	private final ProjectEditUserRepository projectEditUserRepository;
+	private final ProjectActivityLogRepository projectActivityLogRepository;
 
 	private static final String V_TARGET_DEFAULT_NAME = "virnect_target.png";
 	private static final String REPORT_DEFAULT_DIRECTORY = "workspace/report/";
@@ -587,12 +588,13 @@ public class ContentService {
 	 * @param search        - 검색어(컨텐츠명 / 사용자명)
 	 * @param shared        - 공유여부
 	 * @param pageable      - 페이징
+	 * @param targetType
 	 * @return - 컨텐츠 목록
 	 */
 	@Transactional(readOnly = true)
 	public ApiResponse<ContentInfoListResponse> getContentList(
 		String workspaceUUID, String userUUID, String search, String shared, String converteds, Pageable pageable,
-		String targetType
+		List<String> targetType
 	) {
 		List<ContentInfoResponse> contentInfoList;
 		Map<String, UserInfoResponse> userInfoMap = new HashMap<>();
@@ -993,11 +995,11 @@ public class ContentService {
 	}
 
 	private ApiResponse<UserInfoListResponse> getUserInfo(String search, String workspaceId) {
-		ApiResponse<MemberListResponse> userList = workspaceRestService.getSimpleWorkspaceUserList(workspaceId);
+		ApiResponse<WorkspaceUserListResponse> userList = workspaceRestService.getSimpleWorkspaceUserList(workspaceId);
 		List<String> userUUIDs = new ArrayList<>();
 
-		for (MemberInfoDTO dto : userList.getData().getMemberInfoList()) {
-			userUUIDs.add(dto.getUuid());
+		for (WorkspaceUserResponse worksapceUser : userList.getData().getMemberInfoList()) {
+			userUUIDs.add(worksapceUser.getUuid());
 		}
 
 		ApiResponse<UserInfoListResponse> userInfoListResult = this.userRestService.getUserInfoSearchNickName(
@@ -1195,26 +1197,73 @@ public class ContentService {
 	 * @return
 	 */
 	@Transactional
-	public ContentSecessionResponse deleteAllContentInfo(String workspaceUUID) {
-		List<Content> contentList = contentRepository.findByWorkspaceUUID(workspaceUUID);
+	public ContentSecessionResponse deleteAllContent(String workspaceUUID) {
+		List<Content> contentList = contentRepository.findContentAndTargetListByWorkspaceUUID(workspaceUUID);
 
-		// 1. Content download log 삭제
+		// 1-1. Content File, Target File 삭제
+		deleteAllContentAndTargetFile(contentList);
+
+		// 1-2. Content download log 삭제
 		contentDownloadLogRepository.deleteAllContentDownloadLogByWorkspaceUUID(workspaceUUID);
 
-		// 2. Scene Group 삭제
+		// 1-3. Scene Group 삭제
 		sceneGroupRepository.deleteAllSceneGroupInfoByContent(contentList);
 
-		// 3. Target 삭제
+		// 1-4. Target 삭제
 		targetRepository.deleteAllTargetInfoByContent(contentList);
 
-		// 4. Content File 삭제
-		contentList.parallelStream()
-			.forEach(content -> fileUploadService.deleteByFileUrl(content.getPath()));
-
-		// 4. Content 삭제
+		// 1-5. Content 삭제
 		contentRepository.deleteAllContentByWorkspaceUUID(workspaceUUID);
 
+		List<Project> projectList = projectRepository.findByWorkspaceUUID(workspaceUUID);
+
+		// 2-1. Project File, Target File 삭제
+		deleteAllProjectAndTargetFile(projectList);
+
+		// 2-2. Download log 삭제
+		projectDownloadLogRepository.deleteAllProjectDownloadLogByWorkspaceUUID(workspaceUUID);
+
+		// 2-3. Target 삭제
+		projectTargetRepository.deleteAllTargetByProjectList(projectList);
+
+		// 2-4. Mode 삭제
+		projectModeRepository.deleteAllModeByProjectList(projectList);
+
+		// 2-5. 공유 유저 삭제
+		projectShareUerRepository.deleteAllShareUserByProjectList(projectList);
+
+		// 2-6. 편집 유저 삭제
+		projectEditUserRepository.deleteAllEditShareUserByProjectList(projectList);
+
+		// 2-7. 활동 이력 삭제
+		projectActivityLogRepository.deleteAllProjectActivityByProjectList(projectList);
+
+		// 2-8. Project 삭제
+		projectRepository.deleteAllProjectByProjectList(projectList);
+
 		return new ContentSecessionResponse(workspaceUUID, true, LocalDateTime.now());
+	}
+
+	private void deleteAllProjectAndTargetFile(List<Project> projectList) {
+		projectList.parallelStream().forEach(project -> {
+			fileUploadService.deleteByFileUrl(project.getPath());
+			if (project.isFileTypeTarget()) {
+				fileUploadService.deleteByFileUrl(project.getProjectTarget().getPath());
+			}
+		});
+	}
+
+	private void deleteAllContentAndTargetFile(List<Content> contentList) {
+		contentList.parallelStream()
+			.forEach(content -> {
+					fileUploadService.deleteByFileUrl(content.getPath());
+					content.getTargetList().forEach(target -> {
+						if (target.getType() == TargetType.Image || target.getType() == TargetType.QR) {
+							fileUploadService.deleteByFileUrl(target.getImgPath());
+						}
+					});
+				}
+			);
 	}
 
 	@Transactional
