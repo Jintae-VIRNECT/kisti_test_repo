@@ -13,9 +13,8 @@ import lombok.extern.slf4j.Slf4j;
 
 import com.virnect.workspace.application.license.LicenseRestService;
 import com.virnect.workspace.application.user.UserRestService;
+import com.virnect.workspace.application.user.dto.response.UserInfoRestResponse;
 import com.virnect.workspace.dao.history.HistoryRepository;
-import com.virnect.workspace.dao.setting.SettingRepository;
-import com.virnect.workspace.dao.setting.WorkspaceCustomSettingRepository;
 import com.virnect.workspace.dao.setting.WorkspaceSettingRepository;
 import com.virnect.workspace.dao.workspace.WorkspaceRepository;
 import com.virnect.workspace.dao.workspacepermission.WorkspacePermissionRepository;
@@ -29,16 +28,15 @@ import com.virnect.workspace.domain.workspace.WorkspaceRole;
 import com.virnect.workspace.domain.workspace.WorkspaceSetting;
 import com.virnect.workspace.domain.workspace.WorkspaceUser;
 import com.virnect.workspace.domain.workspace.WorkspaceUserPermission;
-import com.virnect.workspace.dto.response.WorkspaceInfoDTO;
-import com.virnect.workspace.dto.response.WorkspaceCustomSettingResponse;
-import com.virnect.workspace.dto.request.WorkspaceFaviconUpdateRequest;
-import com.virnect.workspace.dto.response.WorkspaceFaviconUpdateResponse;
-import com.virnect.workspace.dto.request.WorkspaceLogoUpdateRequest;
-import com.virnect.workspace.dto.response.WorkspaceLogoUpdateResponse;
-import com.virnect.workspace.dto.request.WorkspaceTitleUpdateRequest;
-import com.virnect.workspace.dto.response.WorkspaceTitleUpdateResponse;
 import com.virnect.workspace.dto.request.WorkspaceCreateRequest;
-import com.virnect.workspace.application.user.dto.response.UserInfoRestResponse;
+import com.virnect.workspace.dto.request.WorkspaceFaviconUpdateRequest;
+import com.virnect.workspace.dto.request.WorkspaceLogoUpdateRequest;
+import com.virnect.workspace.dto.request.WorkspaceTitleUpdateRequest;
+import com.virnect.workspace.dto.response.WorkspaceCustomSettingResponse;
+import com.virnect.workspace.dto.response.WorkspaceFaviconUpdateResponse;
+import com.virnect.workspace.dto.response.WorkspaceInfoDTO;
+import com.virnect.workspace.dto.response.WorkspaceLogoUpdateResponse;
+import com.virnect.workspace.dto.response.WorkspaceTitleUpdateResponse;
 import com.virnect.workspace.event.message.MailContextHandler;
 import com.virnect.workspace.exception.WorkspaceException;
 import com.virnect.workspace.global.common.mapper.rest.RestMapStruct;
@@ -47,7 +45,7 @@ import com.virnect.workspace.global.constant.Permission;
 import com.virnect.workspace.global.constant.UUIDType;
 import com.virnect.workspace.global.error.ErrorCode;
 import com.virnect.workspace.global.util.RandomStringTokenUtil;
-import com.virnect.workspace.infra.file.DefaultImageFile;
+import com.virnect.workspace.infra.file.DefaultImageName;
 import com.virnect.workspace.infra.file.FileService;
 
 /**
@@ -76,15 +74,15 @@ public class OffWorkspaceServiceImpl extends WorkspaceService {
 		WorkspaceUserPermissionRepository workspaceUserPermissionRepository, UserRestService userRestService,
 		FileService fileUploadService, HistoryRepository historyRepository, LicenseRestService licenseRestService,
 		WorkspaceMapStruct workspaceMapStruct, RestMapStruct restMapStruct,
-		ApplicationEventPublisher applicationEventPublisher, SettingRepository settingRepository,
-		WorkspaceCustomSettingRepository workspaceCustomSettingRepository, MailContextHandler mailContextHandler,
+		ApplicationEventPublisher applicationEventPublisher, MailContextHandler mailContextHandler,
 		WorkspaceSettingRepository workspaceSettingRepository, WorkspaceRoleRepository workspaceRoleRepository,
 		WorkspacePermissionRepository workspacePermissionRepository
 	) {
 		super(
 			workspaceRepository, workspaceUserRepository, workspaceUserPermissionRepository, userRestService,
 			fileUploadService, historyRepository, licenseRestService, workspaceMapStruct, restMapStruct,
-			applicationEventPublisher, settingRepository, workspaceCustomSettingRepository, mailContextHandler
+			applicationEventPublisher, mailContextHandler,
+			workspaceSettingRepository
 		);
 		this.workspaceRepository = workspaceRepository;
 		this.workspaceUserPermissionRepository = workspaceUserPermissionRepository;
@@ -121,10 +119,10 @@ public class OffWorkspaceServiceImpl extends WorkspaceService {
 
 		String profile = null;
 		if (workspaceCreateRequest.getProfile() == null) {
-			profile = fileUploadService.getDefaultFileUrl(DefaultImageFile.WORKSPACE_PROFILE_IMG);
+			profile = fileUploadService.getDefaultFileUrl(DefaultImageName.WORKSPACE_PROFILE);
 		} else {
 			profile = fileUploadService.upload(workspaceCreateRequest.getProfile(), workspaceId);
-        }
+		}
 
 		// 워크스페이스 생성
 		Workspace workspace = Workspace.builder()
@@ -171,7 +169,7 @@ public class OffWorkspaceServiceImpl extends WorkspaceService {
 
 		//2. 파비콘 확장자, 사이즈 체크
 		if (workspaceFaviconUpdateRequest.getFavicon() == null) {
-			String favicon = fileUploadService.getDefaultFileUrl(DefaultImageFile.WORKSPACE_DEFAULT_FAVICON);
+			String favicon = fileUploadService.getDefaultFileUrl(DefaultImageName.WORKSPACE_DEFAULT_FAVICON);
 			workspaceSetting.setFavicon(favicon);
 			workspaceSettingRepository.save(workspaceSetting);
 			WorkspaceFaviconUpdateResponse workspaceFaviconUpdateResponse = new WorkspaceFaviconUpdateResponse();
@@ -238,7 +236,7 @@ public class OffWorkspaceServiceImpl extends WorkspaceService {
 			String logo = fileUploadService.upload(workspaceLogoUpdateRequest.getDefaultLogo(), workspaceId);
 			workspaceSetting.setDefaultLogo(logo);
 		} else {
-			String logoDefault = fileUploadService.getDefaultFileUrl(DefaultImageFile.WORKSPACE_DEFAULT_LOGO_IMG);
+			String logoDefault = fileUploadService.getDefaultFileUrl(DefaultImageName.WORKSPACE_DEFAULT_LOGO);
 			workspaceSetting.setDefaultLogo(logoDefault);
 			workspaceSettingRepository.save(workspaceSetting);
 
@@ -265,7 +263,7 @@ public class OffWorkspaceServiceImpl extends WorkspaceService {
 			String logo = fileUploadService.upload(workspaceLogoUpdateRequest.getWhiteLogo(), workspaceId);
 			workspaceSetting.setWhiteLogo(logo);
 		} else {
-			String logoWhite = fileUploadService.getDefaultFileUrl(DefaultImageFile.WORKSPACE_WHITE_LOGO_IMG);
+			String logoWhite = fileUploadService.getDefaultFileUrl(DefaultImageName.WORKSPACE_WHITE_LOGO);
 			workspaceSetting.setWhiteLogo(logoWhite);
 		}
 
@@ -299,20 +297,14 @@ public class OffWorkspaceServiceImpl extends WorkspaceService {
 		return workspaceTitleUpdateResponse;
 	}
 
-	public WorkspaceCustomSettingResponse getWorkspaceCustomSetting() {
+	@Override
+	public WorkspaceCustomSettingResponse getWorkspaceCustomSetting(String workspaceId) {
 		List<WorkspaceSetting> workspaceSettingList = workspaceSettingRepository.findAll();
 
 		WorkspaceSetting workspaceSetting = workspaceSettingList.stream().findFirst()
 			.orElseThrow(() -> new WorkspaceException(ErrorCode.ERR_UNEXPECTED_SERVER_ERROR));
 
-		WorkspaceCustomSettingResponse workspaceCustomSettingResponse = new WorkspaceCustomSettingResponse();
-		workspaceCustomSettingResponse.setWorkspaceTitle(workspaceSetting.getTitle());
-		workspaceCustomSettingResponse.setDefaultLogo(workspaceSetting.getDefaultLogo());
-		workspaceCustomSettingResponse.setGreyLogo(workspaceSetting.getGreyLogo());
-		workspaceCustomSettingResponse.setWhiteLogo(workspaceSetting.getWhiteLogo());
-		workspaceCustomSettingResponse.setFavicon(workspaceSetting.getFavicon());
-
-		return workspaceCustomSettingResponse;
+		return workspaceMapStruct.workspaceSettingToWorkspaceCustomSettingResponse(workspaceSetting);
 	}
 
 	private Workspace checkWorkspaceAndUserRole(String workspaceId, String userId, Role[] roles) {

@@ -17,18 +17,27 @@ import lombok.Setter;
 @ApiModel
 public class WorkspaceCustomSettingResponse {
 	@ApiModelProperty(value = "워크스페이스 고객사명", example = "VIRNECT", position = 1)
-	private String workspaceTitle = "";
+	private String workspaceTitle;
 
 	@ApiModelProperty(value = "워크스페이스 기본 로고", example = "", position = 2)
-	private String defaultLogo = "";
+	private String defaultLogo;
 
 	@ApiModelProperty(value = "워크스페이스 기본 로고", example = "", position = 3)
-	private String greyLogo = "";
+	private String greyLogo;
 
 	@ApiModelProperty(value = "워크스페이스 기본 로고", example = "", position = 4)
-	private String whiteLogo = "";
+	private String whiteLogo;
 
 	@ApiModelProperty(value = "워크스페이스 파비콘", example = "", position = 4)
-	private String favicon = "";
+	private String favicon;
+
+	@ApiModelProperty(value = "워크스페이스 기본 로고", example = "", position = 2)
+	private String remoteAndroidSplashLogo;
+
+	@ApiModelProperty(value = "워크스페이스 기본 로고", example = "", position = 3)
+	private String remoteAndroidLoginLogo;
+
+	@ApiModelProperty(value = "워크스페이스 기본 로고", example = "", position = 4)
+	private String remoteHololens2CommonLogo;
 }
 
