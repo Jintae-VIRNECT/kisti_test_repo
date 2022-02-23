@@ -32,4 +32,11 @@ public class WorkspaceLogoUpdateRequest {
 
 	@ApiModelProperty(value = "로고 화이트 이미지", required = false, position = 3)
 	private MultipartFile whiteLogo;
+
+	@Override
+	public String toString() {
+		return "WorkspaceLogoUpdateRequest{" +
+			"userId='" + userId + '\'' +
+			'}';
+	}
 }

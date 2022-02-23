@@ -23,6 +23,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import lombok.SneakyThrows;
 
+import com.virnect.workspace.dto.request.WorkspaceTitleUpdateRequest;
+
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.MOCK)
 @ActiveProfiles("test")
@@ -42,11 +44,11 @@ class WorkspaceControllerTest {
 		String url = String.format("/workspaces/%s/logo/remote", workspaceUUID);
 
 		MockMultipartFile splashLogo = new MockMultipartFile(
-			"androidSplashLogo", "new-splash.png", "image/png", "image".getBytes());
+			"remoteAndroidSplashLogo", "new-splash.png", "image/png", "image".getBytes());
 		MockMultipartFile loginLogo = new MockMultipartFile(
-			"androidLoginLogo", "new-login.png", "image/png", "image".getBytes());
+			"remoteAndroidLoginLogo", "new-login.png", "image/png", "image".getBytes());
 		MockMultipartFile hololens2Logo = new MockMultipartFile(
-			"hololens2CommonLogo", "new-hls.png", "image/png", "image".getBytes());
+			"remoteHololens2CommonLogo", "new-hls.png", "image/png", "image".getBytes());
 
 		MultiValueMap<String, String> workspaceRemoteLogoUpdateRequest = new LinkedMultiValueMap<>();
 		workspaceRemoteLogoUpdateRequest.set("userId", masterUserUUID);
@@ -192,6 +194,77 @@ class WorkspaceControllerTest {
 				.multipart(url)
 				.file(profile)
 				.params(workspaceCreateRequest)
+			)
+			.andDo(print())
+			.andExpect(status().isOk())
+			.andExpect(jsonPath("$.code").value(200))
+			.andReturn();
+	}
+
+	@Test
+	@DisplayName("update workspace logo")
+	void updateWorkspaceLogo() throws Exception {
+		String workspaceUUID = "4d6eab0860969a50acbfa4599fbb5ae8";
+		String masterUserUUID = "498b1839dc29ed7bb2ee90ad6985c608";
+
+		String url = String.format("/workspaces/%s/logo", workspaceUUID);
+
+		MockMultipartFile profile = new MockMultipartFile(
+			"defaultLogo", "new.png", "image/png", "image".getBytes());
+
+		MultiValueMap<String, String> workspaceLogoUpdateRequest = new LinkedMultiValueMap<>();
+		workspaceLogoUpdateRequest.set("userId", masterUserUUID);
+
+		mockMvc.perform(MockMvcRequestBuilders
+				.multipart(url)
+				.file(profile)
+				.params(workspaceLogoUpdateRequest)
+			)
+			.andDo(print())
+			.andExpect(status().isOk())
+			.andExpect(jsonPath("$.code").value(200))
+			.andReturn();
+	}
+
+	@Test
+	@DisplayName("update workspace favicon")
+	void updateWorkspaceFavicon() throws Exception {
+		String workspaceUUID = "4d6eab0860969a50acbfa4599fbb5ae8";
+		String masterUserUUID = "498b1839dc29ed7bb2ee90ad6985c608";
+
+		String url = String.format("/workspaces/%s/favicon", workspaceUUID);
+
+		MockMultipartFile favion = new MockMultipartFile("favicon", "new.png", "image/png", "image".getBytes());
+
+		MultiValueMap<String, String> workspaceFaviconUpdateRequest = new LinkedMultiValueMap<>();
+		workspaceFaviconUpdateRequest.set("userId", masterUserUUID);
+
+		mockMvc.perform(MockMvcRequestBuilders
+				.multipart(url)
+				.file(favion)
+				.params(workspaceFaviconUpdateRequest)
+			)
+			.andDo(print())
+			.andExpect(status().isOk())
+			.andExpect(jsonPath("$.code").value(200))
+			.andReturn();
+	}@Test
+	@DisplayName("update workspace title")
+	void updateWorkspaceTitle() throws Exception {
+		String workspaceUUID = "4d6eab0860969a50acbfa4599fbb5ae8";
+		String masterUserUUID = "498b1839dc29ed7bb2ee90ad6985c608";
+
+		String url = String.format("/workspaces/%s/title", workspaceUUID);
+
+		WorkspaceTitleUpdateRequest workspaceTitleUpdateRequest = new WorkspaceTitleUpdateRequest();
+		workspaceTitleUpdateRequest.setTitle("VIRNECT");
+		workspaceTitleUpdateRequest.setUserId(masterUserUUID);
+
+
+		mockMvc.perform(MockMvcRequestBuilders
+				.post(url)
+				.content(objectMapper.writeValueAsString(workspaceTitleUpdateRequest))
+				.contentType(MediaType.APPLICATION_JSON)
 			)
 			.andDo(print())
 			.andExpect(status().isOk())

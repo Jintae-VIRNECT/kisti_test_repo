@@ -4,6 +4,7 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -25,14 +26,8 @@ import com.virnect.workspace.domain.workspace.WorkspaceSetting;
 import com.virnect.workspace.domain.workspace.WorkspaceUser;
 import com.virnect.workspace.domain.workspace.WorkspaceUserPermission;
 import com.virnect.workspace.dto.request.WorkspaceCreateRequest;
-import com.virnect.workspace.dto.request.WorkspaceFaviconUpdateRequest;
-import com.virnect.workspace.dto.request.WorkspaceLogoUpdateRequest;
-import com.virnect.workspace.dto.request.WorkspaceTitleUpdateRequest;
 import com.virnect.workspace.dto.response.WorkspaceCustomSettingResponse;
-import com.virnect.workspace.dto.response.WorkspaceFaviconUpdateResponse;
 import com.virnect.workspace.dto.response.WorkspaceInfoDTO;
-import com.virnect.workspace.dto.response.WorkspaceLogoUpdateResponse;
-import com.virnect.workspace.dto.response.WorkspaceTitleUpdateResponse;
 import com.virnect.workspace.event.message.MailContextHandler;
 import com.virnect.workspace.exception.WorkspaceException;
 import com.virnect.workspace.global.common.mapper.rest.RestMapStruct;
@@ -155,27 +150,7 @@ public class OnWorkspaceServiceImpl extends WorkspaceService {
 	}
 
 	@Override
-	public WorkspaceTitleUpdateResponse updateWorkspaceTitle(
-		String workspaceId, WorkspaceTitleUpdateRequest workspaceTitleUpdateRequest
-	) {
-		return null;
-	}
-
-	@Override
-	public WorkspaceLogoUpdateResponse updateWorkspaceLogo(
-		String workspaceId, WorkspaceLogoUpdateRequest workspaceLogoUpdateRequest
-	) {
-		return null;
-	}
-
-	@Override
-	public WorkspaceFaviconUpdateResponse updateWorkspaceFavicon(
-		String workspaceId, WorkspaceFaviconUpdateRequest workspaceFaviconUpdateRequest
-	) {
-		return null;
-	}
-
-	@Override
+	@Transactional(readOnly = true)
 	public WorkspaceCustomSettingResponse getWorkspaceCustomSetting(String workspaceId) {
 		WorkspaceSetting workspaceSetting = workspaceSettingRepository.findByWorkspaceId(workspaceId);
 		if (workspaceSetting == null) {
@@ -183,7 +158,4 @@ public class OnWorkspaceServiceImpl extends WorkspaceService {
 		}
 		return workspaceMapStruct.workspaceSettingToWorkspaceCustomSettingResponse(workspaceSetting);
 	}
-
 }
-
-

@@ -26,4 +26,11 @@ public class WorkspaceFaviconUpdateRequest {
 
 	@ApiModelProperty(value = "파비콘 이미지", required = true, position = 1)
 	private MultipartFile favicon;
+
+	@Override
+	public String toString() {
+		return "WorkspaceFaviconUpdateRequest{" +
+			"userId='" + userId + '\'' +
+			'}';
+	}
 }

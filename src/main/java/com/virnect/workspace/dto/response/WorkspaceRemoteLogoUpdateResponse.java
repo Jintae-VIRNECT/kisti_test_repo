@@ -12,11 +12,11 @@ public class WorkspaceRemoteLogoUpdateResponse {
 	private final boolean result;
 
 	@ApiModelProperty(value = "기본 로고 이미지 URL", example = "", position = 1)
-	private final String androidSplashLogo;
+	private final String remoteAndroidSplashLogo;
 
 	@ApiModelProperty(value = "그레이 로고 이미지 URL", example = "", position = 2)
-	private final String androidLoginLogo ;
+	private final String remoteAndroidLoginLogo ;
 
 	@ApiModelProperty(value = "화이트 로고 이미지 URL", example = "", position = 3)
-	private final String hololens2Logo ;
+	private final String remoteHololens2CommonLogo ;
 }

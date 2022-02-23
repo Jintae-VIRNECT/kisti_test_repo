@@ -4,7 +4,6 @@ import java.util.Locale;
 
 import javax.validation.Valid;
 
-import org.springframework.context.annotation.Profile;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.BindingResult;
@@ -20,11 +19,9 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.multipart.MultipartFile;
 
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
-import io.swagger.annotations.ApiModelProperty;
 import io.swagger.annotations.ApiOperation;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -211,8 +208,7 @@ public class WorkspaceController {
 		return ResponseEntity.ok(new ApiResponse<>(responseMessage));
 	}
 
-	@Profile("onpremise")
-	@ApiOperation(value = "워크스페이스 고객사명 변경", tags = "on-premise-only-controller")
+	@ApiOperation(value = "워크스페이스 고객사명 변경")
 	@ApiImplicitParams({
 		@ApiImplicitParam(name = "workspaceId", value = "워크스페이스 식별자", dataType = "string", defaultValue = "4d6eab0860969a50acbfa4599fbb5ae8", paramType = "path", required = true),
 	})
@@ -221,6 +217,8 @@ public class WorkspaceController {
 		@PathVariable("workspaceId") String workspaceId,
 		@RequestBody @Valid WorkspaceTitleUpdateRequest workspaceTitleUpdateRequest, BindingResult bindingResult
 	) {
+		log.info(
+			"[UPDATE_WORKSPACE_TITLE] WORKSPACE : {}, REQ : {}", workspaceId, workspaceTitleUpdateRequest.toString());
 		if (!StringUtils.hasText(workspaceId) || bindingResult.hasErrors()) {
 			log.error("[UPDATE WORKSPACE TITLE] Parameter Error Message : workspaceId=[{}]", workspaceId);
 			bindingResult.getAllErrors()
@@ -234,8 +232,7 @@ public class WorkspaceController {
 
 	}
 
-	@Profile("onpremise")
-	@ApiOperation(value = "워크스페이스 로고 변경", tags = "on-premise-only-controller")
+	@ApiOperation(value = "워크스페이스 로고 변경")
 	@ApiImplicitParams({
 		@ApiImplicitParam(name = "workspaceId", value = "워크스페이스 식별자", dataType = "string", defaultValue = "4d6eab0860969a50acbfa4599fbb5ae8", paramType = "path", required = true),
 		@ApiImplicitParam(name = "userId", value = "로고 변경 유저 식별자", dataType = "string", paramType = "form", required = true, example = "498b1839dc29ed7bb2ee90ad6985c608"),
@@ -248,6 +245,8 @@ public class WorkspaceController {
 		@PathVariable("workspaceId") String workspaceId,
 		@ModelAttribute @Valid WorkspaceLogoUpdateRequest workspaceLogoUpdateRequest, BindingResult bindingResult
 	) {
+		log.info(
+			"[UPDATE_WORKSPACE_LOGO] WORKSPACE : {}, REQ : {}", workspaceId, workspaceLogoUpdateRequest.toString());
 		if (!StringUtils.hasText(workspaceId) || bindingResult.hasErrors()) {
 			log.error("[UPDATE WORKSPACE LOGO] Parameter Error Message : workspaceId=[{}]", workspaceId);
 			bindingResult.getAllErrors()
@@ -261,8 +260,7 @@ public class WorkspaceController {
 
 	}
 
-	@Profile("onpremise")
-	@ApiOperation(value = "워크스페이스 파비콘 변경", tags = "on-premise-only-controller")
+	@ApiOperation(value = "워크스페이스 파비콘 변경")
 	@ApiImplicitParams({
 		@ApiImplicitParam(name = "workspaceId", value = "워크스페이스 식별자", dataType = "string", defaultValue = "4d6eab0860969a50acbfa4599fbb5ae8", paramType = "path", required = true),
 		@ApiImplicitParam(name = "userId", value = "파비콘 변경 유저 식별자", dataType = "string", paramType = "form", required = true, example = "498b1839dc29ed7bb2ee90ad6985c608"),
@@ -273,6 +271,10 @@ public class WorkspaceController {
 		@PathVariable("workspaceId") String workspaceId,
 		@ModelAttribute WorkspaceFaviconUpdateRequest workspaceFaviconUpdateRequest
 	) {
+		log.info(
+			"[UPDATE_WORKSPACE_FAVICON] WORKSPACE : {}, REQ : {}", workspaceId,
+			workspaceFaviconUpdateRequest.toString()
+		);
 		if (!StringUtils.hasText(workspaceId) || !StringUtils.hasText(workspaceFaviconUpdateRequest.getUserId())) {
 			log.error(
 				"[UPDATE WORKSPACE FAVICON] Parameter Error Message : workspaceId=[{}], workspaceFaviconUpdateRequest.getUserId()=[{}] ",
@@ -286,11 +288,16 @@ public class WorkspaceController {
 	}
 
 	@ApiOperation(value = "워크스페이스 커스텀 설정 조회")
+	@ApiImplicitParams({
+		@ApiImplicitParam(name = "workspaceId", value = "워크스페이스 식별자", dataType = "string", defaultValue = "4d6eab0860969a50acbfa4599fbb5ae8", paramType = "query", required = false),
+	})
 	@GetMapping("/setting")
 	public ResponseEntity<ApiResponse<WorkspaceCustomSettingResponse>> getWorkspaceCustomSetting(
-        @RequestParam("workspaceId") String workspaceId
+		@RequestParam(value = "workspaceId", required = false) String workspaceId
 	) {
-		WorkspaceCustomSettingResponse workspaceCustomSettingResponse = workspaceService.getWorkspaceCustomSetting(workspaceId);
+		log.info("[GET_WORKSPACE_SETTING] WORKSPACE : {}", workspaceId);
+		WorkspaceCustomSettingResponse workspaceCustomSettingResponse = workspaceService.getWorkspaceCustomSetting(
+			workspaceId);
 		return ResponseEntity.ok(new ApiResponse<>(workspaceCustomSettingResponse));
 	}
 
@@ -298,15 +305,16 @@ public class WorkspaceController {
 	@ApiImplicitParams({
 		@ApiImplicitParam(name = "workspaceId", value = "워크스페이스 식별자", dataType = "string", defaultValue = "4d6eab0860969a50acbfa4599fbb5ae8", paramType = "path", required = true),
 		@ApiImplicitParam(name = "userId", value = "로고 변경 유저 식별자", dataType = "string", paramType = "form", required = true, example = "498b1839dc29ed7bb2ee90ad6985c608"),
-		@ApiImplicitParam(name = "androidSplashLogo", value = "안드로이드 스플래시 로고 이미지", dataType = "__file", paramType = "form", required = false),
-		@ApiImplicitParam(name = "androidLoginLogo", value = "안드로이드 로그인 로고 이미지", dataType = "__file", paramType = "form", required = false),
-		@ApiImplicitParam(name = "hololens2Logo", value = "홀로렌즈2 로고 이미지", dataType = "__file", paramType = "form", required = false),
+		@ApiImplicitParam(name = "remoteAndroidLoginLogo", value = "안드로이드 스플래시 로고 이미지", dataType = "__file", paramType = "form", required = false),
+		@ApiImplicitParam(name = "remoteAndroidSplashLogo", value = "안드로이드 로그인 로고 이미지", dataType = "__file", paramType = "form", required = false),
+		@ApiImplicitParam(name = "remoteHololens2CommonLogo", value = "홀로렌즈2 로고 이미지", dataType = "__file", paramType = "form", required = false),
 	})
 	@PostMapping("/{workspaceId}/logo/remote")
 	public ResponseEntity<ApiResponse<WorkspaceRemoteLogoUpdateResponse>> updateRemoteLogo(
 		@PathVariable("workspaceId") String workspaceId,
 		@ModelAttribute @Valid WorkspaceRemoteLogoUpdateRequest remoteLogoUpdateRequest, BindingResult bindingResult
 	) {
+		log.info("[UPDATE_REMOTE_LOGO] WORKSPACE : {}, REQ : {}", workspaceId, remoteLogoUpdateRequest.toString());
 		if (!StringUtils.hasText(workspaceId) || bindingResult.hasErrors()) {
 			log.error("[UPDATE REMOTE LOGO] Parameter Error Message : workspaceId=[{}]", workspaceId);
 			bindingResult.getAllErrors()

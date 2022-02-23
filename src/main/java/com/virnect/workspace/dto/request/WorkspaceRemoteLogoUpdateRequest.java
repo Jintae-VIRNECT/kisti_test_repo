@@ -8,7 +8,6 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
 import lombok.Setter;
-import springfox.documentation.annotations.ApiIgnore;
 
 @Getter
 @Setter
@@ -18,36 +17,46 @@ public class WorkspaceRemoteLogoUpdateRequest {
 	@NotBlank
 	private String userId;
 
-	@ApiModelProperty(value = "안드로이드 스플래시 로고 이미지", required = false, position = 4)
-	private MultipartFile androidSplashLogo;
+	@ApiModelProperty(value = "안드로이드 스플래시 로고 이미지", required = false, position = 1)
+	private MultipartFile remoteAndroidSplashLogo;
 
-	@ApiModelProperty(value = "안드로이드 스플래시 로고 이미지", required = false, position = 4)
-	private boolean defaultAndroidSplashLogo = false;
+	@ApiModelProperty(value = "안드로이드 스플래시 로고 기본 이미지로 변경", required = false, position = 2)
+	private boolean defaultRemoteAndroidSplashLogo = false;
 
-	@ApiModelProperty(value = "안드로이드 로그인 로고 이미지", required = false, position = 5)
-	private MultipartFile androidLoginLogo;
+	@ApiModelProperty(value = "안드로이드 로그인 로고 이미지", required = false, position = 3)
+	private MultipartFile remoteAndroidLoginLogo;
 
-	@ApiModelProperty(value = "안드로이드 스플래시 로고 이미지", required = false, position = 4)
-	private boolean defaultAndroidLoginLogo = false;
+	@ApiModelProperty(value = "안드로이드 로그인 로고 기본 이미지로 변경", required = false, position = 4)
+	private boolean defaultRemoteAndroidLoginLogo = false;
 
 	@ApiModelProperty(value = "홀로렌즈2 로고 이미지", required = false, position = 5)
-	private MultipartFile hololens2Logo;
+	private MultipartFile remoteHololens2CommonLogo;
 
-	@ApiModelProperty(value = "안드로이드 스플래시 로고 이미지", required = false, position = 4)
-	private boolean defaultHololens2Logo = false;
+	@ApiModelProperty(value = "홀로렌즈2 로고 기본 이미지로 변경", required = false, position = 6)
+	private boolean defaultRemoteHololens2CommonLogo = false;
 
-	@ApiIgnore
+	@ApiModelProperty(hidden = true)
 	public boolean isUpdateAndroidSplashLogo() {
-		return defaultAndroidSplashLogo || androidSplashLogo != null;
+		return defaultRemoteAndroidSplashLogo || remoteAndroidSplashLogo != null;
 	}
 
-	@ApiIgnore
+	@ApiModelProperty(hidden = true)
 	public boolean isUpdateAndroidLoginLogo() {
-		return defaultAndroidLoginLogo || androidLoginLogo != null;
+		return defaultRemoteAndroidLoginLogo || remoteAndroidLoginLogo != null;
 	}
 
-	@ApiIgnore
+	@ApiModelProperty(hidden = true)
 	public boolean isUpdateHololens2Logo() {
-		return defaultHololens2Logo || hololens2Logo != null;
+		return defaultRemoteHololens2CommonLogo || remoteHololens2CommonLogo != null;
+	}
+
+	@Override
+	public String toString() {
+		return "WorkspaceRemoteLogoUpdateRequest{" +
+			"userId='" + userId + '\'' +
+			", defaultAndroidSplashLogo=" + defaultRemoteAndroidSplashLogo +
+			", defaultAndroidLoginLogo=" + defaultRemoteAndroidLoginLogo +
+			", defaultHololens2CommonLogo=" + defaultRemoteHololens2CommonLogo +
+			'}';
 	}
 }

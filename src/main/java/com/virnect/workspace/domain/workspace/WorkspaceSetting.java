@@ -36,19 +36,19 @@ public class WorkspaceSetting extends TimeEntity {
 	@Column(name = "workspace_setting_id")
 	private Long id;
 
-	@Column(name = "title", nullable = false)
+	@Column(name = "title")
 	private String title;
 
-	@Column(name = "default_logo", nullable = false)
+	@Column(name = "default_logo")
 	private String defaultLogo;
 
-	@Column(name = "grey_logo", nullable = true)
+	@Column(name = "grey_logo")
 	private String greyLogo;
 
-	@Column(name = "white_logo", nullable = true)
+	@Column(name = "white_logo")
 	private String whiteLogo;
 
-	@Column(name = "favicon", nullable = false)
+	@Column(name = "favicon")
 	private String favicon;
 
 	@Column(name = "remote_android_splash_logo")
@@ -74,19 +74,8 @@ public class WorkspaceSetting extends TimeEntity {
 
 	@Builder(builderClassName = "WorkspaceSettingInitBuilder", builderMethodName = "workspaceSettingInitBuilder")
 	public WorkspaceSetting(
-		String defaultLogo, String whiteLogo, String favicon, String remoteAndroidSplashLogo,
-		String remoteAndroidLoginLogo,
-		String remoteHololens2CommonLogo,
 		String workspaceId
 	) {
-		this.title = "VIRNCET";
-		this.defaultLogo = defaultLogo;
-		this.greyLogo = null;
-		this.whiteLogo = whiteLogo;
-		this.favicon = favicon;
-		this.remoteAndroidSplashLogo = remoteAndroidSplashLogo;
-		this.remoteAndroidLoginLogo = remoteAndroidLoginLogo;
-		this.remoteHololens2CommonLogo = remoteHololens2CommonLogo;
 		this.workspaceId = workspaceId;
 	}
 
