@@ -104,7 +104,7 @@ class LiveShareControllerTest {
 				.header(HttpHeaders.AUTHORIZATION, "Bearer " + createAccessToken(userUUID)))
 			.andDo(print())
 			.andExpect(status().isOk())
-			.andExpect(jsonPath("$.code").value(4033))
+			.andExpect(jsonPath("$.code").value(200))
 			.andReturn();
 	}
 

@@ -71,10 +71,11 @@ public class LiveShareService {
 			if (liveShareUserList.size() == MAX_ROOM_USER_AMOUNT) {
 				throw new ContentServiceException(ErrorCode.ERR_CONTENT_LIVE_SHARE_JOIN_MAX_USER);
 			}
-			boolean alreadyJoined = liveShareUserList.stream()
-				.anyMatch(liveShareUser -> liveShareUser.getUserUUID().equals(userUUID));
-			if (alreadyJoined) {
-				throw new ContentServiceException(ErrorCode.ERR_CONTENT_LIVE_SHARE_JOIN_DUPLICATE);
+
+			for (LiveShareUser liveShareUser : liveShareUserList) {
+				if (liveShareUser.getUserUUID().equals(userUUID)) {
+					return new LiveShareJoinResponse(liveShareUser);
+				}
 			}
 
 			LiveShareUser newLiveShareUser = LiveShareUser.liveShareUserBuilder()
@@ -217,7 +218,7 @@ public class LiveShareService {
 		LiveShareUser updateUser = liveShareUserRepository.getActiveUserByRoomIdAndUserUUID(
 			room.getId(), updateUserUUD).orElseThrow(() -> new ContentServiceException(
 			ErrorCode.ERR_CONTENT_LIVE_SHARE_USER_NOT_FOUND));
-		
+
 		if (!Role.LEADER.equals(currentUser.getUserRole())) {
 			throw new ContentServiceException(ErrorCode.ERR_CONTENT_LIVE_SHARE_USER_UPDATE);
 		}
