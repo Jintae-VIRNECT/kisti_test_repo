@@ -24,7 +24,11 @@
       ></p>
     </section>
     <main class="guest-mobile__buttons">
-      <button class="guest-mobile__buttons--runapp" @click="runAppOrOpenStore">
+      <button
+        v-if="!isSafari"
+        class="guest-mobile__buttons--runapp"
+        @click="runAppOrOpenStore"
+      >
         {{ $t('button.run_app') }}
       </button>
 
