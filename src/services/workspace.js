@@ -6,7 +6,7 @@ import WorkspaceInfo from '@/models/workspace/WorkspaceInfo'
 import Member from '@/models/workspace/Member'
 import MemberActivity from '@/models/workspace/MemberActivity'
 import PlansInfo from '@/models/workspace/PlansInfo'
-import OnPremiseSetting from '@/models/workspace/OnPremiseSetting'
+import WorkspaceSetting from '@/models/workspace/WorkspaceSetting'
 import Application, {
   productList,
 } from '@/models/settings/onpremise/application'
@@ -355,11 +355,16 @@ export default {
     return data
   },
   /**
-   * 워크스페이스 세팅 불러오기 (onpremise)
+   * 워크스페이스 세팅 불러오기
    */
   async getWorkspaceSetting() {
-    const data = await api('WORKSPACE_GET_SETTING')
-    return new OnPremiseSetting(data)
+    const workspaceId = activeWorkspaceGetter().uuid
+    const data = await api('WORKSPACE_GET_SETTING', {
+      params: {
+        workspaceId,
+      },
+    })
+    return new WorkspaceSetting(data)
   },
   /**
    * 워크스페이스 타이틀 설정 (onpremise)
@@ -392,6 +397,43 @@ export default {
     }
 
     const data = await api('WORKSPACE_SET_LOGO', {
+      route: { workspaceId: activeWorkspaceGetter().uuid },
+      params: formData,
+    })
+    return data
+  },
+  /**
+   * 워크스페이스 리모트 로고 설정
+   * @param {File} androidType1Logo
+   * @param {File} androidType2Logo
+   * @param {File} hololens2Logo
+   */
+  async setWorkspaceAppLogo({
+    androidType1Logo,
+    androidType2Logo,
+    hololens2Logo,
+  }) {
+    const formData = new FormData()
+    formData.append('userId', myProfileGetter().uuid)
+    if (androidType1Logo) {
+      formData.append('remoteAndroidSplashLogo', androidType1Logo)
+    } else {
+      formData.append('defaultRemoteAndroidSplashLogo', true)
+    }
+
+    if (androidType2Logo) {
+      formData.append('remoteAndroidLoginLogo', androidType2Logo)
+    } else {
+      formData.append('defaultRemoteAndroidLoginLogo', true)
+    }
+
+    if (hololens2Logo) {
+      formData.append('remoteHololens2CommonLogo', hololens2Logo)
+    } else {
+      formData.append('defaultRemoteHololens2CommonLogo', true)
+    }
+
+    const data = await api('WORKSPACE_SET_APP_LOGO', {
       route: { workspaceId: activeWorkspaceGetter().uuid },
       params: formData,
     })

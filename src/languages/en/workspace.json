@@ -146,6 +146,31 @@
           "oneFile": "Please only register one file."
         }
       }
+    },
+    "appSetting":{
+      "title": "Application service settings​",
+      "upload": "Upload Image",
+      "submit": "Register",
+      "tooltip": "Logo area",
+      "warning": "You can upload PNG files up to 3MB.",
+      "remote":{
+        "title": "Change the Remote Application logo",
+        "desc": "If you wish to change a logo, please register a logo image. It will replace the VIRNECT logo from your app service.",
+        "android":{
+          "type1":{
+            "title": "Android logo1",
+            "caution": "You can upload PNG files up to 3MB. <br>* Recommended size<br><blockquote><span>512</span>(horizontal) * <span>512</span>(vertical)px</blockquote>* Background color<br><blockquote>Transparent or RGB:17/21/44​</blockquote>"
+          },
+          "type2":{
+            "title": "Android logo2",
+            "caution": "You can upload PNG files up to 3MB. <br>* Recommended size<br><blockquote><span>776</span>(horizontal) * <span>176</span>(vertical)px</blockquote>* Background color<br><blockquote>Transparent or RGB:30/30/32</blockquote>"
+          }
+        },
+        "hololens2":{
+          "title": "HoloLens2 Logo",
+          "caution": "You can upload PNG files up to 3MB. <br>* Recommended size<br><blockquote><span>198</span>(horizontal) * <span>56</span>(vertical)px</blockquote>* Background color<br><blockquote>Transparent</blockquote>"
+        }
+      }
     }
   }
 }

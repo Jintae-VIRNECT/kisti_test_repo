@@ -42,9 +42,11 @@
       </div>
     </el-card>
 
-    <OnpremiseWorkspaceCompanyNameModal :visible.sync="showCompanyNameModal" />
-    <OnpremiseWorkspaceLogoModal :visible.sync="showLogoModal" />
-    <OnpremiseWorkspaceFaviconModal :visible.sync="showFaviconModal" />
+    <WorkspaceSettingServiceCompanyNameModal
+      :visible.sync="showCompanyNameModal"
+    />
+    <WorkspaceSettingServiceLogoModal :visible.sync="showLogoModal" />
+    <WorkspaceSettingServiceFaviconModal :visible.sync="showFaviconModal" />
   </el-col>
 </template>
 

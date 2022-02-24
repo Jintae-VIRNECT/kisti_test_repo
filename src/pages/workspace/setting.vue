@@ -126,10 +126,14 @@
             </div>
           </el-card>
         </el-col>
-        <OnpremiseWorkspaceSetting
-          v-if="$isOnpremise"
-          class="container__right"
-        />
+        <template v-if="activeWorkspace.role === 'MASTER'">
+          <WorkspaceSettingServiceInfo
+            class="container__right"
+          ></WorkspaceSettingServiceInfo>
+          <WorkspaceSettingAppRemote
+            class="container__right"
+          ></WorkspaceSettingAppRemote>
+        </template>
       </el-row>
     </div>
     <WorkspaceLeaveModal

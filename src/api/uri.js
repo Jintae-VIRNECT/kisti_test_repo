@@ -145,6 +145,9 @@ export default {
   WORKSPACE_SET_TITLE: ['POST', '/workspaces/{workspaceId}/title'],
   // 워크스페이스 로고 변경
   WORKSPACE_SET_LOGO: ['POST', '/workspaces/{workspaceId}/logo'],
+
+  //  리모트 APP 로고 변경
+  WORKSPACE_SET_APP_LOGO: ['POST', '/workspaces/{workspaceId}/logo/remote'],
   // 워크스페이스 파비콘 변경
   WORKSPACE_SET_FAVICON: ['POST', '/workspaces/{workspaceId}/favicon'],
   // 워크스페이스 다운로드 파일 리스트 조회
