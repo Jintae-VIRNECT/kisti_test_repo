@@ -36,12 +36,8 @@
     </div>
 
     <div class="chat-body">
-      <transition name="chat-left">
-        <chat-msg-list v-show="showChat" :show="showChat"></chat-msg-list>
-      </transition>
-      <transition name="chat-right">
-        <chat-file-list v-show="!showChat" :show="!showChat"></chat-file-list>
-      </transition>
+      <chat-msg-list v-show="showChat" :show="showChat"></chat-msg-list>
+      <chat-file-list v-show="!showChat" :show="!showChat"></chat-file-list>
     </div>
   </div>
 </template>
@@ -179,26 +175,3 @@ export default {
   },
 }
 </script>
-
-<style>
-.chat-left-enter-active,
-.chat-left-leave-active,
-.chat-right-enter-active,
-.chat-right-leave-active {
-  transition: left ease 0.4s;
-}
-.chat-left-enter,
-.chat-left-leave-to {
-  left: -100%;
-}
-.chat-right-enter,
-.chat-right-leave-to {
-  left: 100%;
-}
-.chat-left-enter-to,
-.chat-left-leave,
-.chat-right-enter-to,
-.chat-right-leave {
-  left: 0;
-}
-</style>
