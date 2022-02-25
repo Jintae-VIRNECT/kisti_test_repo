@@ -1,13 +1,7 @@
 <template>
   <header class="header service">
     <div v-if="!isMobileSize" class="header-service">
-      <img
-        v-if="logo !== false"
-        @error="logoError"
-        class="header-logo"
-        :src="logo"
-      />
-      <img v-else class="header-logo" src="~assets/image/logo_symtext.svg" />
+      <img class="header-logo" :src="logo" alt="logo" />
       <header-lnb></header-lnb>
 
       <header-tools :callTime="callTime"></header-tools>
@@ -17,7 +11,7 @@
 </template>
 
 <script>
-import { WHITE_LOGO, DEFAULT_LOGO } from 'configs/env.config'
+import { DEFAULT_LOGO } from 'configs/env.config'
 import HeaderLnb from './partials/HeaderServiceLnb'
 import HeaderTools from './partials/HeaderServiceTools'
 import ServiceMobileHeader from './ServiceMobileHeader'
@@ -29,18 +23,30 @@ export default {
     HeaderTools,
     ServiceMobileHeader,
   },
+  props: {
+    logo: {
+      type: [String, Object],
+    },
+  },
   data() {
     return {
-      logo: WHITE_LOGO,
+      headerImgSrc: null,
 
       runnerID: null,
       callStartTime: null,
       callTime: null,
     }
   },
+  watch: {
+    logo(val, oldVal) {
+      if (val && val !== oldVal) {
+        this.headerImgSrc = val
+      }
+    },
+  },
   methods: {
     logoError() {
-      this.logo = DEFAULT_LOGO
+      this.headerImgSrc = DEFAULT_LOGO
     },
 
     timeRunner() {

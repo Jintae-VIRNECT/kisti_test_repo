@@ -79,10 +79,8 @@ export default {
     if (!hasToken) {
       auth.login()
     } else {
-      await getSettings()
       next(vm => {
         vm.$call.leave()
-
         if (to.name === 'workspace' && from.name === 'service') {
           vm.$data.showLeaveMessage = false
         } else {
@@ -132,6 +130,9 @@ export default {
   watch: {
     async workspace(val, oldVal) {
       if (val.uuid && val.uuid !== oldVal.uuid) {
+        await getSettings({ workspaceId: val.uuid })
+        this.$eventBus.$emit('update:settings')
+
         this.checkPlan(val)
         this.checkCompany(val.uuid)
         this.checkLicense(val.uuid)
@@ -222,7 +223,10 @@ export default {
           }
           this.initWorkspace(workspaces)
         }
-        this.$nextTick(() => {
+        await getSettings({ workspaceId: this.workspace.uuid })
+        this.$eventBus.$emit('update:settings')
+
+        this.$nextTick(async () => {
           this.inited = true
         })
       }
@@ -387,7 +391,7 @@ export default {
       this.checkLicense(this.workspace.uuid)
     }
   },
-  mounted() {
+  async mounted() {
     initAudio()
     this.mx_changeLang()
     this.setTabTop()
