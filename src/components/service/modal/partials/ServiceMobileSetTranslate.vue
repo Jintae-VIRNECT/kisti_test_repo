@@ -51,6 +51,8 @@
             value="code"
             text="text"
             :selectedValue.sync="transCode"
+            :placementReverse="false"
+            :showScroll="true"
           >
           </r-select>
         </figure>
