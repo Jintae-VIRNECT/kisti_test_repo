@@ -436,22 +436,28 @@ export const getConfigs = async () => {
   setUrls(res.data)
 }
 
-export const getSettings = async () => {
-  if (RUNTIME_ENV !== RUNTIME.ONPREMISE) {
-    document.title = `VIRNECT | Remote`
-    return
-  }
+export const getSettings = async workspaceId => {
   try {
-    const settings = await getSettingInfo()
-    document.title = `${settings.workspaceTitle} | Remote`
-    const favicon = document.querySelector("link[rel*='icon']")
-    favicon.href = settings.favicon
+    document.title = `VIRNECT | Remote`
+
+    const settings = await getSettingInfo({ workspaceId })
+    if (settings === null || Object.keys(settings).length === 0) {
+      return
+    }
 
     setConfigs({
       whiteLogo: settings.whiteLogo,
       defaultLogo: settings.defaultLogo,
     })
-  } catch (err) {}
+
+    if (RUNTIME_ENV === RUNTIME.ONPREMISE) {
+      document.title = `${settings.workspaceTitle} | Remote`
+      const favicon = document.querySelector("link[rel*='icon']")
+      favicon.href = settings.favicon
+    }
+  } catch (err) {
+    console.error(err)
+  }
 }
 
 export const clearCookie = () => {

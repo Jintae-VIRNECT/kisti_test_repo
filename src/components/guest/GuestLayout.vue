@@ -26,7 +26,7 @@ import errorMsgMixin from 'mixins/errorMsg'
 import authStatusCallbackMixin from 'mixins/authStatusCallback'
 
 import { MyStorage } from 'utils/storage'
-import { getConfigs } from 'utils/auth'
+import { getConfigs, getSettings } from 'utils/auth'
 
 import { getCompanyInfo } from 'api/http/account'
 import { getGuestInfo } from 'api/http/guest'
@@ -214,6 +214,9 @@ export default {
         console.error('invalid params')
         return
       }
+
+      await getSettings({ workspaceId: this.workspaceId })
+      this.$eventBus.$emit('update:settings')
 
       initAudio()
 
