@@ -16,7 +16,7 @@
     <div>
       <div class="popover-more__tools">
         <stream size="3.6rem" :tooltipActive="false"></stream>
-        <mobile-self-flash-button></mobile-self-flash-button>
+        <mobile-self-flash-button v-if="!isSafari"></mobile-self-flash-button>
         <mic size="3.6rem" :tooltipActive="false"></mic>
         <mobile-setting-button v-if="isSettingVisible"></mobile-setting-button>
       </div>
