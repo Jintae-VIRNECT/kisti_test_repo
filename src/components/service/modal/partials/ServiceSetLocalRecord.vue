@@ -1,7 +1,7 @@
 <template>
   <section class="service-setting__view">
     <p class="service-setting--header" :class="{ disable: isLocalRecording }">
-      {{ $t('service.setting_local_record') }}
+      {{ isMobileSize ? '' : $t('service.setting_local_record') }}
       <span v-if="isLocalRecording" class="service-setting--warning">
         {{ $t('service.setting_local_record_warning') }}
       </span>
