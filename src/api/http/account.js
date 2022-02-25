@@ -77,7 +77,7 @@ export const getCompanyInfo = async function({ userId, workspaceId }) {
 /**
  * 커스텀 설정 조회 (onpremise only)
  */
-export const getSettingInfo = async function() {
-  const returnVal = await http('SETTING_INFO')
+export const getSettingInfo = async function({ workspaceId }) {
+  const returnVal = await http('SETTING_INFO', workspaceId)
   return returnVal
 }

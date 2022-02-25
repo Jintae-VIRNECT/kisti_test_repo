@@ -4,13 +4,7 @@
     :class="{ 'workspace-selected': workspace && workspace.uuid }"
   >
     <div class="header-workspace">
-      <img
-        v-if="logo !== false"
-        @error="logoError"
-        class="header-logo"
-        :src="logo"
-      />
-      <img v-else class="header-logo" src="~assets/image/logo_symtext.svg" />
+      <img class="header-logo" :src="headerImgSrc" alt="logo" />
       <template v-if="hasLicense && workspace && workspace.uuid">
         <div class="header-divider"></div>
         <header-nav></header-nav>
@@ -27,7 +21,7 @@
 </template>
 
 <script>
-import { WHITE_LOGO, DEFAULT_LOGO } from 'configs/env.config'
+import { DEFAULT_LOGO } from 'configs/env.config'
 import HeaderNav from './partials/HeaderWorkspaceNav'
 import HeaderTools from './partials/HeaderWorkspaceTools'
 export default {
@@ -36,20 +30,33 @@ export default {
     HeaderNav,
     HeaderTools,
   },
+  props: {
+    logo: {
+      type: [String, Object],
+    },
+  },
   data() {
     return {
-      logo: WHITE_LOGO,
+      headerImgSrc: null,
     }
   },
+  watch: {
+    logo(val, oldVal) {
+      if (val && val !== oldVal) {
+        this.headerImgSrc = val
+      }
+    },
+  },
   computed: {},
-  watch: {},
   methods: {
     logoError() {
-      this.logo = DEFAULT_LOGO
+      this.headerImgSrc = DEFAULT_LOGO
     },
   },
 
   /* Lifecycles */
-  mounted() {},
+  mounted() {
+    this.headerImgSrc = this.logo
+  },
 }
 </script>

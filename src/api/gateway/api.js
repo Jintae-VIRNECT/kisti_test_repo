@@ -5,7 +5,11 @@ export default {
   TOKEN: ['POST', '/auth/oauth/token'],
   ACCOUNT: ['GET', '/users/info', { initing: true }],
   USER_INFO: ['GET', '/users/{userId}', { initing: true }],
-  SETTING_INFO: ['GET', '/workspaces/setting', { initing: true }],
+  SETTING_INFO: [
+    'GET',
+    '/workspaces/setting?workspaceId={workspaceId}',
+    { initing: true },
+  ],
 
   /* LICENSE */
   GET_LICENSE: ['GET', '/licenses/plan/{userId}?size=30'],

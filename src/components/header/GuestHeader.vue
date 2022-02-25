@@ -1,13 +1,7 @@
 <template>
   <header class="header">
     <div class="header-workspace">
-      <img
-        v-if="logo !== false"
-        @error="logoError"
-        class="header-logo"
-        :src="logo"
-      />
-      <img v-else class="header-logo" src="~assets/image/logo_symtext.svg" />
+      <img class="header-logo" :src="headerImgSrc" alt="logo" />
 
       <header-tools></header-tools>
     </div>
@@ -15,27 +9,40 @@
 </template>
 
 <script>
-import { WHITE_LOGO, DEFAULT_LOGO } from 'configs/env.config'
+import { DEFAULT_LOGO } from 'configs/env.config'
 import HeaderTools from './partials/HeaderGuestTools'
 export default {
   name: 'GuestHeader',
   components: {
     HeaderTools,
   },
+  props: {
+    logo: {
+      type: [String, Object],
+    },
+  },
   data() {
     return {
-      logo: WHITE_LOGO,
+      headerImgSrc: null,
     }
   },
   computed: {},
-  watch: {},
+  watch: {
+    logo(val, oldVal) {
+      if (val && val !== oldVal) {
+        this.headerImgSrc = val
+      }
+    },
+  },
   methods: {
     logoError() {
-      this.logo = DEFAULT_LOGO
+      this.headerImgSrc = DEFAULT_LOGO
     },
   },
 
   /* Lifecycles */
-  mounted() {},
+  mounted() {
+    this.headerImgSrc = this.logo
+  },
 }
 </script>
