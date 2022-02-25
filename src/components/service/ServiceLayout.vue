@@ -215,6 +215,8 @@ export default {
       ar3dFileList: [],
 
       uploadingFile: '',
+
+      iceDisconnectedTimer: null,
     }
   },
   computed: {
@@ -467,6 +469,22 @@ export default {
         this.setIsBrowserBackground(false)
       }
     },
+    toggleIceDisconnected(flag) {
+      if (!this.isMobileSize) return
+      if (this.iceDisconnectedTimer !== null) return
+
+      const TWENTY_SECONDS = 20 * 1000
+
+      if (flag) {
+        this.iceDisconnectedTimer = setTimeout(() => {
+          this.$call.leave()
+          this.$router.push({ name: 'workspace' })
+        }, TWENTY_SECONDS)
+      } else {
+        clearTimeout(this.iceDisconnectedTimer)
+        this.iceDisconnectedTimer = null
+      }
+    },
   },
 
   /* Lifecycles */
@@ -512,6 +530,7 @@ export default {
     this.$eventBus.$on('guestInvite:show', this.toggleGuestInvite)
     this.$eventBus.$on('inviteModal:show', this.toggleInviteModal)
     this.$eventBus.$on(SYSTEM.DELETED_ACCOUNT, this.showAccountDeleted)
+    this.$eventBus.$on('toggle:IceDisconnected', this.toggleIceDisconnected)
   },
   beforeDestroy() {
     if (this.callTimeout) {
@@ -541,9 +560,13 @@ export default {
     this.$eventBus.$off('guestInvite:show', this.toggleGuestInvite)
     this.$eventBus.$off('inviteModal:show', this.toggleInviteModal)
     this.$eventBus.$off(SYSTEM.DELETED_ACCOUNT, this.showAccountDeleted)
+    this.$eventBus.$off('toggle:IceDisconnected', this.toggleIceDisconnected)
 
     //협업 종료시 stt 종료
     this.useStt(false)
+
+    clearTimeout(this.iceDisconnectedTimer)
+    this.iceDisconnectedTimer = null
   },
 
   mounted() {
