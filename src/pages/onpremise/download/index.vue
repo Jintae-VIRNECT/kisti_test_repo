@@ -27,8 +27,9 @@
             <li v-for="(file, idx) of fileList" :key="idx">
               <el-card class="onpremise-download-file">
                 <OnpremiseDownloadFile
-                  @fileUploadClick="fileUploadClick"
                   :file="file"
+                  @fileUploadClick="fileUploadClick"
+                  @refresh="selectUploadPart(selected)"
                 />
               </el-card>
             </li>

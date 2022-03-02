@@ -154,4 +154,6 @@ export default {
   WORKSPACE_GET_DOWNLOAD_FILES: ['GET', '/download/list/{productName}'],
   // 워크스페이스 다운로드 파일 업로드
   WORKSPACE_SET_DOWNLOAD_FILE: ['POST', '/download/app/register/admin'],
+  // 워크스페이트 다운로드 파일 삭제
+  WORKSPACE_DELETE_DOWNLOAD_FILE: ['DELETE', '/download/app/{appUUID}/admin'],
 }

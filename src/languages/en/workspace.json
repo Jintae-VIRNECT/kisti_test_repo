@@ -119,6 +119,7 @@
       },
       "upload": {
         "title": "Upload install file",
+        "delete": "Delete install file",
         "modal": {
           "title": "Registering {n} installation file",
           "description1": "Please register the {extension} file when registering {category} installation file.",

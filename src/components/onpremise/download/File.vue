@@ -32,12 +32,18 @@
         :label="$t('workspace.onpremiseSetting.upload.title')"
         @onClick="click(file)"
       />
+      <VirnectButton
+        :label="$t('workspace.onpremiseSetting.upload.delete')"
+        v-if="file.uuid"
+        @onClick="deleteFile()"
+      />
     </div>
   </article>
 </template>
 
 <script>
 import dayjs from '@/plugins/dayjs'
+import workspaceService from '@/services/workspace'
 export default {
   props: {
     file: Object,
@@ -45,6 +51,15 @@ export default {
   methods: {
     click(info) {
       this.$emit('fileUploadClick', info)
+    },
+    async deleteFile() {
+      const { result } = await workspaceService.deleteWorkspaceDownloadFile(
+        this.file.uuid,
+      )
+
+      if (result) {
+        this.$emit('refresh')
+      }
     },
     released(reletedTime) {
       const format = dayjs(this.file.released).format('YY.MM.DD hh:mm')

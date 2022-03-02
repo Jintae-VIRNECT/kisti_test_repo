@@ -119,6 +119,7 @@
       },
       "upload": {
         "title": "설치파일 업로드",
+        "delete": "설치파일 삭제",
         "modal": {
           "title": "{n} 설치파일 등록",
           "description1": "{category} 설치파일 등록 시 {extension} 파일 등록해주세요.",

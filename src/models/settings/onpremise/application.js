@@ -6,6 +6,7 @@ export default class Application extends Model {
    */
   constructor(json) {
     super()
+    this.uuid = json.uuid
     this.category = json.deviceType ?? json.category
     this.name = json.appUrl ? this.generatorFileName(json.appUrl) : json.name
     this.extensionList = json.extensionList ?? json.extensionList
@@ -30,9 +31,14 @@ export default class Application extends Model {
   }
 }
 
+/**
+ * @description 클라이언트에서 관리하는 서비스 리스트입니다.
+ * @todo 구축형으로 나갈때 서버와 리스트를 맞춰야 한다.
+ */
 export const productList = {
   remote: [
     new Application({
+      uuid: '',
       category: 'Mobile',
       name: ['{file_name}.apk'],
       extensionList: ['apk'],
@@ -53,6 +59,7 @@ export const productList = {
     //   productName: 'REMOTE',
     // }),
     new Application({
+      uuid: '',
       category: 'Hololens',
       name: ['{file_name}.appx', '{file_name}.appxbundle'],
       extensionList: ['appx', 'appxbundle'],
@@ -63,6 +70,7 @@ export const productList = {
       productName: 'REMOTE',
     }),
     new Application({
+      uuid: '',
       category: 'Realwear',
       name: ['{file_name}.apk'],
       extensionList: ['apk'],
@@ -73,6 +81,7 @@ export const productList = {
       productName: 'REMOTE',
     }),
     new Application({
+      uuid: '',
       category: 'Linkflow',
       name: ['{file_name}.apk'],
       extensionList: ['apk'],
@@ -85,6 +94,7 @@ export const productList = {
   ],
   make: [
     new Application({
+      uuid: '',
       category: 'PC',
       name: ['{file_name}.exe'],
       extensionList: ['exe'],
@@ -97,6 +107,7 @@ export const productList = {
   ],
   view: [
     new Application({
+      uuid: '',
       category: 'Mobile',
       name: ['{file_name}.apk'],
       extensionList: ['apk'],
@@ -107,6 +118,7 @@ export const productList = {
       productName: 'VIEW',
     }),
     new Application({
+      uuid: '',
       category: 'Hololens',
       name: ['{file_name}.appx'],
       extensionList: ['appx', 'appxbundle'],
@@ -117,6 +129,7 @@ export const productList = {
       productName: 'VIEW',
     }),
     new Application({
+      uuid: '',
       category: 'Rearwear',
       name: ['{file_name}.apk'],
       extensionList: ['apk'],

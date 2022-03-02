@@ -467,6 +467,7 @@ export default {
     const productAppList = productList[productName].map(file => {
       const app = appList.find(app => app.category === file.category)
       if (app) {
+        file.uuid = app.uuid
         file.name = app.name
         file.version = app.version
         file.released = app.released
@@ -506,6 +507,18 @@ export default {
       timeout: 100000,
     })
 
+    return data
+  },
+
+  /**
+   * 워크스페이스 다운로드 파일 삭제 (onpremise)
+   */
+  async deleteWorkspaceDownloadFile(appUUID) {
+    const data = await api('WORKSPACE_DELETE_DOWNLOAD_FILE', {
+      route: {
+        appUUID: appUUID,
+      },
+    })
     return data
   },
 }
