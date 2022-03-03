@@ -3,9 +3,7 @@ package com.virnect.data.infra.utils;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.util.Base64;
-import java.util.Objects;
+import java.io.OutputStream;
 
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -20,12 +18,15 @@ import com.virnect.data.dto.request.file.FileUploadRequest;
 @Service
 public class FileUtil {
 
-	public File convertUploadMultiFileToFile(MultipartFile multipartFile) throws IOException {
-		File file = new File(Objects.requireNonNull(multipartFile.getOriginalFilename()));
-		file.createNewFile();
-		FileOutputStream fos = new FileOutputStream(file);
-		fos.write(multipartFile.getBytes());
-		fos.close();
+	public File convertUploadMultiFileToFile(MultipartFile multipartFile, String parentPath) {
+		File folder = new File(parentPath);
+		folder.mkdir();
+		File file = new File(folder, multipartFile.getOriginalFilename());
+		try (OutputStream fos = new FileOutputStream(file);) {
+			fos.write(multipartFile.getBytes());
+		} catch (IOException e) {
+			return null;
+		}
 		return file;
 	}
 
@@ -34,7 +35,8 @@ public class FileUtil {
 	}
 
 	public com.virnect.data.domain.file.File buildFile(
-		FileUploadRequest fileUploadRequest, String objectName, FileConvertStatus fileConvertStatus) {
+		FileUploadRequest fileUploadRequest, String objectName, FileConvertStatus fileConvertStatus
+	) {
 		return com.virnect.data.domain.file.File.builder()
 			.workspaceId(fileUploadRequest.getWorkspaceId())
 			.sessionId(fileUploadRequest.getSessionId())
@@ -51,7 +53,8 @@ public class FileUtil {
 	}
 
 	public com.virnect.data.domain.file.File buildFileOnly3dObject(
-		FileUploadRequest fileUploadRequest, String objectName, FileConvertStatus fileConvertStatus, Long size) {
+		FileUploadRequest fileUploadRequest, String objectName, FileConvertStatus fileConvertStatus, Long size
+	) {
 		return com.virnect.data.domain.file.File.builder()
 			.workspaceId(fileUploadRequest.getWorkspaceId())
 			.sessionId(fileUploadRequest.getSessionId())

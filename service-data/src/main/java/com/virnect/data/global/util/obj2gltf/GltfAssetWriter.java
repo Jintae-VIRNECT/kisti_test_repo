@@ -21,6 +21,8 @@ import de.javagl.jgltf.model.io.v2.GltfAssetWriterV2;
 
 public class GltfAssetWriter {
 
+	private static final String GLTF_EXTENSION = ".gltf";
+
 	public GltfAssetWriter()
 	{
 		// Default constructor
@@ -68,7 +70,7 @@ public class GltfAssetWriter {
 		throws IOException
 	{
 		String objectName = String.format("%s_%s", LocalDate.now(), RandomStringUtils.randomAlphabetic(20));
-		File gltfFile = new File(objectName +".gltf");
+		File gltfFile = new File(objectName + GLTF_EXTENSION);
 		FileOutputStream outputStream = new FileOutputStream(gltfFile);
 		writeJson(gltfAsset, outputStream);
 		outputStream.close();

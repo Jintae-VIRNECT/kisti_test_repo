@@ -2,6 +2,8 @@ package com.virnect.serviceserver;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import org.bouncycastle.util.Arrays;
 import org.kurento.jsonrpc.internal.server.config.JsonRpcConfiguration;
@@ -55,165 +57,172 @@ import com.virnect.serviceserver.global.config.property.RemoteServiceProperties;
 import com.virnect.serviceserver.global.config.property.RemoteStorageProperties;
 import com.virnect.serviceserver.infra.token.TokenGeneratorDefault;
 
-@Import({ JsonRpcConfiguration.class })
+@Import({JsonRpcConfiguration.class})
 @ComponentScan(value = {
-    "com.virnect.data",
-    "com.virnect.serviceserver"
+	"com.virnect.data",
+	"com.virnect.serviceserver"
 })
 @EntityScan(value = {
-    "com.virnect.data.domain"
+	"com.virnect.data.domain"
 })
 @EnableJpaRepositories(value = {
-    "com.virnect.data.dao"
+	"com.virnect.data.dao"
 })
 @SpringBootApplication
 public class ServiceServerApplication extends SpringBootServletInitializer implements JsonRpcConfigurer {
 
-    private static final Logger log = LoggerFactory.getLogger(ServiceServerApplication.class);
+	private static final Logger log = LoggerFactory.getLogger(ServiceServerApplication.class);
+	public final static String WS_PATH = "/remote/websocket";
 
-    public final static String WS_PATH = "/remote/websocket";
-    @Bean
-    @ConditionalOnMissingBean
-    @DependsOn("remoteServiceConfig")
-    public KmsManager kmsManager(RemoteServiceConfig remoteServiceConfig) {
-        if (remoteServiceConfig.getKmsUris().isEmpty()) {
-            throw new IllegalArgumentException("'KMS_URIS' should contain at least one KMS url");
-        }
+	@Bean
+	@ConditionalOnMissingBean
+	@DependsOn("remoteServiceConfig")
+	public KmsManager kmsManager(RemoteServiceConfig remoteServiceConfig) {
+		if (remoteServiceConfig.getKmsUris().isEmpty()) {
+			throw new IllegalArgumentException("'KMS_URIS' should contain at least one KMS url");
+		}
 
-        for (String kmsWsUri: remoteServiceConfig.getKmsUris()) {
-            log.info("RemoteService Server using one KMS: {}", kmsWsUri);
-        }
-        return new FixedKmsManager();
-    }
+		for (String kmsWsUri : remoteServiceConfig.getKmsUris()) {
+			log.info("RemoteService Server using one KMS: {}", kmsWsUri);
+		}
+		return new FixedKmsManager();
+	}
 
-    @Bean
-    @ConditionalOnMissingBean
-    @DependsOn("remoteServiceConfig")
-    public CallDetailRecord cdr(MediaServerProperties mediaServerProperties) {
-        List<CDRLogger> loggers = new ArrayList<>();
-        if (mediaServerProperties.serverProperty.isServiceCdr()) {
-            log.info("RemoteService CDR service is enabled");
-            loggers.add(new CDRLoggerFile());
-        } else {
-            log.info("RemoteService CDR service is disabled (may be enable with 'remote_cdr=true')");
-        }
-        if (mediaServerProperties.serverProperty.isWebhookEnabled()) {
-            log.info("RemoteService Webhook service is enabled");
-            loggers.add(new CDRLoggerWebhook(mediaServerProperties));
-        } else {
-            log.info("RemoteService Webhook service is disabled (may be enabled with 'remote_webhook=true')");
-        }
-        return new CallDetailRecord(loggers);
-    }
+	@Bean
+	@ConditionalOnMissingBean
+	@DependsOn("remoteServiceConfig")
+	public CallDetailRecord cdr(MediaServerProperties mediaServerProperties) {
+		List<CDRLogger> loggers = new ArrayList<>();
+		if (mediaServerProperties.serverProperty.isServiceCdr()) {
+			log.info("RemoteService CDR service is enabled");
+			loggers.add(new CDRLoggerFile());
+		} else {
+			log.info("RemoteService CDR service is disabled (may be enable with 'remote_cdr=true')");
+		}
+		if (mediaServerProperties.serverProperty.isWebhookEnabled()) {
+			log.info("RemoteService Webhook service is enabled");
+			loggers.add(new CDRLoggerWebhook(mediaServerProperties));
+		} else {
+			log.info("RemoteService Webhook service is disabled (may be enabled with 'remote_webhook=true')");
+		}
+		return new CallDetailRecord(loggers);
+	}
 
-    @Bean
-    @ConditionalOnMissingBean
-    @DependsOn("remoteServiceConfig")
-    public CoturnCredentialsService coturnCredentialsService(RemoteServiceConfig remoteServiceConfig) {
-        return new CoturnCredentialsServiceFactory().getCoturnCredentialsService(remoteServiceConfig.remoteServiceProperties.getSpringProfile());
-    }
+	@Bean
+	@ConditionalOnMissingBean
+	@DependsOn("remoteServiceConfig")
+	public CoturnCredentialsService coturnCredentialsService(RemoteServiceConfig remoteServiceConfig) {
+		return new CoturnCredentialsServiceFactory().getCoturnCredentialsService(
+			remoteServiceConfig.remoteServiceProperties.getSpringProfile());
+	}
 
-    @Bean
-    @ConditionalOnMissingBean
-    @DependsOn("remoteServiceConfig")
-    public SessionManager sessionManager() {
-        return new KurentoSessionManager();
-    }
+	@Bean
+	@ConditionalOnMissingBean
+	@DependsOn("remoteServiceConfig")
+	public SessionManager sessionManager() {
+		return new KurentoSessionManager();
+	}
 
-    @Bean
-    @ConditionalOnMissingBean
-    @DependsOn("remoteServiceConfig")
-    public RpcHandler rpcHandler() {
-        return new RpcHandler();
-    }
+	@Bean
+	@ConditionalOnMissingBean
+	@DependsOn("remoteServiceConfig")
+	public RpcHandler rpcHandler() {
+		return new RpcHandler();
+	}
 
-    @Bean
-    @ConditionalOnMissingBean
-    @DependsOn("remoteServiceConfig")
-    public SessionEventsHandler sessionEventsHandler() {
-        return new KurentoSessionEventsHandler();
-    }
+	@Bean
+	@ConditionalOnMissingBean
+	@DependsOn("remoteServiceConfig")
+	public SessionEventsHandler sessionEventsHandler() {
+		return new KurentoSessionEventsHandler();
+	}
 
-    @Bean
-    @ConditionalOnMissingBean
-    @DependsOn("remoteServiceConfig")
-    public TokenGenerator tokenGenerator() {
-        return new TokenGeneratorDefault();
-    }
+	@Bean
+	@ConditionalOnMissingBean
+	@DependsOn("remoteServiceConfig")
+	public TokenGenerator tokenGenerator() {
+		return new TokenGeneratorDefault();
+	}
 
-    @Bean
-    @ConditionalOnMissingBean
-    @DependsOn("remoteServiceConfig")
-    public RecordingManager recordingManager() {
-        return new RecordingManager();
-    }
+	@Bean
+	@ConditionalOnMissingBean
+	@DependsOn("remoteServiceConfig")
+	public RecordingManager recordingManager() {
+		return new RecordingManager();
+	}
 
-    @Bean
-    @ConditionalOnMissingBean
-    public LoadManager loadManager() {
-        return new DummyLoadManager();
-    }
+	@Bean
+	@ConditionalOnMissingBean
+	public LoadManager loadManager() {
+		return new DummyLoadManager();
+	}
 
-    @Bean
-    @ConditionalOnMissingBean
-    public RpcNotificationService notificationService() {
-        return new RpcNotificationService();
-    }
+	@Bean
+	@ConditionalOnMissingBean
+	public RpcNotificationService notificationService() {
+		return new RpcNotificationService();
+	}
 
-    @Bean
-    @ConditionalOnMissingBean
-    public KurentoParticipantEndpointConfig kurentoEndpointConfig() {
-        return new KurentoParticipantEndpointConfig();
-    }
+	@Bean
+	@ConditionalOnMissingBean
+	public KurentoParticipantEndpointConfig kurentoEndpointConfig() {
+		return new KurentoParticipantEndpointConfig();
+	}
 
-    @Bean
-    @ConditionalOnMissingBean
-    public RecordingDownloader recordingDownload() {
-        return new DummyRecordingDownloader();
-    }
+	@Bean
+	@ConditionalOnMissingBean
+	public RecordingDownloader recordingDownload() {
+		return new DummyRecordingDownloader();
+	}
 
-    @Bean
-    @ConditionalOnMissingBean
-    public GeoLocationByIp geoLocationByIp() {
-        return new GeoLocationByIpDummy();
-    }
+	@Bean
+	@ConditionalOnMissingBean
+	public GeoLocationByIp geoLocationByIp() {
+		return new GeoLocationByIpDummy();
+	}
 
-    @Bean
-    @ConditionalOnMissingBean
-    public QuarantineKiller quarantineKiller() {
-        return new QuarantineKillerDummy();
-    }
+	@Bean
+	@ConditionalOnMissingBean
+	public QuarantineKiller quarantineKiller() {
+		return new QuarantineKillerDummy();
+	}
 
-    @Bean
-    @ConditionalOnMissingBean
-    public MediaNodeStatusManager mediaNodeStatusManager() {
-        return new MediaNodeStatusManagerDummy();
-    }
+	@Bean
+	@ConditionalOnMissingBean
+	public MediaNodeStatusManager mediaNodeStatusManager() {
+		return new MediaNodeStatusManagerDummy();
+	}
 
+	@Override
+	public void registerJsonRpcHandlers(JsonRpcHandlerRegistry registry) {
+		registry.addHandler(
+			rpcHandler().withPingWatchdog(true).withInterceptors(new HttpHandshakeInterceptor()),
+			WS_PATH
+		);
+	}
 
-    @Override
-    public void registerJsonRpcHandlers(JsonRpcHandlerRegistry registry) {
-        registry.addHandler(rpcHandler().withPingWatchdog(true).withInterceptors(new HttpHandshakeInterceptor()),
-            WS_PATH
-        );
-    }
+	@Bean
+	public ExecutorService getThreadPool() {
+		return Executors.newCachedThreadPool();
+	}
 
-    public static void main(String[] args) {
-        ConfigurableApplicationContext app = SpringApplication.run(RemoteServiceConfig.class,
-            "--spring.main.web-application-type=none"
-        );
+	public static void main(String[] args) {
+		ConfigurableApplicationContext app = SpringApplication.run(
+			RemoteServiceConfig.class,
+			"--spring.main.web-application-type=none"
+		);
 
-        RemoteServiceProperties remoteServiceProperties = app.getBean(RemoteServiceProperties.class);
-        RemoteStorageProperties remoteStorageProperties = app.getBean(RemoteStorageProperties.class);
+		RemoteServiceProperties remoteServiceProperties = app.getBean(RemoteServiceProperties.class);
+		RemoteStorageProperties remoteStorageProperties = app.getBean(RemoteStorageProperties.class);
 
-        System.out.println(remoteServiceProperties);
-        System.out.println(remoteStorageProperties);
+		System.out.println(remoteServiceProperties);
+		System.out.println(remoteStorageProperties);
 
-        app.close();
+		app.close();
 
-        log.info("Using /dev/urandom for secure random generation");
-        System.setProperty("java.security.egd", "file:/dev/./urandom");
-        SpringApplication.run(ServiceServerApplication.class, Arrays.append(args, "--spring.main.banner-mode=off"));
-    }
+		log.info("Using /dev/urandom for secure random generation");
+		System.setProperty("java.security.egd", "file:/dev/./urandom");
+		SpringApplication.run(ServiceServerApplication.class, Arrays.append(args, "--spring.main.banner-mode=off"));
+	}
 
 }
