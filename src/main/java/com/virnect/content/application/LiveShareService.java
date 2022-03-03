@@ -10,6 +10,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -48,6 +51,7 @@ public class LiveShareService {
 	private final RabbitTemplate rabbitTemplate;
 	private final WorkspaceRestService workspaceRestService;
 	private final UserRestService userRestService;
+	private final ObjectMapper objectMapper;
 
 	@Transactional
 	public LiveShareJoinResponse joinLiveShareRoom(
@@ -197,11 +201,20 @@ public class LiveShareService {
 
 		liveShareUserRepository.delete(leaveUser);
 
-		room.setData(liveShareRoomLeaveRequest.getData());
+		room.setData(transferToString(liveShareRoomLeaveRequest.getData()));
 		room.setStatus(ActiveOrInactive.INACTIVE);
 		liveShareRoomRepository.save(room);
 
 		return new LiveShareLeaveResponse(true, LocalDateTime.now());
+	}
+
+	private String transferToString(Object data) {
+		try {
+			return objectMapper.writeValueAsString(data);
+		} catch (JsonProcessingException e) {
+			log.info(e.getMessage());
+			throw new ContentServiceException(ErrorCode.ERR_UNEXPECTED_SERVER_ERROR);
+		}
 	}
 
 	@Transactional
