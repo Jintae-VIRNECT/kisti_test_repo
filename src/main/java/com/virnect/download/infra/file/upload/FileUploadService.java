@@ -1,7 +1,5 @@
 package com.virnect.download.infra.file.upload;
 
-import java.io.IOException;
-
 import org.springframework.web.multipart.MultipartFile;
 
 /**
@@ -26,4 +24,5 @@ public interface FileUploadService {
 	 * @param url - 업로드된 파일 url
 	 */
 	boolean delete(final String url);
+
 }

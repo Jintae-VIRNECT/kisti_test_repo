@@ -17,7 +17,15 @@ import com.google.common.io.Files;
 
 import io.minio.MinioClient;
 import io.minio.PutObjectArgs;
+import io.minio.RemoveObjectArgs;
+import io.minio.errors.ErrorResponseException;
+import io.minio.errors.InsufficientDataException;
+import io.minio.errors.InternalException;
+import io.minio.errors.InvalidBucketNameException;
+import io.minio.errors.InvalidResponseException;
 import io.minio.errors.MinioException;
+import io.minio.errors.ServerException;
+import io.minio.errors.XmlParserException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -78,13 +86,25 @@ public class MinioFileUploadService implements FileUploadService {
 			log.info("[MINIO_UPLOAD_END]");
 			return url;
 		} catch (MinioException | InvalidKeyException | NoSuchAlgorithmException | IOException e) {
-			log.error("[MINIO_FILE_UPLOAD_ERROR] - {}", e.getMessage(), e);
+			log.error("[FILE_SERVICE][FILE_UPLOAD] - {}", e.getMessage());
 			throw new AppServiceException(ErrorCode.ERR_APP_UPLOAD_FAIL);
 		}
 	}
 
 	@Override
 	public boolean delete(String url) {
-		return false;
+		String objectName = bucket + "/" + url.substring(url.lastIndexOf("/") + 1);
+		log.info("[MINIO] DELETE OBJECT. URL : {}, KEY : {}", url, objectName);
+		RemoveObjectArgs removeObjectArgs = RemoveObjectArgs.builder()
+			.bucket(bucket)
+			.object(objectName)
+			.build();
+		try {
+			minioClient.removeObject(removeObjectArgs);
+		} catch (ErrorResponseException | InsufficientDataException | InternalException | InvalidBucketNameException | InvalidKeyException | InvalidResponseException | IOException | NoSuchAlgorithmException | ServerException | XmlParserException e) {
+			log.error("[FILE_SERVICE][FILE_DELETE] - {}", e.getMessage());
+		}
+		return true;
 	}
+
 }

@@ -1,6 +1,7 @@
 package com.virnect.download.infra.file.upload;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.List;
 import java.util.Objects;
 
@@ -57,14 +58,14 @@ public class S3FileUploadService implements FileUploadService {
 		objectMetadata.setContentType(file.getContentType());
 		objectMetadata.setContentLength(file.getSize());
 		objectMetadata.setHeader("filename", file.getOriginalFilename());
-		objectMetadata.setContentDisposition("attachment; filename=\"" + file.getOriginalFilename() +"\"");
+		objectMetadata.setContentDisposition("attachment; filename=\"" + file.getOriginalFilename() + "\"");
 
 		// 3. 스트림으로 aws s3에 업로드
 		PutObjectRequest putObjectRequest = null;
-		try {
+
+		try (InputStream inputStream = file.getInputStream()) {
 			putObjectRequest = new PutObjectRequest(
-				bucketName, fileUploadPath + file.getOriginalFilename(), file.getInputStream(), objectMetadata
-			);
+				bucketName, fileUploadPath + file.getOriginalFilename(), inputStream, objectMetadata);
 		} catch (IOException e) {
 			log.error("[AWS_FILE_UPLOAD_ERROR] - {}", e.getMessage(), e);
 			throw new AppServiceException(ErrorCode.ERR_APP_UPLOAD_FAIL);
@@ -90,6 +91,10 @@ public class S3FileUploadService implements FileUploadService {
 
 	@Override
 	public boolean delete(String url) {
-		return false;
+		String objectName = bucketName + "/" + url.substring(url.lastIndexOf("/") + 1);
+		log.info("[AWS S3] DELETE OBJECT. URL : {}, KEY : {}", url, objectName);
+		amazonS3Client.deleteObject(bucketName, objectName);
+		return true;
 	}
+
 }

@@ -1,15 +1,14 @@
 package com.virnect.download.dto.request;
 
+import static com.google.common.io.Files.*;
+
 import java.util.Objects;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Pattern;
 
-import org.springframework.util.StringUtils;
+import org.apache.commons.io.FilenameUtils;
 import org.springframework.web.multipart.MultipartFile;
-
-import com.google.common.io.Files;
 
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
@@ -41,10 +40,6 @@ public class AdminAppUploadRequest {
 	@ApiModelProperty(value = "앱 사이닝 키 (최초 apk 등록 시 필요합니다.)", position = 4, example = "signingKeyvaluessigningKeyvalues", required = false)
 	//@NotBlank(message = "앱 사이닝 키는 최초 등록 시 반드시 입력되어야 합니다.")
 	private String signingKey;
-	@ApiModelProperty(value = "앱 버전 정보 (apk 등록이 아닌 경우 필요합니다.)", position = 5, example = "1.3.2", required = false)
-	//@NotBlank(message = "앱 버전 코드는 반드시 있어야합니다.")
-	@Pattern(regexp = "^[0-9.]+$", message = "숫자와 마침표(.)만 입력할 수 있습니다.")
-	private String versionName;
 
 	@Override
 	public String toString() {
@@ -54,17 +49,8 @@ public class AdminAppUploadRequest {
 			", deviceType='" + deviceType + '\'' +
 			", deviceModel='" + deviceModel + '\'' +
 			", signingKey='" + signingKey + '\'' +
-			", versionName='" + versionName + '\'' +
 			'}';
 	}
 
-	@ApiModelProperty(hidden = true)
-	public Long getVersionCode() {
-		return StringUtils.isEmpty(versionName) ? null : Long.parseLong(StringUtils.deleteAny(versionName, "."));
-	}
 
-	@ApiModelProperty(hidden = true)
-	public boolean isApkApp() {
-		return Files.getFileExtension(Objects.requireNonNull(uploadAppFile.getOriginalFilename())).equals("apk");
-	}
 }

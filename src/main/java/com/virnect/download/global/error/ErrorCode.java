@@ -15,8 +15,10 @@ public enum ErrorCode {
 	// App 서비스 에러
 	ERR_APP_UPLOAD_FAIL(6000, "Application file upload fail."),
 	ERR_APP_UPLOAD_EMPTY_APPLICATION_FILE(6001, "Application file upload file. file size is 0"),
-	ERR_APP_UPLOAD_FILE_EXTENSION_NOT_SUPPORT(6002,
-		"Application file upload file. Application extension not supported."),
+	ERR_APP_UPLOAD_FILE_EXTENSION_NOT_SUPPORT(
+		6002,
+		"Application file upload file. Application extension not supported."
+	),
 	ERR_APP_UPLOAD_FAIL_DEVICE_TYPE_NOT_FOUND(6003, "Application file upload fail. Device type information not found."),
 	ERR_APP_UPLOAD_FAIL_DEVICE_INFO_NOT_FOUND(6004, "Application file upload fail. Device information not found."),
 	ERR_APP_UPLOAD_FAIL_OS_INFO_NOT_FOUND(
@@ -39,7 +41,11 @@ public enum ErrorCode {
 		6012,
 		"Application information update fail."
 	),
-	ERR_APP_UPLOAD_FAIL_WORKSPACE_INVALID_PERMISSION(6013,"Application file upload fail. User is haven't valid workspace permission"),
+	ERR_APP_UPLOAD_FAIL_WORKSPACE_INVALID_PERMISSION(
+		6013,
+		"Application file upload fail. User is haven't valid workspace permission"
+	),
+	ERR_APP_UPLOAD_INVALID_FILE_NAME(6016, "Application file upload fail. Invalid File name."),
 
 	// 공통 에러
 	ERR_API_AUTHENTICATION(8003, "Authentication Error"),

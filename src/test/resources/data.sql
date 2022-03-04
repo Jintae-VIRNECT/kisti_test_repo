@@ -62,17 +62,19 @@ VALUES (146, '2022-01-11 03:29:09', '2022-01-11 03:29:09', 0,
         0, 'https://file.virnect.com/Guide/remote_user_guide.pdf',
         'https://file.virnect.com/resource/view_realwear.png', 'ec24-5584c42ee43b', 2, 'ACTIVE', 'REQUIRED',
         'com.virnect.remote.realwear2', 'tWQ0giBAUabIU7GO8zgxBgVOjF_gDPCQeJlw6wIBRrE', 2600001, '2.6.0', 1, 2),
+
        (147, '2022-01-11 05:12:18', '2022-01-12 05:23:58', 1,
         'https://192.168.6.3:2838/virnect-download/app/VIRNECT%20Remote-mobile-release-v2.6.0_220111_1407.apk', 0,
         'https://file.virnect.com/Guide/remote_user_guide.pdf', 'https://file.virnect.com/resource/remote_android.png',
         '0b06-3d98007acee7', 3, 'ACTIVE', 'REQUIRED', 'com.virnect.remote.mobile2',
-        'tWQ0giBAUabIU7GO8zgxBgVOjF_gDPCQeJlw6wIBRrE', 2600001, '2.6.0', 1, 2)
-        ,
+        'tWQ0giBAUabIU7GO8zgxBgVOjF_gDPCQeJlw6wIBRrE', 2600001, '2.6.0', 1, 2),
+
        (148, '2022-01-11 05:20:56', '2022-01-11 05:20:56', 0,
         'https://192.168.6.3:2838/virnect-download/app/VIRNECT%20Remote%20for%20Linkflow-linkflow-release-v2.6.0_220111_1415.apk',
         0, 'https://file.virnect.com/Guide/remote_linkflow_user_guide.pdf',
         'https://file.virnect.com/resource/remote_linkflow.png', 'e376-e5bb9433f688', 10, 'ACTIVE', 'REQUIRED',
         'com.virnect.remote.linkflow', 'maUXLWUOajzPlvgzUotLxUqtKwR8k7RydQYIGOZlBh4', 2600001, '2.6.0', 1, 2),
+
        (135, '2021-12-17 09:04:14', '2021-12-17 09:04:14', 0,
         'https://192.168.6.3:2838/virnect-download/app/MakeInstaller.exe', 0, NULL, '', '5ca2-5bf164fc3c76', 1,
-        'ACTIVE', 'REQUIRED', NULL, NULL, 132, '1.3.2', 2, 3);
+        'ACTIVE', 'REQUIRED', NULL, NULL, 1302001, '1.3.2', 2, 3);
