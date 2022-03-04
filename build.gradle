@@ -14,7 +14,7 @@ plugins {
 }
 
 group = 'com.virnect'
-version = '1.4.1'
+version = '1.4.2'
 sourceCompatibility = '1.8'
 
 ext {
