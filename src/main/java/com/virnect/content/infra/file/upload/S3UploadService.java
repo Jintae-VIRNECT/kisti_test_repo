@@ -4,6 +4,7 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Base64;
 import java.util.List;
 import java.util.Objects;
@@ -99,15 +100,22 @@ public class S3UploadService implements FileUploadService {
 		objectMetadata.setContentDisposition(String.format("attachment; filename=\"%s\"", fileName));
 
 		String objectName = String.format("workspace/%s/%s/%s", workspaceUUID, fileDir, fileName);
-		PutObjectRequest putObjectRequest = new PutObjectRequest(
-			bucketName, objectName, new ByteArrayInputStream(image), objectMetadata);
-		putObjectRequest.withCannedAcl(CannedAccessControlList.PublicRead);
-		log.info(
-			"[AWS S3 BASE64 UPLOAD] UPLOAD REQUEST. BUCKET : {}, KEY : {}, CONTENT TYPE : {}", bucketName, objectName,
-			MediaType.APPLICATION_OCTET_STREAM_VALUE
-		);
-		amazonS3Client.putObject(putObjectRequest);
-		log.info("[AWS S3 BASE64 UPLOAD] UPLOAD SUCCESS.");
+		try (ByteArrayInputStream inputStream = new ByteArrayInputStream(image)) {
+			PutObjectRequest putObjectRequest = new PutObjectRequest(
+				bucketName, objectName, inputStream, objectMetadata);
+			putObjectRequest.withCannedAcl(CannedAccessControlList.PublicRead);
+			log.info(
+				"[AWS S3 BASE64 UPLOAD] UPLOAD REQUEST. BUCKET : {}, KEY : {}, CONTENT TYPE : {}", bucketName,
+				objectName,
+				MediaType.APPLICATION_OCTET_STREAM_VALUE
+			);
+			amazonS3Client.putObject(putObjectRequest);
+			log.info("[AWS S3 BASE64 UPLOAD] UPLOAD SUCCESS.");
+		} catch (IOException e) {
+			log.error(e.getMessage());
+			throw new ContentServiceException(ErrorCode.ERR_CONTENT_UPLOAD);
+		}
+
 		String url = amazonS3Client.getUrl(bucketName, objectName).toExternalForm();
 		log.info("[AWS S3 BASE64 UPLOAD] UPLOADED URL : {}", url);
 		return url;
@@ -150,9 +158,9 @@ public class S3UploadService implements FileUploadService {
 				"workspace/%s/%s/%s%s", workspaceUUID, fileDir, fileNameWithoutExtension, fileExtension);
 		}
 		// 4. 스트림으로 aws s3에 업로드
-		try {
+		try (InputStream inputStream = file.getInputStream()){
 			PutObjectRequest putObjectRequest = new PutObjectRequest(
-				bucketName, objectName, file.getInputStream(), objectMetadata).withCannedAcl(
+				bucketName, objectName, inputStream, objectMetadata).withCannedAcl(
 				CannedAccessControlList.PublicRead);
 			log.info(
 				"[AWS S3 FILE UPLOAD] UPLOAD REQUEST. BUCKET : {}, KEY : {}, CONTENT TYPE : {}", bucketName, objectName,
@@ -177,41 +185,6 @@ public class S3UploadService implements FileUploadService {
 			log.error("Error Message:     {}", e.getMessage());
 			throw new ContentServiceException(ErrorCode.ERR_CONTENT_UPLOAD);
 		}
-	}
-
-	// 로컬 임시 파일 삭제
-	private void removeNewFile(File targetFile) {
-		if (targetFile.delete()) {
-			log.info("파일이 삭제되었습니다.");
-		} else {
-			log.info("파일이 삭제되지 못했습니다.");
-		}
-	}
-
-	// 이미지 전송 요청을 받아 로컬 파일로 변환
-	private Optional<File> convert(MultipartFile file) throws IOException {
-		File convertFile = new File(Objects.requireNonNull(file.getOriginalFilename()));
-		if (convertFile.createNewFile()) {
-			try (FileOutputStream fos = new FileOutputStream(convertFile)) {
-				fos.write(file.getBytes());
-			}
-			return Optional.of(convertFile);
-		}
-
-		return Optional.empty();
-	}
-
-	/**
-	 * AWS S3 이미지 업로드 요청 전송
-	 *
-	 * @param uploadFile - 업로드 대상 파일
-	 * @param fileName   - 파일 이름
-	 * @return 이미지 URL
-	 */
-	private String putS3(File uploadFile, String fileName) {
-		amazonS3Client.putObject(
-			new PutObjectRequest(bucketName, fileName, uploadFile).withCannedAcl(CannedAccessControlList.PublicRead));
-		return amazonS3Client.getUrl(bucketName, fileName).toString();
 	}
 
 	@Override

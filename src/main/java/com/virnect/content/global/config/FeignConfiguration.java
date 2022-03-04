@@ -26,11 +26,6 @@ public class FeignConfiguration {
 		return new Retryer.Default(1000, 2000, 3);
 	}
 
-	@Bean
-	Logger.Level feignLoggerLevel() {
-		return Logger.Level.FULL;
-	}
-
 	/**
 	 * RequestParam 에서 LocalDate, LocalDateTime, LocalTime 을 사용을 할 때 ISO formatter 로 보내기 위한 설정
 	 *
