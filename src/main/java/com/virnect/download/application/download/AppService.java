@@ -189,11 +189,9 @@ public class AppService {
 			log.error("Upload Application file is empty or set as null");
 			throw new AppServiceException(ErrorCode.ERR_APP_UPLOAD_FAIL);
 		}
-		try {
-			ByteArrayApkFile apkFile = new ByteArrayApkFile(app.getBytes());
+		try (ByteArrayApkFile apkFile = new ByteArrayApkFile(app.getBytes())) {
 			ApkMeta apkMeta = apkFile.getApkMeta();
 			log.info(apkMeta.toString());
-			apkFile.close();
 			return apkMeta;
 		} catch (Exception e) {
 			log.error("APK Parsing Error", e);

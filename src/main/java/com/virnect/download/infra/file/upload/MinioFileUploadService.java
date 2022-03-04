@@ -86,7 +86,7 @@ public class MinioFileUploadService implements FileUploadService {
 			log.info("[MINIO_UPLOAD_END]");
 			return url;
 		} catch (MinioException | InvalidKeyException | NoSuchAlgorithmException | IOException e) {
-			log.error("[MINIO_FILE_UPLOAD_ERROR] - {}", e.getMessage(), e);
+			log.error("[FILE_SERVICE][FILE_UPLOAD] - {}", e.getMessage());
 			throw new AppServiceException(ErrorCode.ERR_APP_UPLOAD_FAIL);
 		}
 	}
@@ -102,7 +102,7 @@ public class MinioFileUploadService implements FileUploadService {
 		try {
 			minioClient.removeObject(removeObjectArgs);
 		} catch (ErrorResponseException | InsufficientDataException | InternalException | InvalidBucketNameException | InvalidKeyException | InvalidResponseException | IOException | NoSuchAlgorithmException | ServerException | XmlParserException e) {
-			e.printStackTrace();
+			log.error("[FILE_SERVICE][FILE_DELETE] - {}", e.getMessage());
 		}
 		return true;
 	}
