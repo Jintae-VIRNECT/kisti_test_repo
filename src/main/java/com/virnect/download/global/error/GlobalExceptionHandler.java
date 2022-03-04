@@ -24,20 +24,19 @@ public class GlobalExceptionHandler {
 	// 기타 모든 예외 에러
 	@ExceptionHandler(Exception.class)
 	public ResponseEntity exception(Exception e) {
-		log.error(e.getMessage());
-		e.printStackTrace();
+		log.error("globalException. ", e);
 		return new ResponseEntity<>(ErrorCode.ERR_UNEXPECTED_SERVER_ERROR, HttpStatus.BAD_REQUEST);
 	}
 
 	@ExceptionHandler(DownloadException.class)
 	protected ResponseEntity<ErrorResponseMessage> handleDownloadException(final DownloadException e) {
-		log.error("handleDownloadException", e);
+		log.error("handleDownloadException. {}", e.getMessage());
 		return ResponseEntity.ok(new ErrorResponseMessage(e.getErrorCode()));
 	}
 
 	@ExceptionHandler(AppServiceException.class)
 	protected ResponseEntity<ErrorResponseMessage> handleUploadServiceException(final AppServiceException e) {
-		log.error("[UPLOAD_SERVICE_EXCEPTION]", e);
+		log.error("handleUploadServiceException. {}", e.getMessage());
 		return ResponseEntity.ok(new ErrorResponseMessage(e.getErrorCode()));
 	}
 }
