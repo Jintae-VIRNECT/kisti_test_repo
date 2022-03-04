@@ -24,4 +24,10 @@ public class GlobalExceptionHandler {
 		log.error("[CONTENT_SERVICE] - MESSAGE: [{}] , DATA: [{}]", e.getMessage(), e.getError().toString());
 		return ResponseEntity.ok(new ErrorResponseMessage(e.getError()));
 	}
+
+	@ExceptionHandler(Exception.class)
+	public ResponseEntity<ErrorResponseMessage> exception(Exception e) {
+		log.error("globalException. ", e);
+		return ResponseEntity.ok(new ErrorResponseMessage(ErrorCode.ERR_UNEXPECTED_SERVER_ERROR));
+	}
 }

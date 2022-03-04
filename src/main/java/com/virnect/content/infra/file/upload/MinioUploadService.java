@@ -157,12 +157,12 @@ public class MinioUploadService implements FileUploadService {
 				"workspace/%s/%s/%s%s", workspaceUUID, fileDir, fileNameWithoutExtension, fileExtension);
 		}
 
-		try {
+		try (InputStream inputStream = file.getInputStream()){
 			PutObjectArgs putObjectArgs = PutObjectArgs.builder()
 				.bucket(bucketName)
 				.object(objectName)
 				.contentType(file.getContentType())
-				.stream(file.getInputStream(), file.getSize(), -1)
+				.stream(inputStream, file.getSize(), -1)
 				.build();
 			log.info(
 				"[MINIO FILE UPLOAD] UPLOAD REQUEST. BUCKET : {}, KEY : {}, CONTENT TYPE : {}", bucketName, objectName,

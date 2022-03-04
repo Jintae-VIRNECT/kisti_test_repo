@@ -1133,7 +1133,7 @@ public class ContentService {
 
 			imgPath = getImgPath(targetData, workspaceUUID);
 		} catch (Exception e) {
-			e.printStackTrace();
+			log.error(e.getMessage());
 		}
 
 		return imgPath;
@@ -1184,7 +1184,7 @@ public class ContentService {
 			log.info(">>>>>>>>>>>>>>>>>>> encodedData : {}", encodedData);
 
 		} catch (UnsupportedEncodingException e) {
-			e.printStackTrace();
+			log.error(e.getMessage());
 		}
 
 		return encodedData;

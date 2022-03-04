@@ -136,8 +136,7 @@ public class MinioDownloadService implements FileDownloadService {
 			.object(objectName)
 			.build();
 		long contentLength = 0L;
-		try {
-			GetObjectResponse getObjectResponse = minioClient.getObject(getObjectArgs);
+		try (GetObjectResponse getObjectResponse = minioClient.getObject(getObjectArgs)){
 			String contentLengthValue = getObjectResponse.headers().get("Content-Length");
 			if (!StringUtils.hasText(contentLengthValue)) {
 				log.error("[MINIO GET FILE SIZE] GET SIZE FAIL.");

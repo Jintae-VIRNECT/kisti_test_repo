@@ -14,6 +14,8 @@ import javax.crypto.SecretKey;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 
+import lombok.extern.slf4j.Slf4j;
+
 /**
  * Project: PF-ContentManagement
  * DATE: 2020-01-09
@@ -21,6 +23,7 @@ import javax.crypto.spec.SecretKeySpec;
  * EMAIL: practice1356@gmail.com
  * DESCRIPTION: AES 256 관련 암복호화 유틸
  */
+@Slf4j
 public class AES256EncryptUtils {
 	public static String encrypt(final String key, final String data) {
 		try {
@@ -34,7 +37,7 @@ public class AES256EncryptUtils {
 			return new String(Base64.getEncoder().encode(encrypted));
 		} catch (NoSuchAlgorithmException | NoSuchPaddingException | InvalidAlgorithmParameterException
 			| InvalidKeyException | BadPaddingException | IllegalBlockSizeException e) {
-			e.printStackTrace();
+			log.error(e.getMessage());
 		}
 		return null;
 	}
@@ -51,7 +54,7 @@ public class AES256EncryptUtils {
 			return new String(cipher.doFinal(decrypted), StandardCharsets.UTF_8);
 		} catch (NoSuchAlgorithmException | NoSuchPaddingException | InvalidAlgorithmParameterException
 			| InvalidKeyException | BadPaddingException | IllegalBlockSizeException e) {
-			e.printStackTrace();
+			log.error(e.getMessage());
 		}
 		return null;
 	}
@@ -71,7 +74,7 @@ public class AES256EncryptUtils {
 			return new String(cipher.doFinal(decrypted), StandardCharsets.UTF_8);
 		} catch (NoSuchAlgorithmException | NoSuchPaddingException | InvalidAlgorithmParameterException
 			| InvalidKeyException | BadPaddingException | IllegalBlockSizeException e) {
-			e.printStackTrace();
+			log.error(e.getMessage());
 		}
 
 		return null;
