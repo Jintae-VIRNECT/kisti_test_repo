@@ -20,7 +20,7 @@ import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import com.virnect.download.application.download.AppService;
+import com.virnect.download.application.download.AdminService;
 import com.virnect.download.dto.request.AdminAppUploadRequest;
 import com.virnect.download.dto.response.AdminAppDeleteResponse;
 import com.virnect.download.dto.response.AdminAppUploadResponse;
@@ -34,7 +34,7 @@ import com.virnect.download.global.error.ErrorCode;
 @RequestMapping("/download/app")
 @RequiredArgsConstructor
 public class AdminController {
-	private final AppService appService;
+	private final AdminService adminService;
 
 	@ApiOperation(value = "관리자 앱 등록 API", notes = "설치파일을 업로드 합니다."
 		+ "\n 파일 이름 명명 규칙 : {product_name}_{device_type}_{version_code}.{extension}", tags = "onpremise-controller")
@@ -53,8 +53,7 @@ public class AdminController {
 			result.getAllErrors().forEach(message -> log.error("[PARAMETER ERROR]:: {}", message));
 			throw new AppServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
 		}
-		AdminAppUploadResponse responseMessage = appService.uploadApplication(
-			adminAppUploadRequest, userUUID);
+		AdminAppUploadResponse responseMessage = adminService.uploadApplication(adminAppUploadRequest, userUUID);
 		return ResponseEntity.ok(new ApiResponse<>(responseMessage));
 	}
 
@@ -70,7 +69,7 @@ public class AdminController {
 		if (StringUtils.isEmpty(userUUID) || StringUtils.isEmpty(appUUID)) {
 			throw new AppServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
 		}
-		AdminAppDeleteResponse responseMessage = appService.deleteApplication(appUUID, userUUID);
+		AdminAppDeleteResponse responseMessage = adminService.deleteApplication(appUUID, userUUID);
 		return ResponseEntity.ok(new ApiResponse<>(responseMessage));
 	}
 }
