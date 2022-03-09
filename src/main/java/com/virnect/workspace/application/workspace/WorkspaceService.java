@@ -29,7 +29,6 @@ import com.virnect.workspace.dao.workspaceuser.WorkspaceUserRepository;
 import com.virnect.workspace.dao.workspaceuserpermission.WorkspaceUserPermissionRepository;
 import com.virnect.workspace.domain.workspace.Role;
 import com.virnect.workspace.domain.workspace.Workspace;
-import com.virnect.workspace.domain.workspace.WorkspaceSetting;
 import com.virnect.workspace.domain.workspace.WorkspaceUser;
 import com.virnect.workspace.domain.workspace.WorkspaceUserPermission;
 import com.virnect.workspace.dto.request.WorkspaceCreateRequest;
@@ -372,147 +371,26 @@ public abstract class WorkspaceService {
 	}
 
 	@Transactional
-	public WorkspaceTitleUpdateResponse updateWorkspaceTitle(
+	public abstract WorkspaceTitleUpdateResponse updateWorkspaceTitle(
 		String workspaceId, WorkspaceTitleUpdateRequest workspaceTitleUpdateRequest
-	) {
-		WorkspaceUserPermission workspaceUser = workspaceUserPermissionRepository.findWorkspaceUserPermission(
-				workspaceId, workspaceTitleUpdateRequest.getUserId())
-			.orElseThrow(() -> new WorkspaceException(ErrorCode.ERR_WORKSPACE_USER_NOT_FOUND));
-		if (!Role.MASTER.equals(workspaceUser.getWorkspaceRole().getRole())) {
-			throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_INVALID_PERMISSION);
-		}
-
-		WorkspaceSetting workspaceSetting = workspaceSettingRepository.findByWorkspaceId(workspaceId);
-		if (workspaceSetting == null) {
-			workspaceSetting = WorkspaceSetting.workspaceSettingInitBuilder().workspaceId(workspaceId).build();
-		}
-
-		workspaceSetting.setTitle(workspaceTitleUpdateRequest.getTitle());
-		workspaceSettingRepository.save(workspaceSetting);
-
-		WorkspaceTitleUpdateResponse workspaceTitleUpdateResponse = new WorkspaceTitleUpdateResponse();
-		workspaceTitleUpdateResponse.setResult(true);
-		workspaceTitleUpdateResponse.setTitle(workspaceSetting.getTitle());
-		return workspaceTitleUpdateResponse;
-	}
+	);
 
 	@Transactional
-	public WorkspaceLogoUpdateResponse updateWorkspaceLogo(
+	public abstract WorkspaceLogoUpdateResponse updateWorkspaceLogo(
 		String workspaceId, WorkspaceLogoUpdateRequest workspaceLogoUpdateRequest
-	) {
-		WorkspaceUserPermission workspaceUser = workspaceUserPermissionRepository.findWorkspaceUserPermission(
-				workspaceId, workspaceLogoUpdateRequest.getUserId())
-			.orElseThrow(() -> new WorkspaceException(ErrorCode.ERR_WORKSPACE_USER_NOT_FOUND));
-		if (!Role.MASTER.equals(workspaceUser.getWorkspaceRole().getRole())) {
-			throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_INVALID_PERMISSION);
-		}
-
-		WorkspaceSetting workspaceSetting = workspaceSettingRepository.findByWorkspaceId(workspaceId);
-
-		if (workspaceSetting == null) {
-			workspaceSetting = WorkspaceSetting.workspaceSettingInitBuilder().workspaceId(workspaceId).build();
-		}
-
-		String defaultLogo = getLogoUrl(
-			DefaultImageName.WORKSPACE_DEFAULT_LOGO, workspaceLogoUpdateRequest.getDefaultLogo(), workspaceId);
-		workspaceSetting.setDefaultLogo(defaultLogo);
-
-		String whiteLogo = getLogoUrl(
-			DefaultImageName.WORKSPACE_WHITE_LOGO, workspaceLogoUpdateRequest.getWhiteLogo(), workspaceId);
-		workspaceSetting.setWhiteLogo(whiteLogo);
-
-		workspaceSettingRepository.save(workspaceSetting);
-
-		WorkspaceLogoUpdateResponse workspaceLogoUpdateResponse = new WorkspaceLogoUpdateResponse();
-		workspaceLogoUpdateResponse.setResult(true);
-		workspaceLogoUpdateResponse.setDefaultLogo(workspaceSetting.getDefaultLogo());
-		workspaceLogoUpdateResponse.setGreyLogo(workspaceSetting.getGreyLogo());
-		workspaceLogoUpdateResponse.setWhiteLogo(workspaceSetting.getWhiteLogo());
-		return workspaceLogoUpdateResponse;
-
-	}
+	);
 
 	@Transactional
-	public WorkspaceFaviconUpdateResponse updateWorkspaceFavicon(
+	public abstract WorkspaceFaviconUpdateResponse updateWorkspaceFavicon(
 		String workspaceId, WorkspaceFaviconUpdateRequest workspaceFaviconUpdateRequest
-	) {
-		WorkspaceUserPermission workspaceUser = workspaceUserPermissionRepository.findWorkspaceUserPermission(
-				workspaceId, workspaceFaviconUpdateRequest.getUserId())
-			.orElseThrow(() -> new WorkspaceException(ErrorCode.ERR_WORKSPACE_USER_NOT_FOUND));
-		if (!Role.MASTER.equals(workspaceUser.getWorkspaceRole().getRole())) {
-			throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_INVALID_PERMISSION);
-		}
-
-		WorkspaceSetting workspaceSetting = workspaceSettingRepository.findByWorkspaceId(workspaceId);
-		if (workspaceSetting == null) {
-			workspaceSetting = WorkspaceSetting.workspaceSettingInitBuilder().workspaceId(workspaceId).build();
-		}
-
-		String favicon = getLogoUrl(
-			DefaultImageName.WORKSPACE_DEFAULT_FAVICON, workspaceFaviconUpdateRequest.getFavicon(), workspaceId);
-		workspaceSetting.setFavicon(favicon);
-		workspaceSettingRepository.save(workspaceSetting);
-
-		WorkspaceFaviconUpdateResponse workspaceFaviconUpdateResponse = new WorkspaceFaviconUpdateResponse();
-		workspaceFaviconUpdateResponse.setResult(true);
-		workspaceFaviconUpdateResponse.setFavicon(favicon);
-		return workspaceFaviconUpdateResponse;
-	}
+	);
 
 	public abstract WorkspaceCustomSettingResponse getWorkspaceCustomSetting(String workspaceId);
 
 	@Transactional
-	public WorkspaceRemoteLogoUpdateResponse updateRemoteLogo(
-		String workspaceId, WorkspaceRemoteLogoUpdateRequest remoteLogoUpdateRequest
-	) {
-		WorkspaceUserPermission workspaceUser = workspaceUserPermissionRepository.findWorkspaceUserPermission(
-				workspaceId, remoteLogoUpdateRequest.getUserId())
-			.orElseThrow(() -> new WorkspaceException(ErrorCode.ERR_WORKSPACE_USER_NOT_FOUND));
-		if (!Role.MASTER.equals(workspaceUser.getWorkspaceRole().getRole())) {
-			throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_INVALID_PERMISSION);
-		}
+	public abstract WorkspaceRemoteLogoUpdateResponse updateRemoteLogo(String workspaceId, WorkspaceRemoteLogoUpdateRequest remoteLogoUpdateRequest);
 
-		WorkspaceSetting workspaceSetting = workspaceSettingRepository.findByWorkspaceId(workspaceId);
-
-		if (workspaceSetting == null) {
-			workspaceSetting = WorkspaceSetting.workspaceSettingInitBuilder().workspaceId(workspaceId).build();
-		}
-
-		if (remoteLogoUpdateRequest.isUpdateAndroidSplashLogo()) {
-			String logoUrl = getRemoteLogoUrl(
-				DefaultImageName.REMOTE_ANDROID_SPLASH_LOGO,
-				remoteLogoUpdateRequest.isDefaultRemoteAndroidSplashLogo(),
-				remoteLogoUpdateRequest.getRemoteAndroidSplashLogo(), workspaceId
-			);
-			workspaceSetting.setRemoteAndroidSplashLogo(logoUrl);
-		}
-
-		if (remoteLogoUpdateRequest.isUpdateAndroidLoginLogo()) {
-			String logoUrl = getRemoteLogoUrl(
-				DefaultImageName.REMOTE_ANDROID_LOGIN_LOGO,
-				remoteLogoUpdateRequest.isDefaultRemoteAndroidLoginLogo(),
-				remoteLogoUpdateRequest.getRemoteAndroidLoginLogo(), workspaceId
-			);
-			workspaceSetting.setRemoteAndroidLoginLogo(logoUrl);
-		}
-
-		if (remoteLogoUpdateRequest.isUpdateHololens2Logo()) {
-			String logoUrl = getRemoteLogoUrl(
-				DefaultImageName.REMOTE_HOLOLENS2_COMMON_LOGO,
-				remoteLogoUpdateRequest.isDefaultRemoteHololens2CommonLogo(),
-				remoteLogoUpdateRequest.getRemoteHololens2CommonLogo(), workspaceId
-			);
-			workspaceSetting.setRemoteHololens2CommonLogo(logoUrl);
-		}
-		workspaceSettingRepository.save(workspaceSetting);
-
-		return new WorkspaceRemoteLogoUpdateResponse(true, workspaceSetting.getRemoteAndroidSplashLogo(),
-			workspaceSetting.getRemoteAndroidLoginLogo(),
-			workspaceSetting.getRemoteHololens2CommonLogo()
-		);
-	}
-
-	private String getRemoteLogoUrl(
+	public String getRemoteLogoUrl(
 		DefaultImageName defaultImageName, boolean isDefaultLogo, MultipartFile file,
 		String workspaceId
 	) {
@@ -524,16 +402,13 @@ public abstract class WorkspaceService {
 		return fileUploadService.uploadByFixedName(file, workspaceId,fixedFileName);
 	}
 
-	private String getLogoUrl(
-		DefaultImageName defaultImageName, MultipartFile file, String workspaceId
+	public String getLogoUrl(
+		MultipartFile file, String workspaceId
 	) {
 		if (file == null || file.getSize() == 0) {
 			return null;
 		}
-
-		int dotIndex = defaultImageName.getName().indexOf(".");
-		String fixedFileName = defaultImageName.getName().substring(0, dotIndex);
-		return fileUploadService.uploadByFixedName(file, workspaceId, fixedFileName);
+		return fileUploadService.upload(file, workspaceId);
 	}
 
 }

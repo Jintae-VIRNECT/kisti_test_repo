@@ -9,9 +9,6 @@ package com.virnect.workspace.infra.file;
  */
 public enum DefaultImageName {
 	WORKSPACE_PROFILE("workspace-profile.png"),
-	WORKSPACE_DEFAULT_LOGO("virnect-default-logo.png"),
-	WORKSPACE_WHITE_LOGO("virnect-white-logo.png"),
-	WORKSPACE_DEFAULT_FAVICON("virnect-default-favicon.ico"),
 	REMOTE_ANDROID_SPLASH_LOGO("remote-android-splash-logo.png"),
 	REMOTE_ANDROID_LOGIN_LOGO("remote-android-login-logo.png"),
 	REMOTE_HOLOLENS2_COMMON_LOGO("remote-hololens2-common-logo.png");

@@ -4,7 +4,6 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -26,8 +25,16 @@ import com.virnect.workspace.domain.workspace.WorkspaceSetting;
 import com.virnect.workspace.domain.workspace.WorkspaceUser;
 import com.virnect.workspace.domain.workspace.WorkspaceUserPermission;
 import com.virnect.workspace.dto.request.WorkspaceCreateRequest;
+import com.virnect.workspace.dto.request.WorkspaceFaviconUpdateRequest;
+import com.virnect.workspace.dto.request.WorkspaceLogoUpdateRequest;
+import com.virnect.workspace.dto.request.WorkspaceRemoteLogoUpdateRequest;
+import com.virnect.workspace.dto.request.WorkspaceTitleUpdateRequest;
 import com.virnect.workspace.dto.response.WorkspaceCustomSettingResponse;
+import com.virnect.workspace.dto.response.WorkspaceFaviconUpdateResponse;
 import com.virnect.workspace.dto.response.WorkspaceInfoDTO;
+import com.virnect.workspace.dto.response.WorkspaceLogoUpdateResponse;
+import com.virnect.workspace.dto.response.WorkspaceRemoteLogoUpdateResponse;
+import com.virnect.workspace.dto.response.WorkspaceTitleUpdateResponse;
 import com.virnect.workspace.event.message.MailContextHandler;
 import com.virnect.workspace.exception.WorkspaceException;
 import com.virnect.workspace.global.common.mapper.rest.RestMapStruct;
@@ -149,6 +156,94 @@ public class OnWorkspaceServiceImpl extends WorkspaceService {
 		return workspaceMapStruct.workspaceToWorkspaceInfoDTO(workspace);
 	}
 
+	@Transactional
+	@Override
+	public WorkspaceTitleUpdateResponse updateWorkspaceTitle(
+		String workspaceId, WorkspaceTitleUpdateRequest workspaceTitleUpdateRequest
+	) {
+		WorkspaceUserPermission workspaceUser = workspaceUserPermissionRepository.findWorkspaceUserPermission(
+				workspaceId, workspaceTitleUpdateRequest.getUserId())
+			.orElseThrow(() -> new WorkspaceException(ErrorCode.ERR_WORKSPACE_USER_NOT_FOUND));
+		if (!Role.MASTER.equals(workspaceUser.getWorkspaceRole().getRole())) {
+			throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_INVALID_PERMISSION);
+		}
+
+		WorkspaceSetting workspaceSetting = workspaceSettingRepository.findByWorkspaceId(workspaceId);
+		if (workspaceSetting == null) {
+			workspaceSetting = WorkspaceSetting.workspaceSettingInitBuilder().workspaceId(workspaceId).build();
+		}
+
+		workspaceSetting.setTitle(workspaceTitleUpdateRequest.getTitle());
+		workspaceSettingRepository.save(workspaceSetting);
+
+		WorkspaceTitleUpdateResponse workspaceTitleUpdateResponse = new WorkspaceTitleUpdateResponse();
+		workspaceTitleUpdateResponse.setResult(true);
+		workspaceTitleUpdateResponse.setTitle(workspaceSetting.getTitle());
+		return workspaceTitleUpdateResponse;
+	}
+
+	@Transactional
+	@Override
+	public WorkspaceLogoUpdateResponse updateWorkspaceLogo(
+		String workspaceId, WorkspaceLogoUpdateRequest workspaceLogoUpdateRequest
+	) {
+		WorkspaceUserPermission workspaceUser = workspaceUserPermissionRepository.findWorkspaceUserPermission(
+				workspaceId, workspaceLogoUpdateRequest.getUserId())
+			.orElseThrow(() -> new WorkspaceException(ErrorCode.ERR_WORKSPACE_USER_NOT_FOUND));
+		if (!Role.MASTER.equals(workspaceUser.getWorkspaceRole().getRole())) {
+			throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_INVALID_PERMISSION);
+		}
+
+		WorkspaceSetting workspaceSetting = workspaceSettingRepository.findByWorkspaceId(workspaceId);
+
+		if (workspaceSetting == null) {
+			workspaceSetting = WorkspaceSetting.workspaceSettingInitBuilder().workspaceId(workspaceId).build();
+		}
+
+		String defaultLogo = getLogoUrl(workspaceLogoUpdateRequest.getDefaultLogo(), workspaceId);
+		workspaceSetting.setDefaultLogo(defaultLogo);
+
+		String whiteLogo = getLogoUrl(workspaceLogoUpdateRequest.getWhiteLogo(), workspaceId);
+		workspaceSetting.setWhiteLogo(whiteLogo);
+
+		workspaceSettingRepository.save(workspaceSetting);
+
+		WorkspaceLogoUpdateResponse workspaceLogoUpdateResponse = new WorkspaceLogoUpdateResponse();
+		workspaceLogoUpdateResponse.setResult(true);
+		workspaceLogoUpdateResponse.setDefaultLogo(workspaceSetting.getDefaultLogo());
+		workspaceLogoUpdateResponse.setGreyLogo(workspaceSetting.getGreyLogo());
+		workspaceLogoUpdateResponse.setWhiteLogo(workspaceSetting.getWhiteLogo());
+		return workspaceLogoUpdateResponse;
+
+	}
+
+	@Transactional
+	@Override
+	public WorkspaceFaviconUpdateResponse updateWorkspaceFavicon(
+		String workspaceId, WorkspaceFaviconUpdateRequest workspaceFaviconUpdateRequest
+	)  {
+		WorkspaceUserPermission workspaceUser = workspaceUserPermissionRepository.findWorkspaceUserPermission(
+				workspaceId, workspaceFaviconUpdateRequest.getUserId())
+			.orElseThrow(() -> new WorkspaceException(ErrorCode.ERR_WORKSPACE_USER_NOT_FOUND));
+		if (!Role.MASTER.equals(workspaceUser.getWorkspaceRole().getRole())) {
+			throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_INVALID_PERMISSION);
+		}
+
+		WorkspaceSetting workspaceSetting = workspaceSettingRepository.findByWorkspaceId(workspaceId);
+		if (workspaceSetting == null) {
+			workspaceSetting = WorkspaceSetting.workspaceSettingInitBuilder().workspaceId(workspaceId).build();
+		}
+
+		String favicon = getLogoUrl(workspaceFaviconUpdateRequest.getFavicon(), workspaceId);
+		workspaceSetting.setFavicon(favicon);
+		workspaceSettingRepository.save(workspaceSetting);
+
+		WorkspaceFaviconUpdateResponse workspaceFaviconUpdateResponse = new WorkspaceFaviconUpdateResponse();
+		workspaceFaviconUpdateResponse.setResult(true);
+		workspaceFaviconUpdateResponse.setFavicon(favicon);
+		return workspaceFaviconUpdateResponse;
+	}
+
 	@Override
 	@Transactional(readOnly = true)
 	public WorkspaceCustomSettingResponse getWorkspaceCustomSetting(String workspaceId) {
@@ -157,5 +252,57 @@ public class OnWorkspaceServiceImpl extends WorkspaceService {
 			return new WorkspaceCustomSettingResponse();
 		}
 		return workspaceMapStruct.workspaceSettingToWorkspaceCustomSettingResponse(workspaceSetting);
+	}
+
+	@Transactional
+	@Override
+	public WorkspaceRemoteLogoUpdateResponse updateRemoteLogo(
+		String workspaceId, WorkspaceRemoteLogoUpdateRequest remoteLogoUpdateRequest
+	) {
+		WorkspaceUserPermission workspaceUser = workspaceUserPermissionRepository.findWorkspaceUserPermission(
+				workspaceId, remoteLogoUpdateRequest.getUserId())
+			.orElseThrow(() -> new WorkspaceException(ErrorCode.ERR_WORKSPACE_USER_NOT_FOUND));
+		if (!Role.MASTER.equals(workspaceUser.getWorkspaceRole().getRole())) {
+			throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_INVALID_PERMISSION);
+		}
+
+		WorkspaceSetting workspaceSetting = workspaceSettingRepository.findByWorkspaceId(workspaceId);
+
+		if (workspaceSetting == null) {
+			workspaceSetting = WorkspaceSetting.workspaceSettingInitBuilder().workspaceId(workspaceId).build();
+		}
+
+		if (remoteLogoUpdateRequest.isUpdateAndroidSplashLogo()) {
+			String logoUrl = getRemoteLogoUrl(
+				DefaultImageName.REMOTE_ANDROID_SPLASH_LOGO,
+				remoteLogoUpdateRequest.isDefaultRemoteAndroidSplashLogo(),
+				remoteLogoUpdateRequest.getRemoteAndroidSplashLogo(), workspaceId
+			);
+			workspaceSetting.setRemoteAndroidSplashLogo(logoUrl);
+		}
+
+		if (remoteLogoUpdateRequest.isUpdateAndroidLoginLogo()) {
+			String logoUrl = getRemoteLogoUrl(
+				DefaultImageName.REMOTE_ANDROID_LOGIN_LOGO,
+				remoteLogoUpdateRequest.isDefaultRemoteAndroidLoginLogo(),
+				remoteLogoUpdateRequest.getRemoteAndroidLoginLogo(), workspaceId
+			);
+			workspaceSetting.setRemoteAndroidLoginLogo(logoUrl);
+		}
+
+		if (remoteLogoUpdateRequest.isUpdateHololens2Logo()) {
+			String logoUrl = getRemoteLogoUrl(
+				DefaultImageName.REMOTE_HOLOLENS2_COMMON_LOGO,
+				remoteLogoUpdateRequest.isDefaultRemoteHololens2CommonLogo(),
+				remoteLogoUpdateRequest.getRemoteHololens2CommonLogo(), workspaceId
+			);
+			workspaceSetting.setRemoteHololens2CommonLogo(logoUrl);
+		}
+		workspaceSettingRepository.save(workspaceSetting);
+
+		return new WorkspaceRemoteLogoUpdateResponse(true, workspaceSetting.getRemoteAndroidSplashLogo(),
+			workspaceSetting.getRemoteAndroidLoginLogo(),
+			workspaceSetting.getRemoteHololens2CommonLogo()
+		);
 	}
 }

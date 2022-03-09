@@ -9,6 +9,8 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
 import lombok.Setter;
 
+import com.virnect.workspace.global.validator.AllowedExtension;
+
 @Getter
 @Setter
 @ApiModel
@@ -17,18 +19,21 @@ public class WorkspaceRemoteLogoUpdateRequest {
 	@NotBlank
 	private String userId;
 
+	@AllowedExtension(extensions = {AllowedExtension.Extension.PNG})
 	@ApiModelProperty(value = "안드로이드 스플래시 로고 이미지", required = false, position = 1)
 	private MultipartFile remoteAndroidSplashLogo;
 
 	@ApiModelProperty(value = "안드로이드 스플래시 로고 기본 이미지로 변경", required = false, position = 2)
 	private boolean defaultRemoteAndroidSplashLogo = false;
 
+	@AllowedExtension(extensions = {AllowedExtension.Extension.PNG})
 	@ApiModelProperty(value = "안드로이드 로그인 로고 이미지", required = false, position = 3)
 	private MultipartFile remoteAndroidLoginLogo;
 
 	@ApiModelProperty(value = "안드로이드 로그인 로고 기본 이미지로 변경", required = false, position = 4)
 	private boolean defaultRemoteAndroidLoginLogo = false;
 
+	@AllowedExtension(extensions = {AllowedExtension.Extension.PNG})
 	@ApiModelProperty(value = "홀로렌즈2 로고 이미지", required = false, position = 5)
 	private MultipartFile remoteHololens2CommonLogo;
 
