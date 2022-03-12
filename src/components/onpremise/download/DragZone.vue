@@ -102,7 +102,56 @@ export default {
         ]
       }
     },
+    checkFileName(name) {
+      /**
+       * 기본 정규식 :  /^(remote|make|view)[_](mobile|hololens2|linkflow|realwear|pc)[_]([0-9]{7})(.apk|.exe|.appx|.appxbundle)$/
+       */
+      const product = this.file.productName.toLowerCase()
+      const deviceType = this.file.category.toLowerCase()
+      const extensions =
+        this.file.extensionList.length === 2
+          ? `.${this.file.extensionList[0]}|.${this.file.extensionList[1]}`
+          : `.${this.file.extensionList[0]}`
+
+      const nameRegExp = new RegExp(
+        `^(${product}[_](${deviceType})[_])([0-9]{7})(${extensions})$`,
+      )
+      if (nameRegExp.test(name)) return true
+      else return false
+    },
+    checkFileVersion(name) {
+      const patterns = name.split('_')
+      const fileInfo = patterns[2]
+      const versionCode = fileInfo.split('.')[0]
+      const uploadedFileVersion = this.file.versionCode
+      return versionCode > uploadedFileVersion
+    },
+    initFile(format) {
+      this.$refs[format][0].value = ''
+    },
     fileSet(file, idx, format) {
+      if (this.checkFileName(file.name) === false) {
+        this.$message.error({
+          message: this.$t('workspace.onpremiseSetting.upload.error.name'),
+          duration: 2000,
+          showClose: true,
+        })
+        this.initFile(format)
+        this.$emit('fileTypeError')
+        return false
+      }
+
+      if (this.checkFileVersion(file.name) === false) {
+        this.$message.error({
+          message: this.$t('workspace.onpremiseSetting.upload.error.version'),
+          duration: 2000,
+          showClose: true,
+        })
+        this.initFile(format)
+        this.$emit('fileTypeError')
+        return false
+      }
+
       const dropFormat = file.name.slice(file.name.lastIndexOf('.') + 1)
 
       if (
@@ -119,6 +168,7 @@ export default {
           duration: 2000,
           showClose: true,
         })
+        this.initFile(format)
         this.$emit('fileTypeError')
         return false
       }
@@ -129,6 +179,7 @@ export default {
           duration: 2000,
           showClose: true,
         })
+        this.initFile(format)
         this.$emit('fileTypeError')
         return false
       }
@@ -142,12 +193,14 @@ export default {
     drop(event, idx, format) {
       event.preventDefault()
       const files = event.dataTransfer.files
+
       if (files.length !== 1) {
         this.$message.error({
           message: this.$t('workspace.onpremiseSetting.upload.error.oneFile'),
           duration: 2000,
           showClose: true,
         })
+        this.initFile(format)
         return false
       }
 

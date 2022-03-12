@@ -470,6 +470,7 @@ export default {
         file.uuid = app.uuid
         file.name = app.name
         file.version = app.version
+        file.versionCode = app.versionCode
         file.released = app.released
         file.updateStatus = app.updateStatus
         return file

@@ -10,7 +10,8 @@ export default class Application extends Model {
     this.category = json.deviceType ?? json.category
     this.name = json.appUrl ? this.generatorFileName(json.appUrl) : json.name
     this.extensionList = json.extensionList ?? json.extensionList
-    this.version = json.version
+    this.version = json.version ?? ''
+    this.versionCode = json.versionCode ?? ''
     this.released = json.releaseTime ?? json.released
 
     // APK 파일이 필요한 값
@@ -43,6 +44,7 @@ export const productList = {
       name: ['{file_name}.apk'],
       extensionList: ['apk'],
       version: '2.5.10',
+      versionCode: '',
       released: 'YY.MM.DD HH:DD',
       deviceModel: 'SMARTPHONE_TABLET',
       operationSystem: 'ANDROID',
@@ -64,6 +66,7 @@ export const productList = {
       name: ['{file_name}.appx', '{file_name}.appxbundle'],
       extensionList: ['appx', 'appxbundle'],
       version: '2.5.10',
+      versionCode: '',
       released: 'YY.MM.DD HH:DD',
       deviceModel: 'HOLOLENS_2',
       operationSystem: 'WINDOWS_UWP',
@@ -75,6 +78,7 @@ export const productList = {
       name: ['{file_name}.apk'],
       extensionList: ['apk'],
       version: '2.5.10',
+      versionCode: '',
       released: 'YY.MM.DD HH:DD',
       deviceModel: 'HMT_SERIES',
       operationSystem: 'ANDROID',
@@ -86,6 +90,7 @@ export const productList = {
       name: ['{file_name}.apk'],
       extensionList: ['apk'],
       version: '2.5.10',
+      versionCode: '',
       released: 'YY.MM.DD HH:DD',
       deviceModel: 'FITT/NEXX',
       operationSystem: 'ANDROID',
@@ -99,6 +104,7 @@ export const productList = {
       name: ['{file_name}.exe'],
       extensionList: ['exe'],
       version: '2.5.10',
+      versionCode: '',
       released: 'YY.MM.DD HH:DD',
       deviceModel: 'WINDOWS_10',
       operationSystem: 'WINDOWS',
@@ -112,6 +118,7 @@ export const productList = {
       name: ['{file_name}.apk'],
       extensionList: ['apk'],
       version: '2.5.10',
+      versionCode: '',
       released: 'YY.MM.DD HH:DD',
       deviceModel: 'SMARTPHONE_TABLET',
       operationSystem: 'ANDROID',
@@ -123,6 +130,7 @@ export const productList = {
       name: ['{file_name}.appx'],
       extensionList: ['appx', 'appxbundle'],
       version: '2.5.10',
+      versionCode: '',
       released: 'YY.MM.DD HH:DD',
       deviceModel: 'HOLOLENS_2',
       operationSystem: 'WINDOWS_UWP',
@@ -134,6 +142,7 @@ export const productList = {
       name: ['{file_name}.apk'],
       extensionList: ['apk'],
       version: '2.5.10',
+      versionCode: '',
       released: 'YY.MM.DD HH:DD',
       deviceModel: 'HTM-1',
       operationSystem: 'ANDROID',
