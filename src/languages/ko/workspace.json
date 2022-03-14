@@ -126,7 +126,7 @@
           "rule2": "파일명을 {product}_{deviceType}_{versionCode}.{extension} 순으로 입력하세요.",
           "product": "product: remote, make, view",
           "deviceType": "deviceType: mobile, hololens2, linkflow, realwear, pc",
-          "versionCode": "versionCode: major.minor.patch.optional 순으로 7자리 입력",
+          "versionCode": "versionCode: major.minor.patch.optional 순으로 최대 7자리까지 입력",
           "extension": "extension: apk, exe, appx",
           "attach": "파일 첨부",
           "explanation": "설치 파일 업로드를 완료하면, App 재실행 시 업데이트 알림창이 생성됩니다.",
@@ -152,26 +152,26 @@
         }
       }
     },
-    "appSetting":{
+    "appSetting": {
       "title": "설치형 프로그램 서비스 설정​",
       "upload": "이미지 업로드",
       "submit": "이미지 등록",
       "tooltip": "파비콘 변경 영역",
       "warning": "최대 3MB의 PNG 파일 업로드가 가능합니다.",
-      "remote":{
+      "remote": {
         "title": "Remote Application 로고 변경",
         "desc": "로고 변경을 원하시면, 로고 이미지를 등록해 주세요. 이용하시는 App 서비스에서 VIRNECT 로고를 대체합니다.",
-        "android":{
-          "type1":{
+        "android": {
+          "type1": {
             "title": "Android 로고1",
             "caution": "최대 3MB의 PNG 파일 업로드가 가능합니다.<br>* 권장 사이즈 : <span>512</span>(가로) * <span>512</span>(세로) px<br>* 배경색 : 투명 또는 RGB:17/21/44​"
           },
-          "type2":{
+          "type2": {
             "title": "Android 로고2",
             "caution": "최대 3MB의 PNG 파일 업로드가 가능합니다.<br>* 권장 사이즈 : <span>776</span>(가로) * <span>176</span>(세로) px<br>* 배경색 : 투명 또는 RGB:30/30/32"
           }
         },
-        "hololens2":{
+        "hololens2": {
           "title": "HoloLens2 로고",
           "caution": "최대 3MB의 PNG 파일 업로드가 가능합니다.<br>* 권장 사이즈 : <span>198</span>(가로) * <span>56</span>(세로) px<br>* 배경색 : 투명"
         }

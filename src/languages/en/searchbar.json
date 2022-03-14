@@ -5,10 +5,10 @@
     "filter": {
       "title": "Filter",
       "all": "All",
-      "processPublished": "Add Task",
-      "processUnpublished": "Remove Task",
-      "globalIssue": "Issues",
-      "workIssue": "Issues",
+      "processPublished": "Add task",
+      "processUnpublished": "Remove task",
+      "globalIssue": "Issue",
+      "workIssue": "Issue",
       "target": "Target",
       "mode": "Mode",
       "share": "Share",
@@ -19,15 +19,15 @@
       "role": "Role",
       "alphabetAsc": "A to Z",
       "alphabetDesc": "Z to A",
-      "createdAsc": "Old to New Update",
-      "createdDesc": "New to Old Update",
-      "updatedAsc": "Old to New Report",
-      "updatedDesc": "New to Old Report"
+      "createdAsc": "Oldest to newest update",
+      "createdDesc": "Newest to oldest update",
+      "updatedAsc": "Oldest to newest report",
+      "updatedDesc": "Newest to oldest report"
     },
     "keyword": {
       "title": "Search",
-      "contentTitle": "Content Name",
-      "projectTitle": "Project Name"
+      "contentTitle": "Content name",
+      "projectTitle": "Project name"
     }
   }
 }

@@ -2,13 +2,13 @@
   "status": {
     "conditions": {
       "wait": "Pending",
-      "unprogressing": "Not Started",
-      "progressing": "In Progress",
-      "incompleted": "Inadequate",
+      "unprogressing": "Not started",
+      "progressing": "In progress",
+      "incompleted": "Incomplete",
       "completed": "Completed",
       "failed": "Overdue",
       "success": "Accomplished",
-      "fault": "Incompleted"
+      "fault": "Incomplete"
     }
   }
 }
