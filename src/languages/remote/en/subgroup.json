@@ -17,7 +17,7 @@
     "error_there_are_already_configured_members":"There are already configured members.",
     "error_please_input_without_name":"Please don't add special letters for Collabo name.",
     "all":"All",
-    "etc":"etc",
+    "etc":"Other",
     "create_select_member_list": "List of member available to select",
     "invite_max": "Exceeded the number of selectable members.",
     "no_group":"No group has been created."
