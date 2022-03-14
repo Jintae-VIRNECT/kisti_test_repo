@@ -59,7 +59,7 @@ class WebSocketControllerTest {
 		stompClient.setMessageConverter(new MappingJackson2MessageConverter());
 		String contentUUID = "3ac931f7-5b3b-4807-ac6e-61ae5d138204";
 		String roomId = "1";
-		String destination = String.format("/topic/api/contents/%s/rooms/%s", contentUUID, roomId);
+		String destination = String.format("/topic/pub.api.contents.%s.rooms.%s", contentUUID, roomId);
 		String connectUrl = String.format("ws://localhost:%d/websocket", port);
 		String payload = "payload";
 

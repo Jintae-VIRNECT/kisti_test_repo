@@ -2,6 +2,7 @@ package com.virnect.content.application;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -148,12 +149,12 @@ public class LiveShareService {
 			.map(liveShareUser -> LiveShareUserUpdatePushRequest.builder().liveShareUser(liveShareUser).build())
 			.collect(Collectors.toList());
 
-		String routingKey = String.format("push.contents.%s.rooms.%s", contentUUID, roomId);
+		String routingKey = String.format("sub.push.contents.%s.rooms.%s", contentUUID, roomId);
 		publishTopicMessage(routingKey, pushRequest);
 	}
 
-	public void publishContentWriteMessage(String contentUUID, String roomId, String message) {
-		String routingKey = String.format("api.contents.%s.rooms.%s", contentUUID, roomId);
+	public void publishContentWriteMessage(String contentUUID, String roomId, Map<Object, Object> message) {
+		String routingKey = String.format("sub.api.contents.%s.rooms.%s", contentUUID, roomId);
 		publishTopicMessage(routingKey, message);
 	}
 

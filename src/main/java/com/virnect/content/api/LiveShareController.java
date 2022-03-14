@@ -1,5 +1,7 @@
 package com.virnect.content.api;
 
+import java.util.Map;
+
 import javax.validation.constraints.NotBlank;
 
 import org.springframework.http.ResponseEntity;
@@ -87,7 +89,7 @@ public class LiveShareController {
 		@PathVariable("userUUID") String updateUserUUID
 	) {
 		log.info(
-			"[LEAVE_LIVE_SHARE_ROOM] CONTENT : {}, ROOM : {}, USER : {}, UPDATE_USER : {}", contentUUID, roomId,
+			"[UPDATE LEADER USER] CONTENT : {}, ROOM : {}, USER : {}, UPDATE_USER : {}", contentUUID, roomId,
 			CurrentUserUtils.getUserUUID(), updateUserUUID
 		);
 		if (StringUtils.isEmpty(contentUUID) || StringUtils.isEmpty(CurrentUserUtils.getUserUUID())
@@ -100,10 +102,10 @@ public class LiveShareController {
 		return ResponseEntity.ok(new ApiResponse<>(responseMessage));
 	}
 
-	@MessageMapping("/api/contents/{contentUUID}/rooms/{roomId}")
+	@MessageMapping("pub.api.contents.{contentUUID}.rooms.{roomId}")
 	public void publishContentWriteMessage(
 		@DestinationVariable("contentUUID") String contentUUID, @DestinationVariable("roomId") String roomId,
-		@Payload String message
+		@Payload Map<Object, Object> message
 	) {
 		log.info("[PUB_CONTENT_WRITING_MESSAGE] CONTENT : {}, ROOM : {}", contentUUID, roomId);
 		liveShareService.publishContentWriteMessage(contentUUID, roomId, message);

@@ -48,8 +48,8 @@ public class TestRabbitmqConfiguration {
 		Queue pushQueue = new Queue("push-sub-queue");
 		rabbitAdmin.declareQueue(apiQueue);
 		rabbitAdmin.declareQueue(pushQueue);
-		rabbitAdmin.declareBinding(BindingBuilder.bind(apiQueue).to(exchange).with("api.*"));
-		rabbitAdmin.declareBinding(BindingBuilder.bind(pushQueue).to(exchange).with("push.*"));
+		rabbitAdmin.declareBinding(BindingBuilder.bind(apiQueue).to(exchange).with("sub.api.#"));
+		rabbitAdmin.declareBinding(BindingBuilder.bind(pushQueue).to(exchange).with("sub.push.#"));
 		return rabbitAdmin;
 	}
 

@@ -2,10 +2,11 @@ package com.virnect.content.global.websocket;
 
 import org.springframework.messaging.Message;
 import org.springframework.messaging.MessageChannel;
-import org.springframework.messaging.simp.stomp.StompCommand;
+import org.springframework.messaging.MessageHeaders;
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.messaging.support.ChannelInterceptor;
 import org.springframework.messaging.support.MessageHeaderAccessor;
+import org.springframework.messaging.support.NativeMessageHeaderAccessor;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
@@ -29,17 +30,27 @@ public class StompChannelInterceptor implements ChannelInterceptor {
 		Message<?> message, MessageChannel channel
 	) {
 		StompHeaderAccessor accessor = MessageHeaderAccessor.getAccessor(message, StompHeaderAccessor.class);
-		if (StompCommand.CONNECT.equals(accessor.getCommand())) {
-			String token = tokenProvider.getTokenByStompHeader(accessor);
-			if (StringUtils.isEmpty(token)) {
-				log.error("Token is Empty. message : {}", message);
-				throw new WebSocketException(ErrorCode.ERR_API_AUTHENTICATION.getMessage());
-			}
-			if (!tokenProvider.validateToken(token)) {
-				log.error("Invalid token Error. message : {}", message);
-				throw new WebSocketException(ErrorCode.ERR_API_AUTHENTICATION.getMessage());
-			}
+
+		MessageHeaders messageHeaders = accessor.getMessageHeaders();
+		Object nativeHeaders = messageHeaders.get(NativeMessageHeaderAccessor.NATIVE_HEADERS);
+
+		log.info(
+			"[STOMP_MESSAGE] COMMAND : {}, SESSION_ID : {}, NATIVE_HEADERS : {}", accessor.getCommand(),
+			accessor.getSessionId(), nativeHeaders
+		);
+
+		String token = tokenProvider.getTokenByStompHeader(accessor);
+
+		if (StringUtils.isEmpty(token)) {
+			log.error("Token is Empty. message : {}", message);
+			throw new WebSocketException(ErrorCode.ERR_API_AUTHENTICATION.getMessage());
 		}
+
+		if (!tokenProvider.validateToken(token)) {
+			log.error("Invalid token Error. message : {}", message);
+			throw new WebSocketException(ErrorCode.ERR_API_AUTHENTICATION.getMessage());
+		}
+
 		return message;
 	}
 
