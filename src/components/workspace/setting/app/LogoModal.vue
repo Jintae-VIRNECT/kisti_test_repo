@@ -66,6 +66,7 @@ export default {
           type: 'hololens2Logo',
         },
       ],
+      isDeleted: false,
     }
   },
   computed: {
@@ -111,6 +112,7 @@ export default {
         logo.src = undefined
         logo.file = null
       })
+      this.isDeleted = true
     },
     async urlToFile(url) {
       const { data } = await axios({
@@ -132,7 +134,7 @@ export default {
           uploadSrc[logo.type] = logo.src
         })
 
-        await workspaceService.setWorkspaceAppLogo(uploadFiles)
+        await workspaceService.setWorkspaceAppLogo(uploadFiles, this.isDeleted)
         this.$store.commit('layout/SET_APP_LOGO', uploadSrc)
         this.showMe = false
       } catch (e) {

@@ -80,7 +80,7 @@ export const productList = {
       version: '2.5.10',
       versionCode: '',
       released: 'YY.MM.DD HH:DD',
-      deviceModel: 'HMT_SERIES',
+      deviceModel: 'HMT-1',
       operationSystem: 'ANDROID',
       productName: 'REMOTE',
     }),

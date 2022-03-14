@@ -408,29 +408,28 @@ export default {
    * @param {File} androidType2Logo
    * @param {File} hololens2Logo
    */
-  async setWorkspaceAppLogo({
-    androidType1Logo,
-    androidType2Logo,
-    hololens2Logo,
-  }) {
+  async setWorkspaceAppLogo(
+    { androidType1Logo, androidType2Logo, hololens2Logo },
+    isDeleted,
+  ) {
     const formData = new FormData()
     formData.append('userId', myProfileGetter().uuid)
     if (androidType1Logo) {
       formData.append('remoteAndroidSplashLogo', androidType1Logo)
     } else {
-      formData.append('defaultRemoteAndroidSplashLogo', true)
+      formData.append('defaultRemoteAndroidSplashLogo', isDeleted)
     }
 
     if (androidType2Logo) {
       formData.append('remoteAndroidLoginLogo', androidType2Logo)
     } else {
-      formData.append('defaultRemoteAndroidLoginLogo', true)
+      formData.append('defaultRemoteAndroidLoginLogo', isDeleted)
     }
 
     if (hololens2Logo) {
       formData.append('remoteHololens2CommonLogo', hololens2Logo)
     } else {
-      formData.append('defaultRemoteHololens2CommonLogo', true)
+      formData.append('defaultRemoteHololens2CommonLogo', isDeleted)
     }
 
     const data = await api('WORKSPACE_SET_APP_LOGO', {
