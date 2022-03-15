@@ -40,7 +40,7 @@
               <ColumnDate
                 :label="$t('payment.log.column.paidDate')"
                 prop="paidDate"
-                :width="100"
+                :width="120"
               />
             </el-table>
             <SearchbarPage
