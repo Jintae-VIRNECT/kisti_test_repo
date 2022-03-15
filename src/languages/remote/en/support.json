@@ -5,8 +5,8 @@
     "header_description_mobile": "For more details, please contact <a href=\"https://virnect.com/contact/inquiry\" target=\"_blank\"><u>customer services</u></a>.",
     "pc_web": "VIRNECT Remote Web can be accessed via the Chrome browser.",
     "pc_web_button": "Download Chrome PC",
-    "spot_already_use" :"There <span class='c-remote-y'>Spot browser controls</span> that are already in use.",
-    "spot_already_use_description" :"Another browser is using the Spot control.<br>Please try again.",
+    "spot_already_use" :"Another browser <span class='c-remote-y'>Spot browser controls</span> is already controlling the Spot.",
+    "spot_already_use_description" :"Another browser is controlling the Spot.<br>Please try again.",
     "close_browser": "Close browser"
   }
 }
