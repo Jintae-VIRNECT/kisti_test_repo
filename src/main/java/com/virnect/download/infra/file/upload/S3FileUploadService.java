@@ -61,16 +61,9 @@ public class S3FileUploadService implements FileUploadService {
 		objectMetadata.setContentDisposition("attachment; filename=\"" + file.getOriginalFilename() + "\"");
 
 		// 3. 스트림으로 aws s3에 업로드
-		PutObjectRequest putObjectRequest = null;
-
 		try (InputStream inputStream = file.getInputStream()) {
-			putObjectRequest = new PutObjectRequest(
+			PutObjectRequest putObjectRequest = new PutObjectRequest(
 				bucketName, fileUploadPath + file.getOriginalFilename(), inputStream, objectMetadata);
-		} catch (IOException e) {
-			log.error("[AWS_FILE_UPLOAD_ERROR] - {}", e.getMessage(), e);
-			throw new AppServiceException(ErrorCode.ERR_APP_UPLOAD_FAIL);
-		}
-		try {
 			amazonS3Client.putObject(putObjectRequest);
 			log.info("[AWS S3 UPLOADER] - UPLOAD END");
 			String url = amazonS3Client.getUrl(bucketName, fileUploadPath + file.getOriginalFilename())
@@ -85,6 +78,9 @@ public class S3FileUploadService implements FileUploadService {
 			log.error("AWS Error Code:    {}", e.getErrorCode());
 			log.error("Error Type:        {}", e.getErrorType());
 			log.error("Request ID:        {}", e.getRequestId());
+			throw new AppServiceException(ErrorCode.ERR_APP_UPLOAD_FAIL);
+		} catch (IOException e) {
+			log.error("[AWS_FILE_UPLOAD_ERROR] - {}", e.getMessage(), e);
 			throw new AppServiceException(ErrorCode.ERR_APP_UPLOAD_FAIL);
 		}
 	}
