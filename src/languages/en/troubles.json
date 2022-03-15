@@ -1,11 +1,11 @@
 {
   "troubles": {
     "list": {
-      "title": "Trouble Memo(TM)",
+      "title": "Trouble memo(TM)",
       "myTm": "My TM",
-      "tmList": "Trouble Memo list",
+      "tmList": "Details",
       "column": {
-        "content": "Details",
+        "content": "TM contents",
         "user": "Member",
         "reportedDate": "Report Date"
       }

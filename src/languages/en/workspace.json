@@ -7,65 +7,65 @@
     "create": "Create Workspace",
     "started": {
       "title": "Finish setting up Workspace details",
-      "desc": "The Workspace information set up is completed. Invite members to start using VIRNECT products at Workspace."
+      "desc": "Workspace information set up is complete. Invite Members to start using VIRNECT products at Workspace."
     },
     "info": {
       "title": "Workspace details",
       "descriptionEmpty": "There is no Workspace description.",
       "planMemberCount": "Members per plans",
-      "planPurchase": "Purchase",
+      "planPurchase": "Purchase plans",
       "addMember": "Add Member"
     },
     "setting": {
-      "title": "Profile Settings",
-      "createdDate": "Created",
-      "name": "Workspace Name",
+      "title": "Profile settings",
+      "createdDate": "Created date",
+      "name": "Workspace name",
       "namePlaceholder": "{nickname}'s Workspace",
-      "nameComment": "Enter less than 30 characters for your Workspace name.",
+      "nameComment": "Enter less than 30 characters for your workspace name.",
       "desc": "Description",
-      "descPlaceholder": "Enter your Workspace description.",
-      "descComment": "Enter less than 40 characters for the description.",
+      "descPlaceholder": "Describe your Workstation.",
+      "descComment": "Describe it using less than 40 letters.",
       "defaultDesc": "This is {nickname}'s Workspace",
-      "image": "Profile Image",
-      "imageComment": "Update your Workspace profile image. This profile picture is displayed on the sidebar and notifications.",
-      "start": "Begin Workspace",
+      "image": "Profile image",
+      "imageComment": "<li>Update your Workspace profile image.</li><li>Profile picture is displayed on the sidebar and notifications.</li>",
+      "start": "Join Workspace",
       "leave": "Leave Workspace",
       "leaveInfo": {
         "title": "Notice on leaving the Workspace",
         "list": [
-          "You are no longer participating in this Workspace including the plans and products related to it.",
-          "Data and records uploaded or shared by you will not be deleted. Leaving the Workspace is not canceled.",
-          "If you would like to rejoin the Workspace contact the Workspace master or manager again."
+          "You are no longer participating in this workspace.",
+          "Data and records uploaded or shared by you will not be deleted. Leaving the Workspace was not successful.",
+          "If you would like to rejoin the Workspace contact the Workspace Master or manager again."
         ],
-        "agree": "I agree to above guidelines before leaving the Workspace.",
+        "agree": "I agree to above guidelines before leaving the workspace.",
         "success": "You have left the Workspace.",
         "fail": "Failed to leave the Workspace please try again later."
       },
       "message": {
-        "updateSuccess": "The Workspace details are updated.",
+        "updateSuccess": "Workspace details are updated.",
         "updateFail": "Failed to setting up the Workspace details please try again later."
       }
     },
     "invite": {
-      "invalid": "Workspace that has been already refused to participate. : This is a workspace that participation has been refused. Ask the master to invite you again."
+      "invalid": "Ask the Master to invite you again if you have been already refused to participate in a Workspace."
     },
     "onpremiseSetting": {
       "title": "Web service settings",
       "desc": "Changing the favicon, logo and company name displayed on the web service. It does not apply to the installation programme (Application).",
       "company": {
         "title": "Change company name",
-        "desc": "If you change the customer name, you will be exposed to the customer name instead of 'VIRNECT' in the Web Services tab / Service Title / Notification phrase.",
-        "tooltip": "Company name area",
+        "desc": "If you change the company name, you will displaying the account name instead of 'VIRNECT' in the Web Services tab / Service Title / Notification phrase.",
+        "tooltip": "Changed company name",
         "companyName": "Company name",
         "caution": "Company name can be changed to a combination of Korean, English, Number, Special character (.,!,@,#,$,%,-,_,&) up to 20 characters."
       },
       "logo": {
         "title": "Change logo",
         "desc": "If you wish to change a logo, please register a logo image. It will replace the VIRNECT logo from your web service.",
-        "lightTheme": "For bright interface",
-        "darkTheme": "For dark interface",
+        "lightTheme": "Bright interface",
+        "darkTheme": "Dark interface",
         "tooltip": "Logo area",
-        "caution": "You can upload JPG and PNG files up to 3MB. <br>* Recommended size: 170(horizontal) * 32(vertical, fixed)px / 72 DPI",
+        "caution": "Upload JPG and PNG files up to 3MB. <br>* Recommended size: 170(horizontal) * 32(vertical, fixed)px / 72 DPI",
         "submit": "Register"
       },
       "favicon": {
@@ -119,13 +119,16 @@
       },
       "upload": {
         "title": "Upload install file",
+        "delete": "Delete install file",
         "modal": {
           "title": "Registering {n} installation file",
-          "description1": "Please register the {extension} file when registering {category} installation file.",
-          "description2": "Please register the {extension} file and version information when registering {category} installation file.",
+          "rule1": "File names must start with an English letter, and only lowercase letters, numbers, and special characters (_) (.) can be used.",
+          "rule2": "Enter the file names in the order of {product}_{devicetype}_{versioncode}.{extension}.",
+          "product": "product: remote, make, view",
+          "deviceType": "deviceType: mobile, hololens2, linkflow, realwear, pc",
+          "versionCode": "versionCode:  Enter up to 7 digits in the order of major.minor.patch.optional.",
+          "extension": "extension: apk, exe, appx",
           "attach": "Attach file",
-          "version": "Version infomation",
-          "placeholder": "Please enter version information. (e.g. X.X.X.X)",
           "explanation": "When the installation file upload is completed, an update notification window is created when the app is re-run.",
           "drag": "Drag the {n} File",
           "add": "Add File",
@@ -139,11 +142,38 @@
         "error": {
           "fail": "Failed to register installation file. Please try again after a while.",
           "size": "The file is not correct. Please check again.",
+          "name": "The file name is not correct. Please check again.",
+          "version": "The version of the attached file is low. Please check again.",
           "notExtension": "Installation file extension not supported.",
           "duplicateVersion": "Installation file version is duplicated.",
           "lowVersion": "Installation file version is lower then latest version duplicated.",
           "wrongExtension": "Please register the {n} file.",
           "oneFile": "Please only register one file."
+        }
+      }
+    },
+    "appSetting": {
+      "title": "Application service settings​",
+      "upload": "Upload Image",
+      "submit": "Register",
+      "tooltip": "Logo area",
+      "warning": "You can upload PNG files up to 3MB.",
+      "remote": {
+        "title": "Change the Remote Application logo",
+        "desc": "If you wish to change a logo, please register a logo image. It will replace the VIRNECT logo from your app service.",
+        "android": {
+          "type1": {
+            "title": "Android logo1",
+            "caution": "You can upload PNG files up to 3MB. <br>* Recommended size<br><blockquote><span>512</span>(horizontal) * <span>512</span>(vertical)px</blockquote>* Background color<br><blockquote>Transparent or RGB:17/21/44​</blockquote>"
+          },
+          "type2": {
+            "title": "Android logo2",
+            "caution": "You can upload PNG files up to 3MB. <br>* Recommended size<br><blockquote><span>776</span>(horizontal) * <span>176</span>(vertical)px</blockquote>* Background color<br><blockquote>Transparent or RGB:30/30/32</blockquote>"
+          }
+        },
+        "hololens2": {
+          "title": "HoloLens2 Logo",
+          "caution": "You can upload PNG files up to 3MB. <br>* Recommended size<br><blockquote><span>198</span>(horizontal) * <span>56</span>(vertical)px</blockquote>* Background color<br><blockquote>Transparent</blockquote>"
         }
       }
     }

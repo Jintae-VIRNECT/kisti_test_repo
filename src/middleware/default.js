@@ -6,13 +6,6 @@ export default async function ({ req, res, store, redirect, error, $config }) {
     redirect('/')
 
   if (process.server) {
-    // onrpemise
-    if ($config.VIRNECT_ENV === 'onpremise') {
-      await store.dispatch('layout/getWorkspaceSetting', {
-        headers: req.headers,
-      })
-    }
-
     // not support browser
     const isIE =
       req.headers['user-agent'].indexOf('MSIE ') !== -1 ||
@@ -55,6 +48,11 @@ export default async function ({ req, res, store, redirect, error, $config }) {
           activeWorkspaceId = myWorkspaces[0].uuid
         }
         store.commit('auth/SET_ACTIVE_WORKSPACE', activeWorkspaceId)
+
+        // 워크스테이션 커스텀 설정 정보 로드
+        await store.dispatch('layout/getWorkspaceSetting', {
+          headers: req.headers,
+        })
 
         // 게스트의 경우 토큰 삭제
         if (store.getters['auth/activeWorkspace'].role === 'GUEST') {

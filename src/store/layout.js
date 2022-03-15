@@ -1,8 +1,8 @@
 import workspaceService from '@/services/workspace'
-import OnPremiseSetting from '@/models/workspace/OnPremiseSetting'
+import WorkspaceSetting from '@/models/workspace/WorkspaceSetting'
 import { context } from '@/plugins/context'
 
-const defaultSetting = new OnPremiseSetting()
+const defaultSetting = new WorkspaceSetting()
 
 /**
  * cdn files filter, onpremise minio proxy url
@@ -17,7 +17,9 @@ function cdn(url) {
 
 export default {
   state: () => {
-    return { ...defaultSetting }
+    return {
+      ...defaultSetting,
+    }
   },
   getters: {
     title(state) {
@@ -25,6 +27,15 @@ export default {
     },
     logo(state) {
       return state.logo
+    },
+    androidType1Logo(state) {
+      return state.androidType1Logo
+    },
+    androidType2Logo(state) {
+      return state.androidType2Logo
+    },
+    hololens2Logo(state) {
+      return state.hololens2Logo
     },
     whiteLogo(state) {
       return state.whiteLogo
@@ -41,6 +52,13 @@ export default {
       state.logo = logo || defaultSetting.logo
       state.whiteLogo = whiteLogo || defaultSetting.whiteLogo
     },
+    SET_APP_LOGO(state, { androidType1Logo, androidType2Logo, hololens2Logo }) {
+      state.androidType1Logo =
+        androidType1Logo || defaultSetting.androidType1Logo
+      state.androidType2Logo =
+        androidType2Logo || defaultSetting.androidType2Logo
+      state.hololens2Logo = hololens2Logo || defaultSetting.hololens2Logo
+    },
     SET_FAVICON(state, img) {
       state.favicon = img || defaultSetting.favicon
     },
@@ -56,6 +74,11 @@ export default {
       commit('SET_LOGO', {
         logo: setting.logo,
         whiteLogo: setting.whiteLogo,
+      })
+      commit('SET_APP_LOGO', {
+        androidType1Logo: setting.androidType1Logo,
+        androidType2Logo: setting.androidType2Logo,
+        hololens2Logo: setting.hololens2Logo,
       })
       return setting
     },

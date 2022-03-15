@@ -11,7 +11,29 @@
       top="11vh"
     >
       <div>
-        <p v-html="getDescription()" class="upload-modal__descriptsion"></p>
+        <div class="upload-modal__descriptsion">
+          <h4>파일명 규칙</h4>
+          <ol>
+            <li>
+              {{ $t('workspace.onpremiseSetting.upload.modal.rule1') }}
+            </li>
+            <li>
+              {{ $t('workspace.onpremiseSetting.upload.modal.rule2') }}
+            </li>
+          </ol>
+          <ul>
+            <li>{{ $t('workspace.onpremiseSetting.upload.modal.product') }}</li>
+            <li>
+              {{ $t('workspace.onpremiseSetting.upload.modal.deviceType') }}
+            </li>
+            <li>
+              {{ $t('workspace.onpremiseSetting.upload.modal.versionCode') }}
+            </li>
+            <li>
+              {{ $t('workspace.onpremiseSetting.upload.modal.extension') }}
+            </li>
+          </ul>
+        </div>
         <el-divider></el-divider>
         <el-form ref="form" :model="form" :rules="rules">
           <el-form-item class="horizon" ref="files">
@@ -26,21 +48,6 @@
               :extensionList="file.extensionList"
               @fileTypeError="fileError"
               @fileData="fileData"
-            />
-          </el-form-item>
-          <!-- APK 파일이 아니면 버전 입력 항목을 출력합니다. -->
-          <el-form-item v-if="showVersion" class="horizon" prop="version">
-            <template slot="label">
-              <span>{{
-                $t('workspace.onpremiseSetting.upload.modal.version')
-              }}</span>
-            </template>
-            <el-input
-              class="full"
-              v-model="form.version"
-              :placeholder="
-                $t('workspace.onpremiseSetting.upload.modal.placeholder')
-              "
             />
           </el-form-item>
         </el-form>
@@ -77,10 +84,6 @@ export default {
     },
   },
   computed: {
-    showVersion() {
-      const extension = this.getFileExtension(this.file.name)
-      return !/APK/.test(extension)
-    },
     submitDisabled() {
       const extension = this.getFileExtension(this.file.name)
       if (/APK/.test(extension)) {
@@ -115,37 +118,6 @@ export default {
     },
     getType(target) {
       return Object.prototype.toString.call(target).slice(8, -1)
-    },
-    getDescription() {
-      let result = ''
-      if (this.getType(this.file.extensionList) === 'Undefined') return result
-
-      let spanTagString = ''
-      this.file.extensionList.forEach(extension => {
-        spanTagString += ` <span>${extension.toUpperCase()}</span>,`
-      })
-      // 마지막 항목의 쉼표 제거
-      spanTagString = spanTagString.slice(0, -1)
-
-      if (this.file.extensionList.includes('apk')) {
-        result = this.$t(
-          'workspace.onpremiseSetting.upload.modal.description1',
-          {
-            category: `<span>${this.file.category}</span>`,
-            extension: spanTagString,
-          },
-        )
-      } else {
-        result = this.$t(
-          'workspace.onpremiseSetting.upload.modal.description2',
-          {
-            category: `<span>${this.file.category}</span>`,
-            extension: spanTagString,
-          },
-        )
-      }
-
-      return result
     },
     getFileExtension(str) {
       if (this.getType(str) !== 'String') return false
@@ -214,6 +186,14 @@ export default {
     &__descriptsion {
       @include fontLevel(100);
       line-height: 1.71;
+      ol {
+        margin-left: 15px;
+        list-style: decimal;
+      }
+      ul {
+        margin-left: 15px;
+        list-style: disc;
+      }
     }
     .el-divider--horizontal {
       margin: 12px 0 0 0;
