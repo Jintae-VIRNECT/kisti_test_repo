@@ -3,37 +3,37 @@
     "login": {
       "remember": "Save ID",
       "redirect": {
-        "title": "Notice on resetting your password",
-        "disc": "Reset your password to keep it secured. Set the password recovery question & answer to use them when you for get your password.",
+        "title": "Notice on resetting password",
+        "disc": "Reset your password to keep it secure. Set the password recovery question to get your password.",
         "confirm": "Account management",
         "cancel": "Next time"
       },
-      "error": "Unauthorized. Please check the ID and password and try again."
+      "error": "Account info does not exist. Please check the ID and password and try again."
     },
     "resetPass": {
       "title": "Password reset",
-      "disc": "You may reset password using your account ID and password recovery question & answer.",
+      "disc": "Reset password using your account ID and password recovery question.",
       "input": {
         "placeholder": "Please enter your ID"
       },
       "next": "Next",
       "qna": {
-        "title": "Password recovery question & answer",
+        "title": "Password recovery questions",
         "placeholder": "Select a question",
-        "inputPlaceholder": "Enter an answer"
+        "inputPlaceholder": "Your answer"
       },
       "change": {
-        "notice": "Login using a new password after resetting your password.",
+        "notice": "Login using new password after resetting your password.",
         "password": "Password",
         "placeholder": "Enter new password",
         "placeholderRe": "Re-enter new Password",
-        "passRule": "Your password must be between 8 and 20 characters long. Your password needs to be included with at least 4 of following character types. - Uppercase letter - Lowercase letter- Number - Special character ( .  ! @ # $ % ). Also your password must not contain consecutive numbers and more than four of same characters.",
+        "passRule": "Password must be between 8 and 20 characters long. Your password must include at least 4 of following character types. - Uppercase letter - Lowercase letter- Number - Special character ( . ! @ # $ % ). Also your password must not contain consecutive numbers and more than four of same characters.",
         "done": "Change password"
       },
       "questionList": [
         "What is the name of your first pet?",
         "What is the name of your best friend when you were a teenager?",
-        "What was the first dis you learned?",
+        "What was the first dish you you learned to cook?",
         "What was the first movie you watched at the cinema?",
         "Where was your first flight to visit?",
         "What is the title of your favorite fairy tale book?",
@@ -44,16 +44,16 @@
         "What is your favorite car model?"
       ],
       "notSet": {
-        "title": "Password recovery question & answer not set",
-        "disc": "The password recovery question & answer cannot be found. Please inquire Master admin to reset your password."
+        "title": "Password recovery question not set",
+        "disc": "Password recovery question cannot be found. Please inquire to your Master admin to reset your password."
       },
       "IdDiscord": {
         "title": "Incorrect ID",
         "disc": "ID cannot be found. Please inquire Master admin to create an account."
       },
       "answerDiscord": {
-        "title": "Password recovery question & answer is incorrect",
-        "disc": "The password recovery question & answer you have entered is wrong please check them again."
+        "title": "Password recovery question/answer does not match.",
+        "disc": "Password recovery answer you have entered is wrong please check them again."
       }
     }
   }

@@ -1,70 +1,70 @@
 {
   "find": {
-    "title": "Account Recovery",
-    "pageInfo": "Use a recovery information saved in account details to recover your account.",
-    "findEmail": "Find Email",
+    "title": "Account recovery",
+    "pageInfo": "Use recovery information saved in account details to recover your account.",
+    "findEmail": "Find email",
     "EmailFindText": {
-      "after": "We found the following address. We only show first 4 letters due to privacy concerns",
-      "before": "You can find out your email address. But first verify using one of the below methods."
+      "after": "Found the following registered email address. Only first 4 letters shown due to privacy.",
+      "before": "Use one of the methods to verify your registered email address to continue."
     },
     "resetPassword": {
-      "title": "Reset Password",
+      "title": "Reset password",
       "done": {
         "title": "Password changed",
-        "message": "Password Changed. Log in again using your new password."
+        "message": "Password changed. Log in again using your new password."
       },
       "error": {
         "title": "Failed to reset password",
-        "multiple": "You cannot reuse old passwords to reset password.",
+        "multiple": "You cannot use previously used passwords to reset.",
         "etc": "Failed to reset password. Please try again later."
       }
     },
-    "findBtn": "Find Email Address",
-    "number": "Use registered phone number to find out the email you reigstered with.",
+    "findBtn": "Find email address",
+    "number": "Use registered phone number to recover registered email.",
     "name": {
       "title": "Name",
       "lastName": "Last name",
       "firstName": "First name"
     },
     "mobile": {
-      "title": "Mobile Number",
-      "placeHolder": "Type in your mobile number."
+      "title": "Phone number",
+      "placeHolder": "Enter your phone number."
     },
-    "recoveryMail": "Verify Using Your Recovery Email",
+    "recoveryMail": "Verify using your recovery email",
     "signupDate": "Sign up date",
-    "feedbackInfo": "Verification code is sent to an email address you used to register.",
+    "feedbackInfo": "Verification code was sent to an email address you used to register.",
     "authText": {
       "after": "Resetting your password. Log in again using your new password.",
-      "before": "Enter 6 digit verification code"
+      "before": "Enter 6 digit verification code."
     },
     "authInput": {
-      "placeholder": "Enter verification code that is sent to your email.",
-      "newPass": "Enter New Password",
-      "newPassConfirm": "Re-enter New Password",
+      "placeholder": "Enter verification code that was sent to your email.",
+      "newPass": "Enter new password",
+      "newPassConfirm": "Re-enter new password",
       "rule": "Enter a password between 8 and 20 characters by combining uppercase/lowercase letters numbers and special characters (.!@#$%).",
-      "code": "Verification Code",
-      "change": "Reset Password"
+      "code": "Verification code",
+      "change": "Reset password"
     },
     "inquiry": "Contact",
     "accountError": {
       "notSync": {
-        "title": "Entered detail does not appear to be valid",
-        "message": "The information you entered does not match our records"
+        "title": "Entered details do not appear to be valid",
+        "message": "Information entered does not match our records"
       },
       "etc": {
-        "title": "Failed to send your account detail",
-        "message": "Failed to send your account detail. Please try it later."
+        "title": "Failed to send account details.",
+        "message": "Failed to send account details. Please try it later."
       }
     },
     "authCode": {
       "done": {
         "send": {
-          "title": "Verification code is sent",
-          "message": "The verification code is sent to an email address you registered with. Check the verification code from your email."
+          "title": "Verification code was sent",
+          "message": "Verification code was sent to the email address you registered with. Check the verification code from your email."
         },
         "sync": {
           "title": "Correct verification code",
-          "message": "Successfully verified the verification code"
+          "message": "Successfully verified."
         }
       },
       "error": {
@@ -73,10 +73,10 @@
         "notSyncCode": "Verification code match error",
         "auth": "Verification code failure",
         "authMessage": "Failed to verify please try again later",
-        "nobody": "The information you entered does not match our records",
+        "nobody": "Information entered does not match our records",
         "rulePass": "Wrong password",
-        "rulePassMessage": "Your password must be between 8 and 20 characters long. Your password needs to be included with at least 4 of following character types. - Uppercase letter - Lowercase letter- Number - Special character ( .  ! @ # $ % ). Also your password must not contain consecutive numbers and more than four of same characters.",
-        "timeOut": "Due to security reasons the verification code can only be sent again after 1 minute has passed. Check you email or try again some time later.",
+        "rulePassMessage": "Password must be between 8 and 20 characters long. Password needs to include at least 4 of following character types. - Uppercase letter - Lowercase letter- Number - Special character ( . ! @ # $ % ). Password must not contain consecutive numbers and more than four of same characters.",
+        "timeOut": "Due to security reasons the verification code can only be sent again after 1 minute has passed. Check your email or try again some time later.",
         "etc": "Failed to send a verification code to your email please try again later."
       }
     }
