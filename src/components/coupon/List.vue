@@ -14,7 +14,7 @@
     <ColumnDate
       :label="$t('coupon.column.registerDate')"
       prop="registerDate"
-      :width="88"
+      :width="95"
     />
     <ColumnDate
       :label="$t('coupon.column.expireDate')"

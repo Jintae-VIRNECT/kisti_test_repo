@@ -5,36 +5,36 @@
       "title": "Profile",
       "desc": "Manage your profile details",
       "image": "Profile Image",
-      "imageDesc": "Updating your profile picture makes it easier for other members to find you",
+      "imageDesc": "Updating your profile picture makes it easier for other Members to find you",
       "name": "Name",
-      "nameDesc": "Your name is used for - payment purchase management and account security management.",
+      "nameDesc": "Your name is used for payment purchase management and account security management.",
       "nameChange": "Edit",
       "nickname": "Nickname",
-      "nicknameDesc": "Your nickname is shared to other members using VERNECT services",
+      "nicknameDesc": "Your nickname is shared to other Members using VIRNECT services",
       "nicknameChange": "Edit"
     },
     "account": {
-      "title": "Account Details",
+      "title": "Account details",
       "desc": "Manage your account and password",
       "email": "Account",
       "emailDesc": "You cannot change an email address you used for registration",
       "password": "Password",
-      "passwordDesc": "Periodic password changes increase security",
+      "passwordDesc": "Frequent password changes increase your security.",
       "passwordChange": "Reset",
-      "marketing": "Receive Promotional Offers",
+      "marketing": "Receive promotional offers",
       "marketingAgree": "Agree",
       "marketingDisagree": "Disagree",
       "marketingChange": "Change promotional marketing agreement",
-      "secession": "Delete Account"
+      "secession": "Delete account"
     },
     "additional": {
-      "title": "Additional User Information",
-      "desc": "The additional user information is used in verification process if the user forgets email address",
+      "title": "Additional user information",
+      "desc": "Additional user information is used in the verification process if the user forgets email address.",
       "birth": "Date of Birth",
-      "birthEmpty": "Date of birth is not updated",
+      "birthEmpty": "No registered date of birth.",
       "birthChange": "Edit",
       "contact": "Contact",
-      "contactEmpty": "Contact detail is not updated",
+      "contactEmpty": "Contact details not updated",
       "contactChange": "Edit",
       "recoveryEmail": "Recovery email address",
       "recoveryEmailEmpty": "Recovery email address is not updated",
@@ -42,22 +42,22 @@
     },
     "imageChangeModal": {
       "title": "Profile Image Settings",
-      "desc": "Your profile picture is shared to all them VIRNECT users",
+      "desc": "Your profile picture will be shared to all registered VIRNECT users",
       "caution": "Up to 5Mb of Jpg or Png files can be uploaded",
       "upload": "Upload",
       "delete": "Delete",
       "submit": "Register",
       "message": {
-        "success": "Successfully uploaded image",
-        "fail": "Failed to upload image file",
+        "success": "Successfully uploaded an image.",
+        "fail": "Failed to upload an image file, please try again later.",
         "notAllowFileExtension": "Unsupported file type",
         "notAllowFileSize": "Unsupported file size"
       }
     },
     "nameChangeModal": {
-      "title": "Name Settings",
+      "title": "Name settings",
       "desc": "If you change the name the changed name is applied to VIRNECT products and services.",
-      "caution": "* For the purpose of account security frequent name changes may be restricted to the use of products and services. Also updating of changed name may take some time.",
+      "caution": "* For the purposes of account security frequent name changes may be restricted when using products and services. Updating a changed name may take some time.",
       "lastName": "Last name",
       "firstName": "First name",
       "submit": "Edit",
@@ -67,20 +67,20 @@
       }
     },
     "nicknameChangeModal": {
-      "title": "Nickname Settings",
-      "desc": "When edit your nickname it will be applied to our products and services",
+      "title": "Nickname settings",
+      "desc": "When editing your nickname it will be applied to our products and services",
       "nickname": "Nickname",
       "submit": "Edit",
       "message": {
-        "success": "Successfully updated your nickname",
-        "fail": "Failed to edit your nickname please try again later",
+        "success": "Successfully updated your nickname.",
+        "fail": "Failed to edit your nickname please try again later.",
         "caution": "Please enter 20 characters or less. You can use Korean English special characters (excluding (>), (<)) and spaces."
       }
     },
     "passwordChangeModal": {
       "title": "Reset Password",
       "desc": "Resetting your password. Log in again using your new password.",
-      "newPassword": "New Password",
+      "newPassword": "New password",
       "newPasswordPlaceholder": "Enter your new password",
       "newPasswordRepeatPlaceholder": "Re-enter your new password",
       "caution": "Your password must be between 8 and 20 characters long. Your password needs to be included with at least 3 of following character types. <br>- Uppercase letter <br>- Lowercase letter<br>- Number <br>- Special character ( .  ! @ # $ % ). <br>Also your password must not contain consecutive numbers and more than four of same characters.",
@@ -89,7 +89,7 @@
         "success": "Successfully updated your password",
         "fail": "Failed to edit your nickname please try again later",
         "wrong": "Wrong password",
-        "duplicate": "You cannot use the previously used password for your new password",
+        "duplicate": "You cannot use the previously used passwords for your new password",
         "invalid": "Your password must be between 8 and 20 characters long. Your password needs to be included with at least 3 of following character types. - Uppercase letter - Lowercase letter- Number - Special character ( .  ! @ # $ % ). Also your password must not contain consecutive numbers and more than four of same characters."
       }
     },
@@ -102,24 +102,24 @@
       "submit": "Edit",
       "ageLimit": "Users under the age of 14 cannot sign up and use the service.",
       "message": {
-        "success": "Successfully updated your date of birth",
-        "fail": "Failed to update your date of birth please try again later"
+        "success": "Successfully updated your date of birth.",
+        "fail": "Failed to update your date of birth please try again later."
       }
     },
     "marketInfoReceive": {
       "title": "Agree to receive promotional offers",
       "contents": "Receive emails about VIRNECT's new products services and promotional offers.",
       "message": {
-        "success": "Successfully updated your promotional marketing agreement",
-        "fail": "Failed to update please try again later"
+        "success": "You have agreed to receive our marketing promotions.",
+        "fail": "Failed to update please try again later."
       }
     },
     "secession": {
-      "title": "Delete Account",
+      "title": "Delete account",
       "caution": "You cannot rejoin with the email that you have left. The account and data cannot be recovered, so please proceed with the membership withdrawal careful.",
       "password": "Password",
       "passwordDesk": "Enter password",
-      "secessionReason": "Reason for delete account",
+      "secessionReason": "Reason for deleting your account",
       "secessionReasonDesk": "Select the main reason for withdrawing your membership",
       "secessionSelect": [
         "Personal information leakage concerns",
@@ -129,15 +129,15 @@
       ],
       "etc": "Other",
       "secessionReasonEtc": "State the reason for your withdrawal from the membership",
-      "done": "I agree to all the terms of membership withdrawal and proceed with membership withdrawal.",
+      "done": "I agree to all the terms for deleting your account.",
       "message": {
-        "success": "Successfully completed membership withdrawal",
+        "success": "Successfully deleted your account",
         "fail": "Wrong password"
       }
     },
     "contactChangeModal": {
-      "title": "Contact Settings",
-      "contact": "Mobile Number",
+      "title": "Contact settings",
+      "contact": "Mobile number",
       "contactPlaceholder": "Enter your phone number",
       "submit": "Edit",
       "message": {
@@ -146,9 +146,9 @@
       }
     },
     "recoveryEmailChangeModal": {
-      "title": "Recovery Email Settings",
+      "title": "Recovery email settings",
       "email": "Email",
-      "recoveryEmail": "Recovery Email Address",
+      "recoveryEmail": "Recovery email address",
       "submit": "Edit",
       "message": {
         "success": "Successfully updated your recovery email address.",

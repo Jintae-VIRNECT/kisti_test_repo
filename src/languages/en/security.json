@@ -1,20 +1,20 @@
 {
   "security": {
-    "desc": "Set security for user's account.",
+    "desc": "Set user account security.",
     "loggedInDevice": "Devices",
     "loggedInDeviceDesc": "Information of the devices that you are logged into.",
-    "notMyDevice": "In case if the devices are not yours.",
-    "now": "Now",
+    "notMyDevice": "In case that devices are not yours.",
+    "now": "Current logged in device",
     "column": {
       "deviceName": "Name",
-      "loginLocation": "Last Location",
-      "loginDate": "Last Connected"
+      "loginLocation": "Last location",
+      "loginDate": "Last connected"
     },
     "enhanceModal": {
-      "title": "Reinforce Security",
-      "desc": "If you have a device you don't know someone else might have stolen your account. Protect your account by changing your password.",
+      "title": "Reinforce device security",
+      "desc": "Be careful of devices you don't recognize, someone else might have stolen your account. Protect your account by changing your password.",
       "caution": "You will be logged out of all devices except the one you are currently using.",
-      "changePassword": "Reset Password"
+      "changePassword": "Reset password"
     }
   }
 }

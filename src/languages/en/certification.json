@@ -1,13 +1,13 @@
 {
   "certification": {
-    "desc": "Please enter your password to keep your information secured",
+    "desc": "Enter your password to keep your information secure.",
     "desc_op": "To maintain your account secured, <br>please enter a password.",
     "password": "Password",
     "passwordPlaceholder": "Enter your password",
     "forgetPassword": "Forgot your password?",
     "message": {
       "wrong": "Wrong password",
-      "fail": "Failed to verify entered account please try again later"
+      "fail": "Failed to verify account, please try again later"
     }
   }
 }

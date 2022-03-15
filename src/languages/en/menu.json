@@ -2,12 +2,12 @@
   "menu": {
     "account": "Account",
     "home": "Home",
-    "profile": "Personal Info",
+    "profile": "Personal info",
     "profile_op": "Account info",
     "workspace": "Workspaces",
-    "security": "Security",
-    "purchases": "Subscriptions",
-    "payment": "Payments",
-    "coupon": "Coupons"
+    "security": "Security settings",
+    "purchases": "Manage my subscriptions",
+    "payment": "Manage payment options",
+    "coupon": "Manage coupons"
   }
 }
