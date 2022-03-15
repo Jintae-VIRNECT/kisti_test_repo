@@ -1,11 +1,13 @@
 # PF-WebDownload
 
 ## Author
+
 ```
 lsb@virnect.com / LeeSangBaek
 ```
 
 ## Description
+
 ```
 버넥트 제품 다운로드 웹 페이지
 prod: download.virnect.com
@@ -14,9 +16,11 @@ dev: 192.168.6.3:8833
 ```
 
 ## Config
+
 https://github.com/virnect-corp/PF-Configurations/blob/master/develop/download-web-develop.yml
 
 ## Environment
+
 ```
 node ^12.14.1
 yarn ^1.21.1
@@ -25,7 +29,9 @@ pf-login 프로젝트 필요. 로그인되어 있지 않으면 서버사이드�
 ```
 
 ## Architecture
+
 https://ko.nuxtjs.org/
+
 ```
 Nuxt framework (Universal)
 
