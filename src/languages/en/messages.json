@@ -3,8 +3,8 @@
     "workspace": {
       "invite": {
         "invalid": {
-          "title": "Workspace accept invitation failed",
-          "contents": "Please confirm through the link delivered within 7 days of receiving the e-mail and sign up as a VIRNECT member with your current e-mail account."
+          "title": "Workspace accept invitation fail",
+          "contents": "Please connect to the link delivered within 7 days of receiving the e-mail and sign up as a VIRNECT member with your current e-mail account."
         }
       }
     }

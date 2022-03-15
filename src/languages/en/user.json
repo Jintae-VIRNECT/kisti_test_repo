@@ -1,36 +1,36 @@
 {
   "user": {
-    "title": "Enter additional information",
-    "pageInfo": "Maximize your experience by entering an additional information.",
+    "title": "Enter Additional Information",
+    "pageInfo": "Entering additional information allows you to use VIRNECT products to be more utilizable",
     "profileImage": {
-      "title": "Profile image",
+      "title": "Profile Image",
       "subTitle": "Register your profile image",
       "contents": "Your profile image is shared to other members",
-      "imageSet": "Profile image settings",
-      "visible": "Your profile image is shared to all the members using VIRNECT product.",
+      "imageSet": "Profile Image Settings",
+      "visible": "Your profile image is shared to all the members using VIRNECT product users",
       "limit": "Up to 5Mb of Jpg or Png files can be uploaded",
       "upload": "Upload",
       "delete": "Delete",
-      "submit": "Register image"
+      "submit": "Register Image"
     },
     "nickName": {
       "title": "Nickname",
-      "contents": "Please enter 20 characters or less. Use Korean English special characters (excluding (&lt;) (&gt;)) and spaces."
+      "contents": "Please enter 20 characters or less. You can use Korean English special characters (excluding (&lt;) (&gt;)) and spaces."
     },
     "recoveryInfo": {
       "title": "Enter account recovery information",
-      "placeHolder": "In the case you have lost account information, please enter the verification information."
+      "placeHolder": "In case you forget account information please enter the verification information."
     },
     "phoneNumber": {
-      "title": "Mobile",
-      "contents": "Enter your mobile number."
+      "title": "Contact Detail",
+      "contents": "Enter your phone number"
     },
     "recoveryEmail": {
-      "title": "Recovery email address",
-      "placeHolder": "Enter your recovery email address."
+      "title": "Verification Email Address",
+      "placeHolder": "Enter your verification email address"
     },
     "confirm": "Confirm",
-    "later": "Next time",
+    "later": "Next Time",
     "error": {
       "etc": {
         "title": "Error",

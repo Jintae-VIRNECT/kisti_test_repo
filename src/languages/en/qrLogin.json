@@ -2,6 +2,6 @@
   "qrLogin": {
     "title": "QR Login Center",
     "pageInfo": "You can log in by recognizing the QR code from mobile or SmartGlasses.",
-    "manual": "Align the QR code within the guide on your screen using your device"
+    "manual": "Center align the QR code using your device"
   }
 }
