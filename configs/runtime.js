@@ -10,7 +10,6 @@ let urlConfig = {}
 let sslConfig = {}
 
 const localIp = 'localhost'
-
 const localUrls = {
   www: `https://${localIp}:9010`,
   console: `https://${localIp}:8883`,
