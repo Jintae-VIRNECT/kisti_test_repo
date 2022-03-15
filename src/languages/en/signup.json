@@ -2,13 +2,13 @@
   "signup": {
     "signupTitle": "Registration",
     "signupDesk": "You can use the entire VIRNECT product using just one account.",
-    "account": "Account Email Address",
+    "account": "Account email address",
     "mailPlaceholder": "Enter your email address",
     "authentication": {
       "mail": "Send Verification Code",
       "number": "Enter 6 digit verification code",
-      "reSubmit": "Re-sending Verification Code",
-      "verification": "Confirm Verification",
+      "reSubmit": "Re-sending verification code",
+      "verification": "Confirm verification",
       "done": "Verification Complete",
       "message": {
         "done": {
@@ -17,7 +17,7 @@
         },
         "errors": {
           "title": "Verification code match error",
-          "contents": "Entered verification code does not match please try again",
+          "contents": "Verification code does not match please try it again.",
           "fail": "Email verification failed",
           "failContent": "Failed to send a verification code to your email please try again later."
         }
@@ -27,7 +27,7 @@
       "pass": "Password",
       "comfirm": "Enter your password",
       "reComfirm": "Re-enter your password",
-      "notice": "Your password must be in English and needs to be between 8 and 20 characters long. Your password also needs to be made up of 4 or more of following character types. - Uppercase letter - Lowercase letter- Number - Special character ( .  ! @ # $ % ). The password must not contain consecutive numbers or 4 identical letters."
+      "notice": "Your password must be in English and needs to be between 8 and 20 characters long. Your password also needs to be made up of 4 or more of following character types. - Uppercase letter - Lowercase letter- Number - Special character ( . ! @ # $ % ). The password must not contain consecutive numbers or 4 identical letters."
     },
     "name": {
       "name": "Name",
@@ -43,16 +43,16 @@
     "route": {
       "title": "How did you hear about us?",
       "select": "Select options",
-      "placeholder": "Tell us where you heard about us",
+      "placeholder": "Which channel did you get to know us?",
       "other": "Other"
     },
     "subscriptionPathLists": [
       "Web search",
       "Exhibition and Seminar",
-      "VIRENCT official blog",
+      "VIRNECT official blog",
       "Experience Center tour",
       "Online advertisement",
-      "SNS and Community",
+      "Social network and Community",
       "Press news articles and magazines",
       "Newsletter and email promotion",
       "Friends or family",
@@ -60,7 +60,7 @@
     ],
     "serviceInfo": {
       "title": "Industry classification",
-      "select": "Select your Industry Classification",
+      "select": "Select your Industry classification",
       "placeholder": "Tell us what type of industry classification you are from.",
       "other": "Other"
     },
@@ -81,8 +81,8 @@
     "next": "Next",
     "done": {
       "verification": {
-        "title": "Successfully sent verification email",
-        "contents": "A verification code is sent to your email address. Please check your email and type in the code."
+        "title": "Verification email sent",
+        "contents": "Verification code was sent to your email address. Please check your email and type in the code."
       }
     },
     "errors": {
@@ -92,11 +92,11 @@
       },
       "password": {
         "title": "Wrong password",
-        "contents": "Your password must be in English and needs to be between 8 and 20 characters long. Your password also needs to be made up of 3 or more of following character types. - Uppercase letter - Lowercase letter- Number - Special character ( .  ! @ # $ % ). The password must not contain consecutive numbers or 4 identical letters."
+        "contents": "Your password must be in English and needs to be between 8 and 20 characters long. Your password also needs to be made up of 3 or more of following character types. - Uppercase letter - Lowercase letter- Number - Special character ( . ! @ # $ % ). The password must not contain consecutive numbers or 4 identical letters."
       },
       "duplicateEmail": {
         "title": "Failed to send verification email",
-        "contents": "We found an existing account with that email address"
+        "contents": "We found an existing account using the email address"
       },
       "verification": {
         "title": "Failed to send verification email",
@@ -104,7 +104,7 @@
       },
       "secessionEmail": {
         "title": "Failed to send verification email",
-        "contents": "Secession User Email"
+        "contents": "Email belongs to a previously deleted account."
       }
     }
   }

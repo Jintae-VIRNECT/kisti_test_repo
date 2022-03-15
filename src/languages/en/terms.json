@@ -5,10 +5,10 @@
     "locationBased": "Terms of Location-Based Service",
     "page": {
       "title": "Terms & Conditions",
-      "pageInfo": "Sign up begins if you agree to the Terms & Conditions",
+      "pageInfo": "Sign up process can begin after agreeing to the Terms & Conditions",
       "entire": "Agree to all the terms",
       "termsContents": "[Agree to the Terms of Service]",
-      "privacyPolicyContents": "[Agreet to the Privacy Policy]",
+      "privacyPolicyContents": "[Agree to the Privacy Policy]",
       "marketingReceive": "[Agree to receiving promotional marketing material (Optional)]"
     }
   }

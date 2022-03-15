@@ -1,7 +1,7 @@
 {
   "login": {
     "title": "Login",
-    "subTitle": "Login Center",
+    "subTitle": "Login center",
     "email": "Email",
     "emailPlaceholder": "Enter your email address",
     "password": "Password",
@@ -12,12 +12,12 @@
     "resetPassword": "Reset password",
     "signUp": "Sign up",
     "needTo": {
-      "title": "Moving to the login page.",
-      "contents": "You have entered incorrect login information."
+      "title": "Login required",
+      "contents": "Moving to login page"
     },
     "accountError": {
-      "title": "You have entered incorrect login information.",
-      "contents": "Unauthorized. Please check the email address and password and try again.",
+      "title": "Entered incorrect login information.",
+      "contents": "Account info does not exist. Please check the email address and password and try again.",
       "btn": "Confirm"
     },
     "next": "Next",
@@ -27,12 +27,12 @@
     },
     "securityError": {
       "title": "Account security",
-      "contents": "If the password input error occurs more than 5 times, it will be converted to a locked account for account security. When switching to a locked account, you must reset your password to log in. <p>Password Error : <span class='danger'>{n} times</span></p>"
+      "contents": "If the password is inputted incorrectly more than 5 times, the account will be converted to a locked account for account security. To unlock the account, you must reset your password to log in. <p>Password Error : <span class='danger'>{n} times</span></p>"
     },
     "lockedError": {
-      "changed": "Account lockout",
-      "title": "Locked Account",
-      "contents": "Switching Abnormal activity has been detected and converted to a locked account. Please reset your password."
+      "changed": "Changing to locked account",
+      "title": "Locked account notice",
+      "contents": "Abnormal activity has been detected and your account was locked. Please reset your password."
     }
   }
 }
