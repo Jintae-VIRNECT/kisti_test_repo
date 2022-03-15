@@ -24,7 +24,7 @@ import DashBoardTab from 'components/dashboard/section/DashBoardTab'
 import { mapActions } from 'vuex'
 import { getLicense, getCompanyInfo } from 'api/http/account'
 import langMixin from 'mixins/language'
-import auth from 'utils/auth'
+import auth, { getWsSettings } from 'utils/auth'
 
 import Player from 'components/dashboard/modal/ModalPlayer'
 import Fab from 'Fab'
@@ -72,9 +72,13 @@ export default {
   },
 
   watch: {
-    workspace(val, oldVal) {
+    async workspace(val, oldVal) {
       if (val.uuid && val.uuid !== oldVal.uuid) {
         this.checkCompany(val.uuid)
+        await getWsSettings({ workspaceId: val.uuid })
+        setTimeout(() => {
+          this.$eventBus.$emit('update:settings')
+        })
       }
     },
   },
@@ -139,10 +143,13 @@ export default {
       })
     },
   },
-  mounted() {
+  async mounted() {
     this.mx_changeLang()
     this.$eventBus.$on('open::player', this.openPlayer)
     this.$eventBus.$on('scroll:reset:dashboard', this.scrollTop)
+
+    await getWsSettings({ workspaceId: this.workspace.uuid })
+    this.$eventBus.$emit('update:settings')
   },
   beforeDestroy() {
     this.$eventBus.$off('open::player')

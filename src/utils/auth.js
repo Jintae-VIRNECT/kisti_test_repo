@@ -128,21 +128,27 @@ const getConfigs = async () => {
   setUrls(res.data)
 }
 
-const getWsSettings = async () => {
-  if (RUNTIME_ENV !== RUNTIME.ONPREMISE) {
+export const getWsSettings = async workspaceId => {
+  try {
     document.title = `VIRNECT | Dashboard`
-  } else {
-    const settings = await getSettingInfo()
 
-    document.title = `${settings.workspaceTitle} | Dashboard`
-    const favicon = document.querySelector("link[rel*='icon']")
-
-    if (favicon) favicon.href = settings.favicon
+    const settings = await getSettingInfo({ workspaceId })
+    if (settings === null || Object.keys(settings).length === 0) {
+      return
+    }
 
     setConfigs({
       whiteLogo: settings.whiteLogo,
       defaultLogo: settings.defaultLogo,
     })
+
+    if (RUNTIME_ENV === RUNTIME.ONPREMISE) {
+      document.title = `${settings.workspaceTitle} | Dashboard`
+      const favicon = document.querySelector("link[rel*='icon']")
+      favicon.href = settings.favicon
+    }
+  } catch (err) {
+    console.error(err)
   }
 }
 
@@ -193,7 +199,7 @@ class Auth {
 
     if (Cookies.get('accessToken')) {
       try {
-        await Promise.all([getMyInfo(), getWsSettings()])
+        await Promise.all([getMyInfo()])
 
         isLogin = true
         tokenRenewal()

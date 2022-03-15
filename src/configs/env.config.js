@@ -6,8 +6,8 @@ export let DEFAULT_LOGO = false
 export const setConfigs = configs => {
   RUNTIME_ENV = configs.runtimeEnv || RUNTIME_ENV
   TARGET_COMPANY = configs.targetCompany || TARGET_COMPANY
-  WHITE_LOGO = configs.whiteLogo || WHITE_LOGO
-  DEFAULT_LOGO = configs.defaultLogo || DEFAULT_LOGO
+  WHITE_LOGO = configs.whiteLogo
+  DEFAULT_LOGO = configs.defaultLogo
 }
 
 export let URLS = {}
