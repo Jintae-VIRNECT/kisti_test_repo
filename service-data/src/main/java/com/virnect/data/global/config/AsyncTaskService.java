@@ -4,19 +4,17 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Future;
 
-import org.apache.commons.io.FilenameUtils;
-import org.springframework.scheduling.annotation.Async;
-import org.springframework.scheduling.annotation.AsyncResult;
+import org.apache.commons.io.FileUtils;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ObjectUtils;
-import org.springframework.util.concurrent.ListenableFuture;
 
 import de.javagl.jgltf.model.io.GltfAsset;
 import de.javagl.jgltf.obj.BufferStrategy;
@@ -32,99 +30,108 @@ import com.virnect.data.global.util.obj2gltf.ConvertObjToGltf;
 import com.virnect.data.infra.file.IFileManagementService;
 import com.virnect.data.infra.utils.FileUtil;
 
+@Transactional
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class AsyncTaskService {
 
-    private final FileUtil fileUtil;
-    private final ConvertObjToGltf convertObjToGltf;
-    private final IFileManagementService fileManagementService;
-    private final FileRepository fileRepository;
+	private final FileUtil fileUtil;
+	private final ConvertObjToGltf convertObjToGltf;
+	private final IFileManagementService fileManagementService;
+	private final FileRepository fileRepository;
+	private final ExecutorService executorService;
 
-    @Async
-    public void covertObj2Gltf(FileUploadRequest fileUploadRequest, String objectName) throws IOException, NoSuchAlgorithmException, InvalidKeyException {
+	public void covertObj2Gltf(
+		FileUploadRequest fileUploadRequest
+		, String objectName
+		, Long gltfId
+		, Long binId
+	) {
+		Callable<FileConvertStatus> callableConvert = () -> {
+			File originalFile = fileUtil.convertUploadMultiFileToFile(fileUploadRequest.getFile(), objectName);
+			if (originalFile == null) {
+				return FileConvertStatus.CONVERTING_FAIL;
+			}
+			GltfAsset gltfAsset = convertObjToGltf.createGltfAsset(BufferStrategy.BUFFER_PER_FILE, originalFile);
+			File gltfFile = convertObjToGltf.extractGltf(gltfAsset, objectName);
+			File binFile = convertObjToGltf.extractBin(gltfAsset, objectName);
+			FileConvertStatus convertResult = saveObjectFile(fileUploadRequest, gltfFile, binFile);
+			FileUtils.deleteDirectory(new File(objectName));
+			return convertResult;
+		};
+		Future<FileConvertStatus> submit = executorService.submit(callableConvert);
+		com.virnect.data.domain.file.File gltf = fileRepository.getOne(gltfId);
+		com.virnect.data.domain.file.File bin = fileRepository.getOne(binId);
+		try {
+			if (submit.get() == FileConvertStatus.CONVERTED) {
+				updateFileConvertStatus(gltf, FileConvertStatus.CONVERTED);
+				updateFileConvertStatus(bin, FileConvertStatus.CONVERTED);
+				log.info("[Thread : Obj to glft Processing] Object file(.glft) upload success");
+			} else {
+				updateFileConvertStatus(gltf, FileConvertStatus.CONVERTING_FAIL);
+				updateFileConvertStatus(bin, FileConvertStatus.CONVERTING_FAIL);
+				log.info("[Thread : Obj to glft Processing] Object file(.glft) upload fail");
+			}
+		} catch (InterruptedException | ExecutionException e) {
+			updateFileConvertStatus(gltf, FileConvertStatus.CONVERTING_FAIL);
+			updateFileConvertStatus(bin, FileConvertStatus.CONVERTING_FAIL);
+			log.info("[Thread : Obj to glft Processing] Object file(.glft) upload covertObj2Gltf exception");
+			Thread.currentThread().interrupt();
+		}
+	}
 
-        File originalFile = fileUtil.convertUploadMultiFileToFile(fileUploadRequest.getFile());
+	public FileConvertStatus saveObjectFile(
+		FileUploadRequest fileUploadRequest,
+		File gltfFile,
+		File binFile
+	) {
+		FileConvertStatus result;
+		try (
+			InputStream gltfFileInputStream = new FileInputStream(gltfFile);
+			InputStream binFileInputStream = new FileInputStream(binFile);
+		) {
+			ErrorCode gltfUploadResult = upload3dFileToStorage(
+				gltfFileInputStream, fileUploadRequest, gltfFile.getName(), gltfFile.getName());
+			ErrorCode binUploadResult = upload3dFileToStorage(
+				binFileInputStream, fileUploadRequest, binFile.getName(), gltfFile.getName());
+			if (gltfUploadResult == ErrorCode.ERR_SUCCESS && binUploadResult == ErrorCode.ERR_SUCCESS) {
+				result = FileConvertStatus.CONVERTED;
+			} else {
+				result = FileConvertStatus.CONVERTING_FAIL;
+			}
+		} catch (Exception e) {
+			log.info("[Thread : Obj to glft Processing] Object file(.glft) upload saveObjectFile exception");
+			result = FileConvertStatus.CONVERTING_FAIL;
+		}
+		return result;
+	}
 
-        GltfAsset gltfAsset = convertObjToGltf.createGltfAsset(BufferStrategy.BUFFER_PER_FILE, originalFile);
-        File gltfFile = convertObjToGltf.extractGltf(gltfAsset, objectName);
-        File binFile = convertObjToGltf.extractBin(gltfAsset);
+	private ErrorCode upload3dFileToStorage(
+		InputStream inputStream,
+		FileUploadRequest objectFileUploadRequest,
+		String objectName,
+		String objectPath
+	) throws IOException, NoSuchAlgorithmException, InvalidKeyException {
+		UploadResult uploadResult = fileManagementService.objectFileUpload(
+			inputStream,
+			fileUtil.generateDirPath(
+				objectFileUploadRequest.getWorkspaceId(),
+				objectFileUploadRequest.getSessionId()
+			),
+			objectFileUploadRequest.getFile().getOriginalFilename(),
+			objectName,
+			objectPath
+		);
+		return uploadResult.getErrorCode();
+	}
 
-        saveObjectFile(fileUploadRequest, gltfFile, binFile);
-
-        originalFile.delete();
-        gltfFile.delete();
-        binFile.delete();
-    }
-
-    public void saveObjectFile(
-        FileUploadRequest fileUploadRequest,
-        File gltfFile,
-        File binFile
-    ) throws IOException, NoSuchAlgorithmException, InvalidKeyException {
-
-        com.virnect.data.domain.file.File gltf = fileRepository.findByWorkspaceIdAndSessionIdAndObjectName(
-            fileUploadRequest.getWorkspaceId(),
-            fileUploadRequest.getSessionId(),
-            gltfFile.getName()).orElse(null);
-
-        com.virnect.data.domain.file.File bin = fileRepository.findByWorkspaceIdAndSessionIdAndObjectName(
-            fileUploadRequest.getWorkspaceId(),
-            fileUploadRequest.getSessionId(),
-            "buffer0.bin" + "_" + FilenameUtils.removeExtension(gltfFile.getName())).orElse(null);
-
-        InputStream gltfFileInputStream = new FileInputStream(gltfFile);
-        InputStream binFileInputStream = new FileInputStream(binFile);
-
-        if (upload3dFileToStorage(gltfFileInputStream, fileUploadRequest, gltfFile.getName(), gltfFile.getName()) == ErrorCode.ERR_SUCCESS) {
-            log.info("[Thread : Obj to glft Processing] Object file(.glft) upload success");
-            gltf.setSize(gltfFile.length());
-            updateFileConvertStatus(gltf, FileConvertStatus.CONVERTED);
-
-        } else {
-            log.info("[Thread : Obj to glft Processing] Object file(.glft) upload fail");
-            updateFileConvertStatus(gltf, FileConvertStatus.CONVERTING_FAIL);
-        }
-
-        if (upload3dFileToStorage(binFileInputStream, fileUploadRequest, binFile.getName(), gltfFile.getName()) == ErrorCode.ERR_SUCCESS) {
-            log.info("[Thread : Obj to glft Processing] Object file(.glft) upload success");
-            bin.setSize(binFile.length());
-            updateFileConvertStatus(bin, FileConvertStatus.CONVERTED);
-        } else {
-            log.info("[Thread : Obj to glft Processing] Object file(.glft) upload fail");
-            updateFileConvertStatus(bin, FileConvertStatus.CONVERTING_FAIL);
-        }
-
-        gltfFileInputStream.close();
-        binFileInputStream.close();
-    }
-
-    private ErrorCode upload3dFileToStorage(
-        InputStream inputStream,
-        FileUploadRequest objectFileUploadRequest,
-        String objectName,
-        String objectPath
-    ) throws IOException, NoSuchAlgorithmException, InvalidKeyException {
-        UploadResult uploadResult = fileManagementService.objectFileUpload(
-            inputStream,
-            fileUtil.generateDirPath(objectFileUploadRequest.getWorkspaceId(),
-                objectFileUploadRequest.getSessionId()),
-            objectFileUploadRequest.getFile().getOriginalFilename(),
-            objectName,
-            objectPath
-        );
-        return uploadResult.getErrorCode();
-    }
-
-    private void updateFileConvertStatus(
-        com.virnect.data.domain.file.File file,
-        FileConvertStatus fileConvertStatus
-    ) {
-        file.setFileConvertStatus(fileConvertStatus);
-        if (ObjectUtils.isEmpty(fileRepository.save(file))) {
-            log.info("[Thread : Obj to glft Processing] file converting status update fail : " + fileConvertStatus.toString());
-        }
-    }
+	private void updateFileConvertStatus(
+		com.virnect.data.domain.file.File file,
+		FileConvertStatus fileConvertStatus
+	) {
+		file.setFileConvertStatus(fileConvertStatus);
+		fileRepository.save(file);
+	}
 
 }
