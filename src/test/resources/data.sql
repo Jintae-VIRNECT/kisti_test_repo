@@ -77,4 +77,4 @@ VALUES (146, '2022-01-11 03:29:09', '2022-01-11 03:29:09', 0,
 
        (135, '2021-12-17 09:04:14', '2021-12-17 09:04:14', 0,
         'https://192.168.6.3:2838/virnect-download/app/MakeInstaller.exe', 0, NULL, '', '5ca2-5bf164fc3c76', 1,
-        'ACTIVE', 'REQUIRED', NULL, NULL, 1302001, '1.3.2', 2, 3);
+        'ACTIVE', 'REQUIRED', NULL, NULL, 1030201, '1.3.2', 2, 3);
