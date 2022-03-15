@@ -1,7 +1,5 @@
 package com.virnect.workspace.infra.file;
 
-import java.io.IOException;
-
 import org.springframework.web.multipart.MultipartFile;
 
 /**
@@ -16,5 +14,7 @@ public interface FileService {
 
     void delete(final String url);
 
-    String getDefaultFileUrl(DefaultImageFile defaultImageFile);
+    String getDefaultFileUrl(DefaultImageName defaultImageName);
+
+    String uploadByFixedName(MultipartFile file, String workspaceUUID, String fileName);
 }

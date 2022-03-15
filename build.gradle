@@ -16,7 +16,7 @@ ext {
 }
 
 group = 'com.virnect'
-version = '1.3.2'
+version = '1.4.0'
 sourceCompatibility = '1.8'
 
 configurations {

@@ -28,4 +28,12 @@ public class WorkspaceTitleUpdateRequest {
 	@NotBlank
 	@Length(max=19, message = "워크스페이스 고객사명은 최대 19자까지 가능합니다.")
 	private String title;
+
+	@Override
+	public String toString() {
+		return "WorkspaceTitleUpdateRequest{" +
+			"userId='" + userId + '\'' +
+			", title='" + title + '\'' +
+			'}';
+	}
 }
