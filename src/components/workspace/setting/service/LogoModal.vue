@@ -14,6 +14,7 @@
         <el-upload
           ref="logoUpload"
           action="#"
+          accept=".jpg,.png"
           :auto-upload="false"
           :on-change="logoImageSelected"
           :show-file-list="false"
@@ -96,11 +97,12 @@
 <script>
 import { mapGetters } from 'vuex'
 import modalMixin from '@/mixins/modal'
+import utilsMixin from '@/mixins/utils'
 import workspaceService from '@/services/workspace'
 import axios from 'axios'
 
 export default {
-  mixins: [modalMixin],
+  mixins: [modalMixin, utilsMixin],
   data() {
     return {
       defaultlogo: require('assets/images/logo/logo-gnb-ci.png'),
@@ -122,17 +124,21 @@ export default {
       this.whiteLogoFile = this.whiteLogo
     },
     logoImageSelected(file) {
-      const reader = new FileReader()
-      reader.readAsDataURL(file.raw)
-      reader.onload = () => {
-        this.logoFile = reader.result
+      if (this.isImageFile(file)) {
+        const reader = new FileReader()
+        reader.readAsDataURL(file.raw)
+        reader.onload = () => {
+          this.logoFile = reader.result
+        }
       }
     },
     whiteLogoImageSelected(file) {
-      const reader = new FileReader()
-      reader.readAsDataURL(file.raw)
-      reader.onload = () => {
-        this.whiteLogoFile = reader.result
+      if (this.isImageFile(file)) {
+        const reader = new FileReader()
+        reader.readAsDataURL(file.raw)
+        reader.onload = () => {
+          this.whiteLogoFile = reader.result
+        }
       }
     },
     deleteImage() {

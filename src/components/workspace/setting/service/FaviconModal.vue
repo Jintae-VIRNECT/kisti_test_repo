@@ -28,6 +28,7 @@
       <el-upload
         ref="upload"
         action="#"
+        accept=".jpg,.png,.ico"
         :auto-upload="false"
         :on-change="imageSelected"
         :show-file-list="false"
@@ -48,11 +49,12 @@
 
 <script>
 import modalMixin from '@/mixins/modal'
+import utilsMixin from '@/mixins/utils'
 import { mapGetters } from 'vuex'
 import workspaceService from '@/services/workspace'
 
 export default {
-  mixins: [modalMixin],
+  mixins: [modalMixin, utilsMixin],
   data() {
     return {
       defaultFavicon: require('assets/images/logo/favicon.png'),
@@ -67,10 +69,12 @@ export default {
       this.file = this.favicon
     },
     imageSelected(file) {
-      const reader = new FileReader()
-      reader.readAsDataURL(file.raw)
-      reader.onload = () => {
-        this.file = reader.result
+      if (this.isImageFile(file)) {
+        const reader = new FileReader()
+        reader.readAsDataURL(file.raw)
+        reader.onload = () => {
+          this.file = reader.result
+        }
       }
     },
     deleteImage() {

@@ -59,8 +59,11 @@ export default {
      * @returns {boolean} 조건에 부합하는 파일인지 확인하고 결과를 리턴
      */
     isImageFile(file) {
+      console.log(file.raw.type)
       const isImage =
-        file.raw.type === 'image/jpeg' || file.raw.type === 'image/png'
+        file.raw.type === 'image/jpeg' ||
+        file.raw.type === 'image/png' ||
+        file.raw.type === 'image/vnd.microsoft.icon'
       let message = ''
       if (!isImage) {
         message = this.$t('members.setting.image.notAllowFileExtension')
