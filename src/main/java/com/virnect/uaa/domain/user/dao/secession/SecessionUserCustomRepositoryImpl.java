@@ -26,16 +26,8 @@ public class SecessionUserCustomRepositoryImpl implements SecessionUserCustomRep
 		return query.selectFrom(secessionUser)
 			.where(
 				secessionUser.userUUID.in(uuidList),
-				searchQuery(search)
+				secessionUser.nickName.contains(search)
 			)
 			.fetch();
 	}
-
-	private BooleanExpression searchQuery(String search) {
-		if (StringUtils.isEmpty(search)) {
-			return null;
-		}
-		return secessionUser.nickName.contains(search).or(secessionUser.email.contains(search));
-	}
-
 }
