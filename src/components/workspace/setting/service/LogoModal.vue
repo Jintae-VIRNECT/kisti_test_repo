@@ -45,10 +45,10 @@
       <div class="theme">
         <h5>{{ $t('workspace.onpremiseSetting.logo.remote') }}</h5>
         <el-upload
-          ref="whiteLogoUpload"
+          ref="remoteLogoUpload"
           action="#"
           :auto-upload="false"
-          :on-change="whiteLogoImageSelected"
+          :on-change="remoteLogoImageSelected"
           :show-file-list="false"
         >
           {{ $t('workspace.onpremiseSetting.favicon.upload') }}
@@ -57,7 +57,7 @@
       <div class="preview dark">
         <div class="area">
           <span class="editable">
-            <img :src="whiteLogoFile || defaultWhiteLogo" />
+            <img :src="remoteLogoFile || defaultRemoteLogo" />
           </span>
           <span class="sub-title">
             <el-divider direction="vertical" />
@@ -83,7 +83,7 @@
       <el-button
         type="text"
         @click="deleteImage"
-        :disabled="!logoFile && !whiteLogoFile"
+        :disabled="!logoFile && !remoteLogoFile"
       >
         {{ $t('common.delete') }}
       </el-button>
@@ -106,22 +106,22 @@ export default {
   data() {
     return {
       defaultlogo: require('assets/images/logo/logo-gnb-ci.png'),
-      defaultWhiteLogo: require('assets/images/logo/logo-gnb-ci-white.png'),
+      defaultRemoteLogo: require('assets/images/logo/default_remote.svg'),
       logoFile: null,
-      whiteLogoFile: null,
+      remoteLogoFile: null,
     }
   },
   computed: {
     ...mapGetters({
       activeWorkspace: 'auth/activeWorkspace',
       logo: 'layout/logo',
-      whiteLogo: 'layout/whiteLogo',
+      remoteLogo: 'layout/remoteLogo',
     }),
   },
   methods: {
     opened() {
       this.logoFile = this.logo
-      this.whiteLogoFile = this.whiteLogo
+      this.remoteLogoFile = this.remoteLogo
     },
     logoImageSelected(file) {
       if (this.isImageFile(file)) {
@@ -132,20 +132,20 @@ export default {
         }
       }
     },
-    whiteLogoImageSelected(file) {
+    remoteLogoImageSelected(file) {
       if (this.isImageFile(file)) {
         const reader = new FileReader()
         reader.readAsDataURL(file.raw)
         reader.onload = () => {
-          this.whiteLogoFile = reader.result
+          this.remoteLogoFile = reader.result
         }
       }
     },
     deleteImage() {
       this.$refs.logoUpload.clearFiles()
-      this.$refs.whiteLogoUpload.clearFiles()
+      this.$refs.remoteLogoUpload.clearFiles()
       this.logoFile = null
-      this.whiteLogoFile = null
+      this.remoteLogoFile = null
     },
     async urlToFile(url) {
       const { data } = await axios({
@@ -161,20 +161,20 @@ export default {
         let logoRaw = logoUploadFiles.length
           ? logoUploadFiles[logoUploadFiles.length - 1].raw
           : null
-        const whiteLogoUploadFiles = this.$refs.whiteLogoUpload.uploadFiles
-        let whiteLogoRaw = whiteLogoUploadFiles.length
-          ? whiteLogoUploadFiles[whiteLogoUploadFiles.length - 1].raw
+        const remoteLogoUploadFiles = this.$refs.remoteLogoUpload.uploadFiles
+        let remoteLogoRaw = remoteLogoUploadFiles.length
+          ? remoteLogoUploadFiles[remoteLogoUploadFiles.length - 1].raw
           : null
 
         if (!logoRaw && this.logoFile)
           logoRaw = await this.urlToFile(this.logoFile)
-        if (!whiteLogoRaw && this.whiteLogoFile)
-          whiteLogoRaw = await this.urlToFile(this.whiteLogoFile)
+        if (!remoteLogoRaw && this.remoteLogoFile)
+          remoteLogoRaw = await this.urlToFile(this.remoteLogoFile)
 
-        await workspaceService.setWorkspaceLogo(logoRaw, whiteLogoRaw)
+        await workspaceService.setWorkspaceLogo(logoRaw, remoteLogoRaw)
         this.$store.commit('layout/SET_LOGO', {
           logo: this.logoFile,
-          whiteLogo: this.whiteLogoFile,
+          remoteLogo: this.remoteLogoFile,
         })
         this.showMe = false
       } catch (e) {
