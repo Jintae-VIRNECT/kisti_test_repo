@@ -10,7 +10,7 @@
       <p>{{ $t('workspace.onpremiseSetting.logo.desc') }}</p>
 
       <div class="theme">
-        <h5>{{ $t('workspace.onpremiseSetting.logo.lightTheme') }}</h5>
+        <h5>{{ $t('workspace.onpremiseSetting.logo.workstation') }}</h5>
         <el-upload
           ref="logoUpload"
           action="#"
@@ -43,7 +43,7 @@
       </div>
 
       <div class="theme">
-        <h5>{{ $t('workspace.onpremiseSetting.logo.darkTheme') }}</h5>
+        <h5>{{ $t('workspace.onpremiseSetting.logo.remote') }}</h5>
         <el-upload
           ref="whiteLogoUpload"
           action="#"
