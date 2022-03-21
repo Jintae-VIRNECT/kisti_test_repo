@@ -6,43 +6,50 @@
     width="440px"
     top="11vh"
   >
-    <div>
-      <p>{{ $t('workspace.onpremiseSetting.company.desc') }}</p>
-      <div class="preview">
-        <img src="~assets/images/workstation-title-example.png" />
-        <div class="area">
-          <span class="editable">{{ form.companyName }}</span>
-          <span>{{ $t('common.workstation') }}</span>
+    <ValidationProvider rules="companyNameCheck" v-slot="{ valid }">
+      <div>
+        <p>{{ $t('workspace.onpremiseSetting.company.desc') }}</p>
+        <div class="preview">
+          <img src="~assets/images/workstation-title-example.png" />
+          <div class="area">
+            <span class="editable">{{ form.companyName }}</span>
+            <span>{{ $t('common.workstation') }}</span>
+          </div>
+          <div class="tooltip">
+            {{ $t('workspace.onpremiseSetting.company.tooltip') }}
+          </div>
         </div>
-        <div class="tooltip">
-          {{ $t('workspace.onpremiseSetting.company.tooltip') }}
-        </div>
-      </div>
-      <el-form
-        ref="form"
-        class="virnect-workstation-form"
-        :model="form"
-        :show-message="false"
-      >
-        <el-form-item
-          class="horizon"
-          prop="companyName"
-          required
-          :label="$t('workspace.onpremiseSetting.company.companyName')"
+        <el-form
+          ref="form"
+          class="virnect-workstation-form"
+          :model="form"
+          :show-message="false"
         >
-          <el-input v-model="form.companyName" :maxlength="19" />
-        </el-form-item>
-        <p
-          class="caution"
-          v-html="$t('workspace.onpremiseSetting.company.caution')"
-        />
-      </el-form>
-    </div>
-    <div slot="footer">
-      <el-button type="primary" @click="submit">
-        {{ $t('common.update') }}
-      </el-button>
-    </div>
+          <el-form-item
+            class="horizon"
+            prop="companyName"
+            :class="{ 'is-error': valid === false }"
+            required
+            :label="$t('workspace.onpremiseSetting.company.companyName')"
+          >
+            <el-input v-model="form.companyName" :maxlength="20" />
+          </el-form-item>
+          <p
+            class="caution"
+            v-html="$t('workspace.onpremiseSetting.company.caution')"
+          />
+        </el-form>
+      </div>
+      <div slot="footer">
+        <el-button
+          type="primary"
+          @click="submit"
+          :disabled="valid === false || form.companyName.length === 0"
+        >
+          {{ $t('common.update') }}
+        </el-button>
+      </div>
+    </ValidationProvider>
   </el-dialog>
 </template>
 
