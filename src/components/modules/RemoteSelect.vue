@@ -259,11 +259,15 @@ export default {
           color: $new_color_text_main;
         }
       }
+
+      > .ps {
+        height: 200px;
+      }
     }
 
     &.scroll {
       > .popover--body {
-        overflow-y: scroll;
+        overflow-y: auto;
         height: 200px;
       }
     }
