@@ -2,7 +2,7 @@
   <popover
     ref="selectPopover"
     placement="bottom"
-    :placementReverse="true"
+    :placementReverse="placementReverse"
     trigger="click"
     popperClass="select-options"
     :fullwidth="true"
@@ -10,6 +10,7 @@
     :disabled="disabled"
     @visible="visible => (show = visible)"
     :targetElement="targetElement"
+    :showScroll="showScroll"
   >
     <button
       slot="reference"
@@ -84,6 +85,14 @@ export default {
     },
     targetElement: {
       type: String,
+    },
+    placementReverse: {
+      type: Boolean,
+      default: true,
+    },
+    showScroll: {
+      type: Boolean,
+      default: false,
     },
   },
   watch: {
@@ -249,6 +258,17 @@ export default {
         &.active {
           color: $new_color_text_main;
         }
+      }
+
+      > .ps {
+        height: 200px;
+      }
+    }
+
+    &.scroll {
+      > .popover--body {
+        overflow-y: auto;
+        height: 200px;
       }
     }
   }

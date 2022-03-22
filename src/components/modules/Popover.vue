@@ -7,7 +7,7 @@
         role="tooltip"
         :id="`popover-${_uid}`"
         :style="style"
-        :class="[popperClass, { reverse: reverse }]"
+        :class="[popperClass, { reverse: reverse, scroll: showScroll }]"
         class="popover"
         @click.stop
       >
@@ -18,7 +18,14 @@
           <slot name="header"></slot>
         </div>
         <div class="popover--body">
-          <slot></slot>
+          <template v-if="showScroll">
+            <perfect-scrollbar>
+              <slot></slot>
+            </perfect-scrollbar>
+          </template>
+          <template v-else>
+            <slot></slot>
+          </template>
         </div>
       </div>
     </transition>
@@ -45,8 +52,13 @@ function calcOffset(element) {
 const RIGHT_TOLERANCE = 10 //우측 여유 영역
 //const TOP_TOLERANCE = 10 //bottom-end 일때 useTopMargin이 true이면 top에 10px 여유추가
 
+import { PerfectScrollbar } from 'vue2-perfect-scrollbar'
+
 export default {
   name: 'Popover',
+  components: {
+    PerfectScrollbar,
+  },
   props: {
     title: String,
     trigger: {
@@ -111,6 +123,10 @@ export default {
     useTopMargin: {
       type: Number,
       default: 0,
+    },
+    showScroll: {
+      type: Boolean,
+      default: false,
     },
   },
   data() {

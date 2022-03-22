@@ -54,6 +54,8 @@ import errorMsgMixin from 'mixins/errorMsg'
 
 import QRCode from 'qrcode'
 
+import { getConfigs, getSettings } from 'utils/auth'
+
 export default {
   name: 'QrLayout',
   mixins: [confirmMixin, langMixin, toastMixin, errorMsgMixin],
@@ -88,6 +90,10 @@ export default {
       }
     }
     await generateQR()
+    await getConfigs()
+    await getSettings({ workspaceId: workspaceId })
+
+    this.$eventBus.$emit('update:settings')
 
     this.$nextTick(() => {
       qr_canvas.style.height = null

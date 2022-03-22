@@ -4,7 +4,6 @@ const { merge } = require('webpack-merge')
 const CleanWebpackPlugin = require('clean-webpack-plugin')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 const baseWebpackConfig = require('./webpack.base.conf')
-const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 
 const mode =
   process.env.NODE_ENV === 'develop' ? 'development' : process.env.NODE_ENV
@@ -48,11 +47,6 @@ const productionWebpackConfig = merge(baseWebpackConfig(mode), {
       template: './src/apps/test/app.html',
       filename: 'test/index.html',
       chunks: ['test'],
-    }),
-
-    new MiniCssExtractPlugin({
-      filename: './assets/style/[name].[contenthash].css',
-      ignoreOrder: true,
     }),
     new webpack.DefinePlugin({
       GOOGLE_MAP_API: '"AIzaSyD0JClrnwr2SpYViHpY69M6_euI7GyUpu8"',

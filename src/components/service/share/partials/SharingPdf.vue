@@ -30,7 +30,7 @@
       </div>
     </div>
     <button
-      v-if="isLeader"
+      v-if="shareFile.objectName !== fileInfo.objectName && isLeader"
       class="sharing-image__remove"
       @click.stop="deleteImage"
     >

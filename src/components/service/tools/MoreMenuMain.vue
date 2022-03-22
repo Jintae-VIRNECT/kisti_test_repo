@@ -81,7 +81,7 @@ export default {
           icon: require('assets/image/call/mdpi_icon_camera_control_new.svg'),
           title: this.$t('service.camera_control'),
           subMenuIcon: true,
-          visible: this.restrictedRoom,
+          visible: this.restrictedRoom && this.isLeader,
         },
         {
           class: 'server-record',

@@ -703,16 +703,20 @@ const getIceStateChangedCallBack = publisher => {
         connectionId: publisher.stream.connection.connectionId,
         status: 'disconnected',
       })
+
+      window.vue.$eventBus.$emit('toggle:IceDisconnected', true)
     } else if (['connected', 'completed'].includes(state)) {
       Store.commit('updateParticipant', {
         connectionId: publisher.stream.connection.connectionId,
         status: 'good',
       })
+      window.vue.$eventBus.$emit('toggle:IceDisconnected', false)
     } else {
       Store.commit('updateParticipant', {
         connectionId: publisher.stream.connection.connectionId,
         status: 'normal',
       })
+      window.vue.$eventBus.$emit('toggle:IceDisconnected', false)
     }
     logger('ice state change', state)
   }

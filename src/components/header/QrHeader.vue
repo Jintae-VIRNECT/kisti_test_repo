@@ -1,13 +1,7 @@
 <template>
   <header class="header">
     <div class="header-workspace">
-      <img
-        v-if="logo !== false"
-        @error="logoError"
-        class="header-logo"
-        :src="logo"
-      />
-      <img v-else class="header-logo" src="~assets/image/logo_symtext.svg" />
+      <img class="header-logo" :src="headerImgSrc" alt="logo" />
       <template v-if="hasLicense && workspace && workspace.uuid">
         <div class="header-divider"></div>
         <header-nav></header-nav>
@@ -17,25 +11,38 @@
 </template>
 
 <script>
-import { WHITE_LOGO, DEFAULT_LOGO } from 'configs/env.config'
+import { DEFAULT_LOGO } from 'configs/env.config'
 
 export default {
   name: 'QRHeader',
   components: {},
+  props: {
+    logo: {
+      type: [String, Object],
+    },
+  },
   data() {
     return {
-      logo: WHITE_LOGO,
+      headerImgSrc: null,
     }
   },
   computed: {},
-  watch: {},
+  watch: {
+    logo(val, oldVal) {
+      if (val && val !== oldVal) {
+        this.headerImgSrc = val
+      }
+    },
+  },
   methods: {
     logoError() {
-      this.logo = DEFAULT_LOGO
+      this.headerImgSrc = DEFAULT_LOGO
     },
   },
 
   /* Lifecycles */
-  mounted() {},
+  mounted() {
+    this.headerImgSrc = this.logo
+  },
 }
 </script>
