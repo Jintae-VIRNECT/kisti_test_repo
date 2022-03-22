@@ -69,7 +69,7 @@ export default {
       this.file = this.favicon
     },
     imageSelected(file) {
-      if (this.isImageFile(file)) {
+      if (this.isImageFile(file, 3)) {
         const reader = new FileReader()
         reader.readAsDataURL(file.raw)
         reader.onload = () => {

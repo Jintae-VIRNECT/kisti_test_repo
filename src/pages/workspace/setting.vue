@@ -148,9 +148,10 @@
 import { mapGetters } from 'vuex'
 import filters from '@/mixins/filters'
 import workspaceService from '@/services/workspace'
+import utilsMixin from '@/mixins/utils'
 
 export default {
-  mixins: [filters],
+  mixins: [filters, utilsMixin],
   computed: {
     ...mapGetters({
       myProfile: 'auth/myProfile',
@@ -169,10 +170,12 @@ export default {
   },
   methods: {
     imageSelected(file) {
-      const reader = new FileReader()
-      reader.readAsDataURL(file.raw)
-      reader.onload = () => {
-        this.file = reader.result
+      if (this.isImageFile(file)) {
+        const reader = new FileReader()
+        reader.readAsDataURL(file.raw)
+        reader.onload = () => {
+          this.file = reader.result
+        }
       }
     },
     async submit() {
