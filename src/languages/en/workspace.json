@@ -122,6 +122,7 @@
         "delete": "Delete install file",
         "modal": {
           "title": "Registering {n} installation file",
+          "subTitle": "File naming rules",
           "rule1": "File names must start with an English letter, and only lowercase letters, numbers, and special characters (_) (.) can be used.",
           "rule2": "Enter the file names in the order of {product}_{devicetype}_{versioncode}.{extension}.",
           "product": "product: remote, make, view",
@@ -150,6 +151,13 @@
           "wrongExtension": "Please register the {n} file.",
           "oneFile": "Please only register one file."
         }
+      },
+      "delete":{
+        "title": "Delete download file",
+        "cancel": "Cancel",
+        "confirm": "Delete",
+        "desc": "The uploaded file will be deleted and restored to the previous version. Do you want to delete?",
+        "success": "File deleted."
       }
     },
     "appSetting": {

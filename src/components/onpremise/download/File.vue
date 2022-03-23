@@ -44,7 +44,10 @@
 <script>
 import dayjs from '@/plugins/dayjs'
 import workspaceService from '@/services/workspace'
+import messageMixin from '@/mixins/message'
+
 export default {
+  mixins: [messageMixin],
   props: {
     file: Object,
   },
@@ -53,13 +56,25 @@ export default {
       this.$emit('fileUploadClick', info)
     },
     async deleteFile() {
-      const { result } = await workspaceService.deleteWorkspaceDownloadFile(
-        this.file.uuid,
-      )
-
-      if (result) {
-        this.$emit('refresh')
-      }
+      this.$confirm(this.$t('workspace.onpremiseSetting.delete.desc'), {
+        title: this.$t('workspace.onpremiseSetting.delete.title'),
+        confirmButtonText: this.$t('workspace.onpremiseSetting.delete.confirm'),
+        cancelButtonText: this.$t('workspace.onpremiseSetting.delete.cancel'),
+      }).then(async () => {
+        try {
+          const { result } = await workspaceService.deleteWorkspaceDownloadFile(
+            this.file.uuid,
+          )
+          if (result) {
+            this.successMessage(
+              this.$t('workspace.onpremiseSetting.delete.success'),
+            )
+            this.$emit('refresh')
+          }
+        } catch (error) {
+          this.errorMessage('Error: 1000')
+        }
+      })
     },
     released(reletedTime) {
       const format = dayjs(this.file.released).format('YY.MM.DD hh:mm')

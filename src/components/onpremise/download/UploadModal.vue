@@ -12,7 +12,7 @@
     >
       <div>
         <div class="upload-modal__descriptsion">
-          <h4>파일명 규칙</h4>
+          <h4>{{ $t('workspace.onpremiseSetting.upload.modal.subTitle') }}</h4>
           <ol>
             <li>
               {{ $t('workspace.onpremiseSetting.upload.modal.rule1') }}
