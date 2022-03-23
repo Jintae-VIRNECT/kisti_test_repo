@@ -12,7 +12,7 @@
     >
       <div>
         <div class="upload-modal__descriptsion">
-          <h4>파일명 규칙</h4>
+          <h4>{{ $t('workspace.onpremiseSetting.upload.modal.subTitle') }}</h4>
           <ol>
             <li>
               {{ $t('workspace.onpremiseSetting.upload.modal.rule1') }}
@@ -46,6 +46,7 @@
               v-if="visible"
               :file="file"
               :extensionList="file.extensionList"
+              @setSubmitDisable="setSubmitDisable"
               @fileTypeError="fileError"
               @fileData="fileData"
             />
@@ -83,22 +84,6 @@ export default {
       required: true,
     },
   },
-  computed: {
-    submitDisabled() {
-      const extension = this.getFileExtension(this.file.name)
-      if (/APK/.test(extension)) {
-        if (this.form.files.length === 0) return true
-        else return false
-      } else {
-        if (
-          this.form.files.length === 0 ||
-          !/^([1-9]{1})(\.(([1-9]{1})|0)){0,3}$/g.test(this.form.version)
-        )
-          return true
-        else return false
-      }
-    },
-  },
   data() {
     return {
       form: {
@@ -106,9 +91,13 @@ export default {
         version: '',
       },
       showProgressModal: false,
+      submitDisabled: true,
     }
   },
   methods: {
+    setSubmitDisable(value) {
+      this.submitDisabled = value
+    },
     fileError() {
       this.$refs['files'].$el.classList.add('is-error')
     },
@@ -138,6 +127,7 @@ export default {
       this.$refs.form.clearValidate()
       this.showMe = false
       this.form.files = []
+      this.submitDisabled = true
     },
     async submit() {
       try {

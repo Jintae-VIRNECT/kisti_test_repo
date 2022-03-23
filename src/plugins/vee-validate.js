@@ -50,6 +50,11 @@ function ipAddressCheck(ip) {
     return false
   return true
 }
+function companyNameCheck(name) {
+  if (/^[ㄱ-ㅎ|가-힣|a-z|A-Z|0-9|!@#%&_\\.\\$\\-]{1,20}$/.test(name))
+    return true
+  else return false
+}
 
 extend('requiredPassword', {
   ...required,
@@ -82,6 +87,9 @@ extend('deleteDescCheck', {
 extend('ipAddressCheck', {
   validate: ipAddressCheck,
   message: 'workspace.onpremiseSetting.ip.list.warning',
+})
+extend('companyNameCheck', {
+  validate: companyNameCheck,
 })
 
 Vue.component('ValidationProvider', ValidationProvider)

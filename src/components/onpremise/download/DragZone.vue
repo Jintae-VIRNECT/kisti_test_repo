@@ -137,6 +137,7 @@ export default {
           showClose: true,
         })
         this.initFile(format)
+        this.$emit('setSubmitDisable', true)
         this.$emit('fileTypeError')
         return false
       }
@@ -148,6 +149,7 @@ export default {
           showClose: true,
         })
         this.initFile(format)
+        this.$emit('setSubmitDisable', true)
         this.$emit('fileTypeError')
         return false
       }
@@ -169,6 +171,7 @@ export default {
           showClose: true,
         })
         this.initFile(format)
+        this.$emit('setSubmitDisable', true)
         this.$emit('fileTypeError')
         return false
       }
@@ -180,6 +183,7 @@ export default {
           showClose: true,
         })
         this.initFile(format)
+        this.$emit('setSubmitDisable', true)
         this.$emit('fileTypeError')
         return false
       }
@@ -188,6 +192,7 @@ export default {
       this.fileList[idx].fileSelected = true
       this.fileList[idx].file = file
 
+      this.$emit('setSubmitDisable', false)
       this.$emit('fileData', this.fileList)
     },
     drop(event, idx, format) {
@@ -214,6 +219,7 @@ export default {
       this.fileList[idx].fileSelected = false
       this.fileList[idx].file = null
       refs.value = null
+      this.$emit('setSubmitDisable', true)
       this.$emit('fileData', this.fileList)
     },
     dragenter(event, idx) {

@@ -10,7 +10,7 @@ export default class WorkspaceSetting extends Model {
     this.title = json.workspaceTitle || 'VIRNECT'
     this.logo =
       json.defaultLogo || require('assets/images/logo/logo-gnb-ci.png')
-    this.whiteLogo =
+    this.remoteLogo =
       json.whiteLogo || require('assets/images/logo/logo-gnb-ci-white.png')
     this.favicon = json.favicon || require('assets/images/logo/favicon.png')
     this.androidType1Logo =

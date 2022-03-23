@@ -54,7 +54,7 @@
       "desc": "Changing the favicon, logo and company name displayed on the web service. It does not apply to the installation programme (Application).",
       "company": {
         "title": "Change company name",
-        "desc": "If you change the company name, you will displaying the account name instead of 'VIRNECT' in the Web Services tab / Service Title / Notification phrase.",
+        "desc": "If you change the company name, you will displaying the account name instead of 'VIRNECT' in the Web Services tab / Service Title.",
         "tooltip": "Changed company name",
         "companyName": "Company name",
         "caution": "Company name can be changed to a combination of Korean, English, Number, Special character (.,!,@,#,$,%,-,_,&) up to 20 characters."
@@ -62,8 +62,8 @@
       "logo": {
         "title": "Change logo",
         "desc": "If you wish to change a logo, please register a logo image. It will replace the VIRNECT logo from your web service.",
-        "lightTheme": "Bright interface",
-        "darkTheme": "Dark interface",
+        "workstation": "Workstation Logo",
+        "remote": "Remote Logo",
         "tooltip": "Logo area",
         "caution": "Upload JPG and PNG files up to 3MB. <br>* Recommended size: 170(horizontal) * 32(vertical, fixed)px / 72 DPI",
         "submit": "Register"
@@ -122,6 +122,7 @@
         "delete": "Delete install file",
         "modal": {
           "title": "Registering {n} installation file",
+          "subTitle": "File naming rules",
           "rule1": "File names must start with an English letter, and only lowercase letters, numbers, and special characters (_) (.) can be used.",
           "rule2": "Enter the file names in the order of {product}_{devicetype}_{versioncode}.{extension}.",
           "product": "product: remote, make, view",
@@ -150,6 +151,13 @@
           "wrongExtension": "Please register the {n} file.",
           "oneFile": "Please only register one file."
         }
+      },
+      "delete":{
+        "title": "Delete download file",
+        "cancel": "Cancel",
+        "confirm": "Delete",
+        "desc": "The uploaded file will be deleted and restored to the previous version. Do you want to delete?",
+        "success": "File deleted."
       }
     },
     "appSetting": {

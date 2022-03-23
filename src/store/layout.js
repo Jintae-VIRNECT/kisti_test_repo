@@ -37,8 +37,8 @@ export default {
     hololens2Logo(state) {
       return state.hololens2Logo
     },
-    whiteLogo(state) {
-      return state.whiteLogo
+    remoteLogo(state) {
+      return state.remoteLogo
     },
     favicon(state) {
       return state.favicon
@@ -48,9 +48,9 @@ export default {
     SET_TITLE(state, str) {
       state.title = str
     },
-    SET_LOGO(state, { logo, whiteLogo }) {
+    SET_LOGO(state, { logo, remoteLogo }) {
       state.logo = logo || defaultSetting.logo
-      state.whiteLogo = whiteLogo || defaultSetting.whiteLogo
+      state.remoteLogo = remoteLogo || defaultSetting.remoteLogo
     },
     SET_APP_LOGO(state, { androidType1Logo, androidType2Logo, hololens2Logo }) {
       state.androidType1Logo =
@@ -73,7 +73,7 @@ export default {
       commit('SET_FAVICON', setting.favicon)
       commit('SET_LOGO', {
         logo: setting.logo,
-        whiteLogo: setting.whiteLogo,
+        remoteLogo: setting.remoteLogo,
       })
       commit('SET_APP_LOGO', {
         androidType1Logo: setting.androidType1Logo,

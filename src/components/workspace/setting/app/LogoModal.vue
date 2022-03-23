@@ -7,7 +7,7 @@
     top="11vh"
   >
     <div>
-      <p>{{ $t('workspace.onpremiseSetting.logo.desc') }}</p>
+      <p>{{ $t('workspace.appSetting.remote.desc') }}</p>
       <WorkspaceSettingAppLogoUploader
         v-for="(logo, index) in logos"
         :key="index"
