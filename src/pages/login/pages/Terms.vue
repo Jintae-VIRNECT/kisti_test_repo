@@ -101,5 +101,4 @@ p {
   font-size: 13px;
   border: 2px solid #ecf0f5;
 }
-@import '~assets/css/modules/policy.scss';
 </style>
