@@ -26,6 +26,7 @@ export default {
 
 <style lang="scss">
 .mobile-stt-btn {
+  z-index: 2;
   position: fixed;
   top: 68.5%;
   right: 1.6rem;

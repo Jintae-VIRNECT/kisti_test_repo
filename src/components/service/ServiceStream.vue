@@ -40,7 +40,7 @@ export default {
     isSttBtnVisible() {
       const version = getIOSversion()
 
-      if (version > 0 && version < 14) {
+      if (version > 0 && version < 15) {
         return false
       } else {
         return this.translate.flag && this.isMobileSize
