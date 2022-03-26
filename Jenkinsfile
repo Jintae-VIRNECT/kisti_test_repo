@@ -23,7 +23,7 @@ pipeline {
                 slackSend (channel: env.SLACK_CHANNEL, color: '#FFFF00', message: "STARTED: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]' (${env.BUILD_URL})")
             }
         }
-        
+
         stage ('compatibility check') {
             when { anyOf { branch 'master'; branch 'staging'; branch 'develop'} }
             environment {
@@ -163,6 +163,7 @@ pipeline {
             }
         }
 
+/*
         stage ('image scanning') {
             when {
                 branch 'develop'
@@ -172,7 +173,7 @@ pipeline {
                 anchore name: 'anchore_images'
             }
         }
-
+ */
         
         stage ('deploy to development') {
             when {
@@ -180,65 +181,55 @@ pipeline {
             }
                 
             steps {
-                sh '''
-                    docker login ${NEXUS_REGISTRY}
-                    docker pull ${NEXUS_REGISTRY}/${REPO_NAME}:${NEXT_VERSION}-${BRANCH_NAME}-${BUILD_NUMBER}
+                // develop
+                script {
+                    withCredentials([usernamePassword(credentialsId: 'server_credentials', passwordVariable: 'PASSWORD', usernameVariable: 'USERNAME')]) {
+                        def remote = [:]
+                        remote.name = "${NEXT_VERSION}-${BRANCH_NAME}-${BUILD_NUMBER}" 
+                        remote.host = "${DEV_SERVER}"
+                        remote.allowAnyHosts = true 
+                        remote.user = USERNAME 
+                        remote.password = PASSWORD
+                        remote.failOnError = true
 
-                    count=`docker ps -a | grep ${REPO_NAME} | wc -l`
+                        sshCommand remote: remote, command: """
+                            docker login ${NEXUS_REGISTRY}
+                            docker pull ${NEXUS_REGISTRY}/${REPO_NAME}:${NEXT_VERSION}-${BRANCH_NAME}-${BUILD_NUMBER}
+                            docker stop ${REPO_NAME} && docker rm ${REPO_NAME} || true
+                            docker run --restart=on-failure:10 \
+                                -d \
+                                -e VIRNECT_ENV=develop \
+                                -e CONFIG_SERVER=${DEV_CONFIG_SERVER} \
+                                -p ${PORT}:${PORT} \
+                                --name=${REPO_NAME} ${NEXUS_REGISTRY}/${REPO_NAME}:${NEXT_VERSION}-${BRANCH_NAME}-${BUILD_NUMBER}
+                        """
+                    }
+                }
 
-                    if [ $count -eq 0 ]
-                    then 
-                        echo "There are no running containers. Starting a new container..."
-                        docker run --restart=on-failure:10 \
-                            -d \
-                            -e VIRNECT_ENV=develop \
-                            -e CONFIG_SERVER=http://192.168.6.3:6383 \
-                            -e WRITE_YOUR=ENVIRONMENT_VARIABLE_HERE \
-                            -p ${PORT}:${PORT} \
-                            --name=${REPO_NAME} ${NEXUS_REGISTRY}/${REPO_NAME}:${NEXT_VERSION}-${BRANCH_NAME}-${BUILD_NUMBER}
-                    else
-                        echo "Found a running container. Downloading old swagger api docs..."
-                        echo "stop the running container..."
-                        docker stop ${REPO_NAME} && docker rm ${REPO_NAME}
-
-                        echo "Starting a new container..."
-                        docker run --restart=on-failure:10 \
-                            -d \
-                            -e VIRNECT_ENV=develop \
-                            -e CONFIG_SERVER=http://192.168.6.3:6383 \
-                            -e WRITE_YOUR=ENVIRONMENT_VARIABLE_HERE \
-                            -p ${PORT}:${PORT} \
-                            --name=${REPO_NAME} ${NEXUS_REGISTRY}/${REPO_NAME}:${NEXT_VERSION}-${BRANCH_NAME}-${BUILD_NUMBER}
-                    fi
-                '''
-                
                 // onpremise
-                sh '''
-                    count=`docker ps -a | grep ${REPO_NAME}-onpremise | wc -l`
-                    
-                    if [ $count -eq 0 ]
-                    then 
-                      echo "There are no running containers. Starting a new container..."
-                      docker run --restart=on-failure:10 \
-                        -d \
-                        -e VIRNECT_ENV=develop \
-                        -e CONFIG_SERVER=http://192.168.6.3:6383 \
-                        -e WRITE_YOUR=ENVIRONMENT_VARIABLE_HERE \
-                        -p 1${PORT}:${PORT} \
-                        --name=${REPO_NAME}-onpremise ${NEXUS_REGISTRY}/${REPO_NAME}:${NEXT_VERSION}-${BRANCH_NAME}-${BUILD_NUMBER}
-                    else
-                      echo "Found a running container. stop the running container..."
-                      docker stop ${REPO_NAME}-onpremise && docker rm ${REPO_NAME}-onpremise
-                      echo "Starting a new container..."
-                      docker run --restart=on-failure:10 \
-                        -d \
-                        -e VIRNECT_ENV=onpremise \
-                        -e CONFIG_SERVER=http://192.168.6.3:6383 \
-                        -e WRITE_YOUR=ENVIRONMENT_VARIABLE_HERE \
-                        -p 1${PORT}:${PORT} \
-                        --name=${REPO_NAME}-onpremise ${NEXUS_REGISTRY}/${REPO_NAME}:${NEXT_VERSION}-${BRANCH_NAME}-${BUILD_NUMBER}
-                    fi
-                '''
+                script {
+                    withCredentials([usernamePassword(credentialsId: 'server_credentials', passwordVariable: 'PASSWORD', usernameVariable: 'USERNAME')]) {
+                        def remote = [:]
+                        remote.name = "${NEXT_VERSION}-${BRANCH_NAME}-${BUILD_NUMBER}" 
+                        remote.host = "${DEV_ONPREMISE_SERVER}"
+                        remote.allowAnyHosts = true 
+                        remote.user = USERNAME 
+                        remote.password = PASSWORD
+                        remote.failOnError = true
+
+                        sshCommand remote: remote, command: """
+                            docker login ${NEXUS_REGISTRY}
+                            docker pull ${NEXUS_REGISTRY}/${REPO_NAME}:${NEXT_VERSION}-${BRANCH_NAME}-${BUILD_NUMBER}
+                            docker stop ${REPO_NAME} && docker rm ${REPO_NAME} || true
+                            docker run --restart=on-failure:10 \
+                                -d \
+                                -e VIRNECT_ENV=onpremise \
+                                -e CONFIG_SERVER=${DEV_CONFIG_SERVER} \
+                                -p ${PORT}:${PORT} \
+                                --name=${REPO_NAME} ${NEXUS_REGISTRY}/${REPO_NAME}:${NEXT_VERSION}-${BRANCH_NAME}-${BUILD_NUMBER}
+                        """
+                    }
+                }
             }
                 
             
@@ -249,7 +240,6 @@ pipeline {
                 }
             }
         }
-
         stage ('deploy to staging') {
             when {
                 branch 'staging'
@@ -373,6 +363,8 @@ pipeline {
                 
             steps {
                 script {
+                    echo "deploy production"
+
                     // pull and run container
                     sshPublisher(
                         continueOnError: false, failOnError: true,
@@ -398,7 +390,6 @@ pipeline {
                                                 -e VIRNECT_ENV=production \
                                                 -e CONFIG_SERVER=https://config.virnect.com \
                                                 -e WRITE_YOUR=ENVIRONMENT_VARIABLE_HERE \
-                                                -e eureka.instance.ip-address=`hostname -I | awk  \'{print \$1}\'` \
                                                 -p ${PORT}:${PORT} \
                                                 --name=${REPO_NAME} ${aws_ecr_address}/${REPO_NAME}:${NEXT_VERSION}
                                         """
@@ -428,6 +419,7 @@ pipeline {
         aborted {
             slackSend (channel: env.SLACK_CHANNEL, color: '#808080', message: "ABORTED: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]' (${env.BUILD_URL})")
         }
+
         cleanup {
             echo 'clean up current directory'
             deleteDir()
