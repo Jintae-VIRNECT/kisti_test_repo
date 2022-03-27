@@ -269,7 +269,7 @@ pipeline {
                                             docker run --restart=on-failure:10 \
                                                     -d \
                                                     -e VIRNECT_ENV=staging \
-                                                    -e CONFIG_SERVER=https://stgconfig.virnect.com \
+                                                    -e CONFIG_SERVER=${STG_CONFIG_SERVER} \
                                                     -e WRITE_YOUR=ENVIRONMENT_VARIABLE_HERE \
                                                     -e eureka.instance.ip-address=`hostname -I | awk  \'{print \$1}\'` \
                                                     -p ${PORT}:${PORT} \
@@ -306,7 +306,7 @@ pipeline {
                                             docker run --restart=on-failure:10 \
                                                     -d \
                                                     -e VIRNECT_ENV=onpremise \
-                                                    -e CONFIG_SERVER=http://3.35.50.181:6383 \
+                                                    -e CONFIG_SERVER=${STG_ONPRE_CONFIG_SERVER} \
                                                     -e WRITE_YOUR=ENVIRONMENT_VARIABLE_HERE \
                                                     -p ${PORT}:${PORT} \
                                                     --name=${REPO_NAME} ${aws_ecr_address}/${REPO_NAME}:${NEXT_VERSION}-${BRANCH_NAME}-${BUILD_NUMBER}
@@ -388,7 +388,7 @@ pipeline {
                                             docker run --restart=on-failure:10 \
                                                 -d \
                                                 -e VIRNECT_ENV=production \
-                                                -e CONFIG_SERVER=https://config.virnect.com \
+                                                -e CONFIG_SERVER=${PROD_CONFIG_SERVER} \
                                                 -e WRITE_YOUR=ENVIRONMENT_VARIABLE_HERE \
                                                 -p ${PORT}:${PORT} \
                                                 --name=${REPO_NAME} ${aws_ecr_address}/${REPO_NAME}:${NEXT_VERSION}
