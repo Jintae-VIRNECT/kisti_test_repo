@@ -1559,7 +1559,7 @@
 
 "@virnect/components@1.9.8":
   version "1.9.8"
-  resolved "http://192.168.6.3:4873/@virnect%2fcomponents/-/components-1.9.8.tgz#f2d059db7ac556c48a33ef90cad736dbf5b0a7bf"
+  resolved "http://10.200.0.21:4873/@virnect%2fcomponents/-/components-1.9.8.tgz#f2d059db7ac556c48a33ef90cad736dbf5b0a7bf"
   integrity sha512-ZGTsWDVWb1+m7eqFPteQp6KsvKNFOikHyDKax3gFV94VrrlhNo6VvdgQcisQz75B5VvjLYfKTNVTpmWY06kpOw==
   dependencies:
     "@virnect/ui-assets" "^1.9.8"
@@ -1567,7 +1567,7 @@
 
 "@virnect/eslint-config@^1.0.3":
   version "1.0.4"
-  resolved "http://192.168.6.3:4873/@virnect%2feslint-config/-/eslint-config-1.0.4.tgz#c8e8887d0aea0c91e5c0efe7b8ddbe487bb5d0d9"
+  resolved "http://10.200.0.21:4873/@virnect%2feslint-config/-/eslint-config-1.0.4.tgz#c8e8887d0aea0c91e5c0efe7b8ddbe487bb5d0d9"
   integrity sha512-8baLJiC8GAojVEv/nFZHUOMSJbSlf/HjyNTdAN2jySLvAPQ2wc2H9h6v4Q6nouh9BseVTTIQXSPHROPw207BwA==
   dependencies:
     babel-eslint "^10.1.0"
@@ -1580,7 +1580,7 @@
 
 "@virnect/i18n@^1.1.1":
   version "1.2.0"
-  resolved "http://192.168.6.3:4873/@virnect%2fi18n/-/i18n-1.2.0.tgz#5ce4fa5d0a88b87ba6690ea98b6cc318e0fe556c"
+  resolved "http://10.200.0.21:4873/@virnect%2fi18n/-/i18n-1.2.0.tgz#5ce4fa5d0a88b87ba6690ea98b6cc318e0fe556c"
   integrity sha512-ggsFGAUeXw1f4/kz7YisNzpZL7kJx8EF+kI0Jrp/WPpC4G+VaFg3yWd/0Vleey4bIhSZeFvHTBvPQRiE+UP2JQ==
   dependencies:
     commander "^7.2.0"
@@ -1588,7 +1588,7 @@
 
 "@virnect/logger@^1.0.2":
   version "1.0.2"
-  resolved "http://192.168.6.3:4873/@virnect%2flogger/-/logger-1.0.2.tgz#7b03643d18adb0f74b448e2833cb48f29a4b3145"
+  resolved "http://10.200.0.21:4873/@virnect%2flogger/-/logger-1.0.2.tgz#7b03643d18adb0f74b448e2833cb48f29a4b3145"
   integrity sha512-kk7kP3BMjLxw3JdR7CEutQ3EAeEcB3r07JsUBmcYswB6lmY6LvTAEGzDIL8LjWdRoOP25YMy6/F1G1Um4G2e2g==
   dependencies:
     chalk "^2.4.2"
@@ -1597,7 +1597,7 @@
 
 "@virnect/platform-auth@^1.0.7":
   version "1.0.7"
-  resolved "http://192.168.6.3:4873/@virnect%2fplatform-auth/-/platform-auth-1.0.7.tgz#36c06fc9c3a1c9d5971f51e769591f721a6d9c84"
+  resolved "http://10.200.0.21:4873/@virnect%2fplatform-auth/-/platform-auth-1.0.7.tgz#36c06fc9c3a1c9d5971f51e769591f721a6d9c84"
   integrity sha512-H2ZV0ZWR4HTPjGo1HwHSUTYAtIoe0RE377FpMTlRNq8IH2aFMIbBTL1GwX+REVVqw4SR7nhZ6FErjnE2DXwlTQ==
   dependencies:
     axios "^0.19.2"
@@ -1607,7 +1607,7 @@
 
 "@virnect/stylelint-config@^1.0.2":
   version "1.0.3"
-  resolved "http://192.168.6.3:4873/@virnect%2fstylelint-config/-/stylelint-config-1.0.3.tgz#21e02133087139d3af89996ec4001972d71cb3ec"
+  resolved "http://10.200.0.21:4873/@virnect%2fstylelint-config/-/stylelint-config-1.0.3.tgz#21e02133087139d3af89996ec4001972d71cb3ec"
   integrity sha512-DROzU5Iindx0YWRHaMBwc5/R8QWJ2WV2nOUZ6D7Syq5GCAKeBHiP+Oy5LPJwt++5ZXFsKsCOSoVyIWzBVnwrYg==
   dependencies:
     prettier "^2.2.1"
@@ -1620,7 +1620,7 @@
 
 "@virnect/ui-assets@^1.9.8":
   version "1.9.8"
-  resolved "http://192.168.6.3:4873/@virnect%2fui-assets/-/ui-assets-1.9.8.tgz#868f8d8e82604490e3b9797714f556e4a74b6ddf"
+  resolved "http://10.200.0.21:4873/@virnect%2fui-assets/-/ui-assets-1.9.8.tgz#868f8d8e82604490e3b9797714f556e4a74b6ddf"
   integrity sha512-GMfJ63CEo5+Fc5Ly6R4ORkqu4P31ta9zCdb2YX80w+HbJdQeJ20AVh2+y8dsmn2hkaPjbFUbvTxsLVKAkAGwUA==
 
 "@vue/babel-helper-vue-jsx-merge-props@^1.2.1":
