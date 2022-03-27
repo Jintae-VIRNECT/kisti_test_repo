@@ -150,7 +150,7 @@ pipeline {
             }
         }
 
-
+/*
         stage ('image scanning') {
             when {
                 branch 'develop'
@@ -160,7 +160,7 @@ pipeline {
                 anchore name: 'anchore_images'
             }
         }
- 
+  */
 
         stage ('deploy to development') {
             when {
