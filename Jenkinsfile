@@ -23,7 +23,7 @@ pipeline {
                 slackSend (channel: env.SLACK_CHANNEL, color: '#FFFF00', message: "STARTED: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]' (${env.BUILD_URL})")
             }
         }
-        
+
         stage ('compatibility check') {
             when { anyOf { branch 'master'; branch 'staging'; branch 'develop'} }
             environment {
@@ -73,7 +73,7 @@ pipeline {
             when {
                 branch 'develop'
             }
-            steps {
+            steps { // only service-server
                 sh '''
                     chmod +x ./service-server/gradlew && ./service-server/gradlew jacocoTestReport || IS_FAIL=true
                     if [[ $IS_FAIL = "true" ]]; then
@@ -102,17 +102,17 @@ pipeline {
                 }
             }
         }
-        // rm-service is multiproject. different from other service.
+
         stage ('edit gradle version') {
             steps {
                 script {
                     if ("${BRANCH_NAME}" == 'master') {
                         sh '''
-                            sed -i "/version =/ c\\    version = \'${NEXT_VERSION}\'" build.gradle
+                            sed -i "/version =/ c\\version = \'${NEXT_VERSION}\'" build.gradle
                         '''
                     } else {
                         sh '''
-                            sed -i "/version =/ c\\    version = \'${NEXT_VERSION}-${BRANCH_NAME}-${BUILD_NUMBER}\'" build.gradle
+                            sed -i "/version =/ c\\version = \'${NEXT_VERSION}-${BRANCH_NAME}-${BUILD_NUMBER}\'" build.gradle
                         '''
                     }
                 }
@@ -163,6 +163,7 @@ pipeline {
             }
         }
 
+
         stage ('image scanning') {
             when {
                 branch 'develop'
@@ -172,49 +173,136 @@ pipeline {
                 anchore name: 'anchore_images'
             }
         }
+ 
 
-        
         stage ('deploy to development') {
             when {
                 branch 'develop'
             }
                 
             steps {
-                sh '''
-                    docker login ${NEXUS_REGISTRY}
-                    docker pull ${NEXUS_REGISTRY}/${REPO_NAME}:${NEXT_VERSION}-${BRANCH_NAME}-${BUILD_NUMBER}
-                    count=`docker ps -a | grep ${REPO_NAME} | wc -l`
-                    if [ $count -eq 0 ]
-                    then 
-                        echo "There are no running containers. Starting a new container..."
-                        docker run --restart=on-failure:10 \
-                            -d \
-                            -e VIRNECT_ENV=develop \
-                            -e CONFIG_SERVER=http://192.168.6.3:6383 \
-                            -e WRITE_YOUR=ENVIRONMENT_VARIABLE_HERE \
-                            -p ${PORT}:${PORT} \
-                            --name=${REPO_NAME} ${NEXUS_REGISTRY}/${REPO_NAME}:${NEXT_VERSION}-${BRANCH_NAME}-${BUILD_NUMBER}
-                    else
-                        echo "Found a running container. Downloading old swagger api docs..."
-                        echo "stop the running container..."
-                        docker stop ${REPO_NAME} && docker rm ${REPO_NAME}
-                        echo "Starting a new container..."
-                        docker run --restart=on-failure:10 \
-                            -d \
-                            -e VIRNECT_ENV=develop \
-                            -e CONFIG_SERVER=http://192.168.6.3:6383 \
-                            -e WRITE_YOUR=ENVIRONMENT_VARIABLE_HERE \
-                            -p ${PORT}:${PORT} \
-                            --name=${REPO_NAME} ${NEXUS_REGISTRY}/${REPO_NAME}:${NEXT_VERSION}-${BRANCH_NAME}-${BUILD_NUMBER}
-                    fi
-                '''
+                // develop
+                script {
+                    withCredentials([usernamePassword(credentialsId: 'server_credentials', passwordVariable: 'PASSWORD', usernameVariable: 'USERNAME')]) {
+                        def remote = [:]
+                        remote.name = "${NEXT_VERSION}-${BRANCH_NAME}-${BUILD_NUMBER}" 
+                        remote.host = "${DEV_SERVER}"
+                        remote.allowAnyHosts = true 
+                        remote.user = USERNAME 
+                        remote.password = PASSWORD
+                        remote.failOnError = true
+
+                        sshCommand remote: remote, command: """
+                            docker login ${NEXUS_REGISTRY}
+                            docker pull ${NEXUS_REGISTRY}/${REPO_NAME}:${NEXT_VERSION}-${BRANCH_NAME}-${BUILD_NUMBER}
+                            docker stop ${REPO_NAME} && docker rm ${REPO_NAME} || true
+                            docker run --restart=on-failure:10 \
+                                -d \
+                                -e VIRNECT_ENV=develop \
+                                -e CONFIG_SERVER=${DEV_CONFIG_SERVER} \
+                                -p ${PORT}:${PORT} \
+                                --name=${REPO_NAME} ${NEXUS_REGISTRY}/${REPO_NAME}:${NEXT_VERSION}-${BRANCH_NAME}-${BUILD_NUMBER}
+                        """
+                    }
+                }
+
+                // onpremise
+                script {
+                    withCredentials([usernamePassword(credentialsId: 'server_credentials', passwordVariable: 'PASSWORD', usernameVariable: 'USERNAME')]) {
+                        def remote = [:]
+                        remote.name = "${NEXT_VERSION}-${BRANCH_NAME}-${BUILD_NUMBER}" 
+                        remote.host = "${DEV_ONPREMISE_SERVER}"
+                        remote.allowAnyHosts = true 
+                        remote.user = USERNAME 
+                        remote.password = PASSWORD
+                        remote.failOnError = true
+
+                        sshCommand remote: remote, command: """
+                            docker login ${NEXUS_REGISTRY}
+                            docker pull ${NEXUS_REGISTRY}/${REPO_NAME}:${NEXT_VERSION}-${BRANCH_NAME}-${BUILD_NUMBER}
+                            docker stop ${REPO_NAME} && docker rm ${REPO_NAME} || true
+                            docker run --restart=on-failure:10 \
+                                -d \
+                                -e VIRNECT_ENV=onpremise \
+                                -e CONFIG_SERVER=${DEV_CONFIG_SERVER} \
+                                -p ${PORT}:${PORT} \
+                                --name=${REPO_NAME} ${NEXUS_REGISTRY}/${REPO_NAME}:${NEXT_VERSION}-${BRANCH_NAME}-${BUILD_NUMBER}
+                        """
+                    }
+                }
             }
-                
+
             
 
             post {
                 always {
-                    jiraSendDeploymentInfo site: "${JIRA_URL}", environmentId: 'seoul-headquarters', environmentName: 'seoul-headquarters', environmentType: 'development'
+                    jiraSendDeploymentInfo site: "${JIRA_URL}", environmentId: 'harington-development', environmentName: 'harington-development', environmentType: 'development'
+                    jiraSendDeploymentInfo site: "${JIRA_URL}", environmentId: 'harington-development-onpremise', environmentName: 'harington-development-onpremise', environmentType: 'development'
+                }
+            }
+        }
+
+        stage ('deploy to freezing') {
+            when {
+                branch 'freezing'
+            }
+                
+            steps {
+                // freezing
+                script {
+                    withCredentials([usernamePassword(credentialsId: 'server_credentials', passwordVariable: 'PASSWORD', usernameVariable: 'USERNAME')]) {
+                        def remote = [:]
+                        remote.name = "${NEXT_VERSION}-${BRANCH_NAME}-${BUILD_NUMBER}" 
+                        remote.host = "${DEV_FREEZING_SERVER}"
+                        remote.allowAnyHosts = true 
+                        remote.user = USERNAME 
+                        remote.password = PASSWORD
+                        remote.failOnError = true
+
+                        sshCommand remote: remote, command: """
+                            docker login ${NEXUS_REGISTRY}
+                            docker pull ${NEXUS_REGISTRY}/${REPO_NAME}:${NEXT_VERSION}-${BRANCH_NAME}-${BUILD_NUMBER}
+                            docker stop ${REPO_NAME} && docker rm ${REPO_NAME} || true
+                            docker run --restart=on-failure:10 \
+                                -d \
+                                -e VIRNECT_ENV=freezing \
+                                -e CONFIG_SERVER=${DEV_CONFIG_SERVER} \
+                                -p ${PORT}:${PORT} \
+                                --name=${REPO_NAME} ${NEXUS_REGISTRY}/${REPO_NAME}:${NEXT_VERSION}-${BRANCH_NAME}-${BUILD_NUMBER}
+                        """
+                    }
+                }
+/*
+                // onpremise
+                script {
+                    withCredentials([usernamePassword(credentialsId: 'server_credentials', passwordVariable: 'PASSWORD', usernameVariable: 'USERNAME')]) {
+                        def remote = [:]
+                        remote.name = "${NEXT_VERSION}-${BRANCH_NAME}-${BUILD_NUMBER}" 
+                        remote.host = "${DEV_ONPREMISE_SERVER}"
+                        remote.allowAnyHosts = true 
+                        remote.user = USERNAME 
+                        remote.password = PASSWORD
+                        remote.failOnError = true
+
+                        sshCommand remote: remote, command: """
+                            docker login ${NEXUS_REGISTRY}
+                            docker pull ${NEXUS_REGISTRY}/${REPO_NAME}:${NEXT_VERSION}-${BRANCH_NAME}-${BUILD_NUMBER}
+                            docker stop ${REPO_NAME} && docker rm ${REPO_NAME} || true
+                            docker run --restart=on-failure:10 \
+                                -d \
+                                -e VIRNECT_ENV=onpremise \
+                                -e CONFIG_SERVER=${DEV_CONFIG_SERVER} \
+                                -p ${PORT}:${PORT} \
+                                --name=${REPO_NAME} ${NEXUS_REGISTRY}/${REPO_NAME}:${NEXT_VERSION}-${BRANCH_NAME}-${BUILD_NUMBER}
+                        """
+                    }
+                }
+*/
+            }            
+
+            post {
+                always {
+                    jiraSendDeploymentInfo site: "${JIRA_URL}", environmentId: 'harington-freezing', environmentName: 'harington-freezing', environmentType: 'development'
                 }
             }
         }
@@ -243,11 +331,49 @@ pipeline {
                                         execCommand: """
                                             echo '${REPO_NAME} Container stop and delete'
                                             docker stop ${REPO_NAME} && docker rm ${REPO_NAME} 
+
                                             echo '${REPO_NAME} New Container start'
                                             docker run --restart=on-failure:10 \
                                                     -d \
                                                     -e VIRNECT_ENV=staging \
-                                                    -e CONFIG_SERVER=https://stgconfig.virnect.com \
+                                                    -e CONFIG_SERVER=${STG_CONFIG_SERVER} \
+                                                    -e WRITE_YOUR=ENVIRONMENT_VARIABLE_HERE \
+                                                    -e eureka.instance.ip-address=`hostname -I | awk  \'{print \$1}\'` \
+                                                    -p ${PORT}:${PORT} \
+                                                    --name=${REPO_NAME} ${aws_ecr_address}/${REPO_NAME}:${NEXT_VERSION}-${BRANCH_NAME}-${BUILD_NUMBER}
+                                        """
+                                    )
+                                ]
+                            )
+                        ]
+                    )
+                }
+                
+                // onpremise
+                script {
+                    sshPublisher(
+                        continueOnError: false, failOnError: true,
+                        publishers: [
+                            sshPublisherDesc(
+                                configName: 'aws-onpremise-qa',
+                                verbose: true,
+                                transfers: [
+                                    sshTransfer(
+                                        execCommand: 'aws ecr get-login --region ap-northeast-2 --no-include-email | bash'
+                                    ),
+                                    sshTransfer(
+                                        execCommand: "docker pull ${aws_ecr_address}/${REPO_NAME}:${NEXT_VERSION}-${BRANCH_NAME}-${BUILD_NUMBER}"
+                                    ),
+                                    sshTransfer(
+                                        execCommand: """
+                                            echo '${REPO_NAME} Container stop and delete'
+                                            docker stop ${REPO_NAME} && docker rm ${REPO_NAME} 
+
+                                            echo '${REPO_NAME} New Container start'
+                                            docker run --restart=on-failure:10 \
+                                                    -d \
+                                                    -e VIRNECT_ENV=onpremise \
+                                                    -e CONFIG_SERVER=${STG_ONPRE_CONFIG_SERVER} \
                                                     -e WRITE_YOUR=ENVIRONMENT_VARIABLE_HERE \
                                                     -p ${PORT}:${PORT} \
                                                     --name=${REPO_NAME} ${aws_ecr_address}/${REPO_NAME}:${NEXT_VERSION}-${BRANCH_NAME}-${BUILD_NUMBER}
@@ -262,7 +388,8 @@ pipeline {
             
             post {
                 always {
-                    jiraSendDeploymentInfo site: "${JIRA_URL}", environmentId: 'seoul-stg', environmentName: 'seoul-stg', environmentType: 'staging'
+                    jiraSendDeploymentInfo site: "${JIRA_URL}", environmentId: 'aws-stging', environmentName: 'aws-stging', environmentType: 'staging'
+                    jiraSendDeploymentInfo site: "${JIRA_URL}", environmentId: 'aws-stging-onpremise', environmentName: 'aws-stging-onpremise', environmentType: 'staging'
                 }
             }
         }
@@ -304,6 +431,8 @@ pipeline {
                 
             steps {
                 script {
+                    echo "deploy production"
+
                     // pull and run container
                     sshPublisher(
                         continueOnError: false, failOnError: true,
@@ -322,11 +451,12 @@ pipeline {
                                         execCommand: """
                                             echo '${REPO_NAME} Container stop and delete'
                                             docker stop ${REPO_NAME} && docker rm ${REPO_NAME} 
+
                                             echo '${REPO_NAME} New Container start'
                                             docker run --restart=on-failure:10 \
                                                 -d \
                                                 -e VIRNECT_ENV=production \
-                                                -e CONFIG_SERVER=https://config.virnect.com \
+                                                -e CONFIG_SERVER=${PROD_CONFIG_SERVER} \
                                                 -e WRITE_YOUR=ENVIRONMENT_VARIABLE_HERE \
                                                 -p ${PORT}:${PORT} \
                                                 --name=${REPO_NAME} ${aws_ecr_address}/${REPO_NAME}:${NEXT_VERSION}
@@ -341,7 +471,7 @@ pipeline {
 
             post {
                 always {
-                    jiraSendDeploymentInfo site: "${JIRA_URL}", environmentId: 'seoul-prod', environmentName: 'seoul-prod', environmentType: 'production'
+                    jiraSendDeploymentInfo site: "${JIRA_URL}", environmentId: 'aws-production', environmentName: 'aws-production', environmentType: 'production'
                 }
             }
         }
@@ -357,6 +487,7 @@ pipeline {
         aborted {
             slackSend (channel: env.SLACK_CHANNEL, color: '#808080', message: "ABORTED: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]' (${env.BUILD_URL})")
         }
+
         cleanup {
             echo 'clean up current directory'
             deleteDir()
