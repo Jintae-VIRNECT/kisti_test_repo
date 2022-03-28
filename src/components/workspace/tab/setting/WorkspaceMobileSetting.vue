@@ -56,7 +56,6 @@
 </template>
 
 <script>
-import { PerfectScrollbar } from 'vue2-perfect-scrollbar'
 import TabButton from '../../partials/WorkspaceTabButton'
 import SetVideo from './WorkspaceSetVideo'
 import SetAudio from './WorkspaceSetAudio'
@@ -66,7 +65,6 @@ import { mapGetters } from 'vuex'
 
 export default {
   components: {
-    PerfectScrollbar,
     TabButton,
     SetVideo,
     SetAudio,
@@ -109,5 +107,3 @@ export default {
   },
 }
 </script>
-
-<style src="vue2-perfect-scrollbar/dist/vue2-perfect-scrollbar.css" />

@@ -52,13 +52,8 @@ function calcOffset(element) {
 const RIGHT_TOLERANCE = 10 //우측 여유 영역
 //const TOP_TOLERANCE = 10 //bottom-end 일때 useTopMargin이 true이면 top에 10px 여유추가
 
-import { PerfectScrollbar } from 'vue2-perfect-scrollbar'
-
 export default {
   name: 'Popover',
-  components: {
-    PerfectScrollbar,
-  },
   props: {
     title: String,
     trigger: {
