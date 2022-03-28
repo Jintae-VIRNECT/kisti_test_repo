@@ -271,13 +271,6 @@ export default {
         height: 200px;
       }
     }
-
-    &.scroll {
-      > .popover--body {
-        overflow-y: scroll;
-        height: 200px;
-      }
-    }
   }
 }
 </style>

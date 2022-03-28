@@ -25,12 +25,16 @@ import { version } from '@/package.json'
 
 import { logger, debug } from 'utils/logger'
 
+import PerfectScrollbar from 'vue2-perfect-scrollbar'
+import 'vue2-perfect-scrollbar/dist/vue2-perfect-scrollbar.css'
+
 import '../../registerServiceWorker'
 
 Vue.use(DayJS)
 Vue.use(PUSH)
 Vue.use(VueToasted)
 Vue.use(Alarm)
+Vue.use(PerfectScrollbar)
 
 Vue.mixin(globalMixin)
 Vue.use(Vue2Scrollbar)
