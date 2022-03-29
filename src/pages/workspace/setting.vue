@@ -57,6 +57,7 @@
                         action="#"
                         :auto-upload="false"
                         :on-change="imageSelected"
+                        accept=".jpg,.png,.ico"
                         :show-file-list="false"
                         :disabled="activeWorkspace.role !== 'MASTER'"
                         drag
@@ -114,6 +115,7 @@
                       type="primary"
                       @click="submit"
                       v-if="activeWorkspace.role === 'MASTER'"
+                      :disabled="disabledSubmitButton"
                     >
                       {{ $t('common.update') }}
                     </el-button>
@@ -166,6 +168,7 @@ export default {
         description: '',
       },
       showLeaveModal: false,
+      disabledSubmitButton: false,
     }
   },
   methods: {
@@ -176,6 +179,9 @@ export default {
         reader.onload = () => {
           this.file = reader.result
         }
+        this.disabledSubmitButton = false
+      } else {
+        this.disabledSubmitButton = true
       }
     },
     async submit() {
