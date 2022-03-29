@@ -24,7 +24,7 @@ import com.virnect.uaa.domain.user.exception.UserServiceException;
 
 @Slf4j
 @Service
-@Profile(value = {"dev", "local", "develop", "onpremise","test"})
+@Profile(value = {"dev", "local", "develop", "onpremise", "test", "freezing"})
 @RequiredArgsConstructor
 public class MinioFileService implements FileService {
 	private static final String URL_SEPARATOR = "/";
