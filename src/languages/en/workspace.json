@@ -126,7 +126,7 @@
           "rule1": "File names must start with an English letter, and only lowercase letters, numbers, and special characters (_) (.) can be used.",
           "rule2": "Enter the file names in the order of {product}_{devicetype}_{versioncode}.{extension}.",
           "product": "product: remote, make, view",
-          "deviceType": "deviceType: mobile, hololens2, linkflow, realwear, pc",
+          "deviceType": "deviceType: mobile, hololens, linkflow, realwear, pc",
           "versionCode": "versionCode:  Enter up to 7 digits in the order of major.minor.patch.optional.",
           "extension": "extension: apk, exe, appx",
           "attach": "Attach file",
