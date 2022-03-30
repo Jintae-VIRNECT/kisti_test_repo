@@ -44,7 +44,7 @@ import com.virnect.content.global.error.ErrorCode;
  * DESCRIPTION:
  */
 @Slf4j
-@Profile({"local", "develop", "onpremise", "test"})
+@Profile({"local", "develop", "onpremise", "test","freezing"})
 @Component
 @RequiredArgsConstructor
 public class MinioUploadService implements FileUploadService {
