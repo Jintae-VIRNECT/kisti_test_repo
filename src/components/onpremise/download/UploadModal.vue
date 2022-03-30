@@ -30,6 +30,9 @@
               {{ $t('workspace.onpremiseSetting.upload.modal.versionCode') }}
             </li>
             <li>
+              {{ $t('workspace.onpremiseSetting.upload.modal.example') }}
+            </li>
+            <li>
               {{ $t('workspace.onpremiseSetting.upload.modal.extension') }}
             </li>
           </ul>
