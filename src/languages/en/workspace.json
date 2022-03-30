@@ -127,7 +127,7 @@
           "rule2": "Enter the file names in the order of {product}_{devicetype}_{versioncode}.{extension}.",
           "product": "product: remote, make, view",
           "deviceType": "deviceType: mobile, hololens, linkflow, realwear, pc",
-          "versionCode": "versionCode:  Enter up to 7 digits in the order of major.minor.patch.optional.",
+          "versionCode": "versionCode: Enter 7 digits in the order of major.minor.patch.optional.",
           "extension": "extension: apk, exe, appx",
           "attach": "Attach file",
           "explanation": "When the installation file upload is completed, an update notification window is created when the app is re-run.",
