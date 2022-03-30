@@ -127,7 +127,7 @@
           "rule2": "파일명을 {product}_{deviceType}_{versionCode}.{extension} 순으로 입력하세요.",
           "product": "product: remote, make, view",
           "deviceType": "deviceType: mobile, hololens, linkflow, realwear, pc",
-          "versionCode": "versionCode: major.minor.patch.optional 순으로 최대 7자리까지 입력",
+          "versionCode": "versionCode: major.minor.patch.optional 순으로 7자리까지 입력",
           "extension": "extension: apk, exe, appx",
           "attach": "파일 첨부",
           "explanation": "설치 파일 업로드를 완료하면, App 재실행 시 업데이트 알림창이 생성됩니다.",
