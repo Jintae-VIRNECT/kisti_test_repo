@@ -36,7 +36,7 @@ public class GlobalExceptionHandler {
 
 	@ExceptionHandler(AppServiceException.class)
 	protected ResponseEntity<ErrorResponseMessage> handleUploadServiceException(final AppServiceException e) {
-		log.error("handleUploadServiceException. {}", e.getMessage());
+		log.error("handleAppServiceException. {}", e);
 		return ResponseEntity.ok(new ErrorResponseMessage(e.getErrorCode()));
 	}
 }
