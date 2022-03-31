@@ -7,6 +7,7 @@ import org.springframework.util.AntPathMatcher;
 import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBroker;
 import org.springframework.web.socket.config.annotation.StompEndpointRegistry;
 import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerConfigurer;
+import org.springframework.web.socket.config.annotation.WebSocketTransportRegistration;
 
 import lombok.RequiredArgsConstructor;
 
@@ -42,5 +43,14 @@ public class WebSocketConfiguration implements WebSocketMessageBrokerConfigurer 
 	@Override
 	public void configureClientInboundChannel(ChannelRegistration registration) {
 		registration.interceptors(stompChannelInterceptor);
+	}
+
+	@Override
+	public void configureWebSocketTransport(
+		WebSocketTransportRegistration registry
+	) {
+		registry.setMessageSizeLimit(1024 * 1024);
+		registry.setSendTimeLimit(10 * 10000);
+		registry.setSendBufferSizeLimit(512 * 1024);
 	}
 }
