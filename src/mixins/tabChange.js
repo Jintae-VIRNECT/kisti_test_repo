@@ -3,14 +3,12 @@ import toastMixin from 'mixins/toast'
 import confirmMixin from 'mixins/confirm'
 
 import { VIEW, ACTION } from 'configs/view.config'
-import { DEVICE } from 'configs/device.config'
 import {
   DRAWING,
   SIGNAL,
   CAPTURE_PERMISSION,
   ROLE,
   AR_3D_FILE_SHARE_STATUS,
-  AR_3D_CONTENT_SHARE,
 } from 'configs/remote.config'
 import { getResolutionScale } from 'utils/settingOptions'
 
@@ -323,24 +321,6 @@ export default {
       }
 
       this.setView(VIEW.AR)
-
-      //AR 공유 기기가 홀로렌즈인 경우 : 3d 공유 기능모드로만 사용
-      if (this.mainView.deviceType === DEVICE.HOLOLENS) {
-        this.debug('tabChange :: hololense ar 3d start')
-        this.activate3dShareMode()
-      }
-    },
-    activate3dShareMode() {
-      this.setAction(ACTION.AR_3D)
-
-      const targetUserId = this.mainView.id
-
-      this.toastDefault(this.$t('service.chat_ar_3d_start'))
-
-      //시그널 전송 : start 3D contents share
-      this.$call.sendAr3dSharing(AR_3D_CONTENT_SHARE.START_SHARE, {
-        targetUserId,
-      })
     },
     showArRejected() {
       this.toastDefault(this.$t('service.toast_refused_ar'))
