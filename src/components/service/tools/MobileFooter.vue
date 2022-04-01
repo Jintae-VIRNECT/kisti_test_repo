@@ -1,6 +1,6 @@
 <template>
   <footer class="mobile-service-footer">
-    <div class="footer-tab-container">
+    <div v-if="!is3dControlling" class="footer-tab-container">
       <button
         v-for="menu in tabMenus"
         :class="{
@@ -50,7 +50,7 @@
       </template>
 
       <!-- 리더 & ar 공유 & 3d 공유 -->
-      <template v-else-if="is3dFileUiVisible">
+      <template v-else-if="is3dFileUiVisible && !is3dControlling">
         <mobile-file-list-button
           :disabled="ar3dFileList.length === 0 && uploadingFile === ''"
           @openFileListModal="open3dFileListModal"
@@ -61,6 +61,10 @@
           @uploaded="on3dFileUploaded"
           @uploadFailed="onFileUploadFailed"
         ></mobile-upload-button>
+        <mobile-3d-control-button
+          v-if="is3dControlBtnActive"
+          @onClick="onClick3dControlBtn"
+        ></mobile-3d-control-button>
       </template>
     </div>
   </footer>
@@ -75,6 +79,7 @@ import MobileUploadButton from './partials/MobileUploadButton'
 import MobileFileListButton from './partials/MobileFileListButton'
 import MobileDownloadButton from './partials/MobileDownloadButton'
 import MobileDrawingExitButton from './partials/MobileDrawingExitButton'
+import Mobile3dControlButton from './partials/Mobile3dControlButton'
 
 import fileShareEventQueueMixin from 'mixins/fileShareEventQueue'
 
@@ -94,6 +99,7 @@ export default {
     MobileFileListButton,
     MobileDownloadButton,
     MobileDrawingExitButton,
+    Mobile3dControlButton,
   },
   props: {
     fetchedFileList: {
@@ -121,6 +127,10 @@ export default {
       'roomInfo',
       'myInfo',
       'viewAction',
+      'share3dContent',
+      'is3dPositionPicking',
+      'isControlPopOverVisible',
+      'controlActive',
     ]),
     isMainViewOn() {
       return this.mainView && this.mainView.id && this.mainView.video
@@ -134,6 +144,13 @@ export default {
         this.view === VIEW.AR &&
         this.viewAction === ACTION.AR_3D
       )
+    },
+    is3dControlBtnActive() {
+      //3d 공유가 이미 출력 중인 경우
+      return this.share3dContent.objectName && !this.is3dPositionPicking
+    },
+    is3dControlling() {
+      return this.isControlPopOverVisible && this.controlActive
     },
   },
   watch: {
@@ -247,6 +264,9 @@ export default {
       this.toastDefault(this.$t('service.toast_drawing_end'))
       this.showImage({}) //공유중 파일 초기화
       this.setView(VIEW.STREAM) //탭 실시간 공유로 이동
+    },
+    onClick3dControlBtn() {
+      this.$emit('onClick3dControlBtn')
     },
   },
   created() {

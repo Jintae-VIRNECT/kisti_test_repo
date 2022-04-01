@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="32px" height="32px" viewBox="0 0 32 32" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>6FC2BE9B-4C41-4626-9BB8-9281E18D61D4@1x</title>
+    <defs>
+        <path d="M13.2792757,11.158891 L19.3088296,5.80882025 C19.5153831,5.62554374 19.5342528,5.30952411 19.3509763,5.10297065 C19.337778,5.08809615 19.3237041,5.07402227 19.3088296,5.06082401 L13.2792757,-0.289246756 C13.0727222,-0.472523269 12.7567026,-0.453653575 12.5734261,-0.247100117 C12.492252,-0.155616583 12.4474242,-0.0375534393 12.4474242,0.0847513647 L12.4474242,10.7848929 C12.4474242,11.0610353 12.6712818,11.2848929 12.9474242,11.2848929 C13.069729,11.2848929 13.1877921,11.2400651 13.2792757,11.158891 Z" id="path-1"></path>
+    </defs>
+    <g id="Remote_Cowork" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="3CI_0012-_3D-콘텐츠-제어-패널_리더-화면-_X,Z,Y-이동-버튼" transform="translate(-1425.000000, -579.000000)">
+            <g id="content-control-panel" transform="translate(1149.000000, 506.000000)">
+                <g id="btn_move_key" transform="translate(115.000000, 65.000000)">
+                    <g id="btn_-Z_move" transform="translate(153.000000, 0.000000)">
+                        <g id="icon_-Z" transform="translate(8.000000, 8.000000)">
+                            <rect id="tr" x="0" y="0" width="32" height="32"></rect>
+                            <path d="M12.7832031,20.6928711 L12.7832031,19.4487305 L9.45068359,19.4487305 L9.45068359,20.6928711 L12.7832031,20.6928711 Z M20.6542969,24 L20.6542969,22.7177734 L15.7158203,22.7177734 L20.5019531,15.7734375 L20.5019531,14.7578125 L13.8051758,14.7578125 L13.8051758,16.0527344 L18.5532227,16.0527344 L13.7734375,22.9589844 L13.7734375,24 L20.6542969,24 Z" id="-Z" fill="#5E666D" fill-rule="nonzero"></path>
+                            <mask id="mask-2" fill="white">
+                                <use xlink:href="#path-1"></use>
+                            </mask>
+                            <use id="icon/navigation/arrow_right_24px-2" fill="#32373F" fill-rule="nonzero" transform="translate(15.962204, 5.434819) rotate(-90.000000) translate(-15.962204, -5.434819) " xlink:href="#path-1"></use>
+                        </g>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

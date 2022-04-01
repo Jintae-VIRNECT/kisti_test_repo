@@ -271,6 +271,13 @@
     "guest_invite_email_please_input_email_address":"Please enter email address.",
     "guest_invite_email_validation_failed": "Wrong email address format.",
 
+    "3d_content_control":"Content Control",
+    "3d_content_control_permission_requested":"requested permission to control 3D content.​",
+    "3d_content_control_permission_requesting":"Requesting permission to control 3D content.​",
+    "3d_content_control_request_denied":"Control permission request denied.",
+    "3d_content_control_request_ask":"Request permission to control 3D content?"
+
     "room_exit_question":"Do you want to end the Session?"
+
   }
 }

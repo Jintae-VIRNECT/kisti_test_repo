@@ -83,6 +83,7 @@
       @uploading="onUploading"
       @uploaded="onUploaded"
       @uploadFailed="onUploadFailed"
+      @onClick3dControlBtn="onClick3dControlBtn"
     ></mobile-footer>
     <reconnect-modal :visible.sync="connectVisible"></reconnect-modal>
     <setting-modal></setting-modal>
@@ -119,6 +120,12 @@
       :fileList="ar3dFileList"
       @3dFileListUpdate="on3dFileListUpdate"
     ></mobile-3d-file-list-modal>
+    <control-3d-request-modal
+      :visible="isRequestModalVisible"
+      @requestSend="requestSend"
+      @cancel="onRequestCancel"
+    >
+    </control-3d-request-modal>
   </section>
 </template>
 
@@ -135,6 +142,7 @@ import { URLS } from 'configs/env.config'
 import localRecorderMixin from 'mixins/localRecorder'
 import serverRecordMixin from 'mixins/serverRecorder'
 import confirmMixin from 'mixins/confirm'
+import ar3dControlMixin from 'mixins/ar3dControl'
 
 import Store from 'stores/remote/store'
 import { checkInput } from 'utils/deviceCheck'
@@ -142,6 +150,7 @@ import { getVisibilityName } from 'utils/pageVisibility'
 import ReconnectModal from './modal/ReconnectModal'
 
 import { mapGetters, mapActions, mapMutations } from 'vuex'
+
 export default {
   name: 'ServiceLayout',
   beforeRouteEnter(to, from, next) {
@@ -170,7 +179,12 @@ export default {
 
     return next()
   },
-  mixins: [localRecorderMixin, serverRecordMixin, confirmMixin],
+  mixins: [
+    localRecorderMixin,
+    serverRecordMixin,
+    confirmMixin,
+    ar3dControlMixin,
+  ],
   components: {
     ReconnectModal,
     HeaderSection,
@@ -191,6 +205,7 @@ export default {
     MobileShareFileListModal: () => import('./modal/MobileShareFileListModal'),
     Mobile3dFileListModal: () => import('./modal/MobileShareFileListModal'),
     Share3d: () => import('./ar/3dcontents/Share3D'),
+    Control3dRequestModal: () => import('./modal/Control3dRequestModal'),
   },
   data() {
     return {
@@ -230,6 +245,7 @@ export default {
       'useLocalRecording',
       'coworkTimeout',
       'viewAction',
+      'isRequestModalVisible',
     ]),
     isLeader() {
       return this.account.roleType === ROLE.LEADER

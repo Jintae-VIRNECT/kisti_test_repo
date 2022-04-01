@@ -180,6 +180,40 @@
   }
 }
 
+.control-3d-btn-wrap {
+  position: absolute;
+  right: 17px;
+  bottom: 16px;
+
+  .control-3d-btn-container{
+    position: relative;
+  }
+}
+
+.ar-3d-control-btn-tooltip.tooltip{
+  // position: absolute;
+  // right: 17px;
+  // bottom: 16px;
+}
+
+.control-3d-btn{
+  width: 38px;
+  height: 38px;
+  border-radius: 2px;
+  background-image : url("~assets/image/call/mdpi_icon_contentcontrol.svg");
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 24px;
+  &.on,
+  &:hover{
+    background-color: rgba(#ffffff, 0.2);
+  }
+  &:disabled{
+    pointer-events: none;
+    opacity: 0.4;
+  }
+}
+
 @include responsive-mobile {
   .ar-view {
     height: 100%;
@@ -227,5 +261,32 @@
         @include fontLevel(75);
       }
     } 
+  }
+
+  .control-3d-exit-btn{
+    position: absolute;
+    top: 68px;
+    left: 13px;
+    padding: 0.7rem 2.8rem 0.7rem 0.8rem;
+    background-color: rgba(#121314, 0.8);
+    border-radius: 4px;
+    @include fontLevel(50);
+    &::after{
+      position: absolute;
+      right: 8px;
+      content: "";
+      width: 16px;
+      height: 16px;
+      background-image: url(~assets/image/ic_close_24.svg);
+      background-size: 16px;
+    }
+  }
+
+  .content-control-section{
+    position: absolute;
+    width: 100%;
+    bottom: 0px;
+    padding: 0 18px 18px 18px;
+    flex-direction: column;
   }
 }
