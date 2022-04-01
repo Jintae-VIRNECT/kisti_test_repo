@@ -383,24 +383,6 @@ export default {
       }
 
       this.setView(VIEW.AR)
-
-      //AR 공유 기기가 홀로렌즈인 경우 : 3d 공유 기능모드로만 사용
-      if (this.mainView.deviceType === DEVICE.HOLOLENS) {
-        this.activate3dShareMode()
-      }
-    },
-
-    activate3dShareMode() {
-      this.setAction(ACTION.AR_3D)
-
-      const targetUserId = this.mainView.id
-
-      this.toastDefault(this.$t('service.chat_ar_3d_start'))
-
-      //시그널 전송 : start 3D contents share
-      this.$call.sendAr3dSharing(AR_3D_CONTENT_SHARE.START_SHARE, {
-        targetUserId,
-      })
     },
 
     startShare(event) {
