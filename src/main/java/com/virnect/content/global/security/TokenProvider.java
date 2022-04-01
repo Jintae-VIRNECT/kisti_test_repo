@@ -5,7 +5,7 @@ import java.util.Base64;
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
+import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
@@ -55,7 +55,7 @@ public class TokenProvider {
 		return null;
 	}
 
-	public String getTokenByStompHeader(StompHeaderAccessor accessor) {
+	public String getTokenByStompHeader(SimpMessageHeaderAccessor accessor) {
 		String authorizationToken = accessor.getFirstNativeHeader(AUTHORIZATION_HEADER);
 		if (StringUtils.hasText(authorizationToken) && authorizationToken.startsWith(BEARER_PREFIX)) {
 			int tokenSize = authorizationToken.length();

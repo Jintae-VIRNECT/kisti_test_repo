@@ -1,5 +1,6 @@
 package com.virnect.content.global.config;
 
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.simp.config.ChannelRegistration;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;
@@ -8,19 +9,24 @@ import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBr
 import org.springframework.web.socket.config.annotation.StompEndpointRegistry;
 import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerConfigurer;
 import org.springframework.web.socket.config.annotation.WebSocketTransportRegistration;
+import org.springframework.web.socket.server.standard.ServletServerContainerFactoryBean;
 
 import lombok.RequiredArgsConstructor;
 
+import com.virnect.content.global.websocket.CustomWebSocketHandlerDecoratorFactory;
 import com.virnect.content.global.websocket.HandShakeInterceptor;
-import com.virnect.content.global.websocket.StompChannelInterceptor;
 import com.virnect.content.global.websocket.StompErrorHandler;
+import com.virnect.content.global.websocket.StompInboundInterceptor;
+import com.virnect.content.global.websocket.StompOutboundInterceptor;
 
 @Configuration
 @EnableWebSocketMessageBroker
 @RequiredArgsConstructor
 public class WebSocketConfiguration implements WebSocketMessageBrokerConfigurer {
-	private final StompChannelInterceptor stompChannelInterceptor;
+	private final StompInboundInterceptor stompInboundInterceptor;
 	private final StompErrorHandler stompErrorHandler;
+	private final CustomWebSocketHandlerDecoratorFactory webSocketHandlerDecoratorFactory;
+	private final StompOutboundInterceptor stompOutboundInterceptor;
 
 	@Override
 	public void registerStompEndpoints(StompEndpointRegistry registry) {
@@ -42,7 +48,12 @@ public class WebSocketConfiguration implements WebSocketMessageBrokerConfigurer 
 
 	@Override
 	public void configureClientInboundChannel(ChannelRegistration registration) {
-		registration.interceptors(stompChannelInterceptor);
+		registration.interceptors(stompInboundInterceptor);
+	}
+
+	@Override
+	public void configureClientOutboundChannel(ChannelRegistration registration) {
+		registration.interceptors(stompOutboundInterceptor);
 	}
 
 	@Override
@@ -50,7 +61,16 @@ public class WebSocketConfiguration implements WebSocketMessageBrokerConfigurer 
 		WebSocketTransportRegistration registry
 	) {
 		registry.setMessageSizeLimit(1024 * 1024);
-		registry.setSendTimeLimit(10 * 10000);
-		registry.setSendBufferSizeLimit(512 * 1024);
+		registry.setSendTimeLimit(60 * 10000);
+		registry.setSendBufferSizeLimit(1024 * 1024);
+		registry.setDecoratorFactories(webSocketHandlerDecoratorFactory);
+	}
+
+
+	@Bean
+	public ServletServerContainerFactoryBean createServletServerContainerFactoryBean() {
+		ServletServerContainerFactoryBean container = new ServletServerContainerFactoryBean();
+		container.setMaxTextMessageBufferSize(1048576); //(byte).1mb.
+		return container;
 	}
 }
