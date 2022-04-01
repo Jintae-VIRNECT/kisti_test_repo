@@ -271,7 +271,12 @@
 	"guest_invite_email_please_input_email_address": "請輸入郵箱地址。",
 	"guest_invite_email_validation_failed": "不是正確的郵箱形式。",
 
-	"room_exit_question":"確定要結束協作嗎？"
-    
+	"room_exit_question":"確定要結束協作嗎？",
+
+	"3d_content_control":"內容控制",
+  	"3d_content_control_permission_requested":"請求了控制 3D 內容的權限。",
+    "3d_content_control_permission_requesting":"請求控制 3D 內容的權限。",
+    "3d_content_control_request_denied":"控制權限請求被拒絕。",
+    "3d_content_control_request_ask":"請求控制 3D 內容的權限？"
   }
 }

@@ -271,7 +271,12 @@
 	"guest_invite_email_please_input_email_address": "Por favor introduzca la dirección de correo electrónico.",
 	"guest_invite_email_validation_failed": "Formato de dirección de correo electrónico incorrecto.",
 
-	"room_exit_question":"¿Seguro que quieres terminar la colaboración?"
+	"room_exit_question":"¿Seguro que quieres terminar la colaboración?",
 
+		"3d_content_control":"Control de contenido",
+  	"3d_content_control_permission_requested":"solicitó permiso para controlar el contenido 3D.​",
+    "3d_content_control_permission_requesting":"Solicitar permiso para controlar contenido 3D.",
+    "3d_content_control_request_denied":"Solicitud de permiso de control denegada.",
+    "3d_content_control_request_ask":"¿Solicitar permiso para controlar el contenido 3D?"
   }
 }
