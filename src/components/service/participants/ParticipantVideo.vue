@@ -56,17 +56,16 @@
         </span>
       </div>
       <div class="participant-video__device">
-        <img
-          v-if="participant.hasVideo && !participant.video"
-          :src="cameraOffIconUrl"
-        />
+        <img v-if="isCameraIconVisible" :src="cameraOffIconUrl" alt="camera" />
         <template v-if="!isMe">
           <img
             v-if="participant.hasAudio"
             :src="participant.audio ? micOnIconUrl : micOffIconUrl"
+            alt="mic"
           />
           <img
             :src="participant.speaker ? speakerOnIconUrl : speakerOffIconUrl"
+            alt="speaker"
           />
         </template>
       </div>
@@ -118,7 +117,7 @@
 import { mapGetters, mapActions } from 'vuex'
 import { ROLE } from 'configs/remote.config'
 import { VIEW } from 'configs/view.config'
-import { CAMERA } from 'configs/device.config'
+import { CAMERA, DEVICE } from 'configs/device.config'
 import { CAMERA_STATE } from 'configs/status.config'
 import { proxyUrl } from 'utils/file'
 import toastMixin from 'mixins/toast'
@@ -159,6 +158,10 @@ export default {
       'restrictedRoom',
       'participants',
     ]),
+    isCameraIconVisible() {
+      //물리적인 카메라는 있으나 참가자가 카메라를 off 한 경우
+      return this.participant.hasVideo && !this.participant.video
+    },
     cameraOffIconUrl() {
       return this.isMobileSize
         ? require('assets/image/call/mdpi_icon_stream_off_new.svg')
@@ -245,7 +248,6 @@ export default {
   },
   watch: {
     'participant.nickname': 'participantInited',
-    participant() {},
     cameraStatus(status, oldStatus) {
       if (
         status === CAMERA_STATE.UNAVAILABLE ||
@@ -261,12 +263,18 @@ export default {
           type: 'system',
         })
       } else if (status === CAMERA_STATE.BACKGROUND) {
+        if (this.isMobileWithScreenShare()) return
+
         this.addChat({
           name: this.participant.nickname,
           status: 'stream-background',
           type: 'system',
         })
       } else if (status === CAMERA_STATE.ON) {
+        // AOS 앱이 화면 공유중 백그라운드 <-> 포어그라운드 전환되어도
+        // 문구 출력하지 않기 위함
+        if (this.isMobileWithScreenShare()) return
+
         this.addChat({
           name: this.participant.nickname,
           status: 'stream-start',
@@ -274,6 +282,7 @@ export default {
         })
       }
     },
+    'participant.screenShare': 'screenShareChanged',
   },
   methods: {
     ...mapActions(['setMainView', 'addChat']),
@@ -408,6 +417,28 @@ export default {
         return
       }
       this.$call.sendVideo(this.participant.id, true)
+    },
+    screenShareChanged(current, before) {
+      //AOS에서 최초 화면 공유시 스트림 재개 메시지 출력
+      const isFreshStart =
+        this.participant.cameraStatus === CAMERA.CAMERA_OFF &&
+        this.participant.deviceType === DEVICE.MOBILE &&
+        current === true &&
+        before === false
+
+      if (isFreshStart) {
+        this.addChat({
+          name: this.participant.nickname,
+          status: 'stream-start',
+          type: 'system',
+        })
+      }
+    },
+    isMobileWithScreenShare() {
+      return (
+        this.participant.screenShare === true &&
+        this.participant.deviceType === DEVICE.MOBILE
+      )
     },
   },
   beforeDestroy() {
