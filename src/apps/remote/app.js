@@ -20,8 +20,7 @@ import call from 'plugins/remote/call'
 
 import PUSH from 'plugins/remote/push'
 
-import { version } from '@/package.json'
-// const version = '2.0'
+import packageInfo from '../../../package.json'
 
 import { logger, debug } from 'utils/logger'
 
@@ -59,8 +58,7 @@ if ('remote.virnect.com' === location.host) {
 
 const EventBus = new Vue()
 Vue.prototype.$eventBus = EventBus
-// Vue.prototype.$version = version.replace(/-\w/, '')
-Vue.prototype.$version = version.split('-')[0]
+Vue.prototype.$version = packageInfo.version.split('-')[0]
 
 const app = new Vue({
   el: '#container',
@@ -77,7 +75,7 @@ export default app
 setTimeout(
   console.log.bind(
     console,
-    `%cVIRNECT Remote v${version.replace(/-/, '.')}`,
+    `%cVIRNECT Remote v${packageInfo.version.replace(/-/, '.')}`,
     'font-size:25px;color:#0f75f5;font-weight:700;font-family:roboto',
   ),
 )
