@@ -11,6 +11,7 @@
 <script>
 import toolMixin from './toolMixin'
 import toastMixin from 'mixins/toast'
+import { CAMERA, DEVICE } from 'configs/device.config'
 import { ACTION } from 'configs/view.config'
 import { ROLE } from 'configs/remote.config'
 import { mapGetters } from 'vuex'
@@ -23,7 +24,7 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['allowPointing', 'viewForce']),
+    ...mapGetters(['allowPointing', 'viewForce', 'mainView']),
     canPointing() {
       if (this.disabled) {
         return false
@@ -31,13 +32,28 @@ export default {
       if (!this.viewForce) {
         return false
       }
+      const isMobileWithScreenShareAndBackground =
+        this.mainView.screenShare &&
+        this.mainView.deviceType === DEVICE.MOBILE &&
+        this.mainView.cameraStatus === CAMERA.APP_IS_BACKGROUND
+      if (isMobileWithScreenShareAndBackground) return false
+
       if (this.account.roleType === ROLE.LEADER) {
         return true
       }
-      if (this.allowPointing) {
-        return true
-      } else {
-        return false
+
+      return this.allowPointing
+    },
+  },
+  watch: {
+    canPointing(current) {
+      const isMobileWithScreenShareAndBackground =
+        this.mainView.screenShare &&
+        this.mainView.deviceType === DEVICE.MOBILE &&
+        this.mainView.cameraStatus === CAMERA.APP_IS_BACKGROUND
+
+      if (!current && isMobileWithScreenShareAndBackground) {
+        this.setAction('default')
       }
     },
   },
@@ -48,7 +64,6 @@ export default {
         return
       }
       if (!this.canPointing) {
-        // TODO: MESSAGE
         this.toastDefault(this.$t('service.tool_pointing_block'))
         return
       }
