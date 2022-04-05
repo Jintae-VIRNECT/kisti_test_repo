@@ -52,13 +52,11 @@ const config = mode => {
         },
         {
           test: /\.js$/,
-          use: {
-            loader: 'babel-loader',
-            options: {
-              presets: [['@babel/preset-env', { targets: 'defaults' }]],
-            },
+          loader: 'esbuild-loader',
+          exclude: /(node_modules)/,
+          options: {
+            target: 'es2015',
           },
-          exclude: /node_modules/,
         },
         {
           test: /\.css$/,

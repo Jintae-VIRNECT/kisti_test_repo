@@ -52,8 +52,4 @@ const tts = async (text, lang, voice = 'FEMALE') => {
   return data.data
 }
 
-module.exports = {
-  stt,
-  translate,
-  tts,
-}
+export { stt, translate, tts }

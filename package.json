@@ -65,6 +65,7 @@
     "dayjs": "^1.8.25",
     "dexie": "^3.0.1",
     "es6-promise": "^4.2.8",
+    "esbuild-loader": "^2.18.0",
     "eslint": "^7.18.0",
     "eslint-plugin-html": "^4.0.6",
     "eslint-plugin-jest": "^23.8.2",
