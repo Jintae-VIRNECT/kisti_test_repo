@@ -143,6 +143,7 @@ import localRecorderMixin from 'mixins/localRecorder'
 import serverRecordMixin from 'mixins/serverRecorder'
 import confirmMixin from 'mixins/confirm'
 import ar3dControlMixin from 'mixins/ar3dControl'
+import shareFileMixin from 'mixins/shareFile'
 
 import Store from 'stores/remote/store'
 import { checkInput } from 'utils/deviceCheck'
@@ -184,6 +185,7 @@ export default {
     serverRecordMixin,
     confirmMixin,
     ar3dControlMixin,
+    shareFileMixin,
   ],
   components: {
     ReconnectModal,
@@ -547,6 +549,7 @@ export default {
     this.$eventBus.$on('inviteModal:show', this.toggleInviteModal)
     this.$eventBus.$on(SYSTEM.DELETED_ACCOUNT, this.showAccountDeleted)
     this.$eventBus.$on('toggle:IceDisconnected', this.toggleIceDisconnected)
+    this.$eventBus.$on('participantChange', this.$_participantChange)
   },
   beforeDestroy() {
     if (this.callTimeout) {
@@ -577,6 +580,7 @@ export default {
     this.$eventBus.$off('inviteModal:show', this.toggleInviteModal)
     this.$eventBus.$off(SYSTEM.DELETED_ACCOUNT, this.showAccountDeleted)
     this.$eventBus.$off('toggle:IceDisconnected', this.toggleIceDisconnected)
+    this.$eventBus.$off('participantChange', this.$_participantChange)
 
     //협업 종료시 stt 종료
     this.useStt(false)

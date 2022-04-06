@@ -62,10 +62,11 @@ import { ROLE, DRAWING } from 'configs/remote.config'
 import { VIEW } from 'configs/view.config'
 import toastMixin from 'mixins/toast'
 import confirmMixin from 'mixins/confirm'
+import shareFileMixin from 'mixins/shareFile'
 
 export default {
   name: 'Drawing',
-  mixins: [toastMixin, confirmMixin],
+  mixins: [toastMixin, confirmMixin, shareFileMixin],
   components: {
     DrawingCanvas,
   },
@@ -115,51 +116,6 @@ export default {
   },
   methods: {
     ...mapActions(['addHistory', 'setView', 'showImage']),
-    participantChange(connectionId) {
-      if (this.account.roleType !== ROLE.LEADER) return
-      if (this.shareFile && this.shareFile.id) {
-        if (!this.shareFile.json || this.shareFile.json.length === 0) {
-          //협업보드 활성화 상태에서 신규 참가자 진입 시 fileShare 이벤트 전송하는 부분
-          this.sendImage([connectionId])
-          return
-        }
-        this.confirmDefault(this.$t('service.drawing_sync'), {
-          action: () => {
-            this.sendImage()
-          },
-        })
-      }
-    },
-    sendImage(target = null) {
-      const index = this.shareFile.pageNum ? this.shareFile.pageNum - 1 : 0 //pdf의 경우 pageNum이 0이상의 수로 존재, image의 경우 0으로 세팅되어 옴
-      const name = this.shareFile.oriName || this.shareFile.name
-      this.$call.sendDrawing(
-        DRAWING.FILE_SHARE,
-        {
-          name,
-          objectName: this.shareFile.objectName,
-          contentType: this.shareFile.contentType,
-          width: this.shareFile.width,
-          height: this.shareFile.height,
-          index,
-        },
-        target,
-      )
-    },
-    //미사용 함수
-    // refreshCanvas() {
-    //   const imgId = parseInt(
-    //     Date.now()
-    //       .toString()
-    //       .substr(-9),
-    //   )
-    //   this.addHistory({
-    //     id: imgId,
-    //     fileName: this.shareFile.fileName,
-    //     oriName: this.shareFile.oriName,
-    //     img: this.shareFile.img,
-    //   })
-    // },
     addFile() {
       this.$eventBus.$emit('addFile')
     },
@@ -215,14 +171,6 @@ export default {
         return
       }
     },
-  },
-
-  /* Lifecycles */
-  created() {
-    this.$eventBus.$on('participantChange', this.participantChange)
-  },
-  beforeDestroy() {
-    this.$eventBus.$off('participantChange', this.participantChange)
   },
 }
 </script>
