@@ -32,7 +32,6 @@
         <!-- 협업보드 종료 버튼 리더에게만 표시 -->
         <mobile-drawing-exit-button
           v-if="historyList.length > 0 && isLeader"
-          @exitDrawing="onExitDrawing"
         ></mobile-drawing-exit-button>
         <mobile-file-list-button
           :disabled="fileList.length === 0 && uploadingFile === ''"
@@ -259,11 +258,6 @@ export default {
           })
         }
       }
-    },
-    onExitDrawing() {
-      this.toastDefault(this.$t('service.toast_drawing_end'))
-      this.showImage({}) //공유중 파일 초기화
-      this.setView(VIEW.STREAM) //탭 실시간 공유로 이동
     },
     onClick3dControlBtn() {
       this.$emit('onClick3dControlBtn')

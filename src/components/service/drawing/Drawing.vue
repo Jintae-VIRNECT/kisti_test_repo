@@ -58,15 +58,15 @@
 <script>
 import DrawingCanvas from './DrawingCanvas'
 import { mapGetters, mapActions } from 'vuex'
-import { ROLE, DRAWING } from 'configs/remote.config'
-import { VIEW } from 'configs/view.config'
+import { ROLE } from 'configs/remote.config'
 import toastMixin from 'mixins/toast'
 import confirmMixin from 'mixins/confirm'
 import shareFileMixin from 'mixins/shareFile'
+import drawingMixin from 'mixins/drawing/drawing'
 
 export default {
   name: 'Drawing',
-  mixins: [toastMixin, confirmMixin, shareFileMixin],
+  mixins: [toastMixin, confirmMixin, shareFileMixin, drawingMixin],
   components: {
     DrawingCanvas,
   },
@@ -100,18 +100,6 @@ export default {
       //리더이고, 협업보드에 공유된 파일이 있을 경우만 표시
       if (this.isLeader && this.shareFile && this.shareFile.id) return true
       return false
-    },
-  },
-  watch: {
-    view(val) {
-      if (val !== VIEW.DRAWING) {
-        // clear image
-        // TODO: 협업보드 나갈 때 클리어 할지 선택해야함
-        // => 협업보드에서 다른 탭으로 이동 시 협업보드는 종료되지 않으므로 데이터 초기화하지 않도록 함 (210504)
-        //if (this.account.roleType === ROLE.LEADER) {
-        //  this.showImage({})
-        //}
-      }
     },
   },
   methods: {
@@ -157,19 +145,7 @@ export default {
     },
     exitDrawing() {
       if (!this.isLeader) return
-
-      if (this.shareFile && this.shareFile.id) {
-        this.confirmCancel(this.$t('service.toast_exit_drawing'), {
-          text: this.$t('button.exit'),
-          action: () => {
-            this.$call.sendDrawing(DRAWING.END_DRAWING)
-            this.toastDefault(this.$t('service.toast_drawing_end'))
-            this.showImage({}) //공유중 파일 초기화
-            this.setView(VIEW.STREAM) //탭 실시간 공유로 이동
-          },
-        })
-        return
-      }
+      this.$_exitDrawing()
     },
   },
 }
