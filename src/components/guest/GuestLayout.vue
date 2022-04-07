@@ -82,7 +82,12 @@ export default {
     ...mapGetters(['isMobileSize']),
   },
   methods: {
-    ...mapActions(['setCompanyInfo', 'updateAccount', 'changeWorkspace']),
+    ...mapActions([
+      'setCompanyInfo',
+      'updateAccount',
+      'changeWorkspace',
+      'setDevices',
+    ]),
 
     async initGuestMember(omitLogout = false) {
       try {
@@ -219,6 +224,12 @@ export default {
       this.$eventBus.$emit('update:settings')
 
       initAudio()
+
+      this.setDevices({
+        mic: {
+          isOn: true,
+        },
+      })
 
       this.$eventBus.$on('initGuestMember', this.initGuestMember)
       this.$eventBus.$on('updateServiceMode', this.updateServiceMode)
