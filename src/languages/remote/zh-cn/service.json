@@ -271,7 +271,12 @@
 	"guest_invite_email_please_input_email_address": "请输入邮箱地址。",
 	"guest_invite_email_validation_failed": "不是正确的邮箱形式。",
 
-	"room_exit_question":"确定要结束协作吗？"
+	"room_exit_question":"确定要结束协作吗？",
 
+		"3d_content_control":"内容控制",
+  	"3d_content_control_permission_requested":"请求了控制 3D 内容的权限。",
+    "3d_content_control_permission_requesting":"请求控制 3D 内容的权限。",
+    "3d_content_control_request_denied":"控制权限请求被拒绝。",
+    "3d_content_control_request_ask":"请求控制 3D 内容的权限？"
   }
 }

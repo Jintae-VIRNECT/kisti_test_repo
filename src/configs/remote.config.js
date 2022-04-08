@@ -175,6 +175,17 @@ export const AR_3D_FILE_SHARE_STATUS = {
   ERROR: 'error',
 }
 
+export const AR_3D_CONTROL_TYPE = {
+  REQUEST: 'request',
+  CANCEL_REQUEST: 'cancelRequest',
+  RESPONSE: 'response',
+  STATUS: 'status',
+  RESET: 'reset',
+  ZOOM: 'zoom',
+  ROTATE: 'rotate',
+  MOVE: 'move',
+}
+
 /**
  * 시그널 - 캡처 권한 제어
  */

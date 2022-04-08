@@ -23,6 +23,47 @@
         :cameraStatus="cameraStatus"
       ></video-stopped>
     </transition>
+
+    <!-- 3d control btn -->
+    <div v-if="!isMobileSize && isLeader" class="control-3d-btn-wrap">
+      <div class="3d-control-btn-container">
+        <tooltip
+          v-if="is3dControlBtnVisible"
+          :content="`${$t('service.3d_content_control')}`"
+          customClass="control-3d-btn-tooltip"
+          placement="left"
+        >
+          <button
+            :disabled="!is3dControlBtnActive"
+            slot="body"
+            class="control-3d-btn"
+            :class="{ on: controlActive }"
+            @click="onClick3dControlBtn"
+          ></button>
+        </tooltip>
+        <control-3d-pop-over
+          v-if="isControlPopOverVisible"
+          :controlZoomLevel="controlZoomLevel"
+          @close="onControlPopOverClose"
+          @controlZoomLevel="onReceiveControlZoomLevel"
+        ></control-3d-pop-over>
+      </div>
+    </div>
+
+    <!-- mobile 3d control ui -->
+    <button
+      v-if="isMobileSize && isControlPopOverVisible"
+      class="control-3d-exit-btn"
+      @click="onControlPopOverClose"
+    >
+      {{ $t('service.3d_content_control') }}
+    </button>
+
+    <control-3d
+      v-if="isMobileSize && isControlPopOverVisible"
+      :controlZoomLevel="controlZoomLevel"
+      @controlZoomLevel="onReceiveControlZoomLevel"
+    ></control-3d>
   </div>
 </template>
 
@@ -36,6 +77,7 @@ import {
   ROLE,
   AR_3D_CONTENT_SHARE,
   AR_3D_FILE_SHARE_STATUS,
+  AR_3D_CONTROL_TYPE,
 } from 'configs/remote.config'
 import { CAMERA, DEVICE } from 'configs/device.config'
 import { CAMERA_STATE } from 'configs/status.config'
@@ -43,24 +85,31 @@ import { CAMERA_STATE } from 'configs/status.config'
 import toastMixin from 'mixins/toast'
 import confirmMixin from 'mixins/confirm'
 import arEventQueueMixin from 'mixins/arEventQueue'
+import ar3dControlMixin from 'mixins/ar3dControl'
 
 import Loading3d from './3dcontents/Loading3d'
 import ArVideo from './ArVideo'
 import ArCanvas from './ardrawing/DrawingCanvas'
 import VideoLoading from '../stream/partials/VideoLoading'
 import VideoStopped from '../stream/partials/VideoStopped'
+import Tooltip from 'Tooltip'
+import Control3dPopOver from '../modal/Control3dPopOver'
+import Control3d from './3dcontents/Control3d'
 
 const MODE_CHANGE_DELAY = 3000
 
 export default {
   name: 'ARView',
-  mixins: [toastMixin, confirmMixin, arEventQueueMixin],
+  mixins: [toastMixin, confirmMixin, arEventQueueMixin, ar3dControlMixin],
   components: {
     Loading3d,
     ArVideo,
     ArCanvas,
     VideoLoading,
     VideoStopped,
+    Tooltip,
+    Control3dPopOver,
+    Control3d,
   },
   data() {
     return {
@@ -68,6 +117,7 @@ export default {
       loadingFrame: false,
       loading3d: false, //모델 랜더링 중 로딩화면
       leaderDrawing: false,
+      controlZoomLevel: 100,
     }
   },
   computed: {
@@ -77,6 +127,9 @@ export default {
       'viewAction',
       'shareArImage',
       'ar3dShareStatus',
+      'share3dContent',
+      'is3dPositionPicking',
+      'participants',
     ]),
     isDrawing() {
       if (!this.isLeader) {
@@ -123,6 +176,13 @@ export default {
         return CAMERA_STATE.UNAVAILABLE
       }
     },
+    is3dControlBtnVisible() {
+      return this.viewAction === ACTION.AR_3D && this.isLeader
+    },
+    is3dControlBtnActive() {
+      //3d 공유가 이미 출력 중인 경우
+      return this.share3dContent.objectName && !this.is3dPositionPicking
+    },
   },
   watch: {
     viewAction(newVal, beforeVal) {
@@ -149,6 +209,7 @@ export default {
         this.SHOW_3D_CONTENT({})
         this.SET_AR_3D_SHARE_STATUS('')
         this.SET_IS_3D_POSITION_PICKING(false)
+        this.reset3dControlStatus()
       }
 
       //3d 공유 -> ar 드로잉으로 모드 전환 시
@@ -164,6 +225,18 @@ export default {
       if (newVal === AR_3D_FILE_SHARE_STATUS.START) this.loading3d = true
       else this.loading3d = false
     },
+
+    isControlPopOverVisible(newVal) {
+      //컨트롤 창 닫을 때, 제어 끝내는 신호 전송
+      if (!newVal) {
+        const isControlling = false
+        this.$call.sendAr3dSharing(
+          AR_3D_CONTROL_TYPE.STATUS,
+          { isControlling },
+          [this.mainView.connectionId],
+        )
+      }
+    },
   },
   methods: {
     ...mapMutations([
@@ -171,6 +244,8 @@ export default {
       'SET_AR_3D_SHARE_STATUS',
       'SET_IS_3D_POSITION_PICKING',
       'updateParticipant',
+      'SET_CONTROL_ACTIVE',
+      'SET_IS_CONTROL_POP_OVER_VISIBLE',
     ]),
     ...mapActions(['showArImage', 'setAction', 'addChat', 'setView']),
     receiveSignal(receive) {
@@ -229,7 +304,9 @@ export default {
 
     // 타 참가자 : 3d 모델 공유 모드 시작/종료
     receiveSignal3d(event) {
-      const { type } = JSON.parse(event.data)
+      const fromUserId = event.from.connectionId
+      const data = JSON.parse(event.data)
+      const { type } = data
 
       if (!type) return false
 
@@ -237,7 +314,9 @@ export default {
       if (type === AR_3D_CONTENT_SHARE.STOP_SHARE) {
         if (this.viewAction !== ACTION.AR_3D) return false
         this.setAction(ACTION.AR_POINTING) //기본 포인팅 모드로 전환
-      } else return false
+      } else {
+        this.on3dControlSignalHandler(data, fromUserId)
+      }
     },
 
     checkArFeature(received) {
@@ -304,24 +383,6 @@ export default {
       }
 
       this.setView(VIEW.AR)
-
-      //AR 공유 기기가 홀로렌즈인 경우 : 3d 공유 기능모드로만 사용
-      if (this.mainView.deviceType === DEVICE.HOLOLENS) {
-        this.activate3dShareMode()
-      }
-    },
-
-    activate3dShareMode() {
-      this.setAction(ACTION.AR_3D)
-
-      const targetUserId = this.mainView.id
-
-      this.toastDefault(this.$t('service.chat_ar_3d_start'))
-
-      //시그널 전송 : start 3D contents share
-      this.$call.sendAr3dSharing(AR_3D_CONTENT_SHARE.START_SHARE, {
-        targetUserId,
-      })
     },
 
     startShare(event) {
@@ -357,6 +418,123 @@ export default {
       //vuex 초기화
       this.SHOW_3D_CONTENT({})
       this.SET_AR_3D_SHARE_STATUS('')
+    },
+
+    //콘텐츠 제어 시그널 수신 처리
+    on3dControlSignalHandler(data, fromUserId) {
+      const { type } = data
+
+      //콘텐츠 제어 시그널 타입인지 필터링
+      if (!Object.values(AR_3D_CONTROL_TYPE).includes(type)) return
+
+      const handler = {
+        //요청 수신
+        request: () => this.onControlRequestReceived(fromUserId),
+
+        //요청 수락 or 요청 거절
+        response: () => this.onControlResponseReceived(data),
+
+        //요청 취소
+        cancelRequest: () => this.onControlCancelRequestReceived(),
+
+        //상태 수신
+        status: () => this.onControlStatusReceived(data),
+
+        //@TODO : AR공유자에서 rest 시그널 송신이 필요하다.
+        reset: () => (this.controlZoomLevel = 100),
+      }
+
+      handler[type]()
+    },
+
+    //ar공유자 -> 리더 콘텐츠 제어 권한 요청
+    onControlRequestReceived(fromUserId) {
+      const fromUser = this.participants.find(
+        pt => pt.connectionId === fromUserId,
+      )
+
+      if (!fromUser) return false
+
+      const popupText = `${fromUser.nickname}${this.$t(
+        'service.3d_content_control_permission_requested',
+      )}`
+
+      const confirm = {
+        text: this.$t('button.accept'),
+        action: () => {
+          //기존 제어 창은 닫기
+          this.SET_IS_CONTROL_POP_OVER_VISIBLE(false)
+          this.SET_CONTROL_ACTIVE(false)
+
+          //요청수락 시그널 전송
+          const isAllowed = true
+          this.$call.sendAr3dSharing(
+            AR_3D_CONTROL_TYPE.RESPONSE,
+            { isAllowed },
+            [fromUserId],
+          )
+        },
+      }
+
+      const cancel = {
+        text: this.$t('button.refuse'),
+        action: () => {
+          //요청거절 시그널 전송
+          const isAllowed = false
+          this.$call.sendAr3dSharing(
+            AR_3D_CONTROL_TYPE.RESPONSE,
+            { isAllowed },
+            [fromUserId],
+          )
+        },
+      }
+
+      const option = {
+        customClass: 'service-popup',
+      }
+
+      this.confirmCancel(popupText, confirm, cancel, option)
+    },
+
+    //제어 권한 요청 응답 수신시
+    onControlResponseReceived(data) {
+      this.confirmClose()
+
+      //수락 시 제어 팝업 열기
+      if (data.isAllowed) {
+        this.SET_IS_CONTROL_POP_OVER_VISIBLE(true)
+      }
+      //거절 시 토스트 띄우기
+      else {
+        this.SET_CONTROL_ACTIVE(false)
+        this.toastDefault(this.$t('service.3d_content_control_request_denied'))
+      }
+    },
+
+    onControlPopOverClose() {
+      this.SET_IS_CONTROL_POP_OVER_VISIBLE(false)
+      this.SET_CONTROL_ACTIVE(false)
+    },
+
+    //사용자가 권한 요청 보낸 후 요청 취소를 수신한 경우
+    onControlCancelRequestReceived() {
+      this.confirmClose()
+    },
+
+    //현재 컨트롤 상태 수신
+    onControlStatusReceived(data) {
+      //ar 공유자가 제어 중인지 여부
+      const isArDeviceControling =
+        !this.controlActive && !this.isControlPopOverVisible
+
+      if (data.currentZoomLevel & isArDeviceControling) {
+        this.controlZoomLevel = data.currentZoomLevel
+      }
+    },
+
+    //자식 component로부터 zoomValue 최종 값 전달 받는 용도
+    onReceiveControlZoomLevel(zoomValue) {
+      this.controlZoomLevel = Number(zoomValue)
     },
 
     /**
@@ -420,6 +598,7 @@ export default {
     this.$eventBus.$off(SIGNAL.AR_FEATURE, this.checkArFeature)
     this.$eventBus.$off(SIGNAL.AR_3D, this.receiveSignal3d)
     this.$eventBus.$off(SIGNAL.AR_FROM_VUEX, this.receiveQueuedSignal)
+    this.reset3dControlStatus()
   },
 }
 </script>

@@ -46,12 +46,11 @@ export const addSessionEventListener = session => {
           event.connection.connectionId,
         ])
 
-        if (Store.getters['view'] === 'drawing') {
-          window.vue.$eventBus.$emit(
-            'participantChange',
-            event.connection.connectionId,
-          )
-        }
+        window.vue.$eventBus.$emit(
+          'participantChange',
+          event.connection.connectionId,
+        )
+
         if (Store.getters['restrictedRoom']) {
           _.sendControlRestrict('video', !Store.getters['allowCameraControl'], [
             event.connection.connectionId,

@@ -51,7 +51,8 @@
     "connect_web":"Web 접속",
     "run_app":"App 실행",
     "previous": "이전",
-    "create":"생성"
+    "create":"생성",
+    "do_not_show_again":"다시 보지 않음"
   },
   "date": {
     "lastday": "[어제] A",

@@ -51,7 +51,8 @@
     "connect_web":"Web接続​",
     "run_app":"App実行",
     "previous": "前の",
-    "create":"生成"
+    "create":"生成",
+    "do_not_show_again":"再び表示しない"
   },
   "date": {
     "lastday": "[昨日] A",

@@ -42,16 +42,16 @@
         "
         :disableTooltip="true"
         class="mobile-ar-tools-btn"
-        :disabled="toolDeactivated"
+        :disabled="toolDeactivated || isMainViewHololens"
       ></ar-capture>
       <ar-pointing
-        v-if="viewAction !== ACTION.AR_POINTING && !isMainViewHololens"
+        v-if="viewAction !== ACTION.AR_POINTING"
         :disableTooltip="true"
         :disabled="leaderDrawing || toolDeactivated"
         class="mobile-ar-tools-btn"
       ></ar-pointing>
       <ar-3d-content
-        v-if="!is3dContentsMode && isLeader && !isMainViewHololens"
+        v-if="!is3dContentsMode && isLeader"
         :disableTooltip="true"
         class="mobile-ar-tools-btn"
         :disabled="toolDeactivated"
@@ -61,15 +61,15 @@
     <template v-else>
       <ar-pointing :disabled="leaderDrawing || toolDeactivated"></ar-pointing>
       <template v-if="isLeader">
-        <ar-3d-content
-          :disabled="!isMainViewHololens && toolDeactivated"
-        ></ar-3d-content>
-        <ar-capture :disabled="toolDeactivated"></ar-capture>
+        <ar-3d-content :disabled="toolDeactivated"></ar-3d-content>
+        <ar-capture
+          :disabled="toolDeactivated || isMainViewHololens"
+        ></ar-capture>
         <div class="division"></div>
         <line-mode :disabled="!canDrawing || isMainViewHololens"></line-mode>
         <line-width :disabled="!canDrawing || isMainViewHololens"></line-width>
       </template>
-      <color :disabled="!canDrawingOrPointing || isMainViewHololens"></color>
+      <color :disabled="!canDrawingOrPointing"></color>
       <div class="division"></div>
       <undo :disabled="!canDrawingOrPointing || !toolStatus.undo"></undo>
       <redo :disabled="!canDrawingOrPointing || !toolStatus.redo"></redo>
@@ -173,9 +173,8 @@ export default {
     },
     toolDeactivated() {
       if (
-        (this.is3dContentsMode &&
-          this.ar3dShareStatus === AR_3D_FILE_SHARE_STATUS.START) ||
-        this.isMainViewHololens
+        this.is3dContentsMode &&
+        this.ar3dShareStatus === AR_3D_FILE_SHARE_STATUS.START
       )
         return true
       else return false
