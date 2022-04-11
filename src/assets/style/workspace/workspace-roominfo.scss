@@ -525,9 +525,9 @@
       align-items: flex-end;
 
       .btn {
-        margin-top: 0;
         width: 100%;
         height: 4.8rem;
+        margin-top: 0;
         background-color: $new_color_bg_button_primary;
         @include fontLevel(200);
       }
