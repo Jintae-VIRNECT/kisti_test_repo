@@ -271,6 +271,12 @@
     "guest_invite_email_please_input_email_address":"메일 주소를 입력해주세요.",
     "guest_invite_email_validation_failed": "올바른 이메일 형식이 아닙니다.",
 
-    "room_exit_question":"협업을 종료하시겠습니까?"
+    "room_exit_question":"협업을 종료하시겠습니까?",
+
+    "3d_content_control":"콘텐츠 제어",
+    "3d_content_control_permission_requested":"님이<br/>콘텐츠 제어 권한을 요청하였습니다.​",
+    "3d_content_control_permission_requesting":"3D 콘텐츠 제어 권한을 요청 중입니다.​",
+    "3d_content_control_request_denied":"제어 권한 요청이 거절되었습니다.​",
+    "3d_content_control_request_ask":"3D 콘텐츠 제어 권한을 요청 하시겠습니까?"
   }
 }

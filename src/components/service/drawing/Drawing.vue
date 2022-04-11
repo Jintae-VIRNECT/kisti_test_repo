@@ -58,14 +58,15 @@
 <script>
 import DrawingCanvas from './DrawingCanvas'
 import { mapGetters, mapActions } from 'vuex'
-import { ROLE, DRAWING } from 'configs/remote.config'
-import { VIEW } from 'configs/view.config'
+import { ROLE } from 'configs/remote.config'
 import toastMixin from 'mixins/toast'
 import confirmMixin from 'mixins/confirm'
+import shareFileMixin from 'mixins/shareFile'
+import drawingMixin from 'mixins/drawing/drawing'
 
 export default {
   name: 'Drawing',
-  mixins: [toastMixin, confirmMixin],
+  mixins: [toastMixin, confirmMixin, shareFileMixin, drawingMixin],
   components: {
     DrawingCanvas,
   },
@@ -101,65 +102,8 @@ export default {
       return false
     },
   },
-  watch: {
-    view(val) {
-      if (val !== VIEW.DRAWING) {
-        // clear image
-        // TODO: 협업보드 나갈 때 클리어 할지 선택해야함
-        // => 협업보드에서 다른 탭으로 이동 시 협업보드는 종료되지 않으므로 데이터 초기화하지 않도록 함 (210504)
-        //if (this.account.roleType === ROLE.LEADER) {
-        //  this.showImage({})
-        //}
-      }
-    },
-  },
   methods: {
     ...mapActions(['addHistory', 'setView', 'showImage']),
-    participantChange(connectionId) {
-      if (this.account.roleType !== ROLE.LEADER) return
-      if (this.shareFile && this.shareFile.id) {
-        if (!this.shareFile.json || this.shareFile.json.length === 0) {
-          //협업보드 활성화 상태에서 신규 참가자 진입 시 fileShare 이벤트 전송하는 부분
-          this.sendImage([connectionId])
-          return
-        }
-        this.confirmDefault(this.$t('service.drawing_sync'), {
-          action: () => {
-            this.sendImage()
-          },
-        })
-      }
-    },
-    sendImage(target = null) {
-      const index = this.shareFile.pageNum ? this.shareFile.pageNum - 1 : 0 //pdf의 경우 pageNum이 0이상의 수로 존재, image의 경우 0으로 세팅되어 옴
-      const name = this.shareFile.oriName || this.shareFile.name
-      this.$call.sendDrawing(
-        DRAWING.FILE_SHARE,
-        {
-          name,
-          objectName: this.shareFile.objectName,
-          contentType: this.shareFile.contentType,
-          width: this.shareFile.width,
-          height: this.shareFile.height,
-          index,
-        },
-        target,
-      )
-    },
-    //미사용 함수
-    // refreshCanvas() {
-    //   const imgId = parseInt(
-    //     Date.now()
-    //       .toString()
-    //       .substr(-9),
-    //   )
-    //   this.addHistory({
-    //     id: imgId,
-    //     fileName: this.shareFile.fileName,
-    //     oriName: this.shareFile.oriName,
-    //     img: this.shareFile.img,
-    //   })
-    // },
     addFile() {
       this.$eventBus.$emit('addFile')
     },
@@ -201,28 +145,8 @@ export default {
     },
     exitDrawing() {
       if (!this.isLeader) return
-
-      if (this.shareFile && this.shareFile.id) {
-        this.confirmCancel(this.$t('service.toast_exit_drawing'), {
-          text: this.$t('button.exit'),
-          action: () => {
-            this.$call.sendDrawing(DRAWING.END_DRAWING)
-            this.toastDefault(this.$t('service.toast_drawing_end'))
-            this.showImage({}) //공유중 파일 초기화
-            this.setView(VIEW.STREAM) //탭 실시간 공유로 이동
-          },
-        })
-        return
-      }
+      this.$_exitDrawing()
     },
-  },
-
-  /* Lifecycles */
-  created() {
-    this.$eventBus.$on('participantChange', this.participantChange)
-  },
-  beforeDestroy() {
-    this.$eventBus.$off('participantChange', this.participantChange)
   },
 }
 </script>

@@ -144,7 +144,7 @@
 import { mapActions, mapGetters } from 'vuex'
 import { ROLE } from 'configs/remote.config'
 import { ACTION } from 'configs/view.config'
-import { CAMERA, FLASH } from 'configs/device.config'
+import { CAMERA, FLASH, DEVICE } from 'configs/device.config'
 import { CAMERA_STATE } from 'configs/status.config'
 
 import Pointing from './StreamPointing'
@@ -235,7 +235,6 @@ export default {
       const hasMainView = this.mainView && this.mainView.id
 
       if (hasMainView) {
-        const id = this.mainView.id
         let state = CAMERA_STATE.ON
 
         const isCameraOff = this.mainView.cameraStatus === CAMERA.CAMERA_OFF
@@ -245,12 +244,18 @@ export default {
         if (isCameraOff) {
           state = CAMERA_STATE.OFF
         } else if (isAppBackground) {
-          state = CAMERA_STATE.BACKGROUND
+          const isMobileWithScreenShare =
+            this.mainView.screenShare &&
+            this.mainView.deviceType === DEVICE.MOBILE
+
+          state = isMobileWithScreenShare
+            ? CAMERA_STATE.ON
+            : CAMERA_STATE.BACKGROUND
         }
 
         return {
           state,
-          id,
+          id: this.mainView.id,
         }
       } else {
         return CAMERA_STATE.UNAVAILABLE

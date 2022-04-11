@@ -51,7 +51,8 @@
 	"connect_web": "连接Web",
 	"run_app":"App运行",
   "previous": "以前的",
-	"create":"生成"
+	"create":"生成",
+	"do_not_show_again":"不再显示"
   },
   "date": {
 	"lastday": "[昨天] A",
