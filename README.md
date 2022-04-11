@@ -47,4 +47,3 @@ package.json 참조
 docker build -t rm-dashboard .
 
 ```
-
