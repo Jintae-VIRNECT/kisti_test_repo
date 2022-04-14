@@ -70,7 +70,7 @@ public class RequestValidationProcessor {
 				clientIp
 			);
 
-			if (clientIp.startsWith("172.") || clientIp.startsWith("10.200.")) {
+			if (clientIp.startsWith("172.") || clientIp.startsWith("10.200.") || clientIp.startsWith("10.100.")) {
 				logger.info(
 					"[RequestValidationProcessing] - allowedOfficeInternalAPKDeployRequest :: RemoteAddress Check Success. : -> [{}]",
 					clientIp
