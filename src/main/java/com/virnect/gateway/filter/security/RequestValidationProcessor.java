@@ -34,7 +34,8 @@ public class RequestValidationProcessor {
 	}
 
 	public static boolean process(ServerHttpRequest request) {
-		return isAuthenticationIgnoreUrl(request) || hostNameCheck(request) || allowedOfficeInternalAPKDeployRequest(request);
+		return isAuthenticationIgnoreUrl(request) || hostNameCheck(request) || allowedOfficeInternalAPKDeployRequest(
+			request);
 	}
 
 	private static boolean hostNameCheck(ServerHttpRequest request) {
