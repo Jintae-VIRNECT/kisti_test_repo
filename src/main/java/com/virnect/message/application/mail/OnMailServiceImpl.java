@@ -5,11 +5,9 @@ import java.io.IOException;
 import javax.activation.DataSource;
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
-import javax.mail.internet.MimeUtility;
 
 import org.apache.commons.io.FilenameUtils;
 import org.springframework.context.annotation.Profile;
-import org.springframework.core.io.InputStreamSource;
 import org.springframework.http.HttpStatus;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
@@ -69,7 +67,7 @@ public class OnMailServiceImpl implements MailService {
 	public Boolean sendAttachmentMail(AttachmentMailRequest mailSendRequest) throws
 		MessagingException,
 		IOException {
-		byte[] bytes = fileService.getObjectBytes("roi/" + FilenameUtils.getName(mailSendRequest.getFileUrl()));
+		byte[] bytes = fileService.getObjectBytes("roi/" + FilenameUtils.getName(mailSendRequest.getMultipartFile()));
 
 		for (String receiver : mailSendRequest.getReceivers()) {
 			MailHistory mailHistory = MailHistory.builder()
