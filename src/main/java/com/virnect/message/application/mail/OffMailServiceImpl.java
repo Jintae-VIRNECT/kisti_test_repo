@@ -1,13 +1,11 @@
 package com.virnect.message.application.mail;
 
 import java.io.IOException;
-import java.util.List;
 
 import javax.mail.MessagingException;
 
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
-import org.thymeleaf.context.Context;
 
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -28,12 +26,6 @@ import com.virnect.message.dto.request.MailSendRequest;
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 @Profile("onpremise")
 public class OffMailServiceImpl implements MailService {
-	@Override
-	public void sendTemplateMail(
-		String sender, List<String> receivers, String subject, String mailTemplate, Context context
-	) {
-
-	}
 
 	@Override
 	public Boolean sendAttachmentMail(AttachmentMailRequest mailSendRequest) throws MessagingException, IOException {
