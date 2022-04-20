@@ -35,29 +35,4 @@ class MailControllerTest {
 	@Autowired
 	private ObjectMapper objectMapper;
 
-	@Test
-	@DisplayName("send attachment mail")
-	void sendAttachmentMail() throws Exception {
-		String url = "/messages/mail/attachment";
-
-		ArrayList<String> receiver = new ArrayList<>();
-		receiver.add("ljk@aaaa.com");
-		AttachmentMailRequest attachmentMailRequest = new AttachmentMailRequest();
-		attachmentMailRequest.setReceivers(receiver);
-		attachmentMailRequest.setSender("no-reply@virnect.com");
-		attachmentMailRequest.setHtml("<html></html>");
-		attachmentMailRequest.setSubject("subject");
-		attachmentMailRequest.setMultipartFile(
-			"https://192.168.6.3:2838/virnect-homepagestorage/roi/37e3ab9f8dd847b88d9ddf3e5c094dd8.pdf");
-
-		mockMvc.perform(MockMvcRequestBuilders
-				.post(url)
-				.contentType(MediaType.APPLICATION_JSON)
-				.content(objectMapper.writeValueAsString(attachmentMailRequest))
-			)
-			.andDo(print())
-			.andExpect(status().isOk())
-			.andExpect(MockMvcResultMatchers.jsonPath("$.data").value(true))
-			.andReturn();
-	}
 }
