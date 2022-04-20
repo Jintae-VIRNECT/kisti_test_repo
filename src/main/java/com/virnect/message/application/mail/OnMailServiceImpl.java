@@ -1,39 +1,20 @@
 package com.virnect.message.application.mail;
 
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.PrintStream;
-import java.nio.ByteBuffer;
-import java.util.List;
-import java.util.Properties;
 
-import javax.activation.DataHandler;
 import javax.activation.DataSource;
-import javax.mail.BodyPart;
 import javax.mail.MessagingException;
-import javax.mail.Session;
-import javax.mail.internet.InternetAddress;
-import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
-import javax.mail.internet.MimeMultipart;
+import javax.mail.internet.MimeUtility;
 
 import org.apache.commons.io.FilenameUtils;
 import org.springframework.context.annotation.Profile;
+import org.springframework.core.io.InputStreamSource;
 import org.springframework.http.HttpStatus;
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
-import org.thymeleaf.context.Context;
 import org.thymeleaf.spring5.SpringTemplateEngine;
-
-import com.amazonaws.services.simpleemail.AmazonSimpleEmailServiceAsyncClient;
-import com.amazonaws.services.simpleemail.model.Body;
-import com.amazonaws.services.simpleemail.model.Content;
-import com.amazonaws.services.simpleemail.model.Destination;
-import com.amazonaws.services.simpleemail.model.Message;
-import com.amazonaws.services.simpleemail.model.RawMessage;
-import com.amazonaws.services.simpleemail.model.SendEmailRequest;
-import com.amazonaws.services.simpleemail.model.SendRawEmailRequest;
 
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -59,10 +40,10 @@ import com.virnect.message.infra.file.FileService;
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 @Profile("!onpremise")
 public class OnMailServiceImpl implements MailService {
-	private final AmazonSimpleEmailServiceAsyncClient amazonSimpleEmailServiceAsyncClient;
 	private final SpringTemplateEngine springTemplateEngine;
 	private final MailHistoryRepository mailHistoryRepository;
 	private final FileService fileService;
+	private final JavaMailSender javaMailSender;
 
 	@Override
 	public Boolean sendMail(MailSendRequest mailSendRequest) {
@@ -74,7 +55,7 @@ public class OnMailServiceImpl implements MailService {
 				.subject(mailSendRequest.getSubject())
 				.resultCode(HttpStatus.OK.value())
 				.build();
-			send(receiver, MailSender.MASTER.getSender(), mailSendRequest.getSubject(), mailSendRequest.getHtml());
+			this.send(receiver, MailSender.MASTER.getSender(), mailSendRequest.getSubject(), mailSendRequest.getHtml());
 
 			log.info("[메일 전송 완료] - 받는 사람 [" + receiver + "]");
 
@@ -88,7 +69,7 @@ public class OnMailServiceImpl implements MailService {
 	public Boolean sendAttachmentMail(AttachmentMailRequest mailSendRequest) throws
 		MessagingException,
 		IOException {
-		byte[] bytes = fileService.getObjectBytes("roi/" + FilenameUtils.getName(mailSendRequest.getMultipartFile()));
+		byte[] bytes = fileService.getObjectBytes("roi/" + FilenameUtils.getName(mailSendRequest.getFileUrl()));
 
 		for (String receiver : mailSendRequest.getReceivers()) {
 			MailHistory mailHistory = MailHistory.builder()
@@ -99,9 +80,9 @@ public class OnMailServiceImpl implements MailService {
 				.resultCode(HttpStatus.OK.value())
 				.build();
 
-			sendAttachment(
-				receiver, MailSender.MASTER.getSender(), mailSendRequest.getSubject(), mailSendRequest.getHtml(), bytes,
-				FilenameUtils.getName(mailSendRequest.getMultipartFile())
+			this.sendAttachment(
+				receiver, MailSender.MASTER.getSender(), mailSendRequest.getSubject(), mailSendRequest.getHtml(),
+				bytes
 			);
 
 			log.info("[메일 전송 완료] - 받는 사람 [" + receiver + "]");
@@ -112,93 +93,49 @@ public class OnMailServiceImpl implements MailService {
 		return true;
 	}
 
-	public void sendTemplateMail(
-		String sender, List<String> receivers, String subject, String mailTemplate, Context context
-	) {
-		String html = this.springTemplateEngine.process(mailTemplate, context);
-		Message message = new Message()
-			.withSubject(createContent(subject))
-			.withBody(new Body().withHtml(createContent(html)));
-
-		for (String receiver : receivers) {
-			SendEmailRequest sendEmailRequest = new SendEmailRequest()
-				.withSource(sender)
-				.withDestination(new Destination().withToAddresses(receiver))
-				.withMessage(message);
-			this.amazonSimpleEmailServiceAsyncClient.sendEmailAsync(sendEmailRequest);
-		}
-	}
-
-	private Content createContent(String data) {
-		return new Content().withCharset("UTF-8").withData(data);
-	}
-
 	public void send(String receiver, String sender, String subject, String html) {
-		Message message = new Message()
-			.withSubject(createContent(subject))
-			.withBody(new Body().withHtml(createContent(html)));
+		MimeMessage mimeMessage = javaMailSender.createMimeMessage();
+		try {
+			MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage, false, "UTF-8");
+			mimeMessageHelper.setFrom(sender);
+			mimeMessageHelper.setTo(receiver);
+			mimeMessageHelper.setSubject(subject);
+			mimeMessageHelper.setText(html, true);
 
-		SendEmailRequest sendEmailRequest = new SendEmailRequest()
-			.withSource(sender)
-			.withDestination(new Destination().withToAddresses(receiver))
-			.withMessage(message);
-		this.amazonSimpleEmailServiceAsyncClient.sendEmailAsync(sendEmailRequest);
+			javaMailSender.send(mimeMessage);
+			log.info("[MAIL_SEND] FROM: [{}] , TO: [{}] , TITLE: [{}]", sender, receiver, subject);
+		} catch (Exception e) {
+			log.error("failed to send email", e);
+			throw new RuntimeException(e);
+		}
 
 	}
 
 	public void sendAttachment(
-		String receiver, String sender, String subject, String html, byte[] bytes, String fileName
+		String receiver, String sender, String subject, String html, byte[] bytes
 	) throws MessagingException, IOException {
-
-		Session session = Session.getDefaultInstance(new Properties());
-
-		MimeMessage message = new MimeMessage(session);
-		message.setSubject(subject, "UTF-8");
-		message.setFrom(new InternetAddress(sender));
-		message.setRecipients(javax.mail.Message.RecipientType.TO, InternetAddress.parse(receiver));
-
-		MimeMultipart msg_body = new MimeMultipart("alternative");
-		MimeBodyPart wrap = new MimeBodyPart();
-		MimeBodyPart htmlPart = new MimeBodyPart();
-		htmlPart.setContent(html, "text/html; charset=UTF-8");
-		msg_body.addBodyPart(htmlPart);
-		wrap.setContent(msg_body);
-
-		MimeMultipart msg = new MimeMultipart("mixed");
-		message.setContent(msg);
-		msg.addBodyPart(wrap);
-
-		//첨부파일
-		File convertFile = new File("버넥트 솔루션 도입 ROI 측정 결과.pdf");
-		if (convertFile.createNewFile()) {
-			FileOutputStream fos = new FileOutputStream(convertFile);
-			fos.write(bytes);
-			fos.close();
-		}
-		DataSource dataSource = new ByteArrayDataSource(bytes, "application/octet-stream", "버넥트 솔루션 도입 ROI 측정 결과.pdf");
-		BodyPart bodyPart = new MimeBodyPart();
-		bodyPart.setDataHandler(new DataHandler(dataSource));
-		bodyPart.setFileName("버넥트 솔루션 도입 ROI 측정 결과.pdf");
-		msg.addBodyPart(bodyPart);
+		MimeMessage mimeMessage = javaMailSender.createMimeMessage();
 
 		try {
-			PrintStream out = System.out;
-			message.writeTo(out);
+			MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage, true, "UTF-8");
+			mimeMessageHelper.setFrom(sender);
+			mimeMessageHelper.setTo(receiver);
+			mimeMessageHelper.setSubject(subject);
+			mimeMessageHelper.setText(html, true);
+			mimeMessageHelper.setEncodeFilenames(false);
 
-			ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-			message.writeTo(outputStream);
-			RawMessage rawMessage =
-				new RawMessage(ByteBuffer.wrap(outputStream.toByteArray()));
+			String fileName = "버넥트 솔루션 도입 ROI 측정 결과.pdf";
 
-			SendRawEmailRequest rawEmailRequest =
-				new SendRawEmailRequest(rawMessage);
+			DataSource dataSource = new ByteArrayDataSource(bytes, "application/pdf", fileName);
+			mimeMessageHelper.addAttachment(fileName, dataSource);
 
-			amazonSimpleEmailServiceAsyncClient.sendRawEmail(rawEmailRequest);
-
-		} catch (Exception ex) {
-			ex.printStackTrace();
+			javaMailSender.send(mimeMessage);
+			log.info("[ATTACHMENT_MAIL_SEND] FROM: [{}] , TO: [{}] , TITLE: [{}]", sender, receiver, subject);
+		} catch (Exception e) {
+			log.error("failed to send email", e);
+			throw new RuntimeException(e);
 		}
-		convertFile.delete();
+
 	}
 
 }

@@ -36,6 +36,6 @@ public class AttachmentMailRequest {
 
     @ApiModelProperty(value = "첨부파일 업로드 url", example = "", required = true, position = 4)
     @NotBlank
-    private String multipartFile;
+    private String fileUrl;
 }
 
