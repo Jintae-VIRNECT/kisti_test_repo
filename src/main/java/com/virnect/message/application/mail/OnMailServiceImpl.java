@@ -106,7 +106,6 @@ public class OnMailServiceImpl implements MailService {
 			log.error("failed to send email", e);
 			throw new RuntimeException(e);
 		}
-
 	}
 
 	public void sendAttachment(
@@ -133,7 +132,5 @@ public class OnMailServiceImpl implements MailService {
 			log.error("failed to send email", e);
 			throw new RuntimeException(e);
 		}
-
 	}
-
 }

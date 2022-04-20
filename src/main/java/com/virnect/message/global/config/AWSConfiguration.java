@@ -46,5 +46,4 @@ public class AWSConfiguration {
 			.withRegion(Regions.AP_NORTHEAST_2)
 			.build();
 	}
-
 }
