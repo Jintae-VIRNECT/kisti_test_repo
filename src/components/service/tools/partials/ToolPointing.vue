@@ -21,10 +21,11 @@ export default {
   data() {
     return {
       STREAM_POINTING: ACTION.STREAM_POINTING,
+      previousStatus: null,
     }
   },
   computed: {
-    ...mapGetters(['allowPointing', 'viewForce', 'mainView']),
+    ...mapGetters(['allowPointing', 'viewForce', 'mainView', 'viewAction']),
     canPointing() {
       if (this.disabled) {
         return false
@@ -53,7 +54,15 @@ export default {
         this.mainView.cameraStatus === CAMERA.APP_IS_BACKGROUND
 
       if (!current && isMobileWithScreenShareAndBackground) {
+        this.previousStatus = this.viewAction
         this.setAction('default')
+      } else if (
+        current &&
+        this.mainView.screenShare &&
+        this.mainView.deviceType === DEVICE.MOBILE &&
+        this.previousStatus === ACTION.STREAM_POINTING
+      ) {
+        this.reactivePointingForMobile()
       }
     },
   },
@@ -72,6 +81,9 @@ export default {
       } else {
         this.setAction('default')
       }
+    },
+    reactivePointingForMobile() {
+      this.setAction(ACTION.STREAM_POINTING)
     },
   },
 }
