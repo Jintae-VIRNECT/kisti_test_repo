@@ -54,7 +54,8 @@ export default {
     },
     isMainViewOn() {
       const hasMainViewAndValidVideo = this.hasMainView && this.mainView.video
-      const hasMainViewAndScreenShare = this.hasMainView && this.screenShare
+      const hasMainViewAndScreenShare =
+        this.hasMainView && this.mainView.screenShare
 
       return hasMainViewAndValidVideo || hasMainViewAndScreenShare
     },
