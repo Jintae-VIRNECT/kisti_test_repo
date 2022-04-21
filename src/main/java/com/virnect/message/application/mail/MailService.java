@@ -13,8 +13,6 @@ import com.virnect.message.global.common.ApiResponse;
 
 @Profile("!onpremise")
 public interface MailService {
-    void sendTemplateMail(String sender, List<String> receivers, String subject, String mailTemplate, Context context);
-
     Boolean sendAttachmentMail(AttachmentMailRequest mailSendRequest) throws MessagingException, IOException;
 
     Boolean sendMail(MailSendRequest mailSendRequest);
