@@ -237,6 +237,15 @@ export default {
         )
       }
     },
+
+    share3dContent(currentContent) {
+      const isSharingStopped = Object.keys(currentContent).length === 0
+
+      if (isSharingStopped) {
+        this.SET_IS_CONTROL_POP_OVER_VISIBLE(false)
+        this.SET_CONTROL_ACTIVE(false)
+      }
+    },
   },
   methods: {
     ...mapMutations([
