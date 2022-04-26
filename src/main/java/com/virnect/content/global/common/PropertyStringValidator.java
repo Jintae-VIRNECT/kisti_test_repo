@@ -1,5 +1,7 @@
 package com.virnect.content.global.common;
 
+import java.util.Objects;
+
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 
@@ -50,7 +52,10 @@ public class PropertyStringValidator implements ConstraintValidator<PropertyVali
 			}
 			if (propertyInfo.getPropertyObjectList()
 				.stream()
-				.noneMatch(objectChild -> objectChild.getObjectType() == PropertyObjectType.SceneGroup)) {
+				.noneMatch(objectChild -> Objects.equals(
+					objectChild.getObjectType(),
+					PropertyObjectType.SceneGroup.toString()
+				))) {
 				log.error(
 					"[PROPERTY VALIDATION CHECK] scene group is not first depth. request properties : {}", properties);
 				return false;

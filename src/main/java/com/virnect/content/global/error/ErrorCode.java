@@ -39,6 +39,12 @@ public enum ErrorCode {
 	ERR_CONTENT_UPLOAD_LICENSE_NOT_FOUND(4022, "Content upload fail. Because workspace haven't license plan"),
 	ERR_CONTENT_DOWNLOAD_INVALID_SHARED(4023, "Content upload fail. Contents is not shared."),
 
+	ERR_CONTENT_LIVE_SHARE_ROOM_NOT_FOUND(4030, "Content live share join room not found."),
+	ERR_CONTENT_LIVE_SHARE_USER_NOT_FOUND(4031, "Content live share room user not found."),
+	ERR_CONTENT_LIVE_SHARE_JOIN_MAX_USER(4032, "Content live share join fail. Over max room user limit."),
+	ERR_CONTENT_LIVE_SHARE_JOIN_DUPLICATE(4033, "Content live share join fail. Already joined user."),
+	ERR_CONTENT_LIVE_SHARE_USER_UPDATE(4034, "Content live share room user update fail."),
+
 	// 타겟 관련
 	ERR_TARGET_DATA_ALREADY_EXIST(4101, "Target insert fail. Because this target data already exist."),
 
@@ -68,10 +74,12 @@ public enum ErrorCode {
 
 	//프로젝트 삭제
 	ERR_PROJECT_DELETE(5050, "Project delete fail."),
-	ERR_PROJECT_DELETE_INVALID_PERMISSION(5051, "Project delete fail. Because user have invalid project edit permission."),
+	ERR_PROJECT_DELETE_INVALID_PERMISSION(
+		5051, "Project delete fail. Because user have invalid project edit permission."),
 
 	// 공통 에러
 	ERR_INVALID_REQUEST_PARAMETER(8001, "Invalid request parameter cause api errors"),
+	ERR_API_AUTHENTICATION(8003, "Authentication Error"),
 	ERR_UNEXPECTED_SERVER_ERROR(9999, "Unexpected Server Error, Please contact Administrator");
 
 	private final int code;

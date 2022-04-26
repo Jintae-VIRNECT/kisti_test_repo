@@ -47,7 +47,7 @@ import com.virnect.content.global.error.ErrorCode;
  * DESCRIPTION:
  */
 @Slf4j
-@Profile({"develop", "onpremise", "test", "local"})
+@Profile({"develop", "onpremise", "test", "local","freezing"})
 @Component
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public class MinioDownloadService implements FileDownloadService {

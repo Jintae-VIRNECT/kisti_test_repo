@@ -8,22 +8,6 @@ package com.virnect.content.domain;
  * DESCRIPTION:
  */
 public enum PropertyObjectType {
-	Target,
 	SceneGroup,
-	Scene,
-	Guide,
-	EnvironmentLight,
-	VRCamera,
-	Text,
-	Image,
-	Modeling,
-	Video,
-	Report,
-	Shape,
-	CheckList,
-	Table,
-	Graph,
-	Polygon2D,
-	SceneGroupButton,
-	Template
+	Scene
 }

@@ -5,10 +5,11 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import com.virnect.content.dto.rest.WorkspaceUserResponse;
-import com.virnect.content.dto.rest.WorkspaceUserListResponse;
 import com.virnect.content.dto.rest.WorkspaceInfoListResponse;
+import com.virnect.content.dto.rest.WorkspaceUserListResponse;
+import com.virnect.content.dto.rest.WorkspaceUserResponse;
 import com.virnect.content.global.common.ApiResponse;
+import com.virnect.content.global.config.FeignConfiguration;
 
 /**
  * @author jeonghyeon.chang (johnmark)
@@ -18,7 +19,7 @@ import com.virnect.content.global.common.ApiResponse;
  * @since 2020.04.29
  */
 
-@FeignClient(name = "workspace-server")
+@FeignClient(name = "workspace-server", configuration = FeignConfiguration.class)
 public interface WorkspaceRestService {
 	/**
 	 * 소속된 워크스페이스 목록 조회 API
@@ -33,6 +34,8 @@ public interface WorkspaceRestService {
 	ApiResponse<WorkspaceUserListResponse> getSimpleWorkspaceUserList(@PathVariable("workspaceId") String workspaceId);
 
 	@GetMapping("/workspaces/{workspaceId}/members/info")
-	ApiResponse<WorkspaceUserResponse> getMemberInfo(@PathVariable("workspaceId") String workspaceId, @RequestParam("userId") String userId);
+	ApiResponse<WorkspaceUserResponse> getMemberInfo(
+		@PathVariable("workspaceId") String workspaceId, @RequestParam("userId") String userId
+	);
 
 }
