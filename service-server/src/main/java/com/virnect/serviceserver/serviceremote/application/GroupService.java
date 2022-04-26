@@ -151,10 +151,10 @@ public class GroupService {
 		boolean includeOneself,
 		boolean accessTypeFilter
 	) {
+		List<WorkspaceMemberInfoResponse> workspaceMembers = getWorkspaceMembers(workspaceId);
 		if (groupId.equals(ETC_GROUP_ID)) {
 			List<RemoteGroup> remoteGroups = groupRepository.findByWorkspaceIdAndUserIdAndIncludeOneself(
 				workspaceId, userId, includeOneself);
-			List<WorkspaceMemberInfoResponse> workspaceMembers = getWorkspaceMembers(workspaceId);
 			workspaceMembers = includeOneselfFilter(userId, includeOneself, workspaceMembers);
 			return makeEtcGroup(workspaceId, remoteGroups, workspaceMembers);
 		}
@@ -163,9 +163,6 @@ public class GroupService {
 				workspaceId, groupId, userId, includeOneself)
 			.orElseThrow(() -> new RemoteServiceException(ErrorCode.ERR_GROUP_NOT_FOUND));
 
-		List<WorkspaceMemberInfoResponse> workspaceMembers = workspaceRestService.getWorkspaceMembers(
-			workspaceId, filter, search, 50).getData().getMemberInfoList();
-
 		List<RemoteGroupMemberResponse> remoteGroupMembers = mapperWorkspaceToRemoteGroupMember(
 			remoteGroup.getGroupMembers(), workspaceMembers);
 
@@ -173,7 +170,7 @@ public class GroupService {
 			remoteGroupMemberResponse.setAccessType(
 				loadAccessType(workspaceId, remoteGroupMemberResponse.getUuid()));
 		}
-		
+
 		if (accessTypeFilter) {
 			for (Iterator<RemoteGroupMemberResponse> groupMemberIterator = remoteGroupMembers.iterator(); groupMemberIterator.hasNext(); ) {
 				AccessStatus targetUser = accessStatusService.getAccessStatus(

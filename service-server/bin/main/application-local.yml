@@ -1,0 +1,148 @@
+
+spring:
+    redis:
+        host: 192.168.6.3
+        port: 6379
+    application:
+        name: remote-service-server-local
+    profiles: local
+    main:
+        allow-bean-definition-overriding: true
+    datasource:
+        driver-class-name: com.mysql.cj.jdbc.Driver
+        url: jdbc:mysql://localhost:3306/woong?serverTimezone=UTC&characterEncoding=UTF-8
+        username: root
+        password: dndqmffldb
+
+    jpa:
+        database: mysql
+        database-platform: org.hibernate.dialect.MySQL5InnoDBDialect
+        generate-ddl: true
+        hibernate:
+            ddl-auto: update
+        properties:
+            hibernate:
+                format_sql: true
+                use_sql_comments: false
+        show-sql: true
+    mvc:
+        async:
+            request-timeout: 10000
+    servlet:
+      multipart:
+          max-file-size: 20MB
+          max-request-size: 20MB
+
+eureka:
+    client:
+        enabled: false
+        registry-fetch-interval-seconds: 3
+        service-url:
+        defaultZone: http://localhost:8761/eureka
+    instance:
+        prefer-ip-address: true
+
+cloud:
+    loadbalancer:
+        ribbon:
+            enabled: true
+
+feign:
+    okhttp:
+        enabled: true
+    httpclient:
+        enabled: false
+        disable-ssl-validation: true
+    hystrix:
+        enabled: true
+    license-prefix: license-server
+    workspace-prefix: workspace-server
+    account-prefix: account-server
+    message-prefix: message-server
+    remote-prefix: remote-service-server
+    record-prefix: remote-record-server
+    license-url: http://192.168.6.3:8632
+    workspace-url: http://192.168.6.3:8082
+    account-url: http://192.168.6.3:8081
+    message-url: http://192.168.6.3:8084
+    remote-url: http://192.168.6.3:8000
+    record-url: https://192.168.6.3:8083
+
+workspace-server:
+    ribbon:
+        listOfServers: http://192.168.6.3:8082
+
+account-server:
+    ribbon:
+        listOfServers: http://192.168.6.3:8081
+
+remote-record-server:
+    ribbon:
+        listOfServers: https://192.168.6.3:8083
+
+license-server:
+    ribbon:
+        listOfServers: http://192.168.6.3:8632
+
+message-server:
+    ribbon:
+        listOfServers: http://192.168.6.3:8084
+
+logging:
+    level:
+        root: info
+        org.hibernate.type.descriptor.sql: off
+
+server:
+    address: 0.0.0.0
+    ssl:
+        enabled: true
+        key-store: virnect.pfx
+        key-store-password: 123456
+        key-store-type: PKCS12
+
+service:
+    coturn-credential: remote
+    coturn-name: remote
+    coturn-uris-conference: ["turn:192.168.6.3:3478"]
+    coturn-uris-streaming: ["turn:192.168.6.3:3478"]
+    domain_or_public_ip: 192.168.13.36
+    https_port: 8000
+    kms-uris-conference: ["ws://192.168.6.3:8888/kurento"]
+    kms-uris-streaming: []
+
+    policy-location: policy/publicServicePolicy.json
+    wss: wss://192.168.13.36:8000/remote/websocket
+    certificate_type: owncert
+    remote_cdr: true
+    remote_cdr_path: /var/log/remote/cdr
+    remote_log_path: /var/log/remote/service
+
+    remote_secret: remote
+    remote_sessions_garbage_interval: 900
+    remote_sessions_garbage_threshold: 3600
+    remote_streams_video_max_recv_bandwidth: 0
+    remote_streams_video_max_send_bandwidth: 0
+    remote_streams_video_min_recv_bandwidth: 1000
+    remote_streams_video_min_send_bandwidth: 1000
+    remote_webhook: false
+    remote_webhook_endpoint: https://webhook.site/67d3ca77-8754-428f-b814-91f45146a26a
+    remote_webhook_events: ["sessionCreated","sessionDestroyed","participantJoined","participantLeft","webrtcConnectionCreated","webrtcConnectionDestroyed","recordingStatusChanged","filterEventDispatched","mediaNodeStatusChanged"]
+    remote_webhook_headers: []
+    remote_service_public_url: https://192.168.6.3:8073
+
+storage:
+    enabled: true
+    serverUrl: https://192.168.6.3:2838
+    access-key: virnect
+    secret-key: Qjsprxm13@$
+    bucket-name: virnect-platform
+    bucket-file-name: file
+    bucket-profile-name: profile
+    bucket-record-name: localRecord
+    policy-enabled: true
+    policy-lifecycle: 
+    policy-location:
+
+hystrix:
+    command.default.execution.isolation.thread.timeoutInMilliseconds: 10000

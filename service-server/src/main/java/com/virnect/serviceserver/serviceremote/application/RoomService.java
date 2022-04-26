@@ -138,7 +138,7 @@ public class RoomService {
 		JsonObject sessionJson = serviceSessionManager.generateSession();
 		JsonObject tokenResult = serviceSessionManager.generateSessionToken(sessionJson);
 
-		return this.sessionDataRepository.generateRoom(
+		RoomResponse roomResponse = sessionDataRepository.generateRoom(
 			sessionId,
 			roomRequest,
 			licenseItem,
@@ -146,6 +146,8 @@ public class RoomService {
 			sessionJson.toString(),
 			tokenResult.toString()
 		).getData();
+		roomResponse.setCoturn(setCoturnListResponse(roomResponse.getSessionType()));
+		return roomResponse;
 	}
 
 	public RoomResponse redialRoomRequestByUserId(
@@ -173,8 +175,7 @@ public class RoomService {
 		JsonObject sessionJson = serviceSessionManager.generateSession();
 		JsonObject tokenResult = serviceSessionManager.generateSessionToken(sessionJson);
 
-		// 협업방 생성
-		return this.sessionDataRepository.generateRoom(
+		RoomResponse roomResponse = sessionDataRepository.generateRoom(
 			sessionId,
 			roomRequest,
 			licenseItem,
@@ -182,6 +183,8 @@ public class RoomService {
 			sessionJson.toString(),
 			tokenResult.toString()
 		).getData();
+		roomResponse.setCoturn(setCoturnListResponse(roomResponse.getSessionType()));
+		return roomResponse;
 	}
 
 	public RoomResponse initRoomByClient(
