@@ -32,7 +32,7 @@ public class ProjectUploadRequest {
 	@ApiModelProperty(value = "프로젝트 이름", example = "프로젝트", position = 2, required = true)
 	@NotBlank
 	private String name;
-	@ApiModelProperty(value = "프로젝트 파일", example = "https://192.168.6.3:2838/virnect-platform/workspace/project/36658ce4-9570-40e0-9be6-653a3bbc6373.Ares", position = 3, required = true)
+	@ApiModelProperty(value = "프로젝트 파일", example = "https://10.200.0.22:2838/virnect-platform/workspace/project/d018cbe0-5723-472e-988c-713185d89aac.Ares", position = 3, required = true)
 	@NotBlank
 	private String project;
 	@ApiModelProperty(value = "프로젝트 속성", example = "{\"propertyName\":\"프로젝트 이름\",\"propertyObjectList\":[{\"objectName\":\"1-depth 첫번째 씬그룹\",\"objectType\":\"SceneGroup\",\"objectChildList\":[{\"objectName\":\"2-depth 씬\",\"objectType\":\"Scene\",\"objectChildList\":[{\"objectName\":\"3-depth 오브젝트111\",\"objectType\":\"Text\"}]}]}]}", position = 4, required = true)
