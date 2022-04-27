@@ -27,7 +27,7 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['mainView']),
+    ...mapGetters(['mainView', 'share3dContent']),
   },
   watch: {
     controlZoomLevel: {
@@ -45,6 +45,9 @@ export default {
     },
     zoomValue(newVal) {
       this.sendZoomStatus(newVal)
+    },
+    share3dContent() {
+      this.resetControl()
     },
   },
   methods: {

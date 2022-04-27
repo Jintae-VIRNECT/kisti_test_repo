@@ -7,7 +7,11 @@
       @touchstart="touch"
       @touchend="touchEnd"
     >
-      <div class="participant-video__stream" v-if="participant.hasVideo">
+      <div
+        class="participant-video__stream"
+        :class="{ 'off-cover': !showVideo }"
+        v-if="participant.hasVideo"
+      >
         <video
           :srcObject.prop="participant.stream"
           autoplay
@@ -206,14 +210,22 @@ export default {
         return proxyUrl(this.participant.path)
       }
     },
-    showProfile() {
-      if (!this.participant.hasVideo) {
+    showVideo() {
+      const hasVideo = this.participant.hasVideo
+      const isScreenSharing = this.participant.screenShare
+
+      if (hasVideo) {
+        const isCameraOff = this.participant.cameraStatus === CAMERA.CAMERA_OFF
+        if (isCameraOff && isScreenSharing) {
+          return true
+        }
+
+        return !isCameraOff
+      } else if (!hasVideo && isScreenSharing) {
         return true
+      } else {
+        return false
       }
-      if (this.participant.hasVideo && !this.participant.video) {
-        return true
-      }
-      return false
     },
     isMe() {
       return this.participant.id === this.account.uuid

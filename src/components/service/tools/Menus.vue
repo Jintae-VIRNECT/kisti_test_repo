@@ -53,7 +53,11 @@ export default {
       return this.mainView && this.mainView.id
     },
     isMainViewOn() {
-      return this.mainView && this.mainView.id && this.mainView.video
+      const hasMainViewAndValidVideo = this.hasMainView && this.mainView.video
+      const hasMainViewAndScreenShare =
+        this.hasMainView && this.mainView.screenShare
+
+      return hasMainViewAndValidVideo || hasMainViewAndScreenShare
     },
     isLeader() {
       return this.account.roleType === ROLE.LEADER

@@ -249,11 +249,11 @@
     }
   }
 
-  .mobile-setting-wrapper{
+  .mobile-setting-wrapper {
     .setting-view-stt-warning {
+      margin-bottom: 15px;
       color: $color_red;
       @include fontLevel(75);
-      margin-bottom: 15px;
     }
   }
 

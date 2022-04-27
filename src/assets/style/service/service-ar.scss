@@ -190,32 +190,32 @@
   right: 17px;
   bottom: 16px;
 
-  .control-3d-btn-container{
+  .control-3d-btn-container {
     position: relative;
   }
 }
 
-.ar-3d-control-btn-tooltip.tooltip{
+.ar-3d-control-btn-tooltip.tooltip {
   // position: absolute;
   // right: 17px;
   // bottom: 16px;
 }
 
-.control-3d-btn{
+.control-3d-btn {
   width: 38px;
   height: 38px;
-  border-radius: 2px;
-  background-image : url("~assets/image/call/mdpi_icon_contentcontrol.svg");
+  background-image: url("~assets/image/call/mdpi_icon_contentcontrol.svg");
   background-repeat: no-repeat;
   background-position: center;
   background-size: 24px;
+  border-radius: 2px;
   &.on,
-  &:hover{
+  &:hover {
     background-color: rgba(#ffffff, 0.2);
   }
-  &:disabled{
-    pointer-events: none;
+  &:disabled {
     opacity: 0.4;
+    pointer-events: none;
   }
 }
 
@@ -268,7 +268,7 @@
     }
   }
 
-  .control-3d-exit-btn{
+  .control-3d-exit-btn {
     position: absolute;
     top: 68px;
     left: 13px;
@@ -276,22 +276,22 @@
     background-color: rgba(#121314, 0.8);
     border-radius: 4px;
     @include fontLevel(50);
-    &::after{
+    &::after {
       position: absolute;
       right: 8px;
-      content: "";
       width: 16px;
       height: 16px;
       background-image: url(~assets/image/ic_close_24.svg);
       background-size: 16px;
+      content: "";
     }
   }
 
-  .content-control-section{
+  .content-control-section {
     position: absolute;
-    width: 100%;
     bottom: 0px;
-    padding: 0 18px 18px 18px;
     flex-direction: column;
+    width: 100%;
+    padding: 0 18px 18px 18px;
   }
 }
