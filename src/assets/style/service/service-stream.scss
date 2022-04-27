@@ -92,11 +92,11 @@
     &:before {
       position: absolute;
       top: 50%;
-      transform: translateY(-50%);
       left: 0.429rem;
       width: 1.429rem;
       height: 24px;
       background: url("~assets/image/call/ic-close-w.svg") no-repeat center/100%;
+      transform: translateY(-50%);
       content: "";
     }
   }
@@ -161,18 +161,18 @@
     width: 8.571rem;
     height: 8.571rem;
   }
-  &.loading, 
+  &.loading,
   &.stopped {
     position: absolute;
     top: 0;
     left: 0;
     display: flex;
-    width: 100%;
-    height: 100%;
-    background-color: $color_darkgray;
     flex-direction: column;
     align-items: center;
     justify-content: center;
+    width: 100%;
+    height: 100%;
+    background-color: $color_darkgray;
     user-select: none;
   }
 }
@@ -253,16 +253,16 @@
       //width: 7.9rem;
       height: 3rem;
       padding: 0;
-      padding-left: 8px;
       padding-right: 30px;
+      padding-left: 8px;
       &::before {
-        transform: translateY(0);
         top: 5.5px;
         right: 8px;
         left: unset;
         width: 1.6rem;
         height: 1.6rem;
         background-size: 130%;
+        transform: translateY(0);
       }
     }
   }
