@@ -43,7 +43,7 @@ public class UserCustomRepositoryImpl extends QuerydslRepositorySupport implemen
 		return query.selectFrom(user)
 			.where(
 				user.uuid.in(uuidList),
-				searchQuery(search)
+				user.nickname.contains(search)
 			)
 			.fetch();
 	}
