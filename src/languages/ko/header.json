@@ -1,0 +1,13 @@
+{
+  "header": {
+    "terms": "서비스 이용약관",
+    "privacyPolicy": "개인정보처리방침",
+    "logout": "로그아웃",
+    "myAccount": "계정 관리",
+    "shortcut": "바로가기",
+    "loginCenter": "QR 로그인 센터",
+    "downloadCenter": "다운로드 센터",
+    "learningCenter": "학습 센터",
+    "supportCenter": "고객 센터"
+  }
+}

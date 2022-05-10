@@ -1,6 +1,6 @@
 <template>
   <div>
-    <VirnectHeader
+    <Header
       :env="$env"
       :subTitle="$t('home.title')"
       :showStatus="showSection"
