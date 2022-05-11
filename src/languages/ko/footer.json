@@ -1,0 +1,50 @@
+{
+  "footer": {
+    "brochureDownload": "회사소개서 다운로드",
+    "downloadProductsLeaflet": "제품소개서 다운로드",
+    "terms": "서비스 이용약관",
+    "privacyPolicy": "개인정보처리방침",
+    "paymentTerms": "유료상품 이용약관",
+    "locationBased": "위치기반서비스 이용약관",
+    "numberList": [
+      "대표전화 <i>070-7733-2025</i>",
+      "구매 및 제휴 문의 <i>contact@virnect.com</i>",
+      "제품 사용 및 기술 지원 <i>support@virnect.com</i>"
+    ],
+    "snsList": [
+      {
+        "title": "youtube",
+        "link": "https://www.youtube.com/virnect​"
+      },
+      {
+        "title": "blog",
+        "link": "https://blog.naver.com/virnect"
+      },
+      {
+        "title": "linkedin",
+        "link": "https://www.linkedin.com/company/virnect"
+      },
+      {
+        "title": "facebook",
+        "link": "https://www.facebook.com/virnectkorea"
+      }
+    ],
+    "address": "주소",
+    "experienceCenter": {
+      "title": "버넥트 익스피리언스 센터",
+      "location": "서울시 용산구 한강대로 7길 10-15"
+    },
+    "researchCenter": {
+      "title": "리서치 센터",
+      "location": "Hoher Markt 4, Stiege 2, Top D1, 1010 Wien, Austria"
+    },
+    "subscribe": "뉴스레터 구독신청",
+    "catalog": "https://image.virnect.com/files/VIRNECT_Company_Profile.pdf",
+    "solutionLeflet": "https://image.virnect.com/files/VIRNECT%20Solution%20Leaflet_ver_LF.KR2203A.pdf",
+    "companyList": [
+      "사업자명 <i>주식회사 버넥트</i>",
+      "사업자등록번호 <i>194-81-00551</i>",
+      "대표자명 <i>하태진</i>"
+    ]
+  }
+}

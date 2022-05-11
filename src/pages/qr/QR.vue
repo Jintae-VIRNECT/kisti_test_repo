@@ -1,6 +1,6 @@
 <template>
   <section>
-    <VirnectHeader
+    <Header
       v-if="$env !== 'onpremise'"
       :showStatus="statusSet"
       :userInfo="userInfo"
@@ -9,7 +9,7 @@
       :subTitle="$t('qrLogin.title')"
       @logout="logout"
     />
-    <VirnectHeader
+    <Header
       v-else
       :showStatus="statusSet"
       :userInfo="userInfo"
@@ -27,14 +27,20 @@
         :subTitle="$t('qrLogin.title')"
       />
     </transition>
-    <VirnectFooter :urls="$urls" v-if="$env !== 'onpremise'" />
+    <Footer :urls="$urls" v-if="$env !== 'onpremise'" />
   </section>
 </template>
 
 <script>
 import { ref, onMounted } from '@vue/composition-api'
 import essential from 'service/slice/essential'
+import Header from 'components/layout/common/Header.vue'
+import Footer from 'components/layout/common/Footer.vue'
 export default {
+  components: {
+    Header,
+    Footer
+  },
   props: {
     showStatus: Object,
     auth: Object,

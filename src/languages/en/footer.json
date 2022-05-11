@@ -1,0 +1,50 @@
+{
+  "footer": {
+    "brochureDownload": "Download Company_Profile",
+    "downloadProductsLeaflet": "Download Products_Leaflet",
+    "terms": "Terms of Service",
+    "privacyPolicy": "Privacy policy",
+    "paymentTerms": "Terms of Paid Service",
+    "locationBased": "Terms of Location-Based Service",
+    "numberList": [
+      "Tel <i>+82-70-7733-2025</i>",
+      "CS/Purchase <i>contact@virnect.com</i>",
+      "Email <i>support@virnect.com</i>"
+    ],
+    "snsList": [
+      {
+        "title": "youtube",
+        "link": "https://www.youtube.com/channel/UCZnFb4xXkt5OTYJKUomFF2w"
+      },
+      {
+        "title": "blog",
+        "link": "https://medium.com/@virnect"
+      },
+      {
+        "title": "linkedin",
+        "link": "https://www.linkedin.com/company/virnect"
+      },
+      {
+        "title": "facebook",
+        "link": "https://www.facebook.com/virnectglobal"
+      }
+    ],
+    "address": "Address",
+    "experienceCenter": {
+      "title": "VIRNECT Experience Center",
+      "location": "10-15, Hangang-daero 7-gil, Yongsan-gu, Seoul"
+    },
+    "researchCenter": {
+      "title": "Research Center",
+      "location": "Hoher Markt 4, Stiege 2, Top D1, 1010 Wien, Austria"
+    },
+    "subscribe": "Subscribe to newsletter",
+    "catalog": "https://image.virnect.com/files/VIRNECT_Company_Profile_EN.pdf",
+    "solutionLeflet": "https://image.virnect.com/files/VIRNECT%20Solution%20Leaflet_ver_LF.EN2204A.pdf",
+    "companyList": [
+      "Company Name <i>VIRNECT CO., LTD.</i>",
+      "Business license number <i>194-81-00551</i>",
+      "CEO <i>Taejin Ha</i>"
+    ]
+  }
+}
