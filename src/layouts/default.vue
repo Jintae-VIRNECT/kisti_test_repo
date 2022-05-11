@@ -1,6 +1,6 @@
 <template>
   <div :class="{ onpremise: $isOnpremise }">
-    <VirnectHeader
+    <Header
       :env="$env"
       :subTitle="$t('home.title')"
       :showStatus="showSection"
@@ -12,13 +12,19 @@
     <main>
       <nuxt />
     </main>
-    <VirnectFooter v-if="!$isOnpremise" />
+    <Footer v-if="!$isOnpremise" />
   </div>
 </template>
 
 <script>
 import { mapGetters } from 'vuex'
+import Header from '../components/layout/common/Header.vue'
+import Footer from '../components/layout/common/Footer.vue'
 export default {
+  components: {
+    Header,
+    Footer
+  },
   middleware: ['default'],
   head() {
     return {

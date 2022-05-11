@@ -85,3 +85,17 @@ button {
   opacity: 1;
   z-index: 2;
 }
+
+.hover-box {
+  .learning {
+    margin-bottom: 8px;
+    a:after {
+      width: 0px !important;
+      height: 0px !important;
+    }
+  }
+}
+
+.policy-section {
+  margin-top: 24px;
+}
