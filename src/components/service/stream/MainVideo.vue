@@ -12,7 +12,8 @@
         hidden: !loaded || emptyStream,
       }"
     >
-      <pinch-zoom-layer
+      <!-- 2.7에서 해당기능 사용 불가능 처리. DCR-1121 -->
+      <!-- <pinch-zoom-layer
         v-if="
           (isLeader || mainView.id === account.uuid) &&
             isMobileSize &&
@@ -20,7 +21,7 @@
             viewAction !== ACTION.STREAM_POINTING
         "
         @zoomLevelChanged="onZoomLevelChanged"
-      ></pinch-zoom-layer>
+      ></pinch-zoom-layer> -->
 
       <!-- 메인 비디오 뷰 -->
       <video
@@ -164,7 +165,7 @@ export default {
     Fullscreen,
     VideoLoading,
     VideoStopped,
-    PinchZoomLayer: () => import('./partials/PinchZoomLayer'),
+    // PinchZoomLayer: () => import('./partials/PinchZoomLayer'),
   },
   data() {
     return {
