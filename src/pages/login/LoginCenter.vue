@@ -41,7 +41,7 @@
 <script>
 import { ref, onMounted } from '@vue/composition-api'
 import essential from 'service/slice/essential'
-import Header from 'components/layout/common/header/Header.vue'
+import Header from 'components/layout/common/Header.vue'
 export default {
   components: {
     Header
