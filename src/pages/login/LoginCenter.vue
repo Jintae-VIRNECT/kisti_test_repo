@@ -14,7 +14,7 @@
       <p>{{ message.contents }}</p>
     </el-dialog>
     <template v-else>
-      <VirnectHeader
+      <Header
         v-if="$env !== 'onpremise'"
         :showStatus="showStatus"
         :env="$env"
@@ -22,7 +22,7 @@
         :subTitle="$t('login.subTitle')"
         @isMobile="isMobile"
       />
-      <VirnectHeader
+      <Header
         v-else
         :showStatus="showStatus"
         :env="$env"
@@ -41,7 +41,11 @@
 <script>
 import { ref, onMounted } from '@vue/composition-api'
 import essential from 'service/slice/essential'
+import Header from 'components/layout/common/Header.vue'
 export default {
+  components: {
+    Header
+  },
   props: {
     showStatus: Object,
     auth: Object,

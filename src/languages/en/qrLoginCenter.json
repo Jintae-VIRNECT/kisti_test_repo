@@ -4,21 +4,21 @@
     "pageInfo": "You can log in by recognizing the QR code from Smart Glasses.",
     "loginRole": "QR code login",
     "expire": "Expired",
-    "renewalCode": "Refresh the QR code",
+    "renewalCode": "Please refresh the QR code",
     "effectiveTime": "Time remaining",
     "resendCode": "Refresh QR code",
-    "howToLogin": "How to use?",
-    "LoginInfo": "You can only use QR Login with the compatible devices.",
+    "howToLogin": "How to login?",
+    "LoginInfo": "You can only use QR Login with compatible devices.",
     "centerHowTo": [
       "Please launch the VIRNECT app on your smart glass.",
       "Select [QR Login] on the login screen to run it.",
-      "Please hold over the QR code displayed on the QR Login Center screen.",
+      "Please scan the QR code displayed on the QR Login Center screen.",
       "You will be logged in when the QR code is scanned."
     ],
     "loginHowTo": [
       "Please launch a VIRNECT product or service.",
       "Select [Go to QR Login Center] icon",
-      "Please hold over the QR code displayed on the QR Login Center screen.",
+      "Please scan the QR code displayed on the QR Login Center screen.",
       "You will be logged in when the QR code is scanned."
     ]
   }
