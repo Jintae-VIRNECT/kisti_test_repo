@@ -9,6 +9,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
 
@@ -46,6 +47,9 @@ public class CompanyService {
 
 	private final SessionTransactionalService sessionService;
 	private final CompanyRepository companyRepository;
+
+	@Value("${company.disable:false}")
+	private boolean companyDisable;
 
 	public CompanyResponse createCompany(CompanyRequest companyRequest) {
 		try {
@@ -147,6 +151,10 @@ public class CompanyService {
 		String userId,
 		String policyLocation
 	) {
+		if (companyDisable) {
+			return getForceDisabledCompanyInfoResponse(workspaceId);
+		}
+
 		Company company = companyRepository.findByWorkspaceId(workspaceId).orElse(null);
 		CompanyInfoResponse companyInfoResponse;
 		try {
@@ -157,12 +165,27 @@ public class CompanyService {
 		return companyInfoResponse;
 	}
 
+	private CompanyInfoResponse getForceDisabledCompanyInfoResponse(String workspaceId) {
+		CompanyInfoResponse companyInfoResponse = new CompanyInfoResponse();
+		companyInfoResponse.setCompanyCode(0);
+		companyInfoResponse.setWorkspaceId(workspaceId);
+		companyInfoResponse.setLicenseName(LicenseItem.ITEM_PRODUCT.getItemName());
+		companyInfoResponse.setSessionType(SessionType.OPEN);
+		companyInfoResponse.setStorage(true);
+		companyInfoResponse.setLanguageCodes(getDefaultLanguages());
+		return companyInfoResponse;
+	}
+
 	public CompanyInfoResponse getCompanyInfoByCompanyCode(
 		String workspaceId,
 		String userId,
 		int companyCode,
 		String policyLocation
 	) {
+		if (companyDisable) {
+			return getForceDisabledCompanyInfoResponse(workspaceId);
+		}
+
 		try {
 			if (companyCode == CompanyConstants.COMPANY_VIRNECT) {
 				return loadServicePolicy(workspaceId, policyLocation);
@@ -229,19 +252,6 @@ public class CompanyService {
 	}
 
 	private CompanyInfoResponse defaultCompanyInfo(String workspaceId) {
-		List<LanguageCode> languageCodes = new ArrayList<>(Arrays.asList(
-			new LanguageCode(TranslationItem.LANGUAGE_KR),
-			new LanguageCode(TranslationItem.LANGUAGE_EN),
-			new LanguageCode(TranslationItem.LANGUAGE_JP),
-			new LanguageCode(TranslationItem.LANGUAGE_ZH),
-			new LanguageCode(TranslationItem.LANGUAGE_FR),
-			new LanguageCode(TranslationItem.LANGUAGE_ES),
-			new LanguageCode(TranslationItem.LANGUAGE_RU),
-			new LanguageCode(TranslationItem.LANGUAGE_UK),
-			new LanguageCode(TranslationItem.LANGUAGE_PL),
-			new LanguageCode(TranslationItem.LANGUAGE_TH)
-		));
-
 		CompanyInfoResponse companyInfoResponse = new CompanyInfoResponse();
 		companyInfoResponse.setCompanyCode(0);
 		companyInfoResponse.setWorkspaceId(workspaceId);
@@ -253,9 +263,23 @@ public class CompanyService {
 		companyInfoResponse.setSttSync(true);
 		companyInfoResponse.setSttStreaming(true);
 		companyInfoResponse.setTts(true);
-		companyInfoResponse.setLanguageCodes(languageCodes);
-
+		companyInfoResponse.setLanguageCodes(getDefaultLanguages());
 		return companyInfoResponse;
+	}
+
+	private List<LanguageCode> getDefaultLanguages() {
+		return new ArrayList<>(Arrays.asList(
+			new LanguageCode(TranslationItem.LANGUAGE_KR),
+			new LanguageCode(TranslationItem.LANGUAGE_EN),
+			new LanguageCode(TranslationItem.LANGUAGE_JP),
+			new LanguageCode(TranslationItem.LANGUAGE_ZH),
+			new LanguageCode(TranslationItem.LANGUAGE_FR),
+			new LanguageCode(TranslationItem.LANGUAGE_ES),
+			new LanguageCode(TranslationItem.LANGUAGE_RU),
+			new LanguageCode(TranslationItem.LANGUAGE_UK),
+			new LanguageCode(TranslationItem.LANGUAGE_PL),
+			new LanguageCode(TranslationItem.LANGUAGE_TH)
+		));
 	}
 
 	private CompanyInfoResponse parseServicePolicyJsonObject(JsonObject jsonObject, String workspaceId) {
