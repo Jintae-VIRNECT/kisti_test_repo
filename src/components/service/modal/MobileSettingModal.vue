@@ -1,5 +1,6 @@
 <template>
   <full-screen-modal
+    v-if="menus.length > 0"
     class="service-mobile-setting-modal"
     :title="$t('service.setting_service')"
     :visible="visible"
@@ -69,7 +70,7 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['useRecording']),
+    ...mapGetters(['useRecording', 'useTranslate']),
     isLeader() {
       return this.account.roleType === ROLE.LEADER
     },
@@ -87,11 +88,15 @@ export default {
           key: 'local-record',
           text: this.$t('service.setting_local_record'),
         },
-        {
-          key: 'translate',
-          text: this.$t('service.setting_translate'),
-        },
       ]
+
+      if (this.useTranslate) {
+        menus.push({
+          key: 'translate',
+          text: this.$t('workspace.setting_translate'),
+        })
+      }
+
       if (!this.isLeader) {
         //리더가 아닌 경우
         menus = menus.filter(item => item.key === 'translate')
