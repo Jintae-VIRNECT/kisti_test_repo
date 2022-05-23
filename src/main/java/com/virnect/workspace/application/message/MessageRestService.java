@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 @FeignClient(name = "message-server", fallbackFactory = MessageRestFallbackFactory.class)
 public interface MessageRestService {
     @PostMapping(value = "/messages/mail")
-    ApiResponse sendMail(@RequestBody MailRequest mailSendRequest);
+    void sendMail(@RequestBody MailRequest mailSendRequest);
 
     @PostMapping(value = "/messages/push")
     ApiResponse<PushResponse> sendPush(@RequestBody PushSendRequest pushSendRequest);
