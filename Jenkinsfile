@@ -179,7 +179,7 @@ pipeline {
                   docker run --restart=on-failure:10 \
                     -d \
                     -e VIRNECT_ENV=develop \
-                    -e CONFIG_SERVER=http://192.168.6.3:6383 \
+                    -e CONFIG_SERVER=http://10.200.0.21:4873 \
                     -e WRITE_YOUR=ENVIRONMENT_VARIABLE_HERE \
                     -p ${PORT}:${PORT} \
                     --name=${REPO_NAME} ${NEXUS_REGISTRY}/${REPO_NAME}:${NEXT_VERSION}-${BRANCH_NAME}-${BUILD_NUMBER}
@@ -191,7 +191,7 @@ pipeline {
                   docker run --restart=on-failure:10 \
                     -d \
                     -e VIRNECT_ENV=develop \
-                    -e CONFIG_SERVER=http://192.168.6.3:6383 \
+                    -e CONFIG_SERVER=http://10.200.0.21:4873 \
                     -e WRITE_YOUR=ENVIRONMENT_VARIABLE_HERE \
                     -p ${PORT}:${PORT} \
                     --name=${REPO_NAME} ${NEXUS_REGISTRY}/${REPO_NAME}:${NEXT_VERSION}-${BRANCH_NAME}-${BUILD_NUMBER}
@@ -204,7 +204,7 @@ pipeline {
                   docker run --restart=on-failure:10 \
                     -d \
                     -e VIRNECT_ENV=develop \
-                    -e CONFIG_SERVER=http://192.168.6.3:6383 \
+                    -e CONFIG_SERVER=http://10.200.0.21:4873 \
                     -e WRITE_YOUR=ENVIRONMENT_VARIABLE_HERE \
                     -p 1${PORT}:${PORT} \
                     --name=${REPO_NAME}-onpremise ${NEXUS_REGISTRY}/${REPO_NAME}:${NEXT_VERSION}-${BRANCH_NAME}-${BUILD_NUMBER}
@@ -215,7 +215,7 @@ pipeline {
                   docker run --restart=on-failure:10 \
                     -d \
                     -e VIRNECT_ENV=onpremise \
-                    -e CONFIG_SERVER=http://192.168.6.3:6383 \
+                    -e CONFIG_SERVER=http://10.200.0.21:4873 \
                     -e WRITE_YOUR=ENVIRONMENT_VARIABLE_HERE \
                     -p 1${PORT}:${PORT} \
                     --name=${REPO_NAME}-onpremise ${NEXUS_REGISTRY}/${REPO_NAME}:${NEXT_VERSION}-${BRANCH_NAME}-${BUILD_NUMBER}
