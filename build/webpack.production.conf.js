@@ -46,7 +46,7 @@ const productionWebpackConfig = merge(baseWebpackConfig(mode), {
       minRatio: 0.8,
     }),
     new webpack.DefinePlugin({
-      GOOGLE_MAP_API: '"AIzaSyD0JClrnwr2SpYViHpY69M6_euI7GyUpu8"',
+      GOOGLE_MAP_API: '"AIzaSyCh1LbSwSgaSxpBb7PJ9Z_pLLd4gxd6Uz4"',
     }),
   ],
   optimization: {},
