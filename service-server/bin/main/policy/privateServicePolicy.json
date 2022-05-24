@@ -1,0 +1,56 @@
+{
+  "company_info": {
+    "company_code": 0,
+    "workspace_id": "",
+    "license_name": "product",
+    "session_type": "open",
+    "recording": true,
+    "storage": true,
+    "translation": true,
+    "stt_sync": true,
+    "stt_streaming": true,
+    "tts": true,
+    "language_codes": [
+      {
+        "code": "ko-KR",
+        "text": "한국어"
+      },
+      {
+        "code": "en-US",
+        "text": "English"
+      },
+      {
+        "code": "ja-JP",
+        "text": "日本語"
+      },
+      {
+        "code": "zh-CN",
+        "text": "中文"
+      },
+      {
+        "code": "fr-FR",
+        "text": "française"
+      },
+      {
+        "code": "es-ES",
+        "text": "Español"
+      },
+      {
+        "code": "ru-RU",
+        "text": "русский"
+      },
+      {
+        "code": "uk-UA",
+        "text": "Український"
+      },
+      {
+        "code": "pl-PL",
+        "text": "Polski"
+      },
+      {
+        "code": "th-TH",
+        "text": "ไทย"
+      }
+    ]
+  }
+}

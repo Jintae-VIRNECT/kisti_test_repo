@@ -22,6 +22,9 @@ public class CustomFileRepositoryImpl extends QuerydslRepositorySupport implemen
 
 	private final JPAQueryFactory query;
 
+	private static final String THUMBNAIL = "thumbnail";
+	private static final String BUFFER_BIN_FILE = "buffer0.bin";
+
 	public CustomFileRepositoryImpl(JPAQueryFactory query) {
 		super(File.class);
 		this.query = query;
@@ -38,8 +41,8 @@ public class CustomFileRepositoryImpl extends QuerydslRepositorySupport implemen
 				file.workspaceId.eq(workspaceId),
 				file.sessionId.eq(sessionId),
 				file.deleted.eq(delete),
-				file.objectName.contains("thumbnail").not(),
-				file.objectName.contains("buffer0.bin").not()
+				file.objectName.contains(THUMBNAIL).not(),
+				file.objectName.contains(BUFFER_BIN_FILE).not()
 			).fetch();
 	}
 
@@ -52,8 +55,8 @@ public class CustomFileRepositoryImpl extends QuerydslRepositorySupport implemen
 			.where(
 				file.workspaceId.eq(workspaceId),
 				file.deleted.eq(delete),
-				file.objectName.contains("thumbnail").not(),
-				file.objectName.contains("buffer0.bin").not()
+				file.objectName.contains(THUMBNAIL).not(),
+				file.objectName.contains(BUFFER_BIN_FILE).not()
 			).fetch();
 	}
 
@@ -71,8 +74,8 @@ public class CustomFileRepositoryImpl extends QuerydslRepositorySupport implemen
 				file.workspaceId.eq(workspaceId),
 				file.sessionId.eq(sessionId),
 				file.fileType.eq(fileType),
-				file.objectName.contains("thumbnail").not(),
-				file.objectName.contains("buffer0.bin").not(),
+				file.objectName.contains(THUMBNAIL).not(),
+				file.objectName.contains(BUFFER_BIN_FILE).not(),
 				file.deleted.eq(false)
 			).distinct();
 		long totalCount = queryResult.fetchCount();
@@ -98,7 +101,7 @@ public class CustomFileRepositoryImpl extends QuerydslRepositorySupport implemen
 				file.workspaceId.eq(workspaceId),
 				file.sessionId.eq(sessionId),
 				file.deleted.eq(deleted),
-				file.objectName.contains("thumbnail").not(),
+				file.objectName.contains(THUMBNAIL).not(),
 				file.fileType.eq(FileType.FILE)
 			).distinct();
 		long totalCount = queryResult.fetchCount();

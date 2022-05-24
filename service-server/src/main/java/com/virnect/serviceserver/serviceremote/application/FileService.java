@@ -17,7 +17,6 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
-import javax.annotation.Resource;
 import javax.imageio.ImageIO;
 import javax.servlet.http.HttpServletRequest;
 
@@ -90,7 +89,6 @@ import com.virnect.data.dto.rest.WorkspaceLicensePlanInfoResponse;
 import com.virnect.data.error.ErrorCode;
 import com.virnect.data.error.exception.RemoteServiceException;
 import com.virnect.data.global.common.ApiResponse;
-import com.virnect.data.global.config.AsyncConfig;
 import com.virnect.data.global.config.AsyncTaskService;
 import com.virnect.data.global.util.paging.PagingUtils;
 import com.virnect.data.infra.file.IFileManagementService;
@@ -110,9 +108,11 @@ import com.virnect.serviceserver.serviceremote.dto.mapper.file.ShareUploadFileMa
 @RequiredArgsConstructor
 public class FileService {
 
-	private final int THUMBNAIL_WIDTH = 120;
-	private final int THUMBNAIL_HEIGHT = 70;
-	private final int EXPIRY = 60 * 60 * 24;
+	private static final int THUMBNAIL_WIDTH = 120;
+	private static final int THUMBNAIL_HEIGHT = 70;
+	private static final int EXPIRY = 60 * 60 * 24;
+	private static final String GLTF_EXTENSION = ".gltf";
+	private static final String BUFFER_BIN_FILE = "buffer0.bin";
 
 	private final IFileManagementService fileManagementService;
 	private final AccountRestService accountRestService;
@@ -136,11 +136,7 @@ public class FileService {
 
 	private final FileUtil fileUtil;
 
-	@Resource(name = "asyncTaskService")
-	private AsyncTaskService asyncTaskService;
-
-	@Resource(name = "asyncConfig")
-	private AsyncConfig asyncConfig;
+	private final AsyncTaskService asyncTaskService;
 
 	@PostConstruct
 	private void init() {
@@ -737,7 +733,6 @@ public class FileService {
 				shareFileUploadResponse.setDeleted(fileUploadResult.getFile().isDeleted());
 				return shareFileUploadResponse;
 			case OBJECT:
-				String objectName = null;
 				if ("gltf".equals(fileExtension) || "glb".equals(fileExtension)) {
 					FileUploadResult objectFileUploadResult = saveShareFile(fileUploadRequest, fileType);
 					if (objectFileUploadResult.getErrorCode() != ErrorCode.ERR_SUCCESS) {
@@ -746,29 +741,23 @@ public class FileService {
 					shareFileUploadResponse = shareUploadFileMapper.toDto(objectFileUploadResult.getFile());
 					return shareFileUploadResponse;
 				}
-				if (asyncConfig.checkSampleTaskExecute()) {
-					objectName = String.format("%s_%s", LocalDate.now(), RandomStringUtils.randomAlphabetic(20));
 
-					fileRepository.save(fileUtil.buildFileOnly3dObject(
-						fileUploadRequest,
-						objectName + ".gltf",
-						FileConvertStatus.CONVERTING,
-						0L
-					));
-
-					fileRepository.save(fileUtil.buildFileOnly3dObject(
-						fileUploadRequest,
-						"buffer0.bin" + "_" + FilenameUtils.removeExtension(objectName),
-						FileConvertStatus.CONVERTING,
-						0L
-					));
-
-					asyncTaskService.covertObj2Gltf(fileUploadRequest, objectName);
-				} else {
-					log.info("Thread count over");
-				}
+				String objectName = String.format("%s_%s", LocalDate.now(), RandomStringUtils.randomAlphabetic(20));
+				Long glftId = fileRepository.save(fileUtil.buildFileOnly3dObject(
+					fileUploadRequest,
+					objectName + ".gltf",
+					FileConvertStatus.CONVERTING,
+					0L
+				)).getId();
+				Long binId = fileRepository.save(fileUtil.buildFileOnly3dObject(
+					fileUploadRequest,
+					BUFFER_BIN_FILE + "_" + FilenameUtils.removeExtension(objectName),
+					FileConvertStatus.CONVERTING,
+					0L
+				)).getId();
+				asyncTaskService.covertObj2Gltf(fileUploadRequest, objectName, glftId, binId);
 				shareFileUploadResponse = shareUploadFileMapper.toDto(
-					buildObjectFile(fileUploadRequest, objectName + ".gltf"));
+					buildObjectFile(fileUploadRequest, objectName + GLTF_EXTENSION));
 				shareFileUploadResponse.setDeleted(false);
 				return shareFileUploadResponse;
 			default:
@@ -794,7 +783,7 @@ public class FileService {
 
 		if (file.getFileType() == FileType.OBJECT) {
 			File binFile = fileRepository.findByWorkspaceIdAndSessionIdAndObjectName(
-				workspaceId, sessionId, "buffer0.bin_" + FilenameUtils.getBaseName(file.getObjectName())).orElse(null);
+				workspaceId, sessionId, BUFFER_BIN_FILE + "_" + FilenameUtils.getBaseName(file.getObjectName())).orElse(null);
 			binFile.setDeleted(true);
 			fileRepository.save(binFile);
 		}
@@ -817,7 +806,7 @@ public class FileService {
 						file.getObjectName()) + "/" + file.getObjectName();
 					String binFilePathToName =
 						generateDirPath(workspaceId, sessionId) + "file/" + FilenameUtils.getBaseName(
-							file.getObjectName()) + "/" + "buffer0.bin";
+							file.getObjectName()) + "/" + BUFFER_BIN_FILE;
 					result = fileManagementService.removeObject(objectPathToName) & fileManagementService.removeObject(
 						binFilePathToName);
 					break;
@@ -886,7 +875,7 @@ public class FileService {
 							+ sessionId + "/"
 							+ "file" + "/"
 							+ FilenameUtils.getBaseName(file.getObjectName()) + "/"
-							+ "buffer0.bin";
+							+ BUFFER_BIN_FILE;
 						result = result && fileManagementService.removeObject(binFilePath);
 					} catch (IOException | NoSuchAlgorithmException | InvalidKeyException exception) {
 						exception.printStackTrace();

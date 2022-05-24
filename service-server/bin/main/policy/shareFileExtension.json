@@ -1,0 +1,20 @@
+{
+  "resource": {
+    "document_pdf": [
+      "pdf"
+    ],
+    "image": [
+      "gif",
+      "jpg",
+      "jpeg",
+      "png",
+      "bmp",
+      "x-ms-bmp"
+    ],
+    "file_3d": [
+      "obj",
+      "gltf",
+      "glb"
+    ]
+  }
+}
