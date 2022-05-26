@@ -5,7 +5,6 @@ import java.util.Locale;
 
 import javax.validation.Valid;
 
-import org.slf4j.MDC;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.CollectionUtils;
@@ -43,6 +42,7 @@ import com.virnect.content.exception.ContentServiceException;
 import com.virnect.content.global.common.ApiResponse;
 import com.virnect.content.global.common.PageRequest;
 import com.virnect.content.global.error.ErrorCode;
+import com.virnect.content.global.util.CurrentUserUtils;
 
 /**
  * Project: PF-ContentManagement
@@ -171,7 +171,7 @@ public class ProjectController {
 	public ResponseEntity<ApiResponse<ProjectDeleteResponse>> deleteProject(
 		@PathVariable("projectUUID") String projectUUID
 	) {
-		String userUUID = MDC.get("userUUID");
+		String userUUID = CurrentUserUtils.getUserUUID();
 		log.info("[PROJECT DELETE] REQ projectUUID : {}, userUUID : {}", projectUUID, userUUID);
 		if (!StringUtils.hasText(projectUUID) || !StringUtils.hasText(userUUID)) {
 			throw new ContentServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
@@ -192,8 +192,11 @@ public class ProjectController {
 	public ResponseEntity<ApiResponse<ProjectActivityLogListResponse>> getProjectActivityLogs(
 		@PathVariable("projectUUID") String projectUUID, @ApiIgnore PageRequest pageRequest, @ApiIgnore Locale locale
 	) {
-		String userUUID = MDC.get("userUUID");
-		log.info("[GET PROJECT ACTIVITY LOG] REQ projectUUID : {}, userUUID : {}, locale : {}", projectUUID, userUUID, locale.toString());
+		String userUUID = CurrentUserUtils.getUserUUID();
+		log.info(
+			"[GET PROJECT ACTIVITY LOG] REQ projectUUID : {}, userUUID : {}, locale : {}", projectUUID, userUUID,
+			locale.toString()
+		);
 		if (!StringUtils.hasText(projectUUID) || !StringUtils.hasText(userUUID)) {
 			throw new ContentServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
 		}

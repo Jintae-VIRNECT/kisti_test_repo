@@ -1,6 +1,7 @@
 package com.virnect.content.dto.request;
 
 import java.util.List;
+import java.util.Objects;
 
 import org.springframework.util.CollectionUtils;
 
@@ -26,15 +27,14 @@ public class PropertyInfoDTO {
 	@Setter
 	public static class ObjectChild {
 		private String objectName;
-		private PropertyObjectType objectType;
+		private String objectType;
 		private List<ObjectChild> objectChildList;
 	}
 
 	public int getObjectCount(List<ObjectChild> propertyObjectList, int count) {
-		for (int i = 0; i < propertyObjectList.size(); i++) {
-			ObjectChild propertyObject = propertyObjectList.get(i);
-			if (propertyObject.getObjectType() != PropertyObjectType.Scene
-				&& propertyObject.getObjectType() != PropertyObjectType.SceneGroup) {
+		for (ObjectChild propertyObject : propertyObjectList) {
+			if (!Objects.equals(propertyObject.getObjectType(), PropertyObjectType.Scene.toString())
+				&& !Objects.equals(propertyObject.getObjectType(), PropertyObjectType.SceneGroup.toString())) {
 				count++;
 			}
 			if (!CollectionUtils.isEmpty(propertyObject.getObjectChildList())) {
@@ -45,9 +45,8 @@ public class PropertyInfoDTO {
 	}
 
 	public int getSceneCount(List<ObjectChild> propertyObjectList, int count) {
-		for (int i = 0; i < propertyObjectList.size(); i++) {
-			ObjectChild propertyObject = propertyObjectList.get(i);
-			if (propertyObject.getObjectType() == PropertyObjectType.Scene) {
+		for (ObjectChild propertyObject : propertyObjectList) {
+			if (Objects.equals(propertyObject.getObjectType(), PropertyObjectType.Scene.toString())) {
 				count++;
 			}
 			if (!CollectionUtils.isEmpty(propertyObject.getObjectChildList())) {

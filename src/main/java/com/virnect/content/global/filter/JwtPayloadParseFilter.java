@@ -13,10 +13,10 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-import io.jsonwebtoken.impl.TextCodec;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+
+import com.virnect.content.global.security.TokenProvider;
 
 /**
  * Project: PF-Workspace
@@ -28,18 +28,18 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @Component
 @Order(2)
-public class JwtTokenPayloadParseFilter extends OncePerRequestFilter {
+@RequiredArgsConstructor
+public class JwtPayloadParseFilter extends OncePerRequestFilter {
+	private final TokenProvider tokenProvider;
+
 	@Override
 	protected void doFilterInternal(
 		HttpServletRequest request, HttpServletResponse response, FilterChain filterChain
 	) throws IOException, ServletException {
-		String authorizationToken = request.getHeader("Authorization");
-		if (StringUtils.hasText(authorizationToken) && authorizationToken.startsWith("Bearer ")) {
-			String[] payload = authorizationToken.split("\\.");
-			String decodedPayload = TextCodec.BASE64URL.decodeToString(payload[1]);
-			ObjectMapper objectMapper = new ObjectMapper();
-			JwtTokenPayload jwtTokenPayload = objectMapper.readValue(decodedPayload, JwtTokenPayload.class);
-			MDC.put("userUUID", jwtTokenPayload.getUuid());
+		String token = tokenProvider.getTokenByRequest(request);
+		if (StringUtils.hasText(token)) {
+			JwtPayload payload = tokenProvider.getTokenPayload(token);
+			MDC.put("userUUID", payload.getUuid());
 		}
 		filterChain.doFilter(request, response);
 		MDC.clear();

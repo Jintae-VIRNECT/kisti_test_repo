@@ -31,7 +31,7 @@ public class ProjectTargetRequest {
 	@ApiModelProperty(value = "타겟 길이 사이즈", example = "10", position = 3, required = true)
 	@NotNull
 	private long length;
-	@ApiModelProperty(value = "이미지 타겟 파일 업로드 URL", example = "https://192.168.6.3:2838/virnect-platform/workspace/report/2021-08-31_fg8nvnjzwv.png", position = 4, required = false)
+	@ApiModelProperty(value = "이미지 타겟 파일 업로드 URL", example = "https://10.200.0.22:2838/virnect-platform/workspace/report/2021-08-31_turyb1tbly.png", position = 4, required = false)
 	private String file;
 
 	@Override

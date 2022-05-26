@@ -18,7 +18,7 @@ version = '1.4.2'
 sourceCompatibility = '1.8'
 
 ext {
-    springCloudVersion = 'Hoxton.SR10'
+    springCloudVersion = 'Hoxton.SR11'
     mapstructVersion = '1.4.2.Final'
     jacocoExcludes = [
 
@@ -109,9 +109,22 @@ dependencies {
     // feign oktthp
     implementation 'io.github.openfeign:feign-okhttp'
 
-
     // Json web token
     implementation 'io.jsonwebtoken:jjwt:0.9.1'
+
+    // Rabbitmq
+    implementation 'org.springframework.boot:spring-boot-starter-amqp'
+    testCompile 'com.github.fridujo:rabbitmq-mock:1.1.1'
+
+    // Websocket
+    implementation 'org.springframework.boot:spring-boot-starter-websocket'
+
+    // Redis
+    implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+    testImplementation('it.ozimov:embedded-redis:0.7.3') {
+        exclude group: 'org.slf4j', module: 'slf4j-simple'
+    }
+
 }
 
 test {
