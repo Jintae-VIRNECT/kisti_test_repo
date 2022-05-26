@@ -11,23 +11,23 @@
   "common": {
     "dashboard": "Dashboard",
     "workstation": "Workstation",
-    "collabo_list": "Collabo history"
+    "collabo_list": "Session history"
   },
   "confirm": {
-    "network_error": "The communication with the server is not stable. Please try again later.",
-    "file_not_found": "The file is already deleted or does not exist.",
-    "server_no_response": "Wrong server response, \nplease try again later."
+    "network_error": "Communication with the server is not stable. Please try again later.",
+    "file_not_found": "File was  deleted or does not exist.",
+    "server_no_response": "Abnormal server response, \nplease try again later."
   },
   "excel": {
-    "room_title": "Collabo name",
-    "room_description": "Collabo description",
+    "room_title": "Session name",
+    "room_description": "Session description",
     "room_leader": "Leader",
     "room_member_list": "Member",
     "room_active_date": "Start time",
     "room_unactive_date": "End time",
     "room_duration_sec": "Duration",
     "file_server_record": "Server recording",
-    "file_local_record": "Local recording",
+    "file_local_record": "Record to PC",
     "file_attach_file": "Attach file"
   }
 }

@@ -35,13 +35,7 @@ export default {
   display: grid;
   margin-top: 1.2857rem;
 
-  @include desktop {
-    grid-template-columns: 1fr 1fr 1fr 1fr;
-    gap: 0px 1.1429rem;
-  }
-  @include tablet {
-    grid-template-columns: 1fr 1fr;
-    gap: 1.1429rem 1.1429rem;
-  }
+  grid-template-columns: 1fr 1fr;
+  gap: 1.1429rem 1.1429rem;
 }
 </style>

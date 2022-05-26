@@ -18,7 +18,7 @@ VIRNECT DashBoard Web frontend project
 | NODE_ENV    | develop, production | 
 | SSL_ENV     | private, public     | 
 | VIRNECT_ENV | develop, staging, production, onpremise |
-| CONFIG_SERVER | http://192.168.6.3:6383, https://stgconfig.virnect.com, https://config.virnect.com|
+| CONFIG_SERVER | http://10.200.0.21:6383, https://stgconfig.virnect.com, https://config.virnect.com|
 
 
 ## Environment
@@ -34,6 +34,7 @@ node -> 14.17.0
 ```
 package.json 참조
 ```
+
 
 ## Running the application
 

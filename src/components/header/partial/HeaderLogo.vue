@@ -1,24 +1,26 @@
 <template>
-  <img
-    v-if="logo !== false"
-    @error="logoError"
-    class="header-logo"
-    :src="logo"
-  />
-  <img v-else class="header-logo" src="~assets/image/logo_symtext.svg" />
+  <img class="header-logo" :src="headerImgSrc" alt="logo" />
 </template>
 
 <script>
 import { proxyUrl } from 'utils/file'
-import { WHITE_LOGO, DEFAULT_LOGO } from 'configs/env.config'
+import { DEFAULT_LOGO } from 'configs/env.config'
 export default {
   name: 'HeaderLogo',
-  computed: {
-    logo() {
-      if (WHITE_LOGO) {
-        return proxyUrl(WHITE_LOGO)
-      } else {
-        return false
+  props: {
+    logo: {
+      type: [String, Object],
+    },
+  },
+  data() {
+    return {
+      headerImgSrc: null,
+    }
+  },
+  watch: {
+    logo(val, oldVal) {
+      if (val && val !== oldVal) {
+        this.headerImgSrc = val
       }
     },
   },
@@ -26,6 +28,9 @@ export default {
     logoError() {
       this.logo = proxyUrl(DEFAULT_LOGO)
     },
+  },
+  mounted() {
+    this.headerImgSrc = this.logo
   },
 }
 </script>
