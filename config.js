@@ -11,8 +11,9 @@ const env = dotenv.parse(fs.readFileSync('.env.local'))
  */
 async function getConfig(serviceName, branch) {
   const { data } = await axios.get(
-    `${process.env.CONFIG_SERVER ||
-      'http://10.200.0.21:6383'}/${serviceName}/${branch}`,
+    `${
+      process.env.CONFIG_SERVER || 'http://10.200.0.21:6383'
+    }/${serviceName}/${branch}`,
   )
   return data.propertySources[0].source
 }
@@ -29,7 +30,7 @@ module.exports = async () => {
     for (const key in env.URLS) {
       env.URLS[key] = /api|ws/.test(key)
         ? env.URLS[key]
-        : env.URLS[key].replace('https://10.200.0.21', 'https://localhost')
+        : env.URLS[key].replace('https://10.200.0.22', 'https://localhost')
     }
   }
   // not local
