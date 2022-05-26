@@ -12,7 +12,8 @@
         hidden: !loaded || emptyStream,
       }"
     >
-      <pinch-zoom-layer
+      <!-- 2.7에서 해당기능 사용 불가능 처리. DCR-1121 -->
+      <!-- <pinch-zoom-layer
         v-if="
           (isLeader || mainView.id === account.uuid) &&
             isMobileSize &&
@@ -20,7 +21,7 @@
             viewAction !== ACTION.STREAM_POINTING
         "
         @zoomLevelChanged="onZoomLevelChanged"
-      ></pinch-zoom-layer>
+      ></pinch-zoom-layer> -->
 
       <!-- 메인 비디오 뷰 -->
       <video
@@ -144,7 +145,7 @@
 import { mapActions, mapGetters } from 'vuex'
 import { ROLE } from 'configs/remote.config'
 import { ACTION } from 'configs/view.config'
-import { CAMERA, FLASH } from 'configs/device.config'
+import { CAMERA, FLASH, DEVICE } from 'configs/device.config'
 import { CAMERA_STATE } from 'configs/status.config'
 
 import Pointing from './StreamPointing'
@@ -164,7 +165,7 @@ export default {
     Fullscreen,
     VideoLoading,
     VideoStopped,
-    PinchZoomLayer: () => import('./partials/PinchZoomLayer'),
+    // PinchZoomLayer: () => import('./partials/PinchZoomLayer'),
   },
   data() {
     return {
@@ -235,7 +236,6 @@ export default {
       const hasMainView = this.mainView && this.mainView.id
 
       if (hasMainView) {
-        const id = this.mainView.id
         let state = CAMERA_STATE.ON
 
         const isCameraOff = this.mainView.cameraStatus === CAMERA.CAMERA_OFF
@@ -245,12 +245,18 @@ export default {
         if (isCameraOff) {
           state = CAMERA_STATE.OFF
         } else if (isAppBackground) {
-          state = CAMERA_STATE.BACKGROUND
+          const isMobileWithScreenShare =
+            this.mainView.screenShare &&
+            this.mainView.deviceType === DEVICE.MOBILE
+
+          state = isMobileWithScreenShare
+            ? CAMERA_STATE.ON
+            : CAMERA_STATE.BACKGROUND
         }
 
         return {
           state,
-          id,
+          id: this.mainView.id,
         }
       } else {
         return CAMERA_STATE.UNAVAILABLE

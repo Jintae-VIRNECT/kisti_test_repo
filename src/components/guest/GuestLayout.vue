@@ -26,7 +26,7 @@ import errorMsgMixin from 'mixins/errorMsg'
 import authStatusCallbackMixin from 'mixins/authStatusCallback'
 
 import { MyStorage } from 'utils/storage'
-import { getConfigs } from 'utils/auth'
+import { getConfigs, getSettings } from 'utils/auth'
 
 import { getCompanyInfo } from 'api/http/account'
 import { getGuestInfo } from 'api/http/guest'
@@ -82,7 +82,12 @@ export default {
     ...mapGetters(['isMobileSize']),
   },
   methods: {
-    ...mapActions(['setCompanyInfo', 'updateAccount', 'changeWorkspace']),
+    ...mapActions([
+      'setCompanyInfo',
+      'updateAccount',
+      'changeWorkspace',
+      'setDevices',
+    ]),
 
     async initGuestMember(omitLogout = false) {
       try {
@@ -215,7 +220,16 @@ export default {
         return
       }
 
+      await getSettings({ workspaceId: this.workspaceId })
+      this.$eventBus.$emit('update:settings')
+
       initAudio()
+
+      this.setDevices({
+        mic: {
+          isOn: true,
+        },
+      })
 
       this.$eventBus.$on('initGuestMember', this.initGuestMember)
       this.$eventBus.$on('updateServiceMode', this.updateServiceMode)

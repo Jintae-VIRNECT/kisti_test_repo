@@ -12,6 +12,7 @@ export default {
       'roomInfo',
       'openRoom',
       'restrictedRoom',
+      'isMobileSize',
     ]),
     isLeader() {
       return this.account.roleType === ROLE.LEADER
@@ -35,7 +36,7 @@ export default {
 
     //제한모드에서 영상 전체 공유 혹은 참가자 영상 클릭 메뉴 열기
     selectMain(participant) {
-      if (this.restrictedRoom) {
+      if (this.restrictedRoom && !this.isMobileSize) {
         this.$call.sendVideo(participant.id, true)
         return
       }

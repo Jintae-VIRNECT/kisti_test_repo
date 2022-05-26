@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="25px" height="25px" viewBox="0 0 25 25" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>FE46F9EB-1237-4813-96FE-1D98F958DDDA@1x</title>
+    <g id="Remote_Cowork" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="3CI_0012-_3D-콘텐츠-제어-패널_리더-화면-_X,Z,Y-이동-버튼" transform="translate(-1180.000000, -586.000000)">
+            <g id="content-control-panel" transform="translate(1149.000000, 506.000000)">
+                <g id="move-/-rotate-/-reset" transform="translate(16.000000, 65.000000)">
+                    <g id="btn_move" transform="translate(4.000000, 4.000000)">
+                        <g id="icon_move" transform="translate(12.000000, 12.000000)">
+                            <polygon id="icon_more" points="0 0 24 0 24 24 0 24"></polygon>
+                            <path d="M13.8808611,5 L15.8431977,6.96233658 L13.3774791,9.41099135 L14.5890087,10.6225209 L17.0376634,8.15680232 L19,10.1191389 L19,5 L13.8808611,5 Z M5,10.1191389 L6.96233658,8.15680232 L9.41099135,10.6225209 L10.6225209,9.41099135 L8.15680232,6.96233658 L10.1191389,5 L5,5 L5,10.1191389 Z M10.1191389,19 L8.15680232,17.0376634 L10.6225209,14.5890087 L9.41099135,13.3774791 L6.96233658,15.8431977 L5,13.8808611 L5,19 L10.1191389,19 Z M19,13.8808611 L17.0376634,15.8431977 L14.5890087,13.3774791 L13.3774791,14.5890087 L15.8431977,17.0376634 L13.8808611,19 L19,19 L19,13.8808611 Z" id="Shape" fill="#FFFFFF" fill-rule="nonzero" transform="translate(12.000000, 12.000000) rotate(-45.000000) translate(-12.000000, -12.000000) "></path>
+                        </g>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

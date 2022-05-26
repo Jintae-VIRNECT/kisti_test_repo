@@ -20,10 +20,12 @@ import call from 'plugins/remote/call'
 
 import PUSH from 'plugins/remote/push'
 
-import { version } from '@/package.json'
-// const version = '2.0'
+import packageInfo from '../../../package.json'
 
 import { logger, debug } from 'utils/logger'
+
+import PerfectScrollbar from 'vue2-perfect-scrollbar'
+import 'vue2-perfect-scrollbar/dist/vue2-perfect-scrollbar.css'
 
 import '../../registerServiceWorker'
 
@@ -31,6 +33,7 @@ Vue.use(DayJS)
 Vue.use(PUSH)
 Vue.use(VueToasted)
 Vue.use(Alarm)
+Vue.use(PerfectScrollbar)
 
 Vue.mixin(globalMixin)
 Vue.use(Vue2Scrollbar)
@@ -55,8 +58,7 @@ if ('remote.virnect.com' === location.host) {
 
 const EventBus = new Vue()
 Vue.prototype.$eventBus = EventBus
-// Vue.prototype.$version = version.replace(/-\w/, '')
-Vue.prototype.$version = version.split('-')[0]
+Vue.prototype.$version = packageInfo.version.split('-')[0]
 
 const app = new Vue({
   el: '#container',
@@ -73,7 +75,7 @@ export default app
 setTimeout(
   console.log.bind(
     console,
-    `%cVIRNECT Remote v${version.replace(/-/, '.')}`,
+    `%cVIRNECT Remote v${packageInfo.version.replace(/-/, '.')}`,
     'font-size:25px;color:#0f75f5;font-weight:700;font-family:roboto',
   ),
 )

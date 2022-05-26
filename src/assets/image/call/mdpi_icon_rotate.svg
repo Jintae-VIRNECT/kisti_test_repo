@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="25px" height="25px" viewBox="0 0 25 25" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>5F52EA38-3FEE-43B4-9815-97F961349754@1x</title>
+    <g id="Remote_Cowork" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="3CI_0012-_3D-콘텐츠-제어-패널_리더-화면-_X,Z,Y-이동-버튼" transform="translate(-1180.000000, -638.000000)">
+            <g id="content-control-panel" transform="translate(1149.000000, 506.000000)">
+                <g id="move-/-rotate-/-reset" transform="translate(16.000000, 65.000000)">
+                    <g id="btn_rotate" transform="translate(4.000000, 56.000000)">
+                        <g id="icon_rotate" transform="translate(12.000000, 12.000000)">
+                            <polygon id="tr" points="0 0 24 0 24 24 0 24"></polygon>
+                            <path d="M12,6 C6.48,6 2,8.24 2,11 C2,13.24 4.94,15.13 9,15.77 L9,19 L13,15 L9,11 L9,13.73 C5.85,13.17 4,11.83 4,11 C4,9.94 7.04,8 12,8 C16.96,8 20,9.94 20,11 C20,11.73 18.54,12.89 16,13.53 L16,15.58 C19.53,14.81 22,13.05 22,11 C22,8.24 17.52,6 12,6 Z" id="Path" fill="#FFFFFF" fill-rule="nonzero"></path>
+                        </g>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

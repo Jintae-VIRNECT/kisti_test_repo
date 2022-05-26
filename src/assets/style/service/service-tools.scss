@@ -291,9 +291,9 @@
       transition: all 0.3s;
       &.active {
         padding-bottom: 6px;
-        opacity: 1;
         border-top-left-radius: 0.6rem;
         border-top-right-radius: 0.6rem;
+        opacity: 1;
       }
       &.drawing.active.leader {
         height: 28.9rem;
@@ -307,7 +307,7 @@
       &.ar.active {
         height: 19.6rem;
       }
-      &.ar-3d.active{
+      &.ar-3d.active {
         height: 5.2rem;
       }
       > button {

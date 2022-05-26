@@ -51,6 +51,8 @@
             value="code"
             text="text"
             :selectedValue.sync="transCode"
+            :placementReverse="false"
+            :showScroll="true"
           >
           </r-select>
         </figure>
@@ -134,7 +136,7 @@ export default {
     showSTTwarning() {
       const version = getIOSversion()
 
-      return version > 0 && version < 14 ? true : false
+      return version > 0 && version < 15 ? true : false
     },
   },
   watch: {

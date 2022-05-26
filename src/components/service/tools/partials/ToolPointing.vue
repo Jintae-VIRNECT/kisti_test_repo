@@ -11,6 +11,7 @@
 <script>
 import toolMixin from './toolMixin'
 import toastMixin from 'mixins/toast'
+import { CAMERA, DEVICE } from 'configs/device.config'
 import { ACTION } from 'configs/view.config'
 import { ROLE } from 'configs/remote.config'
 import { mapGetters } from 'vuex'
@@ -20,10 +21,11 @@ export default {
   data() {
     return {
       STREAM_POINTING: ACTION.STREAM_POINTING,
+      previousStatus: null,
     }
   },
   computed: {
-    ...mapGetters(['allowPointing', 'viewForce']),
+    ...mapGetters(['allowPointing', 'viewForce', 'mainView', 'viewAction']),
     canPointing() {
       if (this.disabled) {
         return false
@@ -31,13 +33,36 @@ export default {
       if (!this.viewForce) {
         return false
       }
+      const isMobileWithScreenShareAndBackground =
+        this.mainView.screenShare &&
+        this.mainView.deviceType === DEVICE.MOBILE &&
+        this.mainView.cameraStatus === CAMERA.APP_IS_BACKGROUND
+      if (isMobileWithScreenShareAndBackground) return false
+
       if (this.account.roleType === ROLE.LEADER) {
         return true
       }
-      if (this.allowPointing) {
-        return true
-      } else {
-        return false
+
+      return this.allowPointing
+    },
+  },
+  watch: {
+    canPointing(current) {
+      const isMobileWithScreenShareAndBackground =
+        this.mainView.screenShare &&
+        this.mainView.deviceType === DEVICE.MOBILE &&
+        this.mainView.cameraStatus === CAMERA.APP_IS_BACKGROUND
+
+      if (!current && isMobileWithScreenShareAndBackground) {
+        this.previousStatus = this.viewAction
+        this.setAction('default')
+      } else if (
+        current &&
+        this.mainView.screenShare &&
+        this.mainView.deviceType === DEVICE.MOBILE &&
+        this.previousStatus === ACTION.STREAM_POINTING
+      ) {
+        this.reactivePointingForMobile()
       }
     },
   },
@@ -48,7 +73,6 @@ export default {
         return
       }
       if (!this.canPointing) {
-        // TODO: MESSAGE
         this.toastDefault(this.$t('service.tool_pointing_block'))
         return
       }
@@ -57,6 +81,9 @@ export default {
       } else {
         this.setAction('default')
       }
+    },
+    reactivePointingForMobile() {
+      this.setAction(ACTION.STREAM_POINTING)
     },
   },
 }

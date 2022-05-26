@@ -804,6 +804,16 @@ body {
   }
 }
 
+.swal2-modal.service-popup {
+  > .swal2-actions > .swal2-styled.swal2-cancel {
+    background-color: #54545c;
+    border: none;
+    &:hover {
+      background-color: rgba(#54545c, 0.8);
+    }
+  }
+}
+
 //모바일 스타일 수정
 @include responsive-mobile {
   .swal2-modal.service-confirm.swal2-popup,
@@ -885,44 +895,13 @@ body {
     }
   }
 
-  //서비스 컨펌 팝업
-  //   .swal2-modal.service-confirm {
-  //     > .swal2-header .swal2-title {
-  //       color: #fff;
-  //     }
-  //     > .swal2-content {
-  //       padding: 2em;
-  //       > div {
-  //         padding: 0;
-  //         font-weight: normal;
-  //         font-size: 1.071em;
-  //         text-align: left;
-  //         > em {
-  //           color: #6bb4f9;
-  //           font-weight: 500;
-  //         }
-  //       }
-  //     }
-  //     > .swal2-actions {
-  //       margin: 0.357em 2em 2em 2em;
-  //       text-align: right;
-  //       > .swal2-confirm {
-  //         border-radius: 4px;
-  //       }
-  //       > .swal2-cancel {
-  //         min-width: auto;
-  //         padding: 0.625em 1em;
-  //         font-weight: 300;
-  //         font-size: 1.071em;
-  //         border: none;
-  //         opacity: 0.6;
-  //         &:hover {
-  //           opacity: 0.8;
-  //         }
-  //         &:active {
-  //           opacity: 1;
-  //         }
-  //       }
-  //     }
-  //   }
+  .swal2-modal.service-popup {
+    > .swal2-actions > .swal2-styled.swal2-cancel {
+      background-color: $new_color_bg_button_sub;
+      border: none;
+      &:hover {
+        background-color: $new_color_bg_button_sub;
+      }
+    }
+  }
 }

@@ -27,7 +27,7 @@
 import { mapGetters } from 'vuex'
 import { fabric } from 'plugins/remote/fabric.custom'
 
-import { ACTION } from 'configs/view.config'
+import { VIEW, ACTION } from 'configs/view.config'
 
 import { getCanvasSize } from 'utils/drawing'
 import DrawingWatch from './DrawingWatch'
@@ -100,6 +100,15 @@ export default {
     },
   },
   watch: {
+    view() {
+      if (this.view === VIEW.DRAWING) {
+        //backCanvas element의 크기를 재설정
+        if (!this.backCanvas) return
+        if (this.backCanvas.width === 0 && this.backCanvas.height === 0) {
+          this.setBG()
+        }
+      }
+    },
     viewAction(newVal) {
       if (newVal === ACTION.DRAWING_LOCK && this.isMobileSize) {
         if (this.pinchZoom) this.pinchZoom.enable()

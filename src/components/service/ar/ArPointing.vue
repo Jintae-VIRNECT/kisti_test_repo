@@ -1,5 +1,5 @@
 <template>
-  <div @click="doPointing($event)"></div>
+  <div :style="{ width, height }" @click="doPointing($event)"></div>
 </template>
 
 <script>
@@ -19,6 +19,8 @@ export default {
   },
   data() {
     return {
+      width: 0,
+      height: 0,
       radius: '60',
     }
   },
@@ -26,6 +28,19 @@ export default {
     ...mapGetters(['tools', 'mainView', 'viewAction', 'allowPointing']),
     pointingColor() {
       return this.tools ? this.tools.color : reset.color
+    },
+  },
+  watch: {
+    videoSize: {
+      immediate: true,
+      deep: true,
+      handler(newVal) {
+        if (newVal) {
+          const { width, height } = newVal
+          this.width = `${width}px`
+          this.height = `${height}px`
+        }
+      },
     },
   },
   methods: {

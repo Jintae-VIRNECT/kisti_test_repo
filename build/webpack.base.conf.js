@@ -1,13 +1,12 @@
 'use strict'
 
 const { join, resolve } = require('path')
-const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 const autoprefixer = require('autoprefixer')
 
 const VueLoaderPlugin = require('vue-loader/lib/plugin')
 
 const config = mode => {
-  const isProduction = mode === 'production'
+  // const isProduction = mode === 'production'
 
   return {
     entry: {
@@ -53,18 +52,16 @@ const config = mode => {
         },
         {
           test: /\.js$/,
-          use: {
-            loader: 'babel-loader',
-            options: {
-              presets: [['@babel/preset-env', { targets: 'defaults' }]],
-            },
+          loader: 'esbuild-loader',
+          exclude: /(node_modules)/,
+          options: {
+            target: 'es2015',
           },
-          exclude: /node_modules/,
         },
         {
           test: /\.css$/,
           use: [
-            isProduction ? MiniCssExtractPlugin.loader : 'style-loader',
+            'style-loader',
             {
               loader: 'css-loader',
               options: {
@@ -76,9 +73,15 @@ const config = mode => {
         {
           test: /\.s[a|c]ss$/,
           use: [
-            isProduction ? MiniCssExtractPlugin.loader : 'style-loader',
+            'style-loader',
             {
               loader: 'css-loader',
+              options: {
+                sourceMap: true,
+              },
+            },
+            {
+              loader: 'postcss-loader',
               options: {
                 sourceMap: true,
               },

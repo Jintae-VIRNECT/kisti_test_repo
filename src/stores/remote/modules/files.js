@@ -52,9 +52,6 @@ const mutations = {
     state.shareArImage = Object.assign({}, imgInfo)
   },
   [ADD_HISTORY](state, imgInfo) {
-    // const idx = state.historyList.findIndex(history => history.id === file.id)
-    // if (idx < 0) {
-    // }
     state.historyList.push(imgInfo)
     state.shareFile = Object.assign({}, imgInfo)
   },

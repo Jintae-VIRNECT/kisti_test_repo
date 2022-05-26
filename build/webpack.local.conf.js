@@ -180,7 +180,7 @@ const localWebpackConfig = merge(baseWebpackConfig(mode), {
     }),
 
     new webpack.DefinePlugin({
-      GOOGLE_MAP_API: '"AIzaSyD0JClrnwr2SpYViHpY69M6_euI7GyUpu8"',
+      GOOGLE_MAP_API: '"AIzaSyCh1LbSwSgaSxpBb7PJ9Z_pLLd4gxd6Uz4"',
     }),
     // new BundleAnalyzerPlugin({
     //   analyzerHost: '127.0.0.1',

@@ -7,7 +7,7 @@
         role="tooltip"
         :id="`popover-${_uid}`"
         :style="style"
-        :class="[popperClass, { reverse: reverse }]"
+        :class="[popperClass, { reverse: reverse, scroll: showScroll }]"
         class="popover"
         @click.stop
       >
@@ -18,7 +18,14 @@
           <slot name="header"></slot>
         </div>
         <div class="popover--body">
-          <slot></slot>
+          <template v-if="showScroll">
+            <perfect-scrollbar>
+              <slot></slot>
+            </perfect-scrollbar>
+          </template>
+          <template v-else>
+            <slot></slot>
+          </template>
         </div>
       </div>
     </transition>
@@ -111,6 +118,10 @@ export default {
     useTopMargin: {
       type: Number,
       default: 0,
+    },
+    showScroll: {
+      type: Boolean,
+      default: false,
     },
   },
   data() {

@@ -1140,13 +1140,13 @@
         @include ellipsis;
       }
       .chat-down__bar--button {
-        padding: 0 1.6rem;
         height: 3rem;
+        padding: 0 1.6rem;
         color: $new_color_text_main;
         background-color: $new_color_bg_button_primary;
         border-radius: 4px;
         @include fontLevel(100);
-        
+
         &:disabled,
         &.disabled {
           background-color: #213d62;

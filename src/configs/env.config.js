@@ -58,8 +58,8 @@ export const setConfigs = configs => {
   ALLOW_NO_AUDIO = configs.ALLOW_NO_AUDIO || ALLOW_NO_AUDIO
   ALLOW_NO_DEVICE = configs.ALLOW_NO_DEVICE || ALLOW_NO_DEVICE
   TARGET_COMPANY = configs.targetCompany || TARGET_COMPANY
-  WHITE_LOGO = configs.whiteLogo || WHITE_LOGO
-  DEFAULT_LOGO = configs.defaultLogo || DEFAULT_LOGO
+  WHITE_LOGO = configs.whiteLogo
+  DEFAULT_LOGO = configs.defaultLogo
   SPOT_CONTROL_ACTIVE = configs.SPOT_CONTROL_ACTIVE || SPOT_CONTROL_ACTIVE
 }
 

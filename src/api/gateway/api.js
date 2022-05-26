@@ -1,11 +1,15 @@
 export default {
   /* Account */
-  LOGIN: ['POST', 'https://192.168.6.3:8073/auth/signin'],
+  LOGIN: ['POST', 'https://10.200.0.22:8073/auth/signin'],
   LOGOUT: ['POST', '/auth/signout'],
   TOKEN: ['POST', '/auth/oauth/token'],
   ACCOUNT: ['GET', '/users/info', { initing: true }],
   USER_INFO: ['GET', '/users/{userId}', { initing: true }],
-  SETTING_INFO: ['GET', '/workspaces/setting', { initing: true }],
+  SETTING_INFO: [
+    'GET',
+    '/workspaces/setting?workspaceId={workspaceId}',
+    { initing: true },
+  ],
 
   /* LICENSE */
   GET_LICENSE: ['GET', '/licenses/plan/{userId}?size=30'],

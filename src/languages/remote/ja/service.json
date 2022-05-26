@@ -272,6 +272,12 @@
     "guest_invite_email_please_input_email_address":"メールアドレスを入力してください。",
     "guest_invite_email_validation_failed": "正しいメールアドレス形式ではありません。",
 
-    "room_exit_question":"協業を終了しますか？"
+    "room_exit_question":"協業を終了しますか？",
+
+    "3d_content_control":"コンテンツ制御",
+    "3d_content_control_permission_requested":"さんが3Dコンテンツ制御権限をリクエストしました。​",
+    "3d_content_control_permission_requesting":"3Dコンテンツ制御権限を要求します。",
+    "3d_content_control_request_denied":"制御権限要求が拒否されました。",
+    "3d_content_control_request_ask":"3D コンテンツ制御権限を要求しますか？"
   }
 }
