@@ -1,45 +1,45 @@
 {
   "payment": {
-    "desc": "Manage the payment details and payment history of the workspace where you are given with master authority.",
+    "desc": "Manage the payment details and payment history of the Workspace where you have Master access.",
     "monetaryUnit": "Won",
     "will": {
-      "title": "Upcoming Payment Info",
-      "price": "Upcoming Payment",
-      "dueDate": "Payment Date",
-      "way": "Payment Method",
-      "autoPaymentEveryMonth": "Monthly Subscription"
+      "title": "Upcoming payment info",
+      "price": "Upcoming payment",
+      "dueDate": "Payment date",
+      "way": "Payment method",
+      "autoPaymentEveryMonth": "Monthly subscription"
     },
     "info": {
-      "title": "Plans Details",
+      "title": "Plans details",
       "totalAmount": "Purchasing plans",
-      "extend": "Additional Services"
+      "extend": "Additional services"
     },
     "log": {
-      "title": "Payment History",
+      "title": "Payment history",
       "column": {
-        "no": "Payment Code",
-        "way": "Purchase Method",
-        "price": "Amount of Payment",
-        "paidDate": "Payment Date"
+        "no": "Payment code",
+        "way": "Purchase method",
+        "price": "Amount of payment",
+        "paidDate": "Payment date"
       }
     },
     "autoPaymentCancelModal": {
-      "title": "Cancel Subcriptions",
+      "title": "Cancel subscriptions",
       "desc": "Please double-check the product plan and subscription you want to cancel.",
       "column": {
         "product": "Product plans and additional services",
         "count": "Quantity",
         "numbersUnit": "Plans"
       },
-      "cautionTitle": "Notice on canceling automatic payment",
-      "caution": "* If you cancel now you will be able to use the product and services until the remaining period. When automatic payment is canceled all users of the workspace will not be able to use VIRNECT products from the next payment due date. Your product and service data will be kept for up to two weeks. If you pay again within 2 weeks of the scheduled payment date you can use the VIRNECT product with your existing information.",
-      "cautionAgree": "Agree to the notice on canceling automatic payment",
+      "cautionTitle": "Notice on canceling recurring payment",
+      "caution": "* If you cancel now you will be able to use the product and services until the remaining period.  <br>* When a recurring payment has been canceled all users of the workspace will not be able to use VIRNECT products from the next payment due date. Your product and service data will be kept for up to two weeks. If you pay again within 2 weeks of the scheduled payment date you can use the VIRNECT product with your existing information.",
+      "cautionAgree": "Agree to the notice on canceling recurring payment",
       "submit": "Cancel",
-      "submitDone": "Cancelling automatic payment",
-      "submitDoneDesc": "Automatic payment has been cancelled. If you want to maintain the automatic payment you can cancel the \"cancellation of the automatic payment\" from tomorrow to one day before the expiration date.",
-      "cancelRequestCancel": "Cancel automatic payment application",
-      "cancelRequestCancelDesc": "If you cancel the automatic payment cancellation application automatic payment will be resumed.",
-      "cancelRequestCancelDone": "Succesfully canceled automatic payment"
+      "submitDone": "Cancelling recurring payment",
+      "submitDoneDesc": "Recurring payment has been cancelled. If you want to maintain recurring payment you can cancel the \"cancellation of recurring payment\" from tomorrow to one day before the expiration date.",
+      "cancelRequestCancel": "Cancel recurring payment",
+      "cancelRequestCancelDesc": "If you cancel the \"recurring payment cancellation\" recurring payment will be resumed.",
+      "cancelRequestCancelDone": "Succesfully canceled recurring payment cancellation"
     }
   }
 }

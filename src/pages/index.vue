@@ -68,7 +68,11 @@ import profileService from '@/services/profile'
 
 export default {
   layout: 'default',
-  async asyncData() {
+  async asyncData({ $config, redirect }) {
+    if ($config.VIRNECT_ENV === 'onpremise') {
+      return redirect('/profile/op')
+    }
+
     const [plansInfo, paymentInfo] = await Promise.all([
       purchaseService.getWorkspacePlansInfo(),
       paymentService.getAutoPayments(),

@@ -25,13 +25,13 @@
       <ColumnDate
         :label="$t('workspace.list.column.joinDate')"
         prop="joinDate"
-        :width="100"
+        :width="140"
         sortable
       />
       <ColumnRole
         :label="$t('workspace.list.column.role')"
         prop="role"
-        :width="150"
+        :width="155"
         sortable
       />
     </el-table>

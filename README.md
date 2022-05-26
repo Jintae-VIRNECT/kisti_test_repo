@@ -38,3 +38,4 @@ $ yarn workspace account deploy
 
 프로젝트 구조는 https://nuxtjs.org/guides/directory-structure/nuxt  
 \+ api, languages, mixins, services
+

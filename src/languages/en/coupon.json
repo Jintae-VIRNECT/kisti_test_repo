@@ -1,35 +1,35 @@
 {
   "coupon": {
-    "desc": "Register and manage the coupons issued from both online or offline.",
+    "desc": "Register and manage offline/online coupons.",
     "banner": {
       "subTitle": "Inquire for a trial",
       "mainTitle": "Time to experience the AR innovations",
       "link": "Shortcut"
     },
     "addCouponCode": {
-      "title": "Register Coupon",
-      "label": "Coupon Code",
+      "title": "Register coupon",
+      "label": "Coupon code",
       "placeholder": "Enter your coupon code",
       "submit": "Submit",
       "cautionTitle": "Notes on coupon registration",
       "cautionContent": [
-        "Coupons are used at the payment center when purchasing product plans or additional service plans.",
-        "One individual discount coupon is applied per product/service and the entire discount coupon cannot be applied on top of an individual discount coupon.",
-        "Coupons beyond the validity period cannot be registered or used.",
+        "Coupons are registered and used at the payment center when purchasing product plans or additional service plans.",
+        "Only one discount coupon can be applied per product/service and the total discount coupon cannot be applied together with single product discount coupons.",
+        "Coupons that have expired cannot be registered or used.",
         "Coupons cannot be used for commercial purposes traded and bought."
       ]
     },
     "couponList": {
-      "title": "Coupon List",
-      "desc": "Standby coupons can be used when purchasing product or service vouchers at the payment center.",
-      "empty": "There is no registered coupon"
+      "title": "Coupon list",
+      "desc": "Saved coupons in your coupon list can be used when purchasing products or service plans at the payment center.",
+      "empty": "No registered coupon"
     },
     "column": {
-      "couponName": "Coupon Name",
-      "couponNo": "Number",
-      "registerDate": "Register Date",
-      "expireDate": "Valid Date",
-      "usedDate": "Used Date",
+      "couponName": "Coupon name",
+      "couponNo": "Serial number",
+      "registerDate": "Register date",
+      "expireDate": "Valid date",
+      "usedDate": "Used date",
       "status": "Validity"
     },
     "status": {
@@ -39,28 +39,28 @@
     },
     "message": {
       "registerFail": "Failed to register the coupon please try again later",
-      "registerNotExist": "The coupon with the number you entered does not exist.",
+      "registerNotExist": "Coupon code you entered does not exist.",
       "registerExpired": "Cannot register this coupon since the validity date has expired",
-      "registerAlready": "This coupon is already registered",
-      "registerOrUsedAlready": "The coupon has already been used or registered",
-      "registerDayRistrict": "You are limited to use the coupon tomorrow due to 5 consecutive wrong attemps.",
-      "registerSuccess": "Your coupon is registered succesfully",
-      "useAlready": "This coupon has already been used",
-      "useExpired": "Cannot use this coupon since the validity date has expired"
+      "registerAlready": "Coupon has already been registered.",
+      "registerOrUsedAlready": "Coupon has already been used or registered",
+      "registerDayRistrict": "You are limited to use the coupon tomorrow due to 5 consecutive wrong attempts.",
+      "registerSuccess": "Coupon was registered successfully.",
+      "useAlready": "Coupon has already been used",
+      "useExpired": "Cannot use this coupon since it has expired."
     },
     "detailModal": {
-      "title": "Coupon Information",
-      "couponName": "Coupon Name",
-      "couponNo": "Coupon Number",
+      "title": "Coupon information",
+      "couponName": "Name",
+      "couponNo": "Coupon code",
       "couponType": "Type",
       "registerDate": "Register date",
-      "usedDate": "Used Date",
-      "usedDateDesc": "Coupon can be applied when used during the valid date mentioned on the coupon.",
+      "usedDate": "Used date",
+      "usedDateDesc": "* Coupon can be applied when used during the valid date mentioned on the coupon.",
       "expireDate": "Coupon expiry date",
-      "expireDateDesc": "Coupons cannot be used after expiry date.",
+      "expireDateDesc": "* Coupons cannot be used after expiry date.",
       "target": "Applicable products and services",
-      "targetDesc": "Only the applicable coupon information is shown.",
-      "desc": "To use the coupon go to the payment center select the product or service voucher you want then apply the coupon and proceed with payment."
+      "targetDesc": "* Only the applicable coupon information is shown.",
+      "desc": "To use the coupon, go to the payment center, select the product or service voucher you want then apply the coupon then proceed with payment."
     }
   }
 }

@@ -62,7 +62,7 @@ export default {
         nickname: [
           {
             validator: (rule, value, callback) => {
-              if (value.length < 1 || value.length > 20) {
+              if (value.trim().length < 1 || value.trim().length > 20) {
                 this.form.confirmNickname = false
                 callback(
                   new Error(
