@@ -28,6 +28,7 @@
       <el-upload
         ref="upload"
         action="#"
+        accept=".jpg,.png,.ico"
         :auto-upload="false"
         :on-change="imageSelected"
         :show-file-list="false"
@@ -39,7 +40,7 @@
       <el-button type="text" @click="deleteImage" :disabled="!file">
         {{ $t('common.delete') }}
       </el-button>
-      <el-button type="primary" @click="submit">
+      <el-button type="primary" @click="submit" :disabled="submitDisabled">
         {{ $t('workspace.onpremiseSetting.favicon.submit') }}
       </el-button>
     </div>
@@ -48,15 +49,17 @@
 
 <script>
 import modalMixin from '@/mixins/modal'
+import utilsMixin from '@/mixins/utils'
 import { mapGetters } from 'vuex'
 import workspaceService from '@/services/workspace'
 
 export default {
-  mixins: [modalMixin],
+  mixins: [modalMixin, utilsMixin],
   data() {
     return {
       defaultFavicon: require('assets/images/logo/favicon.png'),
       file: null,
+      submitDisabled: true,
     }
   },
   computed: {
@@ -66,11 +69,20 @@ export default {
     opened() {
       this.file = this.favicon
     },
+    closed() {
+      this.submitDisabled = true
+    },
     imageSelected(file) {
-      const reader = new FileReader()
-      reader.readAsDataURL(file.raw)
-      reader.onload = () => {
-        this.file = reader.result
+      if (this.isImageFile(file, 3)) {
+        const reader = new FileReader()
+        reader.readAsDataURL(file.raw)
+        reader.onload = () => {
+          this.file = reader.result
+          this.submitDisabled = false
+        }
+      } else {
+        this.submitDisabled = true
+        this.$refs.upload.clearFiles()
       }
     },
     deleteImage() {

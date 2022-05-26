@@ -13,7 +13,7 @@
     "delete": "Delete",
     "graph": "Graph",
     "list": "List",
-    "paymentCenter": "Payment Center",
+    "paymentCenter": "Payment center",
     "plan": "Plan",
     "message": {
       "notAllowFileExtension": "Unsupported file type.",
@@ -25,7 +25,7 @@
       "fileRequestCancel": "The file request was canceled."
     },
     "apply": "Apply",
-    "error": "Request failed. please try again later.",
-    "permanentlyDelete": "Permanently Delete"
+    "error": "Request failed, please try again later.",
+    "permanentlyDelete": "Permanently delete"
   }
 }

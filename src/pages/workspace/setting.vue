@@ -57,6 +57,7 @@
                         action="#"
                         :auto-upload="false"
                         :on-change="imageSelected"
+                        accept=".jpg,.png,.ico"
                         :show-file-list="false"
                         :disabled="activeWorkspace.role !== 'MASTER'"
                         drag
@@ -114,6 +115,7 @@
                       type="primary"
                       @click="submit"
                       v-if="activeWorkspace.role === 'MASTER'"
+                      :disabled="disabledSubmitButton"
                     >
                       {{ $t('common.update') }}
                     </el-button>
@@ -126,10 +128,14 @@
             </div>
           </el-card>
         </el-col>
-        <OnpremiseWorkspaceSetting
-          v-if="$isOnpremise"
-          class="container__right"
-        />
+        <template v-if="activeWorkspace.role === 'MASTER'">
+          <WorkspaceSettingServiceInfo
+            class="container__right"
+          ></WorkspaceSettingServiceInfo>
+          <WorkspaceSettingAppRemote
+            class="container__right"
+          ></WorkspaceSettingAppRemote>
+        </template>
       </el-row>
     </div>
     <WorkspaceLeaveModal
@@ -144,9 +150,10 @@
 import { mapGetters } from 'vuex'
 import filters from '@/mixins/filters'
 import workspaceService from '@/services/workspace'
+import utilsMixin from '@/mixins/utils'
 
 export default {
-  mixins: [filters],
+  mixins: [filters, utilsMixin],
   computed: {
     ...mapGetters({
       myProfile: 'auth/myProfile',
@@ -161,14 +168,20 @@ export default {
         description: '',
       },
       showLeaveModal: false,
+      disabledSubmitButton: false,
     }
   },
   methods: {
     imageSelected(file) {
-      const reader = new FileReader()
-      reader.readAsDataURL(file.raw)
-      reader.onload = () => {
-        this.file = reader.result
+      if (this.isImageFile(file)) {
+        const reader = new FileReader()
+        reader.readAsDataURL(file.raw)
+        reader.onload = () => {
+          this.file = reader.result
+        }
+        this.disabledSubmitButton = false
+      } else {
+        this.disabledSubmitButton = true
       }
     },
     async submit() {

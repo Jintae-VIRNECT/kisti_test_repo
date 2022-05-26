@@ -1,19 +1,19 @@
 {
   "contents": {
     "allContents": {
-      "title": "All Contents",
-      "myContents": "My Contents",
+      "title": "All contents",
+      "myContents": "My contents",
       "delete": "Delete",
-      "workspaceContentsList": "All Contents",
+      "workspaceContentsList": "All contents",
       "column": {
         "id": "Content ID",
         "name": "Name",
-        "targetType": "Target Type",
+        "targetType": "Target type",
         "uploader": "Member",
         "createdDate": "Update",
-        "sharedStatus": "Share Status"
+        "sharedStatus": "Share status"
       },
-      "empty": "There is no uploaded content"
+      "empty": "No uploaded content"
     },
     "sharedStatus": {
       "shared": "Activate",
@@ -26,29 +26,29 @@
       "vr": "VR Target"
     },
     "info": {
-      "title": "Content Details",
+      "title": "Content details",
       "id": "Content ID",
-      "name": "Content Name",
+      "name": "Content name",
       "uploader": "Member",
       "volume": "Size",
       "createdDate": "Update",
-      "type": "Content Type",
-      "device": "Compatible Device",
-      "sharedStatus": "Sharing Status",
-      "target": "Target Type",
-      "properties": "Content Components",
+      "type": "Content type",
+      "device": "Compatible device",
+      "sharedStatus": "Sharing status",
+      "target": "Target type",
+      "properties": "Content components",
       "delete": "Delete",
-      "register": "Register Task",
+      "register": "Register task",
       "message": {
         "delete": "Delete selected contents",
         "deleteSure": "Are you sure you want to delete the selected contents?",
-        "deleteSuccess": "The selected contents has been deleted.",
-        "deleteFail": "Failed to delete the selected contents. Please try again after a while.",
-        "deleteNotExist": "The selected content does not exist in the Workspace. Please check again.",
+        "deleteSuccess": "Selected contents has been deleted.",
+        "deleteFail": "Failed to delete the selected contents. Please try again later.",
+        "deleteNotExist": "Selected content does not exist in the Workspace. Please check again.",
         "deleteShared": "It is impossible to delete when the content sharing status is activation.",
-        "updateSuccess": "The selected content sharing settings have been updated.",
+        "updateSuccess": "Selected content sharing settings have been updated.",
         "updateFail": "Failed to update content sharing settings please try again later.",
-        "updateNotExist": "The selected content does not exist in the Workspace. Please check again."
+        "updateNotExist": "Selected content does not exist in the Workspace. Please check again."
       }
     }
   }

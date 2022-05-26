@@ -6,7 +6,7 @@ import WorkspaceInfo from '@/models/workspace/WorkspaceInfo'
 import Member from '@/models/workspace/Member'
 import MemberActivity from '@/models/workspace/MemberActivity'
 import PlansInfo from '@/models/workspace/PlansInfo'
-import OnPremiseSetting from '@/models/workspace/OnPremiseSetting'
+import WorkspaceSetting from '@/models/workspace/WorkspaceSetting'
 import Application, {
   productList,
 } from '@/models/settings/onpremise/application'
@@ -355,11 +355,16 @@ export default {
     return data
   },
   /**
-   * 워크스페이스 세팅 불러오기 (onpremise)
+   * 워크스페이스 세팅 불러오기
    */
   async getWorkspaceSetting() {
-    const data = await api('WORKSPACE_GET_SETTING')
-    return new OnPremiseSetting(data)
+    const workspaceId = activeWorkspaceGetter().uuid
+    const data = await api('WORKSPACE_GET_SETTING', {
+      params: {
+        workspaceId,
+      },
+    })
+    return new WorkspaceSetting(data)
   },
   /**
    * 워크스페이스 타이틀 설정 (onpremise)
@@ -398,6 +403,42 @@ export default {
     return data
   },
   /**
+   * 워크스페이스 리모트 로고 설정
+   * @param {File} androidType1Logo
+   * @param {File} androidType2Logo
+   * @param {File} hololens2Logo
+   */
+  async setWorkspaceAppLogo(
+    { androidType1Logo, androidType2Logo, hololens2Logo },
+    isDeleted,
+  ) {
+    const formData = new FormData()
+    formData.append('userId', myProfileGetter().uuid)
+    if (androidType1Logo) {
+      formData.append('remoteAndroidSplashLogo', androidType1Logo)
+    } else {
+      formData.append('defaultRemoteAndroidSplashLogo', isDeleted)
+    }
+
+    if (androidType2Logo) {
+      formData.append('remoteAndroidLoginLogo', androidType2Logo)
+    } else {
+      formData.append('defaultRemoteAndroidLoginLogo', isDeleted)
+    }
+
+    if (hololens2Logo) {
+      formData.append('remoteHololens2CommonLogo', hololens2Logo)
+    } else {
+      formData.append('defaultRemoteHololens2CommonLogo', isDeleted)
+    }
+
+    const data = await api('WORKSPACE_SET_APP_LOGO', {
+      route: { workspaceId: activeWorkspaceGetter().uuid },
+      params: formData,
+    })
+    return data
+  },
+  /**
    * 워크스페이스 파비콘 설정 (onpremise)
    */
   async setWorkspaceFavicon(favicon) {
@@ -420,17 +461,20 @@ export default {
         productName,
       },
     })
+
     const appList = appInfoList.map(app => new Application(app))
 
     const productAppList = productList[productName].map(file => {
       const app = appList.find(app => app.category === file.category)
-      if (app) {
-        file.name = app.name
-        file.version = app.version
-        file.released = app.released
-        file.updateStatus = app.updateStatus
-        return file
-      } else return file
+      if (app)
+        return {
+          ...app,
+          extensionList: file.extensionList,
+          deviceModel: file.deviceModel,
+          operationSystem: file.operationSystem,
+          productName: file.productName,
+        }
+      else return file
     })
 
     return productAppList
@@ -464,6 +508,18 @@ export default {
       timeout: 100000,
     })
 
+    return data
+  },
+
+  /**
+   * 워크스페이스 다운로드 파일 삭제 (onpremise)
+   */
+  async deleteWorkspaceDownloadFile(appUUID) {
+    const data = await api('WORKSPACE_DELETE_DOWNLOAD_FILE', {
+      route: {
+        appUUID: appUUID,
+      },
+    })
     return data
   },
 }

@@ -1,10 +1,10 @@
 {
   "menu": {
-    "home": "Workspace Home",
+    "home": "Workspace home",
     "members": "Workspace Members",
     "contents": "Contents",
     "tasks": "Tasks",
-    "workspaceSetting": "Workspace Settings",
+    "workspaceSetting": "Workspace settings",
     "projects": "Project",
     "collapse": {
       "workspace": {
@@ -15,23 +15,23 @@
       },
       "members": {
         "list": "All Members",
-        "activity": "Recent Activity"
+        "activity": "Recent activity"
       },
       "contents": {
-        "list": "All Contents",
+        "list": "All contents",
         "title": "Content (ares)"
       },
       "tasks": {
-        "list": "All Tasks",
+        "list": "All tasks",
         "results": "Reports",
-        "troubles": "Trouble Memo(TM)"
+        "troubles": "Trouble memo(TM)"
       },
       "settings": {
         "info": "Workspace Infomation",
         "download": "Download management"
       },
       "projects": {
-        "list": "Project List",
+        "list": "All projects",
         "title": "Project (mars)"
       },
       "content": {

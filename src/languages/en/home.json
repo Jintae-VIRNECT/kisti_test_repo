@@ -1,9 +1,9 @@
 {
   "home": {
     "banner": {
-      "sub": "Connect Work, Space and People",
+      "sub": "Connect work, space and people",
       "main": "%{company} Workstation",
-      "desc": "Experience true systematic management through VIRNECT products",
+      "desc": "Experience truly seamless management through VIRNECT products",
       "desc_op": "Welcome to %{company} Workstation"
     },
     "memberList": {
@@ -14,31 +14,31 @@
         "role": "Role",
         "joinDate": "Since"
       },
-      "empty": "Invite members to your Workstation"
+      "empty": "Invite Members to your Workstation"
     },
     "contentsList": {
-      "title": "Recent Contents & Tasks",
-      "contents": "Recent Contents",
-      "task": "Recent Tasks",
+      "title": "Recent contents & tasks",
+      "contents": "Recent contents",
+      "task": "Recent tasks",
       "empty": "No content updated recently",
       "taskEmpty": "No tasks updated recently"
     },
     "reportList": {
-      "title": "Recent Task Report",
+      "title": "Recent task report",
       "task": "Task",
       "paper": "Paper",
       "issue": "Issue",
-      "empty": "Nothing reported"
+      "empty": "Nothing to report"
     },
     "profile": {
-      "title": "My Profile",
+      "title": "My profile",
       "link": "Settings",
       "usingNickname": "Nickname",
       "workspaceRole": "Role",
-      "usingPlans": "Plans in Use"
+      "usingPlans": "Plans in use"
     },
     "install": {
-      "title": "Download Center",
+      "title": "Download center",
       "remote": "Install VIRNECT Remote",
       "make": "Install VIRNECT Make",
       "view": "Install VIRNECT View"
@@ -52,36 +52,36 @@
       "remain": "Remaining",
       "buy": "Purchase",
       "arStorage": {
-        "title": "AR Storage Capacity",
-        "desc": "It may differ from the actual remaining storage so please use it as a reference.",
+        "title": "AR storage capacity",
+        "desc": "Actual remaining storage may differ from amount shown.",
         "max": "Total",
         "used": "Used",
         "unit": "GB"
       },
       "arContent": {
-        "title": "Online AR Views",
-        "desc": "It may differ from the actual view counts so please use it as a reference.",
+        "title": "Online AR views",
+        "desc": "May differ from the actual view counts versus amount shown.",
         "max": "Total",
         "used": "Used",
         "unit": "Times"
       },
       "call": {
         "title": "Talk minutes",
-        "desc": "It may differ from the actual remaining Talk minutes so please use it as a reference.",
-        "max": "Overall Talk minutes",
+        "desc": "Actual remaining talk minutes may differ from amount shown",
+        "max": "Overall talk minutes",
         "used": "Talk minutes used",
         "unit": "Minutes"
       }
     },
     "storageOverflow": {
-      "title": "AR storage needs to be managed in the Workspace. Please delete some of your content according to purchased storage.",
-      "desc": "The content is saved for 14 days from the date of purchase and it will be deleted in the order of oldest to newest.",
-      "submit": "Content Management"
+      "title": "AR storage needed - Please delete some of your content according to purchased storage.",
+      "desc": "Content is saved for 14 days from the date of purchase and will be deleted in the order of oldest to newest.",
+      "submit": "Content management"
     },
     "licenseOverflow": {
-      "title": "The service is limited due to the exceeding number of plans allotted to users compared with the plans you have. Inquire your Master admin for the plan management.",
-      "desc": "If you are the Master admin please go to member settings and check plan allotment state.",
-      "submit": "Member Management"
+      "title": "Service is limited due to the exceeded number of plans allotted to users compared with the plans you have. Inquire your Master admin for the plan management.",
+      "desc": "For Master administrators please go to Member settings and check plan allotment state.",
+      "submit": "Member management"
     }
   }
 }

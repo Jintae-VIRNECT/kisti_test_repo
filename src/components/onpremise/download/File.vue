@@ -32,19 +32,49 @@
         :label="$t('workspace.onpremiseSetting.upload.title')"
         @onClick="click(file)"
       />
+      <VirnectButton
+        :label="$t('workspace.onpremiseSetting.upload.delete')"
+        v-if="file.uuid"
+        @onClick="deleteFile()"
+      />
     </div>
   </article>
 </template>
 
 <script>
 import dayjs from '@/plugins/dayjs'
+import workspaceService from '@/services/workspace'
+import messageMixin from '@/mixins/message'
+
 export default {
+  mixins: [messageMixin],
   props: {
     file: Object,
   },
   methods: {
     click(info) {
       this.$emit('fileUploadClick', info)
+    },
+    async deleteFile() {
+      this.$confirm(this.$t('workspace.onpremiseSetting.delete.desc'), {
+        title: this.$t('workspace.onpremiseSetting.delete.title'),
+        confirmButtonText: this.$t('workspace.onpremiseSetting.delete.confirm'),
+        cancelButtonText: this.$t('workspace.onpremiseSetting.delete.cancel'),
+      }).then(async () => {
+        try {
+          const { result } = await workspaceService.deleteWorkspaceDownloadFile(
+            this.file.uuid,
+          )
+          if (result) {
+            this.successMessage(
+              this.$t('workspace.onpremiseSetting.delete.success'),
+            )
+            this.$emit('refresh')
+          }
+        } catch (error) {
+          this.errorMessage('Error: 1000')
+        }
+      })
     },
     released(reletedTime) {
       const format = dayjs(this.file.released).format('YY.MM.DD hh:mm')

@@ -83,6 +83,7 @@ export default {
   methods: {
     changeActiveWorkspace(workspace) {
       this.$store.commit('auth/SET_ACTIVE_WORKSPACE', workspace.uuid)
+      this.$store.dispatch('layout/getWorkspaceSetting')
     },
   },
   mounted() {

@@ -145,10 +145,15 @@ export default {
   WORKSPACE_SET_TITLE: ['POST', '/workspaces/{workspaceId}/title'],
   // 워크스페이스 로고 변경
   WORKSPACE_SET_LOGO: ['POST', '/workspaces/{workspaceId}/logo'],
+
+  //  리모트 APP 로고 변경
+  WORKSPACE_SET_APP_LOGO: ['POST', '/workspaces/{workspaceId}/logo/remote'],
   // 워크스페이스 파비콘 변경
   WORKSPACE_SET_FAVICON: ['POST', '/workspaces/{workspaceId}/favicon'],
   // 워크스페이스 다운로드 파일 리스트 조회
   WORKSPACE_GET_DOWNLOAD_FILES: ['GET', '/download/list/{productName}'],
   // 워크스페이스 다운로드 파일 업로드
   WORKSPACE_SET_DOWNLOAD_FILE: ['POST', '/download/app/register/admin'],
+  // 워크스페이트 다운로드 파일 삭제
+  WORKSPACE_DELETE_DOWNLOAD_FILE: ['DELETE', '/download/app/{appUUID}/admin'],
 }

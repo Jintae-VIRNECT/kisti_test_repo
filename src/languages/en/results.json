@@ -1,12 +1,12 @@
 {
   "results": {
-    "title": "Report Task",
+    "title": "Report task",
     "task": "Task",
     "paper": "Paper",
     "issue": "Issue",
-    "myTask": "My Task",
-    "myPaper": "My Paper",
-    "myIssue": "My Issue",
+    "myTask": "My task",
+    "myPaper": "My paper",
+    "myIssue": "My issue",
     "column": {
       "taskName": "Task",
       "subTaskName": "Subtask",
@@ -17,14 +17,14 @@
       "reportedDate": "Date"
     },
     "issueDetail": {
-      "title": "Issue Details",
+      "title": "Issue details",
       "reporter": "Member",
-      "reportedDate": "Report Time",
-      "content": "Issue Description"
+      "reportedDate": "Report time",
+      "content": "Issue description"
     },
     "paperDetail": {
-      "title": "Paper Details",
-      "item": "Items"
+      "title": "Paper details",
+      "item": "Item"
     }
   }
 }
