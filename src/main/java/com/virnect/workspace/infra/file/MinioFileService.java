@@ -36,7 +36,7 @@ import com.virnect.workspace.global.error.ErrorCode;
  * EMAIL: ljk@virnect.com
  * DESCRIPTION:
  */
-@Profile({"local", "develop", "onpremise", "test"})
+@Profile({"local", "develop", "onpremise", "test", "freezing"})
 @Slf4j
 @Service
 @RequiredArgsConstructor
