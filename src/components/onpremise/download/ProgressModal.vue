@@ -3,6 +3,9 @@
     class="progress-modal onpremise-setting-modal"
     :visible.sync="showMe"
     :title="$t('workspace.onpremiseSetting.upload.modal.progressTitle')"
+    :close-on-press-escape="false"
+    :close-on-click-modal="false"
+    :show-close="false"
     width="380px"
     top="11vh"
   >
@@ -10,11 +13,6 @@
       <p
         v-html="$t('workspace.onpremiseSetting.upload.modal.progressMessage')"
       ></p>
-    </div>
-    <div slot="footer">
-      <el-button type="danger" @click="cancel">{{
-        $t('workspace.onpremiseSetting.upload.modal.cancel')
-      }}</el-button>
     </div>
   </el-dialog>
 </template>

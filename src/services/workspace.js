@@ -461,19 +461,20 @@ export default {
         productName,
       },
     })
+
     const appList = appInfoList.map(app => new Application(app))
 
     const productAppList = productList[productName].map(file => {
       const app = appList.find(app => app.category === file.category)
-      if (app) {
-        file.uuid = app.uuid
-        file.name = app.name
-        file.version = app.version
-        file.versionCode = app.versionCode
-        file.released = app.released
-        file.updateStatus = app.updateStatus
-        return file
-      } else return file
+      if (app)
+        return {
+          ...app,
+          extensionList: file.extensionList,
+          deviceModel: file.deviceModel,
+          operationSystem: file.operationSystem,
+          productName: file.productName,
+        }
+      else return file
     })
 
     return productAppList

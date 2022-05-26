@@ -47,6 +47,7 @@
         <el-upload
           ref="remoteLogoUpload"
           action="#"
+          accept=".jpg,.png"
           :auto-upload="false"
           :on-change="remoteLogoImageSelected"
           :show-file-list="false"
@@ -87,7 +88,7 @@
       >
         {{ $t('common.delete') }}
       </el-button>
-      <el-button type="primary" @click="submit">
+      <el-button type="primary" @click="submit" :disabled="submitDisabled">
         {{ $t('workspace.onpremiseSetting.logo.submit') }}
       </el-button>
     </div>
@@ -109,6 +110,7 @@ export default {
       defaultRemoteLogo: require('assets/images/logo/default_remote.svg'),
       logoFile: null,
       remoteLogoFile: null,
+      submitDisabled: true,
     }
   },
   computed: {
@@ -123,13 +125,20 @@ export default {
       this.logoFile = this.logo
       this.remoteLogoFile = this.remoteLogo
     },
+    closed() {
+      this.submitDisabled = true
+    },
     logoImageSelected(file) {
       if (this.isImageFile(file, 3)) {
         const reader = new FileReader()
         reader.readAsDataURL(file.raw)
         reader.onload = () => {
           this.logoFile = reader.result
+          this.submitDisabled = false
         }
+      } else {
+        this.$refs.logoUpload.clearFiles()
+        this.submitDisabled = true
       }
     },
     remoteLogoImageSelected(file) {
@@ -137,8 +146,12 @@ export default {
         const reader = new FileReader()
         reader.readAsDataURL(file.raw)
         reader.onload = () => {
+          this.submitDisabled = false
           this.remoteLogoFile = reader.result
         }
+      } else {
+        this.submitDisabled = true
+        this.$refs.remoteLogoUpload.clearFiles()
       }
     },
     deleteImage() {
