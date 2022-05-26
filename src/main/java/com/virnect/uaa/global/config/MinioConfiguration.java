@@ -10,7 +10,7 @@ import org.springframework.context.annotation.Profile;
 
 import io.minio.MinioClient;
 
-@Profile(value = {"dev", "local", "develop", "onpremise", "test"})
+@Profile(value = {"dev", "local", "develop", "onpremise", "test", "freezing"})
 @Configuration
 public class MinioConfiguration {
 	@Value("${minio.access-key}")
