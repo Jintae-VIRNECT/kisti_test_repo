@@ -1,15 +1,18 @@
 package com.virnect.workspace.event.message;
 
-import com.virnect.workspace.application.message.MessageRestService;
-import com.virnect.workspace.application.message.dto.MailRequest;
-import com.virnect.workspace.global.constant.MailSender;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.MessageSource;
 import org.springframework.context.event.EventListener;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 import org.thymeleaf.context.Context;
 import org.thymeleaf.spring5.SpringTemplateEngine;
+
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+
+import com.virnect.workspace.application.message.MessageRestService;
+import com.virnect.workspace.application.message.dto.MailRequest;
+import com.virnect.workspace.global.constant.MailSender;
 
 /**
  * Project: PF-Workspace
@@ -26,6 +29,7 @@ public class MessageEventHandler {
     private final SpringTemplateEngine springTemplateEngine;
     private final MessageRestService messageRestService;
 
+    @Async("asyncTaskExecutor")
     @EventListener(MailSendEvent.class)
     public void sendMailEventListener(MailSendEvent mailSendEvent) {
         log.info("[SEND MAIL EVENT] - [{}]", mailSendEvent.toString());

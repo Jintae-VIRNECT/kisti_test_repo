@@ -12,5 +12,5 @@ import com.virnect.workspace.domain.workspace.WorkspaceSetting;
  * DESCRIPTION:
  */
 public interface WorkspaceSettingRepository extends JpaRepository<WorkspaceSetting, Long> {
-	WorkspaceSetting findFirstByOrderByIdAsc();
+	WorkspaceSetting findByWorkspaceId(String workspaceId);
 }

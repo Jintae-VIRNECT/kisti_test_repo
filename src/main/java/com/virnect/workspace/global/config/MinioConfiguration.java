@@ -2,15 +2,6 @@ package com.virnect.workspace.global.config;
 
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
-import java.security.SecureRandom;
-import java.security.cert.CertificateException;
-
-import javax.net.ssl.HostnameVerifier;
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.SSLSession;
-import javax.net.ssl.SSLSocketFactory;
-import javax.net.ssl.TrustManager;
-import javax.net.ssl.X509TrustManager;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -18,8 +9,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 
 import io.minio.MinioClient;
-import lombok.SneakyThrows;
-import okhttp3.OkHttpClient;
 
 /**
  * Project: PF-Admin
@@ -28,7 +17,7 @@ import okhttp3.OkHttpClient;
  * EMAIL: ljk@virnect.com
  * DESCRIPTION:
  */
-@Profile({"local", "develop", "onpremise","test"})
+@Profile({"local", "develop", "onpremise","test", "freezing"})
 @Configuration
 public class MinioConfiguration {
 

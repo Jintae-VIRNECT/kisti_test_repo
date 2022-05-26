@@ -9,6 +9,8 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
 import lombok.Setter;
 
+import com.virnect.workspace.global.validator.AllowedExtension;
+
 /**
  * Project: PF-Workspace
  * DATE: 2020-10-15
@@ -24,12 +26,22 @@ public class WorkspaceLogoUpdateRequest {
 	@NotBlank
 	private String userId;
 
+	@AllowedExtension(extensions = {AllowedExtension.Extension.PNG, AllowedExtension.Extension.JPG})
 	@ApiModelProperty(value = "로고 이미지", required = false, position = 1)
 	private MultipartFile defaultLogo;
 
+	@AllowedExtension(extensions = {AllowedExtension.Extension.PNG, AllowedExtension.Extension.JPG})
 	@ApiModelProperty(value = "로고 그레이 이미지", required = false, position = 2)
 	private MultipartFile greyLogo;
 
+	@AllowedExtension(extensions = {AllowedExtension.Extension.PNG, AllowedExtension.Extension.JPG})
 	@ApiModelProperty(value = "로고 화이트 이미지", required = false, position = 3)
 	private MultipartFile whiteLogo;
+
+	@Override
+	public String toString() {
+		return "WorkspaceLogoUpdateRequest{" +
+			"userId='" + userId + '\'' +
+			'}';
+	}
 }
