@@ -11,7 +11,7 @@ export default class WorkspaceSetting extends Model {
     this.logo =
       json.defaultLogo || require('assets/images/logo/logo-gnb-ci.png')
     this.remoteLogo =
-      json.whiteLogo || require('assets/images/logo/logo-gnb-ci-white.png')
+      json.whiteLogo || require('assets/images/logo/default_remote.svg')
     this.favicon = json.favicon || require('assets/images/logo/favicon.png')
     this.androidType1Logo =
       json.remoteAndroidSplashLogo ||

@@ -88,6 +88,7 @@ export default {
     deleteImage() {
       this.$refs.upload.clearFiles()
       this.file = null
+      this.submitDisabled = false
     },
     async submit() {
       try {

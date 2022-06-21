@@ -159,6 +159,7 @@ export default {
       this.$refs.remoteLogoUpload.clearFiles()
       this.logoFile = null
       this.remoteLogoFile = null
+      this.submitDisabled = false
     },
     async urlToFile(url) {
       const { data } = await axios({
@@ -185,6 +186,7 @@ export default {
           remoteLogoRaw = await this.urlToFile(this.remoteLogoFile)
 
         await workspaceService.setWorkspaceLogo(logoRaw, remoteLogoRaw)
+
         this.$store.commit('layout/SET_LOGO', {
           logo: this.logoFile,
           remoteLogo: this.remoteLogoFile,

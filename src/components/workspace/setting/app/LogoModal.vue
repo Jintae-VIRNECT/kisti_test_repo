@@ -20,7 +20,7 @@
       <el-button type="text" @click="deleteImage" :disabled="disabledState">
         {{ $t('common.delete') }}
       </el-button>
-      <el-button type="primary" @click="submit">
+      <el-button type="primary" @click="submit" :disabled="submitDisabled">
         {{ $t('workspace.onpremiseSetting.logo.submit') }}
       </el-button>
     </div>
@@ -67,6 +67,7 @@ export default {
         },
       ],
       isDeleted: false,
+      submitDisabled: true,
     }
   },
   computed: {
@@ -98,12 +99,14 @@ export default {
     },
     opened() {
       this.setLogoFiles()
+      this.submitDisabled = true
     },
     logoSelected(file, base64, type) {
       this.logos.forEach(logo => {
         if (logo.type === type) {
           logo.src = base64
           logo.file = file
+          this.submitDisabled = false
         }
       })
     },
@@ -113,6 +116,7 @@ export default {
         logo.file = null
       })
       this.isDeleted = true
+      this.submitDisabled = false
     },
     async urlToFile(url) {
       const { data } = await axios({
