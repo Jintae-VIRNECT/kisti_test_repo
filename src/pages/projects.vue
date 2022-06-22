@@ -99,7 +99,7 @@
             />
             <ColumnDate
               :label="$t('projects.allprojects.column.createdDate')"
-              prop="createdDate"
+              prop="updatedDate"
               sortable="custom"
               :width="140"
             />
@@ -127,7 +127,6 @@ import { mapGetters } from 'vuex'
 import searchMixin from '@/mixins/search'
 import columnsMixin from '@/mixins/columns'
 import utils from '@/mixins/utils'
-import { Loading } from 'element-ui'
 import { projectFilterList, memberRoleFilter } from '@/models/project/Project'
 
 export default {
