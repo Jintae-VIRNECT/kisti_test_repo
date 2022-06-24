@@ -11,8 +11,8 @@
     <div>
       <a
         v-for="{ label, url } in this.$t('guide.list')"
-        v-if="url"
-        :href="url"
+        v-show="url"
+        :href="url + `?t=${new Date().getTime()}`"
         :key="label"
         target="_blank"
       >

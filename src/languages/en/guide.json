@@ -1,6 +1,7 @@
 {
   "guide": {
     "title": "User guide",
+    "taskStatusGuide": {},
     "list": [
       {
         "label": "Make user manual",
@@ -18,15 +19,30 @@
         "label": "View user manual (Realwear)",
         "url": "https://file.virnect.com/Guide/view_realwear_user_guide_EN.pdf"
       },
-      {},
+      {
+        "label": "View user manual (Hololens2)",
+        "url": "https://file.virnect.com/Guide/view_hololens2_user_guide_EN.pdf"
+      },
       {
         "label": "Remote user manual",
-        "url": "https://file.virnect.com/Guide/remote_user_guide_EN.pdf"
+        "url": "https://file.virnect.com/Guide/remote_web_user_guide_EN.pdf"
       },
-      {},
-      {},
-      {},
-      {},
+      {
+        "label": "Remote user manual(mobile)",
+        "url": "https://file.virnect.com/Guide/remote_mobile_user_guide_EN.pdf"
+      },
+      {
+        "label": "Remote user manual(Realwear)",
+        "url": "https://file.virnect.com/Guide/remote_realwear_user_guide_EN.pdf"
+      },
+      {
+        "label": "Remote user manual(LINKFLOW)",
+        "url": "https://file.virnect.com/Guide/remote_linkflow_user_guide_EN.pdf"
+      },
+      {
+        "label": "Remote user manual(Hololens2)",
+        "url": "https://file.virnect.com/Guide/remote_hololens2_user_guide_EN.pdf"
+      },
       {
         "label": "Workstation user manual",
         "url": "https://file.virnect.com/Guide/workstation_user_guide_EN.pdf"
@@ -36,7 +52,6 @@
         "url": "https://file.virnect.com/Guide/purchase_user_guide_EN.pdf"
       },
       {}
-    ],
-    "taskStatusGuide": {}
+    ]
   }
 }
