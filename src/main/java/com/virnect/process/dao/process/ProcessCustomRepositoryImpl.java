@@ -81,12 +81,26 @@ public class ProcessCustomRepositoryImpl extends QuerydslRepositorySupport imple
 		List<Conditions> filterList,
 		String workspaceUUID, String search, List<String> userUUIDList, Pageable pageable, String targetType
 	) {
-		JPAQuery<Process> query = queryFactory.select(qProcess)
-			.from(qProcess)
-			.join(qProcess.targetList, qTarget)
-			.where(
-				eqWorkspaceUUID(workspaceUUID), inWorkerUUIDOrEqSearch(userUUIDList, search), eqTargetType(targetType))
-			.groupBy(qProcess.id);
+		JPAQuery<Process> query;
+		if (userUUIDList.isEmpty() && StringUtils.isEmpty(search)) {
+			query = queryFactory.select(qProcess)
+				.from(qProcess)
+				.join(qProcess.targetList, qTarget)
+				.where(
+					eqWorkspaceUUID(workspaceUUID), eqTargetType(targetType)
+				)
+				.groupBy(qProcess.id);
+		} else {
+			query = queryFactory.select(qProcess)
+				.from(qProcess)
+				.join(qProcess.subProcessList, qSubProcess)
+				.join(qProcess.targetList, qTarget)
+				.where(
+					eqWorkspaceUUID(workspaceUUID), inWorkerUUIDOrEqSearch(userUUIDList, search),
+					eqTargetType(targetType)
+				)
+				.groupBy(qProcess.id);
+		}
 
 		// 공정 상태 필터링
 		if (filterList != null && filterList.size() > 0 && !filterList.contains(Conditions.ALL)) {
