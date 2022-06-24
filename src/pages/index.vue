@@ -77,6 +77,38 @@ export default {
       },
       // TODO: 추후 Track 버전을 서버에서 전달받아 URL에 넣어주기.
       trackDownloadUrl: 'http://track.virnect.com/1.2.0/download/download/',
+      guide: {
+        remote: {
+          Realwear: {
+            url: `https://file.virnect.com/Guide/remote_realwear_user_guide_EN.pdf?t=${new Date().getTime()}`,
+          },
+          Mobile: {
+            url: `https://file.virnect.com/Guide/remote_mobile_user_guide_EN.pdf?t=${new Date().getTime()}`,
+          },
+          Linkflow: {
+            url: `https://file.virnect.com/Guide/remote_linkflow_user_guide_EN.pdf?t=${new Date().getTime()}`,
+          },
+          Hololens: {
+            url: `https://file.virnect.com/Guide/remote_hololens2_user_guide_EN.pdf?t=${new Date().getTime()}`,
+          },
+        },
+        make: {
+          PC: {
+            url: `https://file.virnect.com/Guide/make_user_guide_EN.pdf?t=${new Date().getTime()}`,
+          },
+        },
+        view: {
+          Realwear: {
+            url: `https://file.virnect.com/Guide/view_realwear_user_guide_EN.pdf?t=${new Date().getTime()}`,
+          },
+          Mobile: {
+            url: `https://file.virnect.com/Guide/view_mobile_user_guide_EN.pdf?t=${new Date().getTime()}`,
+          },
+          Hololens: {
+            url: `https://file.virnect.com/Guide/view_hololens2_user_guide_EN.pdf?t=${new Date().getTime()}`,
+          },
+        },
+      },
     }
   },
   watch: {
@@ -88,13 +120,28 @@ export default {
         return
       }
       window.history.replaceState({}, null, tab)
+
       if (!this.products[tab].length) {
         this.products[tab] = await this.loadList(tab)
+
+        /**
+         * @todo Hotfix 건으로 임시로 추가 2022.06.24
+         * 국문과 영문에 따라 다운로드 링크가 서버에 다르게 요청 필요
+         * 서버도 관련 API 작업이 필요함
+         */
+        if (this.$i18n.locale === 'en') {
+          this.updateEnglishGuideUrl()
+        }
+
         this.isEmpty = this.products[tab].length === 0 ? true : false
       }
     },
-    async '$i18n.locale'() {
+    async '$i18n.locale'(locale) {
       this.products[this.activeTab] = await this.loadList(this.activeTab)
+
+      if (locale === 'en') {
+        this.updateEnglishGuideUrl()
+      }
     },
   },
   computed: {
@@ -104,6 +151,14 @@ export default {
   },
   filters,
   methods: {
+    updateEnglishGuideUrl() {
+      this.products[this.activeTab] = this.products[this.activeTab].map(
+        product => {
+          product.guideUrl = this.guide[this.activeTab][product.deviceType].url
+          return product
+        },
+      )
+    },
     tabClick(product) {
       this.activeTab = product
     },
@@ -119,6 +174,7 @@ export default {
         route: { productName },
       })
       this.isEmpty = this.products[this.activeTab].length === 0 ? true : false
+
       if (!this.$isOnpremise) {
         return appInfoList.map(this.storeId(productName))
       } else return appInfoList
@@ -132,6 +188,7 @@ export default {
         '/view': 'view',
         '/track': 'track',
       }[this.redirectPath] || 'remote'
+
     if (this.$isOnpremise) {
       this.activeTab =
         {
