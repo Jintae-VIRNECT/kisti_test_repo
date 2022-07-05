@@ -1,7 +1,7 @@
 const env = process.env.VIRNECT_ENV
 const configServer = process.env.CONFIG_SERVER
   ? process.env.CONFIG_SERVER
-  : 'http://192.168.6.3:6383'
+  : 'http://192.168.0.9:6383'
 
 const axios = require('axios')
 
@@ -13,19 +13,19 @@ const localIp = 'localhost'
 const localUrls = {
   www: `https://${localIp}:9010`,
   console: `https://${localIp}:8883`,
-  api: 'https://192.168.6.3:8073',
+  api: 'https://192.168.0.9:8073',
   accout: 'https://localhost:8822',
   workstation: `https://${localIp}:8878`,
   download: 'https://localhost:8833',
   remote: 'https://localhost:8886',
   pay: `https://${localIp}:7070`,
-  minio: 'https://192.168.13.64:4545',
+  minio: 'http://192.168.0.9:9000',
   env: 'local',
   timeout: 30000,
   ssl: 'private',
 }
 class Config {
-  constructor() {}
+  constructor() { }
 
   get envConfig() {
     return envConfig
