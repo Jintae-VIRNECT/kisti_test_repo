@@ -1,0 +1,36 @@
+pipeline {
+    agent any
+    environment {
+        COMMIT = "${GIT_COMMIT}"
+        TAG = "${TAG_NAME}"
+        TEST = "${CHANGE_ID}"
+      BRANCH_NAME = "${BRANCH_NAME.toLowerCase().trim()}"
+      JOB_NAME = "${JOB_NAME.split("/")[0].toLowerCase().trim()}"
+      REPO_NAME = sh(returnStdout: true, script: 'git config --get remote.origin.url | rev | cut -f 1 -d "/" | rev | sed "s/.git//gi";sed "/^ *$/d"').toLowerCase().trim() 
+    }
+
+    stages {
+        stage('Build') {
+            steps{
+                echo 'commit : ' + COMMIT 
+                echo 'TAG : ' + TAG 
+                echo 'TEST :' +TEST
+                echo 'BRANCH_NAME : ' + BRANCH_NAME
+                echo 'job_name : ' + JOB_NAME
+                echo 'REPO_NAME : ' + REPO_NAME
+                sh 'docker build -t ${BRANCH_NAME}:${JOB_NAME} -f docker/Dockerfile .'
+            }
+        }
+        stage('Deploy'){
+            when {
+              branch 'pf-license'
+            }
+            steps {
+              sh 'docker ps -f name=${JOB_NAME}-${BRANCH_NAME} -q  || true  docker stop ${JOB_NAME}-${BRANCH_NAME}'
+              sh 'docker container ls -a -f name=${JOB_NAME}-${BRANCH_NAME} -q || true  docker-compose -f /usr/local/custom/${REPO_NAME}/docker-compose.yaml rm -f ${JOB_NAME}-${BRANCH_NAME}'
+              sh 'docker images -f "dangling=true" -q | xargs -r docker rmi' 
+              sh 'docker-compose -f /usr/local/custom/${REPO_NAME}/docker-compose.yaml up -d ${BRANCH_NAME}'
+            }
+        }
+    }    
+}
