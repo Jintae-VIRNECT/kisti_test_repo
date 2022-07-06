@@ -1,7 +1,7 @@
 
 spring:
     redis:
-        host: 192.168.6.3
+        host: 192.168.0.9
         port: 6379
     application:
         name: remote-service-server-local
@@ -61,32 +61,32 @@ feign:
     message-prefix: message-server
     remote-prefix: remote-service-server
     record-prefix: remote-record-server
-    license-url: http://192.168.6.3:8632
-    workspace-url: http://192.168.6.3:8082
-    account-url: http://192.168.6.3:8081
-    message-url: http://192.168.6.3:8084
-    remote-url: http://192.168.6.3:8000
-    record-url: https://192.168.6.3:8083
+    license-url: http://192.168.0.9:8632
+    workspace-url: http://192.168.0.9:8082
+    account-url: http://192.168.0.9:8081
+    message-url: http://192.168.0.9:8084
+    remote-url: http://192.168.0.9:8000
+    record-url: https://192.168.0.9:8083
 
 workspace-server:
     ribbon:
-        listOfServers: http://192.168.6.3:8082
+        listOfServers: http://192.168.0.9:8082
 
 account-server:
     ribbon:
-        listOfServers: http://192.168.6.3:8081
+        listOfServers: http://192.168.0.9:8081
 
 remote-record-server:
     ribbon:
-        listOfServers: https://192.168.6.3:8083
+        listOfServers: https://192.168.0.9:8083
 
 license-server:
     ribbon:
-        listOfServers: http://192.168.6.3:8632
+        listOfServers: http://192.168.0.9:8632
 
 message-server:
     ribbon:
-        listOfServers: http://192.168.6.3:8084
+        listOfServers: http://192.168.0.9:8084
 
 logging:
     level:
@@ -104,11 +104,11 @@ server:
 service:
     coturn-credential: remote
     coturn-name: remote
-    coturn-uris-conference: ["turn:192.168.6.3:3478"]
-    coturn-uris-streaming: ["turn:192.168.6.3:3478"]
+    coturn-uris-conference: ["turn:192.168.0.9:3478"]
+    coturn-uris-streaming: ["turn:192.168.0.9:3478"]
     domain_or_public_ip: 192.168.13.36
     https_port: 8000
-    kms-uris-conference: ["ws://192.168.6.3:8888/kurento"]
+    kms-uris-conference: ["ws://192.168.0.9:8888/kurento"]
     kms-uris-streaming: []
 
     policy-location: policy/publicServicePolicy.json
@@ -129,11 +129,11 @@ service:
     remote_webhook_endpoint: https://webhook.site/67d3ca77-8754-428f-b814-91f45146a26a
     remote_webhook_events: ["sessionCreated","sessionDestroyed","participantJoined","participantLeft","webrtcConnectionCreated","webrtcConnectionDestroyed","recordingStatusChanged","filterEventDispatched","mediaNodeStatusChanged"]
     remote_webhook_headers: []
-    remote_service_public_url: https://192.168.6.3:8073
+    remote_service_public_url: https://192.168.0.9:8073
 
 storage:
     enabled: true
-    serverUrl: https://192.168.6.3:2838
+    serverUrl: https://192.168.0.9:2838
     access-key: virnect
     secret-key: Qjsprxm13@$
     bucket-name: virnect-platform
