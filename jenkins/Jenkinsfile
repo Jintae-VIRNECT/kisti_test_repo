@@ -30,7 +30,6 @@ pipeline {
             steps {
               sh 'docker ps -f name=${JOB_NAME}-${BRANCH_NAME} -q  || true  docker stop ${JOB_NAME}-${BRANCH_NAME}'
               sh 'docker container ls -a -f name=${JOB_NAME}-${BRANCH_NAME} -q || true  docker-compose -f /usr/local/custom/${REPO_NAME}/docker-compose.yaml rm -f ${JOB_NAME}-${BRANCH_NAME}'
-              sh 'docker images -f "dangling=true" -q | xargs -r docker rmi' 
               sh 'docker-compose -f /usr/local/custom/${REPO_NAME}/docker-compose.yaml up -d ${BRANCH_NAME}'
             }
         }
