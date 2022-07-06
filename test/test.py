@@ -14,7 +14,7 @@ def start_recording():
         "workspace": workspace, "user": user}
     data = {
         "sessionId": "ses_PrATC23KkG",
-        "token": "wss://192.168.6.3:8000?sessionId=ses_HRE5AYUoiR&token=tok_ZEzn3pVf1RJvcYal&role=PUBLISHER&version=2.0.0&recorder=true&options={\"iceServers\":[{\"username\":\"remote\",\"credential\":\"remote\",\"url\":\"turn:192.168.6.3:3478\"}],\"role\":\"PUSLISHER\",\"wsUri\":\"wss://192.168.6.3:8073/remote/websocket\"}",
+        "token": "wss://192.168.0.9:8000?sessionId=ses_HRE5AYUoiR&token=tok_ZEzn3pVf1RJvcYal&role=PUBLISHER&version=2.0.0&recorder=true&options={\"iceServers\":[{\"username\":\"remote\",\"credential\":\"remote\",\"url\":\"turn:192.168.0.9:3478\"}],\"role\":\"PUSLISHER\",\"wsUri\":\"wss://192.168.0.9:8073/remote/websocket\"}",
         "resolution": "480p",
         "framerate": 20,
         "recordingTimeLimit": 5,

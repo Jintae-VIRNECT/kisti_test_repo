@@ -18,7 +18,7 @@ type StartRecordingRequest struct {
 	// session id of room
 	SessionID string `json:"sessionId" binding:"required" example:"session_1"`
 	// token
-	Token string `json:"token" binding:"required" example:"wss://192.168.6.3:8000?sessionId=ses_PAtRKcOQSX&token=tok_G5Pgb8cIRTfq8U3E&role=PUBLISHER&version=2.0.1"`
+	Token string `json:"token" binding:"required" example:"wss://192.168.0.9:8000?sessionId=ses_PAtRKcOQSX&token=tok_G5Pgb8cIRTfq8U3E&role=PUBLISHER&version=2.0.1"`
 	// video resolution
 	Resolution string `json:"resolution,omitempty" binding:"oneof=480p 720p 1080p" enums:"480p, 720p, 1080p" default:"720p" example:"720p"`
 	// video framerate
