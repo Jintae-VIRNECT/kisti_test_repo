@@ -56,7 +56,7 @@ module.exports = {
     port,
     proxy: {
       '/api': {
-        target: 'https://192.168.6.3:8073',
+        target: 'https://192.168.0.9:8073',
         headers: {
           'Access-Control-Allow-Origin': '*',
         },

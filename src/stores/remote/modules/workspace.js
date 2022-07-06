@@ -49,7 +49,7 @@ const state = {
     //   uuid: '462811bf3a8adfc49b121c8d7617e5e3',
     //   title: '1111111111111',
     //   profile:
-    //     'http://192.168.6.3:8082/workspaces/upload/workspace-profile.png',
+    //     'http://192.168.0.9:8082/workspaces/upload/workspace-profile.png',
     //   expire: true,
     // },
     // {
@@ -58,7 +58,7 @@ const state = {
     //   uuid: '4bdebc670244f7c886ace5340ea01fa7',
     //   title: '왕2222222222222222222',
     //   profile:
-    //     'http://192.168.6.3:8082/workspaces/upload/workspace-profile.png',
+    //     'http://192.168.0.9:8082/workspaces/upload/workspace-profile.png',
     //   expire: false,
     // },
   ],
