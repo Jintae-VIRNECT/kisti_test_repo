@@ -25,7 +25,7 @@ pipeline {
         }
         stage('Deploy'){
             when {
-              branch 'pf-workspace'
+              branch 'pf-webworkstation'
             }
             steps {
               sh 'docker ps -f name=${JOB_NAME}-${BRANCH_NAME} -q  || true  docker stop ${JOB_NAME}-${BRANCH_NAME}'
