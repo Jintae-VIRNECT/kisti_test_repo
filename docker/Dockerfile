@@ -17,7 +17,7 @@ ENV KMS_STUN_PORT ""
 ENV KMS_TURN_URL ""
 ENV KMS_DTLS_PEM_CERT_RSA "/etc/kurento/cert/cert+key.pem"
 ENV KMS_DTLS_PEM_CERT_ECDSA ""
-ENV INFLUXDB_URL "http://10.0.0.40:8086/MEDIA"
+ENV INFLUXDB_URL "http://192.168.0.9:8086/MEDIA"
 ENV NODE_ENV production
 
 COPY ./docker/entrypoint.sh ./docker/healthchecker.sh ./docker/start.sh /
