@@ -11,8 +11,7 @@ const pjson = require('./package.json')
  */
 async function getConfig(serviceName, branch) {
   const { data } = await axios.get(
-    `${
-      process.env.CONFIG_SERVER || 'http://10.200.0.21:6383'
+    `${process.env.CONFIG_SERVER || 'http://192.168.0.9:6383'
     }/${serviceName}/${branch}`,
   )
   return data.propertySources[0].source
@@ -26,7 +25,7 @@ module.exports = async () => {
 
   // local
   if (process.env.VIRNECT_ENV === 'local') {
-    env.URLS = await getConfig('web-url', 'develop')
+    env.URLS = await getConfig('web-url', 'onpremise')
     for (const key in env.URLS) {
       env.URLS[key] = /api|ws/.test(key)
         ? env.URLS[key]
