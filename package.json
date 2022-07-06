@@ -10,8 +10,8 @@
     "build:local": "set NODE_ENV=develop&& webpack --progress --config build/webpack.develop.conf.js",
     "pkg": "pkg .",
     "start": "node server.js",
-    "start:dev": "set CONFIG_SERVER=http://10.200.0.21:6383&& set VIRNECT_ENV=develop&& webpack-dev-server --progress --hot --config build/webpack.local.conf.js",
-    "start:local": "set CONFIG_SERVER=http://10.200.0.21:6383&& set VIRNECT_ENV=develop&& set PORT=8885&& node server.js",
+    "start:dev": "set CONFIG_SERVER=http://192.168.0.9:6383&& set VIRNECT_ENV=develop&& webpack-dev-server --progress --hot --config build/webpack.local.conf.js",
+    "start:local": "set CONFIG_SERVER=http://192.168.0.9:6383&& set VIRNECT_ENV=develop&& set PORT=8885&& node server.js",
     "test": "jest",
     "stylelint": "stylelint \"**/*.scss\" --fix"
   },

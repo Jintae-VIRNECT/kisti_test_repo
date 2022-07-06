@@ -27,7 +27,7 @@
   "related_applications": [{
     "platform": "play",
     "id": "com.virnect.remote.mobile2.dev",
-    "url":"https://192.168.6.3:8886/"
+    "url":"https://192.168.0.9:8886/"
     
   },{
     "platform": "play",

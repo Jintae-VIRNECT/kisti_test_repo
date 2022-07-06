@@ -64,7 +64,7 @@ const _ = {
       // const iceServers = URLS.coturn
 
       let ws = configs.wss || `${URLS['ws']}${wsUri['REMOTE']}`
-      // const ws = 'wss://192.168.6.3:8000/remote/websocket'
+      // const ws = 'wss://192.168.0.9:8000/remote/websocket'
 
       //config 서버에 정의된 coturnUrl 우선 설정
       if (URLS['coturnUrl']) {
@@ -753,8 +753,8 @@ const getStreamCreatedCallBack = ({ publisher, isRepublish, configs }) => {
       ? configs.videoRestrictedMode
         ? CAMERA_STATUS.CAMERA_OFF
         : publisher.stream.videoActive
-        ? CAMERA_STATUS.CAMERA_ON
-        : CAMERA_STATUS.CAMERA_OFF
+          ? CAMERA_STATUS.CAMERA_ON
+          : CAMERA_STATUS.CAMERA_OFF
       : CAMERA_STATUS.CAMERA_NONE
 
     const participantInfo = {

@@ -69,7 +69,7 @@ const localWebpackConfig = merge(baseWebpackConfig(mode), {
     },
     proxy: {
       '/api': {
-        target: 'https://192.168.6.3:8073',
+        target: 'https://192.168.0.9:8073',
         headers: {
           'Access-Control-Allow-Origin': '*',
         },
@@ -79,7 +79,7 @@ const localWebpackConfig = merge(baseWebpackConfig(mode), {
     },
 
     open: false,
-    onBeforeSetupMiddleware: function(devServer) {
+    onBeforeSetupMiddleware: function (devServer) {
       var express = require('express')
       configService.init()
       devServer.app.use(
@@ -87,31 +87,31 @@ const localWebpackConfig = merge(baseWebpackConfig(mode), {
           limit: '50mb',
         }),
       )
-      devServer.app.get('/healthcheck', function(req, res) {
+      devServer.app.get('/healthcheck', function (req, res) {
         res.send(200)
       })
 
-      devServer.app.post('/logs', express.json(), function(req, res) {
+      devServer.app.post('/logs', express.json(), function (req, res) {
         logger.log(req.body.data, 'CONSOLE')
         res.send(true)
       })
 
-      devServer.app.get('/configs', express.json(), function(req, res) {
+      devServer.app.get('/configs', express.json(), function (req, res) {
         const a = configService.getConfigs()
         a.console = '/account'
         a.runtime = 'local'
         res.json(a)
       })
 
-      devServer.app.get('/pdf.worker', function(req, res) {
+      devServer.app.get('/pdf.worker', function (req, res) {
         res.sendFile(path.join(__dirname, '../static/js/pdf.worker.js'))
       })
 
-      devServer.app.get('/sw.js', function(req, res) {
+      devServer.app.get('/sw.js', function (req, res) {
         res.sendFile(path.join(__dirname, '../static/js/sw.js'))
       })
 
-      devServer.app.post('/translate', express.json(), function(req, res) {
+      devServer.app.post('/translate', express.json(), function (req, res) {
         const text = req.body.text
         const target = req.body.target
         translate.getTranslate(text, target).then(value => {
@@ -119,7 +119,7 @@ const localWebpackConfig = merge(baseWebpackConfig(mode), {
         })
       })
 
-      devServer.app.post('/stt', express.json(), function(req, res) {
+      devServer.app.post('/stt', express.json(), function (req, res) {
         const file = req.body.file
         const lang = req.body.lang
         const rateHertz = req.body.rateHertz
@@ -129,7 +129,7 @@ const localWebpackConfig = merge(baseWebpackConfig(mode), {
         })
       })
 
-      devServer.app.post('/tts', express.json(), function(req, res) {
+      devServer.app.post('/tts', express.json(), function (req, res) {
         const text = req.body.text
         const lang = req.body.lang
         const voice = req.body.voice

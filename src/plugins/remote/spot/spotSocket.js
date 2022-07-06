@@ -21,7 +21,7 @@ export const spotServerConnect = (
   onSpotError,
 ) => {
   return new Promise((res, rej) => {
-    const wsUrl = URLS['spot-ws'] || 'wss://192.168.6.3:3458' //'wss://192.168.6.3:3458'
+    const wsUrl = URLS['spot-ws'] || 'wss://192.168.0.9:3458' //'wss://192.168.0.9:3458'
     const connectOption = {
       transports: ['websocket'],
       upgrade: false,

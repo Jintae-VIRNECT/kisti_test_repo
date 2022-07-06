@@ -7,7 +7,7 @@
     </div>
     <p>
       토큰 예제
-      wss://192.168.6.3:8000?sessionId=ses_YeLmBDkBwc&token=tok_TICsSe7E1kmpx18E&role=PUBLISHER&version=2.0
+      wss://192.168.0.9:8000?sessionId=ses_YeLmBDkBwc&token=tok_TICsSe7E1kmpx18E&role=PUBLISHER&version=2.0
     </p>
 
     <button @click="connect">connect!</button>
@@ -22,7 +22,7 @@ import { OpenVidu } from '@virnect/remote-webrtc'
 
 const tokenBase = '&recorder=true&secret=remote'
 const conOpts =
-  '{"iceServers":[{"username":"remote","credential":"remote","url":"turn:192.168.6.3:3478","urls":"turn:192.168.6.3:3478"}],"role":"PUBLISHER","wsUri":"wss://192.168.6.3:8073/remote/websocket"}'
+  '{"iceServers":[{"username":"remote","credential":"remote","url":"turn:192.168.0.9:3478","urls":"turn:192.168.0.9:3478"}],"role":"PUBLISHER","wsUri":"wss://192.168.0.9:8073/remote/websocket"}'
 const metaData =
   '{"clientData":"4d127135f699616fb88e6bc4fa6d784a","roleType":"EXPERT","deviceType":"DESKTOP","device":0}'
 export default {

@@ -2278,7 +2278,7 @@
 
 "@virnect/eslint-config@^1.0.3":
   version "1.0.5"
-  resolved "http://10.200.0.21:4873/@virnect%2feslint-config/-/eslint-config-1.0.5.tgz#0c0282a15244ffbd2390e11bd654fb909f3495a2"
+  resolved "http://1.232.152.48:4873/@virnect%2feslint-config/-/eslint-config-1.0.5.tgz#0c0282a15244ffbd2390e11bd654fb909f3495a2"
   integrity sha512-jwBPJar+ilXY9/GFKAIxeU9JfAdtPNdvy/DWtDNhHmWKYsiDXcauB9e6bVnRdz07VArlSoGKwxAngFvjQ0YdrQ==
   dependencies:
     babel-eslint "^10.1.0"
@@ -2292,7 +2292,7 @@
 
 "@virnect/logger@^1.0.2":
   version "1.0.2"
-  resolved "http://10.200.0.21:4873/@virnect%2flogger/-/logger-1.0.2.tgz#7b03643d18adb0f74b448e2833cb48f29a4b3145"
+  resolved "http://1.232.152.48:4873/@virnect%2flogger/-/logger-1.0.2.tgz#7b03643d18adb0f74b448e2833cb48f29a4b3145"
   integrity sha512-kk7kP3BMjLxw3JdR7CEutQ3EAeEcB3r07JsUBmcYswB6lmY6LvTAEGzDIL8LjWdRoOP25YMy6/F1G1Um4G2e2g==
   dependencies:
     chalk "^2.4.2"
@@ -2301,12 +2301,12 @@
 
 "@virnect/remote-stream-recorder@^1.0.5":
   version "1.0.5"
-  resolved "http://10.200.0.21:4873/@virnect%2fremote-stream-recorder/-/remote-stream-recorder-1.0.5.tgz#59ceaf00b4820de70a10a1983c8019732c67a367"
+  resolved "http://1.232.152.48:4873/@virnect%2fremote-stream-recorder/-/remote-stream-recorder-1.0.5.tgz#59ceaf00b4820de70a10a1983c8019732c67a367"
   integrity sha512-kwbbDGTHScSh9r8g4hLfsmXX6rCEtcM2Mu6mpdODvPmFmrKaoLoa+sZpPo7ug0Vv/Tc/8K3yjsgu3fX3p1BT7Q==
 
 "@virnect/remote-webrtc@^1.2.3":
   version "1.2.3"
-  resolved "http://10.200.0.21:4873/@virnect%2fremote-webrtc/-/remote-webrtc-1.2.3.tgz#55d97025fea4f37f6783df5731402faae3844659"
+  resolved "http://1.232.152.48:4873/@virnect%2fremote-webrtc/-/remote-webrtc-1.2.3.tgz#55d97025fea4f37f6783df5731402faae3844659"
   integrity sha512-C3N0nSWlIF2pMj6exlUe2leAZ6uLCJj9ktKSjeBqx+1pyBNJ/BzxgoXWTZi4VGRY6+XsyqjwZGoh3evJXrRxyg==
   dependencies:
     freeice "2.2.2"
@@ -2317,7 +2317,7 @@
 
 "@virnect/stylelint-config@^1.0.6":
   version "1.0.6"
-  resolved "http://10.200.0.21:4873/@virnect%2fstylelint-config/-/stylelint-config-1.0.6.tgz#4127d380ce7ef03f8583d97813af52cd93ee967e"
+  resolved "http://1.232.152.48:4873/@virnect%2fstylelint-config/-/stylelint-config-1.0.6.tgz#4127d380ce7ef03f8583d97813af52cd93ee967e"
   integrity sha512-EOmBF8enOp6HbJ9LS45XDE9myRkwsOlw+FVMpHs3FChn5OPaQmMCCCRm9DyeXH+pP68vrf5CN7R1HjEwKTb6mA==
   dependencies:
     prettier "^2.4.1"
@@ -2331,7 +2331,7 @@
 
 "@virnect/ui-assets@1.8.7":
   version "1.8.7"
-  resolved "http://10.200.0.21:4873/@virnect%2fui-assets/-/ui-assets-1.8.7.tgz#ff2016f9b4a287295c9d74bcd988fd99197ba459"
+  resolved "http://1.232.152.48:4873/@virnect%2fui-assets/-/ui-assets-1.8.7.tgz#ff2016f9b4a287295c9d74bcd988fd99197ba459"
   integrity sha512-VwHESawaQJ8Ip5dBvse9XdomSqFleqG6eZrUEQAwbf3hPp5sAoOut2pSRKDaA4mZRznpZtBExWGvQrBrTDJXaQ==
 
 "@vue/babel-helper-vue-jsx-merge-props@^1.2.1":
