@@ -1,6 +1,7 @@
 import toastMixin from 'mixins/toast'
 
 import { StreamRecorder } from '@virnect/remote-stream-recorder'
+import fixWebmDuration from 'webm-duration-fix';
 import { mapGetters, mapActions } from 'vuex'
 import { getWH, RECORD_TARGET } from 'utils/recordOptions'
 
@@ -472,14 +473,15 @@ export default {
 
       try {
         await this.checkQuota()
+        const fixBlob = await fixWebmDuration(blob);
         //insert IDB
         IDBHelper.addMediaChunk(
           this.groupId,
           privateId,
           this.fileName,
           playTime,
-          blob.size,
-          blob,
+          fixBlob.size,
+          fixBlob,
           this.account.uuid,
           this.account.nickname,
           this.roomInfo.title,
