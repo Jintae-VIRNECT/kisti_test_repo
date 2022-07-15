@@ -28,7 +28,8 @@
     "isbot": "^3.0.24",
     "pdfjs-dist": "2.4.456",
     "register-service-worker": "^1.7.1",
-    "socket.io": "^2.3.0"
+    "socket.io": "^2.3.0",
+    "webm-duration-fix": "1.0.4"
   },
   "devDependencies": {
     "@babel/core": "^7.13.8",
