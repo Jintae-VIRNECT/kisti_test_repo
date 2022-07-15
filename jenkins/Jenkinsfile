@@ -1,36 +1,65 @@
 pipeline {
     agent any
     environment {
-        COMMIT = "${GIT_COMMIT}"
+        COMMIT = "${GIT_COMMIT.substring(0,7)}"
         TAG = "${TAG_NAME}"
-        TEST = "${CHANGE_ID}"
-      BRANCH_NAME = "${BRANCH_NAME.toLowerCase().trim()}"
-      JOB_NAME = "${JOB_NAME.split("/")[0].toLowerCase().trim()}"
-      REPO_NAME = sh(returnStdout: true, script: 'git config --get remote.origin.url | rev | cut -f 1 -d "/" | rev | sed "s/.git//gi";sed "/^ *$/d"').toLowerCase().trim() 
+        CHANGE_ID = "${CHANGE_ID}"
+        BRANCH_NAME = "${BRANCH_NAME.toLowerCase().trim()}"
+        JOB_NAME = "${JOB_NAME.split("/")[0].toLowerCase().trim()}"
+        REPO_NAME = sh(returnStdout: true, script: 'git config --get remote.origin.url | rev | cut -f 1 -d "/" | rev | sed "s/.git//gi";sed "/^ *$/d"').toLowerCase().trim() 
+
+        SLACK_CHANNEL = '#project-dev-jenkins'
     }
 
     stages {
+        stage ('start') {
+            steps {
+                slackSend (channel: env.SLACK_CHANNEL, color: '#FFFF00', message: "STARTED: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]' (${env.BUILD_URL})")
+            }
+        }
         stage('Build') {
+            environment {
+                DOCKER_SAVE_DIR_EXIST =sh(script: "find /usr/local/custom/projectdev-base-2.7/data/Minio/onpremise-tar-files/${JOB_NAME}/${BRANCH_NAME}", returnStatus: true)
+            }
             steps{
                 echo 'commit : ' + COMMIT 
                 echo 'TAG : ' + TAG 
-                echo 'TEST :' +TEST
                 echo 'BRANCH_NAME : ' + BRANCH_NAME
                 echo 'job_name : ' + JOB_NAME
                 echo 'REPO_NAME : ' + REPO_NAME
-                sh 'docker build -t ${BRANCH_NAME}:${JOB_NAME} -f docker/Dockerfile .'
+                
+                sh 'docker build --no-cache -t ${BRANCH_NAME}:${JOB_NAME} -f docker/Dockerfile .'
+
+                script{
+                    if (env.DOCKER_SAVE_DIR_EXIST == '0'){
+                        sh 'docker save -o /usr/local/custom/projectdev-base-2.7/data/Minio/onpremise-tar-files/${JOB_NAME}/${BRANCH_NAME}/${BRANCH_NAME}:${JOB_NAME}-${COMMIT}.tar ${BRANCH_NAME}:${JOB_NAME}'
+                        echo "docker save success. "
+                    }else{
+                        echo " 디렉토리를 찾을 수 없습니다. "
+                        sh 'mkdir /usr/local/custom/projectdev-base-2.7/data/Minio/onpremise-tar-files/${JOB_NAME}/${BRANCH_NAME}'
+                        sh 'docker save -o /usr/local/custom/projectdev-base-2.7/data/Minio/onpremise-tar-files/${JOB_NAME}/${BRANCH_NAME}/${BRANCH_NAME}:${JOB_NAME}-${COMMIT}.tar ${BRANCH_NAME}:${JOB_NAME}'
+                        
+                    }
+                }
             }
         }
         stage('Deploy'){
             when {
-              branch 'pf-contentsmanagement'
+                branch 'pf-contentsmanagement'
             }
             steps {
-              sh 'docker ps -f name=${JOB_NAME}-${BRANCH_NAME} -q  || true  docker stop ${JOB_NAME}-${BRANCH_NAME}'
-              sh 'docker container ls -a -f name=${JOB_NAME}-${BRANCH_NAME} -q || true  docker-compose -f /usr/local/custom/${REPO_NAME}/docker-compose.yaml rm -f ${JOB_NAME}-${BRANCH_NAME}'
-              sh 'docker images -f "dangling=true" -q | xargs -r docker rmi' 
-              sh 'docker-compose -f /usr/local/custom/${REPO_NAME}/docker-compose.yaml up -d ${BRANCH_NAME}'
+                sh 'docker ps -f name=${JOB_NAME}-${BRANCH_NAME} -q  || true  docker stop ${JOB_NAME}-${BRANCH_NAME}'
+                sh 'docker container ls -a -f name=${JOB_NAME}-${BRANCH_NAME} -q || true  docker-compose -f /usr/local/custom/${REPO_NAME}/docker-compose.yaml rm -f ${JOB_NAME}-${BRANCH_NAME}'
+                sh 'docker-compose -f /usr/local/custom/${REPO_NAME}/docker-compose.yaml up -d ${BRANCH_NAME}'
             }
         }
-    }    
+    }
+    post {
+        success {
+            slackSend (channel: env.SLACK_CHANNEL, color: '#00FF00', message: "SUCCESSFUL: ${env.JOB_NAME}-${env.BRANCH_NAME} [${env.BUILD_NUMBER}]\n [PR URL : ${CHANGE_ID}] ${env.CHANGE_URL}  \n [Jenkins Build URL]  - ${env.BUILD_URL} \n tar : https://192.168.0.9:9000/minio/onpremise-tar-files/${JOB_NAME}/${BRANCH_NAME}/" )
+        }
+        failure {
+            slackSend (channel: env.SLACK_CHANNEL, color: '#FF0000', message: "FAILED: Job  ${env.JOB_NAME}-${env.BRANCH_NAME} [${env.BUILD_NUMBER}] \n (${env.BUILD_URL})")
+        }    
+    }
 }
