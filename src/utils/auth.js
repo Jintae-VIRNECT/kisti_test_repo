@@ -572,7 +572,7 @@ class Auth {
   }
   login() {
     clearCookie()
-    location.href = `${URLS['console']}/?continue=${location.href}`
+    location.href = `${URLS['console']}/?continue=${URLS['remote']}`
     return this
   }
   async logout(redirect = true) {
@@ -589,7 +589,7 @@ class Auth {
     myInfo = {}
     myWorkspaces = []
     if (redirect)
-      location.href = `${URLS['console']}/?continue=${location.href}`
+      location.href = `${URLS['console']}/?continue=${URLS['remote']}`
     return this
   }
 }
