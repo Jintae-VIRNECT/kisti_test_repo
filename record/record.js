@@ -51,6 +51,8 @@ session
   })
   .catch(error => {
     console.error(error)
+    const errorMsgContainer = document.getElementById('errorMsg')
+    errorMsgContainer.innerText = `session connection fail\n${error}`
   })
 
 /**
