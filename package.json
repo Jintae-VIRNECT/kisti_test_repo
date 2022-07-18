@@ -17,7 +17,7 @@
     "i18n:download": "i18n download --sheetId RM-DashBoard --src src/languages/remote --force",
     "i18n": "i18n --sheetId RM-DashBoard --src src/languages/remote",
     "prepare": "husky install",
-    "start:dev": "set CONFIG_SERVER=http://192.168.0.9:6383 && set VIRNECT_ENV=develop && webpack-dev-server --progress --hot --config build/webpack.local.conf.js"
+    "start:dev": "set CONFIG_SERVER=http://192.168.0.9:6383 && set VIRNECT_ENV=onpremise && webpack-dev-server --progress --hot --config build/webpack.local.conf.js"
   },
   "dependencies": {
     "@virnect/logger": "^1.0.2",
