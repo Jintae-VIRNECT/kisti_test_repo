@@ -130,7 +130,7 @@ export default {
 
         const text = this.$t('workspace.confirm_duplicated_session_joined')
         const action = () =>
-          (location.href = `${URLS['console']}/?continue=${location.href}`) //리디렉트
+          (location.href = `${URLS['console']}/?continue=${URLS['remote']}`) //리디렉트
         this.confirmDefault(text, { action }, option)
       }
     },
@@ -143,7 +143,7 @@ export default {
         this.$t('workspace.confirm_duplicated_session_logout_received'),
         {
           action: () =>
-            (location.href = `${URLS['console']}/?continue=${location.href}`),
+            (location.href = `${URLS['console']}/?continue=${URLS['remote']}`),
         },
         option,
       )
@@ -159,7 +159,7 @@ export default {
 
       //로그아웃 처리
       const action = () =>
-        (location.href = `${URLS['console']}/?continue=${location.href}`)
+        (location.href = `${URLS['console']}/?continue=${URLS['remote']}`)
 
       //강제 로그아웃 알림 팝업
       this.confirmDefault(

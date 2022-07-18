@@ -374,7 +374,7 @@ export default {
     reconnect(event) {
       if (event.reason === 'networkDisconnect') {
         if (this.account.roleType === ROLE.GUEST) {
-          location.href = `${URLS['console']}/?continue=${location.href}`
+          location.href = `${URLS['console']}/?continue=${URLS['remote']}`
           return
         } else {
           this.connectVisible = true

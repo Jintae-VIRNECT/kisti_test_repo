@@ -198,7 +198,7 @@ const errorHandler = function(err) {
       case 8005:
         // console.error(error.message)
         clearCookie()
-        location.href = `${URLS['console']}/?continue=${location.href}`
+        location.href = `${URLS['console']}/?continue=${URLS['remote']}`
         break
       // case 'Network Error':
       //   sessionStorage.clear()
