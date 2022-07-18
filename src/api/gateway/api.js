@@ -1,6 +1,6 @@
 export default {
   /* Account */
-  LOGIN: ['POST', 'https://10.200.0.22:8073/auth/signin'],
+  LOGIN: ['POST', 'https://192.168.0.9:8073/auth/signin'],
   LOGOUT: ['POST', '/auth/signout'],
   TOKEN: ['POST', '/auth/oauth/token'],
   ACCOUNT: ['GET', '/users/info', { initing: true }],
