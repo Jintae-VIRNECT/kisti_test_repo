@@ -215,7 +215,7 @@ class Auth {
   }
   login() {
     cookieClear()
-    location.href = `${URLS['console']}/?continue=${location.href}`
+    location.href = `${URLS['console']}/?continue=${URLS['dashboard']}`
     return this
   }
   async logout() {
@@ -224,7 +224,7 @@ class Auth {
     isLogin = false
     myInfo = {}
     myWorkspaces = []
-    location.href = `${URLS['console']}/?continue=${location.href}`
+    location.href = `${URLS['console']}/?continue=${URLS['dashboard']}`
     return this
   }
 }
