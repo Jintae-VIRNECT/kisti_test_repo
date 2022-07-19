@@ -223,7 +223,7 @@ export default {
       return false
     },
     canDelete() {
-      return (
+      return !(
         this.image === 'default' || this.image === '' || this.image === null
       )
     },
