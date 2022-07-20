@@ -100,7 +100,8 @@ public class CompanyRestController {
 		CompanyInfoResponse responseData = companyService.getCompanyInfo(
 			workspaceId,
 			userId,
-			config.remoteServiceProperties.getPolicyLocation()
+			config.remoteServiceProperties.getPolicyLocation(),
+			config.remoteServiceProperties.getRemoteRoomTimeout()
 		);
 		return ResponseEntity.ok(new ApiResponse<>(responseData));
 	}

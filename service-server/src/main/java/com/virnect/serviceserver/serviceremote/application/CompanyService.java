@@ -149,7 +149,8 @@ public class CompanyService {
 	public CompanyInfoResponse getCompanyInfo(
 		String workspaceId,
 		String userId,
-		String policyLocation
+		String policyLocation,
+		Integer remoteRoomTimeout
 	) {
 		if (companyDisable) {
 			return getForceDisabledCompanyInfoResponse(workspaceId);
@@ -161,6 +162,10 @@ public class CompanyService {
 			companyInfoResponse = loadServicePolicy(workspaceId, policyLocation);
 		} catch (IOException e) {
 			throw new RemoteServiceException(ErrorCode.ERR_IO_EXCEPTION);
+		}
+
+		if (remoteRoomTimeout != null) {
+			companyInfoResponse.setTimeout(remoteRoomTimeout);
 		}
 		return companyInfoResponse;
 	}
