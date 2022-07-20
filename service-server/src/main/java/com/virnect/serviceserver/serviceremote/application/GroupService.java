@@ -3,6 +3,7 @@ package com.virnect.serviceserver.serviceremote.application;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -36,6 +37,7 @@ import com.virnect.data.dto.response.group.FavoriteGroupResponse;
 import com.virnect.data.dto.response.group.RemoteGroupListResponse;
 import com.virnect.data.dto.response.group.RemoteGroupMemberResponse;
 import com.virnect.data.dto.response.group.RemoteGroupResponse;
+import com.virnect.data.dto.rest.WorkspaceMemberInfoListResponse;
 import com.virnect.data.dto.rest.WorkspaceMemberInfoResponse;
 import com.virnect.data.error.ErrorCode;
 import com.virnect.data.error.exception.RemoteServiceException;
@@ -120,7 +122,7 @@ public class GroupService {
 		List<RemoteGroup> remoteGroups = groupRepository.findByWorkspaceIdAndUserIdAndIncludeOneself(
 			workspaceId, userId, includeOneself);
 
-		List<WorkspaceMemberInfoResponse> workspaceMembers = getWorkspaceMembers(workspaceId);
+		List<WorkspaceMemberInfoResponse> workspaceMembers = getAllMemberInWorkspace(workspaceId);
 		if (CollectionUtils.isEmpty(workspaceMembers)) {
 			return buildRemoteGroupListResponse(new ArrayList<>(), 0);
 		}
@@ -142,6 +144,28 @@ public class GroupService {
 		return buildRemoteGroupListResponse(groupsResponse, workspaceMembers.size());
 	}
 
+	private List<WorkspaceMemberInfoResponse> getAllMemberInWorkspace(
+		String workspaceId
+	) {
+		WorkspaceMemberInfoListResponse firstPageAndMetaData = workspaceRestService.getWorkspaceMembers(
+			workspaceId, "email,desc", 1, Integer.MAX_VALUE).getData();
+		int totalPage = firstPageAndMetaData.getPageMeta().getTotalPage();
+
+		List<WorkspaceMemberInfoResponse> allMemberList = firstPageAndMetaData.getMemberInfoList();
+
+		for (int page = 2; page <= totalPage; page++) {
+			List<WorkspaceMemberInfoResponse> response = workspaceRestService.getWorkspaceMembers(
+				workspaceId, "email,desc", page, Integer.MAX_VALUE).getData().getMemberInfoList();
+			allMemberList.addAll(response);
+		}
+		log.info("[getAllMemberInWorkspace] totalPage : [{}], allMemberListSize : [{}]",
+			totalPage, allMemberList.size()
+		);
+
+		return allMemberList.stream().sorted(Comparator.comparing(WorkspaceMemberInfoResponse::getName))
+			.collect(Collectors.toList());
+	}
+
 	public RemoteGroupResponse getRemoteGroupDetail(
 		String workspaceId,
 		String groupId,
@@ -151,7 +175,7 @@ public class GroupService {
 		boolean includeOneself,
 		boolean accessTypeFilter
 	) {
-		List<WorkspaceMemberInfoResponse> workspaceMembers = getWorkspaceMembers(workspaceId);
+		List<WorkspaceMemberInfoResponse> workspaceMembers = getAllMemberInWorkspace(workspaceId);
 		if (groupId.equals(ETC_GROUP_ID)) {
 			List<RemoteGroup> remoteGroups = groupRepository.findByWorkspaceIdAndUserIdAndIncludeOneself(
 				workspaceId, userId, includeOneself);
@@ -526,7 +550,8 @@ public class GroupService {
 	}
 
 	private boolean isUserIdsIncludeOfWorkspace(String workspaceId, List<String> userIds) {
-		Set<String> uuidSet = getWorkspaceMembers(workspaceId).stream()
+		List<WorkspaceMemberInfoResponse> workspaceMembers = getAllMemberInWorkspace(workspaceId);
+		Set<String> uuidSet = workspaceMembers.stream()
 			.map(WorkspaceMemberInfoResponse::getUuid)
 			.collect(Collectors.toSet());
 		for (String userId : userIds) {

@@ -9,7 +9,7 @@ import com.virnect.data.dto.rest.WorkspaceMemberInfoListResponse;
 import com.virnect.data.dto.rest.WorkspaceMemberInfoResponse;
 import com.virnect.data.global.common.ApiResponse;
 
-@FeignClient(name = "workspace-server", fallbackFactory = WorkspaceRestFallbackFactory.class)
+@FeignClient(name = "workspace-server",  fallbackFactory = WorkspaceRestFallbackFactory.class)
 public interface WorkspaceRestService {
 
 	@GetMapping("/workspaces/{workspaceId}/members")
@@ -59,6 +59,23 @@ public interface WorkspaceRestService {
 	ApiResponse<WorkspaceMemberInfoListResponse> getWorkspaceMembersExcludeUserIds(
 		@PathVariable("workspaceId") String workspaceId,
 		@RequestParam(value = "userIds") String[] userIds
+	);
+
+	/*
+	 * Dashboard 협업 목록
+	 * IOException: Broken pipe  해결하기 위한 custom method
+	 * */
+	@GetMapping("/workspaces/{workspaceId}/members/simple/custom")
+	ApiResponse<WorkspaceMemberInfoListResponse> getWorkspaceMembersCustom(
+		@PathVariable("workspaceId") String workspaceId
+	);
+
+	@GetMapping("/workspaces/{workspaceId}/members")
+	ApiResponse<WorkspaceMemberInfoListResponse> getWorkspaceMembers(
+		@PathVariable("workspaceId") String workspaceId,
+		@RequestParam(value = "sort", required = false) String sort,
+		@RequestParam(value = "page") int page,
+		@RequestParam(value = "size") int size
 	);
 
 }

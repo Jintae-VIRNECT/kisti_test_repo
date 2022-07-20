@@ -2,6 +2,7 @@ package com.virnect.serviceserver.serviceremote.application;
 
 import java.time.LocalDateTime;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -80,10 +81,7 @@ public class MemberService {
 		boolean accessTypeFilter
 	) {
 
-		WorkspaceMemberInfoListResponse responseData = workspaceRestService.getWorkspaceMembers(
-			workspaceId, filter, search, 0, 50).getData();
-
-		List<WorkspaceMemberInfoResponse> workspaceMemberInfoList = responseData.getMemberInfoList();
+		List<WorkspaceMemberInfoResponse> workspaceMemberInfoList = getAllMemberInWorkspace(workspaceId);
 		if (CollectionUtils.isEmpty(workspaceMemberInfoList)) {
 			throw new RemoteServiceException(ErrorCode.ERR_ROOM_MEMBER_INFO_EMPTY);
 		}
@@ -144,8 +142,7 @@ public class MemberService {
 		Room room = roomRepository.findRoomByWorkspaceIdAndSessionIdForWrite(workspaceId, sessionId)
 			.orElseThrow(() -> new RemoteServiceException(ErrorCode.ERR_ROOM_NOT_FOUND));
 
-		WorkspaceMemberInfoListResponse responseData = workspaceRestService.getWorkspaceMembers(workspaceId).getData();
-		List<WorkspaceMemberInfoResponse> workspaceMemberInfoList = responseData.getMemberInfoList();
+		List<WorkspaceMemberInfoResponse> workspaceMemberInfoList = getAllMemberInWorkspace(workspaceId);
 
 		workspaceMemberInfoList.removeIf(
 			memberInfoResponses -> Arrays.toString(memberInfoResponses.getLicenseProducts()).isEmpty()
@@ -186,6 +183,28 @@ public class MemberService {
 		PageMetadataResponse pageMeta = PagingUtils.customPagingBuilder(customPaging);
 
 		return new MemberInfoListResponse(memberInfoList, pageMeta);
+	}
+
+	public List<WorkspaceMemberInfoResponse> getAllMemberInWorkspace(
+		String workspaceId
+	) {
+		WorkspaceMemberInfoListResponse firstPageAndMetaData = workspaceRestService.getWorkspaceMembers(
+			workspaceId, "email,desc", 1, Integer.MAX_VALUE).getData();
+		int totalPage = firstPageAndMetaData.getPageMeta().getTotalPage();
+
+		List<WorkspaceMemberInfoResponse> allMemberList = firstPageAndMetaData.getMemberInfoList();
+
+		for (int page = 2; page <= totalPage; page++) {
+			List<WorkspaceMemberInfoResponse> response = workspaceRestService.getWorkspaceMembers(
+				workspaceId, "email,desc", page, Integer.MAX_VALUE).getData().getMemberInfoList();
+			allMemberList.addAll(response);
+		}
+		log.info("[getAllMemberInWorkspace] totalPage : [{}], allMemberListSize : [{}]",
+			totalPage, allMemberList.size()
+		);
+
+		return allMemberList.stream().sorted(Comparator.comparing(WorkspaceMemberInfoResponse::getName))
+			.collect(Collectors.toList());
 	}
 
 	public MemberSecessionResponse deleteMembersBySession(String userId) {

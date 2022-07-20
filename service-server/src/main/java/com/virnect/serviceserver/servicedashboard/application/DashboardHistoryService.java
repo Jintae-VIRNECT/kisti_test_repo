@@ -340,7 +340,7 @@ public class DashboardHistoryService {
 		RoomHistoryListRequest request,
 		List<RoomHistoryInfoResponse> roomHistories
 	) {
-		List<WorkspaceMemberInfoResponse> workspaceMembers = workspaceRestService.getWorkspaceMembers(workspaceId)
+		List<WorkspaceMemberInfoResponse> workspaceMembers = workspaceRestService.getWorkspaceMembersCustom(workspaceId)
 			.getData()
 			.getMemberInfoList();
 		List<FileDetailInfoResponse> localRecFileAll = getLocalRecordFileList(

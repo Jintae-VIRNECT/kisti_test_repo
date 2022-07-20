@@ -76,6 +76,24 @@ public class WorkspaceRestFallbackFactory implements FallbackFactory<WorkspaceRe
                 WorkspaceMemberInfoListResponse empty = new WorkspaceMemberInfoListResponse();
                 return new ApiResponse<>(empty);
             }
+            @Override
+            public ApiResponse<WorkspaceMemberInfoListResponse> getWorkspaceMembersCustom(String workspaceId) {
+
+                log.error("[WORKSPACE DASHBOARD HISTORY GET WORKSPACE MEMBER SIMPLE Custom]");
+                log.error("[USER WORKSPACE MEMBERS  INFO API FALLBACK] => WORKSAPCE_ID: {}, {}", workspaceId, cause.getMessage());
+                WorkspaceMemberInfoListResponse empty = new WorkspaceMemberInfoListResponse();
+                return new ApiResponse<>(empty);
+            }
+
+            @Override
+            public ApiResponse<WorkspaceMemberInfoListResponse> getWorkspaceMembers(
+                String workspaceId, String sort, int page, int size
+            ) {
+                log.error("[WORKSPACE GROUP MEMBER  -- Sort add ]");
+                log.error("[USER WORKSPACE MEMBERS  INFO API FALLBACK] => WORKSAPCE_ID: {}, {}", workspaceId, cause.getMessage());
+                WorkspaceMemberInfoListResponse empty = new WorkspaceMemberInfoListResponse();
+                return new ApiResponse<>(empty);
+            }
         };
     }
 }
