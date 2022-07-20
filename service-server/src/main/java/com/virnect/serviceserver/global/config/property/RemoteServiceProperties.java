@@ -81,6 +81,8 @@ public class RemoteServiceProperties extends PropertyService {
 	private String remoteServicePublicUrl;
 	private String remoteWebsocketUrl;
 
+	private Integer remoteRoomTimeout;
+
 	protected Environment env;
 
 	@Autowired
@@ -207,6 +209,7 @@ public class RemoteServiceProperties extends PropertyService {
 			"* SERVICE_REMOTE_STREAMS_VIDEO_MAX_SEND_BANDWIDTH=" + this.remoteStreamsVideoMaxSendBandwidth + "\n\t" +
 			"* SERVICE_REMOTE_STREAMS_VIDEO_MIN_RECV_BANDWIDTH=" + this.remoteStreamsVideoMinRecvBandwidth + "\n\t" +
 			"* SERVICE_REMOTE_STREAMS_VIDEO_MIN_SEND_BANDWIDTH=" + this.remoteStreamsVideoMinSendBandwidth + "\n\t" +
-			"* SERVICE_WSS=" + this.wss + "\n";
+			"* SERVICE_WSS=" + this.wss + "\n" +
+			"* SERVICE_REMOTE_ROOM_TIMEOUT=" + this.remoteRoomTimeout + "\n";
 	}
 }
