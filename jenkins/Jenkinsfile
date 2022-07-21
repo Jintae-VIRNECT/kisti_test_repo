@@ -14,7 +14,7 @@ pipeline {
     stages {
         stage ('start') {
             steps {
-                slackSend (channel: env.SLACK_CHANNEL, color: '#FFFF00', message: "STARTED: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]' (${env.BUILD_URL})")
+                slackSend (channel: env.SLACK_CHANNEL, color: '#FFFF00', message: "STARTED: Job '${env.JOB_NAME}-${env.BRANCH_NAME} [${env.BUILD_NUMBER}]' (${env.BUILD_URL})")
             }
         }
         stage('Build') {
