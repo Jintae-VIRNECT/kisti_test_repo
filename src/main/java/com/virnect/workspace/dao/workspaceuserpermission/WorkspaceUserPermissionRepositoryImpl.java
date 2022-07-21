@@ -11,6 +11,8 @@ import org.springframework.data.jpa.repository.support.QuerydslRepositorySupport
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.JPQLQuery;
 
+import com.virnect.workspace.domain.workspace.QWorkspaceRole;
+import com.virnect.workspace.domain.workspace.QWorkspaceUser;
 import com.virnect.workspace.domain.workspace.QWorkspaceUserPermission;
 import com.virnect.workspace.domain.workspace.Role;
 import com.virnect.workspace.domain.workspace.WorkspaceUser;
@@ -111,6 +113,8 @@ public class WorkspaceUserPermissionRepositoryImpl extends QuerydslRepositorySup
 		QWorkspaceUserPermission qWorkspaceUserPermission = QWorkspaceUserPermission.workspaceUserPermission;
 		JPQLQuery<WorkspaceUserPermission> query = from(qWorkspaceUserPermission)
 			.select(qWorkspaceUserPermission)
+			.join(qWorkspaceUserPermission.workspaceRole, QWorkspaceRole.workspaceRole).fetchJoin()
+			.join(qWorkspaceUserPermission.workspaceUser, QWorkspaceUser.workspaceUser).fetchJoin()
 			.where(qWorkspaceUserPermission.workspaceUser.workspace.uuid.eq(workspaceId), inUserIdList(userIdList))
 			.fetchAll();
 		List<WorkspaceUserPermission> workspaceUserPermissionList = getQuerydsl().applyPagination(pageable, query)
