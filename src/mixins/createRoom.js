@@ -42,7 +42,7 @@ export default {
     async inviteRefresh() {
       this.loading = true
       const inviteList = await getMemberList({
-        size: 50,
+        size: 1000,
         workspaceId: this.workspace.uuid,
         userId: this.account.uuid,
         includeGuest: false,

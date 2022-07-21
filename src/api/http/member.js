@@ -12,10 +12,10 @@ import { memberSort } from 'utils/sort'
  * @param {String} workspaceId 조회할 워크스페이스 id
  * @param {Boolean} includeGuest Seat 멤버 포함 여부
  */
-export const getMemberList = async function({
+export const getMemberList = async function ({
   filter = '',
   page = 0,
-  size = 50,
+  size = 1000,
   sort = 'email,desc',
   workspaceId,
   userId,
@@ -73,10 +73,10 @@ export const kickoutMember = async ({
  * @param {String} sort
  * @param {Boolean} includeGuest
  */
-export const invitableList = async function({
+export const invitableList = async function ({
   filter = '',
   page = 0,
-  size = 50,
+  size = 1000,
   sort = 'email,desc',
   workspaceId,
   sessionId,
