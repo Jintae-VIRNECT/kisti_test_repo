@@ -12,6 +12,9 @@ plugins {
     id 'java'
     id 'jacoco'
 }
+springBoot {
+    buildInfo()
+}
 
 group = 'com.virnect'
 version = '1.5.0'
