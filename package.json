@@ -1,6 +1,6 @@
 {
   "name": "download",
-  "version": "1.4.2",
+  "version": "1.4.2-1",
   "description": "Download Center",
   "author": "SangBaek-VIRNECT <lsb@virnect.com>",
   "private": true,
@@ -9,7 +9,7 @@
     "dev:onpremise": "cross-env VIRNECT_ENV=onpremise nuxt",
     "start:dev": "cross-env VIRNECT_ENV=onpremise nuxt",
     "build:develop": "cross-env NODE_ENV=develop VIRNECT_ENV=local nuxt build --modern=server",
-    "build:production": "cross-env NODE_ENV=production VIRNECT_ENV=local nuxt build --modern=server",
+    "build:production": "cross-env NODE_ENV=production VIRNECT_ENV=onpremise nuxt build --modern=server",
     "deploy": "cross-env NODE_ENV=$VIRNECT_ENV VIRNECT_ENV=$VIRNECT_ENV CONFIG_SERVER=$CONFIG_SERVER nuxt start --modern=server",
     "generate": "nuxt generate",
     "i18n": "i18n --sheetId PF-WebDownload",
