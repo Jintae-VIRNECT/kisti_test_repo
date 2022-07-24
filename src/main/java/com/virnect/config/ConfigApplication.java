@@ -1,9 +1,11 @@
 package com.virnect.config;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.config.server.EnableConfigServer;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.context.event.EventListener;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 
@@ -15,7 +17,11 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @EnableConfigServer
 @SpringBootApplication
+@PropertySource("classpath:version.properties")
 public class ConfigApplication {
+
+	@Value("${app.version}")
+	private String version;
 
 	public static void main(String[] args) {
 		SpringApplication.run(ConfigApplication.class, args);
@@ -33,6 +39,7 @@ public class ConfigApplication {
 		String msg = "\n\n----------------------------------------------------\n" + "\n"
 			+ "   Platform Config Server is ready!\n"
 			+ "   ---------------------------\n" + "\n"
+			+ "   * Server Version: [" + version + "]\n" + "\n"
 			+ "   * CONFIG_ENV: [" + System.getenv("CONFIG_ENV") + "]\n" + "\n"
 			+ "   * VIRNECT_ENV: [" + System.getenv("VIRNECT_ENV") + "]\n" + "\n"			
 			+ "----------------------------------------------------\n";
