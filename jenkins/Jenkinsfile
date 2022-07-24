@@ -2,58 +2,112 @@ pipeline {
     agent any
     environment {
         COMMIT = "${GIT_COMMIT.substring(0,7)}"
-        TAG = "${TAG_NAME}"
-        CHANGE_ID = "${CHANGE_ID}"
-        BRANCH_NAME = "${BRANCH_NAME.toLowerCase().trim()}"
+        BRANCH_NAME = "${BRANCH_NAME.toLowerCase().trim().split("/")[0]}"
         JOB_NAME = "${JOB_NAME.split("/")[0].toLowerCase().trim()}"
         REPO_NAME = sh(returnStdout: true, script: 'git config --get remote.origin.url | rev | cut -f 1 -d "/" | rev | sed "s/.git//gi";sed "/^ *$/d"').toLowerCase().trim() 
-
         SLACK_CHANNEL = '#project-dev-jenkins'
+        AUTHOR = sh(returnStdout: true, script : 'git --no-pager show -s --pretty="format: %an"')
+        RELATED_TO_PJTDEV= sh( script : 'git --no-pager show  -s --format=%B | grep -i PJTDEV', returnStatus: true)
+        RELATED_TO_SOLUTION= sh( script : 'git --no-pager show -s --format=%B | grep -i SOLUTION', returnStatus: true)
+        DIR_PATH = "/data/custom/projectdev-base-2.7/minio/onpremise-tar-files"
+        TICKET = sh(returnStdout:true, script: ' git --no-pager show -s  --pretty="format: %B" | head -1 | cut -f 2 -d : |cut -c 1-12').trim()
+        TAG_EXIST=sh(script: "git tag | grep ${BRANCH_NAME}" , returnStatus: true)
     }
-
     stages {
         stage ('start') {
             steps {
-                slackSend (channel: env.SLACK_CHANNEL, color: '#FFFF00', message: "STARTED: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]' (${env.BUILD_URL})")
+                echo "TICKET ::: " + env.TICKET
+                echo "RELATED_TO_PJTDEV :::" + env.RELATED_TO_PJTDEV
+                slackSend (channel: env.SLACK_CHANNEL, color: '#FFFF00', message: "STARTED: Job '${env.JOB_NAME}-${env.BRANCH_NAME} [${env.BUILD_NUMBER}]' \n AUTHOR: ${env.AUTHOR} \n Build URL: ${env.BUILD_URL}")
             }
         }
-        stage('Build') {
-            environment {
-                DOCKER_SAVE_DIR_EXIST =sh(script: "find /usr/local/custom/projectdev-base-2.7/data/Minio/onpremise-tar-files/${JOB_NAME}/${BRANCH_NAME}", returnStatus: true)
+        stage('PJTDEV'){
+            when{
+                expression {    
+                    return RELATED_TO_PJTDEV == "0" 
+                }
             }
-            steps{
-                echo 'commit : ' + COMMIT 
-                echo 'TAG : ' + TAG 
-                echo 'BRANCH_NAME : ' + BRANCH_NAME
-                echo 'job_name : ' + JOB_NAME
-                echo 'REPO_NAME : ' + REPO_NAME
-
+            environment {
+                STAGE_VALUE = "PJTDEV"
+                DOCKER_SAVE_DIR_EXIST =sh(script: "find ${DIR_PATH}/${STAGE_VALUE}/${JOB_NAME}/${BRANCH_NAME}/${TICKET}/", returnStatus: true)
+            }
+            steps {
+                sh 'docker build --no-cache -t ${BRANCH_NAME}:${JOB_NAME} -f docker/Dockerfile .'
                 script{
-                    def BUILD_CHECK = sh ( 
-                    script :'docker build -t ${BRANCH_NAME}:${JOB_NAME} -f docker/Dockerfile .' ,
-                    returnStatus : true
-                    ) 
-
-                    if (BUILD_CHECK != '0'){
-                        sh 'docker tag ${BRANCH_NAME}:base-2.7 ${BRANCH_NAME}:${JOB_NAME}'
-                    }
-
-                    if (env.DOCKER_SAVE_DIR_EXIST == '0'){
-                        sh 'docker save -o /usr/local/custom/projectdev-base-2.7/data/Minio/onpremise-tar-files/${JOB_NAME}/${BRANCH_NAME}/${BRANCH_NAME}:${JOB_NAME}-${COMMIT}.tar ${BRANCH_NAME}:${JOB_NAME}'
+                    if (env.DOCKER_SAVE_DIR_EXIST == '0'){ 
+                        sh 'docker save -o ${DIR_PATH}/${STAGE_VALUE}/${JOB_NAME}/${BRANCH_NAME}/${TICKET}/${BRANCH_NAME}.tar ${BRANCH_NAME}:${JOB_NAME}'
                         echo "docker save success. "
                     }else{
                         echo " 디렉토리를 찾을 수 없습니다. "
-                        sh 'mkdir /usr/local/custom/projectdev-base-2.7/data/Minio/onpremise-tar-files/${JOB_NAME}/${BRANCH_NAME}'
-                        sh 'docker save -o /usr/local/custom/projectdev-base-2.7/data/Minio/onpremise-tar-files/${JOB_NAME}/${BRANCH_NAME}/${BRANCH_NAME}:${JOB_NAME}-${COMMIT}.tar ${BRANCH_NAME}:${JOB_NAME}'
-                        
+                        sh 'mkdir -p ${DIR_PATH}/${STAGE_VALUE}/${JOB_NAME}/${BRANCH_NAME}/${TICKET}/'
+                        sh 'docker save -o ${DIR_PATH}/${STAGE_VALUE}/${JOB_NAME}/${BRANCH_NAME}/${TICKET}/${BRANCH_NAME}.tar ${BRANCH_NAME}:${JOB_NAME}'
                     }
                 }
             }
         }
-        stage('Deploy'){
+        stage ('SOLUTION'){
             when {
-                branch 'rm-recordserver'
+                expression {    
+                    return RELATED_TO_SOLUTION == "0" && TICKET != "9"
+              }
             }
+             environment {
+                STAGE_VALUE = "SOLUTION"
+                DOCKER_SAVE_DIR_EXIST =sh(script: "find ${DIR_PATH}/${JOB_NAME}/${TICKET}/${BRANCH_NAME}", returnStatus: true)   
+             }
+            steps{
+                sh 'docker build --no-cache -t ${BRANCH_NAME}:${JOB_NAME} -f docker/Dockerfile .'
+                script{
+                    if (env.DOCKER_SAVE_DIR_EXIST == '0'){
+                       
+                        sh 'docker save -o ${DIR_PATH}/${STAGE_VALUE}/${JOB_NAME}/${TICKET}/${BRANCH_NAME}.tar ${BRANCH_NAME}:${JOB_NAME}'
+                        echo "docker save success. "
+                    }else{
+                        echo " 디렉토리를 찾을 수 없습니다. "
+                        sh 'mkdir -p ${DIR_PATH}/${STAGE_VALUE}/${JOB_NAME}/${TICKET}/'
+                        sh 'docker save -o ${DIR_PATH}/${STAGE_VALUE}/${JOB_NAME}/${TICKET}/${BRANCH_NAME}.tar ${BRANCH_NAME}:${JOB_NAME}'
+                    }
+                }             
+            }
+            post{
+                success{
+                     slackSend (channel: env.SLACK_CHANNEL, color: '#00FF00', message: "Docker Build Successful \n tar -  https://192.168.0.9:9000/minio/onpremise-tar-files/${env.STAGE_VALUE}/${env.JOB_NAME}/${env.TICKET}/${env.BRANCH_NAME}.tar " )
+                }
+            }
+        }
+        stage('RELEASE'){
+            when{
+                expression {    
+                    return TAG_EXIST == "0" 
+                }
+            }
+            environment {
+                STAGE_VALUE = "RELEASE"
+                TAG = sh(returnStdout: true, script:'git describe --tags --abbrev=0 | grep ${BRANCH_NAME} | sed "s/${BRANCH_NAME}//gi"').trim()
+                DOCKER_SAVE_DIR_EXIST =sh(script: "find ${DIR_PATH}/${STAGE_VALUE}/${JOB_NAME}/${BRANCH_NAME}/${TAG}/", returnStatus: true)
+            }
+            steps {
+                sh 'docker build --no-cache -t ${BRANCH_NAME}:${JOB_NAME} -f docker/Dockerfile .'
+                script{
+                    if (env.TAG_EXIST){
+                        if (env.DOCKER_SAVE_DIR_EXIST == '0'){ 
+                            sh 'docker save -o ${DIR_PATH}/${STAGE_VALUE}/${JOB_NAME}/${BRANCH_NAME}/${TAG}/${BRANCH_NAME}.tar ${BRANCH_NAME}:${JOB_NAME}'
+                            echo "docker save success. "
+                        }else{
+                            echo " 디렉토리를 찾을 수 없습니다. "
+                            sh 'mkdir -p ${DIR_PATH}/${STAGE_VALUE}/${JOB_NAME}/${BRANCH_NAME}/${TAG}/'
+                            sh 'docker save -o ${DIR_PATH}/${STAGE_VALUE}/${JOB_NAME}/${BRANCH_NAME}/${TAG}/${BRANCH_NAME}.tar ${BRANCH_NAME}:${JOB_NAME}'
+                        }
+                    }
+                }
+            }
+            post {
+                success{
+                    slackSend (channel: env.SLACK_CHANNEL, color: 'yello', message: "Docker Build Successful \n tar -  https://192.168.0.9:9000/onpremise-tar-files/${env.STAGE_VALUE}/${env.JOB_NAME}/${env.BRANCH_NAME}/${env.TAG}/${env.BRANCH_NAME}.tar" )
+                }
+            }
+        }
+        stage('Deploy'){
             steps {
                 sh 'docker ps -f name=${JOB_NAME}-${BRANCH_NAME} -q  || true  docker stop ${JOB_NAME}-${BRANCH_NAME}'
                 sh 'docker container ls -a -f name=${JOB_NAME}-${BRANCH_NAME} -q || true  docker-compose -f /usr/local/custom/${REPO_NAME}/docker-compose.yaml rm -f ${JOB_NAME}-${BRANCH_NAME}'
@@ -63,10 +117,10 @@ pipeline {
     }
     post {
         success {
-            slackSend (channel: env.SLACK_CHANNEL, color: '#00FF00', message: "SUCCESSFUL: ${env.JOB_NAME}-${env.BRANCH_NAME} [${env.BUILD_NUMBER}]\n [Jenkins Build URL]  - ${env.BUILD_URL} \n tar : https://192.168.0.9:9000/minio/onpremise-tar-files/${JOB_NAME}/${BRANCH_NAME}/" )
+            slackSend (channel: env.SLACK_CHANNEL, color: '#00FF00', message: "SUCCESSFUL: ${env.JOB_NAME}-${env.BRANCH_NAME} [${env.BUILD_NUMBER}]\n AUTHOR: ${env.AUTHOR}  \n Build URL: - ${env.BUILD_URL} " )
         }
         failure {
-            slackSend (channel: env.SLACK_CHANNEL, color: '#FF0000', message: "FAILED: Job  ${env.JOB_NAME}-${env.BRANCH_NAME} [${env.BUILD_NUMBER}] \n (${env.BUILD_URL})")
+            slackSend (channel: env.SLACK_CHANNEL, color: '#FF0000', message: "FAILED: Job  ${env.JOB_NAME}-${env.BRANCH_NAME} [${env.BUILD_NUMBER}]\n AUTHOR: ${env.AUTHOR} \n Build URL: (${env.BUILD_URL})")
         }    
     }
 }
