@@ -1,11 +1,15 @@
 package com.virnect.workspace.api;
 
+import org.springframework.boot.info.BuildProperties;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
+
+import lombok.RequiredArgsConstructor;
 
 /**
  * @author jeonghyeon.chang (johnmark)
@@ -16,10 +20,22 @@ import java.time.LocalDateTime;
  */
 
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/")
 public class HealthController {
-    @GetMapping("/healthCheck")
+
+    private final BuildProperties buildProperties;
+    @GetMapping("/healthcheck")
     public ResponseEntity<String> healthCheck() {
-        return ResponseEntity.ok("Workspace Server Health Check " + LocalDateTime.now());
+        String message =
+            "\n\n"
+                + "------------------------------------------------------------------------------\n" + "\n"
+                + "   VIRNECT USER ACCOUNT AND AUTHENTICATION SERVER\n"
+                + "   ---------------------------\n" + "\n"
+                + "   * SERVER_VERSION: [ " + buildProperties.getVersion() + " ]\n" + "\n"
+                + "   * SERVER_MODE: [ " + System.getenv("VIRNECT_ENV") + " ]\n" + "\n"
+                + "   * HEALTH_CHECK_DATE: [ " + ZonedDateTime.now() + " ]\n" + "\n"
+                + "------------------------------------------------------------------------------\n";
+        return ResponseEntity.ok(message);
     }
 }
