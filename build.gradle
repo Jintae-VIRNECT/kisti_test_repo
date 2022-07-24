@@ -11,6 +11,10 @@ group = 'com.virnect'
 version = '1.2.29'
 sourceCompatibility = '1.8'
 
+springBoot {
+    buildInfo()
+}
+
 configurations {
     compileOnly {
         extendsFrom annotationProcessor
