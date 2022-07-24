@@ -3,11 +3,13 @@ package com.virnect.license.api;
 import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
 
+import org.springframework.boot.info.BuildProperties;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import lombok.RequiredArgsConstructor;
 import springfox.documentation.annotations.ApiIgnore;
 
 /**
@@ -19,7 +21,11 @@ import springfox.documentation.annotations.ApiIgnore;
  */
 @RestController
 @RequestMapping("/")
+@RequiredArgsConstructor
 public class HealthCheckController {
+
+	private final BuildProperties buildProperties;
+
 	@GetMapping("/healthcheck")
 	public ResponseEntity<String> healthCheck() {
 		String message =
@@ -27,6 +33,7 @@ public class HealthCheckController {
 				+ "------------------------------------------------------------------------------\n" + "\n"
 				+ "   VIRNECT LICENSE SERVER\n"
 				+ "   ---------------------------\n" + "\n"
+				+ "   * SERVER_VERSION: [ " + buildProperties.getVersion() + " ]\n" + "\n"
 				+ "   * SERVER_MODE: [ " + System.getenv("VIRNECT_ENV") + " ]\n" + "\n"
 				+ "   * HEALTH_CHECK_DATE: [ " + ZonedDateTime.now() + " ]\n" + "\n"
 				+ "------------------------------------------------------------------------------\n";
