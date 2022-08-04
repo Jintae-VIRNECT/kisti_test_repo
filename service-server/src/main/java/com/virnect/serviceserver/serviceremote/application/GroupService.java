@@ -339,8 +339,7 @@ public class GroupService {
 				workspaceId, groupId, userId, includeOneself)
 			.orElseThrow(() -> new RemoteServiceException(ErrorCode.ERR_GROUP_NOT_FOUND));
 
-		List<WorkspaceMemberInfoResponse> workspaceMembers = workspaceRestService.getWorkspaceMembers(
-			workspaceId, filter, search, 50).getData().getMemberInfoList();
+		List<WorkspaceMemberInfoResponse> workspaceMembers = getAllMemberInWorkspace(workspaceId);
 		workspaceMembers = includeOneselfFilter(userId, includeOneself, workspaceMembers);
 
 		List<FavoriteGroupMemberResponse> favoriteGroupMembers = mapperWorkspaceToFavoriteMember(
