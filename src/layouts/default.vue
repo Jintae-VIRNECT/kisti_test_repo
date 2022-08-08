@@ -6,7 +6,7 @@
       :userInfo="auth.myInfo"
       :urls="$url"
       :logo="{ default: logo }"
-      :regex="/remote|workstation|login|download/"
+      :regex="menuRegex"
       @logout="$store.commit('auth/LOGOUT')"
     >
       <template slot="subTitle">
@@ -68,6 +68,10 @@ export default {
       bottomMenus: this.$isOnpremise
         ? sideOnpremiseBottomMenus
         : sideBottomMenus,
+      menuRegex:
+        'download' in this.$url
+          ? /remote|workstation|login|download/
+          : /remote|workstation|login/,
     }
   },
   computed: {
@@ -133,6 +137,15 @@ export default {
     background: none;
     border: none;
     &:after {
+      display: none;
+    }
+  }
+}
+// 헤더 login, learning 메뉴가 리스트 마지막일때 seperator 비활성화
+#__nuxt .onpremise .hover-box {
+  .login,
+  .learning {
+    &:last-child a:after{
       display: none;
     }
   }
