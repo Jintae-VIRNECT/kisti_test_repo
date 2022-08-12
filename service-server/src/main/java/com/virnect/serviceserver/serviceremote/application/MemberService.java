@@ -188,20 +188,10 @@ public class MemberService {
 	public List<WorkspaceMemberInfoResponse> getAllMemberInWorkspace(
 		String workspaceId
 	) {
-		WorkspaceMemberInfoListResponse firstPageAndMetaData = workspaceRestService.getWorkspaceMembers(
-			workspaceId, "email,desc", 1, Integer.MAX_VALUE).getData();
-		int totalPage = firstPageAndMetaData.getPageMeta().getTotalPage();
+		List<WorkspaceMemberInfoResponse> allMemberList = workspaceRestService.getWorkspaceMembers(
+			workspaceId, "email,desc", 1, Integer.MAX_VALUE).getData().getMemberInfoList();
 
-		List<WorkspaceMemberInfoResponse> allMemberList = firstPageAndMetaData.getMemberInfoList();
-
-		for (int page = 2; page <= totalPage; page++) {
-			List<WorkspaceMemberInfoResponse> response = workspaceRestService.getWorkspaceMembers(
-				workspaceId, "email,desc", page, Integer.MAX_VALUE).getData().getMemberInfoList();
-			allMemberList.addAll(response);
-		}
-		log.info("[getAllMemberInWorkspace] totalPage : [{}], allMemberListSize : [{}]",
-			totalPage, allMemberList.size()
-		);
+		log.info("[getAllMemberInWorkspace]  allMemberListSize : [{}]", allMemberList.size());
 
 		return allMemberList.stream().sorted(Comparator.comparing(WorkspaceMemberInfoResponse::getName))
 			.collect(Collectors.toList());

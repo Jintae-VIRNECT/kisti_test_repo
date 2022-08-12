@@ -24,7 +24,7 @@ plugins {
 //—————————————————————————————————————————————————————————————————————————————————————————————————
 allprojects {
     "com.virnect"
-version = '2.7.0-1'
+    version = '2.7.0-1'
     sourceCompatibility = "1.8"
     targetCompatibility = "1.8"
 }
@@ -53,6 +53,10 @@ project(":service-server") {
         compileOnly 'org.projectlombok:lombok'
         annotationProcessor 'org.projectlombok:lombok'
         annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
+
+        // zipkin
+        implementation 'org.springframework.cloud:spring-cloud-starter-sleuth'
+        implementation 'org.springframework.cloud:spring-cloud-starter-zipkin'
 
         // Spring Test Dependencies
         testImplementation('org.springframework.boot:spring-boot-starter-test') {
@@ -91,6 +95,10 @@ project(":service-data") {
         implementation 'org.springframework.boot:spring-boot-starter'
         annotationProcessor 'org.projectlombok:lombok'
         annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
+
+        // zipkin
+        implementation 'org.springframework.cloud:spring-cloud-starter-sleuth'
+        implementation 'org.springframework.cloud:spring-cloud-starter-zipkin'
 
         // Spring Test Dependencies
         testImplementation('org.springframework.boot:spring-boot-starter-test') {
