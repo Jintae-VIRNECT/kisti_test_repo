@@ -210,18 +210,14 @@ public class WorkspaceUserServiceCustom {
 				userInfoRestResponse);
 			workspaceUserInfoResponseList.add(workspaceUserInfoResponse);
 		}
-
-		for (UserLicenseInfo userLicenseInfo : userLicenseInfoList) {
-			for (WorkspaceUserInfoResponse workspaceUserInfoResponse : workspaceUserInfoResponseList) {
-
+		for (WorkspaceUserInfoResponse workspaceUserInfoResponse : workspaceUserInfoResponseList) {
+			for (UserLicenseInfo userLicenseInfo : userLicenseInfoList) {
+				
 				// 유저 라이센스 할당.
 				if (workspaceUserInfoResponse.getUuid().equals(userLicenseInfo.getUserId())) {
 					setUserLicenseProducForWorkspaceUserInfoResponse(userLicenseInfo, workspaceUserInfoResponse);
 				}
-				// 라이센스가 할당되지 않은 유저 빈 배열 return
-				if (ArrayUtils.isEmpty(workspaceUserInfoResponse.getLicenseProducts())) {
-					workspaceUserInfoResponse.setLicenseProducts(new String[0]);
-				}
+
 			}
 		}
 
