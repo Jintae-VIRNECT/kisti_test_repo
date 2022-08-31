@@ -19,7 +19,9 @@ pipeline {
                 }
             }
             steps {
-                APP = docker.build("""${BRANCH_NAME}:${REPO_NAME}""", "-f ./docker/Dockerfile .")
+                script{
+                    APP = docker.build("""${BRANCH_NAME}:${REPO_NAME}""", "-f ./docker/Dockerfile .")
+                    }
                 }
             }
         stage ('save image to nexus') {
