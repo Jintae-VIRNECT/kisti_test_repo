@@ -44,7 +44,7 @@ pipeline {
                script {
                     withCredentials([usernamePassword(credentialsId: 'jtkim_local_pc', passwordVariable: 'PASSWORD', usernameVariable: 'USERNAME')]) {
                         def remote = [:]
-                        remote.name = "${JOB}-${BRANCH_NAME}" 
+                        remote.name = "virnect" 
                         remote.host = "${TEST_SERVER}"
                         remote.allowAnyHosts = true 
                         remote.user = USERNAME 
@@ -54,7 +54,7 @@ pipeline {
                         sshCommand remote: remote, command: """
                             start cmd
                   
-                        """,sudo: false
+                        """
                     }
                 }
             }
