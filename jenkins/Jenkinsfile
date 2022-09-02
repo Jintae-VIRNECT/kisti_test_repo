@@ -52,7 +52,7 @@ pipeline {
                         remote.failOnError = true
 
                         sshCommand remote: remote, command: """
-                            start cmd
+                            start notepad
                   
                         """
                     }
