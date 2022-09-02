@@ -61,7 +61,7 @@ pipeline {
                                 -e VIRNECT_ENV=onpremise \
                                 -e CONFIG_SERVER=${KISTI_CONFIG_SERVER} \
                                 -p ${PORT}:${PORT} \
-                                --name= ${JOB}-${BRANCH}
+                                --name= ${JOB}-${BRANCH} ${HARBOR_REGISTRY}/${JOB}/${BRANCH}:${BUILD_NUMBER}
                         """
                     }
                 }
