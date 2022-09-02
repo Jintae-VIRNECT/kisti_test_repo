@@ -51,7 +51,8 @@ pipeline {
                         remote.password = PASSWORD
                         remote.failOnError = true
 
-                        sshCommand remote: remote, command: 'docker login ${HARBOR_REGISTRY}'
+                        sshCommand remote: remote, command: 'docker login '${HARBOR_REGISTRY}
+                        
                         
                     }
                 }
