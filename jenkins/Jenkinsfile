@@ -42,16 +42,16 @@ pipeline {
             steps {
 
                script {
-                    withCredentials([usernamePassword(credentialsId: 'test-cicd', passwordVariable: 'PASSWORD', usernameVariable: 'USERNAME')]) {
+                    withCredentials([usernamePassword(credentialsId: 'jtkim_local_pc', passwordVariable: 'PASSWORD', usernameVariable: 'USERNAME')]) {
                         def remote = [:]
                         remote.name = "${JOB}-${BRANCH_NAME}" 
-                        remote.host = "${TEST_SERVER}"
+                        remote.host = "${TEST_SERVER_WINDOW}"
                         remote.allowAnyHosts = true 
                         remote.user = USERNAME 
                         remote.password = PASSWORD
                         remote.failOnError = true
 
-                        sshCommand remote: remote, command: "dir"
+                        sshCommand remote: remote, command: 'dir'
                     }
                 }
             }
