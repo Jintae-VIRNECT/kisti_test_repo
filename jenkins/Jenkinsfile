@@ -4,6 +4,7 @@ pipeline {
         COMMIT = "${GIT_COMMIT.substring(0,7)}"
         BRANCH = "${BRANCH_NAME.toLowerCase().trim().split("/")[0]}"
         JOB = "${JOB_NAME.split("/")[0].toLowerCase().trim()}"
+        PORT = sh(returnStdout: true, script: 'cat docker/Dockerfile | egrep EXPOSE | awk \'{print $2}\'').trim()
         REPO_NAME = sh(returnStdout: true, script: 'git config --get remote.origin.url | rev | cut -f 1 -d "/" | rev | sed "s/.git//gi";sed "/^ *$/d"').toLowerCase().trim() 
         SLACK_CHANNEL = '#project-dev-jenkins'
         AUTHOR = sh(returnStdout: true, script : 'git --no-pager show -s --pretty="format: %an"')
@@ -21,6 +22,8 @@ pipeline {
             steps {
                 script{
                     echo "${JOB_NAME}/${BRANCH_NAME}"
+                    echo "${JOB_NAME}"
+                    echo "${BRANCH_NAME}"
                     APP = docker.build("""${JOB_NAME}/${BRANCH_NAME}""", "-f ./docker/Dockerfile .")
                     }
                 }
@@ -38,10 +41,29 @@ pipeline {
         stage('Deploy'){
             steps {
 
-                scirpt{
-                    echo "endndneodnaskdjasdlfkjasdlkf"
+               script {
+                    withCredentials([usernamePassword(credentialsId: 'jtkim_local_pc', passwordVariable: 'PASSWORD', usernameVariable: 'USERNAME')]) {
+                        def remote = [:]
+                        remote.name = "${JOB_NAME}-${BRANCH_NAME}" 
+                        remote.host = "${TEST_SERVER}"
+                        remote.allowAnyHosts = true 
+                        remote.user = USERNAME 
+                        remote.password = PASSWORD
+                        remote.failOnError = true
+
+                        sshCommand remote: remote, command: """
+                            docker login ${HARBOR_REGISTRY}
+                            docker pull ${HARBOR_REGISTRY}/${JOB_NAME}:${BRANCH_NAME}-${BUILD_NUMBER}
+                            docker stop ${JOB_NAME}-${BRANCH_NAME} && docker rm ${JOB_NAME}-${BRANCH_NAME} || true
+                            docker run --restart=on-failure:10 \
+                                -d \
+                                -e VIRNECT_ENV=onpremise \
+                                -e CONFIG_SERVER=${KISTI_CONFIG_SERVER} \
+                                -p ${PORT}:${PORT} \
+                                --name= ${JOB_NAME}-${BRANCH_NAME}
+                        """
+                    }
                 }
-               
             }
         }
     }
