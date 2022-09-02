@@ -24,10 +24,10 @@ pipeline {
                     }
                 }
             }
-        stage ('save image to nexus') {
+        stage ('save image to harbor') {
                 steps {
                     script {
-                        docker.withRegistry("https://192.168.0.9", "harbor") {
+                        docker.withRegistry("https://${HARBOR_REGISTRY}", "harbor") {
                             APP.push("${JOB_NAME}/${BRANCH_NAME}-${BUILD_NUMBER}")
                         }
                     }
@@ -36,9 +36,11 @@ pipeline {
             
         stage('Deploy'){
             steps {
-                sh 'docker ps -f name=${JOB}-${BRANCH} -q  || true  docker stop ${JOB}-${BRANCH}'
-                sh 'docker container ls -a -f name=${JOB}-${BRANCH} -q || true  docker-compose -f /usr/local/custom/${REPO_NAME}/docker-compose.yaml rm -f ${JOB}-${BRANCH}'
-                sh 'docker-compose -f /usr/local/custom/${REPO_NAME}/docker-compose.yaml up -d ${BRANCH}'
+
+                scirpt{
+                    echo "endndneodnaskdjasdlfkjasdlkf"
+                }
+               
             }
         }
     }
