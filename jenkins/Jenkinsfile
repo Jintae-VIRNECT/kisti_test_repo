@@ -51,9 +51,8 @@ pipeline {
                         remote.password = PASSWORD
                         remote.failOnError = true
 
-                        sshCommand remote: remote, command: """
-                            echo kkkk
-                        """
+                        sshCommand remote: remote, command:                           'echo kkkk'
+                        
                     }
                 }
             }
