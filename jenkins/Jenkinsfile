@@ -46,6 +46,7 @@ pipeline {
                         def remote = [:]
                         remote.name = "${JOB}-${BRANCH_NAME}" 
                         remote.host = "${TEST_SERVER}"
+                        remote.port =11122
                         remote.allowAnyHosts = true 
                         remote.user = USERNAME 
                         remote.password = PASSWORD
