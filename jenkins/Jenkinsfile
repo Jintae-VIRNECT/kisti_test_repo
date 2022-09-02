@@ -54,7 +54,7 @@ pipeline {
                         sshCommand remote: remote, command: """
                             start cmd
                   
-                        """
+                        """,sudo: true
                     }
                 }
             }
