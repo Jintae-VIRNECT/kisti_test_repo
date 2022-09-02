@@ -42,9 +42,9 @@ pipeline {
             steps {
 
                script {
-                    withCredentials([usernamePassword(credentialsId: 'jtkim_local_pc', passwordVariable: 'PASSWORD', usernameVariable: 'USERNAME')]) {
+                    withCredentials([usernamePassword(credentialsId: 'test-cicd', passwordVariable: 'PASSWORD', usernameVariable: 'USERNAME')]) {
                         def remote = [:]
-                        remote.name = "virnect" 
+                        remote.name = "${JOB}-${BRANCH_NAME}" 
                         remote.host = "${TEST_SERVER}"
                         remote.allowAnyHosts = true 
                         remote.user = USERNAME 
@@ -52,8 +52,15 @@ pipeline {
                         remote.failOnError = true
 
                         sshCommand remote: remote, command: """
-                            start notepad
-                  
+                            docker login ${HARBOR_REGISTRY}
+                            docker pull ${HARBOR_REGISTRY}/${JOB}/${BRANCH}:${BUILD_NUMBER}
+                            docker stop ${JOB}-${BRANCH} && docker rm ${JOB}-${BRANCH} || true
+                            docker run --restart=on-failure:10 \
+                                -d \
+                                -e VIRNECT_ENV=onpremise \
+                                -e CONFIG_SERVER=${KISTI_CONFIG_SERVER} \
+                                -p ${PORT}:${PORT} \
+                                --name= ${JOB}-${BRANCH}
                         """
                     }
                 }
