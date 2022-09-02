@@ -53,8 +53,6 @@ pipeline {
 
                         sshCommand remote: remote, command: """
                             echo kkkk
-
-                            docker pull ${HARBOR_REGISTRY}/${JOB}/${BRANCH}:${BUILD_NUMBER}
                         """
                     }
                 }
