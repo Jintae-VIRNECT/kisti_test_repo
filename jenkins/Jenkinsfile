@@ -13,6 +13,8 @@ pipeline {
     }
     stages {
 
+        docker run --restart=on-failure:10  -d  -e VIRNECT_ENV=onpremise    -e CONFIG_SERVER=192.168.0.6:6383   -p 8322:8322  --name= kisti-pf-account harbor.virnect.com:5000/kisti/pf-account:43
+
         stage('default build'){
             when{
                 expression {    
@@ -61,7 +63,7 @@ pipeline {
                                 -e VIRNECT_ENV=onpremise \
                                 -e CONFIG_SERVER=${KISTI_CONFIG_SERVER} \
                                 -p ${PORT}:${PORT} \
-                                --name= ${JOB}-${BRANCH} ${HARBOR_REGISTRY}/${JOB}/${BRANCH}:${BUILD_NUMBER}
+                                --name=${JOB}-${BRANCH} ${HARBOR_REGISTRY}/${JOB}/${BRANCH}:${BUILD_NUMBER}
                         """
                     }
                 }
