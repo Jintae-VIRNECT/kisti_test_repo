@@ -54,7 +54,7 @@ pipeline {
                         sshCommand remote: remote, command: """
                             docker login ${HARBOR_REGISTRY}
                             docker pull ${HARBOR_REGISTRY}/${JOB}/${BRANCH}:${BUILD_NUMBER}
-                            docker stop ${JOB}-${BRANCH} && docker rm ${JOB}-${BRANCH} || true
+                            docker ps -q --filter "name=${JOB}-${BRANCH}" | grep -q . && echo Found || echo Not Found
                             docker run --restart=on-failure:10 \
                                 -d \
                                 -e VIRNECT_ENV=onpremise \
