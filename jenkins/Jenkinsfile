@@ -52,9 +52,7 @@ pipeline {
                         remote.password = PASSWORD
                         remote.failOnError = true
 
-                        sshCommand remote: remote, command: """
-                            sshGet remote: remote, from: 'test.bat', into: 'abc_get.sh', override: true
-                        """
+                        sshCommand remote: remote, command: "dir"
                     }
                 }
             }
