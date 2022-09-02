@@ -47,7 +47,7 @@ pipeline {
                         remote.name = "${JOB}-${BRANCH_NAME}" 
                         remote.host = "${TEST_SERVER}"
                         remote.allowAnyHosts = true 
-                        remote.port:11122
+                        remote.port= 11122
                         remote.user = USERNAME 
                         remote.password = PASSWORD
                         remote.failOnError = true
