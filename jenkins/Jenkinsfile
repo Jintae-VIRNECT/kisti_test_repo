@@ -20,6 +20,7 @@ pipeline {
             }
             steps {
                 script{
+                    echo "${JOB_NAME}/${BRANCH_NAME}"
                     APP = docker.build("""${JOB_NAME}/${BRANCH_NAME}""", "-f ./docker/Dockerfile .")
                     }
                 }
@@ -28,7 +29,7 @@ pipeline {
                 steps {
                     script {
                         docker.withRegistry("https://${HARBOR_REGISTRY}", "harbor") {
-                            APP.push("${JOB_NAME}/${BRANCH_NAME}")
+                            APP.push("${env.BUILD_NUMBER}")
                         }
                     }
                 }
